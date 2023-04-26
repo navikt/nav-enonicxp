@@ -1,5 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import * as taskLib from '/lib/xp/task';
+import * as portalLib from '/lib/xp/portal';
 import cacheLib from '/lib/cache';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { getLayersData } from '../../lib/localization/layers-data';
@@ -8,6 +9,7 @@ import { parseJsonArray } from '../../lib/utils/array-utils';
 import { migrateContentBatchToLayers } from '../../lib/localization/layers-migration/migration-batch-job';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { generateUUID } from '../../lib/utils/uuid';
+import { URLS } from '../../lib/constants';
 
 type Params = {
     sourceLocale: string;
@@ -163,6 +165,8 @@ export const get = (req: XP.Request) => {
     }
 
     const jobId = generateUUID();
+    const serviceUrl = portalLib.serviceUrl({ service: 'migrateToLayers' });
+    const jobStatusUrl = `${URLS.XP_ORIGIN}${serviceUrl}?status=${jobId}`;
 
     logger.info(`Running layers migration job ${jobId} with params ${JSON.stringify(params)}`);
 
@@ -174,6 +178,7 @@ export const get = (req: XP.Request) => {
             msg: 'Started batch migration job!',
             params,
             jobId,
+            jobStatusUrl,
         },
         contentType: 'application/json',
     };
