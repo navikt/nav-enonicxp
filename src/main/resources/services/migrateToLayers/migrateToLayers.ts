@@ -1,18 +1,35 @@
 import * as contentLib from '/lib/xp/content';
+import * as taskLib from '/lib/xp/task';
+import * as portalLib from '/lib/xp/portal';
+import cacheLib from '/lib/cache';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { getLayersData } from '../../lib/localization/layers-data';
 import { logger } from '../../lib/utils/logging';
 import { parseJsonArray } from '../../lib/utils/array-utils';
-import { migrateContentBatchToLayers } from '../../lib/localization/layers-migration/migration-batch-job';
+import {
+    LayersMigrationResultCache,
+    migrateContentBatchToLayers,
+} from '../../lib/localization/layers-migration/migration-batch-job';
 import { ContentDescriptor } from '../../types/content-types/content-config';
+import { generateUUID } from '../../lib/utils/uuid';
+import { URLS } from '../../lib/constants';
 
 type Params = {
     sourceLocale: string;
     targetLocale: string;
     contentTypes: ContentDescriptor[];
-    count: number;
+    maxCount: number;
     query?: string;
+    dryRun?: boolean;
 };
+
+const ONE_DAY = 60 * 60 * 24;
+
+// TODO: cacheLib type def needs an update
+const resultCache = cacheLib.newCache({
+    size: 1000,
+    expire: ONE_DAY,
+}) as LayersMigrationResultCache;
 
 const validateQuery = (query: string) => {
     try {
@@ -25,7 +42,7 @@ const validateQuery = (query: string) => {
 };
 
 const parseAndValidateParams = (params: XP.Request['params']): Params | null => {
-    const { sourceLocale, targetLocale, contentTypes, query, count } = params;
+    const { sourceLocale, targetLocale, contentTypes, query, maxCount } = params;
     const { locales, defaultLocale } = getLayersData();
 
     const targetLocaleIsValid = typeof targetLocale === 'string' && locales.includes(targetLocale);
@@ -57,9 +74,9 @@ const parseAndValidateParams = (params: XP.Request['params']): Params | null => 
         return null;
     }
 
-    const countParsed = count && parseInt(count);
+    const countParsed = maxCount && parseInt(maxCount);
     if (!countParsed || isNaN(countParsed)) {
-        logger.info(`Invalid count param: ${count}`);
+        logger.info(`Invalid maxCount param: ${maxCount}`);
         return null;
     }
 
@@ -68,7 +85,57 @@ const parseAndValidateParams = (params: XP.Request['params']): Params | null => 
         targetLocale,
         query,
         contentTypes: contentTypesParsed,
-        count: countParsed,
+        maxCount: countParsed,
+        dryRun: params.dryRun === 'true',
+    };
+};
+
+const runMigrationJob = (params: Params, jobId: string, dryRun?: boolean) => {
+    taskLib.executeFunction({
+        description: `Layers migration job ${jobId}`,
+        func: () => {
+            resultCache.put(jobId, {
+                status: `Migration job ${jobId} started`,
+                params,
+                result: [],
+            });
+
+            const start = Date.now();
+
+            const result = migrateContentBatchToLayers(params, jobId, resultCache, dryRun);
+
+            const durationSec = (Date.now() - start) / 1000;
+            const withErrors = result.filter((result) => result.errors.length > 0);
+
+            resultCache.put(jobId, {
+                status: `${
+                    params.dryRun ? '[DRY RUN] ' : ''
+                }Migration job ${jobId} completed in ${durationSec} sec. ${
+                    withErrors.length
+                } contents had errors.`,
+                params,
+                result,
+            });
+        },
+    });
+};
+
+const getJobStatus = (jobId: string) => {
+    const jobStatus = resultCache.getIfPresent(jobId);
+    if (!jobStatus) {
+        return {
+            status: 404,
+            body: {
+                message: `No job status found for ${jobId}`,
+            },
+            contentType: 'application/json',
+        };
+    }
+
+    return {
+        status: 200,
+        body: jobStatus,
+        contentType: 'application/json',
     };
 };
 
@@ -83,6 +150,10 @@ export const get = (req: XP.Request) => {
         };
     }
 
+    if (req.params.status) {
+        return getJobStatus(req.params.status);
+    }
+
     const params = parseAndValidateParams(req.params);
     if (!params) {
         return {
@@ -94,11 +165,22 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const result = migrateContentBatchToLayers(params);
+    const jobId = generateUUID();
+    const serviceUrl = portalLib.serviceUrl({ service: 'migrateToLayers' });
+    const jobStatusUrl = `${URLS.XP_ORIGIN}${serviceUrl}?status=${jobId}`;
+
+    logger.info(`Running layers migration job ${jobId} with params ${JSON.stringify(params)}`);
+
+    runMigrationJob(params, jobId, params.dryRun);
 
     return {
         status: 200,
-        body: result,
+        body: {
+            msg: 'Started batch migration job!',
+            params,
+            jobId,
+            jobStatusUrl,
+        },
         contentType: 'application/json',
     };
 };

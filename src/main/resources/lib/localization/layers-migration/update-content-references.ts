@@ -8,6 +8,8 @@ import { getRepoConnection, isDraftAndMasterSameVersion } from '../../utils/repo
 import { getLayersData } from '../layers-data';
 import { RepoBranch } from '../../../types/common';
 import { modifyContentNode } from './modify-content-node';
+import { forceArray } from '../../utils/array-utils';
+import { isContentLocalized } from '../locale-utils';
 
 const updateReferenceFromNode = ({
     contentNodeToUpdate,
@@ -43,6 +45,15 @@ const updateReferenceFromNode = ({
             );
             const contentWithUpdates = JSON.parse(contentJsonWithUpdates);
 
+            // If the content referenced the migrated content in the legacy languages list
+            // it might now be referencing itself instead. Ensure such a reference is removed.
+            if (contentWithUpdates.data?.languages) {
+                const languages = forceArray(contentWithUpdates.data.languages);
+                contentWithUpdates.data.languages = languages.filter(
+                    (language) => language !== contentNodeToUpdateId
+                );
+            }
+
             return contentWithUpdates;
         },
     });
@@ -68,45 +79,52 @@ const updateReferenceFromNode = ({
     pushResult.success.forEach((id) => `Pushing ${id} to master succeeded`);
 };
 
-export const updateContentReferences = ({
-    sourceId,
-    targetId,
-    sourceLocale,
-}: ContentMigrationParams) => {
-    const references = runInLocaleContext({ locale: sourceLocale }, () =>
+const updateContentReferencesInLocaleLayer = (
+    { sourceId, targetId, sourceLocale }: ContentMigrationParams,
+    localeToUpdate: string
+) => {
+    const repoToUpdate = getLayersData().localeToRepoIdMap[localeToUpdate];
+    if (!repoToUpdate) {
+        logger.error(`No repo found for locale "${localeToUpdate}"`);
+        return;
+    }
+
+    const references = runInLocaleContext({ locale: localeToUpdate }, () =>
         findReferences({ id: sourceId, branch: 'master', withDeepSearch: false })
     );
     if (!references) {
-        logger.error(`References search failed for ${sourceId} in locale ${sourceLocale}`);
+        logger.error(`References search failed for ${sourceId} in locale ${localeToUpdate}`);
         return false;
     }
 
     logger.info(
         `Found ${
             references.length
-        } references to ${sourceId} in locale ${sourceLocale}:\n${references
+        } references to ${sourceId} in locale ${localeToUpdate}:\n${references
             .map((ref) => ref._path)
             .join('\n')}`
     );
 
-    const sourceRepoId = getLayersData().localeToRepoIdMap[sourceLocale];
-
     references.forEach((refContent) => {
+        if (!isContentLocalized(refContent)) {
+            return;
+        }
+
         const { _id } = refContent;
-        if (_id === sourceId) {
+        if (_id === sourceId && localeToUpdate === sourceLocale) {
             return;
         }
 
         const contentNodeMaster = getRepoConnection({
             branch: 'master',
-            repoId: sourceRepoId,
+            repoId: repoToUpdate,
             asAdmin: true,
         }).get(_id);
 
         // Get the content node from draft before updating master, as it may be overwritten
         const contentNodeDraft = getRepoConnection({
             branch: 'draft',
-            repoId: sourceRepoId,
+            repoId: repoToUpdate,
             asAdmin: true,
         }).get(_id);
 
@@ -115,22 +133,37 @@ export const updateContentReferences = ({
                 contentNodeToUpdate: contentNodeMaster,
                 prevRefId: sourceId,
                 newRefId: targetId,
-                repoId: sourceRepoId,
+                repoId: repoToUpdate,
                 targetBranch: 'master',
             });
         }
 
         // If the draft version was not committed to master, we need to update this as well
-        if (contentNodeDraft && !isDraftAndMasterSameVersion(refContent._id, sourceRepoId)) {
+        if (contentNodeDraft && !isDraftAndMasterSameVersion(refContent._id, repoToUpdate)) {
             updateReferenceFromNode({
                 contentNodeToUpdate: contentNodeDraft,
                 prevRefId: sourceId,
                 newRefId: targetId,
-                repoId: sourceRepoId,
+                repoId: repoToUpdate,
                 targetBranch: 'draft',
             });
         }
     });
 
     return true;
+};
+
+export const updateContentReferences = (params: ContentMigrationParams) => {
+    const { locales } = getLayersData();
+
+    let isSuccess = true;
+
+    locales.forEach((locale) => {
+        const result = updateContentReferencesInLocaleLayer(params, locale);
+        if (!result) {
+            isSuccess = false;
+        }
+    });
+
+    return isSuccess;
 };

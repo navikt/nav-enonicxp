@@ -22,6 +22,10 @@ const transformToArchivedContent = (
         content: {
             ...preMigrationContent,
             displayName: `${preMigrationContent.displayName} - Migrert til layer: [${postMigrationLocale}] ${postMigrationContentId}`,
+            data: {
+                ...preMigrationContent.data,
+                customPath: null,
+            },
         },
         migrationParams: {
             targetReferenceType: 'live',
