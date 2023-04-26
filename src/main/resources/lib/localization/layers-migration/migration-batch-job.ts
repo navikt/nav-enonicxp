@@ -1,5 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
+import cacheLib from '/lib/cache';
 import { logger } from '../../utils/logging';
 import { ArrayOrSingle } from '../../../types/util-types';
 import { forceArray, removeDuplicates } from '../../utils/array-utils';
@@ -12,16 +13,98 @@ type Params = {
     sourceLocale: string;
     targetLocale: string;
     contentTypes: ContentDescriptor[];
-    count: number;
+    maxCount: number;
     query?: string;
 };
 
 type MigrationResult = { msg: string; errors: string[] };
 
-const getContentToMigrate = ({ contentTypes, query, count, sourceLocale, targetLocale }: Params) =>
+type SourceAndTargetContent = { sourceContent: Content; targetBaseContent: Content };
+
+type LayerMigrationBatchJobResult = {
+    status: string;
+    params: Params;
+    result: ReturnType<typeof migrateContentBatchToLayers>;
+};
+
+export type LayersMigrationResultCache = cacheLib.Cache & {
+    getIfPresent: (key: string) => LayerMigrationBatchJobResult;
+    put: (key: string, value: LayerMigrationBatchJobResult) => void;
+};
+
+const getTargetBaseContentReverse = (sourceContent: Content, sourceLocale: string) => {
+    return contentLib.query({
+        count: 2,
+        filters: {
+            boolean: {
+                must: [
+                    {
+                        hasValue: {
+                            field: 'language',
+                            values: [sourceLocale],
+                        },
+                    },
+                    {
+                        hasValue: {
+                            field: 'data.languages',
+                            values: [sourceContent._id],
+                        },
+                    },
+                    {
+                        notExists: {
+                            field: 'x.no-nav-navno.layerMigration',
+                        },
+                    },
+                ],
+            },
+        },
+    }).hits;
+};
+
+const getTargetBaseContent = (sourceContent: Content, sourceLocale: string) => {
+    const languageVersionIds = forceArray(
+        (sourceContent.data as { languages: ArrayOrSingle<string> }).languages
+    );
+
+    const baseLanguageVersions = removeDuplicates(languageVersionIds).reduce<Content[]>(
+        (acc, versionContentId) => {
+            const content = contentLib.get({ key: versionContentId });
+            return content?.language === sourceLocale ? [...acc, content] : acc;
+        },
+        []
+    );
+
+    if (baseLanguageVersions.length === 0) {
+        logger.info(
+            `No reference to base language version found on [${sourceLocale}] ${sourceContent._path}, trying reverse lookup`
+        );
+        const reverseLookupVersions = getTargetBaseContentReverse(sourceContent, sourceLocale);
+        baseLanguageVersions.push(...reverseLookupVersions);
+    }
+
+    if (baseLanguageVersions.length === 1) {
+        return baseLanguageVersions[0];
+    } else if (baseLanguageVersions.length > 1) {
+        logger.error(
+            `Multiple base locale versions found for [${sourceLocale}] ${
+                sourceContent._path
+            } - ${JSON.stringify(baseLanguageVersions.map((content) => content._path))}`
+        );
+    }
+
+    return null;
+};
+
+const getContentToMigrate = ({
+    contentTypes,
+    query,
+    maxCount,
+    sourceLocale,
+    targetLocale,
+}: Params) =>
     contentLib
         .query({
-            count,
+            count: 2000,
             query,
             contentTypes,
             filters: {
@@ -34,11 +117,6 @@ const getContentToMigrate = ({ contentTypes, query, count, sourceLocale, targetL
                             },
                         },
                         {
-                            exists: {
-                                field: 'data.languages',
-                            },
-                        },
-                        {
                             notExists: {
                                 field: 'x.no-nav-navno.layerMigration',
                             },
@@ -47,52 +125,34 @@ const getContentToMigrate = ({ contentTypes, query, count, sourceLocale, targetL
                 },
             },
         })
-        .hits.reduce<{ sourceContent: Content; targetBaseContent: Content }[]>(
-            (acc, sourceContent) => {
-                const languageVersionIds = forceArray(
-                    (sourceContent.data as { languages: ArrayOrSingle<string> }).languages
-                );
-
-                const validBaseLanguageVersions = removeDuplicates(languageVersionIds).reduce<
-                    Content[]
-                >((acc, versionContentId) => {
-                    const content = contentLib.get({ key: versionContentId });
-                    return content?.language === sourceLocale ? [...acc, content] : acc;
-                }, []);
-
-                if (validBaseLanguageVersions.length === 1) {
-                    acc.push({
-                        sourceContent: sourceContent,
-                        targetBaseContent: validBaseLanguageVersions[0],
-                    });
-                } else if (validBaseLanguageVersions.length > 1) {
-                    logger.error(
-                        `Multiple base locale versions found for [${sourceLocale}] ${
-                            sourceContent._path
-                        } - ${JSON.stringify(
-                            validBaseLanguageVersions.map((content) => content._path)
-                        )}`
-                    );
-                }
-
+        .hits.reduce<SourceAndTargetContent[]>((acc, sourceContent) => {
+            if (acc.length >= maxCount) {
                 return acc;
-            },
-            []
-        );
+            }
 
-export const migrateContentBatchToLayers = (params: Params) =>
+            const targetBaseContent = getTargetBaseContent(sourceContent, sourceLocale);
+            if (targetBaseContent) {
+                acc.push({ sourceContent, targetBaseContent });
+            }
+
+            return acc;
+        }, []);
+
+export const migrateContentBatchToLayers = (
+    params: Params,
+    jobId: string,
+    resultCache: LayersMigrationResultCache,
+    dryRun = false
+) =>
     runInLocaleContext({ locale: params.sourceLocale, branch: 'draft' }, () => {
         logger.info(`Running migration batch job with params: ${JSON.stringify(params)}`);
 
         const { sourceLocale, targetLocale } = params;
 
-        const batchResult: MigrationResult[] = [];
-
         const contentToMigrate = getContentToMigrate(params);
 
         if (contentToMigrate.length === 0) {
-            batchResult.push({ msg: 'No applicable content found for migrating', errors: [] });
-            return batchResult;
+            return [{ msg: 'No applicable content found for migrating', errors: [] }];
         }
 
         logger.info(
@@ -106,27 +166,51 @@ export const migrateContentBatchToLayers = (params: Params) =>
             )}`
         );
 
-        toggleCacheInvalidationOnNodeEvents({ shouldDefer: true });
+        if (!dryRun) {
+            toggleCacheInvalidationOnNodeEvents({ shouldDefer: true });
+        }
 
-        contentToMigrate.forEach(({ sourceContent, targetBaseContent }) => {
-            const result = migrateContentToLayer({
-                sourceId: sourceContent._id,
-                targetId: targetBaseContent._id,
-                sourceLocale,
-                targetLocale,
-            });
+        const batchResults: MigrationResult[] = [];
+        const cacheBase = resultCache.getIfPresent(jobId);
+
+        contentToMigrate.forEach(({ sourceContent, targetBaseContent }, index) => {
+            const result = dryRun
+                ? { errorMsgs: [] }
+                : migrateContentToLayer({
+                      sourceId: sourceContent._id,
+                      targetId: targetBaseContent._id,
+                      sourceLocale,
+                      targetLocale,
+                  });
 
             const contentResult: MigrationResult = {
-                msg: `Migration from [${sourceLocale}] ${sourceContent._path} to [${targetLocale}] ${targetBaseContent._path}`,
+                msg: `Migrating [${sourceLocale}] ${sourceContent._path} -> [${targetLocale}] ${targetBaseContent._path}`,
                 errors: [],
             };
 
             if (result.errorMsgs.length > 0) {
                 contentResult.errors.push(...result.errorMsgs);
+                logger.error(
+                    `${contentResult.msg} completed with errors: ${result.errorMsgs.join(', ')}`
+                );
+            } else {
+                logger.info(`${contentResult.msg} completed without errors`);
             }
+
+            batchResults.push(contentResult);
+
+            resultCache.put(jobId, {
+                ...cacheBase,
+                status: `Migration job ${jobId} progress: [${index + 1} / ${
+                    contentToMigrate.length
+                }]`,
+                result: batchResults,
+            });
         });
 
-        toggleCacheInvalidationOnNodeEvents({ shouldDefer: false });
+        if (!dryRun) {
+            toggleCacheInvalidationOnNodeEvents({ shouldDefer: false });
+        }
 
-        return batchResult;
+        return batchResults;
     });
