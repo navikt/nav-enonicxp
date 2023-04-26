@@ -131,7 +131,8 @@ const getContentToMigrate = ({ contentTypes, query, count, sourceLocale, targetL
 export const migrateContentBatchToLayers = (
     params: Params,
     jobId: string,
-    resultCache: LayersMigrationResultCache
+    resultCache: LayersMigrationResultCache,
+    dryRun = false
 ) =>
     runInLocaleContext({ locale: params.sourceLocale, branch: 'draft' }, () => {
         logger.info(`Running migration batch job with params: ${JSON.stringify(params)}`);
@@ -144,16 +145,19 @@ export const migrateContentBatchToLayers = (
             return [{ msg: 'No applicable content found for migrating', errors: [] }];
         }
 
-        logger.info(
-            `Found ${contentToMigrate.length} content to migrate: ${JSON.stringify(
-                contentToMigrate.map(
-                    (content) =>
-                        `${content.sourceContent._path} -> ${content.targetBaseContent._path}`
-                ),
-                null,
-                4
-            )}`
-        );
+        const msg = `Found ${contentToMigrate.length} content to migrate: ${JSON.stringify(
+            contentToMigrate.map(
+                (content) => `${content.sourceContent._path} -> ${content.targetBaseContent._path}`
+            ),
+            null,
+            4
+        )}`;
+
+        if (dryRun) {
+            return [{ msg, errors: [] }];
+        }
+
+        logger.info(msg);
 
         toggleCacheInvalidationOnNodeEvents({ shouldDefer: true });
 

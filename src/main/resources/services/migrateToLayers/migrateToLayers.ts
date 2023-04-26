@@ -20,6 +20,7 @@ type Params = {
     contentTypes: ContentDescriptor[];
     count: number;
     query?: string;
+    dryRun?: boolean;
 };
 
 const ONE_DAY = 60 * 60 * 24;
@@ -88,7 +89,7 @@ const parseAndValidateParams = (params: XP.Request['params']): Params | null => 
     };
 };
 
-const runMigrationJob = (params: Params, jobId: string) => {
+const runMigrationJob = (params: Params, jobId: string, dryRun?: boolean) => {
     taskLib.executeFunction({
         description: `Layers migration job ${jobId}`,
         func: () => {
@@ -100,7 +101,7 @@ const runMigrationJob = (params: Params, jobId: string) => {
 
             const start = Date.now();
 
-            const result = migrateContentBatchToLayers(params, jobId, resultCache);
+            const result = migrateContentBatchToLayers(params, jobId, resultCache, dryRun);
 
             const durationSec = (Date.now() - start) / 1000;
 
@@ -164,7 +165,7 @@ export const get = (req: XP.Request) => {
 
     logger.info(`Running layers migration job ${jobId} with params ${JSON.stringify(params)}`);
 
-    runMigrationJob(params, jobId);
+    runMigrationJob(params, jobId, params.dryRun);
 
     return {
         status: 200,
