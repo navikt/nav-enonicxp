@@ -6,7 +6,10 @@ import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { getLayersData } from '../../lib/localization/layers-data';
 import { logger } from '../../lib/utils/logging';
 import { parseJsonArray } from '../../lib/utils/array-utils';
-import { migrateContentBatchToLayers } from '../../lib/localization/layers-migration/migration-batch-job';
+import {
+    LayersMigrationResultCache,
+    migrateContentBatchToLayers,
+} from '../../lib/localization/layers-migration/migration-batch-job';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { generateUUID } from '../../lib/utils/uuid';
 import { URLS } from '../../lib/constants';
@@ -19,19 +22,13 @@ type Params = {
     query?: string;
 };
 
-type JobResult = {
-    status: string;
-    params: Params;
-    result: ReturnType<typeof migrateContentBatchToLayers>;
-};
-
 const ONE_DAY = 60 * 60 * 24;
 
 // TODO: cacheLib type def needs an update
-const resultCache = cacheLib.newCache({ size: 1000, expire: ONE_DAY }) as cacheLib.Cache & {
-    getIfPresent: (key: string) => JobResult;
-    put: (key: string, value: JobResult) => void;
-};
+const resultCache = cacheLib.newCache({
+    size: 1000,
+    expire: ONE_DAY,
+}) as LayersMigrationResultCache;
 
 const validateQuery = (query: string) => {
     try {
@@ -103,7 +100,7 @@ const runMigrationJob = (params: Params, jobId: string) => {
 
             const start = Date.now();
 
-            const result = migrateContentBatchToLayers(params);
+            const result = migrateContentBatchToLayers(params, jobId, resultCache);
 
             const durationSec = (Date.now() - start) / 1000;
 
@@ -130,10 +127,7 @@ const getJobStatus = (jobId: string) => {
 
     return {
         status: 200,
-        body: {
-            message: `Job status for ${jobId}`,
-            jobStatus,
-        },
+        body: jobStatus,
         contentType: 'application/json',
     };
 };

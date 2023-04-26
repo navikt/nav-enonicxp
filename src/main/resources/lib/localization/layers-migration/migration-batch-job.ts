@@ -1,5 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
+import cacheLib from '/lib/cache';
 import { logger } from '../../utils/logging';
 import { ArrayOrSingle } from '../../../types/util-types';
 import { forceArray, removeDuplicates } from '../../utils/array-utils';
@@ -19,6 +20,17 @@ type Params = {
 type MigrationResult = { msg: string; errors: string[] };
 
 type SourceAndTargetContent = { sourceContent: Content; targetBaseContent: Content };
+
+type LayerMigrationBatchJobResult = {
+    status: string;
+    params: Params;
+    result: ReturnType<typeof migrateContentBatchToLayers>;
+};
+
+export type LayersMigrationResultCache = cacheLib.Cache & {
+    getIfPresent: (key: string) => LayerMigrationBatchJobResult;
+    put: (key: string, value: LayerMigrationBatchJobResult) => void;
+};
 
 const getTargetBaseContentReverse = (sourceContent: Content, sourceLocale: string) => {
     return contentLib.query({
@@ -116,7 +128,11 @@ const getContentToMigrate = ({ contentTypes, query, count, sourceLocale, targetL
             return acc;
         }, []);
 
-export const migrateContentBatchToLayers = (params: Params) =>
+export const migrateContentBatchToLayers = (
+    params: Params,
+    jobId: string,
+    resultCache: LayersMigrationResultCache
+) =>
     runInLocaleContext({ locale: params.sourceLocale, branch: 'draft' }, () => {
         logger.info(`Running migration batch job with params: ${JSON.stringify(params)}`);
 
@@ -141,7 +157,10 @@ export const migrateContentBatchToLayers = (params: Params) =>
 
         toggleCacheInvalidationOnNodeEvents({ shouldDefer: true });
 
-        const result = contentToMigrate.map(({ sourceContent, targetBaseContent }) => {
+        const batchResults: MigrationResult[] = [];
+        const cacheBase = resultCache.getIfPresent(jobId);
+
+        contentToMigrate.forEach(({ sourceContent, targetBaseContent }, _) => {
             const result = migrateContentToLayer({
                 sourceId: sourceContent._id,
                 targetId: targetBaseContent._id,
@@ -163,10 +182,12 @@ export const migrateContentBatchToLayers = (params: Params) =>
                 logger.info(`${contentResult.msg} completed without errors`);
             }
 
-            return contentResult;
+            batchResults.push(contentResult);
+
+            resultCache.put(jobId, { ...cacheBase, result: batchResults });
         });
 
         toggleCacheInvalidationOnNodeEvents({ shouldDefer: false });
 
-        return result;
+        return batchResults;
     });
