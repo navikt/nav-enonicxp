@@ -21,11 +21,11 @@
                             <occurrences minimum="1" maximum="1" />
                             <options minimum="1" maximum="1">
                                 <option name="external">
-                                    <label>Utgang til skjema / søknad / klage</label>
+                                    <label>Lenke til skjema/søknad/klage</label>
                                     <help-text>Brukeren skal sendes til en app eller tjeneste utenfor Enonc XP</help-text>
                                     <items>
                                         <input name="externalUrl" type="TextLine">
-                                            <label>Ekstern URL til søknad eller liknende</label>
+                                            <label>Lenke</label>
                                             <occurrences minimum="0" maximum="1"/>
                                         </input>
                                     </items>
@@ -51,7 +51,7 @@
                                                     <items>
                                                         <mixin name="form-intermediate-step-data-action" />
                                                         <input name="externalUrl" type="TextLine">
-                                                            <label>Ekstern URL til søknad eller liknende</label>
+                                                            <label>Lenke til skjema/søknad/klage</label>
                                                             <occurrences minimum="0" maximum="1"/>
                                                         </input>
                                                     </items>
