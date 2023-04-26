@@ -13,7 +13,7 @@ type Params = {
     sourceLocale: string;
     targetLocale: string;
     contentTypes: ContentDescriptor[];
-    count: number;
+    maxCount: number;
     query?: string;
 };
 
@@ -95,10 +95,10 @@ const getTargetBaseContent = (sourceContent: Content, sourceLocale: string) => {
     return null;
 };
 
-const getContentToMigrate = ({ contentTypes, query, count, sourceLocale, targetLocale }: Params) =>
+const getContentToMigrate = ({ contentTypes, query, maxCount, sourceLocale, targetLocale }: Params) =>
     contentLib
         .query({
-            count,
+            count: 2000,
             query,
             contentTypes,
             filters: {
@@ -120,6 +120,10 @@ const getContentToMigrate = ({ contentTypes, query, count, sourceLocale, targetL
             },
         })
         .hits.reduce<SourceAndTargetContent[]>((acc, sourceContent) => {
+            if (acc.length >= maxCount) {
+                return acc;
+            }
+
             const targetBaseContent = getTargetBaseContent(sourceContent, sourceLocale);
             if (targetBaseContent) {
                 acc.push({ sourceContent, targetBaseContent });

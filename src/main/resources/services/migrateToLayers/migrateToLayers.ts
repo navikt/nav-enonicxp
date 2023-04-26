@@ -18,7 +18,7 @@ type Params = {
     sourceLocale: string;
     targetLocale: string;
     contentTypes: ContentDescriptor[];
-    count: number;
+    maxCount: number;
     query?: string;
     dryRun?: boolean;
 };
@@ -42,7 +42,7 @@ const validateQuery = (query: string) => {
 };
 
 const parseAndValidateParams = (params: XP.Request['params']): Params | null => {
-    const { sourceLocale, targetLocale, contentTypes, query, count } = params;
+    const { sourceLocale, targetLocale, contentTypes, query, maxCount } = params;
     const { locales, defaultLocale } = getLayersData();
 
     const targetLocaleIsValid = typeof targetLocale === 'string' && locales.includes(targetLocale);
@@ -74,9 +74,9 @@ const parseAndValidateParams = (params: XP.Request['params']): Params | null => 
         return null;
     }
 
-    const countParsed = count && parseInt(count);
+    const countParsed = maxCount && parseInt(maxCount);
     if (!countParsed || isNaN(countParsed)) {
-        logger.info(`Invalid count param: ${count}`);
+        logger.info(`Invalid maxCount param: ${maxCount}`);
         return null;
     }
 
@@ -85,7 +85,7 @@ const parseAndValidateParams = (params: XP.Request['params']): Params | null => 
         targetLocale,
         query,
         contentTypes: contentTypesParsed,
-        count: countParsed,
+        maxCount: countParsed,
         dryRun: params.dryRun === 'true',
     };
 };
