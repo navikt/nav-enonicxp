@@ -108,7 +108,11 @@ const runMigrationJob = (params: Params, jobId: string, dryRun?: boolean) => {
             const withErrors = result.filter((result) => result.errors.length > 0);
 
             resultCache.put(jobId, {
-                status: `Migration job ${jobId} completed for ${result.length} contents in ${durationSec} sec. ${withErrors.length} contents had errors.`,
+                status: `${
+                    params.dryRun ? '[DRY RUN] ' : ''
+                }Migration job ${jobId} completed in ${durationSec} sec. ${
+                    withErrors.length
+                } contents had errors.`,
                 params,
                 result,
             });

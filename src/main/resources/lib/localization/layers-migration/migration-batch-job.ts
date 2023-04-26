@@ -145,35 +145,36 @@ export const migrateContentBatchToLayers = (
             return [{ msg: 'No applicable content found for migrating', errors: [] }];
         }
 
-        const msg = `Found ${contentToMigrate.length} content to migrate: ${JSON.stringify(
-            contentToMigrate.map(
-                (content) => `${content.sourceContent._path} -> ${content.targetBaseContent._path}`
-            ),
-            null,
-            4
-        )}`;
+        logger.info(
+            `Found ${contentToMigrate.length} content to migrate: ${JSON.stringify(
+                contentToMigrate.map(
+                    (content) =>
+                        `${content.sourceContent._path} -> ${content.targetBaseContent._path}`
+                ),
+                null,
+                4
+            )}`
+        );
 
-        if (dryRun) {
-            return [{ msg, errors: [] }];
+        if (!dryRun) {
+            toggleCacheInvalidationOnNodeEvents({ shouldDefer: true });
         }
-
-        logger.info(msg);
-
-        toggleCacheInvalidationOnNodeEvents({ shouldDefer: true });
 
         const batchResults: MigrationResult[] = [];
         const cacheBase = resultCache.getIfPresent(jobId);
 
         contentToMigrate.forEach(({ sourceContent, targetBaseContent }, index) => {
-            const result = migrateContentToLayer({
-                sourceId: sourceContent._id,
-                targetId: targetBaseContent._id,
-                sourceLocale,
-                targetLocale,
-            });
+            const result = dryRun
+                ? { errorMsgs: [] }
+                : migrateContentToLayer({
+                      sourceId: sourceContent._id,
+                      targetId: targetBaseContent._id,
+                      sourceLocale,
+                      targetLocale,
+                  });
 
             const contentResult: MigrationResult = {
-                msg: `Migrating "[${sourceLocale}] ${sourceContent._path}" -> "[${targetLocale}] ${targetBaseContent._path}"`,
+                msg: `Migrating [${sourceLocale}] ${sourceContent._path} -> [${targetLocale}] ${targetBaseContent._path}`,
                 errors: [],
             };
 
@@ -197,7 +198,9 @@ export const migrateContentBatchToLayers = (
             });
         });
 
-        toggleCacheInvalidationOnNodeEvents({ shouldDefer: false });
+        if (!dryRun) {
+            toggleCacheInvalidationOnNodeEvents({ shouldDefer: false });
+        }
 
         return batchResults;
     });
