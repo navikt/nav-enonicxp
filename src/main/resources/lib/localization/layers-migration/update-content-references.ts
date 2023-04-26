@@ -83,9 +83,9 @@ const updateContentReferencesInLocaleLayer = (
     { sourceId, targetId, sourceLocale }: ContentMigrationParams,
     localeToUpdate: string
 ) => {
-    const sourceRepoId = getLayersData().localeToRepoIdMap[localeToUpdate];
-    if (!sourceRepoId) {
-        logger.error(`Invalid locale specified ${localeToUpdate}`);
+    const repoToUpdate = getLayersData().localeToRepoIdMap[localeToUpdate];
+    if (!repoToUpdate) {
+        logger.error(`No repo found for locale "${localeToUpdate}"`);
         return;
     }
 
@@ -117,14 +117,14 @@ const updateContentReferencesInLocaleLayer = (
 
         const contentNodeMaster = getRepoConnection({
             branch: 'master',
-            repoId: sourceRepoId,
+            repoId: repoToUpdate,
             asAdmin: true,
         }).get(_id);
 
         // Get the content node from draft before updating master, as it may be overwritten
         const contentNodeDraft = getRepoConnection({
             branch: 'draft',
-            repoId: sourceRepoId,
+            repoId: repoToUpdate,
             asAdmin: true,
         }).get(_id);
 
@@ -133,18 +133,18 @@ const updateContentReferencesInLocaleLayer = (
                 contentNodeToUpdate: contentNodeMaster,
                 prevRefId: sourceId,
                 newRefId: targetId,
-                repoId: sourceRepoId,
+                repoId: repoToUpdate,
                 targetBranch: 'master',
             });
         }
 
         // If the draft version was not committed to master, we need to update this as well
-        if (contentNodeDraft && !isDraftAndMasterSameVersion(refContent._id, sourceRepoId)) {
+        if (contentNodeDraft && !isDraftAndMasterSameVersion(refContent._id, repoToUpdate)) {
             updateReferenceFromNode({
                 contentNodeToUpdate: contentNodeDraft,
                 prevRefId: sourceId,
                 newRefId: targetId,
-                repoId: sourceRepoId,
+                repoId: repoToUpdate,
                 targetBranch: 'draft',
             });
         }
