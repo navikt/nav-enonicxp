@@ -18,6 +18,71 @@ type Params = {
 
 type MigrationResult = { msg: string; errors: string[] };
 
+type SourceAndTargetContent = { sourceContent: Content; targetBaseContent: Content };
+
+const getTargetBaseContentReverse = (sourceContent: Content, sourceLocale: string) => {
+    return contentLib.query({
+        count: 2,
+        filters: {
+            boolean: {
+                must: [
+                    {
+                        hasValue: {
+                            field: 'language',
+                            values: [sourceLocale],
+                        },
+                    },
+                    {
+                        hasValue: {
+                            field: 'data.languages',
+                            values: [sourceContent._id],
+                        },
+                    },
+                    {
+                        notExists: {
+                            field: 'x.no-nav-navno.layerMigration',
+                        },
+                    },
+                ],
+            },
+        },
+    }).hits;
+};
+
+const getTargetBaseContent = (sourceContent: Content, sourceLocale: string) => {
+    const languageVersionIds = forceArray(
+        (sourceContent.data as { languages: ArrayOrSingle<string> }).languages
+    );
+
+    const baseLanguageVersions = removeDuplicates(languageVersionIds).reduce<Content[]>(
+        (acc, versionContentId) => {
+            const content = contentLib.get({ key: versionContentId });
+            return content?.language === sourceLocale ? [...acc, content] : acc;
+        },
+        []
+    );
+
+    if (baseLanguageVersions.length === 0) {
+        logger.info(
+            `No reference to base language version found on [${sourceLocale}] ${sourceContent._path}, trying reverse lookup`
+        );
+        const reverseLookupVersions = getTargetBaseContentReverse(sourceContent, sourceLocale);
+        baseLanguageVersions.push(...reverseLookupVersions);
+    }
+
+    if (baseLanguageVersions.length === 1) {
+        return baseLanguageVersions[0];
+    } else if (baseLanguageVersions.length > 1) {
+        logger.error(
+            `Multiple base locale versions found for [${sourceLocale}] ${
+                sourceContent._path
+            } - ${JSON.stringify(baseLanguageVersions.map((content) => content._path))}`
+        );
+    }
+
+    return null;
+};
+
 const getContentToMigrate = ({ contentTypes, query, count, sourceLocale, targetLocale }: Params) =>
     contentLib
         .query({
@@ -34,11 +99,6 @@ const getContentToMigrate = ({ contentTypes, query, count, sourceLocale, targetL
                             },
                         },
                         {
-                            exists: {
-                                field: 'data.languages',
-                            },
-                        },
-                        {
                             notExists: {
                                 field: 'x.no-nav-navno.layerMigration',
                             },
@@ -47,38 +107,14 @@ const getContentToMigrate = ({ contentTypes, query, count, sourceLocale, targetL
                 },
             },
         })
-        .hits.reduce<{ sourceContent: Content; targetBaseContent: Content }[]>(
-            (acc, sourceContent) => {
-                const languageVersionIds = forceArray(
-                    (sourceContent.data as { languages: ArrayOrSingle<string> }).languages
-                );
+        .hits.reduce<SourceAndTargetContent[]>((acc, sourceContent) => {
+            const targetBaseContent = getTargetBaseContent(sourceContent, sourceLocale);
+            if (targetBaseContent) {
+                acc.push({ sourceContent, targetBaseContent });
+            }
 
-                const validBaseLanguageVersions = removeDuplicates(languageVersionIds).reduce<
-                    Content[]
-                >((acc, versionContentId) => {
-                    const content = contentLib.get({ key: versionContentId });
-                    return content?.language === sourceLocale ? [...acc, content] : acc;
-                }, []);
-
-                if (validBaseLanguageVersions.length === 1) {
-                    acc.push({
-                        sourceContent: sourceContent,
-                        targetBaseContent: validBaseLanguageVersions[0],
-                    });
-                } else if (validBaseLanguageVersions.length > 1) {
-                    logger.error(
-                        `Multiple base locale versions found for [${sourceLocale}] ${
-                            sourceContent._path
-                        } - ${JSON.stringify(
-                            validBaseLanguageVersions.map((content) => content._path)
-                        )}`
-                    );
-                }
-
-                return acc;
-            },
-            []
-        );
+            return acc;
+        }, []);
 
 export const migrateContentBatchToLayers = (params: Params) =>
     runInLocaleContext({ locale: params.sourceLocale, branch: 'draft' }, () => {
