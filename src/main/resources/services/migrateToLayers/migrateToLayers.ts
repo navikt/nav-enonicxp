@@ -85,7 +85,7 @@ const parseAndValidateParams = (params: XP.Request['params']): Params | null => 
         targetLocale,
         query,
         contentTypes: contentTypesParsed,
-        count: countParsed,
+        count: Math.floor(countParsed),
         dryRun: params.dryRun === 'true',
     };
 };
