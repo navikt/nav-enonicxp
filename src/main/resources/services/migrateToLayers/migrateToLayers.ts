@@ -1,10 +1,13 @@
 import * as contentLib from '/lib/xp/content';
+import * as taskLib from '/lib/xp/task';
+import cacheLib from '/lib/cache';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { getLayersData } from '../../lib/localization/layers-data';
 import { logger } from '../../lib/utils/logging';
 import { parseJsonArray } from '../../lib/utils/array-utils';
 import { migrateContentBatchToLayers } from '../../lib/localization/layers-migration/migration-batch-job';
 import { ContentDescriptor } from '../../types/content-types/content-config';
+import { generateUUID } from '../../lib/utils/uuid';
 
 type Params = {
     sourceLocale: string;
@@ -12,6 +15,20 @@ type Params = {
     contentTypes: ContentDescriptor[];
     count: number;
     query?: string;
+};
+
+type JobResult = {
+    status: string;
+    params: Params;
+    result: ReturnType<typeof migrateContentBatchToLayers>;
+};
+
+const ONE_DAY = 60 * 60 * 24;
+
+// TODO: cacheLib type def needs an update
+const resultCache = cacheLib.newCache({ size: 1000, expire: ONE_DAY }) as cacheLib.Cache & {
+    getIfPresent: (key: string) => JobResult;
+    put: (key: string, value: JobResult) => void;
 };
 
 const validateQuery = (query: string) => {
@@ -72,6 +89,53 @@ const parseAndValidateParams = (params: XP.Request['params']): Params | null => 
     };
 };
 
+const runMigrationJob = (params: Params, jobId: string) => {
+    taskLib.executeFunction({
+        description: `Layers migration job ${jobId}`,
+        func: () => {
+            resultCache.put(jobId, {
+                status: `Migration job ${jobId} is in progress`,
+                params,
+                result: [],
+            });
+
+            const start = Date.now();
+
+            const result = migrateContentBatchToLayers(params);
+
+            const durationSec = (Date.now() - start) / 1000;
+
+            resultCache.put(jobId, {
+                status: `Migration job ${jobId} completed in ${durationSec} sec`,
+                params,
+                result,
+            });
+        },
+    });
+};
+
+const getJobStatus = (jobId: string) => {
+    const jobStatus = resultCache.getIfPresent(jobId);
+    if (!jobStatus) {
+        return {
+            status: 404,
+            body: {
+                message: `No job status found for ${jobId}`,
+            },
+            contentType: 'application/json',
+        };
+    }
+
+    return {
+        status: 200,
+        body: {
+            message: `Job status for ${jobId}`,
+            jobStatus,
+        },
+        contentType: 'application/json',
+    };
+};
+
 export const get = (req: XP.Request) => {
     if (!validateServiceSecretHeader(req)) {
         return {
@@ -81,6 +145,10 @@ export const get = (req: XP.Request) => {
             },
             contentType: 'application/json',
         };
+    }
+
+    if (req.params.status) {
+        return getJobStatus(req.params.status);
     }
 
     const params = parseAndValidateParams(req.params);
@@ -94,11 +162,19 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const result = migrateContentBatchToLayers(params);
+    const jobId = generateUUID();
+
+    logger.info(`Running layers migration job ${jobId} with params ${JSON.stringify(params)}`);
+
+    runMigrationJob(params, jobId);
 
     return {
         status: 200,
-        body: result,
+        body: {
+            msg: 'Started batch migration job!',
+            params,
+            jobId,
+        },
         contentType: 'application/json',
     };
 };

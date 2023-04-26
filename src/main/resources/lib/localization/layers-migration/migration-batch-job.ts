@@ -156,6 +156,11 @@ export const migrateContentBatchToLayers = (params: Params) =>
 
             if (result.errorMsgs.length > 0) {
                 contentResult.errors.push(...result.errorMsgs);
+                logger.error(
+                    `${contentResult.msg} completed with errors: ${result.errorMsgs.join(', ')}`
+                );
+            } else {
+                logger.info(`${contentResult.msg} completed without errors`);
             }
 
             return contentResult;
