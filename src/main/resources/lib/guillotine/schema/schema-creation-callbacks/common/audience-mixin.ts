@@ -5,7 +5,7 @@ export const audienceCallback: CreationCallback = (context, params) => {
         return null;
     }
     params.fields.audience.resolve = (env) => {
-        if (!env.source.audience['_selected']) {
+        if (typeof env.source.audience === 'string') {
             return {
                 _selected: env.source.audience,
                 provider_audience: null,
