@@ -173,7 +173,7 @@ export const migrateContentBatchToLayers = (
             });
 
             const contentResult: MigrationResult = {
-                msg: `Migration from [${sourceLocale}] ${sourceContent._path} to [${targetLocale}] ${targetBaseContent._path}`,
+                msg: `Migrating "[${sourceLocale}] ${sourceContent._path}" -> "[${targetLocale}] ${targetBaseContent._path}"`,
                 errors: [],
             };
 

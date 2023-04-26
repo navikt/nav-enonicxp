@@ -86,6 +86,7 @@ const parseAndValidateParams = (params: XP.Request['params']): Params | null => 
         query,
         contentTypes: contentTypesParsed,
         count: countParsed,
+        dryRun: params.dryRun === 'true',
     };
 };
 
@@ -104,9 +105,10 @@ const runMigrationJob = (params: Params, jobId: string, dryRun?: boolean) => {
             const result = migrateContentBatchToLayers(params, jobId, resultCache, dryRun);
 
             const durationSec = (Date.now() - start) / 1000;
+            const withErrors = result.filter((result) => result.errors.length > 0);
 
             resultCache.put(jobId, {
-                status: `Migration job ${jobId} completed for ${result.length} contents in ${durationSec} sec`,
+                status: `Migration job ${jobId} completed for ${result.length} contents in ${durationSec} sec. ${withErrors.length} contents had errors.`,
                 params,
                 result,
             });
