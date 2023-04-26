@@ -93,7 +93,7 @@ const runMigrationJob = (params: Params, jobId: string) => {
         description: `Layers migration job ${jobId}`,
         func: () => {
             resultCache.put(jobId, {
-                status: `Migration job ${jobId} is in progress`,
+                status: `Migration job ${jobId} started`,
                 params,
                 result: [],
             });
@@ -105,7 +105,7 @@ const runMigrationJob = (params: Params, jobId: string) => {
             const durationSec = (Date.now() - start) / 1000;
 
             resultCache.put(jobId, {
-                status: `Migration job ${jobId} completed in ${durationSec} sec`,
+                status: `Migration job ${jobId} completed for ${result.length} contents in ${durationSec} sec`,
                 params,
                 result,
             });

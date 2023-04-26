@@ -141,7 +141,7 @@ export const migrateContentBatchToLayers = (
         const contentToMigrate = getContentToMigrate(params);
 
         if (contentToMigrate.length === 0) {
-            return { msg: 'No applicable content found for migrating', errors: [] };
+            return [{ msg: 'No applicable content found for migrating', errors: [] }];
         }
 
         logger.info(
@@ -160,7 +160,7 @@ export const migrateContentBatchToLayers = (
         const batchResults: MigrationResult[] = [];
         const cacheBase = resultCache.getIfPresent(jobId);
 
-        contentToMigrate.forEach(({ sourceContent, targetBaseContent }, _) => {
+        contentToMigrate.forEach(({ sourceContent, targetBaseContent }, index) => {
             const result = migrateContentToLayer({
                 sourceId: sourceContent._id,
                 targetId: targetBaseContent._id,
@@ -184,7 +184,13 @@ export const migrateContentBatchToLayers = (
 
             batchResults.push(contentResult);
 
-            resultCache.put(jobId, { ...cacheBase, result: batchResults });
+            resultCache.put(jobId, {
+                ...cacheBase,
+                status: `Migration job ${jobId} progress: [${index + 1} / ${
+                    contentToMigrate.length
+                }]`,
+                result: batchResults,
+            });
         });
 
         toggleCacheInvalidationOnNodeEvents({ shouldDefer: false });
