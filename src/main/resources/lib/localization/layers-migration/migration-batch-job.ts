@@ -122,13 +122,10 @@ export const migrateContentBatchToLayers = (params: Params) =>
 
         const { sourceLocale, targetLocale } = params;
 
-        const batchResult: MigrationResult[] = [];
-
         const contentToMigrate = getContentToMigrate(params);
 
         if (contentToMigrate.length === 0) {
-            batchResult.push({ msg: 'No applicable content found for migrating', errors: [] });
-            return batchResult;
+            return { msg: 'No applicable content found for migrating', errors: [] };
         }
 
         logger.info(
@@ -144,7 +141,7 @@ export const migrateContentBatchToLayers = (params: Params) =>
 
         toggleCacheInvalidationOnNodeEvents({ shouldDefer: true });
 
-        contentToMigrate.forEach(({ sourceContent, targetBaseContent }) => {
+        const result = contentToMigrate.map(({ sourceContent, targetBaseContent }) => {
             const result = migrateContentToLayer({
                 sourceId: sourceContent._id,
                 targetId: targetBaseContent._id,
@@ -160,9 +157,11 @@ export const migrateContentBatchToLayers = (params: Params) =>
             if (result.errorMsgs.length > 0) {
                 contentResult.errors.push(...result.errorMsgs);
             }
+
+            return contentResult;
         });
 
         toggleCacheInvalidationOnNodeEvents({ shouldDefer: false });
 
-        return batchResult;
+        return result;
     });
