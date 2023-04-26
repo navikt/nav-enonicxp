@@ -1,6 +1,0 @@
-fragment audienceMixin on Content {
-    _selected
-    provider {
-        provider_audience
-    }
-}

@@ -6,9 +6,11 @@ export const audienceCallback: CreationCallback = (context, params) => {
     }
     params.fields.audience.resolve = (env) => {
         if (!env.source.audience['_selected']) {
-            env.source.audience = {
+            return {
                 _selected: env.source.audience,
+                provider_audience: null,
             };
         }
+        return env.source.audience;
     };
 };

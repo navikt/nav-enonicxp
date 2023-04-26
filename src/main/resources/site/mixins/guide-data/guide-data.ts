@@ -28,32 +28,45 @@ export interface GuideData {
   /**
    * Målgruppe
    */
-  audience: {
-    /**
-     * Selected
-     */
-    _selected: Array<"person" | "employer" | "provider">;
-    
-    /**
-     * Privatperson
-     */
-    person: Record<string, unknown>;
-    
-    /**
-     * Arbeidsgiver
-     */
-    employer: Record<string, unknown>;
-    
-    /**
-     * Samarbeidspartner
-     */
-    provider: {
-      /**
-       * Underkategori
-       */
-      provider_audience: "doctor" | "other";
-    };
-  };
+  audience:
+    | {
+        /**
+         * Selected
+         */
+        _selected: "person";
+
+        /**
+         * Privatperson
+         */
+        person: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "employer";
+
+        /**
+         * Arbeidsgiver
+         */
+        employer: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "provider";
+
+        /**
+         * Samarbeidspartner
+         */
+        provider: {
+          /**
+           * Underkategori
+           */
+          provider_audience: "doctor" | "other";
+        };
+      };
 
   /**
    * Områdekategori

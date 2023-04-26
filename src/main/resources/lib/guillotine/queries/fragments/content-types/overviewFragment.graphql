@@ -27,6 +27,12 @@ fragment contentOverviewPage on no_nav_navno_Overview {
             ingress
             taxonomy
             language
+            audience {
+                _selected
+                provider {
+                    provider_audience
+                }
+            }
             area
             illustration {
                 type
