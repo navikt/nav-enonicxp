@@ -8,6 +8,7 @@ import { getRepoConnection, isDraftAndMasterSameVersion } from '../../utils/repo
 import { getLayersData } from '../layers-data';
 import { RepoBranch } from '../../../types/common';
 import { modifyContentNode } from './modify-content-node';
+import { forceArray } from '../../utils/array-utils';
 
 const updateReferenceFromNode = ({
     contentNodeToUpdate,
@@ -42,6 +43,15 @@ const updateReferenceFromNode = ({
                 newRefId
             );
             const contentWithUpdates = JSON.parse(contentJsonWithUpdates);
+
+            // If the content referenced the migrated content in the legacy languages list
+            // it might now be referencing itself instead. Ensure such a reference is removed.
+            if (contentWithUpdates.data?.languages) {
+                const languages = forceArray(contentWithUpdates.data.languages);
+                contentWithUpdates.data.languages = languages.filter(
+                    (language) => language !== contentNodeToUpdateId
+                );
+            }
 
             return contentWithUpdates;
         },
