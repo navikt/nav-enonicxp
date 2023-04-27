@@ -25,7 +25,7 @@ export interface FormIntermediateStepData {
     explanation?: string;
 
     /**
-     * Hvor blir brukeren sendt etter dette valget
+     * Dette valget sender brukeren videre til:
      */
     nextStep:
       | {
@@ -35,11 +35,11 @@ export interface FormIntermediateStepData {
           _selected: "external";
 
           /**
-           * Utgang til skjema / søknad / klage
+           * Lenke til skjema/søknad/klage
            */
           external: {
             /**
-             * Ekstern URL til søknad eller liknende
+             * Ekstern URL
              */
             externalUrl?: string;
           };
@@ -79,7 +79,7 @@ export interface FormIntermediateStepData {
               explanation?: string;
 
               /**
-               * Ekstern URL til søknad eller liknende
+               * Ekstern Url
                */
               externalUrl?: string;
             }>;

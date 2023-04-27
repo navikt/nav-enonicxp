@@ -20,7 +20,7 @@ export interface FormIntermediateStep {
    */
   steps: Array<{
     /**
-     * Hvor blir brukeren sendt etter dette valget
+     * Dette valget sender brukeren videre til:
      */
     nextStep:
       | {
@@ -30,11 +30,11 @@ export interface FormIntermediateStep {
           _selected: "external";
 
           /**
-           * Utgang til skjema / søknad / klage
+           * Lenke til skjema/søknad/klage
            */
           external: {
             /**
-             * Ekstern URL til søknad eller liknende
+             * Ekstern URL
              */
             externalUrl?: string;
           };
@@ -64,7 +64,7 @@ export interface FormIntermediateStep {
              */
             steps: Array<{
               /**
-               * Ekstern URL til søknad eller liknende
+               * Ekstern Url
                */
               externalUrl?: string;
             }>;

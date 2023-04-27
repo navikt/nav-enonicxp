@@ -17,7 +17,7 @@
                     <items>
                         <mixin name="form-intermediate-step-data-action" />
                         <option-set name="nextStep">
-                            <label>Hvor blir brukeren sendt etter dette valget</label>
+                            <label>Dette valget sender brukeren videre til:</label>
                             <occurrences minimum="1" maximum="1" />
                             <options minimum="1" maximum="1">
                                 <option name="external">
@@ -25,7 +25,7 @@
                                     <help-text>Brukeren skal sendes til en app eller tjeneste utenfor Enonc XP</help-text>
                                     <items>
                                         <input name="externalUrl" type="TextLine">
-                                            <label>Lenke</label>
+                                            <label>Ekstern URL</label>
                                             <occurrences minimum="0" maximum="1"/>
                                         </input>
                                     </items>
@@ -51,7 +51,7 @@
                                                     <items>
                                                         <mixin name="form-intermediate-step-data-action" />
                                                         <input name="externalUrl" type="TextLine">
-                                                            <label>Lenke til skjema/søknad/klage</label>
+                                                            <label>Ekstern Url</label>
                                                             <occurrences minimum="0" maximum="1"/>
                                                         </input>
                                                     </items>
