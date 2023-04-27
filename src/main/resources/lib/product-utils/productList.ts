@@ -28,6 +28,9 @@ const contentTypesInAllProductsList = [
     `${APP_DESCRIPTOR}:guide-page`,
 ] as const;
 
+const sortFunc = (a: OverviewPageProductData, b: OverviewPageProductData) =>
+    a.sortTitle.localeCompare(b.sortTitle);
+
 const getProductDetails = (
     product: ContentWithProductDetails,
     overviewType: DetailedOverviewType
@@ -166,7 +169,9 @@ const getProductPages = (
 };
 
 const getAllProductsData = (audience: ProductAudience[], language: string) => {
-    return getProductPages('all_products', audience, language).map(buildCommonProductData);
+    return getProductPages('all_products', audience, language)
+        .map(buildCommonProductData)
+        .sort(sortFunc);
 };
 
 export const getProductDataForOverviewPage = (
@@ -187,7 +192,7 @@ export const getProductDataForOverviewPage = (
 
             return acc;
         }, [])
-        .sort((a, b) => a.sortTitle.localeCompare(b.sortTitle));
+        .sort(sortFunc);
 
     return removeDuplicates(
         productDataList,
