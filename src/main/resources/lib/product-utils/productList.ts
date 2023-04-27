@@ -154,17 +154,23 @@ export const getProductDataForOverviewPage = (
             : (productPageContent: ContentWithProductDetails) =>
                   buildDetailedProductData(productPageContent, overviewType);
 
-    const productDataList = productPages.reduce<OverviewPageProductData[]>((acc, content) => {
-        const productData = productTransformFunc(content);
-        if (productData) {
-            acc.push(productData);
-        }
+    const productDataList = productPages
+        .reduce<OverviewPageProductData[]>((acc, content) => {
+            const productData = productTransformFunc(content);
+            if (productData) {
+                acc.push(productData);
+            }
 
-        return acc;
-    }, []);
+            return acc;
+        }, [])
+        .sort((a, b) => a.sortTitle.localeCompare(b.sortTitle));
+
+    if (overviewType === 'all_products') {
+        return productDataList;
+    }
 
     return removeDuplicates(
         productDataList,
-        (a, b) => a.productDetailsPath === b.productDetailsPath
-    ).sort((a, b) => a.sortTitle.localeCompare(b.sortTitle));
+        (a, b) => a.sortTitle === b.sortTitle && a.productDetailsPath === b.productDetailsPath
+    );
 };
