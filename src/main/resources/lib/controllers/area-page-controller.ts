@@ -86,15 +86,12 @@ const getRelevantSituationPages = (areaPageNodeContent: AreaPageNodeContent) =>
             return situationPagesLocalized;
         }
 
+        // If there are any default-language (ie non-localized) pages in the current layer, include them as well
         const situationPagesDefault = situationPages.filter(
             (situationContent) => situationContent.language === CONTENT_LOCALE_DEFAULT
         );
 
-        const all = [...situationPagesLocalized, ...situationPagesDefault];
-
-        logger.info(`Pages found: ${all.map((item) => item._path).join(', ')}`);
-
-        return all;
+        return [...situationPagesLocalized, ...situationPagesDefault];
     });
 
 const buildSituationCardPart = (path: string, target: string): SituationCardPartComponent => ({
