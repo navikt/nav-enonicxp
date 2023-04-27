@@ -9,7 +9,7 @@ import {
     OverviewPageProductData,
 } from './types';
 import { ProductData } from '../../site/mixins/product-data/product-data';
-import { APP_DESCRIPTOR } from '../constants';
+import { APP_DESCRIPTOR, CONTENT_LOCALE_DEFAULT } from '../constants';
 import { Audience } from '../../site/mixins/audience/audience';
 import { contentTypesWithProductDetails } from '../contenttype-lists';
 import { getPublicPath } from '../paths/public-path';
@@ -32,9 +32,7 @@ const getProductDetails = (
     product: ContentWithProductDetails,
     overviewType: DetailedOverviewType
 ): ProductDetailsContent | null => {
-    const data = product.data as ContentWithProductDetailsData;
-
-    const detailsContentId = data[overviewType];
+    const detailsContentId = (product.data as ContentWithProductDetailsData)[overviewType];
     if (!detailsContentId) {
         return null;
     }
@@ -69,32 +67,48 @@ const buildCommonProductData = (product: ContentWithProductDetails) => {
 };
 
 const buildDetailedProductData = (
-    productContent: ContentWithProductDetails,
-    overviewType: DetailedOverviewType
+    productPageContent: ContentWithProductDetails,
+    overviewType: DetailedOverviewType,
+    requestedLanguage: string
 ) => {
-    const productDetails = getProductDetails(productContent, overviewType);
-    if (!productDetails) {
+    const productDetailsContent = getProductDetails(productPageContent, overviewType);
+    if (!productDetailsContent) {
         return null;
     }
 
-    const commonData = buildCommonProductData(productContent);
+    const languageFromContext = getLocaleFromContext();
+
+    // Ensure content in non-default languages in the default project repo are not included
+    // This check can be removed after all product details have been migrated to layers
+    if (
+        productDetailsContent.language !== requestedLanguage &&
+        languageFromContext === CONTENT_LOCALE_DEFAULT
+    ) {
+        return null;
+    }
+
+    const commonData = buildCommonProductData(productPageContent);
 
     // If the product details are in a different language from the product page
     // we use the name of the product details as the displayed/sorted title
     const sortTitle =
-        productDetails.language !== productContent.language
-            ? productDetails.displayName
+        productDetailsContent.language !== productPageContent.language
+            ? productDetailsContent.displayName
             : commonData.sortTitle;
 
     return {
         ...commonData,
         sortTitle,
         anchorId: sanitize(sortTitle),
-        productDetailsPath: getPublicPath(productDetails, getLocaleFromContext()),
+        productDetailsPath: getPublicPath(productDetailsContent, languageFromContext),
     };
 };
 
-const getProductPagesForOverview = (overviewType: OverviewType, audience: ProductAudience[]) => {
+const getProductPages = (
+    overviewType: OverviewType,
+    audience: ProductAudience[],
+    language?: string
+) => {
     const isAllProductsType = overviewType === 'all_products';
 
     return contentLib.query({
@@ -112,6 +126,16 @@ const getProductPagesForOverview = (overviewType: OverviewType, audience: Produc
                             values: audience,
                         },
                     },
+                    ...(language
+                        ? [
+                              {
+                                  hasValue: {
+                                      field: 'language',
+                                      values: [language],
+                                  },
+                              },
+                          ]
+                        : []),
                     ...(!isAllProductsType
                         ? [
                               {
@@ -141,22 +165,22 @@ const getProductPagesForOverview = (overviewType: OverviewType, audience: Produc
     }).hits;
 };
 
+const getAllProductsData = (audience: ProductAudience[], language: string) => {
+    return getProductPages('all_products', audience, language).map(buildCommonProductData);
+};
+
 export const getProductDataForOverviewPage = (
     language: string,
     overviewType: OverviewType,
     audience: ProductAudience[]
 ) => {
-    const productPages = getProductPagesForOverview(overviewType, audience);
+    if (overviewType === 'all_products') {
+        return getAllProductsData(audience, language);
+    }
 
-    const productTransformFunc =
-        overviewType === 'all_products'
-            ? buildCommonProductData
-            : (productPageContent: ContentWithProductDetails) =>
-                  buildDetailedProductData(productPageContent, overviewType);
-
-    const productDataList = productPages
+    const productDataList = getProductPages(overviewType, audience)
         .reduce<OverviewPageProductData[]>((acc, content) => {
-            const productData = productTransformFunc(content);
+            const productData = buildDetailedProductData(content, overviewType, language);
             if (productData) {
                 acc.push(productData);
             }
@@ -164,10 +188,6 @@ export const getProductDataForOverviewPage = (
             return acc;
         }, [])
         .sort((a, b) => a.sortTitle.localeCompare(b.sortTitle));
-
-    if (overviewType === 'all_products') {
-        return productDataList;
-    }
 
     return removeDuplicates(
         productDataList,
