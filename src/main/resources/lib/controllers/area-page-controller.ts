@@ -76,9 +76,9 @@ const pageContainsLegacyLanguagesRef = (
     defaultSituationPage: SituationPageContent,
     localizedSituationPages: SituationPageContent[]
 ) => {
-    return forceArray(defaultSituationPage.data.languages).some((situationContentId) =>
-        localizedSituationPages.some((localizedContent) =>
-            forceArray(localizedContent.data.languages).includes(situationContentId)
+    return forceArray(defaultSituationPage.data.languages).some((languageVersionContentId) =>
+        localizedSituationPages.some(
+            (localizedContent) => localizedContent._id === languageVersionContentId
         )
     );
 };
