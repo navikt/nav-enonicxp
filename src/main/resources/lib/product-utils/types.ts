@@ -1,5 +1,4 @@
 import { Content } from '/lib/xp/content';
-import { MediaDescriptor } from '../../types/content-types/content-config';
 import { ProductData } from '../../site/mixins/product-data/product-data';
 import {
     contentTypesWithProductDetails,
@@ -9,13 +8,6 @@ import { Overview } from 'site/content-types/overview/overview';
 import { stringArrayToSet } from '../utils/array-utils';
 
 const contentTypeWithProductDetails = stringArrayToSet(_contentTypesWithProductDetails);
-
-export type OverviewPageIllustrationIcon = {
-    icon: {
-        type: MediaDescriptor;
-        mediaUrl: string;
-    };
-};
 
 export type OverviewPageProductData = {
     _id: string;
