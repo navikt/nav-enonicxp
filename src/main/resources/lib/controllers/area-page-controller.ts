@@ -71,6 +71,18 @@ const getSituationPages = (area: string, audience: string) =>
         },
     }).hits;
 
+// TODO: this can be removed after we've migrated these pages to layers
+const pageContainsLegacyLanguagesRef = (
+    defaultSituationPage: SituationPageContent,
+    localizedSituationPages: SituationPageContent[]
+) => {
+    return forceArray(defaultSituationPage.data.languages).some((situationContentId) =>
+        localizedSituationPages.some((localizedContent) =>
+            forceArray(localizedContent.data.languages).includes(situationContentId)
+        )
+    );
+};
+
 const getRelevantSituationPages = (areaPageNodeContent: AreaPageNodeContent) =>
     runInContext({ branch: 'master' }, () => {
         const { language, data } = areaPageNodeContent;
@@ -87,11 +99,13 @@ const getRelevantSituationPages = (areaPageNodeContent: AreaPageNodeContent) =>
         }
 
         // If there are any default-language (ie non-localized) pages in the current layer, include them as well
-        const situationPagesDefault = situationPages.filter(
-            (situationContent) => situationContent.language === CONTENT_LOCALE_DEFAULT
+        const situationPagesFallback = situationPages.filter(
+            (situationContent) =>
+                situationContent.language === CONTENT_LOCALE_DEFAULT &&
+                !pageContainsLegacyLanguagesRef(situationContent, situationPagesLocalized)
         );
 
-        return [...situationPagesLocalized, ...situationPagesDefault];
+        return [...situationPagesLocalized, ...situationPagesFallback];
     });
 
 const buildSituationCardPart = (path: string, target: string): SituationCardPartComponent => ({
