@@ -12,6 +12,9 @@ import { ProductData } from '../../site/mixins/product-data/product-data';
 import { APP_DESCRIPTOR } from '../constants';
 import { Audience } from '../../site/mixins/audience/audience';
 import { contentTypesWithProductDetails } from '../contenttype-lists';
+import { getPublicPath } from '../paths/public-path';
+import { getLocaleFromContext } from '../localization/locale-context';
+import { removeDuplicates } from '../utils/array-utils';
 
 type OverviewType = Overview['overviewType'];
 type ProductAudience = Audience['audience'];
@@ -87,15 +90,11 @@ const buildDetailedProductData = (
         ...commonData,
         sortTitle,
         anchorId: sanitize(sortTitle),
-        productDetailsPath: productDetails._path,
+        productDetailsPath: getPublicPath(productDetails, getLocaleFromContext()),
     };
 };
 
-const getProductPagesForOverview = (
-    language: string,
-    overviewType: OverviewType,
-    audience: ProductAudience[]
-) => {
+const getProductPagesForOverview = (overviewType: OverviewType, audience: ProductAudience[]) => {
     const isAllProductsType = overviewType === 'all_products';
 
     return contentLib.query({
@@ -107,12 +106,6 @@ const getProductPagesForOverview = (
         filters: {
             boolean: {
                 must: [
-                    {
-                        hasValue: {
-                            field: 'language',
-                            values: [language],
-                        },
-                    },
                     {
                         hasValue: {
                             field: 'data.audience',
@@ -153,13 +146,7 @@ export const getProductDataForOverviewPage = (
     overviewType: OverviewType,
     audience: ProductAudience[]
 ) => {
-    const productPages = getProductPagesForOverview(language, overviewType, audience);
-
-    logger.info(
-        `Found ${productPages.length} product pages: ${productPages
-            .map((page) => page._path)
-            .join(',')}`
-    );
+    const productPages = getProductPagesForOverview(overviewType, audience);
 
     const productTransformFunc =
         overviewType === 'all_products'
@@ -176,5 +163,8 @@ export const getProductDataForOverviewPage = (
         return acc;
     }, []);
 
-    return productDataList.sort((a, b) => a.sortTitle.localeCompare(b.sortTitle));
+    return removeDuplicates(
+        productDataList,
+        (a, b) => a.productDetailsPath === b.productDetailsPath
+    ).sort((a, b) => a.sortTitle.localeCompare(b.sortTitle));
 };
