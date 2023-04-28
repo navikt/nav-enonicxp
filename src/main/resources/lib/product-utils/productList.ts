@@ -158,17 +158,6 @@ const buildDetailedProductData = (
         return null;
     }
 
-    const languageFromContext = getLocaleFromContext();
-
-    // Ensure content in non-default languages in the default project repo are not included
-    // This check can be removed after all product details have been migrated to layers
-    if (
-        productDetailsContent.language !== requestedLanguage &&
-        languageFromContext === CONTENT_LOCALE_DEFAULT
-    ) {
-        return null;
-    }
-
     const commonData = buildCommonProductData(productPageContent);
 
     // If the product details are in a different language from the product page
@@ -182,7 +171,7 @@ const buildDetailedProductData = (
         ...commonData,
         sortTitle,
         anchorId: sanitize(sortTitle),
-        productDetailsPath: getPublicPath(productDetailsContent, languageFromContext),
+        productDetailsPath: getPublicPath(productDetailsContent, getLocaleFromContext()),
     };
 };
 
