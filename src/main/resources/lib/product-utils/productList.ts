@@ -9,7 +9,7 @@ import {
     OverviewPageProductData,
 } from './types';
 import { ProductData } from '../../site/mixins/product-data/product-data';
-import { APP_DESCRIPTOR } from '../constants';
+import { APP_DESCRIPTOR, CONTENT_LOCALE_DEFAULT } from '../constants';
 import { Audience } from '../../site/mixins/audience/audience';
 import { contentTypesWithProductDetails } from '../contenttype-lists';
 import { getPublicPath } from '../paths/public-path';
@@ -149,6 +149,15 @@ const buildDetailedProductData = (
     overviewType: DetailedOverviewType,
     requestedLanguage: string
 ) => {
+    // The default content project may contain a few instance of content in other languages than the default.
+    // We don't want to include these if the default language was requested
+    if (
+        requestedLanguage === CONTENT_LOCALE_DEFAULT &&
+        productPageContent.language !== CONTENT_LOCALE_DEFAULT
+    ) {
+        return null;
+    }
+
     const productDetailsContent = getProductDetails(
         productPageContent,
         overviewType,
@@ -159,6 +168,7 @@ const buildDetailedProductData = (
     }
 
     const commonData = buildCommonProductData(productPageContent);
+    const localeContext = getLocaleFromContext();
 
     // If the product details are in a different language from the product page
     // we use the name of the product details as the displayed/sorted title
@@ -171,7 +181,7 @@ const buildDetailedProductData = (
         ...commonData,
         sortTitle,
         anchorId: sanitize(sortTitle),
-        productDetailsPath: getPublicPath(productDetailsContent, getLocaleFromContext()),
+        productDetailsPath: getPublicPath(productDetailsContent, localeContext),
     };
 };
 
