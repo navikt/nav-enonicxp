@@ -14,7 +14,7 @@ import { Audience } from '../../site/mixins/audience/audience';
 import { contentTypesWithProductDetails } from '../contenttype-lists';
 import { getPublicPath } from '../paths/public-path';
 import { getLocaleFromContext } from '../localization/locale-context';
-import { removeDuplicates } from '../utils/array-utils';
+import { forceArray, removeDuplicates } from '../utils/array-utils';
 
 type OverviewType = Overview['overviewType'];
 type ProductAudience = Audience['audience'];
@@ -31,11 +31,82 @@ const contentTypesInAllProductsList = [
 const sortFunc = (a: OverviewPageProductData, b: OverviewPageProductData) =>
     a.sortTitle.localeCompare(b.sortTitle);
 
+const getProductDetailsFromLegacyLanguageReferences = (
+    productDetailsContent: ProductDetailsContent,
+    requestedLanguage: string
+) => {
+    if (productDetailsContent.data.languages) {
+        const directLookupResults = contentLib.query({
+            count: 1000,
+            contentTypes: ['no.nav.navno:product-details'],
+            sort: 'createdTime ASC',
+            filters: {
+                boolean: {
+                    must: [
+                        {
+                            hasValue: {
+                                field: 'language',
+                                values: [requestedLanguage],
+                            },
+                        },
+                    ],
+                },
+                ids: { values: forceArray(productDetailsContent.data.languages) },
+            },
+        }).hits;
+
+        if (directLookupResults.length > 1) {
+            logger.error(
+                `Product details ${productDetailsContent._path} has more than legacy language reference for "${requestedLanguage}"`
+            );
+        }
+
+        if (directLookupResults.length > 0) {
+            return directLookupResults[0];
+        }
+    }
+
+    const reverseLookupResults = contentLib.query({
+        count: 1000,
+        contentTypes: ['no.nav.navno:product-details'],
+        sort: 'createdTime ASC',
+        filters: {
+            boolean: {
+                must: [
+                    {
+                        hasValue: {
+                            field: 'data.languages',
+                            values: [productDetailsContent._id],
+                        },
+                    },
+                    {
+                        hasValue: {
+                            field: 'language',
+                            values: [requestedLanguage],
+                        },
+                    },
+                ],
+            },
+        },
+    }).hits;
+
+    if (reverseLookupResults.length > 1) {
+        logger.error(
+            `Found more than one product detail with legacy language reference to ${productDetailsContent._path} for "${requestedLanguage}"`
+        );
+    }
+
+    return reverseLookupResults[0];
+};
+
 const getProductDetails = (
-    product: ContentWithProductDetails,
-    overviewType: DetailedOverviewType
+    productPageContent: ContentWithProductDetails,
+    overviewType: DetailedOverviewType,
+    requestedLanguage: string
 ): ProductDetailsContent | null => {
-    const detailsContentId = (product.data as ContentWithProductDetailsData)[overviewType];
+    const detailsContentId = (productPageContent.data as ContentWithProductDetailsData)[
+        overviewType
+    ];
     if (!detailsContentId) {
         return null;
     }
@@ -44,14 +115,18 @@ const getProductDetails = (
     if (!productDetails || productDetails.type !== 'no.nav.navno:product-details') {
         logger.error(
             `Product details with id ${detailsContentId} and type ${overviewType} 
-            not found for content id ${product._id}`,
+            not found for content id ${productPageContent._id}`,
             true,
             true
         );
         return null;
     }
 
-    return productDetails;
+    if (productDetails.language === requestedLanguage) {
+        return productDetails;
+    }
+
+    return getProductDetailsFromLegacyLanguageReferences(productDetails, requestedLanguage);
 };
 
 const buildCommonProductData = (product: ContentWithProductDetails) => {
@@ -74,7 +149,11 @@ const buildDetailedProductData = (
     overviewType: DetailedOverviewType,
     requestedLanguage: string
 ) => {
-    const productDetailsContent = getProductDetails(productPageContent, overviewType);
+    const productDetailsContent = getProductDetails(
+        productPageContent,
+        overviewType,
+        requestedLanguage
+    );
     if (!productDetailsContent) {
         return null;
     }
