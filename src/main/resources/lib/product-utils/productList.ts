@@ -31,7 +31,7 @@ const contentTypesInAllProductsList = [
 const sortFunc = (a: OverviewPageProductData, b: OverviewPageProductData) =>
     a.sortTitle.localeCompare(b.sortTitle);
 
-const getProductDetailsFromLegacyLanguageReferences = (
+const getProductDetailsFromLegacyLanguagesReferences = (
     productDetailsContent: ProductDetailsContent,
     requestedLanguage: string
 ) => {
@@ -55,13 +55,13 @@ const getProductDetailsFromLegacyLanguageReferences = (
             },
         }).hits;
 
-        if (directLookupResults.length > 1) {
-            logger.error(
-                `Product details ${productDetailsContent._path} has more than legacy language reference for "${requestedLanguage}"`
-            );
-        }
-
         if (directLookupResults.length > 0) {
+            if (directLookupResults.length > 1) {
+                logger.error(
+                    `Product details ${productDetailsContent._path} has more than one legacy languages reference for "${requestedLanguage}"`
+                );
+            }
+
             return directLookupResults[0];
         }
     }
@@ -126,7 +126,7 @@ const getProductDetails = (
         return productDetails;
     }
 
-    return getProductDetailsFromLegacyLanguageReferences(productDetails, requestedLanguage);
+    return getProductDetailsFromLegacyLanguagesReferences(productDetails, requestedLanguage);
 };
 
 const buildCommonProductData = (product: ContentWithProductDetails) => {
