@@ -9,7 +9,7 @@ import {
     OverviewPageProductData,
 } from './types';
 import { ProductData } from '../../site/mixins/product-data/product-data';
-import { APP_DESCRIPTOR, CONTENT_LOCALE_DEFAULT } from '../constants';
+import { APP_DESCRIPTOR } from '../constants';
 import { Audience } from '../../site/mixins/audience/audience';
 import { contentTypesWithProductDetails } from '../contenttype-lists';
 import { getPublicPath } from '../paths/public-path';
@@ -37,7 +37,7 @@ const getProductDetailsFromLegacyLanguageReferences = (
 ) => {
     if (productDetailsContent.data.languages) {
         const directLookupResults = contentLib.query({
-            count: 1000,
+            count: 2,
             contentTypes: ['no.nav.navno:product-details'],
             sort: 'createdTime ASC',
             filters: {
@@ -67,7 +67,7 @@ const getProductDetailsFromLegacyLanguageReferences = (
     }
 
     const reverseLookupResults = contentLib.query({
-        count: 1000,
+        count: 2,
         contentTypes: ['no.nav.navno:product-details'],
         sort: 'createdTime ASC',
         filters: {
