@@ -149,15 +149,6 @@ const buildDetailedProductData = (
     overviewType: DetailedOverviewType,
     requestedLanguage: string
 ) => {
-    // The default content project may contain a few instance of content in other languages than the default.
-    // We don't want to include these if the default language was requested
-    if (
-        requestedLanguage === CONTENT_LOCALE_DEFAULT &&
-        productPageContent.language !== CONTENT_LOCALE_DEFAULT
-    ) {
-        return null;
-    }
-
     const productDetailsContent = getProductDetails(
         productPageContent,
         overviewType,
@@ -188,7 +179,7 @@ const buildDetailedProductData = (
 const getProductPages = (
     overviewType: OverviewType,
     audience: ProductAudience[],
-    language?: string
+    languages?: string[]
 ) => {
     const isAllProductsType = overviewType === 'all_products';
 
@@ -207,12 +198,12 @@ const getProductPages = (
                             values: audience,
                         },
                     },
-                    ...(language
+                    ...(languages
                         ? [
                               {
                                   hasValue: {
                                       field: 'language',
-                                      values: [language],
+                                      values: languages,
                                   },
                               },
                           ]
@@ -247,7 +238,7 @@ const getProductPages = (
 };
 
 const getAllProductsData = (audience: ProductAudience[], language: string) => {
-    return getProductPages('all_products', audience, language)
+    return getProductPages('all_products', audience, [language])
         .map(buildCommonProductData)
         .sort(sortFunc);
 };
@@ -261,7 +252,14 @@ export const getProductDataForOverviewPage = (
         return getAllProductsData(audience, language);
     }
 
-    const productDataList = getProductPages(overviewType, audience)
+    // For languages other than the default, we also include the default pages in the query
+    // as this is used as a fallback for any products that are not localized to other languages
+    const productPageLanguagesToRetrieve = [language];
+    if (language !== CONTENT_LOCALE_DEFAULT) {
+        productPageLanguagesToRetrieve.push(CONTENT_LOCALE_DEFAULT);
+    }
+
+    const productDataList = getProductPages(overviewType, audience, productPageLanguagesToRetrieve)
         .reduce<OverviewPageProductData[]>((acc, content) => {
             const productData = buildDetailedProductData(content, overviewType, language);
             if (productData) {
