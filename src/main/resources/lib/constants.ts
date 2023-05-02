@@ -12,15 +12,15 @@ const portalAdminOrigins: EnvRecord = {
 
 const frontendOrigins: EnvRecord = {
     p: 'https://www.nav.no',
-    dev: 'https://www.dev.nav.no',
-    q6: 'https://www-2.dev.nav.no',
+    dev: 'https://www.intern.dev.nav.no',
+    q6: 'https://www-2.intern.dev.nav.no',
     localhost: 'http://localhost:3000',
 };
 
 const revalidatorProxyOrigins: EnvRecord = {
     p: 'https://www.nav.no/revalidator-proxy',
-    dev: 'https://nav-enonicxp-frontend-revalidator-proxy.dev.nav.no',
-    q6: 'https://nav-enonicxp-frontend-revalidator-proxy-2.dev.nav.no',
+    dev: 'https://nav-enonicxp-frontend-revalidator-proxy.intern.dev.nav.no',
+    q6: 'https://nav-enonicxp-frontend-revalidator-proxy-2.intern.dev.nav.no',
     localhost: 'http://localhost:3002',
 };
 
