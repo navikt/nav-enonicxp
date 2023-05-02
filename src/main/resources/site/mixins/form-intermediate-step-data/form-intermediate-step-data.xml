@@ -27,6 +27,9 @@
                                         <input name="externalUrl" type="TextLine">
                                             <label>Ekstern URL</label>
                                             <occurrences minimum="0" maximum="1"/>
+                                            <config>
+                                                <regexp>^https?:\/\/.*</regexp>
+                                            </config>
                                         </input>
                                     </items>
                                 </option>
@@ -53,6 +56,9 @@
                                                         <input name="externalUrl" type="TextLine">
                                                             <label>Ekstern Url</label>
                                                             <occurrences minimum="0" maximum="1"/>
+                                                            <config>
+                                                                <regexp>^https?:\/\/.*</regexp>
+                                                            </config>
                                                         </input>
                                                     </items>
                                                 </item-set>
