@@ -79,9 +79,25 @@ export interface FormIntermediateStepData {
               explanation?: string;
 
               /**
-               * Ekstern Url
+               * Dette valget sender brukeren videre til:
                */
-              externalUrl?: string;
+              nextStep:
+                | {
+                    /**
+                     * Selected
+                     */
+                    _selected: "external";
+
+                    /**
+                     * Lenke til skjema/søknad/klage
+                     */
+                    external: {
+                      /**
+                       * Ekstern URL
+                       */
+                      externalUrl?: string;
+                    };
+                  };
             }>;
           };
         };

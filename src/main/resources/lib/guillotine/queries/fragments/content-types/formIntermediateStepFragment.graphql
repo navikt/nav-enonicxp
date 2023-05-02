@@ -23,7 +23,12 @@ fragment contentIntermediateStep on no_nav_navno_FormIntermediateStep {
                     steps {
                         label
                         explanation
-                        externalUrl
+                        nextStep {
+                            _selected
+                            external {
+                                externalUrl
+                            }
+                        }
                     }
                 }
                 external {
