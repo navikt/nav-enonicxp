@@ -1,6 +1,5 @@
 <content-type>
     <display-name>Mellomsteg for søknad, skjema, klage og ettersendelse</display-name>
-    <description></description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
@@ -14,7 +13,7 @@
         </field-set>
         <mixin name="form-intermediate-step-data"/>
         <input name="customPath" type="TextLine">
-            <label>Kort-url (settes automatisk for mellomsteg)</label>
+            <label>Kort-url (settes automatisk for mellomsteg, skal ikke endres manuelt)</label>
             <occurrences minimum="0" maximum="1"/>
         </input>
     </form>
