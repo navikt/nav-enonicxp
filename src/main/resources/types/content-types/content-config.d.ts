@@ -44,6 +44,7 @@ import {
     SearchExternalResourceDescriptor,
 } from './search-config';
 import { PressLandingPage } from 'site/content-types/press-landing-page/press-landing-page';
+import { FormIntermediateStep } from 'site/content-types/form-intermediate-step/form-intermediate-step';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
@@ -72,6 +73,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'publishing-calendar': PublishingCalendar;
     'publishing-calendar-entry': PublishingCalendarEntry;
     'product-details': ProductDetails;
+    'form-intermediate-step': FormIntermediateStep;
     'form-details': FormDetails;
     'generic-page': GenericPage;
     'section-page': SectionPage;

@@ -1,0 +1,40 @@
+#import "../richText/richTextFragment.graphql"
+#import "../mixins/animatedIconsTargetFragment.graphql"
+
+fragment contentIntermediateStep on no_nav_navno_FormIntermediateStep {
+    data {
+        illustration {
+            ...animatedIconsTargetMixin
+        }
+        editorial(processHtml: { type: server }) {
+            ...richText
+        }
+        stepsHeadline
+        steps {
+            label
+            explanation
+            nextStep {
+                _selected
+                next {
+                    editorial(processHtml: { type: server }) {
+                        ...richText
+                    }
+                    stepsHeadline
+                    steps {
+                        label
+                        explanation
+                        nextStep {
+                            _selected
+                            external {
+                                externalUrl
+                            }
+                        }
+                    }
+                }
+                external {
+                    externalUrl
+                }
+            }
+        }
+    }
+}

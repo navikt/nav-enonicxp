@@ -1,0 +1,11 @@
+#import "../fragments/contentCommonWithPageFragment.graphql"
+#import "../fragments/content-types/formIntermediateStepFragment.graphql"
+
+query formIntermediateStepQuery($ref: ID!) {
+    guillotine {
+        get(key: $ref) {
+            ...contentCommonWithPage
+            ...contentIntermediateStep
+        }
+    }
+}

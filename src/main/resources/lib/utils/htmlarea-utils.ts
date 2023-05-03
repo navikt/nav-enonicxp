@@ -12,6 +12,8 @@ export const htmlAreaDataPaths = [
     'article.data.text',
     'article.data.fact',
     'ingress',
+    'editorial',
+    'steps.nextStep.next.editorial',
 ];
 
 export const htmlAreaNodePaths = [
