@@ -1,6 +1,3 @@
-import { OfficeBranch } from 'site/content-types/office-branch/office-branch';
-import { Content } from '/lib/xp/content';
-
 import { transformToRedirectResponse } from './resolve-redirects';
 import * as contentLib from '/lib/xp/content';
 
