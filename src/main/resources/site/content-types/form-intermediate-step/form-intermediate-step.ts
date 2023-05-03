@@ -87,4 +87,9 @@ export interface FormIntermediateStep {
           };
         };
   }>;
+
+  /**
+   * Kort-url (settes automatisk for mellomsteg)
+   */
+  customPath?: string;
 }

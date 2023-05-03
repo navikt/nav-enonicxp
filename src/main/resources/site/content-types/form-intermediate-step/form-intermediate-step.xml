@@ -13,5 +13,9 @@
             </items>
         </field-set>
         <mixin name="form-intermediate-step-data"/>
+        <input name="customPath" type="TextLine">
+            <label>Kort-url (settes automatisk for mellomsteg)</label>
+            <occurrences minimum="0" maximum="1"/>
+        </input>
     </form>
 </content-type>
