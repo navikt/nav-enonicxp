@@ -43,7 +43,7 @@ const insertCustomPath = (req: XP.Request) => {
         return;
     }
 
-    const currentCustomPath = hasValidCustomPath(content) ? content.data.customPath : undefined;
+    const currentCustomPath = hasValidCustomPath(content) ? content.data.customPath : null;
     const correctCustomPath = generateCustomPath(content);
 
     if (currentCustomPath === correctCustomPath) {
