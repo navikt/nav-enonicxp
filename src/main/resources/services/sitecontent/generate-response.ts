@@ -20,10 +20,7 @@ import { getLanguageVersions } from '../../lib/localization/resolve-language-ver
 import { contentTypesRenderedByEditorFrontend } from '../../lib/contenttype-lists';
 import { stringArrayToSet } from '../../lib/utils/array-utils';
 
-import {
-    legacyContentToRedirect,
-    resolveLegacyContentRedirects,
-} from './resolve-legacy-content-redirects';
+import { resolveLegacyContentRedirects } from './resolve-legacy-content-redirects';
 
 const contentTypesForGuillotineQuery = stringArrayToSet(contentTypesRenderedByEditorFrontend);
 
@@ -164,8 +161,10 @@ export const generateSitecontentResponse = ({
 
     const { content, locale } = target;
 
-    if (legacyContentToRedirect.includes(content.type)) {
-        return resolveLegacyContentRedirects(content);
+    const redirectLegacyContent = resolveLegacyContentRedirects(content);
+
+    if (redirectLegacyContent) {
+        return redirectLegacyContent;
     }
 
     const specialPreviewResponse = getSpecialPreviewResponseIfApplicable(
