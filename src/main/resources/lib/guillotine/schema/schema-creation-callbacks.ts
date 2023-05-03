@@ -33,7 +33,6 @@ import { macroAlertboxCallback } from './schema-creation-callbacks/macro-alert-b
 import { richTextCallback } from './schema-creation-callbacks/richtext';
 import { overviewCallback } from './schema-creation-callbacks/overview-callback';
 import { officeBranchCallback } from './schema-creation-callbacks/office-branch-callback';
-import { officeInformationLegacyCallback } from './schema-creation-callbacks/office-information-callback';
 import { formDetailsCallback } from './schema-creation-callbacks/form-details';
 import { fragmentComponentDataCallback } from './schema-creation-callbacks/fragment-component-data';
 import { globalCaseTimeSetCallback } from './schema-creation-callbacks/global-case-time-set';
@@ -62,7 +61,6 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     no_nav_navno_ContentList_Data: contentListDataCallback,
     no_nav_navno_Overview_Data: overviewCallback,
     no_nav_navno_OfficeBranch: officeBranchCallback,
-    no_nav_navno_OfficeInformation: officeInformationLegacyCallback,
     no_nav_navno_ContactInformation_Chat: createOpeningHoursFields('chat'),
     no_nav_navno_ContactInformation_Telephone: createOpeningHoursFields('telephone'),
     no_nav_navno_MainArticle_MenuListItems: menuListDataCallback,
