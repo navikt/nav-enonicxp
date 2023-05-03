@@ -15,6 +15,7 @@ const getOfficeInfo = () =>
             start: 0,
             count: 1000,
             contentTypes: [`${APP_DESCRIPTOR}:office-branch`],
+            query: '_path LIKE "/content/www.nav.no/kontor/*"',
         }).hits;
 
         return officeInfoContent.map((content) => ({
