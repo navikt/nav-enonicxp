@@ -1,6 +1,7 @@
 import * as contentLib from '/lib/xp/content';
 import cacheLib from '/lib/cache';
 import { APP_DESCRIPTOR } from '../../lib/constants';
+import { stripPathPrefix } from '../../lib/paths/path-utils';
 
 const tenMinutes = 600;
 
@@ -14,12 +15,12 @@ const getOfficeInfo = () =>
         const officeInfoContent = contentLib.query({
             start: 0,
             count: 1000,
-            contentTypes: [`${APP_DESCRIPTOR}:office-branch`],
+            contentTypes: [`${APP_DESCRIPTOR}:office-information`],
         }).hits;
 
         return officeInfoContent.map((content) => ({
-            path: `/kontor/${content._name}`,
-            enhetNr: content.data.enhetNr,
+            path: stripPathPrefix(content._path),
+            enhetNr: content.data.enhet.enhetNr,
         }));
     });
 
