@@ -3,73 +3,47 @@ import graphQlLib from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 import { getProductDataForOverviewPage } from '../../../product-utils/productList';
 import { logger } from '../../../utils/logging';
-import {
-    OverviewPageIllustrationIcon,
-    OverviewPageProductData,
-} from '../../../product-utils/types';
-import { CONTENT_LOCALE_DEFAULT } from '../../../constants';
+import { OverviewPageProductData } from '../../../product-utils/types';
 import { forceArray } from '../../../utils/array-utils';
+import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
 
 export const overviewCallback: CreationCallback = (context, params) => {
-    const xpImage = graphQlCreateObjectType<keyof OverviewPageIllustrationIcon['icon']>(context, {
-        name: context.uniqueName('xpImage'),
-        description: 'xpImage',
-        fields: {
-            type: { type: graphQlLib.GraphQLString },
-            mediaUrl: { type: graphQlLib.GraphQLString },
-        },
-    });
-
-    const icon = graphQlCreateObjectType(context, {
-        name: context.uniqueName('Icon'),
-        description: 'Icon',
-        fields: {
-            icon: { type: xpImage },
-        },
-    });
-
-    const icons = graphQlCreateObjectType(context, {
-        name: context.uniqueName('Icons'),
-        description: 'Icons',
-        fields: {
-            icons: { type: graphQlLib.list(icon) },
-        },
-    });
-
-    const illustration = graphQlCreateObjectType(context, {
-        name: context.uniqueName('Illustration'),
-        description: 'Illustration',
-        fields: {
-            type: { type: graphQlLib.GraphQLString },
-            data: { type: icons },
-        },
-    });
-
     const productType = graphQlCreateObjectType<keyof OverviewPageProductData>(context, {
         name: context.uniqueName('ProductType'),
         description: 'Produkttype',
         fields: {
-            _id: { type: graphQlLib.GraphQLID },
-            anchorId: { type: graphQlLib.GraphQLID },
+            _id: { type: graphQlLib.GraphQLString },
             type: { type: graphQlLib.GraphQLString },
-            path: { type: graphQlLib.GraphQLString },
+            anchorId: { type: graphQlLib.GraphQLString },
             productDetailsPath: { type: graphQlLib.GraphQLString },
-            title: { type: graphQlLib.GraphQLString },
-            sortTitle: { type: graphQlLib.GraphQLString },
+            path: { type: graphQlLib.GraphQLString },
             language: { type: graphQlLib.GraphQLString },
+            sortTitle: { type: graphQlLib.GraphQLString },
+            title: { type: graphQlLib.GraphQLString },
             ingress: { type: graphQlLib.GraphQLString },
             audience: { type: graphQlLib.GraphQLString },
-            taxonomy: { type: graphQlLib.list(graphQlLib.GraphQLString) },
-            area: { type: graphQlLib.list(graphQlLib.GraphQLString) },
-            illustration: { type: illustration },
+            taxonomy: {
+                type: graphQlLib.list(graphQlLib.GraphQLString),
+                resolve: (env) => forceArray(env.source.taxonomy),
+            },
+            area: {
+                type: graphQlLib.list(graphQlLib.GraphQLString),
+                resolve: (env) => forceArray(env.source.area),
+            },
+            illustration: {
+                type: graphQlLib.reference('Content'),
+                resolve: (env) => {
+                    const { illustration } = env.source;
+                    return illustration ? contentLib.get({ key: illustration }) : illustration;
+                },
+            },
         },
     });
 
     params.fields.productList = {
-        args: { contentId: graphQlLib.GraphQLID },
         type: graphQlLib.list(productType),
-        resolve: (env) => {
-            const { contentId } = env.args;
+        resolve: () => {
+            const contentId = getGuillotineContentQueryBaseContentId();
             if (!contentId) {
                 logger.error('No contentId provided for overview-page resolver');
                 return [];
@@ -94,12 +68,7 @@ export const overviewCallback: CreationCallback = (context, params) => {
                 return [];
             }
 
-            const productList = getProductDataForOverviewPage(
-                language || CONTENT_LOCALE_DEFAULT,
-                overviewType,
-                forceArray(audience)
-            );
-            return productList;
+            return getProductDataForOverviewPage(language, overviewType, forceArray(audience));
         },
     };
 };

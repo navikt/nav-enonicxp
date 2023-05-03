@@ -1,5 +1,6 @@
 #import "../mixins/languagesFragment.graphql"
 #import "../mixins/animatedIconsTargetFragment.graphql"
+#import "../mixins/imageInlineFragment.graphql"
 
 fragment contentOverviewPage on no_nav_navno_Overview {
     dataAsJson
@@ -10,7 +11,7 @@ fragment contentOverviewPage on no_nav_navno_Overview {
         illustration {
             ...animatedIconsTargetMixin
         }
-        productList(contentId: $ref) {
+        productList {
             _id
             anchorId
             path
@@ -24,11 +25,13 @@ fragment contentOverviewPage on no_nav_navno_Overview {
             audience
             area
             illustration {
-                type
-                data {
-                    icons {
-                        icon {
-                            mediaUrl
+                ...on no_nav_navno_AnimatedIcons{
+                    type
+                    data {
+                        icons {
+                            icon {
+                                ...imageInlineMixin
+                            }
                         }
                     }
                 }

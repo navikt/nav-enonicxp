@@ -1,0 +1,17 @@
+<content-type>
+    <display-name>Mellomsteg for søknad, skjema, klage og ettersendelse</display-name>
+    <description></description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set>
+            <label>Piktogram</label>
+            <items>
+                <mixin name="illustration" />
+            </items>
+        </field-set>
+        <mixin name="form-intermediate-step-data"/>
+    </form>
+</content-type>
