@@ -30,7 +30,7 @@ export interface FormIntermediateStep {
           _selected: "external";
 
           /**
-           * Lenke til skjema/søknad/klage
+           * Lenke til skjema, søknad eller klage
            */
           external: {
             /**
@@ -64,9 +64,25 @@ export interface FormIntermediateStep {
              */
             steps: Array<{
               /**
-               * Ekstern Url
+               * Dette valget sender brukeren videre til:
                */
-              externalUrl?: string;
+              nextStep:
+                | {
+                    /**
+                     * Selected
+                     */
+                    _selected: "external";
+
+                    /**
+                     * Lenke til skjema, søknad eller klage
+                     */
+                    external: {
+                      /**
+                       * Ekstern URL
+                       */
+                      externalUrl?: string;
+                    };
+                  };
             }>;
           };
         };
