@@ -4,51 +4,331 @@ import { findContentsWithFragmentComponent } from '../../lib/utils/component-uti
 import { findContentsWithFragmentMacro } from '../../lib/utils/htmlarea-utils';
 import { getServiceRequestSubPath } from '../service-utils';
 import { runInContext } from '../../lib/context/run-in-context';
-import { CONTENT_ROOT_REPO_ID } from '../../lib/constants';
+import { CONTENT_LOCALE_DEFAULT, CONTENT_ROOT_REPO_ID } from '../../lib/constants';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
-import { removeDuplicates } from '../../lib/utils/array-utils';
+import { forceArray, removeDuplicates } from '../../lib/utils/array-utils';
+import { logger } from '../../lib/utils/logging';
 
-type FragmentToLocaleCorrelationMap = Record<
+type FragmentContent = Content<'portal:fragment'>;
+
+type FragmentMapData = {
+    fragment: FragmentContent;
+    contentIdsWithFragment: string[];
+};
+
+type ContentMapData = {
+    content: Content;
+    fragmentIdsInContent: string[];
+};
+
+type FragmentDataShort = ReturnType<typeof transformFragment>;
+
+type LocaleScoreMap = Record<string, number>;
+
+type LocaleCorrelation = { probableLocales: string[]; localeCorrelation: Record<string, number> };
+
+type FragmentLocaleCorrelationMap = Record<
     string,
-    { fragmentContent: Content<'portal:fragment'>; localeCorrelation: Record<string, number> }
+    { scoreMap: LocaleScoreMap; correlations: LocaleCorrelation }
 >;
+
+const transformFragment = (content: FragmentContent) => ({
+    _id: content._id,
+    _path: content._path,
+    displayName: content.displayName,
+});
+
+const findProbableLocales = (localeScoreMap: LocaleScoreMap): LocaleCorrelation => {
+    const scoreSum = Object.values(localeScoreMap).reduce((acc, score) => {
+        return acc + score;
+    }, 0);
+
+    const result = Object.entries(localeScoreMap).reduce<{
+        highestLocaleCount: number;
+        probaleLocales: string[];
+        localeCorrelation: Record<string, number>;
+    }>(
+        (probableLocaleData, [locale, usageCountForLocale]) => {
+            const { highestLocaleCount, localeCorrelation } = probableLocaleData;
+
+            if (usageCountForLocale > highestLocaleCount) {
+                probableLocaleData.highestLocaleCount = usageCountForLocale;
+                probableLocaleData.probaleLocales = [locale];
+            } else if (usageCountForLocale === highestLocaleCount) {
+                probableLocaleData.probaleLocales.push(locale);
+            }
+
+            localeCorrelation[locale] = Math.round((usageCountForLocale / scoreSum) * 1000) / 10;
+
+            return probableLocaleData;
+        },
+        {
+            highestLocaleCount: 0,
+            probaleLocales: [],
+            localeCorrelation: {},
+        }
+    );
+
+    return {
+        probableLocales: result.probaleLocales,
+        localeCorrelation: result.localeCorrelation,
+    };
+};
+
+type FragmentConnections = {
+    fragment: FragmentDataShort;
+    connections: Record<string, number>;
+};
+
+type FragmentConnectionsFinal = {
+    fragment: FragmentDataShort;
+    connections: {
+        fragment: FragmentDataShort;
+        score: number;
+    }[];
+};
+
+const getCorrelationScore = (
+    defaultContentData: ContentMapData,
+    localizedContentData: ContentMapData,
+    localizedFragmentId: string
+): { fragmentId: string; score: number } => {
+    const { fragmentIdsInContent: fragmentIdsInDefaultContent, content: defaultContent } =
+        defaultContentData;
+
+    const { fragmentIdsInContent: fragmentIdsInLocalizedContent, content: localizedContent } =
+        localizedContentData;
+
+    const localizedContentStringified = JSON.stringify(localizedContent);
+    const defaultContentStringified = JSON.stringify(defaultContent);
+
+    if (fragmentIdsInDefaultContent.length === fragmentIdsInLocalizedContent.length) {
+        const sortedLocalizedFragments = fragmentIdsInLocalizedContent.sort((a, b) => {
+            return localizedContentStringified.indexOf(a) - localizedContentStringified.indexOf(b);
+        });
+        const sortedDefaultFragments = fragmentIdsInDefaultContent.sort((a, b) => {
+            return defaultContentStringified.indexOf(a) - defaultContentStringified.indexOf(b);
+        });
+
+        const localizedFragmentIndex = sortedLocalizedFragments.indexOf(localizedFragmentId);
+
+        return {
+            score: 100,
+            fragmentId: sortedDefaultFragments[localizedFragmentIndex],
+        };
+    }
+
+    const localizedFragmentIndex = localizedContentStringified.indexOf(localizedFragmentId);
+
+    const closestDefaultFragmentIndex = fragmentIdsInDefaultContent.reduce<{
+        diff?: number;
+        fragmentId: string;
+    }>(
+        (acc, defaultFragmentId) => {
+            const defaultFragmentIndex = defaultContentStringified.indexOf(defaultFragmentId);
+
+            const diff = Math.abs(defaultFragmentIndex - localizedFragmentIndex);
+            if (acc.diff === undefined || diff < acc.diff) {
+                return {
+                    diff,
+                    fragmentId: defaultFragmentId,
+                };
+            }
+
+            return acc;
+        },
+        { fragmentId: '' }
+    );
+
+    const score = closestDefaultFragmentIndex.diff
+        ? (1 / closestDefaultFragmentIndex.diff) * 100
+        : 0;
+
+    return {
+        score,
+        fragmentId: closestDefaultFragmentIndex.fragmentId,
+    };
+};
+
+const findPossibleConnections = (
+    fragmentIds: string[],
+    fragmentMap: Record<string, FragmentMapData>,
+    contentMap: Record<string, ContentMapData>
+) => {
+    return fragmentIds.reduce<FragmentConnectionsFinal[]>((acc, localizedFragmentId) => {
+        const fragmentData = fragmentMap[localizedFragmentId];
+        const { fragment, contentIdsWithFragment } = fragmentData;
+
+        const connections = contentIdsWithFragment.reduce<FragmentConnections['connections']>(
+            (acc, contentId) => {
+                const localizedContentData = contentMap[contentId];
+                const { content: localizedContent } = localizedContentData;
+
+                const languages = forceArray((localizedContent.data as any)?.languages);
+
+                const defaultContentData = languages.reduce<ContentMapData | null>(
+                    (acc, languageId) => {
+                        const referencedContent = contentMap[languageId];
+                        if (referencedContent?.content.language === CONTENT_LOCALE_DEFAULT) {
+                            return referencedContent;
+                        }
+                        return acc;
+                    },
+                    null
+                );
+
+                if (
+                    !defaultContentData ||
+                    defaultContentData.content.type !== localizedContentData.content.type
+                ) {
+                    return acc;
+                }
+
+                const { score, fragmentId } = getCorrelationScore(
+                    defaultContentData,
+                    localizedContentData,
+                    localizedFragmentId
+                );
+
+                if (!acc[fragmentId]) {
+                    acc[fragmentId] = 0;
+                }
+
+                acc[fragmentId] += score;
+
+                return acc;
+            },
+            {}
+        );
+
+        const connectionsFinal = Object.entries(connections).reduce<
+            FragmentConnectionsFinal['connections']
+        >((acc, [fragmentId, score]) => {
+            acc.push({ score, fragment: transformFragment(fragmentMap[fragmentId].fragment) });
+
+            return acc;
+        }, []);
+
+        acc.push({ connections: connectionsFinal, fragment: transformFragment(fragment) });
+
+        return acc;
+    }, []);
+};
 
 const getLocaleCorrelation = () => {
     const allFragments = contentLib.query({ count: 2000, contentTypes: ['portal:fragment'] }).hits;
 
-    const localeToFragmentsMap: FragmentToLocaleCorrelationMap = {};
+    const fragmentMap = allFragments.reduce<Record<string, FragmentMapData>>((acc, fragment) => {
+        acc[fragment._id] = {
+            fragment,
+            contentIdsWithFragment: [],
+        };
+        return acc;
+    }, {});
+
+    const contentMap: Record<string, ContentMapData> = {};
 
     allFragments.forEach((fragment) => {
         const fragmentId = fragment._id;
 
-        removeDuplicates(
+        const contentWithFragment = removeDuplicates(
             [
                 ...findContentsWithFragmentMacro(fragmentId),
                 ...findContentsWithFragmentComponent(fragmentId),
             ],
             (a, b) => a._id === b._id
-        ).forEach((content) => {
-            const { language } = content;
-            if (!localeToFragmentsMap[fragmentId]) {
-                localeToFragmentsMap[fragmentId] = {
-                    fragmentContent: fragment,
-                    localeCorrelation: {},
+        );
+
+        fragmentMap[fragmentId].contentIdsWithFragment = contentWithFragment.map(
+            (content) => content._id
+        );
+
+        contentWithFragment.forEach((content) => {
+            const contentId = content._id;
+
+            if (!contentMap[contentId]) {
+                contentMap[contentId] = {
+                    content,
+                    fragmentIdsInContent: [],
                 };
             }
 
-            const mapEntry = localeToFragmentsMap[fragmentId];
-
-            if (!mapEntry.localeCorrelation[language]) {
-                mapEntry.localeCorrelation[language] = 0;
-            }
-
-            mapEntry.localeCorrelation[language]++;
+            contentMap[contentId].fragmentIdsInContent.push(fragmentId);
         });
     });
 
+    const fragmentLocaleCorrelationDataMap = Object.values(
+        contentMap
+    ).reduce<FragmentLocaleCorrelationMap>((acc, contentData) => {
+        const { content, fragmentIdsInContent } = contentData;
+        const { language } = content;
+
+        fragmentIdsInContent.forEach((fragmentId) => {
+            if (!acc[fragmentId]) {
+                acc[fragmentId] = {
+                    scoreMap: {},
+                    correlations: { localeCorrelation: {}, probableLocales: [] },
+                };
+            }
+
+            const scoreMap = acc[fragmentId].scoreMap;
+            if (!scoreMap[language]) {
+                scoreMap[language] = 0;
+            }
+
+            scoreMap[language]++;
+        });
+
+        return acc;
+    }, {});
+
+    Object.values(fragmentLocaleCorrelationDataMap).forEach((localeScoreMap) => {
+        localeScoreMap.correlations = findProbableLocales(localeScoreMap.scoreMap);
+    });
+
+    const fragmentIdLocaleBuckets = allFragments.reduce<Record<string, string[]>>(
+        (acc, fragment) => {
+            const fragmentId = fragment._id;
+
+            const correlationData = fragmentLocaleCorrelationDataMap[fragmentId];
+            if (!correlationData) {
+                acc.undetermined.push(fragmentId);
+                return acc;
+            }
+
+            const { probableLocales } = correlationData.correlations;
+
+            const localeKey = probableLocales.length === 1 ? probableLocales[0] : 'multiple';
+            if (!acc[localeKey]) {
+                acc[localeKey] = [];
+            }
+
+            acc[localeKey].push(fragmentId);
+
+            return acc;
+        },
+        { undetermined: [], multiple: [] }
+    );
+
+    const nnLikelyConnections = findPossibleConnections(
+        fragmentIdLocaleBuckets.nn,
+        fragmentMap,
+        contentMap
+    );
+    const enLikelyConnections = findPossibleConnections(
+        fragmentIdLocaleBuckets.en,
+        fragmentMap,
+        contentMap
+    );
+
     return {
         status: 200,
-        body: localeToFragmentsMap,
+        body: {
+            fragmentLocaleCorrelationDataMap,
+            fragmentIdLocaleBuckets,
+            nnLikelyConnections,
+            enLikelyConnections,
+        },
     };
 };
 
