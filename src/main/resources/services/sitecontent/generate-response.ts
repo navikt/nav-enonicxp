@@ -20,6 +20,11 @@ import { getLanguageVersions } from '../../lib/localization/resolve-language-ver
 import { contentTypesRenderedByEditorFrontend } from '../../lib/contenttype-lists';
 import { stringArrayToSet } from '../../lib/utils/array-utils';
 
+import {
+    legacyContentToRedirect,
+    resolveLegacyContentRedirects,
+} from './resolve-legacy-content-redirects';
+
 const contentTypesForGuillotineQuery = stringArrayToSet(contentTypesRenderedByEditorFrontend);
 
 // The previewOnly x-data flag is used on content which should only be publicly accessible
@@ -30,12 +35,7 @@ const getSpecialPreviewResponseIfApplicable = (
     requestedPath: string,
     isPreview: boolean
 ) => {
-    // During pilot phase, we want office branch pages to only be visible as a preview.
-    // When the pilot is over and office pages are live, we can remove this check.
-    const contentIsOfficeBranch = content.type === 'no.nav.navno:office-branch';
-
-    const contentIsPreviewOnly =
-        !!content.x?.[COMPONENT_APP_KEY]?.previewOnly?.previewOnly || contentIsOfficeBranch;
+    const contentIsPreviewOnly = !!content.x?.[COMPONENT_APP_KEY]?.previewOnly?.previewOnly;
     const externalRedirectUrl = content.data?.externalProductUrl;
 
     if ((contentIsPreviewOnly || !!externalRedirectUrl) === isPreview) {
@@ -163,6 +163,10 @@ export const generateSitecontentResponse = ({
     }
 
     const { content, locale } = target;
+
+    if (legacyContentToRedirect.includes(content.type)) {
+        return resolveLegacyContentRedirects(content);
+    }
 
     const specialPreviewResponse = getSpecialPreviewResponseIfApplicable(
         content,
