@@ -1,4 +1,5 @@
 import * as contentLib from '/lib/xp/content';
+import * as taskLib from '/lib/xp/task';
 import { Content } from '/lib/xp/content';
 import { findContentsWithFragmentComponent } from '../../lib/utils/component-utils';
 import { findContentsWithFragmentMacro } from '../../lib/utils/htmlarea-utils';
@@ -7,7 +8,6 @@ import { runInContext } from '../../lib/context/run-in-context';
 import { CONTENT_LOCALE_DEFAULT, CONTENT_ROOT_REPO_ID } from '../../lib/constants';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { forceArray, removeDuplicates } from '../../lib/utils/array-utils';
-import { logger } from '../../lib/utils/logging';
 
 type FragmentContent = Content<'portal:fragment'>;
 
@@ -322,15 +322,14 @@ const getLocaleCorrelation = () => {
     );
 
     return {
-        status: 200,
-        body: {
-            fragmentLocaleCorrelationDataMap,
-            fragmentIdLocaleBuckets,
-            nnLikelyConnections,
-            enLikelyConnections,
-        },
+        fragmentLocaleCorrelationDataMap,
+        fragmentIdLocaleBuckets,
+        nnLikelyConnections,
+        enLikelyConnections,
     };
 };
+
+let result = {};
 
 export const get = (req: XP.CustomSelectorServiceRequest) => {
     if (!validateServiceSecretHeader(req)) {
@@ -344,12 +343,26 @@ export const get = (req: XP.CustomSelectorServiceRequest) => {
     return runInContext(
         { branch: 'draft', repository: CONTENT_ROOT_REPO_ID, asAdmin: true },
         () => {
-            if (subPath === 'getLocaleCorrelation') {
-                return getLocaleCorrelation();
+            if (subPath === 'runJob') {
+                taskLib.executeFunction({
+                    func: () => {
+                        result = getLocaleCorrelation();
+                    },
+                    description: 'Determining fragment localization data',
+                });
+                return {
+                    status: 200,
+                    body: {
+                        msg: 'Running job!',
+                    },
+                    contentType: 'application/json',
+                };
             }
 
             return {
                 status: 200,
+                body: result,
+                contentType: 'application/json',
             };
         }
     );
