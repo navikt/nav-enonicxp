@@ -12,20 +12,50 @@ fragment contentFormDetails on no_nav_navno_FormDetails {
             application {
                 variations {
                     label
-                    url
+                    link {
+                        _selected
+                         internal {
+                             target {
+                                 _path
+                             }
+                         }
+                        external {
+                            url
+                        }
+                    }
                 }
             }
             complaint {
                 variations {
                     label
-                    url
                     type
+                    link {
+                        _selected
+                        internal {
+                            target {
+                                _path
+                            }
+                        }
+                        external {
+                            url
+                        }
+                    }
                 }
             }
             addendum {
                 variations {
                     label
-                    url
+                    link {
+                        _selected
+                        internal {
+                            target {
+                                _path
+                            }
+                        }
+                        external {
+                            url
+                        }
+                    }
                 }
             }
         }
