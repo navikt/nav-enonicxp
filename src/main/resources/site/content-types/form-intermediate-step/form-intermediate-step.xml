@@ -21,7 +21,7 @@
             <label>Kort-url</label>
             <items>
                 <input name="customPath" type="CustomSelector">
-                    <label>Må begynne med '/start/[målgruppe]'</label>
+                    <label>Må begynne med '/start/[målgruppe dersom ikke privatperson]'</label>
                     <occurrences minimum="1" maximum="1"/>
                     <config>
                         <service>customPathSelector</service>
