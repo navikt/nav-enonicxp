@@ -33,7 +33,7 @@ const migrateOldUrlField = (req: XP.Request) => {
         return;
     }
 
-    const repo = getRepoConnection({ repoId: req.method, branch: 'draft', asAdmin: true });
+    const repo = getRepoConnection({ repoId: req.repositoryId, branch: 'draft', asAdmin: true });
 
     repo.modify<Content<'no.nav.navno:form-details'>>({
         key: content._id,
@@ -47,6 +47,7 @@ const migrateOldUrlField = (req: XP.Request) => {
     });
 };
 
+// TODO: This can be removed once all content of this type has been republished with the new data model
 const formDetailsController = (req: XP.Request) => {
     if ((req.mode === 'edit' || req.mode === 'inline') && req.method === 'GET') {
         migrateOldUrlField(req);
