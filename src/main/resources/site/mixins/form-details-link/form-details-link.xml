@@ -1,0 +1,38 @@
+<mixin>
+    <form>
+        <option-set name="link">
+            <label>Lenke til skjema</label>
+            <occurrences minimum="1" maximum="1"/>
+            <expanded>true</expanded>
+            <options minimum="1" maximum="1">
+                <option name="internal">
+                    <label>Lenke til mellomsteg</label>
+                    <items>
+                        <input name="target" type="ContentSelector">
+                            <label>Velg mellomsteg</label>
+                            <occurrences minimum="1" maximum="1"/>
+                            <config>
+                                <allowPath>/www.nav.no/*</allowPath>
+                                <allowContentType>no.nav.navno:form-intermediate-step</allowContentType>
+                                <showStatus>true</showStatus>
+                            </config>
+                        </input>
+                    </items>
+                </option>
+                <option name="external">
+                    <label>Direkte lenke til skjema</label>
+                    <items>
+                        <input name="url" type="TextLine">
+                            <label>URL</label>
+                            <default>https://www.nav.no/</default>
+                            <occurrences minimum="1" maximum="1"/>
+                            <config>
+                                <regexp>^https:\/\/([a-z0-9_\-.]*\.)?nav\.no($|\/).*</regexp>
+                            </config>
+                        </input>
+                    </items>
+                </option>
+            </options>
+        </option-set>
+    </form>
+</mixin>
