@@ -19,7 +19,7 @@ const getOfficeInfo = () =>
         }).hits;
 
         return officeInfoContent.map((content) => ({
-            path: `/kontor/${content._name}`,
+            path: content._path,
             enhetNr: content.data.enhetNr,
         }));
     });
