@@ -1,6 +1,7 @@
 import * as contentLib from '/lib/xp/content';
 import cacheLib from '/lib/cache';
 import { APP_DESCRIPTOR } from '../../lib/constants';
+import { stripPathPrefix } from '../../lib/paths/path-utils';
 
 const tenMinutes = 600;
 
@@ -19,7 +20,7 @@ const getOfficeInfo = () =>
         }).hits;
 
         return officeInfoContent.map((content) => ({
-            path: content._path,
+            path: stripPathPrefix(content._path),
             enhetNr: content.data.enhetNr,
         }));
     });
