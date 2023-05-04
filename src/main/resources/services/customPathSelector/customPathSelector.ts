@@ -10,6 +10,11 @@ import { logger } from '../../lib/utils/logging';
 import { customSelectorErrorIcon, customSelectorWarningIcon } from '../custom-selector-icons';
 import { runInContext } from '../../lib/context/run-in-context';
 import { forceArray } from '../../lib/utils/array-utils';
+import {
+    FORM_INTERMEDIATE_STEP_CUSTOM_PATH_PREFIX,
+    formIntermediateStepGenerateCustomPath,
+    formIntermediateStepValidateCustomPath,
+} from '../../lib/paths/custom-paths/custom-path-special-types';
 
 type SpecialUrlType = 'formIntermediateStep';
 
@@ -106,18 +111,34 @@ const getResult = ({
 
 const validateFormIntermediateStepResult = (result: XP.CustomSelectorServiceResponseHit) => {
     const content = portalLib.getContent();
-    // const audience = content.data.audience;
+    if (content.type !== 'no.nav.navno:form-intermediate-step') {
+        logger.error(
+            `Selector was called with formIntermediateStep-parameter for a different content type ${content._path}`
+        );
+        return result;
+    }
+
+    if (formIntermediateStepValidateCustomPath(result.id, content)) {
+        return result;
+    }
+
+    const examplePath = formIntermediateStepGenerateCustomPath(content);
+
+    return generateErrorHit(
+        `Feil: "${result.id}" er ikke en gyldig url for mellomsteg`,
+        `URL'en må begynne med "${FORM_INTERMEDIATE_STEP_CUSTOM_PATH_PREFIX}" og inkludere målgruppe dersom denne ikke er person. Eksempel: ${examplePath}`
+    );
 };
 
 const validateResult = (
     result: XP.CustomSelectorServiceResponseHit,
     type?: SpecialUrlType
-): XP.CustomSelectorServiceResponse | null => {
+): XP.CustomSelectorServiceResponseHit => {
     if (type === 'formIntermediateStep') {
         return validateFormIntermediateStepResult(result);
     }
 
-    return null;
+    return result;
 };
 
 export const get = (req: XP.CustomSelectorServiceRequest): XP.CustomSelectorServiceResponse => {
@@ -125,17 +146,14 @@ export const get = (req: XP.CustomSelectorServiceRequest): XP.CustomSelectorServ
 
     const result = getResult({ query, ids });
 
-    const errorResponse = validateResult(result, type as SpecialUrlType);
-    if (errorResponse) {
-        return errorResponse;
-    }
+    const validatedResult = validateResult(result, type as SpecialUrlType);
 
     return {
         status: 200,
         body: {
             total: 1,
             count: 1,
-            hits: [result],
+            hits: [validatedResult],
         },
         contentType: 'application/json',
     };

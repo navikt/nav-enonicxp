@@ -6,6 +6,16 @@ export interface FormIntermediateStep {
   illustration: string;
 
   /**
+   * Målgruppe
+   */
+  audience: "person" | "employer" | "provider";
+
+  /**
+   * Må starte med '/start/[målgruppe]'
+   */
+  customPath: string;
+
+  /**
    * Redaksjonelt innhold ovenfor valgene
    */
   editorial?: string;
@@ -87,9 +97,4 @@ export interface FormIntermediateStep {
           };
         };
   }>;
-
-  /**
-   * Kort-url (settes automatisk for mellomsteg)
-   */
-  customPath?: string;
 }

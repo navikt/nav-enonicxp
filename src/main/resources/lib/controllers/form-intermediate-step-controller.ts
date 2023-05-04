@@ -1,33 +1,11 @@
 import * as portalLib from '/lib/xp/portal';
-import { Content } from '/lib/xp/content';
 import { frontendProxy } from './frontend-proxy';
 import { logger } from '../utils/logging';
 import { getRepoConnection } from '../utils/repo-utils';
 import {
-    getContentFromCustomPath,
-    hasValidCustomPath,
-} from '../paths/custom-paths/custom-path-utils';
-
-const CUSTOM_PATH_PREFIX = '/start';
-
-const generateCustomPath = (content: Content<'no.nav.navno:form-intermediate-step'>) => {
-    const suggestedPath = `${CUSTOM_PATH_PREFIX}/${content._name}`;
-
-    const contentWithCustomPath = getContentFromCustomPath(suggestedPath);
-    if (
-        contentWithCustomPath.length > 1 ||
-        (contentWithCustomPath.length === 1 && contentWithCustomPath[0]._id !== content._id)
-    ) {
-        logger.critical(
-            `Content with customPath ${suggestedPath} already exists: ${contentWithCustomPath
-                .map((content) => content._path)
-                .join(', ')}`
-        );
-        return null;
-    }
-
-    return suggestedPath;
-};
+    formIntermediateStepGenerateCustomPath,
+    formIntermediateStepValidateCustomPath,
+} from '../paths/custom-paths/custom-path-special-types';
 
 const insertCustomPath = (req: XP.Request) => {
     const content = portalLib.getContent();
@@ -43,10 +21,8 @@ const insertCustomPath = (req: XP.Request) => {
         return;
     }
 
-    const currentCustomPath = hasValidCustomPath(content) ? content.data.customPath : null;
-    const correctCustomPath = generateCustomPath(content);
-
-    if (currentCustomPath === correctCustomPath) {
+    const currentCustomPath = content.data.customPath;
+    if (formIntermediateStepValidateCustomPath(currentCustomPath, content)) {
         return;
     }
 
@@ -55,7 +31,7 @@ const insertCustomPath = (req: XP.Request) => {
     repo.modify({
         key: content._id,
         editor: (content) => {
-            content.data.customPath = correctCustomPath;
+            content.data.customPath = formIntermediateStepGenerateCustomPath(content);
             return content;
         },
     });
