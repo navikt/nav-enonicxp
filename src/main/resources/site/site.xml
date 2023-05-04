@@ -23,6 +23,9 @@
         <mapping controller="/lib/controllers/form-intermediate-step-controller.js">
             <match>type:'no.nav.navno:form-intermediate-step'</match>
         </mapping>
+        <mapping controller="/lib/controllers/form-details-controller.js">
+            <match>type:'no.nav.navno:form-details'</match>
+        </mapping>
         <mapping controller="/lib/controllers/frontend-proxy.js">
             <match>
                 type:'^(?!(portal:page-template)|(media:(document|image|vector|text|video))).+'
