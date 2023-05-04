@@ -8,13 +8,28 @@
         <field-set>
             <label>Piktogram</label>
             <items>
-                <mixin name="illustration" />
+                <mixin name="illustration"/>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Målgruppe</label>
+            <items>
+                <mixin name="audience"/>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Kort-url</label>
+            <items>
+                <input name="customPath" type="CustomSelector">
+                    <label>Må starte med '/start/[målgruppe]'</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <service>customPathSelector</service>
+                        <param value="type">formIntermediateStep</param>
+                    </config>
+                </input>
             </items>
         </field-set>
         <mixin name="form-intermediate-step-data"/>
-        <input name="customPath" type="TextLine">
-            <label>Kort-url (settes automatisk for mellomsteg, skal ikke endres manuelt)</label>
-            <occurrences minimum="0" maximum="1"/>
-        </input>
     </form>
 </content-type>
