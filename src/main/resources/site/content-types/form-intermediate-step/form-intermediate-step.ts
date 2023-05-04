@@ -11,7 +11,7 @@ export interface FormIntermediateStep {
   audience: "person" | "employer" | "provider";
 
   /**
-   * Må starte med '/start/[målgruppe]'
+   * Må begynne med '/start/[målgruppe dersom ikke privatperson]'
    */
   customPath: string;
 

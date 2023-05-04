@@ -37,9 +37,41 @@ export interface FormDetails {
             label?: string;
 
             /**
-             * URL til skjema
+             * Lenke til skjema
              */
-            url?: string;
+            link:
+              | {
+                  /**
+                   * Selected
+                   */
+                  _selected: "internal";
+
+                  /**
+                   * Lenke til mellomsteg
+                   */
+                  internal: {
+                    /**
+                     * Velg mellomsteg
+                     */
+                    target: string;
+                  };
+                }
+              | {
+                  /**
+                   * Selected
+                   */
+                  _selected: "external";
+
+                  /**
+                   * Direkte lenke til skjema
+                   */
+                  external: {
+                    /**
+                     * URL
+                     */
+                    url: string;
+                  };
+                };
           }>;
         };
       }
@@ -61,9 +93,41 @@ export interface FormDetails {
             label?: string;
 
             /**
-             * URL til skjema
+             * Lenke til skjema
              */
-            url?: string;
+            link:
+              | {
+                  /**
+                   * Selected
+                   */
+                  _selected: "internal";
+
+                  /**
+                   * Lenke til mellomsteg
+                   */
+                  internal: {
+                    /**
+                     * Velg mellomsteg
+                     */
+                    target: string;
+                  };
+                }
+              | {
+                  /**
+                   * Selected
+                   */
+                  _selected: "external";
+
+                  /**
+                   * Direkte lenke til skjema
+                   */
+                  external: {
+                    /**
+                     * URL
+                     */
+                    url: string;
+                  };
+                };
 
             /**
              * Klage- eller anketype
@@ -90,9 +154,41 @@ export interface FormDetails {
             label?: string;
 
             /**
-             * URL til skjema
+             * Lenke til skjema
              */
-            url?: string;
+            link:
+              | {
+                  /**
+                   * Selected
+                   */
+                  _selected: "internal";
+
+                  /**
+                   * Lenke til mellomsteg
+                   */
+                  internal: {
+                    /**
+                     * Velg mellomsteg
+                     */
+                    target: string;
+                  };
+                }
+              | {
+                  /**
+                   * Selected
+                   */
+                  _selected: "external";
+
+                  /**
+                   * Direkte lenke til skjema
+                   */
+                  external: {
+                    /**
+                     * URL
+                     */
+                    url: string;
+                  };
+                };
           }>;
         };
       }
