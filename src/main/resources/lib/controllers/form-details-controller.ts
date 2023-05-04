@@ -2,7 +2,6 @@ import * as portalLib from '/lib/xp/portal';
 import { Content } from '/lib/xp/content';
 import { frontendProxy } from './frontend-proxy';
 import { forceArray } from '../utils/array-utils';
-import { logger } from '../utils/logging';
 import { getRepoConnection } from '../utils/repo-utils';
 
 const migrateOldUrlField = (req: XP.Request) => {
@@ -13,19 +12,24 @@ const migrateOldUrlField = (req: XP.Request) => {
 
     const formType = forceArray(content.data?.formType);
 
-    const didMigrate = formType.some((formTypeField) => {
+    let didMigrate = false;
+
+    formType.forEach((formTypeField) => {
         const { _selected } = formTypeField;
         const variations = forceArray((formTypeField as any)[_selected].variations);
-        return variations.some((variation) => {
+        return variations.forEach((variation) => {
             if (!variation.url) {
-                return false;
+                return;
             }
 
-            variation._selected = 'external';
-            variation.external = { url: variation.url };
+            variation.link = {
+                _selected: 'external',
+                external: { url: variation.url },
+            };
+
             variation.url = null;
 
-            return true;
+            didMigrate = true;
         });
     });
 
@@ -38,10 +42,7 @@ const migrateOldUrlField = (req: XP.Request) => {
     repo.modify<Content<'no.nav.navno:form-details'>>({
         key: content._id,
         editor: (content) => {
-            logger.info(`Migrating formtype from ${JSON.stringify(content.data.formType)}`);
-            logger.info(`Migrating formtype to ${JSON.stringify(formType)}`);
             content.data.formType = formType;
-
             return content;
         },
     });
