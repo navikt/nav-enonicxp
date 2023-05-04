@@ -34,7 +34,7 @@ export interface FormDetails {
             /**
              * Knappetekst
              */
-            label?: string;
+            label: string;
 
             /**
              * Lenke til skjema
@@ -90,7 +90,7 @@ export interface FormDetails {
             /**
              * Knappetekst
              */
-            label?: string;
+            label: string;
 
             /**
              * Lenke til skjema
@@ -151,7 +151,7 @@ export interface FormDetails {
             /**
              * Knappetekst
              */
-            label?: string;
+            label: string;
 
             /**
              * Lenke til skjema
