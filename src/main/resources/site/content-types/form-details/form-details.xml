@@ -34,6 +34,7 @@
                                         <input name="label" type="TextLine">
                                             <label>Knappetekst</label>
                                             <help-text>Bør være kort. Alternativt flere korte ord.</help-text>
+                                            <occurrences minimum="1" maximum="1"/>
                                         </input>
                                         <mixin name="form-details-link"/>
                                     </items>
@@ -49,6 +50,7 @@
                                         <input name="label" type="TextLine">
                                             <label>Knappetekst</label>
                                             <help-text>Bør være kort. Alternativt flere korte ord.</help-text>
+                                            <occurrences minimum="1" maximum="1"/>
                                         </input>
                                         <mixin name="form-details-link"/>
                                         <input type="ComboBox" name="type">
@@ -76,6 +78,7 @@
                                         <input name="label" type="TextLine">
                                             <label>Knappetekst</label>
                                             <help-text>Bør være kort. Alternativt flere korte ord.</help-text>
+                                            <occurrences minimum="1" maximum="1"/>
                                         </input>
                                         <mixin name="form-details-link"/>
                                     </items>
