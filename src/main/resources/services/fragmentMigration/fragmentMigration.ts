@@ -30,7 +30,7 @@ type LocaleCorrelation = { probableLocales: string[]; localeCorrelation: Record<
 
 type FragmentLocaleCorrelationMap = Record<
     string,
-    { scoreMap: LocaleScoreMap; correlations: LocaleCorrelation }
+    { fragment: FragmentDataShort; scoreMap: LocaleScoreMap; correlations: LocaleCorrelation }
 >;
 
 const transformFragment = (content: FragmentContent) => ({
@@ -276,6 +276,7 @@ const getLocaleCorrelation = () => {
         fragmentIdsInContent.forEach((fragmentId) => {
             if (!acc[fragmentId]) {
                 acc[fragmentId] = {
+                    fragment: transformFragment(fragmentMap[fragmentId].fragment),
                     scoreMap: {},
                     correlations: { localeCorrelation: {}, probableLocales: [] },
                 };
@@ -340,15 +341,24 @@ const getLocaleCorrelation = () => {
         contentMap
     );
 
+    const undeterminedFragments = fragmentIdLocaleBuckets.undetermined.map((fragmentId) =>
+        transformFragment(fragmentMap[fragmentId].fragment)
+    );
+
     return {
         fragmentLocaleCorrelationDataMap,
         fragmentIdLocaleBuckets,
         nnLikelyConnections,
         enLikelyConnections,
+        undeterminedFragments,
     };
 };
 
-let result = {};
+const result = {
+    start: 0,
+    data: {},
+    end: 0,
+};
 
 export const get = (req: XP.CustomSelectorServiceRequest) => {
     if (!validateServiceSecretHeader(req)) {
@@ -365,12 +375,15 @@ export const get = (req: XP.CustomSelectorServiceRequest) => {
             if (subPath === 'runJob') {
                 taskLib.executeFunction({
                     func: () => {
-                        const start = Date.now();
                         logger.info('Running locale correlation job!');
-                        result = getLocaleCorrelation();
+
+                        result.start = Date.now();
+                        result.data = getLocaleCorrelation();
+                        result.end = Date.now();
+
                         logger.info(
                             `Locale correlation job finished after ${
-                                (Date.now() - start) / 1000
+                                (result.end - result.start) / 1000
                             } seconds!`
                         );
                     },
