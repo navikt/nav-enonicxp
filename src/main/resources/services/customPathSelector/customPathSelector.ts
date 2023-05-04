@@ -11,7 +11,6 @@ import { customSelectorErrorIcon, customSelectorWarningIcon } from '../custom-se
 import { runInContext } from '../../lib/context/run-in-context';
 import { forceArray } from '../../lib/utils/array-utils';
 import {
-    FORM_INTERMEDIATE_STEP_CUSTOM_PATH_PREFIX,
     formIntermediateStepGenerateCustomPath,
     formIntermediateStepValidateCustomPath,
 } from '../../lib/paths/custom-paths/custom-path-special-types';
@@ -126,7 +125,7 @@ const validateFormIntermediateStepResult = (result: XP.CustomSelectorServiceResp
 
     return generateErrorHit(
         `Feil: "${result.id}" er ikke en gyldig url for mellomsteg`,
-        `URL'en må begynne med "${FORM_INTERMEDIATE_STEP_CUSTOM_PATH_PREFIX}" og inkludere målgruppe dersom denne ikke er person. Eksempel: ${examplePath}`
+        `Eksempel på gyldig url: ${examplePath}`
     );
 };
 
