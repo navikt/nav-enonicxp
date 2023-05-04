@@ -3,7 +3,6 @@ log.info('Started running main');
 import './lib/polyfills';
 
 import * as clusterLib from '/lib/xp/cluster';
-import { startOfficeInfoPeriodicUpdateSchedule } from './lib/officeInformation';
 import { activateCacheEventListeners } from './lib/cache/invalidate-event-handlers';
 import {
     activateSitemapDataUpdateEventListener,
@@ -39,7 +38,6 @@ if (clusterLib.isMaster()) {
     initSearchRepo();
     startFailsafeSchedule();
     generateSitemapDataAndActivateSchedule();
-    startOfficeInfoPeriodicUpdateSchedule();
     createOfficeBranchFetchSchedule();
 }
 
