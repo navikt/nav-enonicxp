@@ -5,7 +5,7 @@ const legacyContentToRedirect = ['no.nav.navno:office-information'];
 
 export const resolveLegacyContentRedirects = (content: contentLib.Content) => {
     if (!legacyContentToRedirect.includes(content.type)) {
-        return null;
+        return;
     }
 
     if (content.type === 'no.nav.navno:office-information') {
@@ -28,14 +28,17 @@ export const resolveLegacyContentRedirects = (content: contentLib.Content) => {
             },
         });
 
+        if (foundOfficeContent.hits.length === 0) {
+            return;
+        }
+
         // Try and use the new office branch name, but fall back to the old name if it
         // will return a 404 after redirect.
-        const officeName =
-            foundOfficeContent.hits.length > 0 ? foundOfficeContent.hits[0]._name : oldName;
+        const office = foundOfficeContent.hits[0];
 
         return transformToRedirectResponse({
             content,
-            target: `/kontor/${officeName}`,
+            target: office._path,
             type: 'internal',
             isPermanent: true,
         });
