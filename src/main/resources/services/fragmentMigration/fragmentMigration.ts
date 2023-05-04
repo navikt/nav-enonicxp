@@ -8,6 +8,7 @@ import { runInContext } from '../../lib/context/run-in-context';
 import { CONTENT_LOCALE_DEFAULT, CONTENT_ROOT_REPO_ID } from '../../lib/constants';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { forceArray, removeDuplicates } from '../../lib/utils/array-utils';
+import { logger } from '../../lib/utils/logging';
 
 type FragmentContent = Content<'portal:fragment'>;
 
@@ -364,7 +365,14 @@ export const get = (req: XP.CustomSelectorServiceRequest) => {
             if (subPath === 'runJob') {
                 taskLib.executeFunction({
                     func: () => {
+                        const start = Date.now();
+                        logger.info('Running locale correlation job!');
                         result = getLocaleCorrelation();
+                        logger.info(
+                            `Locale correlation job finished after ${
+                                (Date.now() - start) / 1000
+                            } seconds!`
+                        );
                     },
                     description: 'Determining fragment localization data',
                 });
