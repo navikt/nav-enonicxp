@@ -347,7 +347,6 @@ const getLocaleCorrelation = () => {
 
     return {
         fragmentLocaleCorrelationDataMap,
-        fragmentIdLocaleBuckets,
         nnLikelyConnections,
         enLikelyConnections,
         undeterminedFragments,
