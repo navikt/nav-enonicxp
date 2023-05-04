@@ -59,7 +59,7 @@ export interface ToolsPage {
           /**
            * Underkategori
            */
-          provider_audience: "doctor" | "other";
+          provider_audience: "doctor" | "dentist" | "optician" | "occupational_therapist" | "aid_supplier" | "measures_organizer" | "administrator" | "municipality" | "other";
         };
       };
 
