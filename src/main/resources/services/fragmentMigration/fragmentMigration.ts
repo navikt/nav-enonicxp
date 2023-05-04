@@ -166,21 +166,30 @@ const findPossibleConnections = (
 
                 const languages = forceArray((localizedContent.data as any)?.languages);
 
-                const defaultContentData = languages.reduce<ContentMapData | null>(
-                    (acc, languageId) => {
-                        const referencedContent = contentMap[languageId];
+                const defaultContentData =
+                    languages.reduce<ContentMapData | null>((acc, languageContentId) => {
+                        const referencedContent = contentMap[languageContentId];
                         if (referencedContent?.content.language === CONTENT_LOCALE_DEFAULT) {
                             return referencedContent;
                         }
                         return acc;
-                    },
-                    null
-                );
+                    }, null) ||
+                    Object.values(contentMap).find((contentData) => {
+                        return forceArray((contentData.content.data as any)?.languages).some(
+                            (languageContentId) => {
+                                return (
+                                    languageContentId === contentId &&
+                                    contentData.content.language === CONTENT_LOCALE_DEFAULT
+                                );
+                            }
+                        );
+                    });
 
-                if (
-                    !defaultContentData ||
-                    defaultContentData.content.type !== localizedContentData.content.type
-                ) {
+                if (!defaultContentData) {
+                    return acc;
+                }
+
+                if (defaultContentData.content.type !== localizedContentData.content.type) {
                     return acc;
                 }
 
@@ -297,8 +306,17 @@ const getLocaleCorrelation = () => {
             }
 
             const { probableLocales } = correlationData.correlations;
+            if (probableLocales.length > 1) {
+                acc.multiple.push(fragmentId);
+                return acc;
+            }
 
-            const localeKey = probableLocales.length === 1 ? probableLocales[0] : 'multiple';
+            const localeKey = probableLocales[0];
+            if (!localeKey) {
+                acc.undetermined.push(fragmentId);
+                return acc;
+            }
+
             if (!acc[localeKey]) {
                 acc[localeKey] = [];
             }
