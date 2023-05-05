@@ -8,9 +8,12 @@ export const resolveLegacyContentRedirects = (content: contentLib.Content) => {
         return;
     }
 
+    // Note: There are legacy office pages still in effect that also have the
+    // content type office-information. As long as the enhetNr doesn't match up
+    // with any office-branch content, the next function will pass by these
+    // office pages.
     if (content.type === 'no.nav.navno:office-information') {
         const { enhetNr } = content.data.enhet;
-        const oldName = content._name;
 
         const foundOfficeContent = contentLib.query({
             start: 0,
@@ -44,5 +47,5 @@ export const resolveLegacyContentRedirects = (content: contentLib.Content) => {
         });
     }
 
-    return content;
+    return;
 };
