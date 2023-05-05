@@ -23,8 +23,8 @@ type SourceAndTargetContent = { sourceContent: Content; targetBaseContent: Conte
 
 type LayerMigrationBatchJobResult = {
     status: string;
-    params: Params;
-    result: ReturnType<typeof migrateContentBatchToLayers>;
+    params: any;
+    result: any;
 };
 
 export type LayersMigrationResultCache = cacheLib.Cache & {

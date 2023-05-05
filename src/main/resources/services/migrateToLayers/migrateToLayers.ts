@@ -13,6 +13,10 @@ import {
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { generateUUID } from '../../lib/utils/uuid';
 import { URLS } from '../../lib/constants';
+import {
+    ContentMigrationParams,
+    migrateContentToLayer,
+} from '../../lib/localization/layers-migration/migrate-content-to-layer';
 
 type Params = {
     sourceLocale: string;
@@ -120,6 +124,49 @@ const runMigrationJob = (params: Params, jobId: string, dryRun?: boolean) => {
     });
 };
 
+const runPresetMigrationJob = (migrationParams: ContentMigrationParams[]) => {
+    const jobId = generateUUID();
+    const serviceUrl = portalLib.serviceUrl({ service: 'migrateToLayers' });
+    const jobStatusUrl = `${URLS.XP_ORIGIN}${serviceUrl}?status=${jobId}`;
+
+    logger.info(`Running layers migration job ${jobId} for ${migrationParams.length} contents`);
+
+    taskLib.executeFunction({
+        description: `Layers migration job ${jobId}`,
+        func: () => {
+            resultCache.put(jobId, {
+                status: `Migration job ${jobId} started`,
+                params: migrationParams,
+                result: [],
+            });
+
+            const start = Date.now();
+
+            const result = migrationParams.map(migrateContentToLayer);
+
+            const durationSec = (Date.now() - start) / 1000;
+            const withErrors = result.filter((result) => result.errorMsgs.length > 0);
+
+            resultCache.put(jobId, {
+                status: `Migration job ${jobId} completed in ${durationSec} sec. ${withErrors.length} contents had errors.`,
+                params: migrationParams,
+                result,
+            });
+        },
+    });
+
+    return {
+        status: 200,
+        body: {
+            msg: 'Started batch migration job!',
+            params: migrationParams,
+            jobId,
+            jobStatusUrl,
+        },
+        contentType: 'application/json',
+    };
+};
+
 const getJobStatus = (jobId: string) => {
     const jobStatus = resultCache.getIfPresent(jobId);
     if (!jobStatus) {
@@ -148,6 +195,21 @@ export const get = (req: XP.Request) => {
             },
             contentType: 'application/json',
         };
+    }
+
+    if (req.params.contentToMigrate) {
+        const contantToMigrateArray = parseJsonArray(req.params.contentToMigrate);
+        if (!contantToMigrateArray) {
+            return {
+                status: 400,
+                body: {
+                    message: 'Invalid parameter "contentToMigrate"',
+                },
+                contentType: 'application/json',
+            };
+        }
+
+        return runPresetMigrationJob(contantToMigrateArray);
     }
 
     if (req.params.status) {
