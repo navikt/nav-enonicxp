@@ -27,7 +27,7 @@
                             <default>https://www.nav.no/</default>
                             <occurrences minimum="1" maximum="1"/>
                             <config>
-                                <regexp>^https:\/\/([a-z0-9_\-.]*\.)?nav\.no($|\/).*</regexp>
+                                <regexp>^https?:\/\/.*</regexp>
                             </config>
                         </input>
                     </items>
