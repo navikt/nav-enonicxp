@@ -29,7 +29,7 @@ const selectedEnhetTypes: { [key: string]: boolean } = {
     KLAGE: true,
     KONTAKT: true,
     KONTROLL: true,
-    LOKAL: false,
+    LOKAL: true,
     OKONOMI: true,
     TILTAK: true,
     YTA: true,
