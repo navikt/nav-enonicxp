@@ -10,6 +10,7 @@ import {
 } from './lib/sitemap/sitemap';
 import { startReliableEventAckListener } from './lib/events/reliable-custom-events';
 import { updateClusterInfo } from './lib/utils/cluster-utils';
+import { startOfficeInfoPeriodicUpdateSchedule } from './lib/officeInformation';
 import { activateContentListItemUnpublishedListener } from './lib/contentlists/remove-unpublished';
 import { startFailsafeSchedule } from './lib/scheduling/scheduler-failsafe';
 import { activateCustomPathNodeListeners } from './lib/paths/custom-paths/custom-path-event-listeners';
@@ -38,6 +39,7 @@ if (clusterLib.isMaster()) {
     initSearchRepo();
     startFailsafeSchedule();
     generateSitemapDataAndActivateSchedule();
+    startOfficeInfoPeriodicUpdateSchedule();
     createOfficeBranchFetchSchedule();
 }
 
