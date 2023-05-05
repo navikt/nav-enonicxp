@@ -18,13 +18,14 @@ const migrateOldUrlField = (req: XP.Request) => {
         const { _selected } = formTypeField;
         const variations = forceArray((formTypeField as any)[_selected].variations);
         return variations.forEach((variation) => {
-            if (!variation.url) {
+            const { url } = variation;
+            if (!url) {
                 return;
             }
 
             variation.link = {
                 _selected: 'external',
-                external: { url: variation.url },
+                external: { url: url.toLowerCase().startsWith('http') ? url : `https://${url}` },
             };
 
             variation.url = null;
