@@ -1,4 +1,3 @@
-#import "../mixins/languagesFragment.graphql"
 #import "../richText/richTextFragment.graphql"
 #import "./contentListFragment.graphql"
 
@@ -17,8 +16,5 @@ fragment contentPressLandingPage on no_nav_navno_PressLandingPage {
         moreNewsUrl
         maxNewsCount
         maxShortcutsCount
-        languages {
-            ...languagesMixin
-        }
     }
 }

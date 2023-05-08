@@ -1,5 +1,0 @@
-fragment languagesMixin on Content {
-    _id
-    _path
-    language
-}

@@ -6,6 +6,7 @@ import { forceArray } from '../../../utils/array-utils';
 
 // Resolve targetPage content to a localized version matching the product details
 // language if such a version exists
+// TODO: This can be removed once we're migrated all the product pages to layers
 const getLocalizedTargetPageFromProductDetailsLink = (
     baseContentId: string,
     targetBaseContent: Content<any>
