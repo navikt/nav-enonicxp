@@ -1,13 +1,7 @@
 import { transformToRedirectResponse } from './resolve-redirects';
 import * as contentLib from '/lib/xp/content';
 
-const legacyContentToRedirect = ['no.nav.navno:office-information'];
-
 export const resolveLegacyContentRedirects = (content: contentLib.Content) => {
-    if (!legacyContentToRedirect.includes(content.type)) {
-        return;
-    }
-
     // Note: There are legacy office pages still in effect that also have the
     // content type office-information. As long as the enhetNr doesn't match up
     // with any office-branch content, the next function will pass by these
@@ -32,7 +26,7 @@ export const resolveLegacyContentRedirects = (content: contentLib.Content) => {
         });
 
         if (foundOfficeContent.hits.length === 0) {
-            return;
+            return null;
         }
 
         // Try and use the new office branch name, but fall back to the old name if it
@@ -47,5 +41,5 @@ export const resolveLegacyContentRedirects = (content: contentLib.Content) => {
         });
     }
 
-    return;
+    return null;
 };
