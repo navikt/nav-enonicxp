@@ -1,7 +1,8 @@
-import { transformToRedirectResponse } from './resolve-redirects';
 import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
+import { transformToRedirectResponse } from './resolve-redirects';
 
-export const resolveLegacyContentRedirects = (content: contentLib.Content) => {
+export const resolveLegacyContentRedirects = (content: Content) => {
     // Note: There are legacy office pages still in effect that also have the
     // content type office-information. As long as the enhetNr doesn't match up
     // with any office-branch content, the next function will pass by these
