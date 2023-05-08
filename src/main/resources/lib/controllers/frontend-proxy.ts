@@ -4,7 +4,7 @@ import { logger } from '../utils/logging';
 import { getLocaleFromRepoId } from '../localization/layers-data';
 import { stripPathPrefix } from '../paths/path-utils';
 
-const LOOKBACK_CHECK_PARAM = 'fromXp';
+const loopbackCheckParam = 'fromXp';
 
 const errorResponse = (url: string, status: number, message: string) => {
     const msg = `Failed to fetch from frontend: ${url} - ${status}: ${message}`;
@@ -19,6 +19,15 @@ const errorResponse = (url: string, status: number, message: string) => {
     };
 };
 
+// The legacy health check expects an html-response on /no/person
+// "Nyheter" must be part of the response!
+const healthCheckDummyResponse = () => {
+    return {
+        contentType: 'text/html; charset=UTF-8',
+        body: '<html lang="no"><head><meta charset="utf-8"><title>Nav.no</title></head><body><div>Hei, jeg er en ex-forside. Her var det blant annet Nyheter og nyheter.</div></body></html>',
+    };
+};
+
 // Proxy requests to XP to the frontend. Normally this will only be used in the portal-admin
 // content studio previews and from the error controller
 export const frontendProxy = (req: XP.Request, path?: string) => {
@@ -28,7 +37,7 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
         };
     }
 
-    const isLoopback = req.params[LOOKBACK_CHECK_PARAM];
+    const isLoopback = req.params[loopbackCheckParam];
     if (isLoopback) {
         logger.warning(`Loopback to XP detected from path ${req.rawPath}`);
         return {
@@ -36,6 +45,13 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
             body: `<div>Error: request to frontend looped back to XP</div>`,
             status: 200,
         };
+    }
+
+    // Ensures our legacy health-check still works after the old /no/person page is removed
+    // TODO: remove this asap after the health-check has been updated
+    if (req.mode === 'live' && req.url.endsWith('/no/person')) {
+        logger.info('Is the old health check still in use? (Yes it is!)');
+        return healthCheckDummyResponse();
     }
 
     const pathStartIndex = req.rawPath.indexOf(req.branch) + req.branch.length;
@@ -55,7 +71,7 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
             followRedirects: false,
             queryParams: {
                 ...req.params,
-                [LOOKBACK_CHECK_PARAM]: 'true',
+                [loopbackCheckParam]: 'true',
                 mode: req.mode,
                 locale: getLocaleFromRepoId(req.repositoryId),
             },
