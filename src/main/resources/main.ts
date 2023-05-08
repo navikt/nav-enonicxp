@@ -3,7 +3,6 @@ log.info('Started running main');
 import './lib/polyfills';
 
 import * as clusterLib from '/lib/xp/cluster';
-import { startOfficeInfoPeriodicUpdateSchedule } from './lib/officeInformation';
 import { activateCacheEventListeners } from './lib/cache/invalidate-event-handlers';
 import {
     activateSitemapDataUpdateEventListener,
@@ -11,6 +10,7 @@ import {
 } from './lib/sitemap/sitemap';
 import { startReliableEventAckListener } from './lib/events/reliable-custom-events';
 import { updateClusterInfo } from './lib/utils/cluster-utils';
+import { startOfficeInfoPeriodicUpdateSchedule } from './lib/officeInformation';
 import { activateContentListItemUnpublishedListener } from './lib/contentlists/remove-unpublished';
 import { startFailsafeSchedule } from './lib/scheduling/scheduler-failsafe';
 import { activateCustomPathNodeListeners } from './lib/paths/custom-paths/custom-path-event-listeners';
@@ -42,7 +42,6 @@ if (clusterLib.isMaster()) {
     startFailsafeSchedule();
     generateSitemapDataAndActivateSchedule();
     startOfficeInfoPeriodicUpdateSchedule();
-    // Todo: Activate this only when we're going live with the new office branch.
     createOfficeBranchFetchSchedule();
 }
 

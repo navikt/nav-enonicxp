@@ -18,7 +18,7 @@ export interface FormDetails {
   /**
    * Variasjoner
    */
-  formType:
+  formType: Array<
     | {
         /**
          * Selected
@@ -37,14 +37,41 @@ export interface FormDetails {
             label: string;
 
             /**
-             * URL til skjema
+             * Lenke til skjema
              */
-            url: string;
+            link:
+              | {
+                  /**
+                   * Selected
+                   */
+                  _selected: "internal";
 
-            /**
-             * Søknads- eller skjematype
-             */
-            type: "digital" | "paper";
+                  /**
+                   * Lenke til mellomsteg
+                   */
+                  internal: {
+                    /**
+                     * Velg mellomsteg
+                     */
+                    target: string;
+                  };
+                }
+              | {
+                  /**
+                   * Selected
+                   */
+                  _selected: "external";
+
+                  /**
+                   * Direkte lenke til skjema
+                   */
+                  external: {
+                    /**
+                     * URL
+                     */
+                    url: string;
+                  };
+                };
           }>;
         };
       }
@@ -58,9 +85,7 @@ export interface FormDetails {
          * Klage- og ankevariasjoner
          */
         complaint: {
-          /**
-           * Klage- og ankevariasjoner
-           */
+
           variations?: Array<{
             /**
              * Knappetekst
@@ -68,9 +93,41 @@ export interface FormDetails {
             label: string;
 
             /**
-             * URL til skjema
+             * Lenke til skjema
              */
-            url: string;
+            link:
+              | {
+                  /**
+                   * Selected
+                   */
+                  _selected: "internal";
+
+                  /**
+                   * Lenke til mellomsteg
+                   */
+                  internal: {
+                    /**
+                     * Velg mellomsteg
+                     */
+                    target: string;
+                  };
+                }
+              | {
+                  /**
+                   * Selected
+                   */
+                  _selected: "external";
+
+                  /**
+                   * Direkte lenke til skjema
+                   */
+                  external: {
+                    /**
+                     * URL
+                     */
+                    url: string;
+                  };
+                };
 
             /**
              * Klage- eller anketype
@@ -89,9 +146,7 @@ export interface FormDetails {
          * Ettersendelse
          */
         addendum: {
-          /**
-           * Ettersendelsesvariasjoner
-           */
+
           variations?: Array<{
             /**
              * Knappetekst
@@ -99,25 +154,43 @@ export interface FormDetails {
             label: string;
 
             /**
-             * URL til skjema
+             * Lenke til skjema
              */
-            url: string;
+            link:
+              | {
+                  /**
+                   * Selected
+                   */
+                  _selected: "internal";
 
-            /**
-             * Tittel
-             */
-            title?: string;
+                  /**
+                   * Lenke til mellomsteg
+                   */
+                  internal: {
+                    /**
+                     * Velg mellomsteg
+                     */
+                    target: string;
+                  };
+                }
+              | {
+                  /**
+                   * Selected
+                   */
+                  _selected: "external";
 
-            /**
-             * Ingress
-             */
-            ingress?: string;
-
-            /**
-             * Type ettersendelse
-             */
-            type: "addendum_digital" | "addendum_paper";
+                  /**
+                   * Direkte lenke til skjema
+                   */
+                  external: {
+                    /**
+                     * URL
+                     */
+                    url: string;
+                  };
+                };
           }>;
         };
-      };
+      }
+  >;
 }

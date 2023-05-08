@@ -8,6 +8,7 @@
     <x-data name="cmsStatus" optional="true" allowContentTypes="^$"/>
     <x-data name="menu-item" optional="true" allowContentTypes="^$"/>
     <x-data name="oldContentType" optional="true" allowContentTypes="^$"/>
+    <x-data name="layerMigration" optional="true" allowContentTypes="^$"/>
     <mappings>
         <mapping controller="/lib/controllers/site-info-controller.js">
             <!-- Match root path without query parameters -->
@@ -18,6 +19,12 @@
         </mapping>
         <mapping controller="/lib/controllers/content-page-with-sidemenus-controller.js">
             <match>type:'no.nav.navno:content-page-with-sidemenus'</match>
+        </mapping>
+        <mapping controller="/lib/controllers/form-intermediate-step-controller.js">
+            <match>type:'no.nav.navno:form-intermediate-step'</match>
+        </mapping>
+        <mapping controller="/lib/controllers/form-details-controller.js">
+            <match>type:'no.nav.navno:form-details'</match>
         </mapping>
         <mapping controller="/lib/controllers/frontend-proxy.js">
             <match>

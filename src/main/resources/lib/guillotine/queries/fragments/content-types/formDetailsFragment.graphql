@@ -1,29 +1,61 @@
+#import "../richText/richTextFragment.graphql"
+
 fragment contentFormDetails on no_nav_navno_FormDetails {
     dataAsJson
     data {
+        title
+        ingress(processHtml: { type: server }) {
+            ...richText
+        }
         formType {
             _selected
             application {
                 variations {
                     label
-                    url
-                    type
+                    link {
+                        _selected
+                         internal {
+                             target {
+                                 _path
+                             }
+                         }
+                        external {
+                            url
+                        }
+                    }
                 }
             }
             complaint {
                 variations {
                     label
-                    url
                     type
+                    link {
+                        _selected
+                        internal {
+                            target {
+                                _path
+                            }
+                        }
+                        external {
+                            url
+                        }
+                    }
                 }
             }
             addendum {
                 variations {
                     label
-                    title
-                    ingress
-                    url
-                    type
+                    link {
+                        _selected
+                        internal {
+                            target {
+                                _path
+                            }
+                        }
+                        external {
+                            url
+                        }
+                    }
                 }
             }
         }

@@ -1,7 +1,7 @@
 import * as taskLib from '/lib/xp/task';
 import thymeleafLib from '/lib/thymeleaf';
 import * as eventLib from '/lib/xp/event';
-import { runOfficeInfoUpdateTask } from '../lib/officeInformation';
+import { runOfficeBranchFetchTask } from '../lib/officeBranch';
 import { runInContext } from '../lib/context/run-in-context';
 import { frontendInvalidateAllAsync } from '../lib/cache/frontend-cache';
 import { requestSitemapUpdate } from '../lib/sitemap/sitemap';
@@ -21,7 +21,7 @@ const view = resolve('webapp.html');
 const validActions: ActionsMap = {
     norg: {
         description: 'Oppdater kontor-info fra norg',
-        callback: () => runOfficeInfoUpdateTask(false),
+        callback: () => runOfficeBranchFetchTask(),
     },
     wipeCache: {
         description: 'Slett frontend-cache',

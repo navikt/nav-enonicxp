@@ -129,6 +129,30 @@ fragment html_fragmentMacro on Macro {
                 processedHtml
                 macros {
                     ...macros
+                    # Allow 2 levels of nested fragment macros
+                    # (aaah so ugly, but there seems to be no support for recursive fragments)
+                    config {
+                        html_fragment {
+                            fragmentId
+                            processedHtml {
+                                processedHtml
+                                macros {
+                                    ...macros
+                                    config {
+                                        html_fragment {
+                                            fragmentId
+                                            processedHtml {
+                                                processedHtml
+                                                macros {
+                                                    ...macros
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

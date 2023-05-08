@@ -22,6 +22,7 @@ export const dynamicPageContentTypes: ContentTypeList = [
     `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
     `${APP_DESCRIPTOR}:tools-page`,
     `${APP_DESCRIPTOR}:dynamic-page`,
+    `${APP_DESCRIPTOR}:form-intermediate-step`,
     `${APP_DESCRIPTOR}:generic-page`,
     `${APP_DESCRIPTOR}:overview`,
     `${APP_DESCRIPTOR}:front-page`,
@@ -63,6 +64,7 @@ export const typesWithDeepReferences: ContentTypeList = [
     `${APP_DESCRIPTOR}:global-case-time-set`,
     `${APP_DESCRIPTOR}:product-details`,
     `${APP_DESCRIPTOR}:payout-dates`,
+    `${APP_DESCRIPTOR}:contact-information`,
 ];
 
 export const contentTypesWithBreadcrumbs: ContentTypeList = [
@@ -88,6 +90,7 @@ export const contentTypesWithBreadcrumbs: ContentTypeList = [
 export const contentTypesWithComponents: ContentTypeList = [
     ...dynamicPageContentTypes,
     `${APP_DESCRIPTOR}:product-details`,
+    `${APP_DESCRIPTOR}:office-branch`,
     'portal:page-template',
 ];
 
@@ -109,6 +112,7 @@ export const contentTypesRenderedByEditorFrontend: ContentTypeList = [
     `${APP_DESCRIPTOR}:global-case-time-set`,
     `${APP_DESCRIPTOR}:contact-information`,
     `${APP_DESCRIPTOR}:product-details`,
+    `${APP_DESCRIPTOR}:form-details`,
     `${APP_DESCRIPTOR}:office-branch`,
     `${APP_DESCRIPTOR}:payout-dates`,
     `${APP_DESCRIPTOR}:office-editorial-page`,

@@ -1,5 +1,4 @@
 import { Content } from '/lib/xp/content';
-import { ContentDescriptor, MediaDescriptor } from '../../types/content-types/content-config';
 import { ProductData } from '../../site/mixins/product-data/product-data';
 import {
     contentTypesWithProductDetails,
@@ -10,33 +9,14 @@ import { stringArrayToSet } from '../utils/array-utils';
 
 const contentTypeWithProductDetails = stringArrayToSet(_contentTypesWithProductDetails);
 
-export type OverviewPageIllustrationIcon = {
-    icon: {
-        type: MediaDescriptor;
-        mediaUrl: string;
-    };
-};
-
 export type OverviewPageProductData = {
     _id: string;
-    type: ContentDescriptor;
+    type: ContentTypeWithProductDetails;
     anchorId?: string;
     productDetailsPath?: string;
     path: string;
-    title: string;
-    sortTitle: string;
-    ingress: string;
-    audience: ProductData['audience'];
     language: string;
-    taxonomy: ProductData['taxonomy'];
-    area: ProductData['area'];
-    illustration: {
-        type: 'no.nav.navno:animated-icons';
-        data: {
-            icons: OverviewPageIllustrationIcon[];
-        };
-    };
-};
+} & Required<Pick<ProductData, 'title' | 'ingress' | 'audience' | 'sortTitle' | 'illustration'>>;
 
 export type DetailedOverviewType = Exclude<Overview['overviewType'], 'all_products'>;
 

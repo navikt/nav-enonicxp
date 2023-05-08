@@ -7,7 +7,7 @@ import { frontendProxy } from './frontend-proxy';
 import { logger } from '../utils/logging';
 import { NodeComponent } from '../../types/components/component-node';
 import { runInContext } from '../context/run-in-context';
-import { CONTENT_LOCALE_DEFAULT, CONTENT_ROOT_REPO_ID } from '../constants';
+import { CONTENT_LOCALE_DEFAULT } from '../constants';
 import { forceArray } from '../utils/array-utils';
 import { applyModifiedData } from '../utils/content-utils';
 
@@ -38,76 +38,74 @@ const getSituationsLayout = (
     return situationsLayouts[0];
 };
 
-const getRelevantSituationPages = (content: AreaPageNodeContent) =>
+const getSituationPages = (area: string, audience: string) =>
+    contentLib.query({
+        start: 0,
+        count: 1000,
+        contentTypes: ['no.nav.navno:situation-page'],
+        filters: {
+            boolean: {
+                must: [
+                    {
+                        hasValue: {
+                            field: 'data.area',
+                            values: [area],
+                        },
+                    },
+                    {
+                        hasValue: {
+                            field: 'data.audience',
+                            values: [audience],
+                        },
+                    },
+                ],
+                mustNot: [
+                    {
+                        hasValue: {
+                            field: 'x.no-nav-navno.previewOnly.previewOnly',
+                            values: [true],
+                        },
+                    },
+                ],
+            },
+        },
+    }).hits;
+
+// TODO: this can be removed after we've migrated these pages to layers
+const pageContainsLegacyLanguagesRef = (
+    defaultSituationPage: SituationPageContent,
+    localizedSituationPages: SituationPageContent[]
+) => {
+    return forceArray(defaultSituationPage.data.languages).some((languageVersionContentId) =>
+        localizedSituationPages.some(
+            (localizedContent) => localizedContent._id === languageVersionContentId
+        )
+    );
+};
+
+const getRelevantSituationPages = (areaPageNodeContent: AreaPageNodeContent) =>
     runInContext({ branch: 'master' }, () => {
-        const { language: requestedLanguage, data } = content;
+        const { language, data } = areaPageNodeContent;
         const { area, audience } = data;
 
-        const situationPages = contentLib.query({
-            start: 0,
-            count: 1000,
-            contentTypes: ['no.nav.navno:situation-page'],
-            filters: {
-                boolean: {
-                    must: [
-                        {
-                            hasValue: {
-                                field: 'data.area',
-                                values: [area],
-                            },
-                        },
-                        {
-                            hasValue: {
-                                field: 'data.audience',
-                                values: [audience],
-                            },
-                        },
-                        {
-                            hasValue: {
-                                field: 'language',
-                                values: [CONTENT_LOCALE_DEFAULT],
-                            },
-                        },
-                    ],
-                    mustNot: [
-                        {
-                            hasValue: {
-                                field: 'x.no-nav-navno.previewOnly.previewOnly',
-                                values: [true],
-                            },
-                        },
-                    ],
-                },
-            },
-        }).hits;
+        const situationPages = getSituationPages(area, audience);
 
-        if (requestedLanguage === CONTENT_LOCALE_DEFAULT) {
-            return situationPages;
+        const situationPagesLocalized = situationPages.filter(
+            (situationContent) => situationContent.language === language
+        );
+
+        if (language === CONTENT_LOCALE_DEFAULT) {
+            return situationPagesLocalized;
         }
 
-        // If a situation page is not available in the requested language
-        // we use the norwegian page instead as a fallback
-        const requestedLanguageSituationPages = situationPages.map((masterLanguagePage) => {
-            let requestedLanguagePage;
+        // If there are any default-language (ie non-localized) pages in the current layer, include them as well
+        const situationPagesFallback = situationPages.filter(
+            (situationContent) =>
+                situationContent.language === CONTENT_LOCALE_DEFAULT &&
+                !pageContainsLegacyLanguagesRef(situationContent, situationPagesLocalized)
+        );
 
-            forceArray(masterLanguagePage.data.languages).some((languageContentId) => {
-                const languageVersion = contentLib.get({ key: languageContentId });
-                if (
-                    languageVersion &&
-                    languageVersion.language === requestedLanguage &&
-                    languageVersion.type === 'no.nav.navno:situation-page'
-                ) {
-                    requestedLanguagePage = languageVersion;
-                    return true;
-                }
-
-                return false;
-            });
-
-            return requestedLanguagePage || masterLanguagePage;
-        });
-
-        return requestedLanguageSituationPages;
+        return [...situationPagesLocalized, ...situationPagesFallback];
     });
 
 const buildSituationCardPart = (path: string, target: string): SituationCardPartComponent => ({
@@ -205,16 +203,16 @@ const populateSituationsLayout = (req: XP.Request) => {
     }
 
     if (!content.data.area) {
-        logger.warning(`No area specified for area page - ${content._id}`);
+        logger.error(`No area specified for area page - ${content._id}`, true);
         return;
     }
 
     if (!content.data.audience) {
-        logger.warning(`No audience specified for area page - ${content._id}`);
+        logger.error(`No audience specified for area page - ${content._id}`, true);
         return;
     }
 
-    const repo = getRepoConnection({ repoId: CONTENT_ROOT_REPO_ID, branch: 'draft' });
+    const repo = getRepoConnection({ repoId: req.repositoryId, branch: 'draft' });
 
     const nodeContent = repo.get<AreaPageNodeContent>({ key: content._id });
     if (!nodeContent?.components) {

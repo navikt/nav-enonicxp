@@ -68,6 +68,8 @@ const getOverviewReferences = (content: Content) => {
         contentTypes: ['no.nav.navno:overview'],
     }).hits;
 
+    logger.info(`Found ${overviewPages.length} relevant overview pages`);
+
     return overviewPages;
 };
 
@@ -84,6 +86,34 @@ const getProductDetailsReferences = (content: Content) => {
     );
 
     return references;
+};
+
+// Editorial pages are merged into office-branch-pages, which in turn is cached.
+// Therefore, any changes to a editorial page must invalidate all office-branch-page cache.
+const getOfficeBranchPagesIfEditorial = (content: Content) => {
+    if (content.type !== 'no.nav.navno:office-editorial-page') {
+        return [];
+    }
+
+    const { language } = content;
+
+    const officeBranches = contentLib.query({
+        start: 0,
+        count: 1000,
+        contentTypes: ['no.nav.navno:office-branch'],
+        filters: {
+            boolean: {
+                must: {
+                    hasValue: {
+                        field: 'language',
+                        values: [language],
+                    },
+                },
+            },
+        },
+    }).hits;
+
+    return officeBranches;
 };
 
 // AreaPage references to Situation pages are set programatically, which does
@@ -109,7 +139,54 @@ const getSituationAreaPageReferences = (content: Content) => {
         },
     }).hits;
 
+    logger.info(`Found ${areaPages.length} relevant area pages`);
+
     return areaPages;
+};
+
+// Contact-option parts for chat which does not have a sharedContactInformation field set will have
+// a default option set via graphql schema creation callback.
+const getChatContactInfoReferences = (content: Content) => {
+    if (
+        content.type !== 'no.nav.navno:contact-information' ||
+        content.data.contactType._selected !== 'chat'
+    ) {
+        return [];
+    }
+
+    const pagesWithDefaultChatInfo = contentLib.query({
+        start: 0,
+        count: 1000,
+        filters: {
+            boolean: {
+                must: [
+                    {
+                        hasValue: {
+                            field: 'components.part.config.no-nav-navno.contact-option.contactOptions._selected',
+                            values: ['chat'],
+                        },
+                    },
+                    {
+                        hasValue: {
+                            field: 'language',
+                            values: [content.language],
+                        },
+                    },
+                    {
+                        notExists: {
+                            field: 'components.part.config.no-nav-navno.contact-option.contactOptions.chat.sharedContactInformation',
+                        },
+                    },
+                ],
+            },
+        },
+    }).hits;
+
+    logger.info(
+        `Found ${pagesWithDefaultChatInfo.length} references for chat contact info ${content._path}`
+    );
+
+    return pagesWithDefaultChatInfo;
 };
 
 // Some content relations are not defined through explicit references in XP. This includes references
@@ -125,6 +202,8 @@ const getCustomReferences = (content: Content | null) => {
         ...getOverviewReferences(content),
         ...getProductDetailsReferences(content),
         ...getSituationAreaPageReferences(content),
+        ...getOfficeBranchPagesIfEditorial(content),
+        ...getChatContactInfoReferences(content),
     ];
 };
 
@@ -219,6 +298,7 @@ const _findReferences = ({
     branch,
     references = {},
     referencesChecked = {},
+    withDeepSearch = true,
     depth = 0,
     deadline,
 }: {
@@ -226,10 +306,11 @@ const _findReferences = ({
     branch: RepoBranch;
     references?: ReferencesMap;
     referencesChecked?: Record<string, true>;
+    withDeepSearch?: boolean;
     depth?: number;
-    deadline: number;
+    deadline?: number;
 }): Content[] | null => {
-    if (Date.now() > deadline) {
+    if (deadline && Date.now() > deadline) {
         return null;
     }
 
@@ -253,22 +334,24 @@ const _findReferences = ({
         }
     });
 
-    newRefs.forEach((refContent) => {
-        if (!typesWithDeepReferences[refContent.type]) {
-            return;
-        }
+    if (withDeepSearch) {
+        newRefs.forEach((refContent) => {
+            if (!typesWithDeepReferences[refContent.type]) {
+                return;
+            }
 
-        _findReferences({
-            id: refContent._id,
-            branch: 'master',
-            depth: depth + 1,
-            references,
-            referencesChecked,
-            deadline,
+            _findReferences({
+                id: refContent._id,
+                branch: 'master',
+                depth: depth + 1,
+                references,
+                referencesChecked,
+                deadline,
+            });
         });
-    });
+    }
 
-    if (Date.now() > deadline) {
+    if (deadline && Date.now() > deadline) {
         return null;
     }
 
@@ -276,13 +359,24 @@ const _findReferences = ({
 };
 
 // Returns null if the search goes past the deadline timestamp
-export const findReferences = (id: string, branch: RepoBranch, deadline: number) => {
+export const findReferences = ({
+    id,
+    branch,
+    deadline,
+    withDeepSearch,
+}: {
+    id: string;
+    branch: RepoBranch;
+    deadline?: number;
+    withDeepSearch?: boolean;
+}) => {
     const start = Date.now();
 
     const references = _findReferences({
         id,
         branch,
         deadline,
+        withDeepSearch,
     });
 
     if (!references) {

@@ -4,6 +4,7 @@ import { CreationCallback } from '../../utils/creation-callback-utils';
 import { getPublicPath } from '../../../paths/public-path';
 import { getLocaleFromContext } from '../../../localization/locale-context';
 import { logger } from '../../../utils/logging';
+import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
 
 type Links = {
     contentId: string;
@@ -21,20 +22,25 @@ const resolvePublicPathsInLinks = (processedHtml: string, links?: Links[]) => {
         return processedHtml;
     }
 
+    const localeFromContext = getLocaleFromContext();
+    const baseContentId = getGuillotineContentQueryBaseContentId();
+
     return links.reduce((html, link) => {
         const { contentId, linkRef } = link;
         if (!contentId || !linkRef) {
             return html;
         }
 
-        const content = contentLib.get({ key: contentId });
-        if (!content) {
-            logger.warning(`Invalid reference to contentId ${contentId} in html-area`, true);
+        const targetContent = contentLib.get({ key: contentId });
+        if (!targetContent) {
+            logger.warning(
+                `Invalid reference to contentId ${contentId} in html-area on [${localeFromContext}] ${baseContentId}`,
+                true
+            );
             return html;
         }
 
-        const locale = getLocaleFromContext();
-        const publicPath = getPublicPath(content, locale);
+        const publicPath = getPublicPath(targetContent, localeFromContext);
 
         return html.replace(
             new RegExp(`<a href="([^"]*)" data-link-ref="${linkRef}"`, 'g'),

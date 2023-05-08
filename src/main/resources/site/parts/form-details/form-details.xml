@@ -10,6 +10,27 @@
                 <service>selectedFormDetails</service>
             </config>
         </input>
+        <field-set>
+            <label>Tilpass visning</label>
+            <items>
+                <input name="showTitle" type="CheckBox">
+                    <label>Vis tittel</label>
+                    <default>checked</default>
+                </input>
+                <input name="showIngress" type="CheckBox">
+                    <label>Vis ingress</label>
+                    <default>checked</default>
+                </input>
+                <input name="showApplications" type="CheckBox">
+                    <label>Vis inngang til søknad</label>
+                    <default>checked</default>
+                </input>
+                <input name="showAddendums" type="CheckBox">
+                    <label>Vis inngang til ettersendelse</label>
+                    <default>checked</default>
+                </input>
+            </items>
+        </field-set>
     </form>
     <config>
         <allow-on-content-type>${app}:content-page-with-sidemenus</allow-on-content-type>

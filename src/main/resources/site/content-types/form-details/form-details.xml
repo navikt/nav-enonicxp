@@ -16,13 +16,13 @@
                 <input name="title" type="TextLine">
                     <label>Tittel</label>
                 </input>
-                <input name="ingress" type="TextArea">
+                <input name="ingress" type="HtmlArea">
                     <label>Ingress</label>
                 </input>
                 <option-set name="formType">
                     <label>Variasjoner</label>
-                    <occurrences minimum="1" maximum="1"/>
-                    <help-text>Velg hva slags type variasjon du vil lage - søknad, klage eller ettersendelse.</help-text>
+                    <occurrences minimum="1" maximum="0"/>
+                    <help-text>Velg hva slags type variasjon du vil lage - søknad, klage eller ettersendelse. For kun redaksjonell tekst kan du la være å fylle inn felter for søknadsvariasjonen.</help-text>
                     <options minimum="1" maximum="1">
                         <option name="application">
                             <label>Søknad / skjema</label>
@@ -33,25 +33,10 @@
                                     <items>
                                         <input name="label" type="TextLine">
                                             <label>Knappetekst</label>
-                                            <occurrences minimum="1" maximum="1" />
                                             <help-text>Bør være kort. Alternativt flere korte ord.</help-text>
+                                            <occurrences minimum="1" maximum="1"/>
                                         </input>
-                                        <input name="url" type="TextLine">
-                                            <label>URL til skjema</label>
-                                            <occurrences minimum="1" maximum="1" />
-                                        </input>
-                                        <input type="ComboBox" name="type">
-                                            <label>Søknads- eller skjematype</label>
-                                            <occurrences minimum="1" maximum="1"/> 
-                                            <config>  
-                                                <option value="digital"> 
-                                                    Digital
-                                                </option>
-                                                <option value="paper"> 
-                                                    Papir
-                                                </option>
-                                            </config>
-                                        </input>
+                                        <mixin name="form-details-link"/>
                                     </items>
                                 </item-set>
                             </items>
@@ -60,22 +45,18 @@
                             <label>Klage- og ankevariasjoner</label>
                             <items>
                                 <item-set name="variations">
-                                    <label>Klage- og ankevariasjoner</label>
                                     <occurrences minimum="0" maximum="0"/>
                                     <items>
                                         <input name="label" type="TextLine">
                                             <label>Knappetekst</label>
-                                             <occurrences minimum="1" maximum="1" />
                                             <help-text>Bør være kort. Alternativt flere korte ord.</help-text>
+                                            <occurrences minimum="1" maximum="1"/>
                                         </input>
-                                        <input name="url" type="TextLine">
-                                            <label>URL til skjema</label>
-                                            <occurrences minimum="1" maximum="1" />
-                                        </input>
+                                        <mixin name="form-details-link"/>
                                         <input type="ComboBox" name="type">
                                             <label>Klage- eller anketype</label>
                                             <occurrences minimum="1" maximum="1"/> 
-                                            <config>  
+                                            <config>
                                                 <option value="complaint"> 
                                                     Klage
                                                 </option>
@@ -92,36 +73,14 @@
                             <label>Ettersendelse</label>
                             <items>
                                 <item-set name="variations">
-                                    <label>Ettersendelsesvariasjoner</label>
                                     <occurrences minimum="0" maximum="0"/>
                                     <items>
                                         <input name="label" type="TextLine">
                                             <label>Knappetekst</label>
-                                             <occurrences minimum="1" maximum="1" />
                                             <help-text>Bør være kort. Alternativt flere korte ord.</help-text>
+                                            <occurrences minimum="1" maximum="1"/>
                                         </input>
-                                        <input name="url" type="TextLine">
-                                            <label>URL til skjema</label>
-                                            <occurrences minimum="1" maximum="1" />
-                                        </input>
-                                        <input name="title" type="TextLine">
-                                            <label>Tittel</label>
-                                        </input>
-                                        <input name="ingress" type="TextArea">
-                                            <label>Ingress</label>
-                                        </input>
-                                        <input type="ComboBox" name="type">
-                                            <label>Type ettersendelse</label>
-                                            <occurrences minimum="1" maximum="1"/> 
-                                            <config>  
-                                                <option value="addendum_digital"> 
-                                                    Ettersendelse digital
-                                                </option>
-                                                <option value="addendum_paper"> 
-                                                    Ettersendelse papir
-                                                </option>
-                                            </config>
-                                        </input>
+                                        <mixin name="form-details-link"/>
                                     </items>
                                 </item-set>
                             </items>
