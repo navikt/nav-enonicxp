@@ -1,13 +1,9 @@
-#import "../mixins/languagesFragment.graphql"
 #import "../mixins/animatedIconsTargetFragment.graphql"
 #import "../mixins/imageInlineFragment.graphql"
 
 fragment contentOverviewPage on no_nav_navno_Overview {
     dataAsJson
     data {
-        languages {
-            ...languagesMixin
-        }
         illustration {
             ...animatedIconsTargetMixin
         }
