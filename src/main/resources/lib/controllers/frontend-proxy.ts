@@ -55,8 +55,8 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
 
     const pathStartIndex = req.rawPath.indexOf(req.branch) + req.branch.length;
     const contentPath = path || stripPathPrefix(req.rawPath.slice(pathStartIndex));
-    const frontendUrl = `${URLS.FRONTEND_ORIGIN}${
-        req.branch === 'draft' ? '/draft' : ''
+    const frontendUrl = `${
+        req.branch === 'draft' ? `${URLS.FRONTEND_PREVIEW_ORIGIN}/draft` : URLS.FRONTEND_ORIGIN
     }${contentPath}`;
 
     try {
