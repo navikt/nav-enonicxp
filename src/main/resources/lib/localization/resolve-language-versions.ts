@@ -85,10 +85,12 @@ const getLegacyLanguages = (baseContent: Content, branch: RepoBranch): Content[]
 
         if (languageContent.language === CONTENT_LOCALE_DEFAULT) {
             const fromLayers = getLayersLanguages(languageContent, branch, CONTENT_LOCALE_DEFAULT);
-            return [...acc, ...fromLayers, languageContent];
+            acc.push(...fromLayers);
         }
 
-        return [...acc, languageContent];
+        acc.push(languageContent);
+
+        return acc;
     }, []);
 };
 
