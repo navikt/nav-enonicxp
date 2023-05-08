@@ -46,12 +46,12 @@ export const formIntermediateStepGenerateCustomPath = (
         contentWithCustomPath.length > 1 ||
         (contentWithCustomPath.length === 1 && contentWithCustomPath[0]._id !== content._id)
     ) {
-        logger.critical(
+        logger.error(
             `Content with customPath ${suggestedPath} already exists: ${contentWithCustomPath
                 .map((content) => content._path)
                 .join(', ')}`
         );
-        return null;
+        return `${suggestedPath}-${content._id}`;
     }
 
     return suggestedPath;
