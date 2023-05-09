@@ -5,19 +5,30 @@ import { processAllOfficeBranches, fetchAllOfficeBranchDataFromNorg } from './up
 import { runInContext } from '../context/run-in-context';
 
 const OFFICE_BRANCH_FETCH_TASK_NAME = 'no.nav.navno:update-office-branch';
-
 const CRON_SCHEDULE = app.config.env === 'localhost' ? '20 * * * *' : '* * * * *';
+
+const MAX_FAILURE_COUNT_BEFORE_CRITICAL = 10;
+
+let consecutiveFetchFailureCount = 0;
 
 export const runOfficeBranchFetchTask = () => {
     const officeBranches = fetchAllOfficeBranchDataFromNorg();
 
     if (!officeBranches) {
-        logger.critical('OfficeImporting: Failed to fetch office branch from norg2');
+        consecutiveFetchFailureCount++;
+        if (consecutiveFetchFailureCount % MAX_FAILURE_COUNT_BEFORE_CRITICAL === 0) {
+            logger.critical(
+                `Failed to fetch office branch data from norg2 on the last ${consecutiveFetchFailureCount} attempts!`
+            );
+        }
+
         return;
     }
 
+    consecutiveFetchFailureCount = 0;
+
     logger.info(
-        `OfficeImporting: Fetched ${officeBranches.length} office branches from norg2, updating site data...`
+        `Fetched ${officeBranches.length} office branches from norg2, updating site data...`
     );
 
     runInContext({ repository: CONTENT_ROOT_REPO_ID, branch: 'draft', asAdmin: true }, () =>
