@@ -42,7 +42,7 @@ const createImageAsset = (imageUrl: string, targetPath: string) => {
 };
 
 const fetchMetaDataFromQbrick = (accountId: number, mediaId: string) => {
-    const qbrickURL = ` https://video.qbrick.com/api/v1/public/accounts/${accountId}/medias/${mediaId}`;
+    const qbrickURL = `https://video.qbrick.com/api/v1/public/accounts/${accountId}/medias/${mediaId}`;
 
     try {
         const response = httpClient.request({
