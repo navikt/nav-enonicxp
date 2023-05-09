@@ -81,7 +81,7 @@ const updateVideoContentWithMetaData = (content: Content<'no.nav.navno:video'>) 
 
     const qbrickMetadata = fetchMetaDataFromQbrick(accountId, mediaId);
 
-    if (!qbrickMetadata || !qbrickMetadata.duration || !qbrickMetadata.imageURl) {
+    if (!qbrickMetadata || !(qbrickMetadata.duration && qbrickMetadata.imageURl)) {
         return;
     }
 
