@@ -6,6 +6,8 @@ import { runInContext } from '../context/run-in-context';
 
 const OFFICE_BRANCH_FETCH_TASK_NAME = 'no.nav.navno:update-office-branch';
 
+const CRON_SCHEDULE = app.config.env === 'localhost' ? '20 * * * *' : '* * * * *';
+
 export const runOfficeBranchFetchTask = () => {
     const officeBranches = fetchAllOfficeBranchDataFromNorg();
 
@@ -29,7 +31,7 @@ export const createOfficeBranchFetchSchedule = () => {
         jobDescription: 'Fetches office branches from norg and updates into XP as hourly schedule',
         jobSchedule: {
             type: 'CRON',
-            value: '* * * * *',
+            value: CRON_SCHEDULE,
             timeZone: 'GMT+2:00',
         },
         taskDescriptor: OFFICE_BRANCH_FETCH_TASK_NAME,
