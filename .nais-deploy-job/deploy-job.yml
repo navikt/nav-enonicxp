@@ -16,3 +16,4 @@ spec:
     outbound:
       external:
         - host: {{ xpAdminHost }}
+        - host: "https://video.qbrick.com"
