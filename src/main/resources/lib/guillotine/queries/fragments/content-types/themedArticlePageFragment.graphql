@@ -1,4 +1,3 @@
-#import "../mixins/languagesFragment.graphql"
 #import "../mixins/animatedIconsTargetFragment.graphql"
 
 fragment contentThemedArticlePage on no_nav_navno_ThemedArticlePage {
@@ -6,9 +5,6 @@ fragment contentThemedArticlePage on no_nav_navno_ThemedArticlePage {
     data {
         area
         taxonomy
-        languages {
-            ...languagesMixin
-        }
         illustration {
             ...animatedIconsTargetMixin
         }

@@ -21,6 +21,7 @@ import { contentTypesRenderedByEditorFrontend } from '../../lib/contenttype-list
 import { stringArrayToSet } from '../../lib/utils/array-utils';
 
 import { resolveLegacyContentRedirects } from './resolve-legacy-content-redirects';
+import { getContentFromCustomPath } from '../../lib/paths/custom-paths/custom-path-utils';
 
 const contentTypesForGuillotineQuery = stringArrayToSet(contentTypesRenderedByEditorFrontend);
 
@@ -117,7 +118,12 @@ const resolveContentStudioRequest = (
     const localeActual = isValidLocale(locale) ? locale : getLayersData().defaultLocale;
 
     return runInLocaleContext({ locale: localeActual, branch }, () => {
-        const content = contentLib.get({ key: idOrPathRequested });
+        const content =
+            contentLib.get({ key: idOrPathRequested }) ||
+            getContentFromCustomPath(idOrPathRequested).find(
+                // Allow requests to a customPath from CS, as long as it is unique
+                (contentWithCustomPath, _, array) => array.length === 1
+            );
         if (!content) {
             return null;
         }

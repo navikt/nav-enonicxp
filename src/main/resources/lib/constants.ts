@@ -17,6 +17,13 @@ const frontendOrigins: EnvRecord = {
     localhost: 'http://localhost:3000',
 };
 
+const frontendPreviewOrigins: EnvRecord = {
+    p: 'https://www.nav.no',
+    dev: 'https://www-editor.ekstern.dev.nav.no',
+    q6: 'https://www-editor-2.ekstern.dev.nav.no',
+    localhost: 'http://localhost:3000',
+};
+
 const revalidatorProxyOrigins: EnvRecord = {
     p: 'https://www.nav.no/revalidator-proxy',
     dev: 'https://nav-enonicxp-frontend-revalidator-proxy.intern.dev.nav.no',
@@ -31,9 +38,17 @@ const norgOfficeApiUrls: EnvRecord = {
     localhost: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
 };
 
+const xpOrigins: EnvRecord = {
+    p: 'https://www.nav.no',
+    dev: 'https://www.dev.nav.no',
+    q6: 'https://www-q6.nav.no',
+    localhost: 'http://localhost:8080',
+};
+
 export const URLS = Object.freeze({
     FRONTEND_ORIGIN: frontendOrigins[env],
-    XP_ORIGIN: app.config.xpOrigin,
+    FRONTEND_PREVIEW_ORIGIN: frontendPreviewOrigins[env],
+    XP_ORIGIN: xpOrigins[env],
     REVALIDATOR_PROXY_ORIGIN: revalidatorProxyOrigins[env],
     PORTAL_ADMIN_ORIGIN: portalAdminOrigins[env],
     NORG_OFFICE_API_URL: norgOfficeApiUrls[env],

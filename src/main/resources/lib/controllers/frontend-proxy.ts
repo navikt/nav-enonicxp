@@ -50,13 +50,14 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
     // Ensures our legacy health-check still works after the old /no/person page is removed
     // TODO: remove this asap after the health-check has been updated
     if (req.mode === 'live' && req.url.endsWith('/no/person')) {
+        logger.info('Is the old health check still in use? (Yes it is!)');
         return healthCheckDummyResponse();
     }
 
     const pathStartIndex = req.rawPath.indexOf(req.branch) + req.branch.length;
     const contentPath = path || stripPathPrefix(req.rawPath.slice(pathStartIndex));
-    const frontendUrl = `${URLS.FRONTEND_ORIGIN}${
-        req.branch === 'draft' ? '/draft' : ''
+    const frontendUrl = `${
+        req.branch === 'draft' ? `${URLS.FRONTEND_PREVIEW_ORIGIN}/draft` : URLS.FRONTEND_ORIGIN
     }${contentPath}`;
 
     try {

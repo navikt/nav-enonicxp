@@ -1,5 +1,4 @@
 #import "../contentCommonFragment.graphql"
-#import "../mixins/languagesFragment.graphql"
 #import "../mixins/menuListItemFragment.graphql"
 #import "../mixins/imageInlineFragment.graphql"
 #import "../richText/richTextFragment.graphql"
@@ -10,9 +9,6 @@ fragment contentMainArticle on no_nav_navno_MainArticle {
         ingress
         social
         hasTableOfContents
-        languages {
-            ...languagesMixin
-        }
         text(processHtml: { type: server }) {
             ...richText
         }

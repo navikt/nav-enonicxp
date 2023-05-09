@@ -1,5 +1,4 @@
 #import "../contentCommonFragment.graphql"
-#import "../mixins/languagesFragment.graphql"
 #import "./mainArticleFragment.graphql"
 
 fragment contentMainArticleChapter on no_nav_navno_MainArticleChapter {
@@ -20,10 +19,7 @@ fragment contentMainArticleChapter on no_nav_navno_MainArticleChapter {
             }
         }
     }
-    data(resolveLanguages: true) {
-        languages {
-            ...languagesMixin
-        }
+    data {
         article {
             ...contentCommon
             ...contentMainArticle
