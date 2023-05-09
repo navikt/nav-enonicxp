@@ -65,7 +65,11 @@ const fetchMetaDataFromQbrick = (accountId: number, mediaId: string) => {
         const imageURl = links.length > 0 ? links[0].href : null;
         return { duration, imageURl };
     } catch (e) {
-        log.error('Failed to fetch video data from Qbrick', e);
+        log.error(
+            `Failed to fetch video data from Qbrick. Attempted qBrick url: ${qbrickURL}. Error message: ${JSON.stringify(
+                e
+            )}`
+        );
         return null;
     }
 };
