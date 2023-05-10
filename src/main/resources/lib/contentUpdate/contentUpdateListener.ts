@@ -52,6 +52,8 @@ const fetchMetaDataFromQbrick = (accountId: number, mediaId: string) => {
             followRedirects: false,
         });
 
+        log.info(`Fetched qbrickdata from ${JSON.stringify(response)}`);
+
         if (response.status !== 200 || !response.body) {
             log.error(
                 `Failed to fetch video data from Qbrick. Response status: ${response.status}, Attempted qbruck url: ${qbrickURL}`
