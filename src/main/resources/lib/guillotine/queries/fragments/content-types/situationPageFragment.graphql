@@ -11,9 +11,6 @@ fragment contentSituationPage on no_nav_navno_SituationPage {
                 provider_audience
             }
         }
-        languages {
-            ...languagesMixin
-        }
         illustration {
             ...animatedIconsTargetMixin
         }

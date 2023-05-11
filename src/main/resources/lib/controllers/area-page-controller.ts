@@ -54,7 +54,7 @@ const getSituationPages = (area: string, audience: string) =>
                     },
                     {
                         hasValue: {
-                            field: 'data.audience',
+                            field: 'data.audience._selected',
                             values: [audience],
                         },
                     },
@@ -88,7 +88,7 @@ const getRelevantSituationPages = (areaPageNodeContent: AreaPageNodeContent) =>
         const { language, data } = areaPageNodeContent;
         const { area, audience } = data;
 
-        const situationPages = getSituationPages(area, audience);
+        const situationPages = getSituationPages(area, audience._selected);
 
         const situationPagesLocalized = situationPages.filter(
             (situationContent) => situationContent.language === language

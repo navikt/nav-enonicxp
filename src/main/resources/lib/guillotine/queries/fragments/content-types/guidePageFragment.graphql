@@ -10,9 +10,6 @@ fragment contentGuidePage on no_nav_navno_GuidePage {
                 provider_audience
             }
         }
-        languages {
-            ...languagesMixin
-        }
         illustration {
             ...animatedIconsTargetMixin
         }

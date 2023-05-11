@@ -9,10 +9,6 @@ fragment contentGenericPage on no_nav_navno_GenericPage {
                 provider_audience
             }
         }
-        languages {
-            ...languagesMixin
-        }
-        audience
         illustration {
             ...animatedIconsTargetMixin
         }

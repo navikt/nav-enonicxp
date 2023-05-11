@@ -1,4 +1,5 @@
 #import "../mixins/animatedIconsTargetFragment.graphql"
+#import "../mixins/
 
 fragment contentThemedArticlePage on no_nav_navno_ThemedArticlePage {
     dataAsJson
@@ -10,9 +11,6 @@ fragment contentThemedArticlePage on no_nav_navno_ThemedArticlePage {
             provider {
                 provider_audience
             }
-        }
-        languages {
-            ...languagesMixin
         }
         illustration {
             ...animatedIconsTargetMixin

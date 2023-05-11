@@ -194,7 +194,7 @@ const getProductPages = (
                 must: [
                     {
                         hasValue: {
-                            field: 'data.audience',
+                            field: 'data.audience._selected',
                             values: audience,
                         },
                     },
