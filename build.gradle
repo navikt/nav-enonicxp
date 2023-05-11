@@ -74,7 +74,7 @@ dependencies {
     include "com.enonic.xp:lib-task:${xpVersion}"
     include "com.enonic.xp:lib-value:${xpVersion}"
     include "com.enonic.xp:lib-websocket:${xpVersion}"
-    include "com.enonic.lib:lib-cache:2.1.1"
+    include "com.enonic.lib:lib-cache:2.2.0"
     include "com.enonic.lib:lib-graphql-playground:0.0.1"
     include "com.enonic.lib:lib-guillotine:6.0.5"
     include "com.enonic.lib:lib-http-client:2.4.0"

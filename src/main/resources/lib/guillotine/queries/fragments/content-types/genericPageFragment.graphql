@@ -1,4 +1,3 @@
-#import "../mixins/languagesFragment.graphql"
 #import "../mixins/animatedIconsTargetFragment.graphql"
 
 fragment contentGenericPage on no_nav_navno_GenericPage {
@@ -13,6 +12,7 @@ fragment contentGenericPage on no_nav_navno_GenericPage {
         languages {
             ...languagesMixin
         }
+        audience
         illustration {
             ...animatedIconsTargetMixin
         }

@@ -45,7 +45,7 @@ const deleteIfContentExists = (name: string) => {
 
     if (existingContentOnPath && existingContentOnPath.type !== officeInfoContentType) {
         logger.info(
-            `Content already exists on path ${updatedPath} - deleting to make room for office page`
+            `Content already exists on legacy officer path ${updatedPath} - deleting to make room for office page`
         );
 
         // Move the content to a temp path first, as deletion does not seem to be a synchronous operation
@@ -114,7 +114,7 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
                     updated.push(existingOffice._path);
                 } catch (e) {
                     logger.critical(
-                        `Failed to modify office info content ${existingOffice._path} - ${e}`
+                        `Failed to modify legacy office info content ${existingOffice._path} - ${e}`
                     );
                 }
             }
@@ -145,7 +145,7 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
                     });
                 } catch (e) {
                     logger.critical(
-                        `Failed to updated office information name for ${existingOffice._path} - ${e}`
+                        `Failed to updated legacy office information name for ${existingOffice._path} - ${e}`
                     );
                 }
             }
@@ -163,7 +163,7 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
                 });
                 newOffices.push(result._path);
             } catch (e) {
-                logger.critical(`Failed to create new office page for ${enhet.navn} - ${e}`);
+                logger.critical(`Failed to create new legacy office page for ${enhet.navn} - ${e}`);
             }
         }
     });
@@ -215,11 +215,13 @@ const fetchOfficeInfo = () => {
         if (response.status === 200 && response.body) {
             return JSON.parse(response.body);
         } else {
-            logger.error(`Bad response from norg2: ${response.status} - ${response.message}`);
+            logger.error(
+                `Bad response from legacy norg2: ${response.status} - ${response.message}`
+            );
             return null;
         }
     } catch (e) {
-        logger.error(`Exception from norg2 request: ${e}`);
+        logger.error(`Exception from legacy norg2 request: ${e}`);
         return null;
     }
 };
@@ -228,15 +230,15 @@ export const fetchAndUpdateOfficeInfo = (retry?: boolean) => {
     const newOfficeInfo = fetchOfficeInfo();
     if (!newOfficeInfo) {
         if (retry) {
-            logger.error('Failed to fetch office info, retrying in 5 minutes');
+            logger.error('Failed to fetch legacy office info, retrying in 5 minutes');
             runOfficeInfoUpdateTask(false, new Date(Date.now() + fiveMinutes).toISOString());
         } else {
-            logger.critical('Failed to fetch office info from norg2');
+            logger.critical('Failed to fetch legacy office info from norg2');
         }
         return;
     }
 
-    logger.info('Fetched office info from norg2, updating site data...');
+    logger.info('Fetched legacy office info from norg2, updating site data...');
 
     contextLib.run(
         {
@@ -255,7 +257,7 @@ export const runOfficeInfoUpdateTask = (retry: boolean, scheduledTime?: string) 
     if (scheduledTime) {
         createOrUpdateSchedule<UpdateOfficeInfoConfig>({
             jobName: 'office_info_update',
-            jobDescription: 'Updates office info from norg',
+            jobDescription: 'Updates legacy office info from norg',
             taskDescriptor: officeInfoUpdateTaskDescriptor,
             jobSchedule: {
                 type: 'ONE_TIME',
@@ -279,7 +281,7 @@ export const runOfficeInfoUpdateTask = (retry: boolean, scheduledTime?: string) 
 export const startOfficeInfoPeriodicUpdateSchedule = () => {
     createOrUpdateSchedule<UpdateOfficeInfoConfig>({
         jobName: 'office_info_norg2_hourly',
-        jobDescription: 'Updates office information from norg2 every hour',
+        jobDescription: 'Updates legacy office information from norg2 every hour',
         jobSchedule: {
             type: 'CRON',
             value: '15 * * * *',

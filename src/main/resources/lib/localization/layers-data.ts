@@ -40,7 +40,7 @@ const data: LayersRepoData = {
     locales: [],
 };
 
-const fifteenMinutesMs = 1000 * 60 * 15;
+const ONE_DAY_MS = 1000 * 60 * 60 * 24;
 
 export const isValidLocale = (locale?: string): locale is string =>
     !!(locale && data.localeToRepoIdMap[locale]);
@@ -48,6 +48,10 @@ export const isValidLocale = (locale?: string): locale is string =>
 export const getLocaleFromRepoId = (repoId: string) => data.repoIdToLocaleMap[repoId];
 
 export const getLayersData = () => data;
+
+const contentOnlyQueryParams = {
+    query: '_path LIKE "/content/*"'
+};
 
 // Pushes any nodes which exists on master in the root project to master on
 // the child layers as well.
@@ -58,9 +62,11 @@ export const getLayersData = () => data;
 export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
     logger.info('Starting job to publish layer content to master');
 
+    refreshLayersData();
+
     const nodeIdsInRootRepoMaster = batchedNodeQuery({
         repoParams: { repoId: CONTENT_ROOT_REPO_ID, branch: 'master' },
-        queryParams: {},
+        queryParams: contentOnlyQueryParams,
     }).hits.map((hit) => hit.id);
 
     logger.info(`Found ${nodeIdsInRootRepoMaster.length} nodes in root repo`);
@@ -72,11 +78,11 @@ export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
 
         const existingNodesSet = batchedNodeQuery({
             repoParams: { repoId: repoId, branch: 'master' },
-            queryParams: {},
-        }).hits.reduce((acc, hit) => {
+            queryParams: contentOnlyQueryParams,
+        }).hits.reduce<Record<string, true>>((acc, hit) => {
             acc[hit.id] = true;
             return acc;
-        }, {} as Record<string, true>);
+        }, {});
 
         const nodesToPush = pushMissingOnly
             ? nodeIdsInRootRepoMaster.filter((id) => !existingNodesSet[id])
@@ -94,22 +100,26 @@ export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
             asAdmin: true,
         });
 
-        toggleCacheInvalidationOnNodeEvents({ shouldDefer: true, maxDeferTime: fifteenMinutesMs });
+        toggleCacheInvalidationOnNodeEvents({ shouldDefer: true, maxDeferTime: ONE_DAY_MS });
 
-        const result = repoConnection.push({
-            keys: nodesToPush,
-            target: 'master',
-            resolve: false,
-        });
+        try {
+            const result = repoConnection.push({
+                keys: nodesToPush,
+                target: 'master',
+                resolve: false,
+            });
 
-        toggleCacheInvalidationOnNodeEvents({ shouldDefer: false });
-
-        logger.info(
-            `Result for ${repoId} // Success: (${result.success.length}) - Failed: (${
-                result.failed.length
-            }) ${JSON.stringify(result.failed)}`
-        );
+            logger.info(
+                `Result for ${repoId} // Success: (${result.success.length}) - Failed: (${
+                    result.failed.length
+                }) ${JSON.stringify(result.failed)}`
+            );
+        } catch (e) {
+            logger.error(`Error while pushing layer content to master in ${repoId} - ${e}`);
+        }
     });
+
+    toggleCacheInvalidationOnNodeEvents({ shouldDefer: false });
 
     logger.info('Finished job to publish layer content to master!');
 };

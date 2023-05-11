@@ -9,10 +9,6 @@ import {
     mainArticleCallback,
     mainArticleDataCallback,
 } from './schema-creation-callbacks/main-article';
-import {
-    mainArticleChapterCallback,
-    mainArticleChapterDataCallback,
-} from './schema-creation-callbacks/main-article-chapter';
 import { sectionPageDataCallback } from './schema-creation-callbacks/section-page-data';
 import { contentListDataCallback } from './schema-creation-callbacks/content-list-data';
 import { partContactOptionChatCallback } from './schema-creation-callbacks/part-contact-option-chat';
@@ -56,8 +52,6 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     no_nav_navno_InternalLink_Data: internalLinkDataCallback,
     no_nav_navno_MainArticle: mainArticleCallback,
     no_nav_navno_MainArticle_Data: mainArticleDataCallback,
-    no_nav_navno_MainArticleChapter_Data: mainArticleChapterDataCallback,
-    no_nav_navno_MainArticleChapter: mainArticleChapterCallback,
     no_nav_navno_SectionPage_Data: sectionPageDataCallback,
     no_nav_navno_ContentList_Data: contentListDataCallback,
     no_nav_navno_Overview_Data: overviewCallback,

@@ -1,15 +1,9 @@
 # NAV.no - Enonic XP
 NAVs content management system powered by Enonic XP, an open source project.
 
-![Build to prod](https://github.com/navikt/nav-enonicxp/workflows/Build%20to%20prod/badge.svg)
-![Deploy to prod](https://github.com/navikt/nav-enonicxp/workflows/Deploy%20to%20prod/badge.svg) <br>
-![Build to dev](https://github.com/navikt/nav-enonicxp/workflows/Build%20to%20dev/badge.svg)
-![Deploy to dev](https://github.com/navikt/nav-enonicxp/workflows/Deploy%20to%20dev/badge.svg) |
-![Build to Q6](https://github.com/navikt/nav-enonicxp/workflows/Build%20to%20Q6/badge.svg)
-![Deploy to Q6](https://github.com/navikt/nav-enonicxp/workflows/Deploy%20to%20Q6/badge.svg)
-
-Deployed by [nav-enonicxp-actions-runner
-](https://github.com/navikt/nav-enonicxp-actions-runner)
+![Deploy to prod](https://github.com/navikt/nav-enonicxp/actions/workflows/deploy-to-prod.yml/badge.svg) |
+![Deploy to dev](https://github.com/navikt/nav-enonicxp/actions/workflows/deploy-to-dev.yml/badge.svg) |
+![Deploy to dev2/q6](https://github.com/navikt/nav-enonicxp/actions/workflows/deploy-to-q6.yml/badge.svg)
 
 ## How to get started
 1. Install Enonic by following the guide at https://developer.enonic.com/start
@@ -39,7 +33,7 @@ enonic project deploy
 
 ## Deploy
 
-- **dev/Q6:** Run build-to-dev/q6 workflow dispatch
+- **dev/dev2(q6):** Run deploy-to-(dev|dev2/q6) workflow dispatch
 - **P:**  Make a PR between master and your feature branch __*__ and create a release at <br />
 https://github.com/navikt/nav-enonicxp/releases <br />
 **Obs:** Release must be formatted as **vX.X.X** (e.g v1.2.1)

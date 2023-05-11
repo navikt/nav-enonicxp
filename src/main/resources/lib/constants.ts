@@ -1,31 +1,57 @@
-const { xpOrigin, env } = app.config;
+type ServerEnv = typeof app.config.env;
+type EnvRecord = Record<ServerEnv, string>;
 
-const portalAdminOrigin = {
+const env = app.config.env || 'p';
+
+const portalAdminOrigins: EnvRecord = {
     p: 'https://portal-admin.oera.no',
     dev: 'https://portal-admin-dev.oera.no',
     q6: 'https://portal-admin-q6.oera.no',
     localhost: 'http://localhost:8080',
-}[env];
+};
 
-const frontendOrigin = {
+const frontendOrigins: EnvRecord = {
+    p: 'https://www.nav.no',
+    dev: 'https://www.intern.dev.nav.no',
+    q6: 'https://www-2.intern.dev.nav.no',
+    localhost: 'http://localhost:3000',
+};
+
+const frontendPreviewOrigins: EnvRecord = {
+    p: 'https://www.nav.no',
+    dev: 'https://www-editor.ekstern.dev.nav.no',
+    q6: 'https://www-editor-2.ekstern.dev.nav.no',
+    localhost: 'http://localhost:3000',
+};
+
+const revalidatorProxyOrigins: EnvRecord = {
+    p: 'https://www.nav.no/revalidator-proxy',
+    dev: 'https://nav-enonicxp-frontend-revalidator-proxy.intern.dev.nav.no',
+    q6: 'https://nav-enonicxp-frontend-revalidator-proxy-2.intern.dev.nav.no',
+    localhost: 'http://localhost:3002',
+};
+
+const norgOfficeApiUrls: EnvRecord = {
+    p: 'https://norg2.prod-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
+    dev: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
+    q6: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
+    localhost: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
+};
+
+const xpOrigins: EnvRecord = {
     p: 'https://www.nav.no',
     dev: 'https://www.dev.nav.no',
-    q6: 'https://www-2.dev.nav.no',
-    localhost: 'http://localhost:3000',
-}[env];
-
-const revalidatorProxyOrigin = {
-    p: 'https://www.nav.no/revalidator-proxy',
-    dev: 'https://nav-enonicxp-frontend-revalidator-proxy.dev.nav.no',
-    q6: 'https://nav-enonicxp-frontend-revalidator-proxy-2.dev.nav.no',
-    localhost: 'http://localhost:3002',
-}[env];
+    q6: 'https://www-q6.nav.no',
+    localhost: 'http://localhost:8080',
+};
 
 export const URLS = Object.freeze({
-    FRONTEND_ORIGIN: frontendOrigin,
-    XP_ORIGIN: xpOrigin,
-    REVALIDATOR_PROXY_ORIGIN: revalidatorProxyOrigin,
-    PORTAL_ADMIN_ORIGIN: portalAdminOrigin,
+    FRONTEND_ORIGIN: frontendOrigins[env],
+    FRONTEND_PREVIEW_ORIGIN: frontendPreviewOrigins[env],
+    XP_ORIGIN: xpOrigins[env],
+    REVALIDATOR_PROXY_ORIGIN: revalidatorProxyOrigins[env],
+    PORTAL_ADMIN_ORIGIN: portalAdminOrigins[env],
+    NORG_OFFICE_API_URL: norgOfficeApiUrls[env],
 });
 
 export const COMPONENT_APP_KEY = 'no-nav-navno';

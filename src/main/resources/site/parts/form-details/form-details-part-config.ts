@@ -4,4 +4,24 @@ export interface FormDetailsPartConfig {
    * Velg skjemadetalj
    */
   targetFormDetails: string;
+
+  /**
+   * Vis tittel
+   */
+  showTitle: boolean;
+
+  /**
+   * Vis ingress
+   */
+  showIngress: boolean;
+
+  /**
+   * Vis inngang til søknad
+   */
+  showApplications: boolean;
+
+  /**
+   * Vis inngang til ettersendelse
+   */
+  showAddendums: boolean;
 }

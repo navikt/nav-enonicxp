@@ -15,12 +15,13 @@ const getOfficeInfo = () =>
         const officeInfoContent = contentLib.query({
             start: 0,
             count: 1000,
-            contentTypes: [`${APP_DESCRIPTOR}:office-information`],
+            contentTypes: [`${APP_DESCRIPTOR}:office-branch`],
+            query: '_path LIKE "/content/www.nav.no/kontor/*"',
         }).hits;
 
         return officeInfoContent.map((content) => ({
             path: stripPathPrefix(content._path),
-            enhetNr: content.data.enhet.enhetNr,
+            enhetNr: content.data.enhetNr,
         }));
     });
 

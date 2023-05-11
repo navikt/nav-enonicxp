@@ -1,13 +1,13 @@
 import * as contentLib from '/lib/xp/content';
-import {
-    LayerMigrationResult,
-    migrateContentToLayer,
-} from '../../../../lib/localization/layers-migration/migrate-content-to-layer';
+import { migrateContentToLayer } from '../../../../lib/localization/layers-migration/migrate-content-to-layer';
 import { CONTENT_LOCALE_DEFAULT } from '../../../../lib/constants';
 
-export const migrateContentToLayerWidgetHandler = (
-    req: XP.Request
-): XP.Response<LayerMigrationResult> => {
+type ResponseBody = {
+    result: 'success' | 'error';
+    message: string;
+};
+
+export const migrateContentToLayerWidgetHandler = (req: XP.Request): XP.Response<ResponseBody> => {
     const { sourceId: sourceContentId, targetLocale, targetId: targetContentIdInput } = req.params;
 
     if (!targetLocale) {
@@ -51,15 +51,18 @@ export const migrateContentToLayerWidgetHandler = (
         };
     }
 
-    const migrationResult = migrateContentToLayer({
-        sourceContentId,
+    const { errorMsgs, statusMsgs } = migrateContentToLayer({
+        sourceId: sourceContentId,
         sourceLocale: CONTENT_LOCALE_DEFAULT,
-        targetContentId,
+        targetId: targetContentId,
         targetLocale,
     });
 
     return {
-        body: migrationResult,
+        body: {
+            message: [...statusMsgs, ...errorMsgs].join('\n'),
+            result: errorMsgs.length > 0 ? 'error' : 'success',
+        },
         contentType: 'application/json',
     };
 };

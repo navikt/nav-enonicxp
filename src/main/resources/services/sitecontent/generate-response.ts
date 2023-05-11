@@ -11,18 +11,52 @@ import { logger } from '../../lib/utils/logging';
 import { getLayersData, isValidLocale } from '../../lib/localization/layers-data';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { resolvePathToTarget } from '../../lib/localization/locale-paths';
-import { getCustomPathRedirectIfApplicable, getRedirectContent } from './resolve-redirects';
+import {
+    transformToRedirectResponse,
+    getCustomPathRedirectIfApplicable,
+    getRedirectContent,
+} from './resolve-redirects';
 import { getLanguageVersions } from '../../lib/localization/resolve-language-versions';
+import { contentTypesRenderedByEditorFrontend } from '../../lib/contenttype-lists';
+import { stringArrayToSet } from '../../lib/utils/array-utils';
+
+import { resolveLegacyContentRedirects } from './resolve-legacy-content-redirects';
+import { getContentFromCustomPath } from '../../lib/paths/custom-paths/custom-path-utils';
+
+const contentTypesForGuillotineQuery = stringArrayToSet(contentTypesRenderedByEditorFrontend);
 
 // The previewOnly x-data flag is used on content which should only be publicly accessible
 // through the /utkast route in the frontend. Calls from this route comes with the "preview"
-// query param
-const shouldBlockPreview = (content: Content, branch: RepoBranch, isPreview: boolean) => {
-    if (branch !== 'master' || isPreview) {
-        return false;
+// query param. We also want this behaviour for pages with an external redirect url set.
+const getSpecialPreviewResponseIfApplicable = (
+    content: Content<any>,
+    requestedPath: string,
+    isPreview: boolean
+) => {
+    const contentIsPreviewOnly = !!content.x?.[COMPONENT_APP_KEY]?.previewOnly?.previewOnly;
+    const externalRedirectUrl = content.data?.externalProductUrl;
+
+    if ((contentIsPreviewOnly || !!externalRedirectUrl) === isPreview) {
+        return null;
     }
 
-    return !!content.x?.[COMPONENT_APP_KEY]?.previewOnly?.previewOnly;
+    if (externalRedirectUrl) {
+        return {
+            response: transformToRedirectResponse({
+                content,
+                target: externalRedirectUrl,
+                type: 'external',
+            }),
+        };
+    }
+
+    // If the content is flagged for preview only we want a 404 response. Otherwise, redirect to the
+    // actual content url
+    return {
+        response: contentIsPreviewOnly
+            ? null
+            : transformToRedirectResponse({ content, target: requestedPath, type: 'internal' }),
+    };
 };
 
 // Resolve the base content to a fully resolved content via a guillotine query
@@ -31,35 +65,46 @@ const resolveContent = (
     branch: RepoBranch,
     locale: string,
     retries = 2
-): Content | null => {
-    const contentId = baseContent._id;
-    const queryResult = runSitecontentGuillotineQuery(baseContent, branch);
+): Content | null =>
+    runInLocaleContext(
+        {
+            locale: baseContent.language,
+            attributes: {
+                baseContentId: baseContent._id,
+            },
+        },
+        () => {
+            const contentId = baseContent._id;
+            const queryResult = runSitecontentGuillotineQuery(baseContent, branch);
 
-    // Peace-of-mind consistency check to ensure our version-history hack isn't affecting normal requests
-    if (!validateTimestampConsistency(contentId, queryResult, branch)) {
-        if (retries > 0) {
-            logger.error(`Timestamp consistency check failed - Retrying ${retries} more times`);
-        } else {
-            logger.critical(`Time travel permanently disabled on this node`);
-            unhookTimeTravel();
+            // Peace-of-mind consistency check to ensure our version-history hack isn't affecting normal requests
+            if (!validateTimestampConsistency(contentId, queryResult, branch)) {
+                if (retries > 0) {
+                    logger.error(
+                        `Timestamp consistency check failed - Retrying ${retries} more times`
+                    );
+                } else {
+                    logger.critical(`Time travel permanently disabled on this node`);
+                    unhookTimeTravel();
+                }
+
+                return resolveContent(baseContent, branch, locale, retries - 1);
+            }
+
+            return queryResult
+                ? {
+                      ...queryResult,
+                      // modifiedTime should also take any fragments on the page into account
+                      modifiedTime: getModifiedTimeIncludingFragments(baseContent, branch),
+                      languages: getLanguageVersions({
+                          baseContent,
+                          branch,
+                          baseContentLocale: locale,
+                      }),
+                  }
+                : null;
         }
-
-        return resolveContent(baseContent, branch, locale, retries - 1);
-    }
-
-    return queryResult
-        ? {
-              ...queryResult,
-              // modifiedTime should also take any fragments on the page into account
-              modifiedTime: getModifiedTimeIncludingFragments(baseContent, branch),
-              languages: getLanguageVersions({
-                  baseContent,
-                  branch,
-                  baseContentLocale: locale,
-              }),
-          }
-        : null;
-};
+    );
 
 const resolveContentStudioRequest = (
     idOrPathRequested: string,
@@ -73,12 +118,21 @@ const resolveContentStudioRequest = (
     const localeActual = isValidLocale(locale) ? locale : getLayersData().defaultLocale;
 
     return runInLocaleContext({ locale: localeActual, branch }, () => {
-        const content = contentLib.get({ key: idOrPathRequested });
+        const content =
+            contentLib.get({ key: idOrPathRequested }) ||
+            getContentFromCustomPath(idOrPathRequested).find(
+                // Allow requests to a customPath from CS, as long as it is unique
+                (contentWithCustomPath, _, array) => array.length === 1
+            );
         if (!content) {
             return null;
         }
 
-        return resolveContent(content, branch, localeActual);
+        // If the content type does not support a full frontend preview in the editor, just return
+        // the raw content, which is used to show certain info in place of the preview.
+        return contentTypesForGuillotineQuery[content.type]
+            ? resolveContent(content, branch, localeActual)
+            : content;
     });
 };
 
@@ -86,12 +140,12 @@ export const generateSitecontentResponse = ({
     idOrPathRequested,
     branch,
     localeRequested,
-    preview,
+    isPreview,
 }: {
     idOrPathRequested: string;
     branch: RepoBranch;
     localeRequested?: string;
-    preview: boolean;
+    isPreview: boolean;
 }) => {
     // Requests for a UUID should be explicitly resolved to the requested content id and requires
     // fewer steps to resolve. The same goes for requests to the draft branch.
@@ -113,8 +167,20 @@ export const generateSitecontentResponse = ({
 
     const { content, locale } = target;
 
-    if (shouldBlockPreview(content, branch, preview)) {
-        return null;
+    const redirectLegacyContent = resolveLegacyContentRedirects(content);
+
+    if (redirectLegacyContent) {
+        return redirectLegacyContent;
+    }
+
+    const specialPreviewResponse = getSpecialPreviewResponseIfApplicable(
+        content,
+        idOrPathRequested,
+        isPreview
+    );
+
+    if (specialPreviewResponse) {
+        return specialPreviewResponse.response;
     }
 
     const customPathRedirect = getCustomPathRedirectIfApplicable({
@@ -128,5 +194,5 @@ export const generateSitecontentResponse = ({
         return customPathRedirect;
     }
 
-    return runInLocaleContext({ locale }, () => resolveContent(content, branch, locale));
+    return resolveContent(content, branch, locale);
 };

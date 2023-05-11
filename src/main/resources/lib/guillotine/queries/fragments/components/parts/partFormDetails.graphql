@@ -4,4 +4,8 @@ fragment partComponentFormDetails on Part_no_nav_navno_form_details {
     targetFormDetails {
         ...formDetailsMixin
     }
+    showTitle
+    showIngress
+    showApplications
+    showAddendums
 }
