@@ -90,12 +90,11 @@ export const scheduleUnpublish = ({
 
 // Returns true if the content was scheduled for prepublishing
 export const handleScheduledPublish = (nodeData: NodeEventData, eventType: string) => {
-    if (eventType !== 'node.pushed') {
+    if (eventType !== 'node.pushed' || !nodeData.path.startsWith('/content/')) {
         return false;
     }
 
     const publish = getPublish(nodeData);
-
     if (!publish) {
         return false;
     }
