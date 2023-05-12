@@ -7,6 +7,7 @@ import { UnpublishExpiredContentConfig } from '../../tasks/unpublish-expired-con
 import { NodeEventData } from '../cache/utils';
 import { logger } from '../utils/logging';
 import { getUnixTimeFromDateTimeString } from '../utils/datetime-utils';
+import { isContentLocalized } from '../localization/locale-utils';
 
 const getPublish = (node: NodeEventData) => {
     const repo = getRepoConnection({
@@ -15,14 +16,12 @@ const getPublish = (node: NodeEventData) => {
     });
 
     const content = repo.get<Content>({ key: node.id });
-
     if (!content) {
-        logger.error(`Content for ${node.id} not found in repo ${node.repo}!`);
+        logger.info(`Content for ${node.id} not found in repo ${node.repo}!`);
         return null;
     }
 
-    if (!content.publish) {
-        logger.error(`No publish object found for content ${node.id} in repo ${node.repo}!`);
+    if (!content.publish || !isContentLocalized(content)) {
         return null;
     }
 
@@ -91,12 +90,11 @@ export const scheduleUnpublish = ({
 
 // Returns true if the content was scheduled for prepublishing
 export const handleScheduledPublish = (nodeData: NodeEventData, eventType: string) => {
-    if (eventType !== 'node.pushed') {
+    if (eventType !== 'node.pushed' || !nodeData.path.startsWith('/content/')) {
         return false;
     }
 
     const publish = getPublish(nodeData);
-
     if (!publish) {
         return false;
     }
