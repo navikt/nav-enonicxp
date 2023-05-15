@@ -9,10 +9,89 @@ import { Audience } from '../../../../site/mixins/audience/audience';
 import { Taxonomy } from '../../../../site/mixins/taxonomy/taxonomy';
 import { Area } from '../../../../site/mixins/area/area';
 
+type FormDetailsListItem = {
+    title: string;
+    sortTitle: string;
+    illustration: string;
+    taxonomy?: Taxonomy['taxonomy'];
+    area?: Area['area'];
+    formDetailsPaths: string[];
+};
+
+type ContentWithFormDetails = Content<(typeof contentTypesWithFormDetails)[number]>;
+
+const contentTypesWithFormDetails = [
+    'no.nav.navno:content-page-with-sidemenus',
+    'no.nav.navno:guide-page',
+] as const;
+
+const transformToListEntry = (content: ContentWithFormDetails): FormDetailsListItem | null => {
+    const formDetailsTargets = forceArray(content.data.formDetailsTargets);
+
+    const formDetailsContent = contentLib.query({
+        count: formDetailsTargets.length,
+        contentTypes: ['no.nav.navno:form-details'],
+        filters: { ids: { values: formDetailsTargets } },
+    }).hits;
+
+    if (formDetailsContent.length === 0) {
+        return null;
+    }
+
+    return {
+        title: content.displayName,
+        sortTitle: content.displayName,
+        formDetailsPaths: formDetailsContent.map((formDetails) => formDetails._path),
+        illustration: (content.data as any).illustration,
+        area: forceArray((content.data as any).area),
+        taxonomy: forceArray((content.data as any).taxonomy),
+    };
+};
+
+const buildFormDetailsList = (audience: Audience['audience'], language: string) => {
+    const contentWithFormDetails = contentLib.query({
+        count: 1000,
+        contentTypes: contentTypesWithFormDetails,
+        filters: {
+            boolean: {
+                must: [
+                    {
+                        exists: {
+                            field: 'data.formDetailsTargets',
+                        },
+                    },
+                    {
+                        hasValue: {
+                            field: 'data.audience',
+                            values: [audience],
+                        },
+                    },
+                    {
+                        hasValue: {
+                            field: 'language',
+                            values: [language],
+                        },
+                    },
+                ],
+                mustNot: [
+                    {
+                        hasValue: {
+                            field: 'x.no-nav-navno.previewOnly.previewOnly',
+                            values: [true],
+                        },
+                    },
+                ],
+            },
+        },
+    }).hits;
+
+    return contentWithFormDetails.map(transformToListEntry);
+};
+
 export const formsOverviewCallback: CreationCallback = (context, params) => {
-    const formDetailsList = graphQlCreateObjectType<keyof FormDetailsListEntry>(context, {
+    const formDetailsList = graphQlCreateObjectType<keyof FormDetailsListItem>(context, {
         name: context.uniqueName('FormDetailsList'),
-        description: 'Liste over skjemadetaljer ',
+        description: 'Liste over sider med skjemadetaljer',
         fields: {
             formDetailsPaths: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             sortTitle: { type: graphQlLib.GraphQLString },
@@ -52,93 +131,7 @@ export const formsOverviewCallback: CreationCallback = (context, params) => {
                 return [];
             }
 
-            return getFormDetailsList(audience._selected, language);
+            return buildFormDetailsList(audience._selected, language);
         },
     };
-};
-
-type FormDetailsListEntry = {
-    title: string;
-    sortTitle: string;
-    illustration: string;
-    taxonomy?: Taxonomy['taxonomy'];
-    area?: Area['area'];
-    formDetailsPaths: string[];
-};
-
-type ContentWithFormDetails =
-    | 'no.nav.navno:content-page-with-sidemenus'
-    | 'no.nav.navno:guide-page';
-
-const transformToListEntry = (
-    content: Content<ContentWithFormDetails>
-): FormDetailsListEntry | null => {
-    const formDetailsTargets = forceArray(content.data.formDetailsTargets);
-
-    const formDetailsContent = contentLib.query({
-        count: formDetailsTargets.length,
-        contentTypes: ['no.nav.navno:form-details'],
-        filters: { ids: { values: formDetailsTargets } },
-    }).hits;
-
-    if (formDetailsContent.length === 0) {
-        return null;
-    }
-
-    return {
-        title: content.displayName,
-        sortTitle: content.displayName,
-        formDetailsPaths: formDetailsContent.map((formDetails) => formDetails._path),
-        illustration: (content.data as any).illustration,
-        area: forceArray((content.data as any).area),
-        taxonomy: forceArray((content.data as any).taxonomy),
-    };
-};
-
-const getFormDetailsList = (audience: Audience['audience'], language: string) => {
-    const formDetailsList = contentLib
-        .query({
-            count: 1000,
-            contentTypes: ['no.nav.navno:content-page-with-sidemenus', 'no.nav.navno:guide-page'],
-            filters: {
-                boolean: {
-                    must: [
-                        {
-                            exists: {
-                                field: 'data.formDetailsTargets',
-                            },
-                        },
-                        {
-                            hasValue: {
-                                field: 'data.audience',
-                                values: [audience],
-                            },
-                        },
-                        {
-                            hasValue: {
-                                field: 'language',
-                                values: [language],
-                            },
-                        },
-                    ],
-                    mustNot: [
-                        {
-                            hasValue: {
-                                field: 'x.no-nav-navno.previewOnly.previewOnly',
-                                values: [true],
-                            },
-                        },
-                        {
-                            hasValue: {
-                                field: 'data.hideFromProductlist',
-                                values: [true],
-                            },
-                        },
-                    ],
-                },
-            },
-        })
-        .hits.map(transformToListEntry);
-
-    return formDetailsList;
 };
