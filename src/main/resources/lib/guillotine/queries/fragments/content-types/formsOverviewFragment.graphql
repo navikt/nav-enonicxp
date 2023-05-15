@@ -12,6 +12,7 @@ fragment contentFormsOverviewPage on no_nav_navno_FormsOverview {
             formDetailsPaths
             area
             taxonomy
+            anchorId
             illustration {
                 ...on no_nav_navno_AnimatedIcons{
                     type

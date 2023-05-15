@@ -1,4 +1,5 @@
 import * as contentLib from '/lib/xp/content';
+import { sanitize } from '/lib/xp/common';
 import { Content } from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
@@ -12,6 +13,7 @@ import { Area } from '../../../../site/mixins/area/area';
 type FormDetailsListItem = {
     title: string;
     sortTitle: string;
+    anchorId: string;
     illustration: string;
     taxonomy: Taxonomy['taxonomy'];
     area: Area['area'];
@@ -21,7 +23,7 @@ type FormDetailsListItem = {
 type ContentWithFormDetails = Content<(typeof contentTypesWithFormDetails)[number]> & {
     // Fields from nested mixins are not included in the autogenerate types
     data: {
-        title: string;
+        title?: string;
         sortTitle?: string;
         illustration: string;
         area: Area['area'];
@@ -47,9 +49,13 @@ const transformToListItem = (content: ContentWithFormDetails): FormDetailsListIt
         return null;
     }
 
+    const title = content.data.title || content.displayName;
+    const sortTitle = content.data.sortTitle || title;
+
     return {
-        title: content.data.title,
-        sortTitle: content.data.sortTitle || content.data.title,
+        title,
+        sortTitle,
+        anchorId: sanitize(sortTitle),
         formDetailsPaths: formDetailsContent.map((formDetails) => formDetails._path),
         illustration: content.data.illustration,
         area: forceArray(content.data.area),
@@ -114,6 +120,7 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
             formDetailsPaths: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             sortTitle: { type: graphQlLib.GraphQLString },
             title: { type: graphQlLib.GraphQLString },
+            anchorId: { type: graphQlLib.GraphQLString },
             taxonomy: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             area: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             illustration: {
