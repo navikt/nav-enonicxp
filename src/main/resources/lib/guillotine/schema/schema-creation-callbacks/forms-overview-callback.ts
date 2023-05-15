@@ -13,8 +13,8 @@ type FormDetailsListItem = {
     title: string;
     sortTitle: string;
     illustration: string;
-    taxonomy?: Taxonomy['taxonomy'];
-    area?: Area['area'];
+    taxonomy: Taxonomy['taxonomy'];
+    area: Area['area'];
     formDetailsPaths: string[];
 };
 
@@ -25,7 +25,7 @@ const contentTypesWithFormDetails = [
     'no.nav.navno:guide-page',
 ] as const;
 
-const transformToListEntry = (content: ContentWithFormDetails): FormDetailsListItem | null => {
+const transformToListItem = (content: ContentWithFormDetails): FormDetailsListItem | null => {
     const formDetailsTargets = forceArray(content.data.formDetailsTargets);
 
     const formDetailsContent = contentLib.query({
@@ -85,7 +85,16 @@ const buildFormDetailsList = (audience: Audience['audience'], language: string) 
         },
     }).hits;
 
-    return contentWithFormDetails.map(transformToListEntry);
+    return contentWithFormDetails
+        .reduce<FormDetailsListItem[]>((acc, content) => {
+            const transformedItem = transformToListItem(content);
+            if (transformedItem) {
+                acc.push(transformedItem);
+            }
+
+            return acc;
+        }, [])
+        .sort((a, b) => a.sortTitle.localeCompare(b.sortTitle));
 };
 
 export const formsOverviewCallback: CreationCallback = (context, params) => {

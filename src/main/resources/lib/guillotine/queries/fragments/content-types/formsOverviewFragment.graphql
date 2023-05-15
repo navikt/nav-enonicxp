@@ -1,4 +1,5 @@
 #import "../mixins/animatedIconsTargetFragment.graphql"
+#import "../mixins/imageInlineFragment.graphql"
 
 fragment contentFormsOverviewPage on no_nav_navno_FormsOverview {
     dataAsJson
@@ -8,7 +9,6 @@ fragment contentFormsOverviewPage on no_nav_navno_FormsOverview {
         }
         formDetailsList {
             title
-            sortTitle
             formDetailsPaths
             area
             taxonomy
