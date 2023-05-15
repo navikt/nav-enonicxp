@@ -45,6 +45,7 @@ import {
 } from './search-config';
 import { PressLandingPage } from 'site/content-types/press-landing-page/press-landing-page';
 import { FormIntermediateStep } from 'site/content-types/form-intermediate-step/form-intermediate-step';
+import { FormsOverview } from '../../site/content-types/forms-overview/forms-overview';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
@@ -85,6 +86,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'tools-page': ToolsPage;
     'transport-page': TransportPage;
     'press-landing-page': PressLandingPage;
+    'forms-overview': FormsOverview;
 };
 
 // Add the app-specific descriptor prefix to all content types

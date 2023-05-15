@@ -61,7 +61,7 @@ export interface FormsOverview {
                  */
                 "form-details": {
                   /**
-                   * Underkategori
+                   * Velg underkategori
                    */
                   provider_audience: "doctor" | "dentist" | "optician" | "occupational_therapist" | "aid_supplier" | "measures_organizer" | "administrator" | "municipality" | "other";
                 };

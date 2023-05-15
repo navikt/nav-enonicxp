@@ -1,0 +1,8 @@
+<page>
+    <display-name>Side med to kolonner</display-name>
+    <description>En bred kolonne for hovedinnhold, med en valgfri side-kolonne</description>
+    <regions>
+        <region name="mainCol"/>
+        <region name="sideCol"/>
+    </regions>
+</page>
