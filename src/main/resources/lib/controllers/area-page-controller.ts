@@ -38,39 +38,48 @@ const getSituationsLayout = (
     return situationsLayouts[0];
 };
 
-const getSituationPages = (area: string, audience: string) =>
-    contentLib.query({
-        start: 0,
-        count: 1000,
-        contentTypes: ['no.nav.navno:situation-page'],
-        filters: {
-            boolean: {
-                must: [
-                    {
-                        hasValue: {
-                            field: 'data.area',
-                            values: [area],
+const getSituationPages = (area: string, audience: string) => {
+    // Må ta høyde for at audience kan befinne seg i to forskjellige felter,
+    // alt etter om siden er publisert eller ikke etter migrering til ny datamodell for audience
+    // TODO: Kan fjerne dette etter at alle sider med audience er publisert
+    const query = (audienceField: string) => (
+            contentLib.query({
+            start: 0,
+            count: 1000,
+            contentTypes: ['no.nav.navno:situation-page'],
+            filters: {
+                boolean: {
+                    must: [
+                        {
+                            hasValue: {
+                                field: 'data.area',
+                                values: [area],
+                            },
                         },
-                    },
-                    {
-                        hasValue: {
-                            field: 'data.audience._selected',
-                            values: [audience],
+                        {
+                            hasValue: {
+                                field: audienceField,
+                                values: [audience],
+                            },
                         },
-                    },
-                ],
-                mustNot: [
-                    {
-                        hasValue: {
-                            field: 'x.no-nav-navno.previewOnly.previewOnly',
-                            values: [true],
+                    ],
+                    mustNot: [
+                        {
+                            hasValue: {
+                                field: 'x.no-nav-navno.previewOnly.previewOnly',
+                                values: [true],
+                            },
                         },
-                    },
-                ],
+                    ],
+                },
             },
-        },
-    }).hits;
-
+        }).hits
+    );
+    return [
+        ...query('data.audience'),
+        ...query('data.audience._selected'),
+    ];
+}
 // TODO: this can be removed after we've migrated these pages to layers
 const pageContainsLegacyLanguagesRef = (
     defaultSituationPage: SituationPageContent,

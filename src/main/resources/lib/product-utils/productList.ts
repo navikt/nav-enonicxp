@@ -185,7 +185,7 @@ const getProductPages = (
 
     // Må ta høyde for at audience kan befinne seg i to forskjellige felter,
     // alt etter om siden er publisert eller ikke etter migrering til ny datamodell for audience
-    // Kan fjerne dette etter at alle sider med audience er publisert
+    // TODO: Kan fjerne dette etter at alle sider med audience er publisert
     const query = (audienceField: string) => ( contentLib.query({
             start: 0,
             count: 1000,
@@ -239,10 +239,10 @@ const getProductPages = (
             },
         }).hits
     );
-    return (
-        query('data.audience').concat(
-        query('data.audience._selected'))
-    );
+    return [
+        ...query('data.audience'),
+        ...query('data.audience._selected'),
+    ];
 };
 
 const getAllProductsData = (audience: ProductAudience[], language: string) => {
