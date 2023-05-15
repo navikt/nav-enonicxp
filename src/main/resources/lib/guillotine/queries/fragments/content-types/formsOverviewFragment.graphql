@@ -6,5 +6,24 @@ fragment contentFormsOverviewPage on no_nav_navno_FormsOverview {
         illustration {
             ...animatedIconsTargetMixin
         }
+        formDetailsList {
+            title
+            sortTitle
+            formDetailsPaths
+            area
+            taxonomy
+            illustration {
+                ...on no_nav_navno_AnimatedIcons{
+                    type
+                    data {
+                        icons {
+                            icon {
+                                ...imageInlineMixin
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

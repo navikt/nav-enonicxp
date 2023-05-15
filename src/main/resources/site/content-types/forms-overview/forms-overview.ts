@@ -119,9 +119,4 @@ export interface FormsOverview {
    * Skal ikke vises i søk
    */
   noindex: boolean;
-
-  /**
-   * -
-   */
-  "form-details-list"?: undefined;
 }

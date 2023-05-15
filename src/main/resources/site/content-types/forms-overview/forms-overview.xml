@@ -108,9 +108,5 @@
                 </input>
             </items>
         </field-set>
-        <!-- Dummy field which is set programatically -->
-        <input name="form-details-list" type="RadioButton">
-            <label>-</label>
-        </input>
     </form>
 </content-type>

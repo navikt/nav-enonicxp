@@ -39,6 +39,7 @@ import { contentInterfaceCallback } from './schema-creation-callbacks/content-in
 import { externalLinkCallback } from './schema-creation-callbacks/external-link-callback';
 import { microCardTargetPageCallback } from './schema-creation-callbacks/microcard-part';
 import { createOpeningHoursFields } from './schema-creation-callbacks/common/opening-hours-mixin';
+import { formsOverviewCallback } from './schema-creation-callbacks/forms-overview-callback';
 
 export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     Attachment: attachmentCallback,
@@ -47,6 +48,7 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     media_Code: mediaCodeCallback,
     media_Image: mediaImageCallback,
     no_nav_navno_ExternalLink: externalLinkCallback,
+    no_nav_navno_FormsOverview_Data: formsOverviewCallback,
     no_nav_navno_InternalLink: internalLinkCallback,
     no_nav_navno_InternalLink_Data: internalLinkDataCallback,
     no_nav_navno_MainArticle: mainArticleCallback,
