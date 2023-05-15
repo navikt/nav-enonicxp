@@ -27,7 +27,7 @@ import {
 } from './schema-creation-callbacks/global-value-macro-config';
 import { macroAlertboxCallback } from './schema-creation-callbacks/macro-alert-box';
 import { richTextCallback } from './schema-creation-callbacks/richtext';
-import { overviewCallback } from './schema-creation-callbacks/overview-callback';
+import { overviewDataCallback } from './schema-creation-callbacks/overview-data-callback';
 import { officeBranchCallback } from './schema-creation-callbacks/office-branch-callback';
 import { formDetailsCallback } from './schema-creation-callbacks/form-details';
 import { fragmentComponentDataCallback } from './schema-creation-callbacks/fragment-component-data';
@@ -39,7 +39,7 @@ import { contentInterfaceCallback } from './schema-creation-callbacks/content-in
 import { externalLinkCallback } from './schema-creation-callbacks/external-link-callback';
 import { microCardTargetPageCallback } from './schema-creation-callbacks/microcard-part';
 import { createOpeningHoursFields } from './schema-creation-callbacks/common/opening-hours-mixin';
-import { formsOverviewCallback } from './schema-creation-callbacks/forms-overview-callback';
+import { formsOverviewDataCallback } from './schema-creation-callbacks/forms-overview-data-callback';
 
 export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     Attachment: attachmentCallback,
@@ -48,14 +48,14 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     media_Code: mediaCodeCallback,
     media_Image: mediaImageCallback,
     no_nav_navno_ExternalLink: externalLinkCallback,
-    no_nav_navno_FormsOverview_Data: formsOverviewCallback,
+    no_nav_navno_FormsOverview_Data: formsOverviewDataCallback,
     no_nav_navno_InternalLink: internalLinkCallback,
     no_nav_navno_InternalLink_Data: internalLinkDataCallback,
     no_nav_navno_MainArticle: mainArticleCallback,
     no_nav_navno_MainArticle_Data: mainArticleDataCallback,
     no_nav_navno_SectionPage_Data: sectionPageDataCallback,
     no_nav_navno_ContentList_Data: contentListDataCallback,
-    no_nav_navno_Overview_Data: overviewCallback,
+    no_nav_navno_Overview_Data: overviewDataCallback,
     no_nav_navno_OfficeBranch: officeBranchCallback,
     no_nav_navno_ContactInformation_Chat: createOpeningHoursFields('chat'),
     no_nav_navno_ContactInformation_Telephone: createOpeningHoursFields('telephone'),

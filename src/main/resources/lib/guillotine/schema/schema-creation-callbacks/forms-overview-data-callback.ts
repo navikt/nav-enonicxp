@@ -106,7 +106,7 @@ const buildFormDetailsList = (audience: Audience['audience'], language: string) 
         .sort((a, b) => a.sortTitle.localeCompare(b.sortTitle));
 };
 
-export const formsOverviewCallback: CreationCallback = (context, params) => {
+export const formsOverviewDataCallback: CreationCallback = (context, params) => {
     const formDetailsList = graphQlCreateObjectType<keyof FormDetailsListItem>(context, {
         name: context.uniqueName('FormDetailsList'),
         description: 'Liste over sider med skjemadetaljer',

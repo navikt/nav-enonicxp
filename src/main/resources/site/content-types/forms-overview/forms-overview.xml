@@ -62,6 +62,7 @@
                                             </items>
                                         </option>
                                         <option name="audience-landing">
+                                            <!-- TODO: add input for references to relevant pages -->
                                             <label>Inngang til underkategorier</label>
                                         </option>
                                     </options>
