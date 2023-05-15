@@ -21,7 +21,7 @@ type FormDetailsListItem = {
 type ContentWithFormDetails = Content<(typeof contentTypesWithFormDetails)[number]> & {
     // Fields from nested mixins are not included in the autogenerate types
     data: {
-        title: string;
+        title?: string;
         sortTitle?: string;
         illustration: string;
         area: Area['area'];
@@ -47,9 +47,11 @@ const transformToListItem = (content: ContentWithFormDetails): FormDetailsListIt
         return null;
     }
 
+    const title = content.data.title || content.displayName;
+
     return {
-        title: content.data.title,
-        sortTitle: content.data.sortTitle || content.data.title,
+        title,
+        sortTitle: content.data.sortTitle || title,
         formDetailsPaths: formDetailsContent.map((formDetails) => formDetails._path),
         illustration: content.data.illustration,
         area: forceArray(content.data.area),
