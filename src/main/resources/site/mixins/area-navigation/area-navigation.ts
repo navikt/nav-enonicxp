@@ -4,4 +4,9 @@ export interface AreaNavigation {
    * Velg områder
    */
   areasRefs?: Array<string>;
+
+  /**
+   * Velg situasjonssider
+   */
+  situationsRefs?: Array<string>;
 }
