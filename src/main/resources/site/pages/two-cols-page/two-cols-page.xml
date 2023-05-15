@@ -1,6 +1,17 @@
 <page>
     <display-name>Side med to kolonner</display-name>
     <description>En bred kolonne for hovedinnhold, med en valgfri side-kolonne</description>
+    <form>
+        <field-set>
+            <label>Vis side-kolonne</label>
+            <items>
+                <input type="CheckBox" name="sideColToggle">
+                    <label>Vis</label>
+                    <default>checked</default>
+                </input>
+            </items>
+        </field-set>
+    </form>
     <regions>
         <region name="mainCol"/>
         <region name="sideCol"/>
