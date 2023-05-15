@@ -1,0 +1,10 @@
+#import "../mixins/animatedIconsTargetFragment.graphql"
+
+fragment contentFormsOverviewPage on no_nav_navno_FormsOverview {
+    dataAsJson
+    data {
+        illustration {
+            ...animatedIconsTargetMixin
+        }
+    }
+}
