@@ -18,7 +18,16 @@ type FormDetailsListItem = {
     formDetailsPaths: string[];
 };
 
-type ContentWithFormDetails = Content<(typeof contentTypesWithFormDetails)[number]>;
+type ContentWithFormDetails = Content<(typeof contentTypesWithFormDetails)[number]> & {
+    // Fields from nested mixins are not included in the autogenerate types
+    data: {
+        title: string;
+        sortTitle?: string;
+        illustration: string;
+        area: Area['area'];
+        taxonomy: Taxonomy['taxonomy'];
+    };
+};
 
 const contentTypesWithFormDetails = [
     'no.nav.navno:content-page-with-sidemenus',
@@ -39,12 +48,12 @@ const transformToListItem = (content: ContentWithFormDetails): FormDetailsListIt
     }
 
     return {
-        title: content.displayName,
-        sortTitle: content.displayName,
+        title: content.data.title,
+        sortTitle: content.data.sortTitle || content.data.title,
         formDetailsPaths: formDetailsContent.map((formDetails) => formDetails._path),
-        illustration: (content.data as any).illustration,
-        area: forceArray((content.data as any).area),
-        taxonomy: forceArray((content.data as any).taxonomy),
+        illustration: content.data.illustration,
+        area: forceArray(content.data.area),
+        taxonomy: forceArray(content.data.taxonomy),
     };
 };
 
@@ -83,7 +92,7 @@ const buildFormDetailsList = (audience: Audience['audience'], language: string) 
                 ],
             },
         },
-    }).hits;
+    }).hits as ContentWithFormDetails[];
 
     return contentWithFormDetails
         .reduce<FormDetailsListItem[]>((acc, content) => {
