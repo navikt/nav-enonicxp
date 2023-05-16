@@ -11,8 +11,21 @@ export interface FormsOverview {
   ingress: string;
 
   /**
-   * Målgruppe
+   * Velg type oversikt
    */
+  overviewType: "application" | "complaint" | "addendum";
+
+  /**
+   * Velg piktogram
+   */
+  illustration: string;
+
+  /**
+   * Skriv inn ønsket kort-url
+   */
+  customPath: string;
+
+
   audience:
     | {
         /**
@@ -70,30 +83,38 @@ export interface FormsOverview {
                 /**
                  * Selected
                  */
-                _selected: "audience-landing";
+                _selected: "audience-links";
 
                 /**
-                 * Inngang til underkategorier
+                 * Inngang til oversikter for underkategorier
                  */
-                "audience-landing": Record<string, unknown>;
+                "audience-links": {
+
+                  provider_audience_links?: {
+                    /**
+                     * Velg skjemaoversikt
+                     */
+                    link: string;
+                  };
+                };
               };
         };
       };
 
   /**
-   * Velg piktogram
+   * Vis område-filter
    */
-  illustration: string;
+  areasFilterToggle: boolean;
 
   /**
-   * Skriv inn ønsket kort-url
+   * Vis kategori-filter
    */
-  customPath: string;
+  taxonomyFilterToggle: boolean;
 
   /**
    * Vis fritekst-filter
    */
-  showFilter: boolean;
+  textFilterToggle: boolean;
 
   /**
    * Velg eier
@@ -109,11 +130,6 @@ export interface FormsOverview {
    * Nøkkelord (internt søk)
    */
   keywords?: Array<string>;
-
-  /**
-   * Canonical url - NB! Skal bare legges inn av hovedredaktør/administrator
-   */
-  canonicalUrl?: string;
 
   /**
    * Skal ikke vises i søk

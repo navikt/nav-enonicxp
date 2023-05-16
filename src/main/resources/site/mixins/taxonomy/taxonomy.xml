@@ -3,7 +3,7 @@
     <form>
         <input name="taxonomy" type="ComboBox">
             <label>Kategori</label>
-            <occurrences minimum="0" maximum="8"/>
+            <occurrences minimum="0" maximum="0"/>
             <config>
                 <option value="assistive_tools">Hjelpemiddel</option>
                 <option value="followup">Oppfølging</option>
