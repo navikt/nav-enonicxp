@@ -178,6 +178,11 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
                 return [];
             }
 
+            if (!overviewType) {
+                logger.error(`Overview type not set for overview page id ${contentId}`);
+                return [];
+            }
+
             return buildFormDetailsList(audience._selected, language, overviewType);
         },
     };
