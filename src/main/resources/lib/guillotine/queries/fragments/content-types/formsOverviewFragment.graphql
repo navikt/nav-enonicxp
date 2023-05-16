@@ -1,0 +1,30 @@
+#import "../mixins/animatedIconsTargetFragment.graphql"
+#import "../mixins/imageInlineFragment.graphql"
+
+fragment contentFormsOverviewPage on no_nav_navno_FormsOverview {
+    dataAsJson
+    data {
+        illustration {
+            ...animatedIconsTargetMixin
+        }
+        formDetailsList {
+            title
+            formDetailsPaths
+            area
+            taxonomy
+            anchorId
+            illustration {
+                ...on no_nav_navno_AnimatedIcons{
+                    type
+                    data {
+                        icons {
+                            icon {
+                                ...imageInlineMixin
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -63,6 +63,7 @@ import toolsPageQuery from './content-queries/toolsPageQuery.graphql';
 import transportPageQuery from './content-queries/transportPageQuery.graphql';
 import urlQuery from './content-queries/urlQuery.graphql';
 import pressLandingPageQuery from './content-queries/pressLandingPageQuery.graphql';
+import formsOverviewQuery from './content-queries/formsOverviewPageQuery.graphql';
 
 export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'media:archive': mediaArchiveQuery,
@@ -86,6 +87,7 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:form-intermediate-step': formIntermediateStepQuery,
     'no.nav.navno:dynamic-page': dynamicPageQuery,
     'no.nav.navno:external-link': externalLinkQuery,
+    'no.nav.navno:forms-overview': formsOverviewQuery,
     'no.nav.navno:front-page': frontPageQuery,
     'no.nav.navno:internal-link': internalLinkQuery,
     'no.nav.navno:global-case-time-set': globalCaseTimeQuery,
