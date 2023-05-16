@@ -73,10 +73,21 @@
                 </option-set>
                 <mixin name="illustration"/>
                 <mixin name="custom-path-selector-required"/>
-                <input name="showFilter" type="CheckBox">
-                    <label>Vis fritekst-filter</label>
-                    <default>checked</default>
-                </input>
+                <field-set>
+                    <label>Filtre</label>
+                    <input name="areasFilterToggle" type="CheckBox">
+                        <label>Vis område-filter</label>
+                        <default>checked</default>
+                    </input>
+                    <input name="taxonomyFilterToggle" type="CheckBox">
+                        <label>Vis kategori-filter</label>
+                        <default>checked</default>
+                    </input>
+                    <input name="textFilterToggle" type="CheckBox">
+                        <label>Vis fritekst-filter</label>
+                        <default>checked</default>
+                    </input>
+                </field-set>
             </items>
         </field-set>
         <mixin name="owner"/>
