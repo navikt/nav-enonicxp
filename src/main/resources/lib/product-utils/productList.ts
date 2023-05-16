@@ -183,66 +183,69 @@ const getProductPages = (
 ) => {
     const isAllProductsType = overviewType === 'all_products';
 
-    // Må ta høyde for at audience kan befinne seg i to forskjellige felter,
-    // alt etter om siden er publisert eller ikke etter migrering til ny datamodell for audience
-    // TODO: Kan fjerne dette etter at alle sider med audience er publisert
-    const query = (audienceField: string) => ( contentLib.query({
-            start: 0,
-            count: 1000,
-            contentTypes: isAllProductsType
-                ? contentTypesInAllProductsList
-                : contentTypesWithProductDetails,
-            filters: {
-                boolean: {
-                    must: [
-                        {
-                            hasValue: {
-                                field: audienceField,
-                                values: audience,
-                            },
+    return contentLib.query({
+        start: 0,
+        count: 1000,
+        contentTypes: isAllProductsType
+            ? contentTypesInAllProductsList
+            : contentTypesWithProductDetails,
+        filters: {
+            boolean: {
+                // Må ta høyde for at audience kan befinne seg i to forskjellige felter,
+                // alt etter om siden er publisert eller ikke etter migrering til ny datamodell for audience
+                // TODO: Kan endres til EN must etter at alle sider med audience er publisert
+                should: [
+                    {
+                        hasValue: {
+                            field: 'data.audience',
+                            values: audience,
                         },
-                        ...(languages
-                            ? [
-                                {
-                                    hasValue: {
-                                        field: 'language',
-                                        values: languages,
-                                    },
+                    },
+                    {
+                        hasValue: {
+                            field: 'data.audience._selected',
+                            values: audience,
+                        },
+                    },
+                ],
+                must: [
+                    ...(languages
+                        ? [
+                            {
+                                hasValue: {
+                                    field: 'language',
+                                    values: languages,
                                 },
-                            ]
-                            : []),
-                        ...(!isAllProductsType
-                            ? [
-                                {
-                                    exists: {
-                                        field: `data.${overviewType}`,
-                                    },
+                            },
+                        ]
+                        : []),
+                    ...(!isAllProductsType
+                        ? [
+                            {
+                                exists: {
+                                    field: `data.${overviewType}`,
                                 },
-                            ]
-                            : []),
-                    ],
-                    mustNot: [
-                        {
-                            hasValue: {
-                                field: 'x.no-nav-navno.previewOnly.previewOnly',
-                                values: [true],
                             },
+                        ]
+                        : []),
+                ],
+                mustNot: [
+                    {
+                        hasValue: {
+                            field: 'x.no-nav-navno.previewOnly.previewOnly',
+                            values: [true],
                         },
-                        {
-                            hasValue: {
-                                field: 'data.hideFromProductlist',
-                                values: [true],
-                            },
+                    },
+                    {
+                        hasValue: {
+                            field: 'data.hideFromProductlist',
+                            values: [true],
                         },
-                    ],
-                },
+                    },
+                ],
             },
-        }).hits
-    );
-    return [
-        ...query('data.audience'),
-        ...query('data.audience._selected'),
-    ];
+        },
+    }).hits;
 };
 
 const getAllProductsData = (audience: ProductAudience[], language: string) => {

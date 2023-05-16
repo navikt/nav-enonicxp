@@ -39,46 +39,48 @@ const getSituationsLayout = (
 };
 
 const getSituationPages = (area: string, audience: string) => {
-    // Må ta høyde for at audience kan befinne seg i to forskjellige felter,
-    // alt etter om siden er publisert eller ikke etter migrering til ny datamodell for audience
-    // TODO: Kan fjerne dette etter at alle sider med audience er publisert
-    const query = (audienceField: string) => (
-            contentLib.query({
-            start: 0,
-            count: 1000,
-            contentTypes: ['no.nav.navno:situation-page'],
-            filters: {
-                boolean: {
-                    must: [
-                        {
-                            hasValue: {
-                                field: 'data.area',
-                                values: [area],
-                            },
+    return contentLib.query({
+        start: 0,
+        count: 1000,
+        contentTypes: ['no.nav.navno:situation-page'],
+        filters: {
+            boolean: {
+                // Må ta høyde for at audience kan befinne seg i to forskjellige felter,
+                // alt etter om siden er publisert eller ikke etter migrering til ny datamodell for audience
+                // TODO: Kan endres til EN must etter at alle sider med audience er publisert
+                should: [
+                    {
+                        hasValue: {
+                            field: 'data.audience',
+                            values: [audience],
                         },
-                        {
-                            hasValue: {
-                                field: audienceField,
-                                values: [audience],
-                            },
+                    },
+                    {
+                        hasValue: {
+                            field: 'data.audience._selected',
+                            values: [audience],
                         },
-                    ],
-                    mustNot: [
-                        {
-                            hasValue: {
-                                field: 'x.no-nav-navno.previewOnly.previewOnly',
-                                values: [true],
-                            },
+                    },
+                ],
+                must: [
+                    {
+                        hasValue: {
+                            field: 'data.area',
+                            values: [area],
                         },
-                    ],
-                },
+                    },
+                ],
+                mustNot: [
+                    {
+                        hasValue: {
+                            field: 'x.no-nav-navno.previewOnly.previewOnly',
+                            values: [true],
+                        },
+                    },
+                ],
             },
-        }).hits
-    );
-    return [
-        ...query('data.audience'),
-        ...query('data.audience._selected'),
-    ];
+        },
+    }).hits;
 }
 // TODO: this can be removed after we've migrated these pages to layers
 const pageContainsLegacyLanguagesRef = (
