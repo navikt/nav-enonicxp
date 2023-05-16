@@ -15,6 +15,11 @@ export const audienceMigration = () => {
                             field: 'data.audience',
                         },
                     },
+                    mustNot: {
+                        exists: {
+                            field: 'data.audience._selected',
+                        },
+                    },
                 },
             },
         }).hits;
