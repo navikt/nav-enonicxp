@@ -109,7 +109,7 @@ export interface CurrentTopicPage {
   canonicalUrl?: string;
 
   /**
-   * Skal ikke vises i eksternt søk
+   * Skal ikke vises i søk
    */
   noindex: boolean;
 }

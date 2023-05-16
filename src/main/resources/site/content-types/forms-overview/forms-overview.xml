@@ -1,0 +1,113 @@
+<content-type>
+    <display-name>Skjemaoversikt</display-name>
+    <description>Oversikt over skjemaer for en bestemt målgruppe</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <form>
+        <field-set>
+            <label>Tittel/ingress</label>
+            <items>
+                <input type="TextLine" name="title">
+                    <label>Side-tittel</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <default>Søknad og skjema</default>
+                </input>
+                <input type="TextArea" name="ingress">
+                    <label>Ingress/beskrivelse</label>
+                    <help-text>En kort beskrivelse som vises i lenkepanel/kort som lenker til denne siden</help-text>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Sideoppsett</label>
+            <items>
+                <option-set name="audience">
+                    <label>Målgruppe</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <options minimum="1" maximum="1">
+                        <option name="person">
+                            <label>Privatperson</label>
+                        </option>
+                        <option name="employer">
+                            <label>Arbeidsgiver</label>
+                        </option>
+                        <option name="provider">
+                            <label>Samarbeidspartner</label>
+                            <items>
+                                <option-set name="pageType">
+                                    <label>Sidetype</label>
+                                    <occurrences minimum="1" maximum="1"/>
+                                    <options minimum="1" maximum="1">
+                                        <option name="form-details">
+                                            <label>Skjemaoversikt</label>
+                                            <items>
+                                                <!--TODO: make a shared mixin with the general audience type-->
+                                                <input name="provider_audience" type="ComboBox">
+                                                    <label>Velg underkategori</label>
+                                                    <occurrences minimum="1" maximum="1"/>
+                                                    <config>
+                                                        <option value="doctor">Lege</option>
+                                                        <option value="dentist">Tannlege</option>
+                                                        <option value="optician">Optiker</option>
+                                                        <option value="occupational_therapist">Ergoterapeut</option>
+                                                        <option value="aid_supplier">Hjelpemiddeleverandør</option>
+                                                        <option value="measures_organizer">Tiltaksarrangør</option>
+                                                        <option value="administrator">Bostyrer</option>
+                                                        <option value="municipality">Kommune</option>
+                                                        <option value="other">Annet</option>
+                                                    </config>
+                                                </input>
+                                            </items>
+                                        </option>
+                                        <option name="audience-landing">
+                                            <!-- TODO: add input for references to relevant pages -->
+                                            <label>Inngang til underkategorier</label>
+                                        </option>
+                                    </options>
+                                </option-set>
+                            </items>
+                        </option>
+                    </options>
+                </option-set>
+                <mixin name="illustration"/>
+                <mixin name="custom-path-selector-required"/>
+                <input name="showFilter" type="CheckBox">
+                    <label>Vis fritekst-filter</label>
+                    <default>checked</default>
+                </input>
+            </items>
+        </field-set>
+        <mixin name="owner"/>
+        <field-set>
+            <label>Søkeoptimalisering</label>
+            <items>
+                <input type="TextArea" name="description">
+                    <label>Oppsummering</label>
+                    <help-text>Vises når denne siden lenkes til fra enkelte andre sider, og i
+                        søkeresultater. Bør være maks 240 tegn.
+                    </help-text>
+                </input>
+                <mixin name="keywords"/>
+                <input name="canonicalUrl" type="TextLine">
+                    <label>
+                        Canonical url - NB! Skal bare legges inn av hovedredaktør/administrator
+                    </label>
+                    <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <regexp>^https:\/\/([a-z0-9_\-.]*\.)?nav\.no($|\/).*</regexp>
+                    </config>
+                </input>
+                <input name="noindex" type="CheckBox">
+                    <label>
+                        Skal ikke vises i søk
+                    </label>
+                    <help-text>
+                        Gjelder både søket på nav.no og eksternt søk som Google og Bing
+                    </help-text>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

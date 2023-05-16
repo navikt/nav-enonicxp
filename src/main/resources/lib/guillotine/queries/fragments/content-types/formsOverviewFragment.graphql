@@ -1,28 +1,20 @@
 #import "../mixins/animatedIconsTargetFragment.graphql"
 #import "../mixins/imageInlineFragment.graphql"
 
-fragment contentOverviewPage on no_nav_navno_Overview {
+fragment contentFormsOverviewPage on no_nav_navno_FormsOverview {
     dataAsJson
     data {
-        audience
         illustration {
             ...animatedIconsTargetMixin
         }
-        productList {
-            _id
-            anchorId
-            path
-            type
-            productDetailsPath
+        formDetailsList {
             title
-            sortTitle
-            ingress
-            taxonomy
-            language
-            audience
+            formDetailsPaths
             area
+            taxonomy
+            anchorId
             illustration {
-                ... on no_nav_navno_AnimatedIcons {
+                ...on no_nav_navno_AnimatedIcons{
                     type
                     data {
                         icons {

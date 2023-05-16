@@ -24,10 +24,10 @@
                 </input>
                 <input name="noindex" type="CheckBox">
                     <label>
-                        Skal ikke vises i eksternt søk
+                        Skal ikke vises i søk
                     </label>
                     <help-text>
-                        Med eksternt søk menes Google, Bing mv.
+                        Gjelder både søket på nav.no og eksternt søk som Google og Bing
                     </help-text>
                 </input>
             </items>
