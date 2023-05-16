@@ -63,22 +63,30 @@ const transformToListItem = (content: ContentWithFormDetails): FormDetailsListIt
     };
 };
 
-const buildFormDetailsList = (audience: Audience['audience'], language: string) => {
+const buildFormDetailsList = (audience: Audience['audience']['_selected'], language: string) => {
     const contentWithFormDetails = contentLib.query({
         count: 1000,
         contentTypes: contentTypesWithFormDetails,
         filters: {
             boolean: {
-                must: [
-                    {
-                        exists: {
-                            field: 'data.formDetailsTargets',
-                        },
-                    },
+                should: [
                     {
                         hasValue: {
                             field: 'data.audience',
                             values: [audience],
+                        },
+                    },
+                    {
+                        hasValue: {
+                            field: 'data.audience._selected',
+                            values: [audience],
+                        },
+                    },
+                ],
+                must: [
+                    {
+                        exists: {
+                            field: 'data.formDetailsTargets',
                         },
                     },
                     {
