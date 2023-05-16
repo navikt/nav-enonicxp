@@ -9,6 +9,8 @@ fragment contentFormsOverviewPage on no_nav_navno_FormsOverview {
         }
         formDetailsList {
             title
+            sortTitle
+            url
             formDetailsPaths
             area
             taxonomy
