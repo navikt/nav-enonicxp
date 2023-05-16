@@ -7,29 +7,24 @@ import { logger } from '../../../utils/logging';
 import { forceArray } from '../../../utils/array-utils';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
 import { Audience } from '../../../../site/mixins/audience/audience';
-import { Taxonomy } from '../../../../site/mixins/taxonomy/taxonomy';
-import { Area } from '../../../../site/mixins/area/area';
 import { FormsOverview } from '../../../../site/content-types/forms-overview/forms-overview';
+import { ProductData } from '../../../../site/mixins/product-data/product-data';
+import { stripPathPrefix } from '../../../paths/path-utils';
+
+type IncludedProductData = Pick<
+    ProductData,
+    'title' | 'sortTitle' | 'illustration' | 'area' | 'taxonomy'
+>;
 
 type FormDetailsListItem = {
-    title: string;
-    sortTitle: string;
     anchorId: string;
-    illustration: string;
-    taxonomy: Taxonomy['taxonomy'];
-    area: Area['area'];
     formDetailsPaths: string[];
-};
+    url: string;
+} & Required<IncludedProductData>;
 
 type ContentWithFormDetails = Content<(typeof contentTypesWithFormDetails)[number]> & {
     // Fields from nested mixins are not included in the autogenerate types
-    data: {
-        title?: string;
-        sortTitle?: string;
-        illustration: string;
-        area: Area['area'];
-        taxonomy: Taxonomy['taxonomy'];
-    };
+    data: IncludedProductData & Pick<ProductData, 'externalProductUrl'>;
 };
 
 const contentTypesWithFormDetails = [
@@ -72,9 +67,12 @@ const transformToListItem = (
     const title = content.data.title || content.displayName;
     const sortTitle = content.data.sortTitle || title;
 
+    const url = content.data.externalProductUrl || stripPathPrefix(content._path);
+
     return {
         title,
         sortTitle,
+        url,
         anchorId: sanitize(sortTitle),
         formDetailsPaths: formDetailsContent.map((formDetails) => formDetails._path),
         illustration: content.data.illustration,
@@ -141,6 +139,7 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
         name: context.uniqueName('FormDetailsList'),
         description: 'Liste over sider med skjemadetaljer',
         fields: {
+            url: { type: graphQlLib.GraphQLString },
             formDetailsPaths: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             sortTitle: { type: graphQlLib.GraphQLString },
             title: { type: graphQlLib.GraphQLString },
