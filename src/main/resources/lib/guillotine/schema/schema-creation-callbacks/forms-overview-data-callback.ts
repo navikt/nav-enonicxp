@@ -52,6 +52,12 @@ const transformToListItem = (content: ContentWithFormDetails): FormDetailsListIt
     const title = content.data.title || content.displayName;
     const sortTitle = content.data.sortTitle || title;
 
+    const taxonomy = forceArray(content.data.taxonomy);
+
+    if (content.type === 'no.nav.navno:guide-page') {
+        taxonomy.push('forms');
+    }
+
     return {
         title,
         sortTitle,
@@ -59,7 +65,7 @@ const transformToListItem = (content: ContentWithFormDetails): FormDetailsListIt
         formDetailsPaths: formDetailsContent.map((formDetails) => formDetails._path),
         illustration: content.data.illustration,
         area: forceArray(content.data.area),
-        taxonomy: forceArray(content.data.taxonomy),
+        taxonomy,
     };
 };
 

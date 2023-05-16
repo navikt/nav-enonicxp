@@ -3,7 +3,7 @@
     <form>
         <input name="taxonomy" type="ComboBox">
             <label>Kategori</label>
-            <occurrences minimum="0" maximum="8"/>
+            <occurrences minimum="0" maximum="0"/>
             <config>
                 <option value="assistive_tools">Hjelpemiddel</option>
                 <option value="followup">Oppfølging</option>
@@ -16,6 +16,7 @@
                 <option value="for_municipality">For kommunen</option>
                 <option value="for_event_organizers">For tiltaksarrangører</option>
                 <option value="for_health_service">For leger og andre behandlere</option>
+                <option value="forms">Skjema</option>
             </config>
         </input>
     </form>

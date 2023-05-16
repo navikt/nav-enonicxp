@@ -132,9 +132,15 @@ const getProductDetails = (
 const buildCommonProductData = (product: ContentWithProductDetails) => {
     const data = product.data as ContentWithProductDetailsData;
     const fullTitle = data.title || product.displayName;
+    const taxonomy = forceArray(data.taxonomy);
+
+    if (product.type === 'no.nav.navno:guide-page') {
+        taxonomy.push('forms');
+    }
 
     return {
         ...data,
+        taxonomy,
         _id: product._id,
         type: product.type,
         path: product._path,
