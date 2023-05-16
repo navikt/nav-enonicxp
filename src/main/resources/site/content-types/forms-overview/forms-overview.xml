@@ -1,28 +1,23 @@
 <content-type>
     <display-name>Skjemaoversikt</display-name>
-    <description>Oversikt over skjemaer for en bestemt målgruppe</description>
+    <description>Oversikt for søknad/skjema, klage/anke og ettersendelse</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
     <form>
         <field-set>
-            <label>Tittel/ingress</label>
+            <label>Sideoppsett</label>
             <items>
                 <input type="TextLine" name="title">
                     <label>Side-tittel</label>
                     <occurrences minimum="1" maximum="1"/>
                     <default>Søknad og skjema</default>
-                </input>
+                </input>s
                 <input type="TextArea" name="ingress">
                     <label>Ingress/beskrivelse</label>
                     <help-text>En kort beskrivelse som vises i lenkepanel/kort som lenker til denne siden</help-text>
                     <occurrences minimum="1" maximum="1"/>
                 </input>
-            </items>
-        </field-set>
-        <field-set>
-            <label>Sideoppsett</label>
-            <items>
                 <input name="overviewType" type="ComboBox">
                     <label>Velg type oversikt</label>
                     <occurrences minimum="1" maximum="1"/>
@@ -37,6 +32,7 @@
             </items>
         </field-set>
         <option-set name="audience">
+            <label>Målgruppe</label>
             <occurrences minimum="1" maximum="1"/>
             <options minimum="1" maximum="1">
                 <option name="person">
@@ -77,6 +73,7 @@
                                     <label>Inngang til oversikter for underkategorier</label>
                                     <items>
                                         <item-set name="provider_audience_links">
+                                            <label>Legg til skjemaoversikter for underkategorier</label>
                                             <occurences minimum="1" maximum="0"/>
                                             <items>
                                                 <input type="ContentSelector" name="link">

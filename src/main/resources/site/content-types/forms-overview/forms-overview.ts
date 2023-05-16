@@ -25,7 +25,9 @@ export interface FormsOverview {
    */
   customPath: string;
 
-
+  /**
+   * Målgruppe
+   */
   audience:
     | {
         /**
@@ -89,7 +91,9 @@ export interface FormsOverview {
                  * Inngang til oversikter for underkategorier
                  */
                 "audience-links": {
-
+                  /**
+                   * Legg til skjemaoversikter for underkategorier
+                   */
                   provider_audience_links?: {
                     /**
                      * Velg skjemaoversikt

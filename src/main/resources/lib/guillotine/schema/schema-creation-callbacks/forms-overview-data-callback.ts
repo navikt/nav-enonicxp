@@ -9,6 +9,7 @@ import { getGuillotineContentQueryBaseContentId } from '../../utils/content-quer
 import { Audience } from '../../../../site/mixins/audience/audience';
 import { Taxonomy } from '../../../../site/mixins/taxonomy/taxonomy';
 import { Area } from '../../../../site/mixins/area/area';
+import { FormsOverview } from '../../../../site/content-types/forms-overview/forms-overview';
 
 type FormDetailsListItem = {
     title: string;
@@ -36,13 +37,30 @@ const contentTypesWithFormDetails = [
     'no.nav.navno:guide-page',
 ] as const;
 
-const transformToListItem = (content: ContentWithFormDetails): FormDetailsListItem | null => {
+const transformToListItem = (
+    content: ContentWithFormDetails,
+    overviewType: FormsOverview['overviewType']
+): FormDetailsListItem | null => {
     const formDetailsTargets = forceArray(content.data.formDetailsTargets);
 
     const formDetailsContent = contentLib.query({
         count: formDetailsTargets.length,
         contentTypes: ['no.nav.navno:form-details'],
-        filters: { ids: { values: formDetailsTargets } },
+        filters: {
+            ids: {
+                values: formDetailsTargets,
+            },
+            boolean: {
+                must: [
+                    {
+                        hasValue: {
+                            field: 'data.formType._selected',
+                            values: [overviewType],
+                        },
+                    },
+                ],
+            },
+        },
     }).hits;
 
     if (formDetailsContent.length === 0) {
@@ -63,7 +81,11 @@ const transformToListItem = (content: ContentWithFormDetails): FormDetailsListIt
     };
 };
 
-const buildFormDetailsList = (audience: Audience['audience'], language: string) => {
+const buildFormDetailsList = (
+    audience: Audience['audience'],
+    language: string,
+    overviewType: FormsOverview['overviewType']
+) => {
     const contentWithFormDetails = contentLib.query({
         count: 1000,
         contentTypes: contentTypesWithFormDetails,
@@ -102,7 +124,7 @@ const buildFormDetailsList = (audience: Audience['audience'], language: string) 
 
     return contentWithFormDetails
         .reduce<FormDetailsListItem[]>((acc, content) => {
-            const transformedItem = transformToListItem(content);
+            const transformedItem = transformToListItem(content, overviewType);
             if (transformedItem) {
                 acc.push(transformedItem);
             }
@@ -149,14 +171,14 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
             }
 
             const { language, data } = content;
-            const { audience } = data;
+            const { audience, overviewType } = data;
 
             if (!audience) {
                 logger.error(`Audience not set for overview page id ${contentId}`);
                 return [];
             }
 
-            return buildFormDetailsList(audience._selected, language);
+            return buildFormDetailsList(audience._selected, language, overviewType);
         },
     };
 };
