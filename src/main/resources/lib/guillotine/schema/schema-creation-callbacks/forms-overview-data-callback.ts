@@ -43,25 +43,27 @@ const transformToListItem = (
 ): FormDetailsListItem | null => {
     const formDetailsTargets = forceArray(content.data.formDetailsTargets);
 
-    const formDetailsContent = contentLib.query({
-        count: formDetailsTargets.length,
-        contentTypes: ['no.nav.navno:form-details'],
-        filters: {
-            ids: {
-                values: formDetailsTargets,
-            },
-            boolean: {
-                must: [
-                    {
-                        hasValue: {
-                            field: 'data.formType._selected',
-                            values: [overviewType],
+    const formDetailsContent = contentLib
+        .query({
+            count: formDetailsTargets.length,
+            contentTypes: ['no.nav.navno:form-details'],
+            filters: {
+                ids: {
+                    values: formDetailsTargets,
+                },
+                boolean: {
+                    must: [
+                        {
+                            hasValue: {
+                                field: 'data.formType._selected',
+                                values: [overviewType],
+                            },
                         },
-                    },
-                ],
+                    ],
+                },
             },
-        },
-    }).hits;
+        })
+        .hits.sort((a, b) => formDetailsTargets.indexOf(a._id) - formDetailsTargets.indexOf(b._id));
 
     if (formDetailsContent.length === 0) {
         return null;
