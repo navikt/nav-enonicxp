@@ -48,7 +48,7 @@
                             <label>Sidetype</label>
                             <occurrences minimum="1" maximum="1"/>
                             <options minimum="1" maximum="1">
-                                <option name="form-details">
+                                <option name="overview">
                                     <label>Oversikt for underkategori</label>
                                     <items>
                                         <!--TODO: make a shared mixin with the general audience type-->
@@ -69,10 +69,10 @@
                                         </input>
                                     </items>
                                 </option>
-                                <option name="audience-links">
+                                <option name="links">
                                     <label>Inngang til oversikter for underkategorier</label>
                                     <items>
-                                        <input type="ContentSelector" name="link">
+                                        <input type="ContentSelector" name="links">
                                             <label>Velg oversikter</label>
                                             <occurrences minimum="1" maximum="0"/>
                                             <config>
