@@ -9,7 +9,7 @@ import { getGuillotineContentQueryBaseContentId } from '../../utils/content-quer
 import { Audience } from '../../../../site/mixins/audience/audience';
 import { FormsOverview } from '../../../../site/content-types/forms-overview/forms-overview';
 import { ProductData } from '../../../../site/mixins/product-data/product-data';
-import { stripPathPrefix } from '../../../paths/path-utils';
+import { getPublicPath } from '../../../paths/public-path';
 
 type IncludedProductData = Pick<
     ProductData,
@@ -67,7 +67,7 @@ const transformToListItem = (
     const title = content.data.title || content.displayName;
     const sortTitle = content.data.sortTitle || title;
 
-    const url = content.data.externalProductUrl || stripPathPrefix(content._path);
+    const url = content.data.externalProductUrl || getPublicPath(content, content.language);
 
     return {
         title,
