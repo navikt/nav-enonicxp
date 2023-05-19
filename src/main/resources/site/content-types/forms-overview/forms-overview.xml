@@ -54,7 +54,7 @@
                                         <!--TODO: make a shared mixin with the general audience type-->
                                         <input name="provider_audience" type="ComboBox">
                                             <label>Velg underkategori</label>
-                                            <occurrences minimum="1" maximum="1"/>
+                                            <occurrences minimum="1" maximum="0"/>
                                             <config>
                                                 <option value="doctor">Lege</option>
                                                 <option value="dentist">Tannlege</option>
