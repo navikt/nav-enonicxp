@@ -73,7 +73,7 @@
                                     <label>Inngang til oversikter for underkategorier</label>
                                     <items>
                                         <input type="ContentSelector" name="link">
-                                            <label>Velg skjemaoversikt</label>
+                                            <label>Velg oversikter</label>
                                             <occurrences minimum="1" maximum="0"/>
                                             <config>
                                                 <allowContentType>${app}:forms-overview</allowContentType>

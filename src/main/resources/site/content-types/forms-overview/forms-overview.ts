@@ -72,7 +72,7 @@ export interface FormsOverview {
                 _selected: "form-details";
 
                 /**
-                 * Skjemaoversikt
+                 * Oversikt for underkategori
                  */
                 "form-details": {
                   /**
