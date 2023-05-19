@@ -7,28 +7,24 @@ import { logger } from '../../../utils/logging';
 import { forceArray } from '../../../utils/array-utils';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
 import { Audience } from '../../../../site/mixins/audience/audience';
-import { Taxonomy } from '../../../../site/mixins/taxonomy/taxonomy';
-import { Area } from '../../../../site/mixins/area/area';
+import { FormsOverview } from '../../../../site/content-types/forms-overview/forms-overview';
+import { ProductData } from '../../../../site/mixins/product-data/product-data';
+import { getPublicPath } from '../../../paths/public-path';
+
+type IncludedProductData = Pick<
+    ProductData,
+    'title' | 'sortTitle' | 'illustration' | 'area' | 'taxonomy'
+>;
 
 type FormDetailsListItem = {
-    title: string;
-    sortTitle: string;
     anchorId: string;
-    illustration: string;
-    taxonomy: Taxonomy['taxonomy'];
-    area: Area['area'];
     formDetailsPaths: string[];
-};
+    url: string;
+} & Required<IncludedProductData>;
 
 type ContentWithFormDetails = Content<(typeof contentTypesWithFormDetails)[number]> & {
     // Fields from nested mixins are not included in the autogenerate types
-    data: {
-        title?: string;
-        sortTitle?: string;
-        illustration: string;
-        area: Area['area'];
-        taxonomy: Taxonomy['taxonomy'];
-    };
+    data: IncludedProductData & Pick<ProductData, 'externalProductUrl'>;
 };
 
 const contentTypesWithFormDetails = [
@@ -36,14 +32,33 @@ const contentTypesWithFormDetails = [
     'no.nav.navno:guide-page',
 ] as const;
 
-const transformToListItem = (content: ContentWithFormDetails): FormDetailsListItem | null => {
+const transformToListItem = (
+    content: ContentWithFormDetails,
+    overviewType: FormsOverview['overviewType']
+): FormDetailsListItem | null => {
     const formDetailsTargets = forceArray(content.data.formDetailsTargets);
 
-    const formDetailsContent = contentLib.query({
-        count: formDetailsTargets.length,
-        contentTypes: ['no.nav.navno:form-details'],
-        filters: { ids: { values: formDetailsTargets } },
-    }).hits;
+    const formDetailsContent = contentLib
+        .query({
+            count: formDetailsTargets.length,
+            contentTypes: ['no.nav.navno:form-details'],
+            filters: {
+                ids: {
+                    values: formDetailsTargets,
+                },
+                boolean: {
+                    must: [
+                        {
+                            hasValue: {
+                                field: 'data.formType._selected',
+                                values: [overviewType],
+                            },
+                        },
+                    ],
+                },
+            },
+        })
+        .hits.sort((a, b) => formDetailsTargets.indexOf(a._id) - formDetailsTargets.indexOf(b._id));
 
     if (formDetailsContent.length === 0) {
         return null;
@@ -52,9 +67,12 @@ const transformToListItem = (content: ContentWithFormDetails): FormDetailsListIt
     const title = content.data.title || content.displayName;
     const sortTitle = content.data.sortTitle || title;
 
+    const url = content.data.externalProductUrl || getPublicPath(content, content.language);
+
     return {
         title,
         sortTitle,
+        url,
         anchorId: sanitize(sortTitle),
         formDetailsPaths: formDetailsContent.map((formDetails) => formDetails._path),
         illustration: content.data.illustration,
@@ -63,7 +81,11 @@ const transformToListItem = (content: ContentWithFormDetails): FormDetailsListIt
     };
 };
 
-const buildFormDetailsList = (audience: Audience['audience']['_selected'], language: string) => {
+const buildFormDetailsList = (
+    audience: Audience['audience']['_selected'],
+    language: string,
+    overviewType: FormsOverview['overviewType']
+) => {
     const contentWithFormDetails = contentLib.query({
         count: 1000,
         contentTypes: contentTypesWithFormDetails,
@@ -110,7 +132,7 @@ const buildFormDetailsList = (audience: Audience['audience']['_selected'], langu
 
     return contentWithFormDetails
         .reduce<FormDetailsListItem[]>((acc, content) => {
-            const transformedItem = transformToListItem(content);
+            const transformedItem = transformToListItem(content, overviewType);
             if (transformedItem) {
                 acc.push(transformedItem);
             }
@@ -125,6 +147,7 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
         name: context.uniqueName('FormDetailsList'),
         description: 'Liste over sider med skjemadetaljer',
         fields: {
+            url: { type: graphQlLib.GraphQLString },
             formDetailsPaths: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             sortTitle: { type: graphQlLib.GraphQLString },
             title: { type: graphQlLib.GraphQLString },
@@ -157,14 +180,19 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
             }
 
             const { language, data } = content;
-            const { audience } = data;
+            const { audience, overviewType } = data;
 
             if (!audience) {
                 logger.error(`Audience not set for overview page id ${contentId}`);
                 return [];
             }
 
-            return buildFormDetailsList(audience._selected, language);
+            if (!overviewType) {
+                logger.error(`Overview type not set for overview page id ${contentId}`);
+                return [];
+            }
+
+            return buildFormDetailsList(audience._selected, language, overviewType);
         },
     };
 };

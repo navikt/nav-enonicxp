@@ -36,20 +36,14 @@ export const audienceMigration = () => {
                 key: hit._id,
                 editor: (node) => {
                     const oldAudience = node.data.audience;
-                    log.info(`${num++}: ${hit._path} Audience: ${oldAudience}`);
                     if (oldAudience._selected === undefined) {
+                        log.info(`${num++}: ${hit._path} Audience: ${oldAudience}`);
                         node.data.audience = { _selected: oldAudience };
                     }
                     return node;
                 },
             });
-            repo.push({
-                key: hit._id,
-                target: 'draft',
-                resolve: false,
-            });
         });
-
         log.info(`Antall sider migrert: ${hits.length}`);
     });
 };
