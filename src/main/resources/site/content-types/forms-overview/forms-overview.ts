@@ -98,7 +98,7 @@ export interface FormsOverview {
                     /**
                      * Velg skjemaoversikt
                      */
-                    link: string;
+                    link: Array<string>;
                   };
                 };
               };
