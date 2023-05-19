@@ -4,6 +4,26 @@
 fragment contentFormsOverviewPage on no_nav_navno_FormsOverview {
     dataAsJson
     data {
+        audience {
+            _selected
+            provider {
+                pageType {
+                    overview {
+                        provider_audience
+                    }
+                    links {
+                        links {
+                            _path
+                            ...on no_nav_navno_FormsOverview {
+                                data {
+                                    title
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
         illustration {
             ...animatedIconsTargetMixin
         }

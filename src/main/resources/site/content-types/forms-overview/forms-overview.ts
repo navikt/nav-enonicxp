@@ -69,12 +69,12 @@ export interface FormsOverview {
                 /**
                  * Selected
                  */
-                _selected: "form-details";
+                _selected: "overview";
 
                 /**
-                 * Skjemaoversikt
+                 * Oversikt for underkategori
                  */
-                "form-details": {
+                overview: {
                   /**
                    * Velg underkategori
                    */
@@ -85,21 +85,16 @@ export interface FormsOverview {
                 /**
                  * Selected
                  */
-                _selected: "audience-links";
+                _selected: "links";
 
                 /**
                  * Inngang til oversikter for underkategorier
                  */
-                "audience-links": {
+                links: {
                   /**
-                   * Legg til skjemaoversikter for underkategorier
+                   * Velg oversikter
                    */
-                  provider_audience_links?: {
-                    /**
-                     * Velg skjemaoversikt
-                     */
-                    link: string;
-                  };
+                  links: Array<string>;
                 };
               };
         };
