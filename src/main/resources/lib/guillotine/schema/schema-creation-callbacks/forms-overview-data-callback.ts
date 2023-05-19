@@ -13,16 +13,19 @@ import { getPublicPath } from '../../../paths/public-path';
 
 type IncludedProductData = Pick<
     ProductData,
-    'title' | 'sortTitle' | 'illustration' | 'area' | 'taxonomy'
+    'title' | 'sortTitle' | 'illustration' | 'area' | 'taxonomy' | 'ingress'
 >;
 
 type FormDetailsListItem = {
     anchorId: string;
     formDetailsPaths: string[];
     url: string;
+    type: ContentTypeWithFormDetails;
 } & Required<IncludedProductData>;
 
-type ContentWithFormDetails = Content<(typeof contentTypesWithFormDetails)[number]> & {
+type ContentTypeWithFormDetails = (typeof contentTypesWithFormDetails)[number];
+
+type ContentWithFormDetails = Content<ContentTypeWithFormDetails> & {
     // Fields from nested mixins are not included in the autogenerate types
     data: IncludedProductData & Pick<ProductData, 'externalProductUrl'>;
 };
@@ -72,7 +75,9 @@ const transformToListItem = (
     return {
         title,
         sortTitle,
+        ingress: content.data.ingress,
         url,
+        type: content.type,
         anchorId: sanitize(sortTitle),
         formDetailsPaths: formDetailsContent.map((formDetails) => formDetails._path),
         illustration: content.data.illustration,
@@ -140,6 +145,8 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
         description: 'Liste over sider med skjemadetaljer',
         fields: {
             url: { type: graphQlLib.GraphQLString },
+            type: { type: graphQlLib.GraphQLString },
+            ingress: { type: graphQlLib.GraphQLString },
             formDetailsPaths: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             sortTitle: { type: graphQlLib.GraphQLString },
             title: { type: graphQlLib.GraphQLString },
