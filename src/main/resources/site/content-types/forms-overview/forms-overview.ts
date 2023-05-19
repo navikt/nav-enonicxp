@@ -92,14 +92,9 @@ export interface FormsOverview {
                  */
                 "audience-links": {
                   /**
-                   * Legg til skjemaoversikter for underkategorier
+                   * Velg skjemaoversikt
                    */
-                  provider_audience_links?: {
-                    /**
-                     * Velg skjemaoversikt
-                     */
-                    link: Array<string>;
-                  };
+                  link: Array<string>;
                 };
               };
         };
