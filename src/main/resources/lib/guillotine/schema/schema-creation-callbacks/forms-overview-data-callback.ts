@@ -4,7 +4,7 @@ import { Content } from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 import { logger } from '../../../utils/logging';
-import { forceArray, duplicatesFilter } from '../../../utils/array-utils';
+import { forceArray, removeDuplicatesFilter } from '../../../utils/array-utils';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
 import { Audience } from '../../../../site/mixins/audience/audience';
 import { FormsOverview } from '../../../../site/content-types/forms-overview/forms-overview';
@@ -123,7 +123,7 @@ const buildFormDetailsList = (
     const formDetailsIds = contentWithFormDetails
         .map((content) => content.data.formDetailsTargets)
         .flat()
-        .filter(duplicatesFilter());
+        .filter(removeDuplicatesFilter());
 
     const formDetailsMap = contentLib
         .query({

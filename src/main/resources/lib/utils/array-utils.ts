@@ -29,9 +29,9 @@ export const stringArrayToSet = (list: string[] | readonly string[]): Record<str
 export const removeDuplicates = <Type>(
     array: Type[] | ReadonlyArray<Type>,
     isEqualPredicate?: (a: Type, b: Type) => boolean
-) => array.filter(duplicatesFilter<Type>(isEqualPredicate));
+) => array.filter(removeDuplicatesFilter<Type>(isEqualPredicate));
 
-export const duplicatesFilter = <Type>(isEqualPredicate?: (a: Type, b: Type) => boolean) =>
+export const removeDuplicatesFilter = <Type>(isEqualPredicate?: (a: Type, b: Type) => boolean) =>
     isEqualPredicate
         ? (aItem: Type, aIndex: number, array: Type[] | ReadonlyArray<Type>) => {
               const bIndex = array.findIndex((bItem) => isEqualPredicate(aItem, bItem));
