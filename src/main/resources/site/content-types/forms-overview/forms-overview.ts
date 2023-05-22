@@ -62,7 +62,7 @@ export interface FormsOverview {
          */
         provider: {
           /**
-           * Sidetype
+           * Velg sidetype
            */
           pageType:
             | {
@@ -72,7 +72,7 @@ export interface FormsOverview {
                 _selected: "overview";
 
                 /**
-                 * Oversikt for underkategori
+                 * Oversiktsside for underkategori
                  */
                 overview: {
                   /**
@@ -88,13 +88,23 @@ export interface FormsOverview {
                 _selected: "links";
 
                 /**
-                 * Inngang til oversikter for underkategorier
+                 * Transportside til oversikter for underkategorier
                  */
                 links: {
                   /**
-                   * Velg oversikter
+                   * Lenker til oversikter
                    */
-                  links: Array<string>;
+                  links: Array<{
+                    /**
+                     * Lenketekst
+                     */
+                    text?: string;
+
+                    /**
+                     * Velg oversiktsside
+                     */
+                    link: string;
+                  }>;
                 };
               };
         };
