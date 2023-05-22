@@ -1,5 +1,6 @@
 #import "../mixins/productTargetFragment.graphql"
 #import "../mixins/productTargetMicroFragment.graphql"
+#import "../mixins/formDetailsTargetFragment.graphql"
 #import "../content-types/payoutDatesFragment.graphql"
 
 fragment macros on Macro {
@@ -152,5 +153,20 @@ fragment html_fragmentMacro on Macro {
                 }
             }
         }
+    }
+}
+
+# This macro can contain other macros and must be defined as a separate fragment
+# to prevent circular queries
+fragment form_details_fragmentMacro on Macro {
+    config {
+    formDetails {
+        targetFormDetails {
+            ...formDetailsMixin
+        }
+        showTitle
+        showIngress
+        showApplications
+        showAddendums
     }
 }
