@@ -1,0 +1,141 @@
+<content-type>
+    <display-name>Skjemaoversikt</display-name>
+    <description>Oversikt for søknad/skjema, klage/anke og ettersendelse</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <form>
+        <field-set>
+            <label>Sideoppsett</label>
+            <items>
+                <input type="TextLine" name="title">
+                    <label>Side-tittel</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <default>Søknad og skjema</default>
+                </input>
+                <input type="TextArea" name="ingress">
+                    <label>Ingress/beskrivelse</label>
+                    <help-text>En kort beskrivelse som vises i lenkepanel/kort som lenker til denne siden</help-text>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <input name="overviewType" type="ComboBox">
+                    <label>Velg type oversikt</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <option value="application">Søknad og skjema</option>
+                        <option value="complaint">Klage og anke</option>
+                        <option value="addendum">Ettersendelse</option>
+                    </config>
+                </input>
+                <mixin name="illustration"/>
+                <mixin name="custom-path-selector-required"/>
+            </items>
+        </field-set>
+        <option-set name="audience">
+            <label>Målgruppe</label>
+            <occurrences minimum="1" maximum="1"/>
+            <options minimum="1" maximum="1">
+                <option name="person">
+                    <label>Privatperson</label>
+                </option>
+                <option name="employer">
+                    <label>Arbeidsgiver</label>
+                </option>
+                <option name="provider">
+                    <label>Samarbeidspartner</label>
+                    <items>
+                        <option-set name="pageType">
+                            <label>Velg sidetype</label>
+                            <occurrences minimum="1" maximum="1"/>
+                            <options minimum="1" maximum="1">
+                                <option name="overview">
+                                    <label>Oversiktsside for underkategori</label>
+                                    <items>
+                                        <!--TODO: make a shared mixin with the general audience type-->
+                                        <input name="provider_audience" type="ComboBox">
+                                            <label>Velg underkategori</label>
+                                            <occurrences minimum="1" maximum="0"/>
+                                            <config>
+                                                <option value="doctor">Lege</option>
+                                                <option value="dentist">Tannlege</option>
+                                                <option value="optician">Optiker</option>
+                                                <option value="occupational_therapist">Ergoterapeut</option>
+                                                <option value="aid_supplier">Hjelpemiddeleverandør</option>
+                                                <option value="measures_organizer">Tiltaksarrangør</option>
+                                                <option value="administrator">Bostyrer</option>
+                                                <option value="municipality">Kommune</option>
+                                                <option value="other">Annet</option>
+                                            </config>
+                                        </input>
+                                    </items>
+                                </option>
+                                <option name="links">
+                                    <label>Transportside til oversikter for underkategorier</label>
+                                    <items>
+                                        <item-set name="links">
+                                            <label>Lenker til oversiktssider</label>
+                                            <occurrences minimum="1" maximum="0"/>
+                                            <items>
+                                                <input type="TextLine" name="text">
+                                                    <label>Lenketekst</label>
+                                                    <help-text>Hvis denne er tom benyttes tittel på oversiktssiden som
+                                                        lenketekst
+                                                    </help-text>
+                                                </input>
+                                                <input type="ContentSelector" name="link">
+                                                    <label>Velg oversiktsside</label>
+                                                    <occurrences minimum="1" maximum="1"/>
+                                                    <config>
+                                                        <allowContentType>${app}:forms-overview</allowContentType>
+                                                    </config>
+                                                </input>
+                                            </items>
+                                        </item-set>
+                                    </items>
+                                </option>
+                            </options>
+                        </option-set>
+                    </items>
+                </option>
+            </options>
+        </option-set>
+        <field-set>
+            <label>Filtre</label>
+            <items>
+                <input name="areasFilterToggle" type="CheckBox">
+                    <label>Vis område-filter</label>
+                    <default>checked</default>
+                </input>
+                <input name="taxonomyFilterToggle" type="CheckBox">
+                    <label>Vis kategori-filter</label>
+                    <default>checked</default>
+                </input>
+                <input name="textFilterToggle" type="CheckBox">
+                    <label>Vis fritekst-filter</label>
+                    <default>checked</default>
+                </input>
+            </items>
+        </field-set>
+        <mixin name="owner"/>
+        <field-set>
+            <label>Søkeoptimalisering</label>
+            <items>
+                <input type="TextArea" name="description">
+                    <label>Oppsummering</label>
+                    <help-text>Vises når denne siden lenkes til fra enkelte andre sider, og i
+                        søkeresultater. Bør være maks 240 tegn.
+                    </help-text>
+                </input>
+                <mixin name="keywords"/>
+                <input name="noindex" type="CheckBox">
+                    <label>
+                        Skal ikke vises i søk
+                    </label>
+                    <help-text>
+                        Gjelder både søket på nav.no og eksternt søk som Google og Bing
+                    </help-text>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

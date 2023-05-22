@@ -7,7 +7,7 @@ import { OverviewPageProductData } from '../../../product-utils/types';
 import { forceArray } from '../../../utils/array-utils';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
 
-export const overviewCallback: CreationCallback = (context, params) => {
+export const overviewDataCallback: CreationCallback = (context, params) => {
     const productType = graphQlCreateObjectType<keyof OverviewPageProductData>(context, {
         name: context.uniqueName('ProductType'),
         description: 'Produkttype',

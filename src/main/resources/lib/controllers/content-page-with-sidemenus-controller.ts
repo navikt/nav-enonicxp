@@ -130,7 +130,7 @@ const removeInvalidFilterIds = (req: XP.Request) => {
     let somePartsWereCleaned = false;
 
     const cleanedComponents = allComponents.map((partComponent) => {
-        if (partComponent.type !== 'part') {
+        if (partComponent.type !== 'part' || !partComponent.part) {
             return partComponent;
         }
         const { component, wasCleaned } = cleanComponentForInvalidFilterId(

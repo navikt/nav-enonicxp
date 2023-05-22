@@ -86,13 +86,26 @@ export const widgetResponse = (req: XP.Request) => {
 
     const migrateHandlerUrl = `${URLS.PORTAL_ADMIN_ORIGIN}${contextPath}/${MIGRATE_HANDLER_PATH}`;
 
-    const nonDefaultLocales = getLayersData().locales.filter(
-        (locale) => locale !== CONTENT_LOCALE_DEFAULT
-    );
+    const { locales, defaultLocale } = getLayersData();
 
+    const nonDefaultLocales = locales.filter((locale) => locale !== CONTENT_LOCALE_DEFAULT);
     if (nonDefaultLocales.length === 0) {
         return {
             body: `<widget>Denne widgeten kan kun benyttes etter innføring av layers (kommer snart!)</widget>`,
+            contentType: 'text/html; charset=UTF-8',
+        };
+    }
+
+    if (content.language === defaultLocale && content.type !== 'portal:fragment') {
+        return {
+            body: `<widget>Denne widgeten kan ikke benyttes for innhold på default-språket (${defaultLocale})</widget>`,
+            contentType: 'text/html; charset=UTF-8',
+        };
+    }
+
+    if (!locales.includes(content.language)) {
+        return {
+            body: `<widget>Det finnes ingen layer for språket til dette innholdet (${content.language})</widget>`,
             contentType: 'text/html; charset=UTF-8',
         };
     }
@@ -101,6 +114,7 @@ export const widgetResponse = (req: XP.Request) => {
 
     const model = {
         locales: nonDefaultLocales,
+        contentLocale: content.language,
         sourceId: contentId,
         targetOptions,
         migrateHandlerUrl,
