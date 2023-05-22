@@ -92,7 +92,7 @@ export interface FormsOverview {
                  */
                 links: {
                   /**
-                   * Lenker til oversikter
+                   * Lenker til oversiktssider
                    */
                   links: Array<{
                     /**
