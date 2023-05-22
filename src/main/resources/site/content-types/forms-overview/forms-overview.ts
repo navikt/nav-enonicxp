@@ -11,6 +11,21 @@ export interface FormsOverview {
   ingress: string;
 
   /**
+   * Velg type oversikt
+   */
+  overviewType: "application" | "complaint" | "addendum";
+
+  /**
+   * Velg piktogram
+   */
+  illustration: string;
+
+  /**
+   * Skriv inn ønsket kort-url
+   */
+  customPath: string;
+
+  /**
    * Målgruppe
    */
   audience:
@@ -47,53 +62,68 @@ export interface FormsOverview {
          */
         provider: {
           /**
-           * Sidetype
+           * Velg sidetype
            */
           pageType:
             | {
                 /**
                  * Selected
                  */
-                _selected: "form-details";
+                _selected: "overview";
 
                 /**
-                 * Skjemaoversikt
+                 * Oversiktsside for underkategori
                  */
-                "form-details": {
+                overview: {
                   /**
                    * Velg underkategori
                    */
-                  provider_audience: "doctor" | "dentist" | "optician" | "occupational_therapist" | "aid_supplier" | "measures_organizer" | "administrator" | "municipality" | "other";
+                  provider_audience: Array<"doctor" | "dentist" | "optician" | "occupational_therapist" | "aid_supplier" | "measures_organizer" | "administrator" | "municipality" | "other">;
                 };
               }
             | {
                 /**
                  * Selected
                  */
-                _selected: "audience-landing";
+                _selected: "links";
 
                 /**
-                 * Inngang til underkategorier
+                 * Transportside til oversikter for underkategorier
                  */
-                "audience-landing": Record<string, unknown>;
+                links: {
+                  /**
+                   * Lenker til oversikter
+                   */
+                  links: Array<{
+                    /**
+                     * Lenketekst
+                     */
+                    text?: string;
+
+                    /**
+                     * Velg oversiktsside
+                     */
+                    link: string;
+                  }>;
+                };
               };
         };
       };
 
   /**
-   * Velg piktogram
+   * Vis område-filter
    */
-  illustration: string;
+  areasFilterToggle: boolean;
 
   /**
-   * Skriv inn ønsket kort-url
+   * Vis kategori-filter
    */
-  customPath: string;
+  taxonomyFilterToggle: boolean;
 
   /**
    * Vis fritekst-filter
    */
-  showFilter: boolean;
+  textFilterToggle: boolean;
 
   /**
    * Velg eier
@@ -109,11 +139,6 @@ export interface FormsOverview {
    * Nøkkelord (internt søk)
    */
   keywords?: Array<string>;
-
-  /**
-   * Canonical url - NB! Skal bare legges inn av hovedredaktør/administrator
-   */
-  canonicalUrl?: string;
 
   /**
    * Skal ikke vises i søk

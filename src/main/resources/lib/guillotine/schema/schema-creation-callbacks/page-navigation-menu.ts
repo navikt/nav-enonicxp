@@ -65,8 +65,11 @@ const getPartAnchorLink = (part: NodeComponent<'part'>['part']) => {
 };
 
 const getLayoutAnchorLink = (layout: NodeComponent<'layout'>['layout']) => {
-    const { descriptor, config } = layout;
+    if (!layout) {
+        return null;
+    }
 
+    const { descriptor, config } = layout;
     if (!config) {
         return null;
     }
