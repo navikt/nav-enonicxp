@@ -73,7 +73,7 @@
                                     <label>Transportside til oversikter for underkategorier</label>
                                     <items>
                                         <item-set name="links">
-                                            <label>Lenker til oversikter</label>
+                                            <label>Lenker til oversiktssider</label>
                                             <occurrences minimum="1" maximum="0"/>
                                             <items>
                                                 <input type="TextLine" name="text">
