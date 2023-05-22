@@ -45,11 +45,11 @@
                     <label>Samarbeidspartner</label>
                     <items>
                         <option-set name="pageType">
-                            <label>Sidetype</label>
+                            <label>Velg sidetype</label>
                             <occurrences minimum="1" maximum="1"/>
                             <options minimum="1" maximum="1">
                                 <option name="overview">
-                                    <label>Oversikt for underkategori</label>
+                                    <label>Oversiktsside for underkategori</label>
                                     <items>
                                         <!--TODO: make a shared mixin with the general audience type-->
                                         <input name="provider_audience" type="ComboBox">
@@ -70,15 +70,27 @@
                                     </items>
                                 </option>
                                 <option name="links">
-                                    <label>Inngang til oversikter for underkategorier</label>
+                                    <label>Transportside til oversikter for underkategorier</label>
                                     <items>
-                                        <input type="ContentSelector" name="links">
-                                            <label>Velg oversikter</label>
+                                        <item-set name="links">
+                                            <label>Lenker til oversikter</label>
                                             <occurrences minimum="1" maximum="0"/>
-                                            <config>
-                                                <allowContentType>${app}:forms-overview</allowContentType>
-                                            </config>
-                                        </input>
+                                            <items>
+                                                <input type="TextLine" name="text">
+                                                    <label>Lenketekst</label>
+                                                    <help-text>Hvis denne er tom benyttes tittel på oversiktssiden som
+                                                        lenketekst
+                                                    </help-text>
+                                                </input>
+                                                <input type="ContentSelector" name="link">
+                                                    <label>Velg oversiktsside</label>
+                                                    <occurrences minimum="1" maximum="1"/>
+                                                    <config>
+                                                        <allowContentType>${app}:forms-overview</allowContentType>
+                                                    </config>
+                                                </input>
+                                            </items>
+                                        </item-set>
                                     </items>
                                 </option>
                             </options>

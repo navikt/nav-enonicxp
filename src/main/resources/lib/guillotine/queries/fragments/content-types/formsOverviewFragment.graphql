@@ -8,15 +8,19 @@ fragment contentFormsOverviewPage on no_nav_navno_FormsOverview {
             _selected
             provider {
                 pageType {
+                    _selected
                     overview {
                         provider_audience
                     }
                     links {
                         links {
-                            _path
-                            ...on no_nav_navno_FormsOverview {
-                                data {
-                                    title
+                            text
+                            link {
+                                _path
+                                ...on no_nav_navno_FormsOverview {
+                                    data {
+                                        title
+                                    }
                                 }
                             }
                         }
