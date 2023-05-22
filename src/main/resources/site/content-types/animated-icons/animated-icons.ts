@@ -8,21 +8,6 @@ export interface AnimatedIcons {
      * Velg ikon
      */
     icon?: string;
-
-    /**
-     * Start-transformasjon
-     */
-    transformStart?: string;
-
-    /**
-     * Slutt-transformasjon
-     */
-    transformEnd?: string;
-
-    /**
-     * Origo
-     */
-    transformOrigin?: string;
   }>;
 
   /**
