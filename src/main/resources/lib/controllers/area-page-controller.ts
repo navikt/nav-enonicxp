@@ -38,8 +38,8 @@ const getSituationsLayout = (
     return situationsLayouts[0];
 };
 
-const getSituationPages = (area: string, audience: string) => {
-    return contentLib.query({
+const getSituationPages = (area: string, audience: string) =>
+    contentLib.query({
         start: 0,
         count: 1000,
         contentTypes: ['no.nav.navno:situation-page'],
@@ -81,7 +81,7 @@ const getSituationPages = (area: string, audience: string) => {
             },
         },
     }).hits;
-}
+
 // TODO: this can be removed after we've migrated these pages to layers
 const pageContainsLegacyLanguagesRef = (
     defaultSituationPage: SituationPageContent,
