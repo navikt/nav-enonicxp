@@ -29,10 +29,13 @@ export const stringArrayToSet = (list: string[] | readonly string[]): Record<str
 export const removeDuplicates = <Type>(
     array: Type[] | ReadonlyArray<Type>,
     isEqualPredicate?: (a: Type, b: Type) => boolean
-) =>
+) => array.filter(duplicatesFilter<Type>(isEqualPredicate));
+
+export const duplicatesFilter = <Type>(isEqualPredicate?: (a: Type, b: Type) => boolean) =>
     isEqualPredicate
-        ? array.filter((aItem, aIndex) => {
+        ? (aItem: Type, aIndex: number, array: Type[] | ReadonlyArray<Type>) => {
               const bIndex = array.findIndex((bItem) => isEqualPredicate(aItem, bItem));
               return aIndex === bIndex;
-          })
-        : array.filter((item, index) => array.indexOf(item) === index);
+          }
+        : (item: Type, index: number, array: Type[] | ReadonlyArray<Type>) =>
+              array.indexOf(item) === index;

@@ -4,12 +4,13 @@ import { Content } from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 import { logger } from '../../../utils/logging';
-import { forceArray } from '../../../utils/array-utils';
+import { forceArray, duplicatesFilter } from '../../../utils/array-utils';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
 import { Audience } from '../../../../site/mixins/audience/audience';
 import { FormsOverview } from '../../../../site/content-types/forms-overview/forms-overview';
 import { ProductData } from '../../../../site/mixins/product-data/product-data';
 import { getPublicPath } from '../../../paths/public-path';
+import { FormDetailsSelector } from '../../../../site/mixins/form-details-selector/form-details-selector';
 
 type IncludedProductData = Pick<
     ProductData,
@@ -27,8 +28,12 @@ type ContentTypeWithFormDetails = (typeof contentTypesWithFormDetails)[number];
 
 type ContentWithFormDetails = Content<ContentTypeWithFormDetails> & {
     // Fields from nested mixins are not included in the autogenerate types
-    data: IncludedProductData & Pick<ProductData, 'externalProductUrl'>;
+    data: IncludedProductData &
+        Pick<ProductData, 'externalProductUrl'> &
+        Required<Pick<FormDetailsSelector, 'formDetailsTargets'>>;
 };
+
+type FormDetailsMap = Record<string, Content<'no.nav.navno:form-details'>>;
 
 const contentTypesWithFormDetails = [
     'no.nav.navno:content-page-with-sidemenus',
@@ -37,33 +42,21 @@ const contentTypesWithFormDetails = [
 
 const transformToListItem = (
     content: ContentWithFormDetails,
-    overviewType: FormsOverview['overviewType']
+    formDetailsMap: FormDetailsMap
 ): FormDetailsListItem | null => {
-    const formDetailsTargets = forceArray(content.data.formDetailsTargets);
+    const formDetailsPaths = forceArray(content.data.formDetailsTargets).reduce<string[]>(
+        (acc, formDetailsId) => {
+            const formDetails = formDetailsMap[formDetailsId];
+            if (formDetails) {
+                acc.push(formDetails._path);
+            }
 
-    const formDetailsContent = contentLib
-        .query({
-            count: formDetailsTargets.length,
-            contentTypes: ['no.nav.navno:form-details'],
-            filters: {
-                ids: {
-                    values: formDetailsTargets,
-                },
-                boolean: {
-                    must: [
-                        {
-                            hasValue: {
-                                field: 'data.formType._selected',
-                                values: [overviewType],
-                            },
-                        },
-                    ],
-                },
-            },
-        })
-        .hits.sort((a, b) => formDetailsTargets.indexOf(a._id) - formDetailsTargets.indexOf(b._id));
+            return acc;
+        },
+        []
+    );
 
-    if (formDetailsContent.length === 0) {
+    if (formDetailsPaths.length === 0) {
         return null;
     }
 
@@ -79,7 +72,7 @@ const transformToListItem = (
         url,
         type: content.type,
         anchorId: sanitize(sortTitle),
-        formDetailsPaths: formDetailsContent.map((formDetails) => formDetails._path),
+        formDetailsPaths,
         illustration: content.data.illustration,
         area: forceArray(content.data.area),
         taxonomy: forceArray(content.data.taxonomy),
@@ -127,9 +120,39 @@ const buildFormDetailsList = (
         },
     }).hits as ContentWithFormDetails[];
 
+    const formDetailsIds = contentWithFormDetails
+        .map((content) => content.data.formDetailsTargets)
+        .flat()
+        .filter(duplicatesFilter());
+
+    const formDetailsMap = contentLib
+        .query({
+            count: formDetailsIds.length,
+            contentTypes: ['no.nav.navno:form-details'],
+            filters: {
+                ids: {
+                    values: formDetailsIds,
+                },
+                boolean: {
+                    must: [
+                        {
+                            hasValue: {
+                                field: 'data.formType._selected',
+                                values: [overviewType],
+                            },
+                        },
+                    ],
+                },
+            },
+        })
+        .hits.reduce<FormDetailsMap>((acc, formDetail) => {
+            acc[formDetail._id] = formDetail;
+            return acc;
+        }, {});
+
     return contentWithFormDetails
         .reduce<FormDetailsListItem[]>((acc, content) => {
-            const transformedItem = transformToListItem(content, overviewType);
+            const transformedItem = transformToListItem(content, formDetailsMap);
             if (transformedItem) {
                 acc.push(transformedItem);
             }
