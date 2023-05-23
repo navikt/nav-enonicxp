@@ -24,7 +24,7 @@ const updateVideoContent = ({ content, duration, imageAsset }: UpdateVideoConten
     });
 };
 
-const createImageAsset = (imageUrl: string, targetPath: string) => {
+const createImageAsset = (imageUrl: string, targetPath: string, targetName: string) => {
     const response = httpClient.request({
         method: 'GET',
         url: imageUrl,
@@ -38,7 +38,7 @@ const createImageAsset = (imageUrl: string, targetPath: string) => {
     });
 
     return contentLib.createMedia({
-        name: 'posterImage',
+        name: `${targetName}.jpg`,
         parentPath: `${targetPath}`,
         mimeType: 'image/jpeg',
         data: response.bodyStream,
@@ -138,7 +138,7 @@ const updateVideoContentWithMetaData = (content: Content<'no.nav.navno:video'>) 
 
     runInContext({ branch: 'draft', asAdmin: true }, () => {
         const { duration, imageURI } = qbrickMetadata;
-        const imageAsset = imageURI && createImageAsset(imageURI, content._path);
+        const imageAsset = imageURI && createImageAsset(imageURI, content._path, content._name);
         if (imageAsset) {
             updateVideoContent({ duration, imageAsset, content });
         }
