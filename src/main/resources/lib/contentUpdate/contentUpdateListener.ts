@@ -52,7 +52,7 @@ const fetchMetaDataFromQbrick = (accountId: number, mediaId: string) => {
             followRedirects: false,
             proxy: {
                 host: 'webproxy-internett.nav.no',
-                port: 8080,
+                port: 8088,
             },
         });
 
