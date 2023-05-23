@@ -8,6 +8,11 @@ export interface QbrickMeta {
     metadata: Metadata;
     tracks: string[];
     catalog?: Catalog;
+    thumbnails?: ThumbnailRef[];
+}
+
+export interface ThumbnailRef {
+    id: string;
 }
 
 export interface Asset {

@@ -2,8 +2,8 @@ import * as eventLib from '/lib/xp/event';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
-import { findNestedKey } from '../utils/object-utils';
 import { runInContext } from '../context/run-in-context';
+import { QbrickMeta } from 'types/qbrickMeta';
 
 let hasContentUpdateListener = false;
 type UpdateVideoContentParams = {
@@ -45,14 +45,53 @@ const createImageAsset = (imageUrl: string, targetPath: string) => {
     });
 };
 
+export const findImageUrlFromVideoMeta = (qbrickMediaData: QbrickMeta) => {
+    const resources = qbrickMediaData?.asset?.resources;
+    if (!resources) {
+        return;
+    }
+
+    const qBrickPickedThumbnail = qbrickMediaData.thumbnails && qbrickMediaData.thumbnails[0]?.id;
+
+    let image = resources.find(
+        (resource) => resource.type === 'image' && resource.id === qBrickPickedThumbnail
+    );
+
+    // No specific thumbnail picked in the Qbrick UI, so use first image
+    if (!image) {
+        image = resources.find((resource) => resource.type === 'image');
+    }
+
+    if (!image) {
+        return;
+    }
+
+    const imageLink = image.renditions[0]?.links[0]?.href;
+
+    return imageLink;
+};
+
+export const findVideoDurationFromMeta = (qbrickMediaData: QbrickMeta) => {
+    const resources = qbrickMediaData?.asset?.resources;
+    if (!resources) {
+        return 0;
+    }
+
+    const firstFoundResource = resources.find((resource) => resource.type === 'video');
+    const firstFoundVideo = firstFoundResource && firstFoundResource.renditions[0]?.videos;
+    const duration = firstFoundVideo && firstFoundVideo[0]?.duration;
+
+    return duration || 0;
+};
+
 const fetchMetaDataFromQbrick = (accountId: number, mediaId: string) => {
-    const qbrickURL = `https://video.qbrick.com/api/v1/public/accounts/${accountId}/medias/${mediaId}`;
+    const qbrickURI = `https://video.qbrick.com/api/v1/public/accounts/${accountId}/medias/${mediaId}`;
 
     try {
         const response = httpClient.request({
             method: 'GET',
-            url: qbrickURL,
-            connectionTimeout: 5000,
+            url: qbrickURI,
+            connectionTimeout: 8000,
             followRedirects: false,
             proxy: {
                 host: 'webproxy-internett.nav.no',
@@ -62,19 +101,18 @@ const fetchMetaDataFromQbrick = (accountId: number, mediaId: string) => {
 
         if (response.status !== 200 || !response.body) {
             log.error(
-                `Failed to fetch video data from Qbrick. Response status: ${response.status}, Attempted qbruck url: ${qbrickURL}`
+                `Failed to fetch video data from Qbrick. Response status: ${response.status}, Attempted qbruck url: ${qbrickURI}`
             );
             return null;
         }
 
-        const data = JSON.parse(response.body);
-        const duration = findNestedKey(data, 'duration');
-        const links = findNestedKey(data, 'links');
-        const imageURl = links.length > 0 ? links[0].href : null;
-        return { duration, imageURl };
+        const data = JSON.parse(response.body) as QbrickMeta;
+        const duration = findVideoDurationFromMeta(data);
+        const imageURI = findImageUrlFromVideoMeta(data);
+        return { duration, imageURI };
     } catch (e) {
         log.error(
-            `Failed to fetch video data from Qbrick. Attempted qBrick url: ${qbrickURL}. Error message: ${JSON.stringify(
+            `Failed to fetch video data from Qbrick. Attempted qBrick url: ${qbrickURI}. Error message: ${JSON.stringify(
                 e
             )}`
         );
@@ -93,14 +131,16 @@ const updateVideoContentWithMetaData = (content: Content<'no.nav.navno:video'>) 
 
     const qbrickMetadata = fetchMetaDataFromQbrick(accountId, mediaId);
 
-    if (!qbrickMetadata || !(qbrickMetadata.duration && qbrickMetadata.imageURl)) {
+    if (!qbrickMetadata || !(qbrickMetadata.duration && qbrickMetadata.imageURI)) {
         return;
     }
 
     runInContext({ branch: 'draft', asAdmin: true }, () => {
-        const { duration, imageURl } = qbrickMetadata;
-        const imageAsset = createImageAsset(imageURl, content._path);
-        updateVideoContent({ duration, imageAsset, content });
+        const { duration, imageURI } = qbrickMetadata;
+        const imageAsset = imageURI && createImageAsset(imageURI, content._path);
+        if (imageAsset) {
+            updateVideoContent({ duration, imageAsset, content });
+        }
     });
 };
 
