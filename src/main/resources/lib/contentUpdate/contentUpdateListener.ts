@@ -50,6 +50,10 @@ const fetchMetaDataFromQbrick = (accountId: number, mediaId: string) => {
             url: qbrickURL,
             connectionTimeout: 5000,
             followRedirects: false,
+            proxy: {
+                host: 'webproxy-internett.nav.no',
+                port: 8080,
+            },
         });
 
         log.info(`Fetched qbrickdata from ${JSON.stringify(response)}`);
