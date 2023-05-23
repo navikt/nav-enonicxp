@@ -27,7 +27,7 @@
             </items>
         </field-set>
         <field-set>
-            <label>Spilleinfo (hentes fra Qbrick automatisk)</label> 
+            <label>Spilleinfo (hentes fra Qbrick automatisk etter lagring)</label> 
             <items>
                 <input name="poster" type="ImageSelector">
                     <label>Bildeplakat</label>
