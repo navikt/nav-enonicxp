@@ -121,6 +121,7 @@ const fetchMetaDataFromQbrick = (accountId: number, mediaId: string) => {
 };
 
 const updateVideoContentWithMetaData = (content: Content<'no.nav.navno:video'>) => {
+    log.info('Updating video content with metadata from Qbrick');
     const { accountId, mediaId } = content.data;
 
     // Don't override any posters or durations already set or set manually
