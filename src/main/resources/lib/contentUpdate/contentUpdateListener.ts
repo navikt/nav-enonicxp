@@ -31,6 +31,10 @@ const createImageAsset = (imageUrl: string, targetPath: string) => {
         contentType: 'image/jpeg',
         connectionTimeout: 5000,
         followRedirects: false,
+        proxy: {
+            host: 'webproxy-internett.nav.no',
+            port: 8088,
+        },
     });
 
     return contentLib.createMedia({
