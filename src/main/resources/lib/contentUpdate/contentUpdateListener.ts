@@ -13,7 +13,6 @@ type UpdateVideoContentParams = {
 };
 
 const updateVideoContent = ({ content, duration, imageAsset }: UpdateVideoContentParams) => {
-    log.info(`Updating video content with duration: ${duration} and image: ${imageAsset._id}`);
     contentLib.modify({
         key: content._id,
         editor: (c: Content<'no.nav.navno:video'>) => {
@@ -26,7 +25,6 @@ const updateVideoContent = ({ content, duration, imageAsset }: UpdateVideoConten
 };
 
 const createImageAsset = (imageUrl: string, targetPath: string) => {
-    log.info(`Attempting to fetch image from qbrick: ${imageUrl}`);
     const response = httpClient.request({
         method: 'GET',
         url: imageUrl,
@@ -38,8 +36,6 @@ const createImageAsset = (imageUrl: string, targetPath: string) => {
             port: 8088,
         },
     });
-
-    log.info(`Video image fetch result from qbrick: ${JSON.stringify(response)}`);
 
     return contentLib.createMedia({
         name: 'posterImage',
@@ -63,8 +59,6 @@ const fetchMetaDataFromQbrick = (accountId: number, mediaId: string) => {
                 port: 8088,
             },
         });
-
-        log.info(`Fetched qbrickdata from ${JSON.stringify(response)}`);
 
         if (response.status !== 200 || !response.body) {
             log.error(
