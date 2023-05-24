@@ -19,7 +19,8 @@
                         <option value="health">Helse og sykdom</option>
                         <option value="accessibility">Hjelpemidler og tilrettelegging</option>
                         <option value="pension">Pensjon</option>
-                        <option value="social_counselling">Økonomisk sosialhjelp, råd og veiledning</option>
+                        <option value="social_counselling">Sosiale tjenester og veiledning</option>
+                        <option value="other">Annet</option>
                     </config>
                 </input>
             </items>

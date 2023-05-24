@@ -30,6 +30,9 @@
             </input>
           </items>
         </option>
+        <option name="other">
+          <label>Annet</label>
+        </option>
       </options>
     </option-set>
   </form>
