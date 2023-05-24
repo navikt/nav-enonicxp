@@ -4,11 +4,39 @@
 fragment contentFormsOverviewPage on no_nav_navno_FormsOverview {
     dataAsJson
     data {
+        audience {
+            _selected
+            provider {
+                pageType {
+                    _selected
+                    overview {
+                        provider_audience
+                    }
+                    links {
+                        links {
+                            text
+                            link {
+                                _path
+                                ...on no_nav_navno_FormsOverview {
+                                    data {
+                                        title
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
         illustration {
             ...animatedIconsTargetMixin
         }
         formDetailsList {
             title
+            sortTitle
+            url
+            type
+            ingress
             formDetailsPaths
             area
             taxonomy
