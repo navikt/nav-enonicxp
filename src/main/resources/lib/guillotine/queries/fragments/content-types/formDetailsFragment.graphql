@@ -7,6 +7,7 @@ fragment contentFormDetails on no_nav_navno_FormDetails {
         ingress(processHtml: { type: server }) {
             ...richText
         }
+        # Denne bør være en egen mixin som kan brukes begge steder
         formType {
             _selected
             application {
