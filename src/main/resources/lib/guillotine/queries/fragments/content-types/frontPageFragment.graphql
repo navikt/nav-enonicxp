@@ -1,10 +1,14 @@
 #import "../mixins/areasFragment.graphql"
+#import "../mixins/situationFragment.graphql"
 
 fragment contentFrontPage on no_nav_navno_FrontPage {
     dataAsJson
     data {
         areasRefs {
             ...areasMixin
+        }
+        situationsRefs {
+            ...situationMixin
         }
     }
 }
