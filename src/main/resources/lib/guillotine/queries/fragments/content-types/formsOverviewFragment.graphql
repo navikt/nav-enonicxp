@@ -38,6 +38,8 @@ fragment contentFormsOverviewPage on no_nav_navno_FormsOverview {
             type
             ingress
             formDetailsPaths
+            formDetailsTitles
+            formNumbers
             area
             taxonomy
             anchorId
