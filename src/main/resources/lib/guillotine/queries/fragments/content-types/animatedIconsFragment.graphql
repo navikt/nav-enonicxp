@@ -6,9 +6,6 @@ fragment contentAnimatedIcons on no_nav_navno_AnimatedIcons {
             icon {
                 ...imageInlineMixin
             }
-            transformStart
-            transformEnd
-            transformOrigin
         }
         lottieHover {
             ... on media_Code {
