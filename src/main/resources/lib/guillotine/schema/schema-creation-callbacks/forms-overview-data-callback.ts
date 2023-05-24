@@ -69,7 +69,7 @@ const transformToListItem = (
     return {
         title,
         sortTitle,
-        ingress: content.data.ingress || '',
+        ingress: content.data.ingress,
         url,
         type: content.type,
         anchorId: sanitize(sortTitle),
