@@ -17,6 +17,7 @@ import {
     ContentMigrationParams,
     migrateContentToLayer,
 } from '../../lib/localization/layers-migration/migrate-content-to-layer';
+import { toggleCacheInvalidationOnNodeEvents } from '../../lib/cache/invalidate-event-defer';
 
 type Params = {
     sourceLocale: string;
@@ -106,7 +107,9 @@ const runMigrationJob = (params: Params, jobId: string, dryRun?: boolean) => {
 
             const start = Date.now();
 
+            toggleCacheInvalidationOnNodeEvents({ shouldDefer: true });
             const result = migrateContentBatchToLayers(params, jobId, resultCache, dryRun);
+            toggleCacheInvalidationOnNodeEvents({ shouldDefer: false });
 
             const durationSec = (Date.now() - start) / 1000;
             const withErrors = result.filter((result) => result.errors.length > 0);
@@ -142,7 +145,9 @@ const runPresetMigrationJob = (migrationParams: ContentMigrationParams[]) => {
 
             const start = Date.now();
 
+            toggleCacheInvalidationOnNodeEvents({ shouldDefer: true });
             const result = migrationParams.map(migrateContentToLayer);
+            toggleCacheInvalidationOnNodeEvents({ shouldDefer: false });
 
             const durationSec = (Date.now() - start) / 1000;
             const withErrors = result.filter((result) => result.errorMsgs.length > 0);
@@ -186,7 +191,7 @@ const getJobStatus = (jobId: string) => {
     };
 };
 
-export const get = (req: XP.Request) => {
+export const post = (req: XP.Request) => {
     if (!validateServiceSecretHeader(req)) {
         return {
             status: 401,
@@ -197,19 +202,29 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    if (req.params.contentToMigrate) {
-        const contantToMigrateArray = parseJsonArray(req.params.contentToMigrate);
-        if (!contantToMigrateArray) {
-            return {
-                status: 400,
-                body: {
-                    message: 'Invalid parameter "contentToMigrate"',
-                },
-                contentType: 'application/json',
-            };
-        }
+    const contantToMigrateArray = parseJsonArray(req.body);
+    if (!contantToMigrateArray) {
+        return {
+            status: 400,
+            body: {
+                message: 'Invalid parameter "contentToMigrate"',
+            },
+            contentType: 'application/json',
+        };
+    }
 
-        return runPresetMigrationJob(contantToMigrateArray);
+    return runPresetMigrationJob(contantToMigrateArray);
+};
+
+export const get = (req: XP.Request) => {
+    if (!validateServiceSecretHeader(req)) {
+        return {
+            status: 401,
+            body: {
+                message: 'Not authorized',
+            },
+            contentType: 'application/json',
+        };
     }
 
     if (req.params.status) {
