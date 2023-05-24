@@ -1,0 +1,12 @@
+<macro>
+    <display-name>Skjemadetaljer</display-name>
+    <description>Sett inn skjemadetaljer</description>
+    <form>
+        <input name="formDetails" type="ContentSelector">
+            <label>Velg skjemadetaljer</label>
+            <config>
+                <allowContentType>${app}:form-details</allowContentType>
+            </config>
+        </input>
+    </form>
+</macro>

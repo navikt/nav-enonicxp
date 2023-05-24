@@ -154,3 +154,78 @@ fragment html_fragmentMacro on Macro {
         }
     }
 }
+
+fragment form_detailsMacro on Macro {
+    config {
+        form_details {
+            formDetails {
+                ... on no_nav_navno_FormDetails {
+                    dataAsJson
+                    data {
+                        ingress(processHtml: { type: server }) {
+                            ...on RichText {
+                                processedHtml
+                                macros {
+                                    ...macros
+                                    ...html_fragmentMacro
+                                }
+                            }
+                        }
+                        formType {
+                            _selected
+                            application {
+                                variations {
+                                    label
+                                    link {
+                                        _selected
+                                        internal {
+                                            target {
+                                                _path
+                                            }
+                                        }
+                                        external {
+                                            url
+                                        }
+                                    }
+                                }
+                            }
+                            complaint {
+                                variations {
+                                    label
+                                    type
+                                    link {
+                                        _selected
+                                        internal {
+                                            target {
+                                                _path
+                                            }
+                                        }
+                                        external {
+                                            url
+                                        }
+                                    }
+                                }
+                            }
+                            addendum {
+                                variations {
+                                    label
+                                    link {
+                                        _selected
+                                        internal {
+                                            target {
+                                                _path
+                                            }
+                                        }
+                                        external {
+                                            url
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
