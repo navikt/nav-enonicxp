@@ -95,6 +95,8 @@ const buildFormDetailsList = (
         audience.provider.pageType._selected === 'overview' &&
         audience.provider.pageType.overview.provider_audience;
 
+    logger.info(`${selectedAudience} ${selectedProviderAudience} ${JSON.stringify(audience)}`);
+
     const contentWithFormDetails = contentLib.query({
         count: 1000,
         contentTypes: contentTypesWithFormDetails,
@@ -104,13 +106,13 @@ const buildFormDetailsList = (
                     {
                         hasValue: {
                             field: 'data.audience',
-                            values: [audience],
+                            values: [selectedAudience],
                         },
                     },
                     {
                         hasValue: {
                             field: 'data.audience._selected',
-                            values: [audience],
+                            values: [selectedAudience],
                         },
                     },
                 ],
