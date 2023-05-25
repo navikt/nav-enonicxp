@@ -55,12 +55,7 @@ export interface SituationPage {
         /**
          * Samarbeidspartner
          */
-        provider: {
-          /**
-           * Underkategori
-           */
-          provider_audience: "doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "other";
-        };
+        provider: Record<string, unknown>;
       }
     | {
         /**

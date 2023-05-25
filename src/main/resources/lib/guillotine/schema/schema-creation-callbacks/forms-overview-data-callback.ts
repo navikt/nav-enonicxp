@@ -6,7 +6,6 @@ import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-
 import { logger } from '../../../utils/logging';
 import { forceArray, removeDuplicatesFilter } from '../../../utils/array-utils';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
-import { Audience } from '../../../../site/mixins/audience/audience';
 import { FormsOverview } from '../../../../site/content-types/forms-overview/forms-overview';
 import { ProductData } from '../../../../site/mixins/product-data/product-data';
 import { getPublicPath } from '../../../paths/public-path';
@@ -85,10 +84,17 @@ const transformToListItem = (
 };
 
 const buildFormDetailsList = (
-    audience: Audience['audience']['_selected'],
+    audience: FormsOverview['audience'],
     language: string,
     overviewType: FormsOverview['overviewType']
 ) => {
+    const { _selected: selectedAudience } = audience;
+
+    const selectedProviderAudience =
+        selectedAudience === 'provider' &&
+        audience.provider.pageType._selected === 'overview' &&
+        audience.provider.pageType.overview.provider_audience;
+
     const contentWithFormDetails = contentLib.query({
         count: 1000,
         contentTypes: contentTypesWithFormDetails,
@@ -98,13 +104,13 @@ const buildFormDetailsList = (
                     {
                         hasValue: {
                             field: 'data.audience',
-                            values: [audience],
+                            values: [selectedAudience],
                         },
                     },
                     {
                         hasValue: {
                             field: 'data.audience._selected',
-                            values: [audience],
+                            values: [selectedAudience],
                         },
                     },
                 ],
@@ -120,6 +126,16 @@ const buildFormDetailsList = (
                             values: [language],
                         },
                     },
+                    ...(selectedProviderAudience
+                        ? [
+                              {
+                                  hasValue: {
+                                      field: 'data.audience.provider.provider_audience',
+                                      values: [selectedProviderAudience],
+                                  },
+                              },
+                          ]
+                        : []),
                 ],
                 mustNot: [
                     {
@@ -219,7 +235,7 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
             const { language, data } = content;
             const { audience, overviewType } = data;
 
-            if (!audience) {
+            if (!audience?._selected) {
                 logger.error(`Audience not set for overview page id ${contentId}`);
                 return [];
             }
@@ -229,7 +245,14 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
                 return [];
             }
 
-            return buildFormDetailsList(audience._selected, language, overviewType);
+            const isTransportPage =
+                audience._selected === 'provider' &&
+                audience.provider.pageType?._selected === 'links';
+            if (isTransportPage) {
+                return [];
+            }
+
+            return buildFormDetailsList(audience, language, overviewType);
         },
     };
 };

@@ -51,22 +51,7 @@
                                 <option name="overview">
                                     <label>Oversiktsside for underkategori</label>
                                     <items>
-                                        <!--TODO: make a shared mixin with the general audience type-->
-                                        <input name="provider_audience" type="ComboBox">
-                                            <label>Velg underkategori</label>
-                                            <occurrences minimum="1" maximum="0"/>
-                                            <config>
-                                                <option value="doctor">Lege</option>
-                                                <option value="dentist">Tannlege</option>
-                                                <option value="optician">Optiker</option>
-                                                <option value="occupational_therapist">Ergoterapeut</option>
-                                                <option value="aid_supplier">Hjelpemiddeleverandør</option>
-                                                <option value="measures_organizer">Tiltaksarrangør</option>
-                                                <option value="administrator">Bostyrer</option>
-                                                <option value="municipality">Kommune</option>
-                                                <option value="other">Annet</option>
-                                            </config>
-                                        </input>
+                                        <mixin name="provider-audience"/>
                                     </items>
                                 </option>
                                 <option name="links">
