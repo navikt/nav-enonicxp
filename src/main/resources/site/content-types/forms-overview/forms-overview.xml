@@ -12,7 +12,7 @@
                     <label>Side-tittel</label>
                     <occurrences minimum="1" maximum="1"/>
                     <default>Søknad og skjema</default>
-                </input>s
+                </input>
                 <input type="TextArea" name="ingress">
                     <label>Ingress/beskrivelse</label>
                     <help-text>En kort beskrivelse som vises i lenkepanel/kort som lenker til denne siden</help-text>
@@ -45,16 +45,16 @@
                     <label>Samarbeidspartner</label>
                     <items>
                         <option-set name="pageType">
-                            <label>Sidetype</label>
+                            <label>Velg sidetype</label>
                             <occurrences minimum="1" maximum="1"/>
                             <options minimum="1" maximum="1">
-                                <option name="form-details">
-                                    <label>Skjemaoversikt</label>
+                                <option name="overview">
+                                    <label>Oversiktsside for underkategori</label>
                                     <items>
                                         <!--TODO: make a shared mixin with the general audience type-->
                                         <input name="provider_audience" type="ComboBox">
                                             <label>Velg underkategori</label>
-                                            <occurrences minimum="1" maximum="1"/>
+                                            <occurrences minimum="1" maximum="0"/>
                                             <config>
                                                 <option value="doctor">Lege</option>
                                                 <option value="dentist">Tannlege</option>
@@ -69,15 +69,21 @@
                                         </input>
                                     </items>
                                 </option>
-                                <option name="audience-links">
-                                    <label>Inngang til oversikter for underkategorier</label>
+                                <option name="links">
+                                    <label>Transportside til oversikter for underkategorier</label>
                                     <items>
-                                        <item-set name="provider_audience_links">
-                                            <label>Legg til skjemaoversikter for underkategorier</label>
-                                            <occurences minimum="1" maximum="0"/>
+                                        <item-set name="links">
+                                            <label>Lenker til oversiktssider</label>
+                                            <occurrences minimum="1" maximum="0"/>
                                             <items>
+                                                <input type="TextLine" name="text">
+                                                    <label>Lenketekst</label>
+                                                    <help-text>Hvis denne er tom benyttes tittel på oversiktssiden som
+                                                        lenketekst
+                                                    </help-text>
+                                                </input>
                                                 <input type="ContentSelector" name="link">
-                                                    <label>Velg skjemaoversikt</label>
+                                                    <label>Velg oversiktsside</label>
                                                     <occurrences minimum="1" maximum="1"/>
                                                     <config>
                                                         <allowContentType>${app}:forms-overview</allowContentType>

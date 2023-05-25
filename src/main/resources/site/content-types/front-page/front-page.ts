@@ -65,6 +65,11 @@ export interface FrontPage {
   areasRefs?: Array<string>;
 
   /**
+   * Velg situasjonssider
+   */
+  situationsRefs?: Array<string>;
+
+  /**
    * Skriv inn ønsket kort-url
    */
   customPath?: string;

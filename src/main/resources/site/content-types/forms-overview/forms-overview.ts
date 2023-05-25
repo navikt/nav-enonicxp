@@ -62,44 +62,49 @@ export interface FormsOverview {
          */
         provider: {
           /**
-           * Sidetype
+           * Velg sidetype
            */
           pageType:
             | {
                 /**
                  * Selected
                  */
-                _selected: "form-details";
+                _selected: "overview";
 
                 /**
-                 * Skjemaoversikt
+                 * Oversiktsside for underkategori
                  */
-                "form-details": {
+                overview: {
                   /**
                    * Velg underkategori
                    */
-                  provider_audience: "doctor" | "dentist" | "optician" | "occupational_therapist" | "aid_supplier" | "measures_organizer" | "administrator" | "municipality" | "other";
+                  provider_audience: Array<"doctor" | "dentist" | "optician" | "occupational_therapist" | "aid_supplier" | "measures_organizer" | "administrator" | "municipality" | "other">;
                 };
               }
             | {
                 /**
                  * Selected
                  */
-                _selected: "audience-links";
+                _selected: "links";
 
                 /**
-                 * Inngang til oversikter for underkategorier
+                 * Transportside til oversikter for underkategorier
                  */
-                "audience-links": {
+                links: {
                   /**
-                   * Legg til skjemaoversikter for underkategorier
+                   * Lenker til oversiktssider
                    */
-                  provider_audience_links?: {
+                  links: Array<{
                     /**
-                     * Velg skjemaoversikt
+                     * Lenketekst
+                     */
+                    text?: string;
+
+                    /**
+                     * Velg oversiktsside
                      */
                     link: string;
-                  };
+                  }>;
                 };
               };
         };

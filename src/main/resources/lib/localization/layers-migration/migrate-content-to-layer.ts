@@ -121,6 +121,13 @@ export const migrateContentToLayer = (contentMigrationParams: ContentMigrationPa
         ],
     };
 
+    if (!sourceId || !sourceLocale || !targetId || !targetLocale) {
+        response.errorMsgs.push(
+            `Some parameters were missing - sourceId: ${sourceId} - sourceLocale: ${sourceLocale} - targetId: ${targetId} - targetLocale: ${targetLocale}`
+        );
+        return response;
+    }
+
     const copyMasterSuccess = migrateBranch(contentMigrationParams, 'master');
     if (copyMasterSuccess) {
         response.statusMsgs.push('Migrering av publisert innhold var vellykket.');

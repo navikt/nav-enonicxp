@@ -21,6 +21,7 @@ import { timeTravelConfig } from './lib/time-travel/time-travel-config';
 import { initSearchRepo } from './lib/search/search-repo';
 import { initLayersData } from './lib/localization/layers-data';
 import { activateLayersEventListeners } from './lib/localization/publish-events';
+import { activateContentUpdateListener } from './lib/contentUpdate/contentUpdateListener';
 
 updateClusterInfo();
 initLayersData();
@@ -41,6 +42,7 @@ if (clusterLib.isMaster()) {
     generateSitemapDataAndActivateSchedule();
     startOfficeInfoPeriodicUpdateSchedule();
     createOfficeBranchFetchSchedule();
+    activateContentUpdateListener();
 }
 
 activateSearchIndexEventHandlers();
