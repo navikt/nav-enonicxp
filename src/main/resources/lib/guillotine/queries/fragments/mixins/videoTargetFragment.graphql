@@ -1,0 +1,5 @@
+#import "../content-types/videoFragment.graphql"
+
+fragment videoTargetMixin on Content {
+    ...contentVideo
+}
