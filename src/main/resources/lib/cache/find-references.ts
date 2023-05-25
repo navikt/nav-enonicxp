@@ -65,7 +65,7 @@ const getOverviewReferences = (content: Content) => {
     const overviewPages = contentLib.query({
         start: 0,
         count: 1000,
-        contentTypes: ['no.nav.navno:overview'],
+        contentTypes: ['no.nav.navno:overview', 'no.nav.navno:forms-overview'],
     }).hits;
 
     logger.info(`Found ${overviewPages.length} relevant overview pages`);
