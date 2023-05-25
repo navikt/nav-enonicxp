@@ -1,5 +1,6 @@
 #import "../mixins/productTargetFragment.graphql"
 #import "../mixins/productTargetMicroFragment.graphql"
+#import "../mixins/formTypeFragment.graphql"
 #import "../content-types/payoutDatesFragment.graphql"
 
 fragment macros on Macro {
@@ -158,12 +159,12 @@ fragment html_fragmentMacro on Macro {
 fragment form_detailsMacro on Macro {
     config {
         form_details {
-            formDetails {
+            targetFormDetails {
                 ... on no_nav_navno_FormDetails {
                     dataAsJson
                     data {
                         ingress(processHtml: { type: server }) {
-                            ...on RichText {
+                            ... on RichText {
                                 processedHtml
                                 macros {
                                     ...macros
@@ -171,62 +172,14 @@ fragment form_detailsMacro on Macro {
                                 }
                             }
                         }
-                        # Denne bør være en egen mixin som kan brukes begge steder
-                        formType {
-                            _selected
-                            application {
-                                variations {
-                                    label
-                                    link {
-                                        _selected
-                                        internal {
-                                            target {
-                                                _path
-                                            }
-                                        }
-                                        external {
-                                            url
-                                        }
-                                    }
-                                }
-                            }
-                            complaint {
-                                variations {
-                                    label
-                                    type
-                                    link {
-                                        _selected
-                                        internal {
-                                            target {
-                                                _path
-                                            }
-                                        }
-                                        external {
-                                            url
-                                        }
-                                    }
-                                }
-                            }
-                            addendum {
-                                variations {
-                                    label
-                                    link {
-                                        _selected
-                                        internal {
-                                            target {
-                                                _path
-                                            }
-                                        }
-                                        external {
-                                            url
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        ...formTypeMixin
                     }
                 }
             }
+            showTitle
+            showIngress
+            showApplications
+            showAddendums
         }
     }
 }

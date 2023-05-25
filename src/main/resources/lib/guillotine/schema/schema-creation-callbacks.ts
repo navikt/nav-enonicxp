@@ -40,6 +40,7 @@ import { externalLinkCallback } from './schema-creation-callbacks/external-link-
 import { microCardTargetPageCallback } from './schema-creation-callbacks/microcard-part';
 import { createOpeningHoursFields } from './schema-creation-callbacks/common/opening-hours-mixin';
 import { formsOverviewDataCallback } from './schema-creation-callbacks/forms-overview-data-callback';
+import { macroFormDetailsCallback } from './schema-creation-callbacks/macro-form-details';
 
 export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     Attachment: attachmentCallback,
@@ -85,6 +86,7 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     Macro_no_nav_navno_global_value_DataConfig: globalValueMacroConfigCallback,
     Macro_no_nav_navno_global_value_with_math_DataConfig: globalValueWithMathMacroConfigCallback,
     Macro_no_nav_navno_html_fragment_DataConfig: macroHtmlFragmentCallback,
+    Macro_no_nav_navno_form_details_DataConfig: formDetailsCallback,
     Macro_no_nav_navno_alert_box_DataConfig: macroAlertboxCallback,
     RichText: richTextCallback,
 };

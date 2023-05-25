@@ -1,4 +1,5 @@
 #import "../richText/richTextFragment.graphql"
+#import "../mixins/formTypeFragment.graphql"
 
 fragment contentFormDetails on no_nav_navno_FormDetails {
     dataAsJson
@@ -7,58 +8,6 @@ fragment contentFormDetails on no_nav_navno_FormDetails {
         ingress(processHtml: { type: server }) {
             ...richText
         }
-        # Denne bør være en egen mixin som kan brukes begge steder
-        formType {
-            _selected
-            application {
-                variations {
-                    label
-                    link {
-                        _selected
-                         internal {
-                             target {
-                                 _path
-                             }
-                         }
-                        external {
-                            url
-                        }
-                    }
-                }
-            }
-            complaint {
-                variations {
-                    label
-                    type
-                    link {
-                        _selected
-                        internal {
-                            target {
-                                _path
-                            }
-                        }
-                        external {
-                            url
-                        }
-                    }
-                }
-            }
-            addendum {
-                variations {
-                    label
-                    link {
-                        _selected
-                        internal {
-                            target {
-                                _path
-                            }
-                        }
-                        external {
-                            url
-                        }
-                    }
-                }
-            }
-        }
+        ...formTypeMixin
     }
 }

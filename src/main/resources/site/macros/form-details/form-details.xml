@@ -1,12 +1,39 @@
 <macro>
     <display-name>Skjemadetaljer</display-name>
-    <description>Sett inn skjemadetaljer</description>
+    <description>Viser valgte skjemadetaljer</description>
     <form>
-        <input name="formDetails" type="ContentSelector">
-            <label>Velg skjemadetaljer</label>
+        <input name="targetFormDetails" type="CustomSelector">
+            <label>Velg skjemadetalj</label>
+            <help-text>Husk å markere hvilke skjemadetaljer som skal være tilgjengelige på denne siden. Det gjør du i produktside-fanen til venstre."</help-text>
+            <occurrences minimum="1" maximum="1"/>
             <config>
-                <allowContentType>${app}:form-details</allowContentType>
+                <service>selectedFormDetails</service>
             </config>
         </input>
+        <field-set>
+            <label>Tilpass visning</label>
+            <items>
+                <input name="showTitle" type="CheckBox">
+                    <label>Vis tittel</label>
+                    <default>checked</default>
+                </input>
+                <input name="showIngress" type="CheckBox">
+                    <label>Vis ingress</label>
+                    <default>checked</default>
+                </input>
+                <input name="showApplications" type="CheckBox">
+                    <label>Vis inngang til søknad</label>
+                    <default>checked</default>
+                </input>
+                <input name="showAddendums" type="CheckBox">
+                    <label>Vis inngang til ettersendelse</label>
+                    <default>checked</default>
+                </input>
+            </items>
+        </field-set>
     </form>
+    <config>
+        <allow-on-content-type>${app}:content-page-with-sidemenus</allow-on-content-type>
+        <allow-on-content-type>${app}:guide-page</allow-on-content-type>
+    </config>
 </macro>
