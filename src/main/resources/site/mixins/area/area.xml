@@ -1,18 +1,20 @@
 <mixin>
   <form>
     <input name="area" type="ComboBox">
-        <label>Områdekategori</label>
-        <occurrences minimum="1" maximum="99"/>
-        <config>
-            <option value="work">Arbeid</option>
-            <option value="family">Familie og barn</option>
-            <option value="health">Helse og sykdom</option>
-            <option value="accessibility">Hjelpemidler og tilrettelegging</option>
-            <option value="pension">Pensjon</option>
-            <option value="social_counselling">Økonomisk sosialhjelp, råd og veiledning</option>
-            <option value="municipality">For kommunen</option>     
-            <option value="other">Annet</option>
-        </config>
+      <label>Områdekategori</label>
+      <occurrences minimum="1" maximum="99"/>
+      <config>
+        <option value="work">Arbeid</option>
+        <option value="family">Familie og barn</option>
+        <option value="health">Helse og sykdom</option>
+        <option value="accessibility">Hjelpemidler og tilrettelegging</option>
+        <option value="pension">Pensjon</option>
+        <option value="social_counselling">Sosiale tjenester og veiledning</option>
+        <option value="other">På tvers</option>
+        <option value="recruitment">Rekruttering</option>
+        <option value="inclusion">Inkludering og tilrettelegging</option>
+        <option value="downsizing">Permittering og nedbemanning</option>
+      </config>
     </input>
   </form>
 </mixin>

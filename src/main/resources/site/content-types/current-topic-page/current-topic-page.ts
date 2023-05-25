@@ -13,12 +13,61 @@ export interface CurrentTopicPage {
   /**
    * Målgruppe
    */
-  audience: "person" | "employer" | "provider";
+  audience:
+    | {
+        /**
+         * Selected
+         */
+        _selected: "person";
+
+        /**
+         * Privatperson
+         */
+        person: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "employer";
+
+        /**
+         * Arbeidsgiver
+         */
+        employer: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "provider";
+
+        /**
+         * Samarbeidspartner
+         */
+        provider: {
+          /**
+           * Underkategori
+           */
+          provider_audience: "doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "other";
+        };
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "other";
+
+        /**
+         * Annet
+         */
+        other: Record<string, unknown>;
+      };
 
   /**
    * Områdekategori
    */
-  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "municipality" | "other">;
+  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "other" | "recruitment" | "inclusion" | "downsizing">;
 
   /**
    * Videresend alle besøk til annen url:

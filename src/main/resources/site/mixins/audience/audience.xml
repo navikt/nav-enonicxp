@@ -1,13 +1,37 @@
 <mixin>
   <form>
-    <input name="audience" type="ComboBox">
-        <label>Målgruppe</label>
-        <occurrences minimum="1" maximum="1"/>
-        <config>
-            <option value="person">Privatperson</option>
-            <option value="employer">Arbeidsgiver</option>
-            <option value="provider">Samarbeidspartner</option>
-        </config>
-    </input>
+    <option-set name="audience">
+      <label>Målgruppe</label>
+      <occurrences minimum="1" maximum="1"/>
+      <options minimum="1" maximum="1">
+        <option name="person">
+          <label>Privatperson</label>
+        </option>
+        <option name="employer">
+          <label>Arbeidsgiver</label>
+        </option>
+        <option name="provider">
+          <label>Samarbeidspartner</label>
+          <items>
+            <input name="provider_audience" type="ComboBox">
+              <label>Underkategori</label>
+              <occurrences minimum="1" maximum="1"/>
+              <config>
+                <option value="doctor">Lege, tannlege eller annen behandler</option>
+                <option value="municipality_employed">Ansatt i NAV-kontor, kommunen eller fylkeskommunen</option>
+                <option value="optician">Optiker eller øyelege</option>
+                <option value="administrator">Bostyrer</option>
+                <option value="measures_organizer">Tiltaksarrangør</option>
+                <option value="aid_supplier">Hjelpemiddelformidler</option>
+                <option value="other">Andre samarbeidspartnere</option>
+              </config>
+            </input>
+          </items>
+        </option>
+        <option name="other">
+          <label>Annet</label>
+        </option>
+      </options>
+    </option-set>
   </form>
 </mixin>

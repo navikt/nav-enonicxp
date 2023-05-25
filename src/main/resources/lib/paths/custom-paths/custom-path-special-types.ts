@@ -10,7 +10,7 @@ const audienceSegmentMap: Record<string, string> = {
     provider: 'samarbeidspartner',
 };
 
-const getAudienceSegmentWithSlash = (audience: Audience['audience']) => {
+const getAudienceSegmentWithSlash = (audience: Audience['audience']['_selected']) => {
     const audienceSegment = audienceSegmentMap[audience];
     return audienceSegment ? `/${audienceSegment}` : '';
 };
@@ -25,7 +25,7 @@ export const formIntermediateStepValidateCustomPath = (
 
     const { audience } = content.data;
 
-    const audienceSegment = getAudienceSegmentWithSlash(audience);
+    const audienceSegment = getAudienceSegmentWithSlash(audience._selected);
 
     const isValid = new RegExp(
         `${FORM_INTERMEDIATE_STEP_CUSTOM_PATH_PREFIX}${audienceSegment}/.+`
@@ -38,7 +38,7 @@ export const formIntermediateStepGenerateCustomPath = (
     content: Content<'no.nav.navno:form-intermediate-step'>
 ) => {
     const suggestedPath = `${FORM_INTERMEDIATE_STEP_CUSTOM_PATH_PREFIX}${getAudienceSegmentWithSlash(
-        content.data.audience
+        content.data.audience._selected
     )}/${content._name}`;
 
     const contentWithCustomPath = getContentFromCustomPath(suggestedPath);

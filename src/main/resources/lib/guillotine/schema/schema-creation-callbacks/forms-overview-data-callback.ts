@@ -85,7 +85,7 @@ const transformToListItem = (
 };
 
 const buildFormDetailsList = (
-    audience: Audience['audience'],
+    audience: Audience['audience']['_selected'],
     language: string,
     overviewType: FormsOverview['overviewType']
 ) => {
@@ -94,16 +94,24 @@ const buildFormDetailsList = (
         contentTypes: contentTypesWithFormDetails,
         filters: {
             boolean: {
-                must: [
-                    {
-                        exists: {
-                            field: 'data.formDetailsTargets',
-                        },
-                    },
+                should: [
                     {
                         hasValue: {
                             field: 'data.audience',
                             values: [audience],
+                        },
+                    },
+                    {
+                        hasValue: {
+                            field: 'data.audience._selected',
+                            values: [audience],
+                        },
+                    },
+                ],
+                must: [
+                    {
+                        exists: {
+                            field: 'data.formDetailsTargets',
                         },
                     },
                     {

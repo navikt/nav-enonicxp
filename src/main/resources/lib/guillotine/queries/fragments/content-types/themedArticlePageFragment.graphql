@@ -5,6 +5,12 @@ fragment contentThemedArticlePage on no_nav_navno_ThemedArticlePage {
     data {
         area
         taxonomy
+        audience {
+            _selected
+            provider {
+                provider_audience
+            }
+        }
         illustration {
             ...animatedIconsTargetMixin
         }
