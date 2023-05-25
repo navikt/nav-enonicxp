@@ -8,6 +8,19 @@ export const audienceMigration = () => {
         const hits = contentLib.query({
             start: 0,
             count: 1000,
+            contentTypes: [
+                'no.nav.navno:form-intermediate-step',
+                'no.nav.navno:area-page',
+                'no.nav.navno:current-topic-page',
+                'no.nav.navno:front-page',
+                'no.nav.navno:press-landing-page',
+                'no.nav.navno:situation-page',
+                'no.nav.navno:tools-page',
+                'no.nav.navno:generic-page',
+                'no.nav.navno:guide-page',
+                'no.nav.navno:themed-article-page',
+                'no.nav.navno:content-page-with-sidemenus'
+            ],
             filters: {
                 boolean: {
                     must: {
