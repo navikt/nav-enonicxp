@@ -40,7 +40,6 @@ import { externalLinkCallback } from './schema-creation-callbacks/external-link-
 import { microCardTargetPageCallback } from './schema-creation-callbacks/microcard-part';
 import { createOpeningHoursFields } from './schema-creation-callbacks/common/opening-hours-mixin';
 import { formsOverviewDataCallback } from './schema-creation-callbacks/forms-overview-data-callback';
-import { macroFormDetailsCallback } from './schema-creation-callbacks/macro-form-details';
 
 export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     Attachment: attachmentCallback,
