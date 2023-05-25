@@ -3,5 +3,5 @@ export interface Taxonomy {
   /**
    * Kategori
    */
-  taxonomy?: Array<"assistive_tools" | "benefits" | "measures" | "service" | "rights" | "for_providers">;
+  taxonomy?: Array<"insurance" | "assistive_tools" | "benefits" | "measures" | "service" | "rights" | "form" | "employee_benefits" | "refund" | "for_providers">;
 }

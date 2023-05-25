@@ -5,11 +5,15 @@
             <label>Kategori</label>
             <occurrences minimum="0" maximum="0"/>
             <config>
+                <option value="insurance">Forsikring</option>
                 <option value="assistive_tools">Hjelpemiddel</option>
                 <option value="benefits">Pengestøtte</option>
                 <option value="measures">Tiltak</option>
                 <option value="service">Tjeneste</option>
                 <option value="rights">Veiledning</option>
+                <option value="form">Skjema</option>
+                <option value="employee_benefits">Pengestøtte til ansatt</option>
+                <option value="refund">Refusjon</option>
                 <option value="for_providers">For samarbeidspartnere</option>
             </config>
         </input>

@@ -11,6 +11,9 @@
         <option value="pension">Pensjon</option>
         <option value="social_counselling">Sosiale tjenester og veiledning</option>
         <option value="other">Annet</option>
+        <option value="recruitment">Rekruttering</option>
+        <option value="inclusion">Inkludering og tilrettelegging</option>
+        <option value="downsizing">Permittering og nedbemanning</option>
       </config>
     </input>
   </form>
