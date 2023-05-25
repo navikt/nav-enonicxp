@@ -59,7 +59,7 @@ export interface ThemedArticleData {
           /**
            * Underkategori
            */
-          provider_audience: "doctor" | "dentist" | "optician" | "occupational_therapist" | "aid_supplier" | "measures_organizer" | "administrator" | "municipality" | "other";
+          provider_audience: "doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "other";
         };
       }
     | {
