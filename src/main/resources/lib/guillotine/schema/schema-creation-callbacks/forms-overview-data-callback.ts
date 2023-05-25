@@ -229,6 +229,13 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
                 return [];
             }
 
+            const isTransportPage =
+                audience._selected === 'provider' &&
+                audience.provider.pageType._selected === 'links';
+            if (isTransportPage) {
+                return [];
+            }
+
             return buildFormDetailsList(audience._selected, language, overviewType);
         },
     };
