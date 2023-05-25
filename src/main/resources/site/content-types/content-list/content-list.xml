@@ -27,6 +27,7 @@
                         <allowContentType>${app}:current-topic-page</allowContentType>
                         <allowContentType>${app}:themed-article-page</allowContentType>
                         <allowContentType>${app}:overview</allowContentType>
+                        <allowContentType>${app}:forms-overview</allowContentType>
                     </config>
                 </input>
             </items>

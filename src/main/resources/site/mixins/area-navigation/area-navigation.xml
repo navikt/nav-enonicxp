@@ -1,13 +1,20 @@
 <mixin>
     <form>
         <field-set>
-            <label>Områdenavigasjon</label>
+            <label>Område- eller situasjonsnavigasjon</label>
             <items>
                 <input name="areasRefs" type="ContentSelector">
                     <label>Velg områder</label>
                     <occurrences maximum="0" minimum="0"/>
                     <config>
                         <allowContentType>${app}:area-page</allowContentType>
+                    </config>
+                </input>
+                <input name="situationsRefs" type="ContentSelector">
+                    <label>Velg situasjonssider</label>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allowContentType>${app}:situation-page</allowContentType>
                     </config>
                 </input>
             </items>

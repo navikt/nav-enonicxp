@@ -37,6 +37,8 @@ import { FrontPage } from '../../site/content-types/front-page/front-page';
 import { AreaPage } from '../../site/content-types/area-page/area-page';
 import { OfficeBranch } from 'site/content-types/office-branch/office-branch';
 import { CurrentTopicPage } from 'site/content-types/current-topic-page/current-topic-page';
+import { Video } from 'site/content-types/video/video';
+import { FormIntermediateStep } from 'site/content-types/form-intermediate-step/form-intermediate-step';
 import {
     SearchConfigData,
     SearchConfigDescriptor,
@@ -44,7 +46,6 @@ import {
     SearchExternalResourceDescriptor,
 } from './search-config';
 import { PressLandingPage } from 'site/content-types/press-landing-page/press-landing-page';
-import { FormIntermediateStep } from 'site/content-types/form-intermediate-step/form-intermediate-step';
 import { FormsOverview } from '../../site/content-types/forms-overview/forms-overview';
 
 type CustomContentDataConfigsWithoutDescriptor = {
@@ -86,6 +87,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'tools-page': ToolsPage;
     'transport-page': TransportPage;
     'press-landing-page': PressLandingPage;
+    video: Video;
     'forms-overview': FormsOverview;
 };
 

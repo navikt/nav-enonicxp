@@ -20,6 +20,8 @@ type IncludedProductData = Pick<
 type FormDetailsListItem = {
     anchorId: string;
     formDetailsPaths: string[];
+    formDetailsTitles: string[];
+    formNumbers: string[];
     url: string;
     type: ContentTypeWithFormDetails;
 } & Required<IncludedProductData>;
@@ -44,19 +46,18 @@ const transformToListItem = (
     content: ContentWithFormDetails,
     formDetailsMap: FormDetailsMap
 ): FormDetailsListItem | null => {
-    const formDetailsPaths = forceArray(content.data.formDetailsTargets).reduce<string[]>(
-        (acc, formDetailsId) => {
-            const formDetails = formDetailsMap[formDetailsId];
-            if (formDetails) {
-                acc.push(formDetails._path);
-            }
+    const formDetailsContents = forceArray(content.data.formDetailsTargets).reduce<
+        Content<'no.nav.navno:form-details'>[]
+    >((acc, formDetailsId) => {
+        const formDetails = formDetailsMap[formDetailsId];
+        if (formDetails) {
+            acc.push(formDetails);
+        }
 
-            return acc;
-        },
-        []
-    );
+        return acc;
+    }, []);
 
-    if (formDetailsPaths.length === 0) {
+    if (formDetailsContents.length === 0) {
         return null;
     }
 
@@ -72,10 +73,14 @@ const transformToListItem = (
         url,
         type: content.type,
         anchorId: sanitize(sortTitle),
-        formDetailsPaths,
         illustration: content.data.illustration,
         area: forceArray(content.data.area),
         taxonomy: forceArray(content.data.taxonomy),
+        formDetailsPaths: formDetailsContents.map((formDetails) => formDetails._path),
+        formDetailsTitles: formDetailsContents.map((formDetails) => formDetails.data.title || ''),
+        formNumbers: formDetailsContents
+            .map((formDetails) => forceArray(formDetails.data.formNumbers))
+            .flat(),
     };
 };
 
@@ -171,6 +176,8 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
             type: { type: graphQlLib.GraphQLString },
             ingress: { type: graphQlLib.GraphQLString },
             formDetailsPaths: { type: graphQlLib.list(graphQlLib.GraphQLString) },
+            formDetailsTitles: { type: graphQlLib.list(graphQlLib.GraphQLString) },
+            formNumbers: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             sortTitle: { type: graphQlLib.GraphQLString },
             title: { type: graphQlLib.GraphQLString },
             anchorId: { type: graphQlLib.GraphQLString },
