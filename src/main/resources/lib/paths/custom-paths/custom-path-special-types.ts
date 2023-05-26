@@ -3,6 +3,8 @@ import { getContentFromCustomPath, isValidCustomPath } from './custom-path-utils
 import { logger } from '../../utils/logging';
 import { Audience } from '../../../site/mixins/audience/audience';
 
+type AudienceNewOrLegacy = Audience['audience'] | Audience['audience']['_selected'];
+
 export const FORM_INTERMEDIATE_STEP_CUSTOM_PATH_PREFIX = '/start';
 
 const audienceSegmentMap: Record<string, string> = {
@@ -10,8 +12,10 @@ const audienceSegmentMap: Record<string, string> = {
     provider: 'samarbeidspartner',
 };
 
-const getAudienceSegmentWithSlash = (audience: Audience['audience']['_selected']) => {
-    const audienceSegment = audienceSegmentMap[audience];
+const getAudienceSegmentWithSlash = (audience: AudienceNewOrLegacy) => {
+    const audienceSelected = typeof audience === 'string' ? audience : audience?._selected;
+
+    const audienceSegment = audienceSegmentMap[audienceSelected];
     return audienceSegment ? `/${audienceSegment}` : '';
 };
 
@@ -25,7 +29,7 @@ export const formIntermediateStepValidateCustomPath = (
 
     const { audience } = content.data;
 
-    const audienceSegment = getAudienceSegmentWithSlash(audience._selected);
+    const audienceSegment = getAudienceSegmentWithSlash(audience as AudienceNewOrLegacy);
 
     const isValid = new RegExp(
         `${FORM_INTERMEDIATE_STEP_CUSTOM_PATH_PREFIX}${audienceSegment}/.+`
