@@ -72,12 +72,12 @@ export interface ProductData {
   /**
    * Kategori
    */
-  taxonomy?: Array<"insurance" | "assistive_tools" | "benefits" | "measures" | "service" | "rights" | "form" | "employee_benefits" | "refund" | "for_providers">;
+  taxonomy?: Array<"insurance" | "assistive_tools" | "benefits" | "measures" | "service" | "rights" | "form" | "employee_benefits" | "refund" | "for_providers" | "followup" | "for_employers" | "for_municipality" | "for_event_organizers" | "for_health_service">;
 
   /**
    * Områdekategori
    */
-  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "other" | "recruitment" | "inclusion" | "downsizing">;
+  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "other" | "recruitment" | "inclusion" | "downsizing" | "municipality">;
 
   /**
    * Velg piktogram
