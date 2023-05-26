@@ -45,17 +45,28 @@ const getSituationPages = (area: string, audience: string) =>
         contentTypes: ['no.nav.navno:situation-page'],
         filters: {
             boolean: {
+                // Må ta høyde for at audience kan befinne seg i to forskjellige felter,
+                // alt etter om siden er publisert eller ikke etter migrering til ny datamodell for audience
+                // TODO: Kan endres til EN must etter at alle sider med audience er publisert
+                should: [
+                    {
+                        hasValue: {
+                            field: 'data.audience',
+                            values: [audience],
+                        },
+                    },
+                    {
+                        hasValue: {
+                            field: 'data.audience._selected',
+                            values: [audience],
+                        },
+                    },
+                ],
                 must: [
                     {
                         hasValue: {
                             field: 'data.area',
                             values: [area],
-                        },
-                    },
-                    {
-                        hasValue: {
-                            field: 'data.audience',
-                            values: [audience],
                         },
                     },
                 ],
@@ -88,7 +99,7 @@ const getRelevantSituationPages = (areaPageNodeContent: AreaPageNodeContent) =>
         const { language, data } = areaPageNodeContent;
         const { area, audience } = data;
 
-        const situationPages = getSituationPages(area, audience);
+        const situationPages = getSituationPages(area, audience._selected);
 
         const situationPagesLocalized = situationPages.filter(
             (situationContent) => situationContent.language === language

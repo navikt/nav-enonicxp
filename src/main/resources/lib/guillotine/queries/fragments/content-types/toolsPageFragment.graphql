@@ -4,6 +4,12 @@ fragment contentToolsPage on no_nav_navno_ToolsPage {
     dataAsJson
     data {
         area
+        audience {
+            _selected
+            provider {
+                provider_audience
+            }
+        }
         taxonomy
         illustration {
             ...animatedIconsTargetMixin

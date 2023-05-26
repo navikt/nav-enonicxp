@@ -23,7 +23,51 @@ export interface ThemedArticleData {
   /**
    * Målgruppe
    */
-  audience: "person" | "employer" | "provider";
+  audience:
+    | {
+        /**
+         * Selected
+         */
+        _selected: "person";
+
+        /**
+         * Privatperson
+         */
+        person: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "employer";
+
+        /**
+         * Arbeidsgiver
+         */
+        employer: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "provider";
+
+        /**
+         * Samarbeidspartner
+         */
+        provider: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "other";
+
+        /**
+         * Annet
+         */
+        other: Record<string, unknown>;
+      };
 
   /**
    * Kategorier
@@ -38,7 +82,7 @@ export interface ThemedArticleData {
   /**
    * Områdekategori
    */
-  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "municipality" | "other">;
+  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "other" | "recruitment" | "inclusion" | "downsizing">;
 
   /**
    * Velg piktogram

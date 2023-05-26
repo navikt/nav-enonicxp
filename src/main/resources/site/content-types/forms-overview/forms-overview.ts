@@ -76,9 +76,9 @@ export interface FormsOverview {
                  */
                 overview: {
                   /**
-                   * Velg underkategori
+                   * Underkategori
                    */
-                  provider_audience: Array<"doctor" | "dentist" | "optician" | "occupational_therapist" | "aid_supplier" | "measures_organizer" | "administrator" | "municipality" | "other">;
+                  provider_audience: "doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "other";
                 };
               }
             | {

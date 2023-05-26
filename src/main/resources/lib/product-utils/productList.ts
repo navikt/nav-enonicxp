@@ -17,7 +17,7 @@ import { getLocaleFromContext } from '../localization/locale-context';
 import { forceArray, removeDuplicates } from '../utils/array-utils';
 
 type OverviewType = Overview['overviewType'];
-type ProductAudience = Audience['audience'];
+type ProductAudience = Audience['audience']['_selected'];
 type ContentWithProductDetails = Content<ContentTypeWithProductDetails>;
 // Generated data type definitions are incorrect due to nested mixins
 type ContentWithProductDetailsData = ContentWithProductDetails['data'] & ProductData;
@@ -191,31 +191,42 @@ const getProductPages = (
             : contentTypesWithProductDetails,
         filters: {
             boolean: {
-                must: [
+                // Må ta høyde for at audience kan befinne seg i to forskjellige felter,
+                // alt etter om siden er publisert eller ikke etter migrering til ny datamodell for audience
+                // TODO: Kan endres til EN must etter at alle sider med audience er publisert
+                should: [
                     {
                         hasValue: {
                             field: 'data.audience',
                             values: audience,
                         },
                     },
+                    {
+                        hasValue: {
+                            field: 'data.audience._selected',
+                            values: audience,
+                        },
+                    },
+                ],
+                must: [
                     ...(languages
                         ? [
-                              {
-                                  hasValue: {
-                                      field: 'language',
-                                      values: languages,
-                                  },
-                              },
-                          ]
+                            {
+                                hasValue: {
+                                    field: 'language',
+                                    values: languages,
+                                },
+                            },
+                        ]
                         : []),
                     ...(!isAllProductsType
                         ? [
-                              {
-                                  exists: {
-                                      field: `data.${overviewType}`,
-                                  },
-                              },
-                          ]
+                            {
+                                exists: {
+                                    field: `data.${overviewType}`,
+                                },
+                            },
+                        ]
                         : []),
                 ],
                 mustNot: [

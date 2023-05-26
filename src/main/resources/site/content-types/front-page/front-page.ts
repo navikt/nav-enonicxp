@@ -3,7 +3,51 @@ export interface FrontPage {
   /**
    * Målgruppe
    */
-  audience: "person" | "employer" | "provider";
+  audience:
+    | {
+        /**
+         * Selected
+         */
+        _selected: "person";
+
+        /**
+         * Privatperson
+         */
+        person: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "employer";
+
+        /**
+         * Arbeidsgiver
+         */
+        employer: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "provider";
+
+        /**
+         * Samarbeidspartner
+         */
+        provider: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "other";
+
+        /**
+         * Annet
+         */
+        other: Record<string, unknown>;
+      };
 
   /**
    * Overskrift

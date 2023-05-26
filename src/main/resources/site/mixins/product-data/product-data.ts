@@ -23,17 +23,61 @@ export interface ProductData {
   /**
    * Målgruppe
    */
-  audience: "person" | "employer" | "provider";
+  audience:
+    | {
+        /**
+         * Selected
+         */
+        _selected: "person";
+
+        /**
+         * Privatperson
+         */
+        person: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "employer";
+
+        /**
+         * Arbeidsgiver
+         */
+        employer: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "provider";
+
+        /**
+         * Samarbeidspartner
+         */
+        provider: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "other";
+
+        /**
+         * Annet
+         */
+        other: Record<string, unknown>;
+      };
 
   /**
    * Kategori
    */
-  taxonomy?: Array<"assistive_tools" | "followup" | "benefits" | "measures" | "service" | "rights" | "for_employers" | "for_providers" | "for_municipality" | "for_event_organizers" | "for_health_service">;
+  taxonomy?: Array<"insurance" | "assistive_tools" | "benefits" | "measures" | "service" | "rights" | "form" | "employee_benefits" | "refund" | "for_providers">;
 
   /**
    * Områdekategori
    */
-  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "municipality" | "other">;
+  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "other" | "recruitment" | "inclusion" | "downsizing">;
 
   /**
    * Velg piktogram

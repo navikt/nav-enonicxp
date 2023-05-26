@@ -4,6 +4,7 @@
 fragment contentOverviewPage on no_nav_navno_Overview {
     dataAsJson
     data {
+        audience
         illustration {
             ...animatedIconsTargetMixin
         }
@@ -21,7 +22,7 @@ fragment contentOverviewPage on no_nav_navno_Overview {
             audience
             area
             illustration {
-                ...on no_nav_navno_AnimatedIcons{
+                ... on no_nav_navno_AnimatedIcons {
                     type
                     data {
                         icons {

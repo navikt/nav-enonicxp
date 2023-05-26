@@ -6,7 +6,32 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <mixin name="generic-page-data"/>
+        <field-set>
+            <label>Tittel og ingress</label>
+            <items>
+                <mixin name="page-header"/>
+                <mixin name="ingress-required" />
+            </items>
+        </field-set>
+        <field-set>
+            <label>Generisk sidedata</label>
+            <items>
+                <mixin name="audience" />
+            </items>
+        </field-set>
+        <field-set>
+            <label>Piktogram</label>
+            <items>
+                <mixin name="illustration" />
+            </items>
+        </field-set>
+        <field-set>
+            <label>URL</label>
+            <items>
+                <mixin name="external-product-url" />
+                <mixin name="custom-path-selector-required"/>
+            </items>
+        </field-set>
         <mixin name="dynamic-page-common"/>
     </form>
 </content-type>
