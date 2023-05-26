@@ -90,7 +90,7 @@ const buildFormDetailsList = (
 ) => {
     const { _selected: selectedAudience } = audience;
 
-    const selectedProviderAudience =
+    const selectedProviderAudiences =
         selectedAudience === 'provider' &&
         audience.provider.pageType._selected === 'overview' &&
         audience.provider.pageType.overview.provider_audience;
@@ -126,12 +126,12 @@ const buildFormDetailsList = (
                             values: [language],
                         },
                     },
-                    ...(selectedProviderAudience
+                    ...(selectedProviderAudiences
                         ? [
                               {
                                   hasValue: {
                                       field: 'data.audience.provider.provider_audience',
-                                      values: [selectedProviderAudience],
+                                      values: forceArray(selectedProviderAudiences),
                                   },
                               },
                           ]
