@@ -14,6 +14,9 @@
         <option value="recruitment">Rekruttering</option>
         <option value="inclusion">Inkludering og tilrettelegging</option>
         <option value="downsizing">Permittering og nedbemanning</option>
+
+        <!--TODO: remove this when no longer in use-->
+        <option value="municipality">For kommunen (IKKE BRUK, SKAL FJERNES)</option>
       </config>
     </input>
   </form>

@@ -15,6 +15,13 @@
                 <option value="employee_benefits">Pengestøtte til ansatt</option>
                 <option value="refund">Refusjon</option>
                 <option value="for_providers">For samarbeidspartnere</option>
+
+                <!--TODO: remove these when no longer in use-->
+                <option value="followup">Oppfølging (IKKE BRUK, SKAL FJERNES)</option>
+                <option value="for_employers">For arbeidsgivere (IKKE BRUK, SKAL FJERNES)</option>
+                <option value="for_municipality">For kommunen (IKKE BRUK, SKAL FJERNES)</option>
+                <option value="for_event_organizers">For tiltaksarrangører (IKKE BRUK, SKAL FJERNES)</option>
+                <option value="for_health_service">For leger og andre behandlere (IKKE BRUK, SKAL FJERNES)</option>
             </config>
         </input>
     </form>
