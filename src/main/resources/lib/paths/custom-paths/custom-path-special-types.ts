@@ -2,6 +2,7 @@ import { Content } from '/lib/xp/content';
 import { getContentFromCustomPath, isValidCustomPath } from './custom-path-utils';
 import { logger } from '../../utils/logging';
 import { Audience } from '../../../site/mixins/audience/audience';
+import { sanitize } from '/lib/xp/common';
 
 type AudienceNewOrLegacy = Audience['audience'] | Audience['audience']['_selected'];
 
@@ -42,8 +43,8 @@ export const formIntermediateStepGenerateCustomPath = (
     content: Content<'no.nav.navno:form-intermediate-step'>
 ) => {
     const suggestedPath = `${FORM_INTERMEDIATE_STEP_CUSTOM_PATH_PREFIX}${getAudienceSegmentWithSlash(
-        content.data.audience._selected
-    )}/${content._name}`;
+        content.data.audience as AudienceNewOrLegacy
+    )}/${sanitize(content._name)}`;
 
     const contentWithCustomPath = getContentFromCustomPath(suggestedPath);
     if (
