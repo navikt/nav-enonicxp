@@ -32,6 +32,8 @@ activateCacheEventListeners();
 activateSitemapDataUpdateEventListener();
 activateContentListItemUnpublishedListener();
 activateCustomPathNodeListeners();
+activateSearchIndexEventHandlers();
+activateContentUpdateListener();
 
 hookLibsWithTimeTravel(timeTravelConfig);
 
@@ -42,10 +44,7 @@ if (clusterLib.isMaster()) {
     generateSitemapDataAndActivateSchedule();
     startOfficeInfoPeriodicUpdateSchedule();
     createOfficeBranchFetchSchedule();
-    activateContentUpdateListener();
 }
-
-activateSearchIndexEventHandlers();
 
 log.info('Finished running main');
 
