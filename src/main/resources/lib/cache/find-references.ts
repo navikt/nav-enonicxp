@@ -26,7 +26,9 @@ const typesWithOverviewPages = stringArrayToSet(contentTypesWithProductDetails);
 const getHtmlAreaReferences = (content: Content) => {
     const references = findContentsWithHtmlAreaText(content._id);
 
-    logger.info(`Found ${references.length} pages with htmlarea-references to content id ${content._id}`);
+    logger.info(
+        `Found ${references.length} pages with htmlarea-references to content id ${content._id}`
+    );
 
     return references;
 };
@@ -58,15 +60,46 @@ const getOverviewReferences = (content: Content) => {
         return [];
     }
 
-    const overviewPages = contentLib.query({
+    const { language, data } = content;
+
+    const selectedAudience =
+        typeof data.audience === 'string' ? data.audience : data.audience?._selected;
+
+    const relavantOverviewPages = contentLib.query({
         start: 0,
         count: 1000,
         contentTypes: ['no.nav.navno:overview', 'no.nav.navno:forms-overview'],
+        filters: {
+            boolean: {
+                should: [
+                    {
+                        hasValue: {
+                            field: 'data.audience',
+                            values: [selectedAudience],
+                        },
+                    },
+                    {
+                        hasValue: {
+                            field: 'data.audience._selected',
+                            values: [selectedAudience],
+                        },
+                    },
+                ],
+                must: [
+                    {
+                        hasValue: {
+                            field: 'language',
+                            values: [language],
+                        },
+                    },
+                ],
+            },
+        },
     }).hits;
 
-    logger.info(`Found ${overviewPages.length} relevant overview pages`);
+    logger.info(`Found ${relavantOverviewPages.length} relevant overview pages`);
 
-    return overviewPages;
+    return relavantOverviewPages;
 };
 
 // Product details are selected with a custom selector, and does not generate explicit references
