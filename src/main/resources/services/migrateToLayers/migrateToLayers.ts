@@ -149,8 +149,12 @@ const runPresetMigrationJob = (migrationParams: ContentMigrationParams[]) => {
 
             toggleCacheInvalidationOnNodeEvents({ shouldDefer: true });
             migrationParams.forEach((params, index) => {
-                const result = migrateContentToLayer(params);
-                resultsAcc.push(result);
+                try {
+                    const result = migrateContentToLayer(params);
+                    resultsAcc.push(result);
+                } catch (e) {
+                    resultsAcc.push(e);
+                }
 
                 resultCache.put(jobId, {
                     status: `Migration job ${jobId} progress: [${index + 1} / ${
