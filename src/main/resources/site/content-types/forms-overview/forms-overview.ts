@@ -76,7 +76,7 @@ export interface FormsOverview {
                  */
                 overview: {
                   /**
-                   * Underkategori
+                   * Velg underkategorier
                    */
                   provider_audience: Array<"doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "other">;
                 };

@@ -34,7 +34,7 @@ export const getGvKeyAndContentIdFromUniqueKey = (key: string) => {
 export const getGlobalValueUsage = (gvKey: string, contentId: string) => {
     const key = getGlobalValueUniqueKey(gvKey, contentId);
 
-    const macroUsage = findContentsWithHtmlAreaText(key, true);
+    const macroUsage = findContentsWithHtmlAreaText(key);
     const calcUsage = getGlobalValueCalcUsage(key);
 
     return [...macroUsage, ...calcUsage];

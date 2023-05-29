@@ -24,13 +24,9 @@ const typesWithOverviewPages = stringArrayToSet(contentTypesWithProductDetails);
 // Search html-area fields for a content id. Handles references via macros, which does not generate
 // explicit references
 const getHtmlAreaReferences = (content: Content) => {
-    const { _id, type } = content;
+    const references = findContentsWithHtmlAreaText(content._id);
 
-    // Fragments containing other fragments is a very rare edge-case, which we will ignore
-    // for performance reasons until the bug with querying fragment component fields is resolved :D
-    const references = findContentsWithHtmlAreaText(_id, type !== 'portal:fragment');
-
-    logger.info(`Found ${references.length} pages with htmlarea-references to content id ${_id}`);
+    logger.info(`Found ${references.length} pages with htmlarea-references to content id ${content._id}`);
 
     return references;
 };

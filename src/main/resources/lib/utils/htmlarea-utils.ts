@@ -1,5 +1,5 @@
 import * as contentLib from '/lib/xp/content';
-import { batchedContentQuery } from './batched-query';
+import { logger } from './logging';
 
 export const htmlAreaComponentPaths = [
     'part.config.no-nav-navno.html-area.html',
@@ -23,7 +23,7 @@ export const htmlAreaNodePaths = [
 
 const htmlAreaNodePathsString = htmlAreaNodePaths.join(',');
 
-export const findContentsWithHtmlAreaText = (text: string, searchInFragments: boolean) => {
+export const findContentsWithHtmlAreaText = (text: string) => {
     if (!text) {
         return [];
     }
@@ -34,25 +34,16 @@ export const findContentsWithHtmlAreaText = (text: string, searchInFragments: bo
         query: `fulltext('${htmlAreaNodePathsString}', '"${text}"', 'AND')`,
     }).hits;
 
-    if (!searchInFragments) {
-        return queryHits;
-    }
-
-    // Workaround for searching htmlarea fragments. Query strings or filters don't seem to pick
-    // up component config-fields in fragments...
-    const fragmentHits = batchedContentQuery({
-        count: 10000,
-        contentTypes: ['portal:fragment'],
-    }).hits.filter(
-        (hit) =>
-            hit.fragment.type === 'part' &&
-            hit.fragment.descriptor === 'no.nav.navno:html-area' &&
-            hit.fragment.config?.html?.includes(text)
+    const hitsFromFragments = queryHits.filter((hit) => hit.type === 'portal:fragment');
+    logger.info(
+        `Found ${hitsFromFragments.length} fragment hits - ${hitsFromFragments
+            .slice(0, 10)
+            .map((hit) => hit._path)}`
     );
 
-    return [...queryHits, ...fragmentHits];
+    return queryHits;
 };
 
 export const findContentsWithFragmentMacro = (fragmentId: string) => {
-    return findContentsWithHtmlAreaText(fragmentId, false);
+    return findContentsWithHtmlAreaText(fragmentId);
 };
