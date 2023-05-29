@@ -16,7 +16,7 @@
                     <items>
                         <input name="taxonomy" type="ComboBox">
                             <label>Kategorier</label>
-                            <occurrences minimum="0" maximum="99"/>
+                            <occurrences minimum="0" maximum="0"/>
                             <config>
                                 <option value="tips_job">Jobbsøkertips</option>
                                 <option value="help_work">Hjelp til å komme i jobb</option>
