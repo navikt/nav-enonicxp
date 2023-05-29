@@ -67,8 +67,6 @@ const getOverviewReferences = (content: Content) => {
 
     const { language, data } = content;
 
-    // const data = content.data as any;
-
     const selectedAudience =
         typeof data.audience === 'string' ? data.audience : data.audience?._selected;
 

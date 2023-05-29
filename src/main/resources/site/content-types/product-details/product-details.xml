@@ -6,7 +6,7 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <field-set name="product-details">
+        <field-set>
             <label>Produktdetaljer</label>
             <items>
                 <input name="detailType" type="ComboBox">
