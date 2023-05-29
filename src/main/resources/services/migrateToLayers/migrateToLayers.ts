@@ -145,17 +145,32 @@ const runPresetMigrationJob = (migrationParams: ContentMigrationParams[]) => {
 
             const start = Date.now();
 
+            const resultsAcc: any[] = [];
+
             toggleCacheInvalidationOnNodeEvents({ shouldDefer: true });
-            const result = migrationParams.map(migrateContentToLayer);
+            migrationParams.forEach((params, index) => {
+                try {
+                    const result = migrateContentToLayer(params);
+                    resultsAcc.push(result);
+                } catch (e) {
+                    resultsAcc.push(e);
+                }
+
+                resultCache.put(jobId, {
+                    status: `Migration job ${jobId} progress: [${index + 1} / ${
+                        migrationParams.length
+                    }]`,
+                    result: resultsAcc,
+                    params,
+                });
+            });
             toggleCacheInvalidationOnNodeEvents({ shouldDefer: false });
 
             const durationSec = (Date.now() - start) / 1000;
-            const withErrors = result.filter((result) => result.errorMsgs.length > 0);
 
             resultCache.put(jobId, {
-                status: `Migration job ${jobId} completed in ${durationSec} sec. ${withErrors.length} contents had errors.`,
-                params: migrationParams,
-                result,
+                ...resultCache.getIfPresent(jobId),
+                status: `Migration job ${jobId} completed in ${durationSec} sec.`,
             });
         },
     });
