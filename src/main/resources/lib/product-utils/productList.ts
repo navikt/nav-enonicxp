@@ -8,19 +8,19 @@ import {
     DetailedOverviewType,
     OverviewPageProductData,
 } from './types';
-import { ProductData } from '../../site/mixins/product-data/product-data';
 import { APP_DESCRIPTOR, CONTENT_LOCALE_DEFAULT } from '../constants';
 import { Audience } from '../../site/mixins/audience/audience';
 import { contentTypesWithProductDetails } from '../contenttype-lists';
 import { getPublicPath } from '../paths/public-path';
 import { getLocaleFromContext } from '../localization/locale-context';
 import { forceArray, removeDuplicates } from '../utils/array-utils';
+import { ContentPageWithSidemenus } from '../../site/content-types/content-page-with-sidemenus/content-page-with-sidemenus';
 
 type OverviewType = Overview['overviewType'];
 type ProductAudience = Audience['audience']['_selected'];
 type ContentWithProductDetails = Content<ContentTypeWithProductDetails>;
 // Generated data type definitions are incorrect due to nested mixins
-type ContentWithProductDetailsData = ContentWithProductDetails['data'] & ProductData;
+type ContentWithProductDetailsData = ContentWithProductDetails['data'] & ContentPageWithSidemenus;
 type ProductDetailsContent = Content<'no.nav.navno:product-details'>;
 
 const contentTypesInAllProductsList = [
@@ -211,22 +211,22 @@ const getProductPages = (
                 must: [
                     ...(languages
                         ? [
-                            {
-                                hasValue: {
-                                    field: 'language',
-                                    values: languages,
-                                },
-                            },
-                        ]
+                              {
+                                  hasValue: {
+                                      field: 'language',
+                                      values: languages,
+                                  },
+                              },
+                          ]
                         : []),
                     ...(!isAllProductsType
                         ? [
-                            {
-                                exists: {
-                                    field: `data.${overviewType}`,
-                                },
-                            },
-                        ]
+                              {
+                                  exists: {
+                                      field: `data.${overviewType}`,
+                                  },
+                              },
+                          ]
                         : []),
                 ],
                 mustNot: [

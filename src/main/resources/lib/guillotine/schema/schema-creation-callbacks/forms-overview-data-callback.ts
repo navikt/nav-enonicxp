@@ -7,9 +7,11 @@ import { logger } from '../../../utils/logging';
 import { forceArray, removeDuplicatesFilter } from '../../../utils/array-utils';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
 import { FormsOverview } from '../../../../site/content-types/forms-overview/forms-overview';
-import { ProductData } from '../../../../site/mixins/product-data/product-data';
 import { getPublicPath } from '../../../paths/public-path';
 import { FormDetailsSelector } from '../../../../site/mixins/form-details-selector/form-details-selector';
+import { ContentPageWithSidemenus } from '../../../../site/content-types/content-page-with-sidemenus/content-page-with-sidemenus';
+
+type ProductData = ContentPageWithSidemenus;
 
 type IncludedProductData = Pick<
     ProductData,

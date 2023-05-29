@@ -21,6 +21,11 @@ const MAX_DEPTH = 5;
 const typesWithDeepReferences = stringArrayToSet(_typesWithDeepReferences);
 const typesWithOverviewPages = stringArrayToSet(contentTypesWithProductDetails);
 
+type ContentWithOverviewPages = Content<(typeof contentTypesWithProductDetails)[number]>;
+
+const isTypeWithOverviewPages = (content: Content): content is ContentWithOverviewPages =>
+    typesWithOverviewPages[content.type];
+
 // Search html-area fields for a content id. Handles references via macros, which does not generate
 // explicit references
 const getHtmlAreaReferences = (content: Content) => {
@@ -56,11 +61,13 @@ const getGlobalValueCalculatorReferences = (content: Content) => {
 // Overview pages are generated from meta-data of certain content types, and does not generate
 // references to the listed content
 const getOverviewReferences = (content: Content) => {
-    if (!typesWithOverviewPages[content.type]) {
+    if (!isTypeWithOverviewPages(content)) {
         return [];
     }
 
     const { language, data } = content;
+
+    // const data = content.data as any;
 
     const selectedAudience =
         typeof data.audience === 'string' ? data.audience : data.audience?._selected;
