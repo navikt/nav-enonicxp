@@ -6,6 +6,11 @@ export interface FormsOverview {
   title: string;
 
   /**
+   * Under-tittel
+   */
+  underTitle: string;
+
+  /**
    * Ingress/beskrivelse
    */
   ingress: string;
