@@ -89,14 +89,38 @@ const getResult = ({
         );
     }
 
-    const redirectContent = runInContext({ branch: 'master' }, () =>
+    const redirectMasterContent = runInContext({ branch: 'master' }, () =>
         contentLib.get({ key: `${REDIRECTS_ROOT_PATH}${suggestedPath}` })
     );
-    if (redirectContent && redirectContent.type !== 'base:folder') {
+
+    if (redirectMasterContent && redirectMasterContent.type !== 'base:folder') {
         return {
             id: suggestedPath,
             displayName: suggestedPath,
             description: `Advarsel: ${suggestedPath} er i bruk som redirect url - redirect vil overstyres av kort-url`,
+            icon: customSelectorWarningIcon,
+        };
+    }
+    // Also check draft content for custom paths to catch any content
+    // that hasn't been published yet (ie. not yet in master)
+    const redirectDraftContent = runInContext({ branch: 'draft' }, () => {
+        const existingContentWithSuggestedPath = contentLib.query({
+            start: 0,
+            count: 1,
+            filters: {
+                boolean: {
+                    must: { hasValue: { field: 'data.customPath', values: [suggestedPath] } },
+                },
+            },
+        }).hits;
+        return existingContentWithSuggestedPath[0];
+    });
+
+    if (redirectDraftContent && redirectDraftContent.type !== 'base:folder') {
+        return {
+            id: suggestedPath,
+            displayName: suggestedPath,
+            description: `Advarsel: ${suggestedPath} er ibruk i annet innhold som ikke er publisert ennå. Konflikter vil kunne oppstå.`,
             icon: customSelectorWarningIcon,
         };
     }
