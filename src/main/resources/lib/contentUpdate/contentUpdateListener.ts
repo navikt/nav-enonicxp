@@ -5,7 +5,6 @@ import { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
 import { runInContext } from '../context/run-in-context';
 import { QbrickMeta } from 'types/qbrickMeta';
-import { get } from 'http';
 
 let hasContentUpdateListener = false;
 type UpdateVideoContentParams = {
