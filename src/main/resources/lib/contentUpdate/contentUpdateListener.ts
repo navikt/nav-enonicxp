@@ -13,6 +13,18 @@ type UpdateVideoContentParams = {
     imageAsset: Content<'media:image'>;
 };
 
+const getProxyConfig = () => {
+    if (app.config.env === 'localhost') {
+        return {};
+    }
+    return {
+        proxy: {
+            host: 'webproxy-internett.nav.no',
+            port: 8088,
+        },
+    };
+};
+
 const updateVideoContent = ({ content, duration, imageAsset }: UpdateVideoContentParams) => {
     contentLib.modify({
         key: content._id,
@@ -26,17 +38,25 @@ const updateVideoContent = ({ content, duration, imageAsset }: UpdateVideoConten
 };
 
 const createImageAsset = (imageUrl: string, targetPath: string, targetName: string) => {
+    if (!targetName || !targetPath) {
+        return null;
+    }
+
     const response = httpClient.request({
         method: 'GET',
         url: imageUrl,
         contentType: 'image/jpeg',
         connectionTimeout: 5000,
         followRedirects: false,
-        proxy: {
-            host: 'webproxy-internett.nav.no',
-            port: 8088,
-        },
+        ...getProxyConfig(),
     });
+
+    const posterExists = contentLib.exists({ key: `${targetPath}/${targetName}.jpg` });
+
+    if (posterExists)
+        contentLib.delete({
+            key: `${targetPath}/${targetName}.jpg`,
+        });
 
     return contentLib.createMedia({
         name: `${targetName}.jpg`,
@@ -94,10 +114,7 @@ const fetchMetaDataFromQbrick = (accountId: number, mediaId: string) => {
             url: qbrickURI,
             connectionTimeout: 8000,
             followRedirects: false,
-            proxy: {
-                host: 'webproxy-internett.nav.no',
-                port: 8088,
-            },
+            ...getProxyConfig(),
         });
 
         if (response.status !== 200 || !response.body) {
