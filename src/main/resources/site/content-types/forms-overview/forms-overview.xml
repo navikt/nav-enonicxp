@@ -13,6 +13,11 @@
                     <occurrences minimum="1" maximum="1"/>
                     <default>Søknad og skjema</default>
                 </input>
+                <input type="TextLine" name="underTitle">
+                    <label>Under-tittel</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <default>Fra A til Å</default>
+                </input>
                 <input type="TextArea" name="ingress">
                     <label>Ingress/beskrivelse</label>
                     <help-text>En kort beskrivelse som vises i lenkepanel/kort som lenker til denne siden</help-text>
