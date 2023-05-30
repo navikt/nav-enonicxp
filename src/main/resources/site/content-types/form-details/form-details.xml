@@ -1,12 +1,12 @@
 <content-type>
     <display-name>Skjemadetaljer</display-name>
-    <description>Kun til testing!</description>
+    <description>Informasjon og lenker til søknader, skjemaer, klage og anke, ettersendelse</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <field-set name="formDetails">
+        <field-set>
             <label>Skjemadetaljer</label>
             <items>
                 <input name="formNumbers" type="TextLine">

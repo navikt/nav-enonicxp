@@ -13,6 +13,7 @@ import { logger } from '../utils/logging';
 import { isGlobalValueSetType } from '../global-values/types';
 import { getProductDetailsUsage } from '../product-utils/productDetails';
 import { getParentPath } from '../paths/path-utils';
+import { getAudience } from '../utils/audience';
 
 type ReferencesMap = Record<string, Content>;
 
@@ -21,16 +22,19 @@ const MAX_DEPTH = 5;
 const typesWithDeepReferences = stringArrayToSet(_typesWithDeepReferences);
 const typesWithOverviewPages = stringArrayToSet(contentTypesWithProductDetails);
 
+type ContentWithOverviewPages = Content<(typeof contentTypesWithProductDetails)[number]>;
+
+const isTypeWithOverviewPages = (content: Content): content is ContentWithOverviewPages =>
+    typesWithOverviewPages[content.type];
+
 // Search html-area fields for a content id. Handles references via macros, which does not generate
 // explicit references
 const getHtmlAreaReferences = (content: Content) => {
-    const { _id, type } = content;
+    const references = findContentsWithHtmlAreaText(content._id);
 
-    // Fragments containing other fragments is a very rare edge-case, which we will ignore
-    // for performance reasons until the bug with querying fragment component fields is resolved :D
-    const references = findContentsWithHtmlAreaText(_id, type !== 'portal:fragment');
-
-    logger.info(`Found ${references.length} pages with htmlarea-references to content id ${_id}`);
+    logger.info(
+        `Found ${references.length} pages with htmlarea-references to content id ${content._id}`
+    );
 
     return references;
 };
@@ -58,19 +62,49 @@ const getGlobalValueCalculatorReferences = (content: Content) => {
 // Overview pages are generated from meta-data of certain content types, and does not generate
 // references to the listed content
 const getOverviewReferences = (content: Content) => {
-    if (!typesWithOverviewPages[content.type]) {
+    if (!isTypeWithOverviewPages(content)) {
         return [];
     }
 
-    const overviewPages = contentLib.query({
+    const { language, data } = content;
+
+    const selectedAudience = getAudience(data.audience);
+
+    const relavantOverviewPages = contentLib.query({
         start: 0,
         count: 1000,
         contentTypes: ['no.nav.navno:overview', 'no.nav.navno:forms-overview'],
+        filters: {
+            boolean: {
+                should: [
+                    {
+                        hasValue: {
+                            field: 'data.audience',
+                            values: [selectedAudience],
+                        },
+                    },
+                    {
+                        hasValue: {
+                            field: 'data.audience._selected',
+                            values: [selectedAudience],
+                        },
+                    },
+                ],
+                must: [
+                    {
+                        hasValue: {
+                            field: 'language',
+                            values: [language],
+                        },
+                    },
+                ],
+            },
+        },
     }).hits;
 
-    logger.info(`Found ${overviewPages.length} relevant overview pages`);
+    logger.info(`Found ${relavantOverviewPages.length} relevant overview pages`);
 
-    return overviewPages;
+    return relavantOverviewPages;
 };
 
 // Product details are selected with a custom selector, and does not generate explicit references

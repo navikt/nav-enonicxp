@@ -6,6 +6,11 @@ export interface FormsOverview {
   title: string;
 
   /**
+   * Under-tittel
+   */
+  underTitle: string;
+
+  /**
    * Ingress/beskrivelse
    */
   ingress: string;
@@ -76,7 +81,7 @@ export interface FormsOverview {
                  */
                 overview: {
                   /**
-                   * Underkategori
+                   * Velg underkategorier
                    */
                   provider_audience: Array<"doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "other">;
                 };

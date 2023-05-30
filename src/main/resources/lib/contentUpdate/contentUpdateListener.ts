@@ -1,5 +1,6 @@
 import * as eventLib from '/lib/xp/event';
 import * as contentLib from '/lib/xp/content';
+import * as clusterLib from '/lib/xp/cluster';
 import { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
 import { runInContext } from '../context/run-in-context';
@@ -146,6 +147,10 @@ const updateVideoContentWithMetaData = (content: Content<'no.nav.navno:video'>) 
 };
 
 const handleEvent = (event: eventLib.EnonicEvent) => {
+    if (!clusterLib.isMaster()) {
+        return;
+    }
+
     const { id } = event.data.nodes[0];
     const content = contentLib.get({ key: id });
 

@@ -37,9 +37,9 @@ export interface Audience {
          */
         provider: {
           /**
-           * Underkategori
+           * Velg underkategorier
            */
-          provider_audience: "doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "other";
+          provider_audience: Array<"doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "other">;
         };
       }
     | {

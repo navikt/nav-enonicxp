@@ -1,11 +1,11 @@
 import { Content } from '/lib/xp/content';
-import { ProductData } from '../../site/mixins/product-data/product-data';
 import {
     contentTypesWithProductDetails,
     contentTypesWithProductDetails as _contentTypesWithProductDetails,
 } from '../contenttype-lists';
 import { Overview } from 'site/content-types/overview/overview';
 import { stringArrayToSet } from '../utils/array-utils';
+import { ContentPageWithSidemenus } from '../../site/content-types/content-page-with-sidemenus/content-page-with-sidemenus';
 
 const contentTypeWithProductDetails = stringArrayToSet(_contentTypesWithProductDetails);
 
@@ -16,7 +16,9 @@ export type OverviewPageProductData = {
     productDetailsPath?: string;
     path: string;
     language: string;
-} & Required<Pick<ProductData, 'title' | 'ingress' | 'audience' | 'sortTitle' | 'illustration'>>;
+} & Required<
+    Pick<ContentPageWithSidemenus, 'title' | 'ingress' | 'audience' | 'sortTitle' | 'illustration'>
+>;
 
 export type DetailedOverviewType = Exclude<Overview['overviewType'], 'all_products'>;
 
