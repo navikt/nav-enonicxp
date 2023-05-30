@@ -38,6 +38,10 @@ const updateVideoContent = ({ content, duration, imageAsset }: UpdateVideoConten
 };
 
 const createImageAsset = (imageUrl: string, targetPath: string, targetName: string) => {
+    if (!targetName || !targetPath) {
+        return null;
+    }
+
     const response = httpClient.request({
         method: 'GET',
         url: imageUrl,
