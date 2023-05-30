@@ -49,6 +49,10 @@ export const audienceMigration = (content: Content, repoId: string) => {
             key: content._id,
             editor: (node) => {
                 const oldAudience = node.data.audience;
+                if (typeof oldAudience !== 'string') {
+                    return node;
+                }
+
                 node.data.audience = { _selected: oldAudience };
                 return node;
             },
