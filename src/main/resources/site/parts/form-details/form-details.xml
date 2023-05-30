@@ -31,6 +31,7 @@
                 </input>
             </items>
         </field-set>
+        <mixin name="filter-selector"/>
     </form>
     <config>
         <allow-on-content-type>${app}:content-page-with-sidemenus</allow-on-content-type>

@@ -24,4 +24,9 @@ export interface FormDetailsPartConfig {
    * Vis inngang til ettersendelse
    */
   showAddendums: boolean;
+
+  /**
+   * Velg filtre
+   */
+  filters?: Array<string>;
 }
