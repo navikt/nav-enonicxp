@@ -1,5 +1,6 @@
 #import "../mixins/productTargetFragment.graphql"
 #import "../mixins/productTargetMicroFragment.graphql"
+#import "../mixins/formTypeFragment.graphql"
 #import "../mixins/videoTargetFragment.graphql"
 #import "../content-types/payoutDatesFragment.graphql"
 
@@ -155,6 +156,34 @@ fragment html_fragmentMacro on Macro {
                     }
                 }
             }
+        }
+    }
+}
+
+fragment form_detailsMacro on Macro {
+    config {
+        form_details {
+            targetFormDetails {
+                ... on no_nav_navno_FormDetails {
+                    dataAsJson
+                    data {
+                        ingress(processHtml: { type: server }) {
+                            ... on RichText {
+                                processedHtml
+                                macros {
+                                    ...macros
+                                    ...html_fragmentMacro
+                                }
+                            }
+                        }
+                        ...formTypeMixin
+                    }
+                }
+            }
+            showTitle
+            showIngress
+            showApplications
+            showAddendums
         }
     }
 }

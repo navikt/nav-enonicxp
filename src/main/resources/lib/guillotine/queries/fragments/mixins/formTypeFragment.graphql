@@ -1,0 +1,54 @@
+fragment formTypeMixin on no_nav_navno_FormDetails_Data {
+    formType {
+        _selected
+        application {
+            variations {
+                label
+                link {
+                    _selected
+                    internal {
+                        target {
+                            _path
+                        }
+                    }
+                    external {
+                        url
+                    }
+                }
+            }
+        }
+        complaint {
+            variations {
+                label
+                type
+                link {
+                    _selected
+                    internal {
+                        target {
+                            _path
+                        }
+                    }
+                    external {
+                        url
+                    }
+                }
+            }
+        }
+        addendum {
+            variations {
+                label
+                link {
+                    _selected
+                    internal {
+                        target {
+                            _path
+                        }
+                    }
+                    external {
+                        url
+                    }
+                }
+            }
+        }
+    }
+}
