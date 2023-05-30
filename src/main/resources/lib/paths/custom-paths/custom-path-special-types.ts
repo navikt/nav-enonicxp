@@ -3,6 +3,7 @@ import { getContentFromCustomPath, isValidCustomPath } from './custom-path-utils
 import { logger } from '../../utils/logging';
 import { Audience } from '../../../site/mixins/audience/audience';
 import { sanitize } from '/lib/xp/common';
+import { getAudience } from '../../utils/audience';
 
 type AudienceNewOrLegacy = Audience['audience'] | Audience['audience']['_selected'];
 
@@ -14,9 +15,9 @@ const audienceSegmentMap: Record<string, string> = {
 };
 
 const getAudienceSegmentWithSlash = (audience: AudienceNewOrLegacy) => {
-    const audienceSelected = typeof audience === 'string' ? audience : audience?._selected;
+    const audienceSelected = getAudience(audience);
 
-    const audienceSegment = audienceSegmentMap[audienceSelected];
+    const audienceSegment = audienceSelected && audienceSegmentMap[audienceSelected];
     return audienceSegment ? `/${audienceSegment}` : '';
 };
 

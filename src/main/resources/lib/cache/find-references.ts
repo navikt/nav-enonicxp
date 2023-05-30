@@ -13,6 +13,7 @@ import { logger } from '../utils/logging';
 import { isGlobalValueSetType } from '../global-values/types';
 import { getProductDetailsUsage } from '../product-utils/productDetails';
 import { getParentPath } from '../paths/path-utils';
+import { getAudience } from '../utils/audience';
 
 type ReferencesMap = Record<string, Content>;
 
@@ -67,8 +68,7 @@ const getOverviewReferences = (content: Content) => {
 
     const { language, data } = content;
 
-    const selectedAudience =
-        typeof data.audience === 'string' ? data.audience : data.audience?._selected;
+    const selectedAudience = getAudience(data.audience);
 
     const relavantOverviewPages = contentLib.query({
         start: 0,
