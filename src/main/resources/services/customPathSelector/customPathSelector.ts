@@ -104,7 +104,7 @@ const getResult = ({
     // Also check draft content for custom paths to catch any content
     // that hasn't been published yet (ie. not yet in master)
     const redirectDraftContent = runInContext({ branch: 'draft' }, () => {
-        const existingContentWithSuggestedPath = contentLib.query({
+        const existingHits = contentLib.query({
             start: 0,
             count: 1,
             filters: {
@@ -113,7 +113,15 @@ const getResult = ({
                 },
             },
         }).hits;
-        return existingContentWithSuggestedPath[0];
+
+        if (!existingHits[0]) {
+            return null;
+        }
+
+        const currentContent = portalLib.getContent();
+        // Don't report back on duplicate custom path if the match is the same
+        // content as we're currently editing.
+        return existingHits[0]._id === currentContent._id ? null : existingHits[0];
     });
 
     if (redirectDraftContent && redirectDraftContent.type !== 'base:folder') {
