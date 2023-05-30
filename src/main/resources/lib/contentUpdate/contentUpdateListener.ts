@@ -5,12 +5,25 @@ import { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
 import { runInContext } from '../context/run-in-context';
 import { QbrickMeta } from 'types/qbrickMeta';
+import { get } from 'http';
 
 let hasContentUpdateListener = false;
 type UpdateVideoContentParams = {
     content: Content<'no.nav.navno:video'>;
     duration: number;
     imageAsset: Content<'media:image'>;
+};
+
+const getProxyConfig = () => {
+    if (app.config.env === 'localhost') {
+        return {};
+    }
+    return {
+        proxy: {
+            host: 'webproxy-internett.nav.no',
+            port: 8088,
+        },
+    };
 };
 
 const updateVideoContent = ({ content, duration, imageAsset }: UpdateVideoContentParams) => {
@@ -32,11 +45,15 @@ const createImageAsset = (imageUrl: string, targetPath: string, targetName: stri
         contentType: 'image/jpeg',
         connectionTimeout: 5000,
         followRedirects: false,
-        proxy: {
-            host: 'webproxy-internett.nav.no',
-            port: 8088,
-        },
+        ...getProxyConfig(),
     });
+
+    const posterExists = contentLib.exists({ key: `${targetPath}/${targetName}.jpg` });
+
+    if (posterExists)
+        contentLib.delete({
+            key: `${targetPath}/${targetName}.jpg`,
+        });
 
     return contentLib.createMedia({
         name: `${targetName}.jpg`,
@@ -94,10 +111,7 @@ const fetchMetaDataFromQbrick = (accountId: number, mediaId: string) => {
             url: qbrickURI,
             connectionTimeout: 8000,
             followRedirects: false,
-            proxy: {
-                host: 'webproxy-internett.nav.no',
-                port: 8088,
-            },
+            ...getProxyConfig(),
         });
 
         if (response.status !== 200 || !response.body) {
