@@ -43,7 +43,8 @@ const getPreselectedFormIds = () => {
     if (
         !(
             currentContent.type === 'no.nav.navno:content-page-with-sidemenus' ||
-            currentContent.type === 'no.nav.navno:guide-page'
+            currentContent.type === 'no.nav.navno:guide-page' ||
+            currentContent.type === 'no.nav.navno:main-article'
         )
     ) {
         return [];
