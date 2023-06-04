@@ -176,6 +176,11 @@ export interface MainArticle {
   };
 
   /**
+   * Velg alle detaljer som skal brukes på denne siden
+   */
+  formDetailsTargets?: Array<string>;
+
+  /**
    * Del på sosiale medier
    */
   social?: Array<"twitter" | "facebook" | "linkedin">;
