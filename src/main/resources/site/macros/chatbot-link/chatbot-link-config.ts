@@ -4,4 +4,9 @@ export interface ChatbotLinkConfig {
    * Lenke-tekst
    */
   text: string;
+
+  /**
+   * Vis lenken som
+   */
+  presentation: "link" | "button";
 }
