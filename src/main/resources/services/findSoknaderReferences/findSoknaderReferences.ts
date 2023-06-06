@@ -3,13 +3,16 @@ import * as taskLib from '/lib/xp/task';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { CONTENT_STUDIO_EDIT_PATH_PREFIX, URLS } from '../../lib/constants';
 import { logger } from '../../lib/utils/logging';
+import { stripPathPrefix } from '../../lib/paths/path-utils';
 
 type ResultItem = {
     displayName: string;
+    url: string;
     editorUrl: string;
     references: Array<{
         displayName: string;
         url: string;
+        editorUrl: string;
         type: string;
     }>;
 };
@@ -38,24 +41,26 @@ const getResult = () => {
             query: 'data.url LIKE "*www.nav.no/soknader*" AND data.url NOT LIKE "*www.nav.no/soknader/en*"',
         })
         .hits.reduce<ResultItem[]>((acc, externalLinkContent, index, array) => {
-            const { _id, displayName } = externalLinkContent;
+            const { _id, data, displayName } = externalLinkContent;
 
             const references = findSoknaderReferences(_id);
             if (references.length > 0) {
                 acc.push({
                     displayName,
+                    url: data.url,
                     editorUrl: getEditorUrl(_id),
                     references: references.map((refContent) => ({
                         displayName: refContent.displayName,
-                        url: getEditorUrl(refContent._id),
+                        url: `${URLS.FRONTEND_ORIGIN}${stripPathPrefix(refContent._path)}`,
+                        editorUrl: getEditorUrl(refContent._id),
                         type: refContent.type,
                     })),
                 });
             }
 
-            const num = index + 1;
-            if (num % 10 === 0 || num === array.length) {
-                logger.info(`Processed ${num}/${array.length} external links`);
+            progress = index + 1;
+            if (progress % 10 === 0 || progress === array.length) {
+                logger.info(`Processed ${progress}/${array.length} external links`);
             }
 
             return acc;
@@ -63,7 +68,7 @@ const getResult = () => {
 };
 
 let savedResult: { ts: number; result: ReturnType<typeof getResult> } | null = null;
-let inProgress = false;
+let progress = 0;
 
 // TODO: one-time job which can be removed asap
 export const get = (req: XP.Request) => {
@@ -77,11 +82,10 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    if (!inProgress && !savedResult) {
+    if (!progress && !savedResult) {
         taskLib.executeFunction({
             description: `Finding references to /soknader lenker`,
             func: () => {
-                inProgress = true;
                 const start = Date.now();
                 logger.info(`Starting soknader references finder job at ${start}`);
 
@@ -93,7 +97,7 @@ export const get = (req: XP.Request) => {
                 } catch (e) {
                     logger.error(`Soknader references error: ${e}`);
                 } finally {
-                    inProgress = false;
+                    progress = 0;
                 }
 
                 logger.info(`Finished soknader references finder job after ${Date.now() - start}`);
@@ -103,7 +107,7 @@ export const get = (req: XP.Request) => {
 
     return {
         status: 200,
-        body: savedResult,
+        body: savedResult || progress,
         contentType: 'application/json',
     };
 };
