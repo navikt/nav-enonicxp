@@ -16,8 +16,8 @@ import { getTimeTravelContext } from './run-with-time-travel';
 export let timeTravelHooksEnabled = false;
 
 // This function will hook content retrieval functions to retrieve data from
-// the version at the requested timestamp. Only calls from threads currently
-// registered with a time travel config will be affected.
+// the version at the requested timestamp. Only calls made with time travel
+// context attributes will get this special functionality
 export const hookLibsWithTimeTravel = () => {
     if (timeTravelHooksEnabled) {
         logger.error(`Time travel hooks are already enabled!`);
@@ -29,8 +29,6 @@ export const hookLibsWithTimeTravel = () => {
     (contentLib.get as typeof contentLibGetStandard) = function (args) {
         const timeTravelContext = getTimeTravelContext();
 
-        // If the function is called while hooked, only threads with time travel parameters set
-        // should get non-standard functionality
         if (!timeTravelContext) {
             // Catch errors here as a temp fix for contentLib.get throwing errors when attempting
             // to get a content which has been archived
@@ -83,8 +81,6 @@ export const hookLibsWithTimeTravel = () => {
     (nodeLib.connect as typeof nodeLibConnectStandard) = function (connectArgs) {
         const timeTravelContext = getTimeTravelContext();
 
-        // If the function is called while hooked, only threads with time travel parameters set
-        // should get non-standard functionality
         if (!timeTravelContext) {
             return nodeLibConnectStandard(connectArgs);
         }
