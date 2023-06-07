@@ -64,7 +64,7 @@ export const componentPreviewController = (_: XP.Request) => {
 
     try {
         const componentHtml = httpClient.request({
-            url: `${URLS.FRONTEND_PREVIEW_ORIGIN}/api/component-preview`,
+            url: `${URLS.FRONTEND_ORIGIN}/api/component-preview`,
             method: 'POST',
             body: JSON.stringify({ props: componentProps }),
             contentType: 'application/json',
