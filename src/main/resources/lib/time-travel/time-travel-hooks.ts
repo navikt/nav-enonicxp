@@ -13,7 +13,7 @@ import { logger } from '../utils/logging';
 import { contentLibGetStandard, nodeLibConnectStandard } from './standard-functions';
 import { getTimeTravelContext } from './run-with-time-travel';
 
-export let timeTravelHooksEnabled = false;
+let timeTravelHooksEnabled = false;
 
 // This function will hook content retrieval functions to retrieve data from
 // the version at the requested timestamp. Only calls made with time travel
@@ -153,12 +153,4 @@ export const hookLibsWithTimeTravel = () => {
 
         return repoConnection;
     };
-};
-
-// Restore standard functionality
-export const unhookTimeTravel = () => {
-    timeTravelHooksEnabled = false;
-
-    (contentLib.get as typeof contentLibGetStandard) = contentLibGetStandard;
-    (nodeLib.connect as typeof nodeLibConnectStandard) = nodeLibConnectStandard;
 };
