@@ -1,42 +1,97 @@
+import * as contextLib from '/lib/xp/context';
 import { generateUUID } from '../utils/uuid';
 import { RepoBranch } from '../../types/common';
-import { timeTravelConfig } from './time-travel-config';
-import { timeTravelHooksEnabled } from './time-travel-hooks';
-import { getCurrentThreadId } from '../utils/thread-utils';
 import { logger } from '../utils/logging';
+import { runInContext } from '../context/run-in-context';
+import { getNodeKey, getTargetUnixTime } from '../utils/version-utils';
+import { getUnixTimeFromDateTimeString } from '../utils/datetime-utils';
 
-export const runWithTimeTravel = (
-    requestedDateTime: string,
-    branch: RepoBranch,
-    baseContentKey: string,
-    callback: () => any
-) => {
-    if (!timeTravelHooksEnabled) {
-        logger.error(
-            `Time travel: got request for ${baseContentKey} but time travel is disabled on this node`
-        );
-        return callback();
+type TimeTravelOptions = {
+    dateTime: string;
+    baseContentKey: string;
+    branch: RepoBranch;
+    repoId?: string;
+};
+
+type TimeTravelContextAttribs = {
+    timeTravelTargetUnixTime: number;
+    timeTravelBranch: RepoBranch;
+    timeTravelRepoId: string;
+    timeTravelBaseContentKey: string;
+    timeTravelBaseNodeKey: string;
+};
+
+export const getTimeTravelContext = (): TimeTravelContextAttribs | null => {
+    const attribs = contextLib.get<Partial<TimeTravelContextAttribs>>()?.attributes;
+    if (!attribs) {
+        return null;
     }
 
-    const threadId = getCurrentThreadId();
+    const {
+        timeTravelTargetUnixTime,
+        timeTravelBranch,
+        timeTravelBaseContentKey,
+        timeTravelRepoId,
+        timeTravelBaseNodeKey,
+    } = attribs;
+
+    if (
+        !timeTravelTargetUnixTime ||
+        !timeTravelBranch ||
+        !timeTravelBaseContentKey ||
+        !timeTravelRepoId ||
+        !timeTravelBaseNodeKey
+    ) {
+        return null;
+    }
+
+    return {
+        timeTravelRepoId,
+        timeTravelBranch,
+        timeTravelBaseNodeKey,
+        timeTravelBaseContentKey,
+        timeTravelTargetUnixTime,
+    };
+};
+
+export const runInTimeTravelContext = <CallbackReturn>(
+    options: TimeTravelOptions,
+    callback: () => CallbackReturn
+) => {
+    const { branch, baseContentKey, dateTime, repoId = contextLib.get().repository } = options;
+
     const sessionId = generateUUID();
 
-    try {
-        logger.info(
-            `Time travel: Starting session ${sessionId} - base content: ${baseContentKey} / time: ${requestedDateTime} / branch: ${branch} / thread: ${threadId}`
-        );
-        timeTravelConfig.add({
-            threadId,
-            requestedDateTime,
-            branch,
-            baseContentKey,
-        });
-        return callback();
-    } catch (e) {
-        logger.error(`Time travel: Error occured during session ${sessionId} - ${e}`);
-        throw e;
-    } finally {
-        timeTravelConfig.remove(threadId);
-        logger.info(`Time travel: Ending session ${sessionId} for thread ${threadId}`);
-    }
+    const baseNodeKey = getNodeKey(baseContentKey);
+    const requestedUnixTime = getUnixTimeFromDateTimeString(dateTime);
+
+    const targetUnixTime = getTargetUnixTime({
+        nodeKey: baseNodeKey,
+        requestedUnixTime,
+        repoId,
+        branch,
+    });
+
+    logger.info(
+        `Time travel: Running session ${sessionId} - base content: ${baseContentKey} / time: ${dateTime} / branch: ${branch}`
+    );
+
+    const attribs: TimeTravelContextAttribs = {
+        timeTravelBranch: branch,
+        timeTravelRepoId: repoId,
+        timeTravelTargetUnixTime: targetUnixTime,
+        timeTravelBaseContentKey: baseContentKey,
+        timeTravelBaseNodeKey: baseNodeKey,
+    };
+
+    const result = runInContext(
+        {
+            attributes: attribs,
+        },
+        callback
+    );
+
+    logger.info(`Time travel: Finished session ${sessionId}`);
+
+    return result;
 };
