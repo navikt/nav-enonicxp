@@ -14,6 +14,7 @@ import {
     formIntermediateStepGenerateCustomPath,
     formIntermediateStepValidateCustomPath,
 } from '../../lib/paths/custom-paths/custom-path-special-types';
+import { RepoBranch } from '../../types/common';
 
 type SpecialUrlType = 'formIntermediateStep';
 
@@ -41,6 +42,21 @@ const verifyIngressOwner = (path: string) => {
     }
 };
 
+const findExistingContentsWithCustomPath = (suggestedCustomPath: string, branch: RepoBranch) => {
+    const currentId = portalLib.getContent()._id;
+
+    const otherContentsWithCustomPath = getContentFromCustomPath(
+        suggestedCustomPath,
+        branch
+    ).filter((content) => content._id !== currentId);
+
+    if (otherContentsWithCustomPath.length === 0) {
+        return null;
+    }
+
+    return otherContentsWithCustomPath.map((content) => content._path).join(', ');
+};
+
 const getResult = ({
     query,
     ids,
@@ -58,17 +74,20 @@ const getResult = ({
         );
     }
 
-    if (suggestedPath !== currentSelection) {
-        const contentWithCustomPath = getContentFromCustomPath(suggestedPath)[0];
-        if (contentWithCustomPath) {
-            const currentContent = portalLib.getContent();
-            if (currentContent._id !== contentWithCustomPath._id) {
-                return generateErrorHit(
-                    `Feil: "${suggestedPath}" er allerede i bruk som kort-url`,
-                    `"${contentWithCustomPath._path}" bruker allerede denne kort-url'en`
-                );
-            }
-        }
+    const draftContentPaths = findExistingContentsWithCustomPath(suggestedPath, 'draft');
+    if (draftContentPaths) {
+        return generateErrorHit(
+            `Feil: "${suggestedPath}" er allerede i bruk som kort-url på upublisert innhold`,
+            `"${draftContentPaths}" bruker denne kort-url'en`
+        );
+    }
+
+    const masterContentPaths = findExistingContentsWithCustomPath(suggestedPath, 'master');
+    if (masterContentPaths) {
+        return generateErrorHit(
+            `Feil: "${suggestedPath}" er allerede i bruk som kort-url på publisert innhold`,
+            `"${masterContentPaths}" bruker denne kort-url'en`
+        );
     }
 
     const contentWithInternalPath = runInContext({ branch: 'master' }, () =>
@@ -141,6 +160,23 @@ const validateResult = (
 };
 
 export const get = (req: XP.CustomSelectorServiceRequest): XP.CustomSelectorServiceResponse => {
+    if (!portalLib.getContent()) {
+        return {
+            status: 200,
+            body: {
+                total: 1,
+                count: 1,
+                hits: [
+                    generateErrorHit(
+                        'Feil: Kunne ikke hente innhold fra context',
+                        'Du kan forsøke å laste editoren på nytt (F5)'
+                    ),
+                ],
+            },
+            contentType: 'application/json',
+        };
+    }
+
     const { query, ids, type } = req.params;
 
     const result = getResult({ query, ids });
