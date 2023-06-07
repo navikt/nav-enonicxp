@@ -73,7 +73,7 @@ export const runInTimeTravelContext = <CallbackReturn>(
     });
 
     logger.info(
-        `Time travel: Running session ${sessionId} - base content: ${baseContentKey} / time: ${dateTime} / branch: ${branch}`
+        `Time travel: Running session ${sessionId} - base content: ${baseContentKey} / time: ${dateTime} / branch: ${branch} / repo: ${repoId}`
     );
 
     const attribs: TimeTravelContextAttribs = {
