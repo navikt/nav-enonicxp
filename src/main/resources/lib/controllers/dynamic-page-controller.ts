@@ -111,11 +111,6 @@ const removeInvalidFilterIds = (req: XP.Request) => {
         return;
     }
 
-    if (content.type !== 'no.nav.navno:content-page-with-sidemenus') {
-        logger.error(`Invalid type for content page controller - ${content._id}`);
-        return;
-    }
-
     const repo = getRepoConnection({ repoId: CONTENT_ROOT_REPO_ID, branch: 'draft' });
 
     const nodeContent = repo.get<ContentPageWithSideMenusNodeContent>({ key: content._id });
@@ -160,7 +155,8 @@ const removeInvalidFilterIds = (req: XP.Request) => {
     });
 };
 
-const contentPageWithSidemenusController = (req: XP.Request) => {
+const dynamicPageController = (req: XP.Request) => {
+    log.info('dynamicPageController running');
     if ((req.mode === 'edit' || req.mode === 'inline') && req.method === 'GET') {
         removeInvalidFilterIds(req);
     }
@@ -168,4 +164,4 @@ const contentPageWithSidemenusController = (req: XP.Request) => {
     return frontendProxy(req);
 };
 
-export const get = contentPageWithSidemenusController;
+export const get = dynamicPageController;
