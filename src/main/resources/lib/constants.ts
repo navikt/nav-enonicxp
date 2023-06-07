@@ -12,15 +12,8 @@ const portalAdminOrigins: EnvRecord = {
 
 const frontendOrigins: EnvRecord = {
     p: 'https://www.nav.no',
-    dev: 'https://www.intern.dev.nav.no',
-    q6: 'https://www-2.intern.dev.nav.no',
-    localhost: 'http://localhost:3000',
-};
-
-const frontendPreviewOrigins: EnvRecord = {
-    p: 'https://www.nav.no',
-    dev: 'https://www-editor.ekstern.dev.nav.no',
-    q6: 'https://www-editor-2.ekstern.dev.nav.no',
+    dev: 'https://www.ekstern.dev.nav.no',
+    q6: 'https://www-2.ekstern.dev.nav.no',
     localhost: 'http://localhost:3000',
 };
 
@@ -47,7 +40,6 @@ const xpOrigins: EnvRecord = {
 
 export const URLS = Object.freeze({
     FRONTEND_ORIGIN: frontendOrigins[env],
-    FRONTEND_PREVIEW_ORIGIN: frontendPreviewOrigins[env],
     XP_ORIGIN: xpOrigins[env],
     REVALIDATOR_PROXY_ORIGIN: revalidatorProxyOrigins[env],
     PORTAL_ADMIN_ORIGIN: portalAdminOrigins[env],
