@@ -1,0 +1,18 @@
+<content-type>
+    <display-name>Fragment</display-name>
+    <description>Opprett et fragment direkte, uten å gå via en annen side</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <input type="RadioButton" name="type">
+            <label>Velg type fragment. Obs: Du bør laste inn editoren på nytt etter lagring av valget (F5)</label>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <option value="part">Part</option>
+                <option value="layout">Layout</option>
+            </config>
+        </input>
+    </form>
+</content-type>
