@@ -8,7 +8,7 @@ export interface FormsOverview {
   /**
    * Under-tittel
    */
-  underTitle: string;
+  underTitle?: string;
 
   /**
    * Ingress/beskrivelse
