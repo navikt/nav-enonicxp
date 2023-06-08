@@ -23,6 +23,7 @@ type FormDetailsListItem = {
     formDetailsPaths: string[];
     formDetailsTitles: string[];
     formNumbers: string[];
+    keywords: string[];
     url: string;
     type: ContentTypeWithFormDetails;
 } & Required<IncludedProductData>;
@@ -33,7 +34,9 @@ type ContentWithFormDetails = Content<ContentTypeWithFormDetails> & {
     // Fields from nested mixins are not included in the autogenerate types
     data: IncludedProductData &
         Pick<ProductData, 'externalProductUrl'> &
-        Required<Pick<FormDetailsSelector, 'formDetailsTargets'>>;
+        Required<Pick<FormDetailsSelector, 'formDetailsTargets'>> & {
+            keywords?: string | string[];
+        };
 };
 
 type FormDetailsMap = Record<string, Content<'no.nav.navno:form-details'>>;
@@ -71,6 +74,7 @@ const transformToListItem = (
         title,
         sortTitle,
         ingress: content.data.ingress,
+        keywords: forceArray(content.data.keywords),
         url,
         type: content.type,
         anchorId: sanitize(sortTitle),
@@ -201,6 +205,7 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
             url: { type: graphQlLib.GraphQLString },
             type: { type: graphQlLib.GraphQLString },
             ingress: { type: graphQlLib.GraphQLString },
+            keywords: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             formDetailsPaths: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             formDetailsTitles: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             formNumbers: { type: graphQlLib.list(graphQlLib.GraphQLString) },
