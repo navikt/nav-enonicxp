@@ -17,8 +17,8 @@
         <mapping controller="/lib/controllers/area-page-controller.js">
             <match>type:'no.nav.navno:area-page'</match>
         </mapping>
-        <mapping controller="/lib/controllers/content-page-with-sidemenus-controller.js">
-            <match>type:'no.nav.navno:content-page-with-sidemenus'</match>
+        <mapping controller="/lib/controllers/dynamic-page-controller.js">
+            <match>type:'no.nav.navno:(content-page-with-sidemenus|guide-page|tools-page|generic-page|themed-article-page)'</match>
         </mapping>
         <mapping controller="/lib/controllers/form-intermediate-step-controller.js">
             <match>type:'no.nav.navno:form-intermediate-step'</match>
