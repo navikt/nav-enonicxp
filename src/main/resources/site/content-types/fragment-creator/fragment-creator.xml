@@ -1,6 +1,6 @@
 <content-type>
     <display-name>Fragment</display-name>
-    <description>Komponent som kan gjenbrukes på flere sider</description>
+    <description>Opprett et fragment direkte, uten å gå via en annen side</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
