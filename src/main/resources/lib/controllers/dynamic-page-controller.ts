@@ -10,12 +10,8 @@ import { FiltersMenuPartConfig } from 'site/parts/filters-menu/filters-menu-part
 import { PartComponentName, PartConfigs } from 'types/components/component-config';
 import { forceArray } from '../utils/array-utils';
 
-type ContentPageWithSideMenusNodeContent = NodeContent<
-    Content<'no.nav.navno:content-page-with-sidemenus'>
->;
-type ContentPageWithSidemenusRepoNode = RepoNode<
-    Content<'no.nav.navno:content-page-with-sidemenus'>
->;
+type DynamicPageContent = NodeContent<Content>;
+type DynamicContentRepoNode = RepoNode<Content>;
 
 type FilterMenuComponent = NodeComponent<'part', 'filters-menu'>;
 type Component = NodeComponent<'part'>;
@@ -111,14 +107,9 @@ const removeInvalidFilterIds = (req: XP.Request) => {
         return;
     }
 
-    if (content.type !== 'no.nav.navno:content-page-with-sidemenus') {
-        logger.error(`Invalid type for content page controller - ${content._id}`);
-        return;
-    }
-
     const repo = getRepoConnection({ repoId: CONTENT_ROOT_REPO_ID, branch: 'draft' });
 
-    const nodeContent = repo.get<ContentPageWithSideMenusNodeContent>({ key: content._id });
+    const nodeContent = repo.get<DynamicPageContent>({ key: content._id });
 
     if (!nodeContent?.components) {
         return;
@@ -151,7 +142,7 @@ const removeInvalidFilterIds = (req: XP.Request) => {
 
     repo.modify({
         key: nodeContent._id,
-        editor: (content: ContentPageWithSidemenusRepoNode) => {
+        editor: (content: DynamicContentRepoNode) => {
             return {
                 ...content,
                 components: cleanedComponents,
@@ -160,7 +151,7 @@ const removeInvalidFilterIds = (req: XP.Request) => {
     });
 };
 
-const contentPageWithSidemenusController = (req: XP.Request) => {
+const dynamicPageController = (req: XP.Request) => {
     if ((req.mode === 'edit' || req.mode === 'inline') && req.method === 'GET') {
         removeInvalidFilterIds(req);
     }
@@ -168,4 +159,4 @@ const contentPageWithSidemenusController = (req: XP.Request) => {
     return frontendProxy(req);
 };
 
-export const get = contentPageWithSidemenusController;
+export const get = dynamicPageController;
