@@ -132,13 +132,7 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
             return errorResponse(frontendUrl, status, 'Redirects are not supported in editor view');
         }
 
-        return {
-            contentType: 'text/html; charset=UTF-8',
-            body: `<div>Lol wut</div>`,
-            status: 200,
-        };
-
-        // return response;
+        return response;
     } catch (e) {
         return errorResponse(frontendUrl, 500, `Exception: ${e}`);
     }
