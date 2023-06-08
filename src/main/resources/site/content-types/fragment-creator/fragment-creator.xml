@@ -7,7 +7,7 @@
     <allow-child-content>true</allow-child-content>
     <form>
         <input type="RadioButton" name="type">
-            <label>Velg type fragment. Obs: Du må laste inn editoren på nytt etter første lagring!</label>
+            <label>Velg type fragment. Obs: Du bør laste inn editoren på nytt etter første lagring (F5)</label>
             <occurrences minimum="1" maximum="1"/>
             <default>part</default>
             <config>
