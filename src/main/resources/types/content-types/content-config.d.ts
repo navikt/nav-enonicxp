@@ -47,6 +47,7 @@ import {
 } from './search-config';
 import { PressLandingPage } from 'site/content-types/press-landing-page/press-landing-page';
 import { FormsOverview } from '../../site/content-types/forms-overview/forms-overview';
+import { FragmentCreator } from '../../site/content-types/fragment-creator/fragment-creator';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
@@ -57,6 +58,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'content-page-with-sidemenus': ContentPageWithSidemenus;
     'dynamic-page': DynamicPage;
     'external-link': ExternalLink;
+    'fragment-creator': FragmentCreator;
     'front-page': FrontPage;
     'global-case-time-set': GlobalCaseTimeSetData;
     'global-value-set': GlobalNumberValueSetData;
