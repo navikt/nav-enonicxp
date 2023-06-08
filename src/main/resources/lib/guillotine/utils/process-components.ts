@@ -2,7 +2,6 @@ import { Region } from '/lib/xp/portal';
 import { PortalComponent } from '../../../types/components/component-portal';
 import { GuillotineUnresolvedComponentType } from '../queries/run-sitecontent-query';
 import { ComponentType } from '../../../types/components/component-config';
-import { logger } from '../../utils/logging';
 
 // These functions are used for processing component-objects from Guillotine queries into a consistent structure
 // before serving to the frontend.
@@ -196,8 +195,6 @@ export const buildFragmentComponentTree = (
     }
 
     const destructuredComponent = destructureComponent(rootComponent);
-
-    logger.info(`Component: ${JSON.stringify(destructuredComponent)}`);
 
     // Only layout components can have regions in a fragment, any other types does not require any further processing
     if (destructuredComponent.type !== 'layout') {

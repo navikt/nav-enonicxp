@@ -12,6 +12,10 @@ export const transformFragmentCreatorToFragment = ({
     branch: RepoBranch;
     repoId: string;
 }) => {
+    if (branch !== 'draft') {
+        return;
+    }
+
     const fragmentType = content.data?.type;
     if (!fragmentType) {
         return;
