@@ -7,7 +7,6 @@ import { runInContext } from '../context/run-in-context';
 import { QbrickMeta } from 'types/qbrickMeta';
 import { CONTENT_REPO_PREFIX } from '../constants';
 import { transformFragmentCreatorToFragment } from '../fragmentCreator/fragment-creator';
-import { RepoBranch } from '../../types/common';
 
 let hasContentUpdateListener = false;
 type UpdateVideoContentParams = {
@@ -172,7 +171,7 @@ const handleEvent = (event: eventLib.EnonicEvent) => {
     }
 
     event.data.nodes.forEach((node) => {
-        const { id, branch, repo } = node;
+        const { id, repo } = node;
 
         if (!repo.startsWith(CONTENT_REPO_PREFIX)) {
             return;
@@ -191,7 +190,6 @@ const handleEvent = (event: eventLib.EnonicEvent) => {
             case 'no.nav.navno:fragment-creator': {
                 transformFragmentCreatorToFragment({
                     content,
-                    branch: branch as RepoBranch,
                     repoId: repo,
                 });
                 break;
