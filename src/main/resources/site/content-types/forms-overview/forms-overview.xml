@@ -15,7 +15,7 @@
                 </input>
                 <input type="TextLine" name="underTitle">
                     <label>Under-tittel</label>
-                    <occurrences minimum="1" maximum="1"/>
+                    <occurrences minimum="0" maximum="1"/>
                     <default>Fra A til Å</default>
                 </input>
                 <input type="TextArea" name="ingress">
