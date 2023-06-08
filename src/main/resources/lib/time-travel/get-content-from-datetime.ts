@@ -6,6 +6,8 @@ import { runInTimeTravelContext } from './run-with-time-travel';
 import { runSitecontentGuillotineQuery } from '../guillotine/queries/run-sitecontent-query';
 import { getPublishedVersionTimestamps } from '../utils/version-utils';
 import { logger } from '../utils/logging';
+import { getRepoConnection } from '../utils/repo-utils';
+import { CONTENT_ROOT_REPO_ID } from '../constants';
 
 // Get content from a specific datetime (used for requests from the internal version history selector)
 export const getContentVersionFromDateTime = (
@@ -13,9 +15,10 @@ export const getContentVersionFromDateTime = (
     branch: RepoBranch,
     dateTime: string
 ): Content | null => {
-    const contentCurrent = runInContext({ branch: 'draft' }, () =>
-        contentLib.get({ key: contentRef })
-    );
+    const repoConnection = getRepoConnection({ repoId: CONTENT_ROOT_REPO_ID, branch });
+
+    const contentCurrent = repoConnection.get(contentRef);
+
     if (!contentCurrent) {
         return null;
     }

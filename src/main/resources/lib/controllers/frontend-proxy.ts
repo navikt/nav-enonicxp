@@ -3,6 +3,9 @@ import { URLS } from '../constants';
 import { logger } from '../utils/logging';
 import { getLocaleFromRepoId } from '../localization/layers-data';
 import { stripPathPrefix } from '../paths/path-utils';
+import * as contentLib from '/lib/xp/content';
+import { getNodeVersions } from '../utils/version-utils';
+import { getRepoConnection } from '../utils/repo-utils';
 
 const loopbackCheckParam = 'fromXp';
 
@@ -56,9 +59,43 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
 
     const pathStartIndex = req.rawPath.indexOf(req.branch) + req.branch.length;
     const contentPath = path || stripPathPrefix(req.rawPath.slice(pathStartIndex));
-    const frontendUrl = `${
+    let frontendUrl = `${
         req.branch === 'draft' ? `${URLS.FRONTEND_ORIGIN}/draft` : URLS.FRONTEND_ORIGIN
     }${contentPath}`;
+
+    if (contentPath.startsWith('/__archive/')) {
+        const archivedPath = contentPath.replace('/__archive', '/archive');
+        logger.info(`Archived in ${archivedPath}`);
+
+        const repoConnection = getRepoConnection({ branch: 'draft', repoId: req.repositoryId });
+        const contentNode = repoConnection.get(archivedPath);
+
+        logger.info(
+            `Found in archive: ${contentNode.originalParentPath}/${contentNode.originalName}`
+        );
+
+        const version = getNodeVersions({
+            nodeKey: contentNode._id,
+            branch: 'draft',
+            repoId: req.repositoryId,
+        }).find((version) => version.nodePath.startsWith('/content'));
+
+        if (version) {
+            const contentVersion = contentLib.get({
+                key: version.nodeId,
+                versionId: version.versionId,
+            });
+
+            frontendUrl = `${URLS.FRONTEND_ORIGIN}/draft${contentPath.replace(
+                '/__archive',
+                ''
+            )}?time=${contentVersion?.modifiedTime}&id=${
+                contentVersion?._id
+            }&branch=draft&locale=no`;
+
+            logger.info(`New frontend url: ${frontendUrl}`);
+        }
+    }
 
     try {
         const response = httpClient.request({
@@ -95,7 +132,13 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
             return errorResponse(frontendUrl, status, 'Redirects are not supported in editor view');
         }
 
-        return response;
+        return {
+            contentType: 'text/html; charset=UTF-8',
+            body: `<div>Lol wut</div>`,
+            status: 200,
+        };
+
+        // return response;
     } catch (e) {
         return errorResponse(frontendUrl, 500, `Exception: ${e}`);
     }
