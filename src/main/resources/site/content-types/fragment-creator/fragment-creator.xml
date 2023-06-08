@@ -1,0 +1,19 @@
+<content-type>
+    <display-name>Fragment</display-name>
+    <description>Komponent som kan gjenbrukes på flere sider</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <input type="RadioButton" name="type">
+            <label>Velg type fragment. Obs: Du må laste inn editoren på nytt etter første lagring!</label>
+            <occurrences minimum="1" maximum="1"/>
+            <default>part</default>
+            <config>
+                <option value="part">Part</option>
+                <option value="layout">Layout</option>
+            </config>
+        </input>
+    </form>
+</content-type>
