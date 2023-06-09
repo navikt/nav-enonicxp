@@ -7,6 +7,7 @@ import { runInContext } from '../context/run-in-context';
 import { QbrickMeta } from 'types/qbrickMeta';
 import { CONTENT_REPO_PREFIX } from '../constants';
 import { transformFragmentCreatorToFragment } from '../fragmentCreator/fragment-creator';
+import { isContentLocalized } from '../localization/locale-utils';
 
 let hasContentUpdateListener = false;
 type UpdateVideoContentParams = {
@@ -177,24 +178,26 @@ const handleEvent = (event: eventLib.EnonicEvent) => {
             return;
         }
 
-        const content = contentLib.get({ key: id });
-        if (!content) {
-            return;
-        }
+        runInContext({ repository: repo }, () => {
+            const content = contentLib.get({ key: id });
+            if (!content || !isContentLocalized(content)) {
+                return;
+            }
 
-        switch (content.type) {
-            case 'no.nav.navno:video': {
-                updateVideoContentWithMetaData(content);
-                break;
+            switch (content.type) {
+                case 'no.nav.navno:video': {
+                    updateVideoContentWithMetaData(content);
+                    break;
+                }
+                case 'no.nav.navno:fragment-creator': {
+                    transformFragmentCreatorToFragment({
+                        content,
+                        repoId: repo,
+                    });
+                    break;
+                }
             }
-            case 'no.nav.navno:fragment-creator': {
-                transformFragmentCreatorToFragment({
-                    content,
-                    repoId: repo,
-                });
-                break;
-            }
-        }
+        });
     });
 };
 
