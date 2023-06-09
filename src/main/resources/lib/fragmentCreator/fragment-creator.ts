@@ -10,7 +10,10 @@ export const transformFragmentCreatorToFragment = ({
     repoId: string;
 }) => {
     const fragmentType = content.data?.type;
-    if (!fragmentType) {
+
+    // Only transform after a fragment type has been selected, and the content has been saved
+    // (indicated by no longer using the placeholder "__unnamed__*" name
+    if (!fragmentType || content._name.startsWith('__unnamed__')) {
         return;
     }
 
