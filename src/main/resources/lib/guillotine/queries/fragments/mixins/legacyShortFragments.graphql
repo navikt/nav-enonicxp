@@ -69,4 +69,9 @@ fragment legacyShortFragmentsMixin on Content {
             ingress
         }
     }
+    ... on no_nav_navno_FormsOverview {
+        data {
+            ingress
+        }
+    }
 }
