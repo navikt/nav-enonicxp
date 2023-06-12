@@ -24,14 +24,4 @@ export interface FrontpageShortcutsPartConfig {
      */
     target: string;
   }>;
-
-  /**
-   * Velg innholdsliste (deprecated)
-   */
-  contentList: string;
-
-  /**
-   * Maks antall lenker (deprecated)
-   */
-  maxItems?: number;
 }
