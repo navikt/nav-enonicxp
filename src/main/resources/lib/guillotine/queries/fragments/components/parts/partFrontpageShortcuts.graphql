@@ -1,7 +1,22 @@
 #import "../../mixins/contentListShortFragment.graphql"
+#import "../../mixins/animatedIconsTargetFragment.graphql"
 
 fragment partFrontpageShortcuts on Part_no_nav_navno_frontpage_shortcuts {
     title
+    shortcuts {
+        title
+        target {
+            _path
+            ...on no_nav_navno_ExternalLink {
+                data {
+                    url
+                }
+            }
+        }
+        illustration {
+            ...animatedIconsTargetMixin
+        }
+    }
     contentList {
         ...contentListShortMixin
     }
