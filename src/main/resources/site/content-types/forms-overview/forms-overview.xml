@@ -127,5 +127,6 @@
                 </input>
             </items>
         </field-set>
+        <mixin name="languages-legacy"/>
     </form>
 </content-type>
