@@ -1,4 +1,3 @@
-#import "../../mixins/contentListShortFragment.graphql"
 #import "../../mixins/animatedIconsTargetFragment.graphql"
 
 fragment partFrontpageShortcuts on Part_no_nav_navno_frontpage_shortcuts {
