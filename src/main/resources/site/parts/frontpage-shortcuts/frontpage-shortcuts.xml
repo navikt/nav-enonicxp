@@ -39,21 +39,6 @@
                 </input>
             </items>
         </item-set>
-        <input name="contentList" type="ContentSelector">
-            <label>Velg innholdsliste (deprecated)</label>
-            <occurrences minimum="1" maximum="1"/>
-            <config>
-                <allowContentType>no.nav.navno:content-list</allowContentType>
-            </config>
-        </input>
-        <input name="maxItems" type="Long">
-            <label>Maks antall lenker (deprecated)</label>
-            <default>3</default>
-            <config>
-                <min>1</min>
-                <max>4</max>
-            </config>
-        </input>
     </form>
     <config>
         <allow-on-content-type>${app}:front-page</allow-on-content-type>
