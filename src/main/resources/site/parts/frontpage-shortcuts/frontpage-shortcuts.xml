@@ -11,7 +11,8 @@
             <items>
                 <input name="title" type="TextLine">
                     <label>Tittel på snarvei</label>
-                    <occurrences minimum="1" maximum="1"/>
+                    <help-text>Hvis denne er blank vil navnet på innholdet vises</help-text>
+                    <occurrences minimum="0" maximum="1"/>
                 </input>
                 <input name="target" type="ContentSelector">
                     <label>Velg innhold</label>

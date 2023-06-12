@@ -7,6 +7,7 @@ fragment partFrontpageShortcuts on Part_no_nav_navno_frontpage_shortcuts {
         title
         target {
             _path
+            displayName
             ...on no_nav_navno_ExternalLink {
                 data {
                     url

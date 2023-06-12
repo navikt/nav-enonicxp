@@ -12,7 +12,7 @@ export interface FrontpageShortcutsPartConfig {
     /**
      * Tittel på snarvei
      */
-    title: string;
+    title?: string;
 
     /**
      * Velg innhold
