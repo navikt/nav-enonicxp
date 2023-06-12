@@ -4,7 +4,10 @@
 fragment partFrontpageShortcuts on Part_no_nav_navno_frontpage_shortcuts {
     title
     shortcuts {
-        title
+        customTitle
+        customIllustration {
+            ...animatedIconsTargetMixin
+        }
         target {
             _path
             displayName
@@ -13,9 +16,62 @@ fragment partFrontpageShortcuts on Part_no_nav_navno_frontpage_shortcuts {
                     url
                 }
             }
-        }
-        illustration {
-            ...animatedIconsTargetMixin
+            ...on no_nav_navno_ContentPageWithSidemenus {
+                data {
+                    title
+                    illustration {
+                        ...animatedIconsTargetMixin
+                    }
+                }
+            }
+            ...on no_nav_navno_SituationPage {
+                data {
+                    title
+                    illustration {
+                        ...animatedIconsTargetMixin
+                    }
+                }
+            }
+            ...on no_nav_navno_GuidePage {
+                data {
+                    title
+                    illustration {
+                        ...animatedIconsTargetMixin
+                    }
+                }
+            }
+            ...on no_nav_navno_ToolsPage {
+                data {
+                    title
+                    illustration {
+                        ...animatedIconsTargetMixin
+                    }
+                }
+            }
+            ...on no_nav_navno_ThemedArticlePage {
+                data {
+                    title
+                    illustration {
+                        ...animatedIconsTargetMixin
+                    }
+                }
+            }
+            ...on no_nav_navno_Overview {
+                data {
+                    title
+                    illustration {
+                        ...animatedIconsTargetMixin
+                    }
+                }
+            }
+            ...on no_nav_navno_FormsOverview {
+                data {
+                    title
+                    illustration {
+                        ...animatedIconsTargetMixin
+                    }
+                }
+            }
         }
     }
     contentList {

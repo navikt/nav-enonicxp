@@ -9,10 +9,18 @@
             <label>Velg snarveier</label>
             <occurrences minimum="0" maximum="4"/>
             <items>
-                <input name="title" type="TextLine">
+                <input name="customTitle" type="TextLine">
                     <label>Tittel på snarvei</label>
-                    <help-text>Hvis denne er blank vil navnet på innholdet vises</help-text>
+                    <help-text>Hvis denne er blank vil tittel på innholdet vises</help-text>
                     <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input name="customIllustration" type="ContentSelector">
+                    <label>Velg piktogram</label>
+                    <help-text>Hvis denne er blank vil piktogrammet til innholdet vises</help-text>
+                    <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <allowContentType>${app}:animated-icons</allowContentType>
+                    </config>
                 </input>
                 <input name="target" type="ContentSelector">
                     <label>Velg innhold</label>
@@ -20,19 +28,15 @@
                     <config>
                         <showStatus>true</showStatus>
                         <allowContentType>${app}:external-link</allowContentType>
-                        <allowContentType>${app}:dynamic-page</allowContentType>
                         <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
                         <allowContentType>${app}:situation-page</allowContentType>
                         <allowContentType>${app}:guide-page</allowContentType>
                         <allowContentType>${app}:tools-page</allowContentType>
-                        <allowContentType>${app}:guide-page</allowContentType>
-                        <allowContentType>${app}:current-topic-page</allowContentType>
                         <allowContentType>${app}:themed-article-page</allowContentType>
                         <allowContentType>${app}:overview</allowContentType>
                         <allowContentType>${app}:forms-overview</allowContentType>
                     </config>
                 </input>
-                <mixin name="illustration" />
             </items>
         </item-set>
         <input name="contentList" type="ContentSelector">

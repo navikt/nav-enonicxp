@@ -12,17 +12,17 @@ export interface FrontpageShortcutsPartConfig {
     /**
      * Tittel på snarvei
      */
-    title?: string;
+    customTitle?: string;
+
+    /**
+     * Velg piktogram
+     */
+    customIllustration?: string;
 
     /**
      * Velg innhold
      */
     target: string;
-
-    /**
-     * Velg piktogram
-     */
-    illustration: string;
   }>;
 
   /**
