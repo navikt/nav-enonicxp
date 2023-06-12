@@ -2,12 +2,16 @@ import httpClient from '/lib/http-client';
 import { URLS } from '../constants';
 import { logger } from '../utils/logging';
 import { getLocaleFromRepoId } from '../localization/layers-data';
-import { stripPathPrefix } from '../paths/path-utils';
-import * as contentLib from '/lib/xp/content';
 import { getNodeVersions } from '../utils/version-utils';
 import { getRepoConnection } from '../utils/repo-utils';
+import { stripPathPrefix } from '../paths/path-utils';
 
-const loopbackCheckParam = 'fromXp';
+// Used for checking if a request to the frontend looped back to this controller
+const LOOPBACK_PARAM = 'fromXp';
+
+// Requests from the archive preview are mapped to a target path prefixed with
+// this segment, in the server vhost config
+const ARCHIVE_VHOST_TARGET_PREFIX = '/__archive';
 
 const errorResponse = (url: string, status: number, message: string) => {
     const msg = `Failed to fetch from frontend: ${url} - ${status}: ${message}`;
@@ -22,6 +26,52 @@ const errorResponse = (url: string, status: number, message: string) => {
     };
 };
 
+const getFrontendPath = (req: XP.Request) => {
+    const contentPath = stripPathPrefix(req.rawPath.split(req.branch)[1] || '');
+    if (!contentPath) {
+        logger.error(`Unexpected request path: ${req.rawPath}`);
+        return null;
+    }
+
+    if (!contentPath.startsWith(ARCHIVE_VHOST_TARGET_PREFIX)) {
+        return contentPath;
+    }
+
+    const archivedPath = contentPath.replace(ARCHIVE_VHOST_TARGET_PREFIX, '/archive');
+    logger.info(`Archived path: ${archivedPath}`);
+
+    const repoConnection = getRepoConnection({ branch: 'draft', repoId: req.repositoryId });
+    const contentNode = repoConnection.get(archivedPath);
+
+    logger.info(`Found in archive: ${contentNode.originalParentPath}/${contentNode.originalName}`);
+
+    const version = getNodeVersions({
+        nodeKey: contentNode._id,
+        branch: 'draft',
+        repoId: req.repositoryId,
+    }).find((version) => version.nodePath.startsWith('/content'));
+
+    if (!version) {
+        logger.error(`No pre-archiving content version found for ${req.rawPath}`);
+        return null;
+    }
+
+    const contentVersionNode = repoConnection.get({
+        key: version.nodeId,
+        versionId: version.versionId,
+    });
+    if (!contentVersionNode) {
+        logger.error(
+            `Content node not found for version ${JSON.stringify(
+                version
+            )} (this shouldn't be possible!)`
+        );
+        return null;
+    }
+
+    return `${archivedPath}?time=${contentVersionNode.modifiedTime}&id=${contentVersionNode._id}`;
+};
+
 // The legacy health check expects an html-response on /no/person
 // "Nyheter" must be part of the response!
 const healthCheckDummyResponse = () => {
@@ -31,7 +81,7 @@ const healthCheckDummyResponse = () => {
     };
 };
 
-// Proxy requests to XP to the frontend. Normally this will only be used in the portal-admin
+// Proxy requests to the frontend application. Normally this will only be used in the portal-admin
 // content studio previews and from the error controller
 export const frontendProxy = (req: XP.Request, path?: string) => {
     if (req.method === 'HEAD') {
@@ -40,7 +90,9 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
         };
     }
 
-    const isLoopback = req.params[loopbackCheckParam];
+    logger.info(`Req: ${JSON.stringify(req)}`);
+
+    const isLoopback = req.params[LOOPBACK_PARAM];
     if (isLoopback) {
         logger.warning(`Loopback to XP detected from path ${req.rawPath}`);
         return {
@@ -57,45 +109,18 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
         return healthCheckDummyResponse();
     }
 
-    const pathStartIndex = req.rawPath.indexOf(req.branch) + req.branch.length;
-    const contentPath = path || stripPathPrefix(req.rawPath.slice(pathStartIndex));
-    let frontendUrl = `${
-        req.branch === 'draft' ? `${URLS.FRONTEND_ORIGIN}/draft` : URLS.FRONTEND_ORIGIN
-    }${contentPath}`;
-
-    if (contentPath.startsWith('/__archive/')) {
-        const archivedPath = contentPath.replace('/__archive', '/archive');
-        logger.info(`Archived in ${archivedPath}`);
-
-        const repoConnection = getRepoConnection({ branch: 'draft', repoId: req.repositoryId });
-        const contentNode = repoConnection.get(archivedPath);
-
-        logger.info(
-            `Found in archive: ${contentNode.originalParentPath}/${contentNode.originalName}`
-        );
-
-        const version = getNodeVersions({
-            nodeKey: contentNode._id,
-            branch: 'draft',
-            repoId: req.repositoryId,
-        }).find((version) => version.nodePath.startsWith('/content'));
-
-        if (version) {
-            const contentVersion = contentLib.get({
-                key: version.nodeId,
-                versionId: version.versionId,
-            });
-
-            frontendUrl = `${URLS.FRONTEND_ORIGIN}/draft${contentPath.replace(
-                '/__archive',
-                ''
-            )}?time=${contentVersion?.modifiedTime}&id=${
-                contentVersion?._id
-            }&branch=draft&locale=no`;
-
-            logger.info(`New frontend url: ${frontendUrl}`);
-        }
+    const frontendPath = path || getFrontendPath(req);
+    if (!frontendPath) {
+        return {
+            contentType: 'text/html',
+            body: `<div>Error: could not determine frontend path for ${req.url}</div>`,
+            status: 200,
+        };
     }
+
+    const frontendUrl = `${URLS.FRONTEND_ORIGIN}${
+        req.branch === 'draft' ? '/draft' : ''
+    }${frontendPath}`;
 
     try {
         const response = httpClient.request({
@@ -108,7 +133,7 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
             followRedirects: false,
             queryParams: {
                 ...req.params,
-                [loopbackCheckParam]: 'true',
+                [LOOPBACK_PARAM]: 'true',
                 mode: req.mode,
                 locale: getLocaleFromRepoId(req.repositoryId),
             },
