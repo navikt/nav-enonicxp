@@ -18,7 +18,6 @@ fragment productTargetMixin on Content {
         data {
             title
             ingress
-            audience
             illustration {
                 ...animatedIconsTargetMixin
             }
@@ -28,16 +27,6 @@ fragment productTargetMixin on Content {
         data {
             title
             ingress
-            audience {
-                _selected
-                provider {
-                    pageType {
-                        overview {
-                            provider_audience
-                        }
-                    }
-                }
-            }
             illustration {
                 ...animatedIconsTargetMixin
             }
