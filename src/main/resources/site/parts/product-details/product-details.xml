@@ -2,15 +2,45 @@
     <display-name>Produktdetaljer</display-name>
     <description>Viser valgt produktdetaljer som en del av produktsiden</description>
     <form>
-        <input name="detailType" type="RadioButton">
-            <label>Velg produktdetalj</label>
-            <occurrences minimum="1" maximum="1"/>
-            <config>
-                <option value="processing_times">Saksbehandlingstider</option>
-                <option value="payout_dates">Utbetalingsdatoer</option>
-                <option value="rates">Satser</option>
-            </config>
-        </input>
+        <field-set>
+            <label>Type produktdetalj</label>
+            <items>
+                <input name="detailType" type="RadioButton">
+                    <label>Velg type produktdetalj</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <option value="processing_times">Saksbehandlingstider</option>
+                        <option value="payout_dates">Utbetalingsdatoer</option>
+                        <option value="rates">Satser</option>
+                    </config>
+                </input>
+                <option-set name="options">
+                    <label>Tilpass visning</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <options minimum="1" maximum="1">
+                        <option name="all">
+                            <label>Vis alle produktdetaljer</label>
+                            <help-text>Viser alle produktdetaljer som siden er markert til å vise.</help-text>
+                            <default>true</default>
+                        </option>
+                        <option name="filters">
+                            <label>Filtrer visning</label>
+                            <help-text>Husk å velge relevante filter for detaljtypen du har valgt.</help-text>
+                            <items>
+                                <input name="processing_times_applications" type="CheckBox">
+                                    <label>Vis saksbehandlingstider for søknader</label>
+                                    <default>checked</default>
+                                </input>
+                                <input name="processing_times_complaint" type="CheckBox">
+                                    <label>Vis saksbehandlingstider for klage</label>
+                                    <default>checked</default>
+                                </input>
+                            </items>
+                        </option>
+                    </options>
+                </option-set>
+            </items>
+        </field-set>
         <mixin name="expandable"/>
         <mixin name="filter-selector"/>
         <mixin name="auth-render-option"/>

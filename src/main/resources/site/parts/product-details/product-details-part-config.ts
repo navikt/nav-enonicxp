@@ -6,6 +6,43 @@ export interface ProductDetailsPartConfig {
   detailType: "processing_times" | "payout_dates" | "rates";
 
   /**
+   * Tilpass visning
+   */
+  options:
+    | {
+        /**
+         * Selected
+         */
+        _selected: "all";
+
+        /**
+         * Vis alle produktdetaljer
+         */
+        all: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "filters";
+
+        /**
+         * Filtrer visning
+         */
+        filters: {
+          /**
+           * Vis saksbehandlingstider for søknader
+           */
+          processing_times_applications: boolean;
+
+          /**
+           * Vis saksbehandlingstider for klage
+           */
+          processing_times_complaint: boolean;
+        };
+      };
+
+  /**
    * Utvidbar
    */
   expandable: boolean;
