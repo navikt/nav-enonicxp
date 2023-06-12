@@ -149,4 +149,9 @@ export interface FormsOverview {
    * Skal ikke vises i søk
    */
   noindex: boolean;
+
+  /**
+   * Legg til andre språkversjoner
+   */
+  languages?: Array<string>;
 }
