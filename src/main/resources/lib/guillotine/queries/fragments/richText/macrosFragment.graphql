@@ -30,6 +30,7 @@ fragment macros on Macro {
         }
         chatbot_link {
             text
+            presentation
         }
         chevron_link_external {
             text

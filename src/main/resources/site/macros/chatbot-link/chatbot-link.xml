@@ -5,5 +5,14 @@
             <label>Lenke-tekst</label>
             <occurrences minimum="1" maximum="1"/>
         </input>
+        <input name="presentation" type="RadioButton">
+            <label>Vis lenken som</label>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <option value="link">Lenke</option>  
+                <option value="button">Knapp</option>
+            </config>
+            <default>link</default>
+        </input>
     </form>
 </macro>

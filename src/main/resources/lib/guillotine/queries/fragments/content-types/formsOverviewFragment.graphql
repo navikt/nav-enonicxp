@@ -37,6 +37,7 @@ fragment contentFormsOverviewPage on no_nav_navno_FormsOverview {
             url
             type
             ingress
+            keywords
             formDetailsPaths
             formDetailsTitles
             formNumbers

@@ -8,7 +8,7 @@ export interface FormsOverview {
   /**
    * Under-tittel
    */
-  underTitle: string;
+  underTitle?: string;
 
   /**
    * Ingress/beskrivelse
@@ -149,4 +149,9 @@ export interface FormsOverview {
    * Skal ikke vises i søk
    */
   noindex: boolean;
+
+  /**
+   * Legg til andre språkversjoner
+   */
+  languages?: Array<string>;
 }

@@ -1,0 +1,19 @@
+<content-type>
+    <display-name>Fragment</display-name>
+    <description>Opprett et fragment direkte, uten å gå via en annen side</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <input type="RadioButton" name="type">
+            <label>Velg type fragment og lagre</label>
+            <occurrences minimum="1" maximum="1"/>
+            <default>part</default>
+            <config>
+                <option value="part">Part (for tekst og andre enkeltstående komponenter)</option>
+                <option value="layout">Layout (for seksjoner som kan inneholde flere komponenter)</option>
+            </config>
+        </input>
+    </form>
+</content-type>

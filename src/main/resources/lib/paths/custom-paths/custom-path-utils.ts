@@ -2,6 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { runInContext } from '../../context/run-in-context';
 import { stripPathPrefix as _stripPathPrefix } from '../path-utils';
+import { RepoBranch } from '../../../types/common';
 
 type ContentWithCustomPath = Content & { data: { customPath: string } };
 
@@ -28,18 +29,18 @@ export const getCustomPathFromContent = (contentId: string, versionId?: string) 
     return content && hasValidCustomPath(content) ? content.data.customPath : null;
 };
 
-export const getContentFromCustomPath = (path: string) => {
+export const getContentFromCustomPath = (path: string, branch: RepoBranch = 'master') => {
     const customPath = stripPathPrefix(path);
     if (!isValidCustomPath(customPath)) {
         return [];
     }
 
     return runInContext(
-        { branch: 'master' },
+        { branch },
         () =>
             contentLib.query({
                 start: 0,
-                count: 2,
+                count: 10,
                 filters: {
                     boolean: {
                         must: {

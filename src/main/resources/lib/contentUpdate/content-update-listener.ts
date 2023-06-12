@@ -5,6 +5,9 @@ import { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
 import { runInContext } from '../context/run-in-context';
 import { QbrickMeta } from 'types/qbrickMeta';
+import { CONTENT_REPO_PREFIX } from '../constants';
+import { transformFragmentCreatorToFragment } from '../fragmentCreator/fragment-creator';
+import { isContentLocalized } from '../localization/locale-utils';
 
 let hasContentUpdateListener = false;
 type UpdateVideoContentParams = {
@@ -168,12 +171,34 @@ const handleEvent = (event: eventLib.EnonicEvent) => {
         return;
     }
 
-    const { id } = event.data.nodes[0];
-    const content = contentLib.get({ key: id });
+    event.data.nodes.forEach((node) => {
+        const { id, repo } = node;
 
-    if (content && content.type === 'no.nav.navno:video') {
-        updateVideoContentWithMetaData(content);
-    }
+        if (!repo.startsWith(CONTENT_REPO_PREFIX)) {
+            return;
+        }
+
+        runInContext({ repository: repo }, () => {
+            const content = contentLib.get({ key: id });
+            if (!content || !isContentLocalized(content)) {
+                return;
+            }
+
+            switch (content.type) {
+                case 'no.nav.navno:video': {
+                    updateVideoContentWithMetaData(content);
+                    break;
+                }
+                case 'no.nav.navno:fragment-creator': {
+                    transformFragmentCreatorToFragment({
+                        content,
+                        repoId: repo,
+                    });
+                    break;
+                }
+            }
+        });
+    });
 };
 
 export const activateContentUpdateListener = () => {

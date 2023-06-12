@@ -5,8 +5,6 @@ import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-
 import { COMPONENT_APP_KEY } from '../../lib/constants';
 import { getModifiedTimeIncludingFragments } from '../../lib/utils/fragment-utils';
 import { isUUID } from '../../lib/utils/uuid';
-import { validateTimestampConsistency } from '../../lib/time-travel/consistency-check';
-import { unhookTimeTravel } from '../../lib/time-travel/time-travel-hooks';
 import { logger } from '../../lib/utils/logging';
 import { getLayersData, isValidLocale } from '../../lib/localization/layers-data';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
@@ -60,12 +58,7 @@ const getSpecialPreviewResponseIfApplicable = (
 };
 
 // Resolve the base content to a fully resolved content via a guillotine query
-const resolveContent = (
-    baseContent: Content,
-    branch: RepoBranch,
-    locale: string,
-    retries = 2
-): Content | null =>
+const resolveContent = (baseContent: Content, branch: RepoBranch, locale: string): Content | null =>
     runInLocaleContext(
         {
             locale: baseContent.language,
@@ -74,22 +67,7 @@ const resolveContent = (
             },
         },
         () => {
-            const contentId = baseContent._id;
             const queryResult = runSitecontentGuillotineQuery(baseContent, branch);
-
-            // Peace-of-mind consistency check to ensure our version-history hack isn't affecting normal requests
-            if (!validateTimestampConsistency(contentId, queryResult, branch)) {
-                if (retries > 0) {
-                    logger.error(
-                        `Timestamp consistency check failed - Retrying ${retries} more times`
-                    );
-                } else {
-                    logger.critical(`Time travel permanently disabled on this node`);
-                    unhookTimeTravel();
-                }
-
-                return resolveContent(baseContent, branch, locale, retries - 1);
-            }
 
             return queryResult
                 ? {
