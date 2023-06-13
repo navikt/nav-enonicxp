@@ -26,7 +26,12 @@ export interface FrontpageShortcutsPartConfig {
   }>;
 
   /**
-   * Velg farge
+   * Velg bakgrunnsfarge
    */
-  color: string;
+  bgColor?: string;
+
+  /**
+   * Velg farge på hover-effekt
+   */
+  hoverColor?: string;
 }
