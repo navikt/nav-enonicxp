@@ -102,10 +102,12 @@ const getResult = ({
 
     const ingressIsOurs = verifyIngressOwner(suggestedPath);
     if (!ingressIsOurs) {
-        return generateErrorHit(
-            `Feil: "${suggestedPath}" kan tilhøre en annen app på nav.no`,
-            "Det krever en teknisk endring for å bruke denne url'en, kontakt Team personbruker"
-        );
+        return {
+            id: suggestedPath,
+            displayName: suggestedPath,
+            description: `"${suggestedPath}" tilhører en annen app på nav.no - Det krever en teknisk endring for å bruke denne url'en`,
+            icon: customSelectorWarningIcon,
+        };
     }
 
     const redirectContent = runInContext({ branch: 'master' }, () =>
