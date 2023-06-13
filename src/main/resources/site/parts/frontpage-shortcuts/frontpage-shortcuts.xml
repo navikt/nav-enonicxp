@@ -39,6 +39,12 @@
                 </input>
             </items>
         </item-set>
+        <field-set>
+            <label>Velg bakgrunnsfarge</label>
+            <items>
+                <mixin name="color-picker"/>
+            </items>
+        </field-set>
     </form>
     <config>
         <allow-on-content-type>${app}:front-page</allow-on-content-type>
