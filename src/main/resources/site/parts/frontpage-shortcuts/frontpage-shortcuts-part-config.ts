@@ -24,4 +24,9 @@ export interface FrontpageShortcutsPartConfig {
      */
     target: string;
   }>;
+
+  /**
+   * Velg farge
+   */
+  color: string;
 }

@@ -2,6 +2,7 @@
 
 fragment partFrontpageShortcuts on Part_no_nav_navno_frontpage_shortcuts {
     title
+    color
     shortcuts {
         customTitle
         customIllustration {
