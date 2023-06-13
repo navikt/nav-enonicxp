@@ -151,6 +151,11 @@ export interface FormsOverview {
   noindex: boolean;
 
   /**
+   * Videresend alle besøk til annen url:
+   */
+  externalProductUrl?: string;
+
+  /**
    * Legg til andre språkversjoner
    */
   languages?: Array<string>;

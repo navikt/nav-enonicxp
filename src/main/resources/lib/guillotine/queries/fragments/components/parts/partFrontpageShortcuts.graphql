@@ -2,6 +2,8 @@
 
 fragment partFrontpageShortcuts on Part_no_nav_navno_frontpage_shortcuts {
     title
+    bgColor
+    hoverColor
     shortcuts {
         customTitle
         customIllustration {
