@@ -13,9 +13,6 @@ const filterRelevantComponents = (detailContent: any, processingTimesVisibility:
     const mainDetailComponents = detailContent.page?.regions?.main?.components;
     const mainComplaintDetailComponents = detailContent.page?.regions?.main_complaint?.components;
 
-    log.info('processingTimesVisibility');
-    log.info(processingTimesVisibility);
-
     if (processingTimesVisibility === 'all' || !processingTimesVisibility) {
         return [...(mainDetailComponents || []), ...(mainComplaintDetailComponents || [])];
     }
