@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x-data>
+    <display-name>Overstyring av rekkefølge i søket</display-name>
+    <form>
+        <input name="searchOrder" type="Long">
+            <label>Høyere tall vil prioriteres høyere i søkeresultatet. Dette gjelder kun når ingen søkeord er skrevet inn.</label>
+            <occurrences minimum="0" maximum="1"/>
+            <config>
+                <min>0</min>
+                <max>10000</max>
+            </config>
+        </input>
+    </form>
+</x-data>
