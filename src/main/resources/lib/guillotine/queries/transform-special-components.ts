@@ -9,6 +9,22 @@ import { isContentWithProductDetails } from '../../product-utils/types';
 
 type SitecontentQueryFunc = typeof runSitecontentGuillotineQuery;
 
+const filterRelevantComponents = (detailContent: any, processingTimesVisibility: string) => {
+    const mainDetailComponents = detailContent.page?.regions?.main?.components;
+    const mainComplaintDetailComponents = detailContent.page?.regions?.main_complaint?.components;
+
+    log.info('processingTimesVisibility');
+    log.info(processingTimesVisibility);
+
+    if (processingTimesVisibility === 'all' || !processingTimesVisibility) {
+        return [...(mainDetailComponents || []), ...(mainComplaintDetailComponents || [])];
+    }
+
+    return processingTimesVisibility === 'application'
+        ? mainDetailComponents
+        : mainComplaintDetailComponents;
+};
+
 // The product-details part requires an additional query to retrieve the components
 // to render in the part.
 const transformProductDetailsPart = (
@@ -38,7 +54,8 @@ const transformProductDetailsPart = (
         return component;
     }
 
-    const detailType = productDetailsPartConfig.detailType;
+    const { detailType, processingTimesVisibility } = productDetailsPartConfig;
+
     if (!detailType) {
         logger.error(
             `No product detail type specified - Base content id ${baseContentId}`,
@@ -78,8 +95,9 @@ const transformProductDetailsPart = (
         return component;
     }
 
-    const detailComponents = detailContent.page?.regions?.main?.components;
-    if (!detailComponents) {
+    const relevantComponents = filterRelevantComponents(detailContent, processingTimesVisibility);
+
+    if (!relevantComponents) {
         logger.error(
             `No product detail main region components found for id ${detailContentId} - Base content id ${baseContentId}`,
             true,
@@ -98,7 +116,7 @@ const transformProductDetailsPart = (
                     product_details: {
                         ...productDetailsPartConfig,
                         language: detailContent.language,
-                        components: detailComponents,
+                        components: relevantComponents,
                     },
                 },
             },

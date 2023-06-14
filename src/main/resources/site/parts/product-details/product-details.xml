@@ -14,31 +14,21 @@
                         <option value="rates">Satser</option>
                     </config>
                 </input>
-                <option-set name="options">
-                    <label>Tilpass visning</label>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Visningsinnstillinger</label>
+            <items>
+                <input name="processingTimesVisibility" type="ComboBox">
+                    <label>For visning av saksbehandlingstider</label>
                     <occurrences minimum="1" maximum="1"/>
-                    <options minimum="1" maximum="1">
-                        <option name="all">
-                            <label>Vis alle produktdetaljer</label>
-                            <help-text>Viser alle produktdetaljer som siden er markert til å vise.</help-text>
-                            <default>true</default>
-                        </option>
-                        <option name="filters">
-                            <label>Filtrer visning</label>
-                            <help-text>Husk å velge relevante filter for detaljtypen du har valgt.</help-text>
-                            <items>
-                                <input name="processing_times_applications" type="CheckBox">
-                                    <label>Vis saksbehandlingstider for søknader</label>
-                                    <default>checked</default>
-                                </input>
-                                <input name="processing_times_complaint" type="CheckBox">
-                                    <label>Vis saksbehandlingstider for klage</label>
-                                    <default>checked</default>
-                                </input>
-                            </items>
-                        </option>
-                    </options>
-                </option-set>
+                    <config>
+                        <option value="all">Vis begge</option>  
+                        <option value="application">Vis bare søknad</option>
+                        <option value="complaint">Vis bare klage</option>
+                    </config>
+                    <default>all</default>  
+                </input>
             </items>
         </field-set>
         <mixin name="expandable"/>
