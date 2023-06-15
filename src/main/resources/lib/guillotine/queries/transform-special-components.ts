@@ -18,7 +18,7 @@ const filterRelevantComponents = (
     const mainComplaintDetailComponents = detailContent.page?.regions?.main_complaint?.components;
 
     // Only process components if the productdetail is 'saksbehandlingstid'
-    if (detailType !== 'processing_time') {
+    if (detailType !== 'processing_times') {
         return mainDetailComponents;
     }
 
