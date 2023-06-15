@@ -15,9 +15,9 @@ export interface FiltersMenuPartConfig {
    */
   categories?: Array<{
     /**
-     * Kategori-navn
+     * Filtreringsspørsmål
      */
-    categoryName?: string;
+    categoryName: string;
 
     /**
      * Filter
