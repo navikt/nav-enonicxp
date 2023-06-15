@@ -9,14 +9,24 @@ import { isContentWithProductDetails } from '../../product-utils/types';
 
 type SitecontentQueryFunc = typeof runSitecontentGuillotineQuery;
 
-const filterRelevantComponents = (detailContent: any, processingTimesVisibility: string) => {
+const filterRelevantComponents = (
+    detailContent: any,
+    detailType: any,
+    processingTimesVisibility: string
+) => {
     const mainDetailComponents = detailContent.page?.regions?.main?.components;
     const mainComplaintDetailComponents = detailContent.page?.regions?.main_complaint?.components;
+
+    // Only process components if the productdetail is 'saksbehandlingstid'
+    if (detailType !== 'processing_time') {
+        return mainDetailComponents;
+    }
 
     if (processingTimesVisibility === 'all' || !processingTimesVisibility) {
         return [...(mainDetailComponents || []), ...(mainComplaintDetailComponents || [])];
     }
 
+    // 'application' in this context is 'søknad'
     return processingTimesVisibility === 'application'
         ? mainDetailComponents
         : mainComplaintDetailComponents;
@@ -92,7 +102,11 @@ const transformProductDetailsPart = (
         return component;
     }
 
-    const relevantComponents = filterRelevantComponents(detailContent, processingTimesVisibility);
+    const relevantComponents = filterRelevantComponents(
+        detailContent,
+        detailType,
+        processingTimesVisibility
+    );
 
     if (!relevantComponents) {
         logger.error(
