@@ -17,7 +17,8 @@ const filterRelevantComponents = (
     const mainDetailComponents = detailContent.page?.regions?.main?.components;
     const mainComplaintDetailComponents = detailContent.page?.regions?.main_complaint?.components;
 
-    // Only process components if the productdetail is 'saksbehandlingstid'
+    // Only product details for 'saksbehandlingstid' have an extra main_complaint region,
+    // so just return the main region for all other types.
     if (detailType !== 'processing_times') {
         return mainDetailComponents;
     }
@@ -26,7 +27,7 @@ const filterRelevantComponents = (
         return [...(mainDetailComponents || []), ...(mainComplaintDetailComponents || [])];
     }
 
-    // 'application' in this context is 'søknad'
+    // 'application' in this context relates to 'søknad'
     return processingTimesVisibility === 'application'
         ? mainDetailComponents
         : mainComplaintDetailComponents;
