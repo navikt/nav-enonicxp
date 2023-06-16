@@ -149,4 +149,14 @@ export interface FormsOverview {
    * Skal ikke vises i søk
    */
   noindex: boolean;
+
+  /**
+   * Videresend alle besøk til annen url:
+   */
+  externalProductUrl?: string;
+
+  /**
+   * Legg til andre språkversjoner
+   */
+  languages?: Array<string>;
 }

@@ -1,8 +1,78 @@
-#import "../../mixins/contentListShortFragment.graphql"
+#import "../../mixins/animatedIconsTargetFragment.graphql"
 
 fragment partFrontpageShortcuts on Part_no_nav_navno_frontpage_shortcuts {
     title
-    contentList {
-        ...contentListShortMixin
+    bgColor
+    hoverColor
+    shortcuts {
+        customTitle
+        customIllustration {
+            ...animatedIconsTargetMixin
+        }
+        target {
+            _path
+            displayName
+            ...on no_nav_navno_ExternalLink {
+                data {
+                    url
+                }
+            }
+            ...on no_nav_navno_ContentPageWithSidemenus {
+                data {
+                    title
+                    illustration {
+                        ...animatedIconsTargetMixin
+                    }
+                }
+            }
+            ...on no_nav_navno_SituationPage {
+                data {
+                    title
+                    illustration {
+                        ...animatedIconsTargetMixin
+                    }
+                }
+            }
+            ...on no_nav_navno_GuidePage {
+                data {
+                    title
+                    illustration {
+                        ...animatedIconsTargetMixin
+                    }
+                }
+            }
+            ...on no_nav_navno_ToolsPage {
+                data {
+                    title
+                    illustration {
+                        ...animatedIconsTargetMixin
+                    }
+                }
+            }
+            ...on no_nav_navno_ThemedArticlePage {
+                data {
+                    title
+                    illustration {
+                        ...animatedIconsTargetMixin
+                    }
+                }
+            }
+            ...on no_nav_navno_Overview {
+                data {
+                    title
+                    illustration {
+                        ...animatedIconsTargetMixin
+                    }
+                }
+            }
+            ...on no_nav_navno_FormsOverview {
+                data {
+                    title
+                    illustration {
+                        ...animatedIconsTargetMixin
+                    }
+                }
+            }
+        }
     }
 }

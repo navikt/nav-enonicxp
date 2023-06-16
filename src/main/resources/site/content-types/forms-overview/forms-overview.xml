@@ -127,5 +127,7 @@
                 </input>
             </items>
         </field-set>
+        <mixin name="external-product-url"/>
+        <mixin name="languages-legacy"/>
     </form>
 </content-type>

@@ -36,36 +36,48 @@ fragment legacyShortFragmentsMixin on Content {
     }
     ... on no_nav_navno_ContentPageWithSidemenus {
         data {
+            title
             description
             ingress
         }
     }
     ... on no_nav_navno_SituationPage {
         data {
+            title
             description
             ingress
         }
     }
     ... on no_nav_navno_GuidePage {
         data {
+            title
             description
             ingress
         }
     }
     ... on no_nav_navno_ThemedArticlePage {
         data {
+            title
             description
             ingress
         }
     }
     ... on no_nav_navno_ToolsPage {
         data {
+            title
             ingress
         }
     }
     ... on no_nav_navno_Overview {
         data {
+            title
             description
+            ingress
+        }
+    }
+    ... on no_nav_navno_FormsOverview {
+        data {
+            title
             ingress
         }
     }

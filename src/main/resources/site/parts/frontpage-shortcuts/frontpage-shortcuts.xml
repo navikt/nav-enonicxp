@@ -3,21 +3,56 @@
     <description>Til bruk på forsider</description>
     <form>
         <input name="title" type="TextLine">
-            <label>Tittel</label>
+            <label>Tittel på seksjon</label>
         </input>
-        <input name="contentList" type="ContentSelector">
-            <label>Velg innholdsliste</label>
-            <occurrences minimum="1" maximum="1"/>
+        <item-set name="shortcuts">
+            <label>Velg snarveier</label>
+            <occurrences minimum="0" maximum="4"/>
+            <items>
+                <input name="customTitle" type="TextLine">
+                    <label>Tittel på snarvei</label>
+                    <help-text>Hvis denne er blank vil tittel på innholdet vises</help-text>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input name="customIllustration" type="ContentSelector">
+                    <label>Velg piktogram</label>
+                    <help-text>Hvis denne er blank vil piktogrammet til innholdet vises</help-text>
+                    <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <allowContentType>${app}:animated-icons</allowContentType>
+                    </config>
+                </input>
+                <input name="target" type="ContentSelector">
+                    <label>Velg innhold</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <showStatus>true</showStatus>
+                        <allowContentType>${app}:external-link</allowContentType>
+                        <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
+                        <allowContentType>${app}:situation-page</allowContentType>
+                        <allowContentType>${app}:guide-page</allowContentType>
+                        <allowContentType>${app}:tools-page</allowContentType>
+                        <allowContentType>${app}:themed-article-page</allowContentType>
+                        <allowContentType>${app}:overview</allowContentType>
+                        <allowContentType>${app}:forms-overview</allowContentType>
+                    </config>
+                </input>
+            </items>
+        </item-set>
+        <input name="bgColor" type="CustomSelector">
+            <label>Velg bakgrunnsfarge</label>
+            <help-text>Velg fra designsystemets fargepalett, eller en egendefinert hex-code, f.eks. #0451ff</help-text>
+            <occurrences minimum="0" maximum="1"/>
             <config>
-                <allowContentType>no.nav.navno:content-list</allowContentType>
+                <service>colorPicker</service>
             </config>
         </input>
-        <input name="maxItems" type="Long">
-            <label>Maks antall lenker</label>
-            <default>3</default>
+        <input name="hoverColor" type="CustomSelector">
+            <label>Velg farge på hover-effekt</label>
+            <help-text>Velg fra designsystemets fargepalett, eller en egendefinert hex-code, f.eks. #0451ff</help-text>
+            <occurrences minimum="0" maximum="1"/>
             <config>
-                <min>1</min>
-                <max>4</max>
+                <service>colorPicker</service>
             </config>
         </input>
     </form>
