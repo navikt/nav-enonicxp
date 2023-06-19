@@ -25,7 +25,6 @@ export const get = (req: XP.Request) => {
     }
 
     // id can be a content UUID, or a content path, ie. /www.nav.no/no/person
-    // TODO: validate parameters in a cleaner way
     const {
         id: idOrPath,
         branch = 'master',

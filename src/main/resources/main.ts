@@ -40,7 +40,7 @@ if (clusterLib.isMaster()) {
     log.info('Running master only init scripts');
     initSearchRepo();
     startFailsafeSchedule();
-    generateSitemapDataAndActivateSchedule();
+    // generateSitemapDataAndActivateSchedule();
     startOfficeInfoPeriodicUpdateSchedule();
     createOfficeBranchFetchSchedule();
 }

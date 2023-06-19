@@ -20,6 +20,9 @@ import { stringArrayToSet } from '../../lib/utils/array-utils';
 
 import { resolveLegacyContentRedirects } from './resolve-legacy-content-redirects';
 import { getContentFromCustomPath } from '../../lib/paths/custom-paths/custom-path-utils';
+import { getRepoConnection } from '../../lib/utils/repo-utils';
+import { getMostRecentLiveContent } from '../../lib/time-travel/get-content-from-datetime';
+import { stripPathPrefix } from '../../lib/paths/path-utils';
 
 const contentTypesForGuillotineQuery = stringArrayToSet(contentTypesRenderedByEditorFrontend);
 
@@ -94,6 +97,22 @@ const resolveContentStudioRequest = (
     }
 
     const localeActual = isValidLocale(locale) ? locale : getLayersData().defaultLocale;
+
+    if (idOrPathRequested.includes('/archive')) {
+        const repoId = getLayersData().localeToRepoIdMap[localeActual];
+
+        logger.info(`Archive request: ${idOrPathRequested} - ${repoId}`);
+        const content = getRepoConnection({
+            branch,
+            repoId,
+        }).get(stripPathPrefix(idOrPathRequested));
+        if (!content) {
+            logger.info(`Archive request not found: ${idOrPathRequested} - ${repoId}`);
+            return null;
+        }
+
+        return getMostRecentLiveContent(content._id, repoId);
+    }
 
     return runInLocaleContext({ locale: localeActual, branch }, () => {
         const content =

@@ -33,6 +33,8 @@ const getFrontendPath = (req: XP.Request) => {
         return null;
     }
 
+    logger.info(`Content path: ${contentPath}`);
+
     if (!contentPath.startsWith(ARCHIVE_VHOST_TARGET_PREFIX)) {
         return contentPath;
     }
@@ -90,8 +92,6 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
         };
     }
 
-    logger.info(`Req: ${JSON.stringify(req)}`);
-
     const isLoopback = req.params[LOOPBACK_PARAM];
     if (isLoopback) {
         logger.warning(`Loopback to XP detected from path ${req.rawPath}`);
@@ -109,7 +109,7 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
         return healthCheckDummyResponse();
     }
 
-    const frontendPath = path || getFrontendPath(req);
+    const frontendPath = path || stripPathPrefix(req.rawPath.split(req.branch)[1] || '');
     if (!frontendPath) {
         return {
             contentType: 'text/html',
@@ -121,6 +121,8 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
     const frontendUrl = `${URLS.FRONTEND_ORIGIN}${
         req.branch === 'draft' ? '/draft' : ''
     }${frontendPath}`;
+
+    logger.info(`Requesting ${frontendUrl}`);
 
     try {
         const response = httpClient.request({
