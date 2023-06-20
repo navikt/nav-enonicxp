@@ -7,22 +7,34 @@ import { SITECONTENT_404_MSG_PREFIX } from '../../lib/constants';
 import { forceArray } from '../../lib/utils/array-utils';
 import { CustomContentDescriptor } from '../../types/content-types/content-config';
 import { getRepoConnection } from '../../lib/utils/repo-utils';
-import { getNodeVersions, getPublishedVersionTimestamps } from '../../lib/utils/version-utils';
+import { getNodeVersions } from '../../lib/utils/version-utils';
 import { runInTimeTravelContext } from '../../lib/time-travel/run-with-time-travel';
 import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-sitecontent-query';
 import { isUUID } from '../../lib/utils/uuid';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
 
-const getPageTemplate = (content: Content) => {
-    const templates = contentLib.getChildren({ key: '/www.nav.no/_templates', count: 1000 }).hits;
+// We need to find page templates ourselves, as the version history hack we use for resolving content
+// from the archive does work with the Java method Guillotine uses for resolving page templates
+const getPage = (content: Content) => {
+    // If the content has its own populated page object, it should not need a page template
+    if (content.page && Object.keys(content.page).length > 0) {
+        return content.page;
+    }
 
-    return templates.find((template) => {
+    const pageTemplates = contentLib.getChildren({
+        key: '/www.nav.no/_templates',
+        count: 1000,
+    }).hits;
+
+    const supportedTemplate = pageTemplates.find((template) => {
         if (template.type !== 'portal:page-template') {
             return false;
         }
 
         return forceArray(template.data.supports).includes(content.type as CustomContentDescriptor);
     });
+
+    return supportedTemplate?.page || {};
 };
 
 const getArchivedContentRef = (idOrArchivedPath: string) => {
@@ -33,46 +45,45 @@ const getArchivedContentRef = (idOrArchivedPath: string) => {
     return `/archive${stripPathPrefix(idOrArchivedPath)}`;
 };
 
+const getPreArchivedVersions = (contentId: string, repoId: string) => {
+    return getNodeVersions({
+        nodeKey: contentId,
+        branch: 'draft',
+        repoId,
+    }).filter((version) => version.nodePath.startsWith('/content'));
+};
+
 export const getMostRecentLiveContent = (idOrArchivedPath: string, repoId: string) => {
     const contentRef = getArchivedContentRef(idOrArchivedPath);
 
     const repoConnection = getRepoConnection({ branch: 'draft', repoId });
 
-    const contentNode = repoConnection.get(contentRef);
-
-    if (!contentNode) {
-        logger.info(`Content not found - ${contentRef} in repo ${repoId}`);
+    const archivedNode = repoConnection.get(contentRef);
+    if (!archivedNode) {
+        logger.info(`Archived node not found - ${contentRef} in repo ${repoId}`);
         return null;
     }
 
-    const mostRecentLiveVersion = getNodeVersions({
-        nodeKey: contentNode._id,
-        branch: 'draft',
-        repoId,
-    }).find((version) => version.nodePath.startsWith('/content'));
+    const preArchivedVersions = getPreArchivedVersions(archivedNode._id, repoId);
 
+    const mostRecentLiveVersion = preArchivedVersions[0];
     if (!mostRecentLiveVersion) {
-        logger.info(`No live version found for content - ${contentRef} in repo ${repoId}`);
+        logger.info(`No live versions found for content - ${contentRef} in repo ${repoId}`);
         return null;
     }
-
-    logger.info(`Content props: ${JSON.stringify(mostRecentLiveVersion)}`);
 
     const mostRecentLiveContent = contentLib.get({
         key: mostRecentLiveVersion.nodeId,
         versionId: mostRecentLiveVersion.versionId,
     });
-
     if (!mostRecentLiveContent) {
         logger.info(
-            `Could not retrieve last known live content - ${JSON.stringify(
-                mostRecentLiveVersion
-            )} in repo ${repoId}`
+            `Could not retrieve version content - ${mostRecentLiveVersion.nodeId} / ${mostRecentLiveVersion.versionId} in repo ${repoId}`
         );
         return null;
     }
 
-    return runInTimeTravelContext(
+    const content = runInTimeTravelContext(
         {
             dateTime: mostRecentLiveContent.modifiedTime,
             branch: 'draft',
@@ -85,19 +96,16 @@ export const getMostRecentLiveContent = (idOrArchivedPath: string, repoId: strin
                 return null;
             }
 
-            const page =
-                content.page && Object.keys(content.page).length > 0
-                    ? content.page
-                    : getPageTemplate(content)?.page || {};
-
-            return {
-                ...content,
-                page,
-                versionTimestamps: getPublishedVersionTimestamps(content._id),
-                livePath: mostRecentLiveContent._path,
-            };
+            return content;
         }
     );
+
+    return {
+        ...content,
+        page: getPage(content),
+        versionTimestamps: preArchivedVersions.map((version) => version.timestamp),
+        livePath: archivedNode._path,
+    };
 };
 
 export const get = (req: XP.Request) => {
