@@ -40,11 +40,13 @@ const getPageTemplate = (content: NodeContent<Content<CustomContentDescriptor>>)
         return forceArray(template.data.supports).includes(content.type);
     });
     if (!supportedTemplate) {
+        logger.info(`No supported template found for ${content.type}`);
         return null;
     }
 
     const guillotineTemplate = runSitecontentGuillotineQuery(supportedTemplate, 'master');
     if (!guillotineTemplate) {
+        logger.info(`Could not resolve template: ${JSON.stringify(supportedTemplate)}`);
         return null;
     }
 
@@ -123,6 +125,8 @@ export const getPreArchiveContent = (idOrArchivedPath: string, repoId: string, t
             }
 
             const contentNode = repoConnection.get(contentRef);
+
+            logger.info(`Content page: ${JSON.stringify(content.page)}`);
 
             return {
                 ...content,
