@@ -35,7 +35,14 @@ const getPage = (content: Content) => {
         return forceArray(template.data.supports).includes(content.type as CustomContentDescriptor);
     });
 
-    return supportedTemplate?.page || {};
+    if (supportedTemplate) {
+        const guillotineTemplate = runSitecontentGuillotineQuery(supportedTemplate, 'master');
+        if (guillotineTemplate) {
+            return guillotineTemplate.page;
+        }
+    }
+
+    return {};
 };
 
 const getArchivedContentRef = (idOrArchivedPath: string) => {
