@@ -23,7 +23,7 @@ const getPageTemplate = (content: NodeContent<Content<CustomContentDescriptor>>)
         (component) => component.type === 'page' && !!(component.page as any).customized
     );
     if (isCustomized) {
-        logger.info(`Node: ${JSON.stringify(content)}`);
+        logger.info(`Node: ${JSON.stringify(content.components)}`);
         return null;
     }
 
