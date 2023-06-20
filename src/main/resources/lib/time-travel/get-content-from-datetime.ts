@@ -6,17 +6,21 @@ import { runInTimeTravelContext } from './run-with-time-travel';
 import { runSitecontentGuillotineQuery } from '../guillotine/queries/run-sitecontent-query';
 import { getPublishedVersionTimestamps } from '../utils/version-utils';
 import { logger } from '../utils/logging';
+import { getRepoConnection } from '../utils/repo-utils';
+import { CONTENT_ROOT_REPO_ID } from '../constants';
 
 // Get content from a specific datetime (used for requests from the internal version history selector)
 export const getContentVersionFromDateTime = (
     contentRef: string,
     branch: RepoBranch,
-    dateTime: string
+    dateTime: string,
+    repoId = CONTENT_ROOT_REPO_ID
 ): Content | null => {
-    const contentCurrent = runInContext({ branch: 'draft' }, () =>
-        contentLib.get({ key: contentRef })
-    );
-    if (!contentCurrent) {
+    const repoConnection = getRepoConnection({ repoId, branch });
+
+    const activeContent = repoConnection.get(contentRef);
+    if (!activeContent) {
+        logger.info(`No active content found - ${contentRef} in repo ${repoId}`);
         return null;
     }
 
@@ -26,18 +30,24 @@ export const getContentVersionFromDateTime = (
                 contentLib.get({ key: contentRef })
             );
             if (!contentFromDateTime) {
+                logger.info(
+                    `No content found for requested timestamp - ${contentRef} in repo ${repoId} (time: ${dateTime})`
+                );
                 return null;
             }
 
             const content = runSitecontentGuillotineQuery(contentFromDateTime, 'draft');
             if (!content) {
+                logger.info(
+                    `No content resolved through Guillotine for requested timestamp - ${contentRef} in repo ${repoId} (time: ${dateTime})`
+                );
                 return null;
             }
 
             return {
                 ...content,
                 versionTimestamps: getPublishedVersionTimestamps(content._id),
-                livePath: contentCurrent._path,
+                livePath: activeContent._path,
             };
         });
     } catch (e) {
