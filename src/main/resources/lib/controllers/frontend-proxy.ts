@@ -69,7 +69,7 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
 
     const frontendUrl = getFrontendUrl(req, path);
 
-    logger.info(`Requesting from frontend: ${frontendUrl}`);
+    logger.info(`Requesting from frontend: ${frontendUrl} - ${JSON.stringify(req.params)}`);
 
     try {
         const response = httpClient.request({
