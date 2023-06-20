@@ -1,10 +1,11 @@
 import { getLayersData } from '../../lib/localization/layers-data';
 import { getMostRecentLiveContent } from '../../lib/time-travel/get-content-from-datetime';
 import { logger } from '../../lib/utils/logging';
-import { userIsAuthenticated, validateServiceSecretHeader } from '../../lib/utils/auth-utils';
+import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
+import { SITECONTENT_404_MSG_PREFIX } from '../../lib/constants';
 
 export const get = (req: XP.Request) => {
-    if (!validateServiceSecretHeader(req) && !userIsAuthenticated()) {
+    if (!validateServiceSecretHeader(req)) {
         return {
             status: 401,
             body: {
@@ -34,7 +35,7 @@ export const get = (req: XP.Request) => {
         const content = getMostRecentLiveContent(id, repoId);
 
         if (!content) {
-            const msg = `Content not found: ${id}`;
+            const msg = `${SITECONTENT_404_MSG_PREFIX} in archive: ${id}`;
             logger.info(msg);
 
             return {
