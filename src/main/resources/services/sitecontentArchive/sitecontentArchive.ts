@@ -19,11 +19,8 @@ import { getUnixTimeFromDateTimeString } from '../../lib/utils/datetime-utils';
 // from the archive does not work with the Java method Guillotine uses for resolving page templates
 const getPageTemplate = (content: NodeContent<Content<CustomContentDescriptor>>) => {
     // If the content has its own customized page component, it should not need a page template
-    const isCustomized = forceArray(content.components).some(
-        (component) => component.type === 'page' && !!(component.page as any).customized
-    );
-    if (isCustomized) {
-        logger.info(`Node with customized page: ${JSON.stringify(content.components)}`);
+    if (content.page?.customized) {
+        logger.info(`Content with customized page: ${JSON.stringify(content.page)}`);
         return null;
     }
 
@@ -109,31 +106,28 @@ export const getPreArchiveContent = (idOrArchivedPath: string, repoId: string, t
         return null;
     }
 
-    return runInTimeTravelContext(
+    const content = runInTimeTravelContext(
         {
             baseContentKey: requestedVersion.nodeId,
             dateTime: requestedContent.modifiedTime,
             branch: 'draft',
         },
         () => {
-            const content = runSitecontentGuillotineQuery(requestedContent, 'draft');
-            if (!content) {
-                logger.info(`No result from guillotine query - ${contentRef} in repo ${repoId}`);
-                return null;
-            }
-
-            const contentNode = repoConnection.get(contentRef);
-
-            logger.info(`Content page: ${JSON.stringify(content.page)}`);
-
-            return {
-                ...content,
-                page: getPageTemplate(contentNode) || content.page,
-                versionTimestamps: preArchivedVersions.map((version) => version.timestamp),
-                livePath: archivedNode._path,
-            };
+            return runSitecontentGuillotineQuery(requestedContent, 'draft');
         }
     );
+
+    if (!content) {
+        logger.info(`No result from guillotine query - ${contentRef} in repo ${repoId}`);
+        return null;
+    }
+
+    return {
+        ...content,
+        page: getPageTemplate(content) || content.page,
+        versionTimestamps: preArchivedVersions.map((version) => version.timestamp),
+        livePath: archivedNode._path,
+    };
 };
 
 export const get = (req: XP.Request) => {
