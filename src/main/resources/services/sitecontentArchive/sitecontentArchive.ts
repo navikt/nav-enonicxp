@@ -1,3 +1,4 @@
+import { Content } from '/lib/xp/content';
 import { NodeContent } from '/lib/xp/node';
 import * as contentLib from '/lib/xp/content';
 import { getLayersData } from '../../lib/localization/layers-data';
@@ -15,15 +16,15 @@ import { stripPathPrefix } from '../../lib/paths/path-utils';
 import { getUnixTimeFromDateTimeString } from '../../lib/utils/datetime-utils';
 
 // We need to find page templates ourselves, as the version history hack we use for resolving content
-// from the archive does work with the Java method Guillotine uses for resolving page templates
-const getPage = (content: NodeContent<any>) => {
-    if (!content.page) {
-        return {};
-    }
-
-    // If the content has its own customized page, it should not need a page template
-    if (content.page.customized) {
-        return content.page;
+// from the archive does not work with the Java method Guillotine uses for resolving page templates
+const getPageTemplate = (content: NodeContent<Content<CustomContentDescriptor>>) => {
+    // If the content has its own customized page component, it should not need a page template
+    const isCustomized = forceArray(content.components).some(
+        (component) => component.type === 'page' && !!(component.page as any).customized
+    );
+    if (isCustomized) {
+        logger.info(`Node: ${JSON.stringify(content)}`);
+        return null;
     }
 
     const pageTemplates = contentLib.getChildren({
@@ -36,17 +37,18 @@ const getPage = (content: NodeContent<any>) => {
             return false;
         }
 
-        return forceArray(template.data.supports).includes(content.type as CustomContentDescriptor);
+        return forceArray(template.data.supports).includes(content.type);
     });
-
-    if (supportedTemplate) {
-        const guillotineTemplate = runSitecontentGuillotineQuery(supportedTemplate, 'master');
-        if (guillotineTemplate) {
-            return guillotineTemplate.page;
-        }
+    if (!supportedTemplate) {
+        return null;
     }
 
-    return {};
+    const guillotineTemplate = runSitecontentGuillotineQuery(supportedTemplate, 'master');
+    if (!guillotineTemplate) {
+        return null;
+    }
+
+    return guillotineTemplate.page;
 };
 
 const getArchivedContentRef = (idOrArchivedPath: string) => {
@@ -118,9 +120,11 @@ export const getPreArchiveContent = (idOrArchivedPath: string, repoId: string, t
                 return null;
             }
 
+            const contentNode = repoConnection.get(contentRef);
+
             return {
                 ...content,
-                page: getPage(content),
+                page: getPageTemplate(contentNode) || content.page,
                 versionTimestamps: preArchivedVersions.map((version) => version.timestamp),
                 livePath: archivedNode._path,
             };
