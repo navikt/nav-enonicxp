@@ -23,7 +23,7 @@ const getPageTemplate = (content: NodeContent<Content<CustomContentDescriptor>>)
         (component) => component.type === 'page' && !!(component.page as any).customized
     );
     if (isCustomized) {
-        logger.info(`Node: ${JSON.stringify(content.components)}`);
+        logger.info(`Node with customized page: ${JSON.stringify(content.components)}`);
         return null;
     }
 
@@ -46,11 +46,9 @@ const getPageTemplate = (content: NodeContent<Content<CustomContentDescriptor>>)
 
     const guillotineTemplate = runSitecontentGuillotineQuery(supportedTemplate, 'master');
     if (!guillotineTemplate) {
-        logger.info(`Could not resolve template: ${JSON.stringify(supportedTemplate)}`);
-        return null;
+        logger.info(`Could not resolve template: ${supportedTemplate._id}`);
+        return supportedTemplate.page;
     }
-
-    logger.info(`Found template: ${JSON.stringify(guillotineTemplate)}`);
 
     return guillotineTemplate.page;
 };
