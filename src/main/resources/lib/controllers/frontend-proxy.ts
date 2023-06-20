@@ -30,10 +30,9 @@ const healthCheckDummyResponse = () => {
 };
 
 const getFrontendUrl = (req: XP.Request, path?: string) => {
-    const contentPath = req.rawPath.split(req.branch)[1] || '';
+    const frontendPath = path || stripPathPrefix(req.rawPath.split(req.branch)[1] || '');
 
-    const frontendPath = path || stripPathPrefix(contentPath);
-
+    // Archive requests have their own routing under the /archive path segment
     if (frontendPath.startsWith('/archive')) {
         return `${URLS.FRONTEND_ORIGIN}${frontendPath}`;
     }
@@ -68,8 +67,6 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
     }
 
     const frontendUrl = getFrontendUrl(req, path);
-
-    logger.info(`Requesting from frontend: ${frontendUrl} - ${JSON.stringify(req.params)}`);
 
     try {
         const response = httpClient.request({
