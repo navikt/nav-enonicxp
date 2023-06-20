@@ -128,8 +128,8 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const { id: isOrArchivedPath, locale, time } = req.params;
-    if (!isOrArchivedPath) {
+    const { id: idOrArchivedPath, locale, time } = req.params;
+    if (!idOrArchivedPath) {
         return {
             status: 400,
             body: {
@@ -143,10 +143,10 @@ export const get = (req: XP.Request) => {
     const repoId = localeToRepoIdMap[locale || defaultLocale];
 
     try {
-        const content = getPreArchiveContent(isOrArchivedPath, repoId, time);
+        const content = getPreArchiveContent(idOrArchivedPath, repoId, time);
 
         if (!content) {
-            const msg = `${SITECONTENT_404_MSG_PREFIX} in archive: ${isOrArchivedPath}`;
+            const msg = `${SITECONTENT_404_MSG_PREFIX} in archive: ${idOrArchivedPath}`;
             logger.info(msg);
 
             return {
@@ -164,7 +164,7 @@ export const get = (req: XP.Request) => {
             contentType: 'application/json',
         };
     } catch (e) {
-        const msg = `Error fetching content version for ${isOrArchivedPath} - ${e}`;
+        const msg = `Error fetching content version for ${idOrArchivedPath} - ${e}`;
 
         logger.error(msg);
 
