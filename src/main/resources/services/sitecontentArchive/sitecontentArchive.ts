@@ -21,7 +21,6 @@ import { runInContext } from '../../lib/context/run-in-context';
 const getPageTemplate = (content: NodeContent<Content<CustomContentDescriptor>>) => {
     // If the content has its own customized page component, it should not need a page template
     if (content.page?.customized) {
-        logger.info(`Content with customized page: ${JSON.stringify(content.page)}`);
         return null;
     }
 
