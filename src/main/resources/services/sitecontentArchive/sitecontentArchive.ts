@@ -7,11 +7,12 @@ import { SITECONTENT_404_MSG_PREFIX } from '../../lib/constants';
 import { forceArray } from '../../lib/utils/array-utils';
 import { CustomContentDescriptor } from '../../types/content-types/content-config';
 import { getRepoConnection } from '../../lib/utils/repo-utils';
-import { getNodeVersions } from '../../lib/utils/version-utils';
+import { getNodeVersions, getVersionFromTime } from '../../lib/utils/version-utils';
 import { runInTimeTravelContext } from '../../lib/time-travel/run-with-time-travel';
 import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-sitecontent-query';
 import { isUUID } from '../../lib/utils/uuid';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
+import { getUnixTimeFromDateTimeString } from '../../lib/utils/datetime-utils';
 
 // We need to find page templates ourselves, as the version history hack we use for resolving content
 // from the archive does work with the Java method Guillotine uses for resolving page templates
@@ -53,7 +54,7 @@ const getPreArchivedVersions = (contentId: string, repoId: string) => {
     }).filter((version) => version.nodePath.startsWith('/content'));
 };
 
-export const getMostRecentLiveContent = (idOrArchivedPath: string, repoId: string) => {
+export const getPreArchiveContent = (idOrArchivedPath: string, repoId: string, time?: string) => {
     const contentRef = getArchivedContentRef(idOrArchivedPath);
 
     const repoConnection = getRepoConnection({ branch: 'draft', repoId });
@@ -66,46 +67,54 @@ export const getMostRecentLiveContent = (idOrArchivedPath: string, repoId: strin
 
     const preArchivedVersions = getPreArchivedVersions(archivedNode._id, repoId);
 
-    const mostRecentLiveVersion = preArchivedVersions[0];
-    if (!mostRecentLiveVersion) {
-        logger.info(`No live versions found for content - ${contentRef} in repo ${repoId}`);
-        return null;
-    }
-
-    const mostRecentLiveContent = contentLib.get({
-        key: mostRecentLiveVersion.nodeId,
-        versionId: mostRecentLiveVersion.versionId,
-    });
-    if (!mostRecentLiveContent) {
+    const requestedVersion = time
+        ? getVersionFromTime({
+              nodeKey: contentRef,
+              unixTime: getUnixTimeFromDateTimeString(time),
+              repoId,
+              branch: 'draft',
+              getOldestIfNotFound: false,
+          })
+        : preArchivedVersions[0];
+    if (!requestedVersion) {
         logger.info(
-            `Could not retrieve version content - ${mostRecentLiveVersion.nodeId} / ${mostRecentLiveVersion.versionId} in repo ${repoId}`
+            `No live version found for content - ${contentRef} in repo ${repoId} (time: ${time})`
         );
         return null;
     }
 
-    const content = runInTimeTravelContext(
+    const requestedContent = contentLib.get({
+        key: requestedVersion.nodeId,
+        versionId: requestedVersion.versionId,
+    });
+    if (!requestedContent) {
+        logger.info(
+            `Could not retrieve version content - ${requestedVersion.nodeId} / ${requestedVersion.versionId} in repo ${repoId}`
+        );
+        return null;
+    }
+
+    return runInTimeTravelContext(
         {
-            dateTime: mostRecentLiveContent.modifiedTime,
+            baseContentKey: requestedVersion.nodeId,
+            dateTime: requestedContent.modifiedTime,
             branch: 'draft',
-            baseContentKey: mostRecentLiveVersion.nodeId,
         },
         () => {
-            const content = runSitecontentGuillotineQuery(mostRecentLiveContent, 'draft');
+            const content = runSitecontentGuillotineQuery(requestedContent, 'draft');
             if (!content) {
                 logger.info(`No result from guillotine query - ${contentRef} in repo ${repoId}`);
                 return null;
             }
 
-            return content;
+            return {
+                ...content,
+                page: getPage(content),
+                versionTimestamps: preArchivedVersions.map((version) => version.timestamp),
+                livePath: archivedNode._path,
+            };
         }
     );
-
-    return {
-        ...content,
-        page: getPage(content),
-        versionTimestamps: preArchivedVersions.map((version) => version.timestamp),
-        livePath: archivedNode._path,
-    };
 };
 
 export const get = (req: XP.Request) => {
@@ -119,7 +128,7 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const { id: isOrArchivedPath, locale } = req.params;
+    const { id: isOrArchivedPath, locale, time } = req.params;
     if (!isOrArchivedPath) {
         return {
             status: 400,
@@ -134,7 +143,7 @@ export const get = (req: XP.Request) => {
     const repoId = localeToRepoIdMap[locale || defaultLocale];
 
     try {
-        const content = getMostRecentLiveContent(isOrArchivedPath, repoId);
+        const content = getPreArchiveContent(isOrArchivedPath, repoId, time);
 
         if (!content) {
             const msg = `${SITECONTENT_404_MSG_PREFIX} in archive: ${isOrArchivedPath}`;

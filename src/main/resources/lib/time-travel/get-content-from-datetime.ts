@@ -13,14 +13,14 @@ import { CONTENT_ROOT_REPO_ID } from '../constants';
 export const getContentVersionFromDateTime = (
     contentRef: string,
     branch: RepoBranch,
-    dateTime: string
+    dateTime: string,
+    repoId = CONTENT_ROOT_REPO_ID
 ): Content | null => {
-    const repoConnection = getRepoConnection({ repoId: CONTENT_ROOT_REPO_ID, branch });
+    const repoConnection = getRepoConnection({ repoId, branch });
 
-    const contentCurrent = repoConnection.get(contentRef);
-
-    if (!contentCurrent) {
-        logger.info(`Not found - ${contentRef}`);
+    const activeContent = repoConnection.get(contentRef);
+    if (!activeContent) {
+        logger.info(`No active content found - ${contentRef} in repo ${repoId}`);
         return null;
     }
 
@@ -45,7 +45,7 @@ export const getContentVersionFromDateTime = (
             return {
                 ...content,
                 versionTimestamps: getPublishedVersionTimestamps(content._id),
-                livePath: contentCurrent._path,
+                livePath: activeContent._path,
             };
         });
     } catch (e) {
