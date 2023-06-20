@@ -1,4 +1,4 @@
-import { Content } from '/lib/xp/content';
+import { NodeContent } from '/lib/xp/node';
 import * as contentLib from '/lib/xp/content';
 import { getLayersData } from '../../lib/localization/layers-data';
 import { logger } from '../../lib/utils/logging';
@@ -16,9 +16,13 @@ import { getUnixTimeFromDateTimeString } from '../../lib/utils/datetime-utils';
 
 // We need to find page templates ourselves, as the version history hack we use for resolving content
 // from the archive does work with the Java method Guillotine uses for resolving page templates
-const getPage = (content: Content) => {
-    // If the content has its own populated page object, it should not need a page template
-    if (content.page && Object.keys(content.page).length > 0) {
+const getPage = (content: NodeContent<any>) => {
+    if (!content.page) {
+        return {};
+    }
+
+    // If the content has its own customized page, it should not need a page template
+    if (content.page.customized) {
         return content.page;
     }
 
