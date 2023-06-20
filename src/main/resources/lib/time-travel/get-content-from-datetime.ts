@@ -30,14 +30,16 @@ export const getContentVersionFromDateTime = (
                 contentLib.get({ key: contentRef })
             );
             if (!contentFromDateTime) {
-                logger.info(`Not found 2 - ${contentRef} ${dateTime}`);
+                logger.info(
+                    `No content found for requested timestamp - ${contentRef} in repo ${repoId} (time: ${dateTime})`
+                );
                 return null;
             }
 
             const content = runSitecontentGuillotineQuery(contentFromDateTime, 'draft');
             if (!content) {
                 logger.info(
-                    `Not found 3 - ${contentRef} ${dateTime} ${JSON.stringify(contentFromDateTime)}`
+                    `No content resolved through Guillotine for requested timestamp - ${contentRef} in repo ${repoId} (time: ${dateTime})`
                 );
                 return null;
             }
