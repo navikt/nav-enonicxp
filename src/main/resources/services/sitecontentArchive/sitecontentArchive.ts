@@ -48,6 +48,8 @@ const getPageTemplate = (content: NodeContent<Content<CustomContentDescriptor>>)
         return null;
     }
 
+    logger.info(`Found template: ${JSON.stringify(guillotineTemplate)}`);
+
     return guillotineTemplate.page;
 };
 
