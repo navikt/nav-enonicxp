@@ -61,3 +61,8 @@ export const REDIRECTS_ROOT_PATH = `${NAVNO_ROOT_PATH}/redirects`;
 export const FRONTEND_APP_NAME = 'nav-enonicxp-frontend';
 export const CONTENT_STUDIO_EDIT_PATH_PREFIX =
     '/admin/tool/com.enonic.app.contentstudio/main/default/edit';
+
+// This message is used by the frontend to differentiate between
+// 404 returned from a sitecontent service and general 404 from the server
+// Don't change it without also changing the implementation in the frontend!
+export const SITECONTENT_404_MSG_PREFIX = 'Site path not found';

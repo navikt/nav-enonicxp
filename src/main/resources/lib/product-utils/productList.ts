@@ -281,8 +281,11 @@ export const getProductDataForOverviewPage = (
         }, [])
         .sort(sortFunc);
 
-    return removeDuplicates(
-        productDataList,
-        (a, b) => a.sortTitle === b.sortTitle && a.productDetailsPath === b.productDetailsPath
-    );
+    // Check for duplicates in other languages than no
+    return language === 'no' ?
+        productDataList :
+        removeDuplicates(
+            productDataList,
+            (a, b) => a.productDetailsPath === b.productDetailsPath
+        );
 };

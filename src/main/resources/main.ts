@@ -40,9 +40,15 @@ if (clusterLib.isMaster()) {
     log.info('Running master only init scripts');
     initSearchRepo();
     startFailsafeSchedule();
-    generateSitemapDataAndActivateSchedule();
     startOfficeInfoPeriodicUpdateSchedule();
     createOfficeBranchFetchSchedule();
+
+    // This is somewhat annoying for local development, as it will run a fairly heavy task and spam
+    // the logs when generating the sitemap. This happens on every redeploy of the app :)
+    // Uncomment if you need to test sitemap generation locally
+    if (app.config.env !== 'localhost') {
+        generateSitemapDataAndActivateSchedule();
+    }
 }
 
 log.info('Finished running main');

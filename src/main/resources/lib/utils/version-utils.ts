@@ -1,5 +1,4 @@
 import * as contextLib from '/lib/xp/context';
-import { Content } from '/lib/xp/content';
 import { getRepoConnection } from './repo-utils';
 import { NodeVersionMetadata } from '/lib/xp/node';
 import { RepoBranch } from '../../types/common';
@@ -7,8 +6,6 @@ import { nodeLibConnectStandard } from '../time-travel/standard-functions';
 import { logger } from './logging';
 import { getUnixTimeFromDateTimeString } from './datetime-utils';
 import { contentTypesWithCustomEditor } from '../contenttype-lists';
-import { COMPONENT_APP_KEY } from '../constants';
-import { LayerMigration } from '../../site/x-data/layerMigration/layerMigration';
 
 const MAX_VERSIONS_COUNT_TO_RETRIEVE = 1000;
 
@@ -20,53 +17,6 @@ type GetNodeVersionsParams = {
     repoId: string;
     branch: RepoBranch;
     modifiedOnly?: boolean;
-};
-
-const getMigratedNodeVersions = (params: GetNodeVersionsParams) => {
-    const { nodeKey, repoId, branch, modifiedOnly = false } = params;
-
-    const repo = getRepoConnection({ repoId, branch });
-
-    const contentNode = repo.get<Content>(nodeKey);
-    if (!contentNode) {
-        logger.info(`Content not found: ${nodeKey}`);
-        return [];
-    }
-
-    const currentVersions = getNodeVersions(params);
-
-    const layerMigration = contentNode.x?.[COMPONENT_APP_KEY]?.layerMigration as LayerMigration;
-
-    if (!layerMigration || layerMigration.targetReferenceType === 'archived') {
-        return currentVersions;
-    }
-
-    const {
-        contentId: archivedContentId,
-        repoId: archivedLayerId,
-        ts: migrationTs,
-    } = layerMigration;
-
-    const archivedVersions = getNodeVersions({
-        nodeKey: archivedContentId,
-        repoId: archivedLayerId,
-        branch: 'master',
-        modifiedOnly,
-    });
-
-    logger.info(
-        `Live versions of ${contentNode._path} (${nodeKey}): ${JSON.stringify(currentVersions)}`
-    );
-    logger.info(
-        `Archived versions of ${contentNode._path} (${archivedContentId}): ${JSON.stringify(
-            archivedVersions
-        )}`
-    );
-
-    return [
-        ...currentVersions.filter((version) => version.timestamp > migrationTs),
-        ...archivedVersions.filter((version) => version.timestamp <= migrationTs),
-    ];
 };
 
 export const getNodeVersions = ({
@@ -173,7 +123,7 @@ const shouldGetModifiedTimestampsOnly = (contentRef: string, repoId: string) => 
 export const getPublishedVersionTimestamps = (contentRef: string) => {
     const { repository } = contextLib.get();
 
-    const versions = getMigratedNodeVersions({
+    const versions = getNodeVersions({
         nodeKey: getNodeKey(contentRef),
         branch: 'master',
         repoId: repository,

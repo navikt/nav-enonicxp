@@ -4,7 +4,8 @@ import { logger } from '../utils/logging';
 import { getLocaleFromRepoId } from '../localization/layers-data';
 import { stripPathPrefix } from '../paths/path-utils';
 
-const loopbackCheckParam = 'fromXp';
+// Used for checking if a request to the frontend looped back to this controller
+const LOOPBACK_PARAM = 'fromXp';
 
 const errorResponse = (url: string, status: number, message: string) => {
     const msg = `Failed to fetch from frontend: ${url} - ${status}: ${message}`;
@@ -28,7 +29,18 @@ const healthCheckDummyResponse = () => {
     };
 };
 
-// Proxy requests to XP to the frontend. Normally this will only be used in the portal-admin
+const getFrontendUrl = (req: XP.Request, path?: string) => {
+    const frontendPath = path || stripPathPrefix(req.rawPath.split(req.branch)[1] || '');
+
+    // Archive requests have their own routing under the /archive path segment
+    if (frontendPath.startsWith('/archive')) {
+        return `${URLS.FRONTEND_ORIGIN}${frontendPath}`;
+    }
+
+    return `${URLS.FRONTEND_ORIGIN}${req.branch === 'draft' ? '/draft' : ''}${frontendPath}`;
+};
+
+// Proxy requests to the frontend application. Normally this will only be used in the portal-admin
 // content studio previews and from the error controller
 export const frontendProxy = (req: XP.Request, path?: string) => {
     if (req.method === 'HEAD') {
@@ -37,7 +49,7 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
         };
     }
 
-    const isLoopback = req.params[loopbackCheckParam];
+    const isLoopback = req.params[LOOPBACK_PARAM];
     if (isLoopback) {
         logger.warning(`Loopback to XP detected from path ${req.rawPath}`);
         return {
@@ -54,11 +66,7 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
         return healthCheckDummyResponse();
     }
 
-    const pathStartIndex = req.rawPath.indexOf(req.branch) + req.branch.length;
-    const contentPath = path || stripPathPrefix(req.rawPath.slice(pathStartIndex));
-    const frontendUrl = `${
-        req.branch === 'draft' ? `${URLS.FRONTEND_ORIGIN}/draft` : URLS.FRONTEND_ORIGIN
-    }${contentPath}`;
+    const frontendUrl = getFrontendUrl(req, path);
 
     try {
         const response = httpClient.request({
@@ -71,7 +79,7 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
             followRedirects: false,
             queryParams: {
                 ...req.params,
-                [loopbackCheckParam]: 'true',
+                [LOOPBACK_PARAM]: 'true',
                 mode: req.mode,
                 locale: getLocaleFromRepoId(req.repositoryId),
             },

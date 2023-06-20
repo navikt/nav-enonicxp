@@ -7,6 +7,7 @@ import { userIsAuthenticated, validateServiceSecretHeader } from '../../lib/util
 import { publishedVersionsReqHandler } from './publishedVersions/publisedVersions';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { getLayersData } from '../../lib/localization/layers-data';
+import { SITECONTENT_404_MSG_PREFIX } from '../../lib/constants';
 
 const isValidTime = (time?: string): time is string => {
     try {
@@ -57,7 +58,7 @@ const sitecontentVersionsReqHandler = (req: XP.Request) => {
         );
 
         if (!content) {
-            const msg = `Content version not found: ${id} - ${time}`;
+            const msg = `${SITECONTENT_404_MSG_PREFIX}: ${id} - ${time}`;
             logger.info(msg);
 
             return {
