@@ -14,6 +14,7 @@ import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-
 import { isUUID } from '../../lib/utils/uuid';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
 import { getUnixTimeFromDateTimeString } from '../../lib/utils/datetime-utils';
+import { runInContext } from '../../lib/context/run-in-context';
 
 // We need to find page templates ourselves, as the version history hack we use for resolving content
 // from the archive does not work with the Java method Guillotine uses for resolving page templates
@@ -156,7 +157,9 @@ export const get = (req: XP.Request) => {
     const repoId = localeToRepoIdMap[locale || defaultLocale];
 
     try {
-        const content = getPreArchiveContent(idOrArchivedPath, repoId, time);
+        const content = runInContext({ asAdmin: true }, () =>
+            getPreArchiveContent(idOrArchivedPath, repoId, time)
+        );
 
         if (!content) {
             const msg = `${SITECONTENT_404_MSG_PREFIX} in archive: ${idOrArchivedPath}`;
