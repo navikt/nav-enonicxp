@@ -3,6 +3,7 @@
 fragment pageComponents on PageComponentData {
     descriptor
     configAsJson
+    customized
     config {
         no_nav_navno {
             page_with_side_menus {

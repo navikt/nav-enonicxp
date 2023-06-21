@@ -1,4 +1,5 @@
 import { Content } from '/lib/xp/content';
+import { NodeContent } from '/lib/xp/node';
 import * as contentLib from '/lib/xp/content';
 import { getLayersData } from '../../lib/localization/layers-data';
 import { logger } from '../../lib/utils/logging';
@@ -13,13 +14,14 @@ import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-
 import { isUUID } from '../../lib/utils/uuid';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
 import { getUnixTimeFromDateTimeString } from '../../lib/utils/datetime-utils';
+import { runInContext } from '../../lib/context/run-in-context';
 
 // We need to find page templates ourselves, as the version history hack we use for resolving content
-// from the archive does work with the Java method Guillotine uses for resolving page templates
-const getPage = (content: Content) => {
-    // If the content has its own populated page object, it should not need a page template
-    if (content.page && Object.keys(content.page).length > 0) {
-        return content.page;
+// from the archive does not work with the Java method Guillotine uses for resolving page templates
+const getPageTemplate = (content: NodeContent<Content<CustomContentDescriptor>>) => {
+    // If the content has its own customized page component, it should not need a page template
+    if (content.page?.customized) {
+        return null;
     }
 
     const pageTemplates = contentLib.getChildren({
@@ -32,17 +34,20 @@ const getPage = (content: Content) => {
             return false;
         }
 
-        return forceArray(template.data.supports).includes(content.type as CustomContentDescriptor);
+        return forceArray(template.data.supports).includes(content.type);
     });
-
-    if (supportedTemplate) {
-        const guillotineTemplate = runSitecontentGuillotineQuery(supportedTemplate, 'master');
-        if (guillotineTemplate) {
-            return guillotineTemplate.page;
-        }
+    if (!supportedTemplate) {
+        logger.info(`No supported template found for ${content.type}`);
+        return null;
     }
 
-    return {};
+    const guillotineTemplate = runSitecontentGuillotineQuery(supportedTemplate, 'master');
+    if (!guillotineTemplate) {
+        logger.info(`Could not resolve template: ${supportedTemplate._id}`);
+        return supportedTemplate.page;
+    }
+
+    return guillotineTemplate.page;
 };
 
 const getArchivedContentRef = (idOrArchivedPath: string) => {
@@ -101,27 +106,28 @@ export const getPreArchiveContent = (idOrArchivedPath: string, repoId: string, t
         return null;
     }
 
-    return runInTimeTravelContext(
+    const content = runInTimeTravelContext(
         {
             baseContentKey: requestedVersion.nodeId,
             dateTime: requestedContent.modifiedTime,
             branch: 'draft',
         },
         () => {
-            const content = runSitecontentGuillotineQuery(requestedContent, 'draft');
-            if (!content) {
-                logger.info(`No result from guillotine query - ${contentRef} in repo ${repoId}`);
-                return null;
-            }
-
-            return {
-                ...content,
-                page: getPage(content),
-                versionTimestamps: preArchivedVersions.map((version) => version.timestamp),
-                livePath: archivedNode._path,
-            };
+            return runSitecontentGuillotineQuery(requestedContent, 'draft');
         }
     );
+
+    if (!content) {
+        logger.info(`No result from guillotine query - ${contentRef} in repo ${repoId}`);
+        return null;
+    }
+
+    return {
+        ...content,
+        page: getPageTemplate(content) || content.page,
+        versionTimestamps: preArchivedVersions.map((version) => version.timestamp),
+        livePath: archivedNode._path,
+    };
 };
 
 export const get = (req: XP.Request) => {
@@ -150,7 +156,9 @@ export const get = (req: XP.Request) => {
     const repoId = localeToRepoIdMap[locale || defaultLocale];
 
     try {
-        const content = getPreArchiveContent(idOrArchivedPath, repoId, time);
+        const content = runInContext({ asAdmin: true }, () =>
+            getPreArchiveContent(idOrArchivedPath, repoId, time)
+        );
 
         if (!content) {
             const msg = `${SITECONTENT_404_MSG_PREFIX} in archive: ${idOrArchivedPath}`;
