@@ -20,15 +20,19 @@ const getAllFormDetailIds = () => {
     return formDetails.hits.map((hit) => hit._id);
 };
 
-const getFormDetailContent = (formDetailIds: string[]) => {
+const getFormDetailContent = (formDetailIds: string[], query: string) => {
     const formDetails = contentLib.query({
-        count: 100,
+        ...(query && { query: `displayName LIKE "*${query}*"` }),
+        count: 2000,
         filters: {
             ids: {
                 values: formDetailIds,
             },
         },
     });
+
+    log.info(query);
+    log.info(formDetails.hits.length);
 
     return formDetails.hits.map((hit) =>
         customSelectorHitWithLink(
@@ -66,9 +70,10 @@ const getPreselectedFormIds = () => {
     return forceArray(data.formDetailsTargets);
 };
 
-export const get = () => {
+export const get = ({ params }: any) => {
+    const { query = '' } = params;
     const selectableFormIds = getPreselectedFormIds();
-    const formDetails = getFormDetailContent(selectableFormIds);
+    const formDetails = getFormDetailContent(selectableFormIds, query);
 
     return {
         status: 200,
