@@ -2,15 +2,35 @@
     <display-name>Produktdetaljer</display-name>
     <description>Viser valgt produktdetaljer som en del av produktsiden</description>
     <form>
-        <input name="detailType" type="RadioButton">
-            <label>Velg produktdetalj</label>
-            <occurrences minimum="1" maximum="1"/>
-            <config>
-                <option value="processing_times">Saksbehandlingstider</option>
-                <option value="payout_dates">Utbetalingsdatoer</option>
-                <option value="rates">Satser</option>
-            </config>
-        </input>
+        <field-set>
+            <label>Type produktdetalj</label>
+            <items>
+                <input name="detailType" type="RadioButton">
+                    <label>Velg type produktdetalj</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <option value="processing_times">Saksbehandlingstider</option>
+                        <option value="payout_dates">Utbetalingsdatoer</option>
+                        <option value="rates">Satser</option>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Visningsinnstillinger</label>
+            <items>
+                <input name="processingTimesVisibility" type="ComboBox">
+                    <label>For visning av saksbehandlingstider</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <option value="all">Vis begge</option>  
+                        <option value="application">Vis bare søknad</option>
+                        <option value="complaint">Vis bare klage</option>
+                    </config>
+                    <default>all</default>  
+                </input>
+            </items>
+        </field-set>
         <mixin name="expandable"/>
         <mixin name="filter-selector"/>
         <mixin name="auth-render-option"/>

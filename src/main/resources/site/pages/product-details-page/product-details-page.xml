@@ -5,6 +5,7 @@
     <regions>
         <region name="intro"/>
         <region name="main"/>
+        <region name="main_complaint"/>
         <region name="outro"/>
     </regions>
 </page>

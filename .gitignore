@@ -30,6 +30,7 @@ Temporary Items
 .gradle
 gradle.properties
 build/
+bin/
 
 # Ignore Gradle GUI config
 gradle-app.setting
