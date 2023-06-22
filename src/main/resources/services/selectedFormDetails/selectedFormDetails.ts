@@ -23,16 +23,13 @@ const getAllFormDetailIds = () => {
 const getFormDetailContent = (formDetailIds: string[], query: string) => {
     const formDetails = contentLib.query({
         ...(query && { query: `displayName LIKE "*${query}*"` }),
-        count: 2000,
+        count: 100,
         filters: {
             ids: {
                 values: formDetailIds,
             },
         },
     });
-
-    log.info(query);
-    log.info(formDetails.hits.length);
 
     return formDetails.hits.map((hit) =>
         customSelectorHitWithLink(
