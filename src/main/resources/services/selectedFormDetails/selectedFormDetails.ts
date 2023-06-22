@@ -11,8 +11,18 @@ const iconData = `\
 \
 `;
 
-const getFormDetailContent = (formDetailIds: string[]) => {
+const getAllFormDetailIds = () => {
     const formDetails = contentLib.query({
+        count: 5000,
+        contentTypes: ['no.nav.navno:form-details'],
+    });
+
+    return formDetails.hits.map((hit) => hit._id);
+};
+
+const getFormDetailContent = (formDetailIds: string[], query: string) => {
+    const formDetails = contentLib.query({
+        ...(query && { query: `displayName LIKE "*${query}*"` }),
         count: 100,
         filters: {
             ids: {
@@ -39,6 +49,9 @@ const getPreselectedFormIds = () => {
     if (!currentContent) {
         return [];
     }
+    if (currentContent.type === 'portal:fragment') {
+        return getAllFormDetailIds();
+    }
 
     if (
         !(
@@ -54,9 +67,10 @@ const getPreselectedFormIds = () => {
     return forceArray(data.formDetailsTargets);
 };
 
-export const get = () => {
+export const get = ({ params }: any) => {
+    const { query = '' } = params;
     const selectableFormIds = getPreselectedFormIds();
-    const formDetails = getFormDetailContent(selectableFormIds);
+    const formDetails = getFormDetailContent(selectableFormIds, query);
 
     return {
         status: 200,
