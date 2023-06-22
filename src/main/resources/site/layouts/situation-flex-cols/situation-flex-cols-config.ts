@@ -23,33 +23,33 @@ export interface SituationFlexColsConfig {
   /**
    * For varehylle
    */
-  productShelf?:
+  shelf?:
     | {
         /**
          * Selected
          */
-        _selected: "produkter";
+        _selected: "products";
 
         /**
          * Produkter
          */
-        produkter: {
+        products: {
           /**
            * Prioritering
            */
-          priority?: "priority1" | "priority2" | "priority3";
+          priority?: "primary" | "secondary" | "tertiary";
         };
       }
     | {
         /**
          * Selected
          */
-        _selected: "samarbeidspartner";
+        _selected: "providers";
 
         /**
          * Samarbeidspartner
          */
-        samarbeidspartner: Record<string, unknown>;
+        providers: Record<string, unknown>;
       };
 
   /**
