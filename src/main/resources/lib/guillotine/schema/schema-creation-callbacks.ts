@@ -71,7 +71,7 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     Part_no_nav_navno_dynamic_news_list_ContentList: contentListCallback(
         'target',
         'numLinks',
-        'publish.first'
+        'publish.from'
     ),
     Part_no_nav_navno_dynamic_link_list_ContentList: contentListCallback('target', 'numLinks'),
     Part_no_nav_navno_contact_option_Chat: partContactOptionChatCallback,
