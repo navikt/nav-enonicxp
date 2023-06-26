@@ -41,6 +41,7 @@ import { microCardTargetPageCallback } from './schema-creation-callbacks/microca
 import { createOpeningHoursFields } from './schema-creation-callbacks/common/opening-hours-mixin';
 import { formsOverviewDataCallback } from './schema-creation-callbacks/forms-overview-data-callback';
 import { audienceCallback } from './schema-creation-callbacks/common/audience-mixin';
+import { pressLandingPageDataCallback } from './schema-creation-callbacks/press-landing-page-data';
 
 export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     Attachment: attachmentCallback,
@@ -65,6 +66,7 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     no_nav_navno_GlobalValueSet: globalValueSetCallback,
     no_nav_navno_GlobalCaseTimeSet: globalCaseTimeSetCallback,
     no_nav_navno_Calculator_GlobalValue: globalValueCalculatorConfigCallback,
+    no_nav_navno_PressLandingPage_Data: pressLandingPageDataCallback,
     Part_no_nav_navno_areapage_situation_card: areapageSituationCardPartCallback,
     Part_no_nav_navno_dynamic_news_list_ContentList: contentListCallback(
         'target',
@@ -95,7 +97,6 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     no_nav_navno_GenericPage_Audience: audienceCallback,
     no_nav_navno_ContentPageWithSidemenus_Audience: audienceCallback,
     no_nav_navno_ThemedArticlePage_Audience: audienceCallback,
-    no_nav_navno_PressLandingPage_Audience: audienceCallback,
     no_nav_navno_ToolsPage_Audience: audienceCallback,
     no_nav_navno_GuidePage_Audience: audienceCallback,
 };
