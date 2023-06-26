@@ -22,7 +22,7 @@ type newsItem = {
 const handleGet = () => {
     // Get the IDs to relevant content from given content-lists
     const listIDs = contentLists
-        .map((key) => getContentList(key, 3, 'publish.first'))
+        .map((key) => getContentList(key, 3, 'publish.from'))
         .filter(notNullOrUndefined);
     // Create the rssFeed based on content IDs
     const rssFeed: newsItem[] = [];
@@ -34,7 +34,7 @@ const handleGet = () => {
                 rssFeed.push({
                     title: content.displayName,
                     url: `https://www.nav.no${stripPathPrefix(content._path)}`,
-                    date: content?.publish?.first,
+                    date: content?.publish?.from,
                     description: content?.data?.ingress,
                 });
             }

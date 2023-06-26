@@ -5,7 +5,7 @@ export const sectionPageDataCallback: CreationCallback = (context, params) => {
     params.fields.newsContents.resolve = contentListResolver(
         'newsContents',
         'nrNews',
-        'publish.first'
+        'publish.from'
     );
     params.fields.ntkContents.resolve = contentListResolver('ntkContents', 'nrNTK');
     params.fields.scContents.resolve = contentListResolver('scContents', 'nrSC');
