@@ -97,7 +97,6 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     no_nav_navno_GenericPage_Audience: audienceCallback,
     no_nav_navno_ContentPageWithSidemenus_Audience: audienceCallback,
     no_nav_navno_ThemedArticlePage_Audience: audienceCallback,
-    no_nav_navno_PressLandingPage_Audience: audienceCallback,
     no_nav_navno_ToolsPage_Audience: audienceCallback,
     no_nav_navno_GuidePage_Audience: audienceCallback,
 };
