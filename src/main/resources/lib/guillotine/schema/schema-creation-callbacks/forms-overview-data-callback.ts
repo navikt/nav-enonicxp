@@ -24,7 +24,7 @@ type FormDetailsListItem = {
     formDetailsTitles: string[];
     formNumbers: string[];
     keywords: string[];
-    url: string;
+    url: string | null;
     type: ContentTypeWithFormDetails;
 } & Required<IncludedProductData>;
 
@@ -45,6 +45,18 @@ const contentTypesWithFormDetails = [
     'no.nav.navno:content-page-with-sidemenus',
     'no.nav.navno:guide-page',
 ] as const;
+
+const getUrl = (content: ContentWithFormDetails) => {
+    const { externalProductUrl } = content.data;
+
+    if (externalProductUrl) {
+        // Temporary workaround for hiding the product link in the form details panel
+        // by setting the external url to the nav.no origin
+        return externalProductUrl === 'https://www.nav.no' ? null : externalProductUrl;
+    }
+
+    return getPublicPath(content, content.language);
+};
 
 const transformToListItem = (
     content: ContentWithFormDetails,
@@ -68,14 +80,12 @@ const transformToListItem = (
     const title = content.data.title || content.displayName;
     const sortTitle = content.data.sortTitle || title;
 
-    const url = content.data.externalProductUrl || getPublicPath(content, content.language);
-
     return {
         title,
         sortTitle,
         ingress: content.data.ingress,
         keywords: forceArray(content.data.keywords),
-        url,
+        url: getUrl(content),
         type: content.type,
         anchorId: sanitize(sortTitle),
         illustration: content.data.illustration,
