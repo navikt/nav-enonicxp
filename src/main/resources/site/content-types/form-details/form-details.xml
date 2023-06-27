@@ -15,6 +15,7 @@
                 </input>
                 <input name="title" type="TextLine">
                     <label>Tittel</label>
+                    <occurrences minimum="1" maximum="1"/>
                 </input>
                 <input name="ingress" type="HtmlArea">
                     <label>Ingress</label>
@@ -22,7 +23,9 @@
                 <option-set name="formType">
                     <label>Variasjoner</label>
                     <occurrences minimum="1" maximum="0"/>
-                    <help-text>Velg hva slags type variasjon du vil lage - søknad, klage eller ettersendelse. For kun redaksjonell tekst kan du la være å fylle inn felter for søknadsvariasjonen.</help-text>
+                    <help-text>Velg hva slags type variasjon du vil lage - søknad, klage eller ettersendelse. For kun
+                        redaksjonell tekst kan du la være å fylle inn felter for søknadsvariasjonen.
+                    </help-text>
                     <options minimum="1" maximum="1">
                         <option name="application">
                             <label>Søknad / skjema</label>
@@ -55,12 +58,12 @@
                                         <mixin name="form-details-link"/>
                                         <input type="ComboBox" name="type">
                                             <label>Klage- eller anketype</label>
-                                            <occurrences minimum="1" maximum="1"/> 
+                                            <occurrences minimum="1" maximum="1"/>
                                             <config>
-                                                <option value="complaint"> 
+                                                <option value="complaint">
                                                     Klage
                                                 </option>
-                                                <option value="appeal"> 
+                                                <option value="appeal">
                                                     Anke
                                                 </option>
                                             </config>
