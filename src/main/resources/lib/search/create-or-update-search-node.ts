@@ -1,4 +1,5 @@
 import { RepoConnection, RepoNode } from '/lib/xp/node';
+import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { ContentFacet, SearchNode, SearchNodeCreateParams } from '../../types/search';
 import { logger } from '../utils/logging';
@@ -18,14 +19,49 @@ import { forceArray } from '../utils/array-utils';
 const SEARCH_REPO_CONTENT_PARENT_PATH = `/${SEARCH_REPO_CONTENT_BASE_NODE}`;
 
 const getHref = (content: Content, locale: string) => {
-    if (
-        content.type === 'navno.nav.no.search:search-api2' ||
-        content.type === 'no.nav.navno:external-link'
-    ) {
-        return content.data.url;
-    }
+    switch (content.type) {
+        case 'navno.nav.no.search:search-api2':
+        case 'no.nav.navno:external-link': {
+            return content.data.url;
+        }
+        case 'no.nav.navno:form-details': {
+            const application = forceArray(content.data?.formType).find(
+                (formType) => formType._selected === 'application'
+            );
+            if (!application || application._selected !== 'application') {
+                return null;
+            }
 
-    return `${URLS.FRONTEND_ORIGIN}${getPublicPath(content, locale)}`;
+            const variation = forceArray(application.application?.variations)[0];
+            if (!variation) {
+                return null;
+            }
+
+            const selectedLink = variation.link?._selected;
+            if (!selectedLink) {
+                return null;
+            }
+
+            if (selectedLink === 'external') {
+                return variation.link.external?.url;
+            }
+
+            const targetContentId = variation.link.internal?.target;
+            if (!targetContentId) {
+                return null;
+            }
+
+            const targetContent = contentLib.get({ key: targetContentId });
+            if (!targetContent) {
+                return null;
+            }
+
+            return `${URLS.FRONTEND_ORIGIN}${getPublicPath(targetContent, locale)}`;
+        }
+        default: {
+            return `${URLS.FRONTEND_ORIGIN}${getPublicPath(content, locale)}`;
+        }
+    }
 };
 
 // Note: datetimes must be provided as Date-objects with a format accepted by Nashorn
@@ -34,7 +70,13 @@ const transformContentToSearchNodeParams = (
     contentNode: RepoNode<Content>,
     facets: ContentFacet[],
     locale: string
-): SearchNodeCreateParams => {
+): SearchNodeCreateParams | null => {
+    const href = getHref(contentNode, locale);
+
+    if (!href) {
+        return null;
+    }
+
     const { createdTime, modifiedTime, publish, ...rest } = contentNode;
 
     // Add a uuid to prevent name collisions
@@ -45,7 +87,7 @@ const transformContentToSearchNodeParams = (
         facets: facets,
         contentId: contentNode._id,
         contentPath: contentNode._path,
-        href: getHref(contentNode, locale),
+        href,
         layerLocale: locale,
         _name: name,
         _parentPath: SEARCH_REPO_CONTENT_PARENT_PATH,
@@ -130,6 +172,13 @@ export const createOrUpdateSearchNode = ({
     }
 
     const searchNodeParams = transformContentToSearchNodeParams(contentNode, facets, locale);
+    if (!searchNodeParams) {
+        logger.error(`Could not create search node for ${contentNode._id} ${locale}`);
+        existingSearchNodes.forEach((node) => {
+            deleteSearchNode(node._id, searchRepoConnection);
+        });
+        return { didUpdate: existingSearchNodes.length > 0 };
+    }
 
     const { contentPath, contentId } = searchNodeParams;
 
