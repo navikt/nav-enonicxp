@@ -70,7 +70,7 @@ const getOverviewReferences = (content: Content) => {
 
     const selectedAudience = getAudience(data.audience);
 
-    const relavantOverviewPages = contentLib.query({
+    const relevantOverviewPages = contentLib.query({
         start: 0,
         count: 1000,
         contentTypes: ['no.nav.navno:overview', 'no.nav.navno:forms-overview'],
@@ -102,9 +102,9 @@ const getOverviewReferences = (content: Content) => {
         },
     }).hits;
 
-    logger.info(`Found ${relavantOverviewPages.length} relevant overview pages`);
+    logger.info(`Found ${relevantOverviewPages.length} relevant overview pages`);
 
-    return relavantOverviewPages;
+    return relevantOverviewPages;
 };
 
 const getFormDetailsReferences = (content: Content) => {
@@ -112,7 +112,7 @@ const getFormDetailsReferences = (content: Content) => {
         return [];
     }
 
-    const relavantFormsOverviewPages = contentLib.query({
+    const relevantFormsOverviewPages = contentLib.query({
         start: 0,
         count: 1000,
         contentTypes: ['no.nav.navno:forms-overview'],
@@ -130,9 +130,9 @@ const getFormDetailsReferences = (content: Content) => {
         },
     }).hits;
 
-    logger.info(`Found ${relavantFormsOverviewPages.length} relevant forms overview pages`);
+    logger.info(`Found ${relevantFormsOverviewPages.length} relevant forms overview pages`);
 
-    return relavantFormsOverviewPages;
+    return relevantFormsOverviewPages;
 };
 
 // Product details are selected with a custom selector, and does not generate explicit references
