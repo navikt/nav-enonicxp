@@ -10,6 +10,7 @@ import { FormsOverview } from '../../../../site/content-types/forms-overview/for
 import { getPublicPath } from '../../../paths/public-path';
 import { FormDetailsSelector } from '../../../../site/mixins/form-details-selector/form-details-selector';
 import { ContentPageWithSidemenus } from '../../../../site/content-types/content-page-with-sidemenus/content-page-with-sidemenus';
+import striptags from '/assets/striptags/3.1.1/src/striptags';
 
 type ProductData = ContentPageWithSidemenus;
 
@@ -94,8 +95,8 @@ const transformToListItem = (
         taxonomy: forceArray(content.data.taxonomy),
         formDetailsPaths: formDetailsContents.map((formDetails) => formDetails._path),
         formDetailsTitles: formDetailsContents.map((formDetails) => formDetails.data.title || ''),
-        formDetailsIngresses: formDetailsContents.map(
-            (formDetails) => formDetails.data.ingress || ''
+        formDetailsIngresses: formDetailsContents.map((formDetails) =>
+            striptags(formDetails.data.ingress || '')
         ),
         formNumbers: formDetailsContents
             .map((formDetails) => forceArray(formDetails.data.formNumbers))
