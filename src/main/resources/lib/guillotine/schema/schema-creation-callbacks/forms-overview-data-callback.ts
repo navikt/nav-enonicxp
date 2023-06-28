@@ -22,6 +22,7 @@ type FormDetailsListItem = {
     anchorId: string;
     formDetailsPaths: string[];
     formDetailsTitles: string[];
+    formDetailsIngresses: string[];
     formNumbers: string[];
     keywords: string[];
     url: string | null;
@@ -93,6 +94,9 @@ const transformToListItem = (
         taxonomy: forceArray(content.data.taxonomy),
         formDetailsPaths: formDetailsContents.map((formDetails) => formDetails._path),
         formDetailsTitles: formDetailsContents.map((formDetails) => formDetails.data.title || ''),
+        formDetailsIngresses: formDetailsContents.map(
+            (formDetails) => formDetails.data.ingress || ''
+        ),
         formNumbers: formDetailsContents
             .map((formDetails) => forceArray(formDetails.data.formNumbers))
             .flat(),
@@ -218,6 +222,7 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
             keywords: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             formDetailsPaths: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             formDetailsTitles: { type: graphQlLib.list(graphQlLib.GraphQLString) },
+            formDetailsIngresses: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             formNumbers: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             sortTitle: { type: graphQlLib.GraphQLString },
             title: { type: graphQlLib.GraphQLString },
