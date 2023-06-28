@@ -107,6 +107,34 @@ const getOverviewReferences = (content: Content) => {
     return relavantOverviewPages;
 };
 
+const getFormDetailsReferences = (content: Content) => {
+    if (content.type !== 'no.nav.navno:form-details') {
+        return [];
+    }
+
+    const relavantFormsOverviewPages = contentLib.query({
+        start: 0,
+        count: 1000,
+        contentTypes: ['no.nav.navno:forms-overview'],
+        filters: {
+            boolean: {
+                must: [
+                    {
+                        hasValue: {
+                            field: 'language',
+                            values: [content.language],
+                        },
+                    },
+                ],
+            },
+        },
+    }).hits;
+
+    logger.info(`Found ${relavantFormsOverviewPages.length} relevant forms overview pages`);
+
+    return relavantFormsOverviewPages;
+};
+
 // Product details are selected with a custom selector, and does not generate explicit references
 const getProductDetailsReferences = (content: Content) => {
     if (content.type !== 'no.nav.navno:product-details') {
@@ -235,6 +263,7 @@ const getCustomReferences = (content: Content | null) => {
         ...getGlobalValueCalculatorReferences(content),
         ...getOverviewReferences(content),
         ...getProductDetailsReferences(content),
+        ...getFormDetailsReferences(content),
         ...getSituationAreaPageReferences(content),
         ...getOfficeBranchPagesIfEditorial(content),
         ...getChatContactInfoReferences(content),
