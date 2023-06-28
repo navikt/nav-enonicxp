@@ -8,7 +8,7 @@ export interface FormDetails {
   /**
    * Tittel
    */
-  title?: string;
+  title: string;
 
   /**
    * Ingress
