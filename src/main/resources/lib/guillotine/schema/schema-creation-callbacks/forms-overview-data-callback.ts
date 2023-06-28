@@ -94,10 +94,14 @@ const transformToListItem = (
         area: forceArray(content.data.area),
         taxonomy: forceArray(content.data.taxonomy),
         formDetailsPaths: formDetailsContents.map((formDetails) => formDetails._path),
-        formDetailsTitles: formDetailsContents.map((formDetails) => formDetails.data.title || ''),
-        formDetailsIngresses: formDetailsContents.map((formDetails) =>
-            striptags(formDetails.data.ingress || '')
-        ),
+        formDetailsTitles: formDetailsContents
+            .map((formDetails) => formDetails.data.title)
+            .filter(Boolean),
+        formDetailsIngresses: formDetailsContents
+            .map((formDetails) =>
+                formDetails.data.ingress ? striptags(formDetails.data.ingress) : ''
+            )
+            .filter(Boolean),
         formNumbers: formDetailsContents
             .map((formDetails) => forceArray(formDetails.data.formNumbers))
             .flat(),
