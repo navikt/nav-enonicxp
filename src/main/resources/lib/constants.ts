@@ -33,8 +33,8 @@ const norgOfficeApiUrls: EnvRecord = {
 
 const xpOrigins: EnvRecord = {
     p: 'https://www.nav.no',
-    dev: 'https://www.dev.nav.no',
-    q6: 'https://www-q6.nav.no',
+    dev: 'https://portal-admin-dev.oera.no',
+    q6: 'https://portal-admin-q6.oera.no',
     localhost: 'http://localhost:8080',
 };
 
