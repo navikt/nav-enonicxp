@@ -13,7 +13,6 @@
                     <label>Skjemanummer</label>
                     <occurrences minimum="0" maximum="0"/>
                 </input>
-                <mixin name="audience"/>
                 <input name="title" type="TextLine">
                     <label>Tittel</label>
                     <occurrences minimum="1" maximum="1"/>
@@ -28,6 +27,7 @@
                 <input name="ingress" type="HtmlArea">
                     <label>Ingress</label>
                 </input>
+                <mixin name="audience"/>
                 <option-set name="formType">
                     <label>Variasjoner</label>
                     <occurrences minimum="1" maximum="0"/>
