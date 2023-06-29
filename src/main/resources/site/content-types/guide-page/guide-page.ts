@@ -16,7 +16,7 @@ export interface GuidePage {
   norwegianTitle?: string;
 
   /**
-   * Ikke vis denne siden i selve produktutlistingen
+   * Ikke vis denne siden på oversiktssider (gjelder ikke skjemaoversikter)
    */
   hideFromProductlist: boolean;
 
