@@ -17,9 +17,37 @@
                     <label>Tittel</label>
                     <occurrences minimum="1" maximum="1"/>
                 </input>
+                <input name="longTitle" type="TextLine">
+                    <label>Tittel for søk</label>
+                    <help-text>Benyttes i søketreff og ellers hvor skjemadetaljen vises utenfor kontekst, ved behov for
+                        en mer beskrivende tittel
+                    </help-text>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
                 <input name="ingress" type="HtmlArea">
                     <label>Ingress</label>
                 </input>
+                <option-set name="audience">
+                    <label>Målgruppe</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <options minimum="1" maximum="0">
+                        <option name="person">
+                            <label>Privatperson</label>
+                        </option>
+                        <option name="employer">
+                            <label>Arbeidsgiver</label>
+                        </option>
+                        <option name="provider">
+                            <label>Samarbeidspartner</label>
+                            <items>
+                                <mixin name="provider-audience"/>
+                            </items>
+                        </option>
+                        <option name="other">
+                            <label>Annet</label>
+                        </option>
+                    </options>
+                </option-set>
                 <option-set name="formType">
                     <label>Variasjoner</label>
                     <occurrences minimum="1" maximum="0"/>
