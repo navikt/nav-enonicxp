@@ -4,19 +4,16 @@
       <label>Områdekategori</label>
       <occurrences minimum="1" maximum="99"/>
       <config>
-        <option value="work">Arbeid</option>
-        <option value="family">Familie og barn</option>
-        <option value="health">Helse og sykdom</option>
-        <option value="accessibility">Hjelpemidler og tilrettelegging</option>
-        <option value="pension">Pensjon</option>
-        <option value="social_counselling">Sosiale tjenester og veiledning</option>
-        <option value="other">På tvers</option>
-        <option value="recruitment">Rekruttering</option>
-        <option value="inclusion">Inkludering og tilrettelegging</option>
-        <option value="downsizing">Permittering og nedbemanning</option>
-
-        <!--TODO: remove this when no longer in use-->
-        <option value="municipality">For kommunen (IKKE BRUK, SKAL FJERNES)</option>
+        <option value="work">Arbeid (for privatperson)</option>
+        <option value="family">Familie og barn (for privatperson)</option>
+        <option value="accessibility">Hjelpemidler og tilrettelegging (for privatperson)</option>
+        <option value="pension">Pensjon (for privatperson)</option>
+        <option value="social_counselling">Sosiale tjenester og veiledning (for privatperson)</option>
+        <option value="other">På tvers (for privatperson og arbeidsgiver)</option>
+        <option value="health">Helse og sykdom (for arbeidsgiver)</option>
+        <option value="recruitment">Rekruttering (for arbeidsgiver)</option>
+        <option value="inclusion">Inkludering og tilrettelegging (for arbeidsgiver)</option>
+        <option value="downsizing">Permittering og nedbemanning (for arbeidsgiver)</option>
       </config>
     </input>
   </form>
