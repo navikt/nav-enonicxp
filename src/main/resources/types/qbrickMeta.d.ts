@@ -71,12 +71,7 @@ type QbrickItem = {
     rendition: QbrickCatalog;
 };
 
-enum QbrickAssetType {
-    Image = 'image',
-    Index = 'index',
-    Subtitle = 'subtitle',
-    Video = 'video',
-}
+type QbrickAssetType = 'image' | 'index' | 'subtitle' | 'video';
 
 type QbrickVideo = {
     bitrate: number;

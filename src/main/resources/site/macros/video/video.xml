@@ -24,7 +24,7 @@
         </input>
         <input name="video" type="TextLine">
             <label>(Ikke i bruk)</label>
-            <help-text>URL til video for gamle video - skal ikke brukes</help-text>
+            <help-text>URL til video for gamle videoer - skal ikke brukes</help-text>
             <config>
                 <regexp>^https:\/\/video\.qbrick\.com\/.+</regexp>
             </config>

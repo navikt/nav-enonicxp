@@ -1,10 +1,10 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
-import { QbrickAssetType, QbrickMeta } from '../../types/qbrickMeta';
 import { logger } from '../utils/logging';
 import { runInContext } from '../context/run-in-context';
 import { forceArray } from '../utils/array-utils';
+import { QbrickMeta } from '../../types/qbrickMeta';
 
 type UpdateVideoContentParams = {
     videoContentId: string;
@@ -110,7 +110,7 @@ const findSubtitleLanguages = (qbrickMediaData: QbrickMeta) => {
     return forceArray(qbrickMediaData?.asset?.resources).reduce<string[]>((acc, resource) => {
         const { type, language } = resource;
 
-        if (type === QbrickAssetType.Subtitle && language) {
+        if (type === 'subtitle' && language) {
             acc.push(language);
         }
         return acc;
