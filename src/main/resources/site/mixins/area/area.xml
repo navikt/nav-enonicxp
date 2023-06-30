@@ -4,16 +4,16 @@
       <label>Områdekategori</label>
       <occurrences minimum="1" maximum="99"/>
       <config>
-        <option value="work">Arbeid (for privatperson)</option>
-        <option value="family">Familie og barn (for privatperson)</option>
-        <option value="accessibility">Hjelpemidler og tilrettelegging (for privatperson)</option>
-        <option value="pension">Pensjon (for privatperson)</option>
-        <option value="social_counselling">Sosiale tjenester og veiledning (for privatperson)</option>
-        <option value="other">På tvers (for privatperson og arbeidsgiver)</option>
-        <option value="health">Helse og sykdom (for arbeidsgiver)</option>
-        <option value="recruitment">Rekruttering (for arbeidsgiver)</option>
-        <option value="inclusion">Inkludering og tilrettelegging (for arbeidsgiver)</option>
-        <option value="downsizing">Permittering og nedbemanning (for arbeidsgiver)</option>
+        <option value="health">Helse og sykdom</option>
+        <option value="other">På tvers</option>
+        <option value="work">Arbeid (KUN PRIVATPERSON)</option>
+        <option value="family">Familie og barn (KUN PRIVATPERSON)</option>
+        <option value="accessibility">Hjelpemidler og tilrettelegging (KUN PRIVATPERSON)</option>
+        <option value="pension">Pensjon (KUN PRIVATPERSON)</option>
+        <option value="social_counselling">Sosiale tjenester og veiledning (KUN PRIVATPERSON)</option>
+        <option value="inclusion">Inkludering og tilrettelegging (KUN ARBEIDSGIVER)</option>
+        <option value="downsizing">Permittering og nedbemanning (KUN ARBEIDSGIVER)</option>
+        <option value="recruitment">Rekruttering (KUN ARBEIDSGIVER)</option>
       </config>
     </input>
   </form>

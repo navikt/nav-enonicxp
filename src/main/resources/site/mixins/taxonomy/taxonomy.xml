@@ -5,16 +5,14 @@
             <label>Kategori</label>
             <occurrences minimum="0" maximum="0"/>
             <config>
-                <option value="insurance">Forsikring (for privatperson og arbeidsgiver)</option>
-                <option value="measures">Tiltak (for privatperson og arbeidsgiver)</option>
-                <option value="service">Tjeneste (for privatperson og arbeidsgiver)</option>
-                <option value="rights">Veiledning (for privatperson og arbeidsgiver)</option>
-                <option value="form">Skjema (for privatperson og arbeidsgiver)</option>
-                <option value="assistive_tools">Hjelpemiddel (for privatperson)</option>
-                <option value="benefits">Pengestøtte (for privatperson)</option>
-                <option value="employee_benefits">Pengestøtte til ansatt (for arbeidsgiver)</option>
-                <option value="refund">Refusjon (for arbeidsgiver)</option>
-                <option value="for_providers">For samarbeidspartnere</option>
+                <option value="insurance">Forsikring</option>
+                <option value="measures">Tiltak</option>
+                <option value="service">Tjeneste</option>
+                <option value="rights">Veiledning</option>
+                <option value="assistive_tools">Hjelpemiddel (KUN PRIVATPERSON)</option>
+                <option value="benefits">Pengestøtte (KUN PRIVATPERSON)</option>
+                <option value="employee_benefits">Pengestøtte til ansatt (KUN ARBEIDSGIVER)</option>
+                <option value="refund">Refusjon (KUN ARBEIDSGIVER)</option>
             </config>
         </input>
     </form>
