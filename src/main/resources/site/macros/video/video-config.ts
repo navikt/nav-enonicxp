@@ -6,6 +6,11 @@ export interface VideoConfig {
   targetContent: string;
 
   /**
+   * Overstyr språk for undertekster
+   */
+  language?: string;
+
+  /**
    * Beskrivende tittel
    */
   title?: string;

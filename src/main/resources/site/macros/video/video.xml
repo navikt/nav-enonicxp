@@ -9,6 +9,14 @@
                 <allowContentType>${app}:video</allowContentType>
             </config>
         </input>
+        <input name="language" type="TextLine">
+            <label>Overstyr språk for undertekster</label>
+            <help-text>To-bokstavers kode, f.eks. "nb" eller "en". Som standard benyttes samme språk som på siden.</help-text>
+            <occurrences minimum="0" maximum="1"/>
+            <config>
+                <regexp>^[a-z]{2}$</regexp>
+            </config>
+        </input>
         <field-set>
             <label>Brukes ikke lenger</label>
             <help-text>Kun for gamle videoer.</help-text>

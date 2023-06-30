@@ -6,5 +6,6 @@ fragment contentVideo on no_nav_navno_Video {
         poster {
             ...imageInlineMixin
         }
+        subtitles
     }
 }
