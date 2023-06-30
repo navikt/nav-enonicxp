@@ -114,6 +114,7 @@ fragment macros on Macro {
         video {
             title
             video
+            language
             targetContent {
                 ...videoTargetMixin
             }

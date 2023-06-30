@@ -1,99 +1,94 @@
-export interface QbrickMeta {
+export type QbrickMeta = {
     id: string;
     created: Date;
     updated: Date;
     tags: string[];
     rel: string[];
-    asset?: Asset;
-    metadata: Metadata;
+    asset?: QbrickAsset;
+    metadata: QbrickMetadata;
     tracks: string[];
-    catalog?: Catalog;
-    thumbnails?: ThumbnailRef[];
-}
+    catalog?: QbrickCatalog;
+    thumbnails?: QbrickThumbnailRef[];
+};
 
-export interface ThumbnailRef {
+type QbrickThumbnailRef = {
     id: string;
-}
+};
 
-export interface Asset {
+type QbrickAsset = {
     id: string;
     created: Date;
     updated: Date;
-    createdBy: Catalog;
-    updatedBy: Catalog;
+    createdBy: QbrickCatalog;
+    updatedBy: QbrickCatalog;
     name: string;
     rel: string[];
-    resources: Resource[];
-    references: AssetReference[];
-}
+    resources: QbrickResource[];
+    references: QbrickAssetReference[];
+};
 
-export interface Catalog {
+type QbrickCatalog = {
     id: string;
-}
+};
 
-export interface AssetReference {
+type QbrickAssetReference = {
     id: string;
     type: string;
-}
+};
 
-export interface Resource {
-    type: Type;
+type QbrickResource = {
+    type: QbrickAssetType;
     id: string;
     rel: string[];
-    renditions: Rendition[];
+    renditions: QbrickRendition[];
     language?: string;
-}
+};
 
-export interface Rendition {
-    type: Type;
+type QbrickRendition = {
+    type: QbrickAssetType;
     width?: number;
     height?: number;
     id: string;
     size: number;
-    links: Link[];
-    references?: RenditionReference[];
+    links: QbrickLink[];
+    references?: QbrickRenditionReference[];
     language?: string;
-    videos?: Video[];
-}
+    videos?: QbrickVideo[];
+};
 
-export interface Link {
+type QbrickLink = {
     href: string;
     mimeType: string;
-}
+};
 
-export interface RenditionReference {
+type QbrickRenditionReference = {
     order: number;
-    item: Item;
-}
+    item: QbrickItem;
+};
 
-export interface Item {
-    resource: Catalog;
-    rendition: Catalog;
-}
+type QbrickItem = {
+    resource: QbrickCatalog;
+    rendition: QbrickCatalog;
+};
 
-export enum Type {
-    Image = 'image',
-    Index = 'index',
-    Subtitle = 'subtitle',
-    Video = 'video',
-}
+type QbrickAssetType = 'image' | 'index' | 'subtitle' | 'video';
 
-export interface Video {
+type QbrickVideo = {
     bitrate: number;
     codec: string;
     width: number;
     height: number;
     duration: number;
-    audios: Audio[];
-}
+    audios: QbrickAudio[];
+};
 
-export interface Audio {
+type QbrickAudio = {
     codec: string;
     sampleRate: number;
     bitDepth: number;
     channels: number;
-}
+};
 
-export interface Metadata {
+type QbrickMetadata = {
     title: string;
-}
+};
