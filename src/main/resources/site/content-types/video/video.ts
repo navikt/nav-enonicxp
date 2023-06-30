@@ -24,4 +24,9 @@ export interface Video {
    * Spilletid i sekunder
    */
   duration?: string;
+
+  /**
+   * Tilgjengelige språk (undertekster)
+   */
+  subtitles?: Array<string>;
 }

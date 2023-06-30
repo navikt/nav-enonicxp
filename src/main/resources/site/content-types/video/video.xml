@@ -39,7 +39,11 @@
                     </config>
                 </input>
                 <input name="duration" type="TextLine">
-                    <label>Spilletid i sekunder </label>
+                    <label>Spilletid i sekunder</label>
+                </input>
+                <input name="subtitles" type="TextLine">
+                    <label>Tilgjengelige språk (undertekster)</label>
+                    <occurrences minimum="0" maximum="0"/>
                 </input>
             </items>
         </field-set>
