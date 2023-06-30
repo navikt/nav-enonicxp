@@ -8,8 +8,10 @@ import { QbrickMeta } from 'types/qbrickMeta';
 import { CONTENT_REPO_PREFIX } from '../constants';
 import { transformFragmentCreatorToFragment } from '../fragmentCreator/fragment-creator';
 import { isContentLocalized } from '../localization/locale-utils';
+import { logger } from '../utils/logging';
 
 let hasContentUpdateListener = false;
+
 type UpdateVideoContentParams = {
     content: Content<'no.nav.navno:video'>;
     duration: number;
@@ -69,7 +71,7 @@ const createImageAsset = (imageUrl: string, targetPath: string, targetName: stri
     });
 };
 
-export const findImageUrlFromVideoMeta = (qbrickMediaData: QbrickMeta) => {
+const findImageUrlFromVideoMeta = (qbrickMediaData: QbrickMeta) => {
     const resources = qbrickMediaData?.asset?.resources;
     if (!resources) {
         return;
@@ -95,7 +97,7 @@ export const findImageUrlFromVideoMeta = (qbrickMediaData: QbrickMeta) => {
     return imageLink;
 };
 
-export const findVideoDurationFromMeta = (qbrickMediaData: QbrickMeta) => {
+const findVideoDurationFromMeta = (qbrickMediaData: QbrickMeta) => {
     const resources = qbrickMediaData?.asset?.resources;
     if (!resources) {
         return 0;
@@ -142,8 +144,8 @@ const fetchMetaDataFromQbrick = (accountId: number, mediaId: string) => {
 };
 
 const updateVideoContentWithMetaData = (content: Content<'no.nav.navno:video'>) => {
-    log.info('Updating video content with metadata from Qbrick');
     const { accountId, mediaId } = content.data;
+    logger.info(`Updating video content with metadata from Qbrick - ${accountId} - ${mediaId}`);
 
     // Don't override any posters or durations already set or set manually
     // by the editor.
