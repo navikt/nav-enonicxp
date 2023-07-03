@@ -72,12 +72,12 @@ export interface ContentPageWithSidemenus {
   /**
    * Kategori
    */
-  taxonomy?: Array<"insurance" | "assistive_tools" | "benefits" | "measures" | "service" | "rights" | "form" | "employee_benefits" | "refund" | "for_providers" | "followup" | "for_employers" | "for_municipality" | "for_event_organizers" | "for_health_service">;
+  taxonomy?: Array<"insurance" | "measures" | "service" | "rights" | "form" | "assistive_tools" | "benefits" | "employee_benefits" | "refund" | "for_providers">;
 
   /**
    * Områdekategori
    */
-  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "other" | "recruitment" | "inclusion" | "downsizing" | "municipality">;
+  area: Array<"work" | "family" | "accessibility" | "pension" | "social_counselling" | "other" | "health" | "recruitment" | "inclusion" | "downsizing">;
 
   /**
    * Velg piktogram
