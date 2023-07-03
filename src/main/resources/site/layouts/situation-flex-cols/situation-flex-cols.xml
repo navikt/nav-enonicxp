@@ -4,7 +4,7 @@
     <form>
         <mixin name="header-with-anchor"/>
         <option-set name="shelf">
-            <label>For varehylle</label>
+            <label>Innstilling for varehyller</label>
             <help-text>Brukes kun hvis dette er en type varehylle.</help-text>
             <options minimum="1" maximum="1">
                 <option name="products">
