@@ -16,7 +16,7 @@ export interface GuidePage {
   norwegianTitle?: string;
 
   /**
-   * Ikke vis denne siden i selve produktutlistingen
+   * Ikke vis denne siden på oversiktssider (gjelder ikke skjemaoversikter)
    */
   hideFromProductlist: boolean;
 
@@ -77,7 +77,7 @@ export interface GuidePage {
   /**
    * Områdekategori
    */
-  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "other" | "recruitment" | "inclusion" | "downsizing" | "municipality">;
+  area: Array<"work" | "family" | "accessibility" | "pension" | "social_counselling" | "other" | "health" | "recruitment" | "inclusion" | "downsizing">;
 
   /**
    * Velg piktogram

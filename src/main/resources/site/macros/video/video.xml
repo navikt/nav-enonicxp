@@ -3,27 +3,31 @@
     <description>Legg inn URL og beskrivende tittel</description>
     <form>
         <input name="targetContent" type="ContentSelector">
-            <label>Video-innhold</label>
+            <label>Velg video-innhold</label>
             <occurrences minimum="1" maximum="1"/>
             <config>
                 <allowContentType>${app}:video</allowContentType>
             </config>
         </input>
-        <field-set>
-            <label>Brukes ikke lenger</label>
-            <help-text>Kun for gamle videoer.</help-text>
-            <items>
-                <input name="title" type="TextLine">
-                    <label>Beskrivende tittel</label>
-                </input>
-                <input name="video" type="TextLine">
-                    <label>Brukes ikke: URL til video</label>
-                    <help-text>Kun gamle videoer - skal ikke brukes.</help-text>
-                    <config>
-                        <regexp>^https:\/\/video\.qbrick\.com\/.+</regexp>
-                    </config>
-                </input>
-            </items>
-        </field-set>
+        <input name="language" type="TextLine">
+            <label>Overstyr språk for undertekster</label>
+            <help-text>To-bokstavers kode, f.eks. "nb" eller "en". Som standard benyttes samme språk som på siden.
+            </help-text>
+            <occurrences minimum="0" maximum="1"/>
+            <config>
+                <regexp>^[a-z]{2}$</regexp>
+            </config>
+        </input>
+        <input name="title" type="TextLine">
+            <label>(Ikke i bruk)</label>
+            <help-text>Beskrivende tittel for gamle videoer - skal ikke brukes</help-text>
+        </input>
+        <input name="video" type="TextLine">
+            <label>(Ikke i bruk)</label>
+            <help-text>URL til video for gamle videoer - skal ikke brukes</help-text>
+            <config>
+                <regexp>^https:\/\/video\.qbrick\.com\/.+</regexp>
+            </config>
+        </input>
     </form>
 </macro>

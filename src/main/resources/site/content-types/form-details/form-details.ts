@@ -8,12 +8,52 @@ export interface FormDetails {
   /**
    * Tittel
    */
-  title?: string;
+  title: string;
+
+  /**
+   * Tittel for søk
+   */
+  longTitle?: string;
 
   /**
    * Ingress
    */
   ingress?: string;
+
+  /**
+   * Målgruppe
+   */
+  audience: {
+    /**
+     * Selected
+     */
+    _selected: Array<"person" | "employer" | "provider" | "other">;
+    
+    /**
+     * Privatperson
+     */
+    person: Record<string, unknown>;
+    
+    /**
+     * Arbeidsgiver
+     */
+    employer: Record<string, unknown>;
+    
+    /**
+     * Samarbeidspartner
+     */
+    provider: {
+      /**
+       * Velg underkategorier
+       */
+      provider_audience: Array<"doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "other">;
+    };
+    
+    /**
+     * Annet
+     */
+    other: Record<string, unknown>;
+  };
 
   /**
    * Variasjoner

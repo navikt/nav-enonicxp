@@ -3,5 +3,5 @@ export interface Area {
   /**
    * Områdekategori
    */
-  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "other" | "recruitment" | "inclusion" | "downsizing" | "municipality">;
+  area: Array<"health" | "other" | "work" | "family" | "accessibility" | "pension" | "social_counselling" | "inclusion" | "downsizing" | "recruitment">;
 }

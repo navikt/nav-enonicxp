@@ -10,6 +10,7 @@ import { FormsOverview } from '../../../../site/content-types/forms-overview/for
 import { getPublicPath } from '../../../paths/public-path';
 import { FormDetailsSelector } from '../../../../site/mixins/form-details-selector/form-details-selector';
 import { ContentPageWithSidemenus } from '../../../../site/content-types/content-page-with-sidemenus/content-page-with-sidemenus';
+import striptags from '/assets/striptags/3.1.1/src/striptags';
 
 type ProductData = ContentPageWithSidemenus;
 
@@ -22,9 +23,10 @@ type FormDetailsListItem = {
     anchorId: string;
     formDetailsPaths: string[];
     formDetailsTitles: string[];
+    formDetailsIngresses: string[];
     formNumbers: string[];
     keywords: string[];
-    url: string;
+    url: string | null;
     type: ContentTypeWithFormDetails;
 } & Required<IncludedProductData>;
 
@@ -45,6 +47,18 @@ const contentTypesWithFormDetails = [
     'no.nav.navno:content-page-with-sidemenus',
     'no.nav.navno:guide-page',
 ] as const;
+
+const getUrl = (content: ContentWithFormDetails) => {
+    const { externalProductUrl } = content.data;
+
+    if (externalProductUrl) {
+        // Temporary workaround for hiding the product link in the form details panel
+        // by setting the external url to the nav.no origin
+        return externalProductUrl === 'https://www.nav.no' ? null : externalProductUrl;
+    }
+
+    return getPublicPath(content, content.language);
+};
 
 const transformToListItem = (
     content: ContentWithFormDetails,
@@ -68,21 +82,26 @@ const transformToListItem = (
     const title = content.data.title || content.displayName;
     const sortTitle = content.data.sortTitle || title;
 
-    const url = content.data.externalProductUrl || getPublicPath(content, content.language);
-
     return {
         title,
         sortTitle,
         ingress: content.data.ingress,
         keywords: forceArray(content.data.keywords),
-        url,
+        url: getUrl(content),
         type: content.type,
         anchorId: sanitize(sortTitle),
         illustration: content.data.illustration,
         area: forceArray(content.data.area),
         taxonomy: forceArray(content.data.taxonomy),
         formDetailsPaths: formDetailsContents.map((formDetails) => formDetails._path),
-        formDetailsTitles: formDetailsContents.map((formDetails) => formDetails.data.title || ''),
+        formDetailsTitles: formDetailsContents
+            .map((formDetails) => formDetails.data.title)
+            .filter(Boolean),
+        formDetailsIngresses: formDetailsContents
+            .map((formDetails) =>
+                formDetails.data.ingress ? striptags(formDetails.data.ingress) : ''
+            )
+            .filter(Boolean),
         formNumbers: formDetailsContents
             .map((formDetails) => forceArray(formDetails.data.formNumbers))
             .flat(),
@@ -208,6 +227,7 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
             keywords: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             formDetailsPaths: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             formDetailsTitles: { type: graphQlLib.list(graphQlLib.GraphQLString) },
+            formDetailsIngresses: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             formNumbers: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             sortTitle: { type: graphQlLib.GraphQLString },
             title: { type: graphQlLib.GraphQLString },

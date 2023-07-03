@@ -20,7 +20,5 @@ fragment contentPressLandingPage on no_nav_navno_PressLandingPage {
             ...contentContentList
         }
         moreNewsUrl
-        maxNewsCount
-        maxShortcutsCount
     }
 }
