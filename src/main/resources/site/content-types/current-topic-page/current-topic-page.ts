@@ -62,7 +62,7 @@ export interface CurrentTopicPage {
   /**
    * Områdekategori
    */
-  area: Array<"work" | "family" | "accessibility" | "pension" | "social_counselling" | "other" | "health" | "recruitment" | "inclusion" | "downsizing">;
+  area: Array<"health" | "other" | "work" | "family" | "accessibility" | "pension" | "social_counselling" | "inclusion" | "downsizing" | "recruitment">;
 
   /**
    * Videresend alle besøk til annen url:

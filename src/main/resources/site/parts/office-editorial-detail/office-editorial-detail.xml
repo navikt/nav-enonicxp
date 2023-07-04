@@ -13,4 +13,7 @@
             </config>
         </input>
     </form>
+    <config>
+        <allow-on-content-type>${app}:office-editorial-page</allow-on-content-type>
+    </config>
 </part>
