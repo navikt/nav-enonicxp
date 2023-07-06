@@ -15,6 +15,7 @@ import { getPublicPath } from '../paths/public-path';
 import { URLS } from '../constants';
 import { dateTimesAreEqual, fixDateFormat } from '../utils/datetime-utils';
 import { forceArray } from '../utils/array-utils';
+import { hasExternalProductUrl } from '../paths/path-utils';
 
 const SEARCH_REPO_CONTENT_PARENT_PATH = `/${SEARCH_REPO_CONTENT_BASE_NODE}`;
 
@@ -59,7 +60,9 @@ const getHref = (content: Content, locale: string) => {
             return `${URLS.FRONTEND_ORIGIN}${getPublicPath(targetContent, locale)}`;
         }
         default: {
-            return `${URLS.FRONTEND_ORIGIN}${getPublicPath(content, locale)}`;
+            return hasExternalProductUrl(content)
+                ? content.data.externalProductUrl
+                : `${URLS.FRONTEND_ORIGIN}${getPublicPath(content, locale)}`;
         }
     }
 };
