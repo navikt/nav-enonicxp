@@ -21,6 +21,38 @@ export interface SituationFlexColsConfig {
   toggleCopyButton: boolean;
 
   /**
+   * For varehylle
+   */
+  shelf?:
+    | {
+        /**
+         * Selected
+         */
+        _selected: "products";
+
+        /**
+         * Produkter
+         */
+        products: {
+          /**
+           * Prioritering
+           */
+          priority?: "primary" | "secondary" | "tertiary";
+        };
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "providers";
+
+        /**
+         * Samarbeidspartner
+         */
+        providers: Record<string, unknown>;
+      };
+
+  /**
    * Antall kolonner ved full skjermbredde
    */
   numCols?: number;
