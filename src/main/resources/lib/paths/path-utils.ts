@@ -13,4 +13,5 @@ export const getFrontendPathname = (path: string) => path.replace(navnoRootPathF
 
 export const hasExternalProductUrl = (
     content: Content | ContentWithExternalProductUrl
-): content is ContentWithExternalProductUrl => !!(content.data as any)?.externalProductUrl;
+): content is ContentWithExternalProductUrl =>
+    !!(content as ContentWithExternalProductUrl).data?.externalProductUrl;
