@@ -77,7 +77,7 @@ export interface GuidePage {
   /**
    * Områdekategori
    */
-  area: Array<"work" | "family" | "accessibility" | "pension" | "social_counselling" | "other" | "health" | "recruitment" | "inclusion" | "downsizing">;
+  area: Array<"health" | "other" | "work" | "family" | "accessibility" | "pension" | "social_counselling" | "inclusion" | "downsizing" | "recruitment">;
 
   /**
    * Velg piktogram
