@@ -21,7 +21,7 @@ export interface SituationFlexColsConfig {
   toggleCopyButton: boolean;
 
   /**
-   * For varehylle
+   * Innstilling for varehyller
    */
   shelf?:
     | {

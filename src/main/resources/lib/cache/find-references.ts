@@ -1,8 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { findContentsWithHtmlAreaText } from '../utils/htmlarea-utils';
-import { getGlobalValueCalcUsage } from '../global-values/global-value-utils';
-import { forceArray, stringArrayToSet } from '../utils/array-utils';
+import { stringArrayToSet } from '../utils/array-utils';
 import { runInContext } from '../context/run-in-context';
 import {
     typesWithDeepReferences as _typesWithDeepReferences,
@@ -10,10 +8,9 @@ import {
 } from '../contenttype-lists';
 import { RepoBranch } from '../../types/common';
 import { logger } from '../utils/logging';
-import { isGlobalValueSetType } from '../global-values/types';
-import { getProductDetailsUsage } from '../product-utils/productDetails';
 import { getParentPath } from '../paths/path-utils';
 import { getAudience } from '../utils/audience';
+import { batchedContentQuery } from '../utils/batched-query';
 
 type ReferencesMap = Record<string, Content>;
 
@@ -29,31 +26,15 @@ const isTypeWithOverviewPages = (content: Content): content is ContentWithOvervi
 
 // Search html-area fields for a content id. Handles references via macros, which does not generate
 // explicit references
-const getHtmlAreaReferences = (content: Content) => {
-    const references = findContentsWithHtmlAreaText(content._id);
+const getStringTypeReferences = (content: Content) => {
+    const references = batchedContentQuery({
+        start: 0,
+        count: 10000,
+        query: `fulltext('*', '"${content._id}"')`,
+    }).hits;
 
     logger.info(
         `Found ${references.length} pages with htmlarea-references to content id ${content._id}`
-    );
-
-    return references;
-};
-
-// Global values used in calculators are selected with a custom selector, and does not generate
-// explicit references
-const getGlobalValueCalculatorReferences = (content: Content) => {
-    if (!isGlobalValueSetType(content)) {
-        return [];
-    }
-
-    const references = forceArray(content.data?.valueItems)
-        .map((item) => {
-            return getGlobalValueCalcUsage(item.key);
-        })
-        .flat();
-
-    logger.info(
-        `Found ${references.length} pages with references to global value id ${content._id}`
     );
 
     return references;
@@ -135,21 +116,6 @@ const getFormDetailsReferences = (content: Content) => {
     return relevantFormsOverviewPages;
 };
 
-// Product details are selected with a custom selector, and does not generate explicit references
-const getProductDetailsReferences = (content: Content) => {
-    if (content.type !== 'no.nav.navno:product-details') {
-        return [];
-    }
-
-    const references = getProductDetailsUsage(content);
-
-    logger.info(
-        `Found ${references.length} pages with references to product details id ${content._id}`
-    );
-
-    return references;
-};
-
 // Editorial pages are merged into office-branch-pages, which in turn is cached.
 // Therefore, any changes to a editorial page must invalidate all office-branch-page cache.
 const getOfficeBranchPagesIfEditorial = (content: Content) => {
@@ -176,34 +142,6 @@ const getOfficeBranchPagesIfEditorial = (content: Content) => {
     }).hits;
 
     return officeBranches;
-};
-
-// AreaPage references to Situation pages are set programatically, which does
-// not seem to generate dependencies in XP. We need to handle this ourselves.
-const getSituationAreaPageReferences = (content: Content) => {
-    if (content.type !== 'no.nav.navno:situation-page') {
-        return [];
-    }
-
-    const areaPages = contentLib.query({
-        start: 0,
-        count: 1000,
-        contentTypes: ['no.nav.navno:area-page'],
-        filters: {
-            boolean: {
-                must: {
-                    hasValue: {
-                        field: 'data.area',
-                        values: forceArray(content.data.area),
-                    },
-                },
-            },
-        },
-    }).hits;
-
-    logger.info(`Found ${areaPages.length} relevant area pages`);
-
-    return areaPages;
 };
 
 // Contact-option parts for chat which does not have a sharedContactInformation field set will have
@@ -259,12 +197,9 @@ const getCustomReferences = (content: Content | null) => {
     }
 
     return [
-        ...getHtmlAreaReferences(content),
-        ...getGlobalValueCalculatorReferences(content),
+        ...getStringTypeReferences(content),
         ...getOverviewReferences(content),
-        ...getProductDetailsReferences(content),
         ...getFormDetailsReferences(content),
-        ...getSituationAreaPageReferences(content),
         ...getOfficeBranchPagesIfEditorial(content),
         ...getChatContactInfoReferences(content),
     ];
@@ -438,8 +373,7 @@ export const findReferences = ({
     const references = _findReferences({
         id,
         branch,
-        deadline,
-        withDeepSearch,
+        withDeepSearch: false,
     });
 
     if (!references) {
