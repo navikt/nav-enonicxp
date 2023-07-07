@@ -24,17 +24,18 @@ type ContentWithOverviewPages = Content<(typeof contentTypesWithProductDetails)[
 const isTypeWithOverviewPages = (content: Content): content is ContentWithOverviewPages =>
     typesWithOverviewPages[content.type];
 
-// Search html-area fields for a content id. Handles references via macros, which does not generate
-// explicit references
-const getStringTypeReferences = (content: Content) => {
+// Search string-fields for a content id. Handles ids set with custom selectors
+// or "references" set programmatically, which does not generate true references
+// in the database index
+const getStringTypeReferences = (contentId: string) => {
     const references = batchedContentQuery({
         start: 0,
         count: 10000,
-        query: `fulltext('*', '"${content._id}"')`,
+        query: `fulltext('*', '"${contentId}"')`,
     }).hits;
 
     logger.info(
-        `Found ${references.length} pages with htmlarea-references to content id ${content._id}`
+        `Found ${references.length} pages with string-references to content id ${contentId}`
     );
 
     return references;
@@ -197,7 +198,6 @@ const getCustomReferences = (content: Content | null) => {
     }
 
     return [
-        ...getStringTypeReferences(content),
         ...getOverviewReferences(content),
         ...getFormDetailsReferences(content),
         ...getOfficeBranchPagesIfEditorial(content),
@@ -267,16 +267,17 @@ const getMainArticleChapterReferences = (content: Content<'no.nav.navno:main-art
 
 const getReferences = (id: string, branch: RepoBranch) => {
     const content = runInContext({ branch }, () => contentLib.get({ key: id }));
-    if (!content) {
-        return getExplicitReferences(id);
-    }
 
     const refs = [
         ...getExplicitReferences(id),
+        ...getStringTypeReferences(id),
         ...getCustomReferences(content),
         ...getReferencesFromParent(content),
-        content,
     ];
+
+    if (content) {
+        refs.push(content);
+    }
 
     // Handle main-article-chapter references. There is a unique system of relations between
     // articles/chapters which is most effectively handled as a separate step.
@@ -373,7 +374,8 @@ export const findReferences = ({
     const references = _findReferences({
         id,
         branch,
-        withDeepSearch: false,
+        deadline,
+        withDeepSearch,
     });
 
     if (!references) {
