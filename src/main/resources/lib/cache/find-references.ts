@@ -24,18 +24,17 @@ type ContentWithOverviewPages = Content<(typeof contentTypesWithProductDetails)[
 const isTypeWithOverviewPages = (content: Content): content is ContentWithOverviewPages =>
     typesWithOverviewPages[content.type];
 
-// Search string-fields for a content id. Handles ids set with custom selectors
-// or "references" set programmatically, which does not generate true references
-// in the database index
+// Search all fields for a content id string. Handles ids set with custom selectors, macros or
+// "references" set programmatically, which are not indexed as references in the database
 const getStringTypeReferences = (contentId: string) => {
     const references = batchedContentQuery({
         start: 0,
         count: 10000,
-        query: `fulltext('*', '"${contentId}"')`,
+        query: `fulltext('components.part.config.*,components.layout.config.*,data.*', '"${contentId}"')`,
     }).hits;
 
     logger.info(
-        `Found ${references.length} pages with string-references to content id ${contentId}`
+        `Found ${references.length} pages with string references to content id ${contentId}`
     );
 
     return references;
