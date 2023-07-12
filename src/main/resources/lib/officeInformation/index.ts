@@ -233,7 +233,7 @@ export const fetchAndUpdateOfficeInfo = (retry?: boolean) => {
             logger.error('Failed to fetch legacy office info, retrying in 5 minutes');
             runOfficeInfoUpdateTask(false, new Date(Date.now() + fiveMinutes).toISOString());
         } else {
-            logger.critical('Failed to fetch legacy office info from norg2');
+            logger.error('Failed to fetch legacy office info from norg2');
         }
         return;
     }
