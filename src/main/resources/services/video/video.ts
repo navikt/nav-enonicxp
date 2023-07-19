@@ -6,7 +6,7 @@ import { getServiceRequestSubPath, transformUsageHit } from '../service-utils';
 import { logger } from '../../lib/utils/logging';
 
 type UsageCheckParams = {
-    videoId: string;
+    id: string;
 };
 
 export const getVideoUsage = (content: Content<'no.nav.navno:video'>) => {
@@ -20,13 +20,11 @@ export const getVideoUsage = (content: Content<'no.nav.navno:video'>) => {
 };
 
 const usageCheckHandler = (req: XP.Request) => {
-    const { videoId } = req.params as UsageCheckParams;
+    const { id } = req.params as UsageCheckParams;
 
-    const detailsContent = contentLib.get({ key: videoId });
+    const detailsContent = contentLib.get({ key: id });
     if (!detailsContent || detailsContent.type !== 'no.nav.navno:video') {
-        logger.warning(
-            `Product details usage check for id ${videoId} failed - content does not exist`
-        );
+        logger.warning(`Product details usage check for id ${id} failed - content does not exist`);
         return {
             status: 404,
             contentType: 'application/json',
