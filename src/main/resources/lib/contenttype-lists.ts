@@ -110,6 +110,7 @@ export const contentTypesRenderedByEditorFrontend: ContentTypeList = [
     `${APP_DESCRIPTOR}:global-value-set`,
     `${APP_DESCRIPTOR}:global-case-time-set`,
     `${APP_DESCRIPTOR}:contact-information`,
+    `${APP_DESCRIPTOR}:calculator`,
     `${APP_DESCRIPTOR}:product-details`,
     `${APP_DESCRIPTOR}:form-details`,
     `${APP_DESCRIPTOR}:office-branch`,
