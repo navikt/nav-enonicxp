@@ -16,7 +16,7 @@ export const getVideoUsage = (content: Content<'no.nav.navno:video'>) => {
         query: `components.part.config.no-nav-navno.html-area.html LIKE '*targetContent="${content._id}"*' OR data.text LIKE '*targetContent="${content._id}"*'`,
     }).hits;
 
-    return [...contentWithUsage];
+    return contentWithUsage;
 };
 
 const usageCheckHandler = (req: XP.Request) => {
