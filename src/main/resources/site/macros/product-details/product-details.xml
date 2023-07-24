@@ -1,0 +1,58 @@
+<macro>
+    <display-name>Produktdetaljer</display-name>
+    <form>
+        <field-set>
+            <label>Saksbehandlingstider</label>
+            <items>
+                <input name="processing_times" type="CustomSelector">
+                    <label>Saksbehandlingstider</label>
+                    <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <service>productDetailsSelector</service>
+                        <param value="detailType">processing_times</param>
+                    </config>
+                </input>
+                <input name="processingTimesVisibility" type="ComboBox">
+                    <label>Visningsinnstillinger</label>
+                    <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <option value="all">Vis både søknad og klage</option>  
+                        <option value="application">Vis bare søknad</option>
+                        <option value="complaint">Vis bare klage</option>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Utbetalingsdatoer</label>
+            <items>
+                <input name="payout_dates" type="CustomSelector">
+                    <label>Utbetalingsdatoer</label>
+                    <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <service>productDetailsSelector</service>
+                        <param value="detailType">payout_dates</param>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Satser</label>
+            <items>
+                <input name="rates" type="CustomSelector">
+                    <label>Satser</label>
+                    <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <service>productDetailsSelector</service>
+                        <param value="detailType">rates</param>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+    <config>
+        <allow-on-content-type>${app}:content-page-with-sidemenus</allow-on-content-type>
+        <allow-on-content-type>${app}:guide-page</allow-on-content-type>
+        <allow-on-content-type>${app}:themed-article-page</allow-on-content-type>
+    </config>
+</macro>

@@ -3,6 +3,7 @@
 #import "../mixins/formTypeFragment.graphql"
 #import "../mixins/videoTargetFragment.graphql"
 #import "../content-types/payoutDatesFragment.graphql"
+#import "../contentCommonWithPageFragment.graphql"
 
 fragment macros on Macro {
     name
@@ -186,6 +187,23 @@ fragment form_detailsMacro on Macro {
             showIngress
             showApplications
             showAddendums
+        }
+    }
+}
+
+fragment product_detailsMacro on Macro {
+    config {
+        product_details {
+            processing_times {
+                ...contentCommonWithPage
+            }
+            payout_dates {
+                ...contentCommonWithPage
+            }
+            rates {
+                ...contentCommonWithPage
+            }
+            processingTimesVisibility
         }
     }
 }

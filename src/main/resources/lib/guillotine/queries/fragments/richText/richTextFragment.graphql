@@ -6,5 +6,6 @@ fragment richText on RichText {
         ...macros
         ...html_fragmentMacro
         ...form_detailsMacro
+        ...product_detailsMacro
     }
 }
