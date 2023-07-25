@@ -18,10 +18,16 @@ const buildProcessObject = (key: string) => {
             const processedComponents = components.map((component: any) => {
                 if (component.descriptor === 'no.nav.navno:html-area') {
                     const html = (component.config as HtmlAreaPartConfig)?.html;
-                    return macroLib.processHtml({
-                        type: 'server',
-                        value: html,
-                    });
+                    return {
+                        ...component,
+                        config: {
+                            ...component.config,
+                            html: macroLib.processHtml({
+                                type: 'server',
+                                value: html,
+                            }),
+                        },
+                    };
                 }
             });
 
