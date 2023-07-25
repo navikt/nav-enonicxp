@@ -168,13 +168,15 @@ export const guillotineTransformSpecialComponents = ({
     return components
         .map((component) => {
             switch (component.part?.descriptor) {
-                case 'no.nav.navno:product-details':
+                case 'no.nav.navno:product-details': {
+                    log.info(JSON.stringify(component));
                     return transformProductDetailsPart(
                         component,
                         baseContent,
                         branch,
                         runSitecontentGuillotineQuery
                     );
+                }
                 case 'no.nav.navno:areapage-situation-card':
                     return transformAreapageSituationCardPart(component, branch);
                 default:
