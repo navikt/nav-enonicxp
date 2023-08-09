@@ -1,21 +1,4 @@
 <widget>
-	<display-name>Dashboard</display-name>
-	<description>Brukes til for å informere redaktører</description>
-	<super-type>base:unstructured</super-type>
-	<form>
-			<field-set>
-					<label>Dashboard</label>
-					<items>		
-							<input type="HtmlArea" name="text">
-									<label>Tekst</label>
-									<occurrences minimum="1" maximum="1"/>
-									<config>
-											<include>Undo Redo</include>
-											<exclude>JustifyBlock Underline</exclude>
-											<allowHeadings>h3 h4 normal</allowHeadings>
-									</config>
-							</input>
-					</items>
-			</field-set>
-	</form>
+	<div id="admin-widget" data-th-text="${text}">
+	</div>
 </widget>
