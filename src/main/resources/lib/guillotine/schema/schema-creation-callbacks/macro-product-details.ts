@@ -10,10 +10,13 @@ const buildProcessObject = (key: string) => {
     return {
         type: graphQlLib.reference('no_nav_navno_ProductDetails'),
         resolve: (env: graphQlLib.GraphQLResolverEnvironment<any, EmptyObject>) => {
+            log.info(`Processing product details for ${env.source[key]}`);
             const productDetail = env.source[key] ? contentLib.get({ key: env.source[key] }) : null;
             if (!productDetail) {
                 return null;
             }
+            log.info(`Processing product details for ${JSON.stringify(productDetail)}`);
+
             const components = productDetail?.page.regions.main.components;
             const processedComponents = components.map((component: any) => {
                 if (component.descriptor === 'no.nav.navno:html-area') {
@@ -38,7 +41,7 @@ const buildProcessObject = (key: string) => {
     };
 };
 
-export const productDetailsCallback: CreationCallback = (context, params) => {
+export const macroProductDetailsCallback: CreationCallback = (context, params) => {
     params.fields.processing_times = buildProcessObject('processing_times');
     params.fields.payout_dates = buildProcessObject('payout_dates');
     params.fields.rates = buildProcessObject('rates');

@@ -30,7 +30,7 @@ import { richTextCallback } from './schema-creation-callbacks/richtext';
 import { overviewDataCallback } from './schema-creation-callbacks/overview-data-callback';
 import { officeBranchCallback } from './schema-creation-callbacks/office-branch-callback';
 import { formDetailsCallback } from './schema-creation-callbacks/form-details';
-import { productDetailsCallback } from './schema-creation-callbacks/product-details';
+import { macroProductDetailsCallback } from './schema-creation-callbacks/macro-product-details';
 import { fragmentComponentDataCallback } from './schema-creation-callbacks/fragment-component-data';
 import { globalCaseTimeSetCallback } from './schema-creation-callbacks/global-case-time-set';
 import { saksbehandlingstidMacroCallback } from './schema-creation-callbacks/saksbehandlingstid-macro-config';
@@ -89,7 +89,7 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     Macro_no_nav_navno_global_value_with_math_DataConfig: globalValueWithMathMacroConfigCallback,
     Macro_no_nav_navno_html_fragment_DataConfig: macroHtmlFragmentCallback,
     Macro_no_nav_navno_form_details_DataConfig: formDetailsCallback,
-    Macro_no_nav_navno_product_details_DataConfig: productDetailsCallback,
+    Macro_no_nav_navno_product_details_DataConfig: macroProductDetailsCallback,
     Macro_no_nav_navno_alert_box_DataConfig: macroAlertboxCallback,
     RichText: richTextCallback,
     no_nav_navno_AreaPage_Audience: audienceCallback,
