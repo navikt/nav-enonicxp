@@ -46,11 +46,13 @@ import {
     SearchExternalResourceDescriptor,
 } from './search-config';
 import { PressLandingPage } from 'site/content-types/press-landing-page/press-landing-page';
-import { FormsOverview } from '../../site/content-types/forms-overview/forms-overview';
-import { FragmentCreator } from '../../site/content-types/fragment-creator/fragment-creator';
+import { FormsOverview } from 'site/content-types/forms-overview/forms-overview';
+import { FragmentCreator } from 'site/content-types/fragment-creator/fragment-creator';
+import { AnnouncementToEditors } from 'site/content-types/announcement-to-editors/announcement-to-editors';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
+    'announcement': AnnouncementToEditors;
     'area-page': AreaPage;
     calculator: Calculator;
     'contact-information': ContactInformation;

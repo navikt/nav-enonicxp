@@ -1,15 +1,29 @@
 import * as contentLib from '/lib/xp/content';
-import * as portalLib from '/lib/xp/portal';
 import thymeleafLib from '/lib/thymeleaf';
+import { runInContext } from "lib/context/run-in-context";
 
+const announcementId = '/www.nav.no/admin/announcement';
 const view = resolve('./dashboard.html');
-const text = "Skal erstattes med en contentLib.get()"
-const model = { text };
+
 const dashboardInfo = () => {
+    const content = runInContext({ branch: 'master' }, () =>
+        contentLib.get<any>({key: announcementId})
+    );
+
+    log.info(JSON.stringify(content, null, 4));
+
+    if (content && content.type === 'no.nav.navno:announcement-to-editors') {
+        const { displayName, text } = content.data;
+        const model = { displayName, text};
+
+        return {
+            body: thymeleafLib.render(view, model),
+            contentType: 'text/html',
+        };
+    }
     return {
-        body: thymeleafLib.render(view, model),
-        contentType: 'text/html',
-    };
+        body: null
+    }
 };
 
 exports.get = dashboardInfo;
