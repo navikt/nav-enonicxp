@@ -9,6 +9,7 @@ import { logger } from '../../../lib/utils/logging';
 import { GlobalValueItem } from '../../../lib/global-values/types';
 import { forceArray } from '../../../lib/utils/array-utils';
 import { applyModifiedData } from '../../../lib/utils/content-utils';
+import { CONTENT_ROOT_REPO_ID } from '../../../lib/constants';
 
 const itemNameExists = (valueItems: GlobalValueItem[], itemName: string, key: string) =>
     itemName && valueItems.find((item) => item.itemName === itemName && item.key !== key);
@@ -43,7 +44,7 @@ export const modifyGlobalValueItemService = (req: XP.Request) => {
 
     try {
         const repo = getRepoConnection({
-            repoId: 'com.enonic.cms.default',
+            repoId: CONTENT_ROOT_REPO_ID,
             branch: 'draft',
         });
 

@@ -12,6 +12,7 @@ import {
 import { logger } from '../../../lib/utils/logging';
 import { forceArray } from '../../../lib/utils/array-utils';
 import { applyModifiedData } from '../../../lib/utils/content-utils';
+import { CONTENT_ROOT_REPO_ID } from '../../../lib/constants';
 
 export const removeGlobalValueItemService = (req: XP.Request) => {
     const { key, contentId } = req.params;
@@ -53,7 +54,7 @@ export const removeGlobalValueItemService = (req: XP.Request) => {
 
     try {
         const repo = getRepoConnection({
-            repoId: 'com.enonic.cms.default',
+            repoId: CONTENT_ROOT_REPO_ID,
             branch: 'draft',
         });
 
