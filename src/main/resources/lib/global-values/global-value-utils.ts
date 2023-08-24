@@ -6,6 +6,8 @@ import { GlobalNumberValueItem } from '../../types/content-types/global-value-se
 import { CaseTimeItem } from '../../types/content-types/global-case-time-set';
 import { GlobalValueContentTypes, isGlobalValueSetType } from './types';
 import { forceArray } from '../utils/array-utils';
+import { runInLocaleContext } from '../localization/locale-context';
+import { getLayersData } from '../localization/layers-data';
 
 const uniqueKeySeparator = '::';
 
@@ -82,7 +84,12 @@ export const getGlobalValueSet = (contentId?: string): GlobalValueContentTypes |
         return null;
     }
 
-    const content = contentLib.get({ key: contentId });
+    const { defaultLocale } = getLayersData();
+
+    // Global values should always be retrieved from the default layer
+    const content = runInLocaleContext({ locale: defaultLocale }, () =>
+        contentLib.get({ key: contentId })
+    );
     if (!content || !isGlobalValueSetType(content)) {
         return null;
     }
