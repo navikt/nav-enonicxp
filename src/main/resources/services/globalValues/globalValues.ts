@@ -6,33 +6,46 @@ import { modifyGlobalValueItemService } from './modify/modify';
 import { removeGlobalValueItemService } from './remove/remove';
 import { addGlobalValueItemService } from './add/add';
 import { reorderGlobalValuesService } from './reorderValues/reorderGlobalValuesService';
+import { runInLocaleContext } from '../../lib/localization/locale-context';
+import { getLayersData } from '../../lib/localization/layers-data';
 
-export const get = (req: XP.Request) => {
+const getRequestHandler = (req: XP.Request) => {
     const subPath = getServiceRequestSubPath(req);
 
     if (!subPath) {
-        return globalValueSelectorService(req);
+        return globalValueSelectorService;
     }
 
     switch (subPath) {
         case 'getValueSet':
-            return getGlobalValueSetService(req);
+            return getGlobalValueSetService;
         case 'usage':
-            return getGlobalValueUsageService(req);
+            return getGlobalValueUsageService;
         case 'add':
-            return addGlobalValueItemService(req);
+            return addGlobalValueItemService;
         case 'modify':
-            return modifyGlobalValueItemService(req);
+            return modifyGlobalValueItemService;
         case 'remove':
-            return removeGlobalValueItemService(req);
+            return removeGlobalValueItemService;
         case 'reorder':
-            return reorderGlobalValuesService(req);
+            return reorderGlobalValuesService;
         default:
-            break;
+            return null;
+    }
+};
+
+export const get = (req: XP.Request) => {
+    const reqHandler = getRequestHandler(req);
+
+    if (!reqHandler) {
+        return {
+            status: 404,
+            contentType: 'application/json',
+        };
     }
 
-    return {
-        status: 404,
-        contentType: 'application/json',
-    };
+    const { defaultLocale } = getLayersData();
+
+    // Global values should always use the default layer
+    return runInLocaleContext({ locale: defaultLocale }, () => reqHandler(req));
 };
