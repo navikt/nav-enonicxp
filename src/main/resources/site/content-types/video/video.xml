@@ -15,7 +15,7 @@
                 </input>
                 <input name="mediaId" type="TextLine">
                     <label>Qbrick media-id</label>
-                    <help-text>For eksempel ddf118c6-00015227-86825a7e. Denne id'en henter du fra Qbrick eller ber om hjelp fra noen som har tilgang. Du kan ikke bruke denne innholdstypen på videoer fra Vimeo eller ligende.</help-text>
+                    <help-text>For eksempel ddf118c6-00015227-86825a7e. Denne id'en henter du fra Qbrick eller ber om hjelp fra noen som har tilgang. Du kan ikke bruke denne innholdstypen til videoer fra Vimeo eller liknende.</help-text>
                     <occurrences minimum="1" maximum="1"/>
                 </input>
                 <input name="accountId" type="Long">
