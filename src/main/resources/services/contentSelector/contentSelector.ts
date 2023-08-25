@@ -58,12 +58,17 @@ const transformHit = (content: Content): SelectorHit =>
         `${CONTENT_STUDIO_EDIT_PATH_PREFIX}/${content._id}`
     );
 
-const getHitsFromQuery = (query: string, contentTypes?: ContentDescriptor[]): SelectorHit[] => {
+const getHitsFromQuery = (
+    query: string,
+    contentTypes?: ContentDescriptor[],
+    sort?: string
+): SelectorHit[] => {
     return contentLib
         .query({
             count: 1000,
             contentTypes: contentTypes,
             query: query || undefined,
+            sort,
         })
         .hits.map(transformHit);
 };
@@ -97,13 +102,14 @@ export const get = (req: XP.Request) => {
         ids,
         contentTypes: contentTypesJson,
         selectorQuery,
+        sort,
     } = req.params as ReqParams;
 
     const query = buildQuery(userQuery, selectorQuery);
     const contentTypes = parseContentTypes(contentTypesJson);
 
     const hitsFromIds = getHitsFromIds(forceArray(ids));
-    const hitsFromQuery = getHitsFromQuery(query, contentTypes || undefined);
+    const hitsFromQuery = getHitsFromQuery(query, contentTypes || undefined, sort);
     const hits = removeDuplicates([...hitsFromIds, ...hitsFromQuery], (a, b) => a.id === b.id);
 
     return {

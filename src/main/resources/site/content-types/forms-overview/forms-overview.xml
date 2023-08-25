@@ -120,6 +120,7 @@
                         <param value="selectorQuery">language="{language}" AND
                             data.audience._selected="{data.audience._selected}" AND data.formDetailsTargets LIKE "*"
                         </param>
+                        <param value="sort">data.area ASC, displayName ASC</param>
                     </config>
                 </input>
             </items>
