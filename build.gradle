@@ -76,11 +76,11 @@ dependencies {
     include "com.enonic.xp:lib-websocket:${xpVersion}"
     include "com.enonic.lib:lib-cache:2.2.0"
     include "com.enonic.lib:lib-graphql-playground:0.0.1"
-    include "com.enonic.lib:lib-guillotine:6.0.5"
+    include "com.enonic.lib:lib-guillotine:6.2.1"
     include "com.enonic.lib:lib-http-client:2.4.0"
     include "com.enonic.lib:lib-thymeleaf:2.0.1"
     include 'com.enonic.lib:lib-urlredirect:3.0.0'
-    webjar "org.webjars.npm:html-entities:2.1.0"
+    webjar "org.webjars.npm:html-entities:2.3.3"
     webjar "org.webjars.npm:striptags:3.1.1"
 }
 
