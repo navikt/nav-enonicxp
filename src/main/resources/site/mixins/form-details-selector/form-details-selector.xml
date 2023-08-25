@@ -10,16 +10,6 @@
                         <allowContentType>${app}:form-details</allowContentType>
                     </config>
                 </input>
-                <input name="overviewsDisabled" type="ComboBox">
-                    <label>Skjul fra skjemaoversikter</label>
-                    <help-text>Velg skjemaoversikter der dette produktet IKKE skal vises</help-text>
-                    <occurrences minimum="0" maximum="0"/>
-                    <config>
-                        <option value="application">Søknad / skjema</option>
-                        <option value="complaint">Klage- og anke</option>
-                        <option value="addendum">Ettersendelse</option>
-                    </config>
-                </input>
             </items>
         </field-set>
     </form>

@@ -111,7 +111,8 @@ const transformToListItem = (
 const buildFormDetailsList = (
     audience: FormsOverview['audience'],
     language: string,
-    overviewType: FormsOverview['overviewType']
+    overviewType: FormsOverview['overviewType'],
+    excludedContent: string[]
 ) => {
     const { _selected: selectedAudience } = audience;
 
@@ -169,12 +170,16 @@ const buildFormDetailsList = (
                             values: [true],
                         },
                     },
-                    {
-                        hasValue: {
-                            field: 'data.overviewsDisabled',
-                            values: [overviewType],
-                        },
-                    },
+                    ...(excludedContent.length > 0
+                        ? [
+                              {
+                                  hasValue: {
+                                      field: '_id',
+                                      values: excludedContent,
+                                  },
+                              },
+                          ]
+                        : []),
                 ],
             },
         },
@@ -266,7 +271,7 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
             }
 
             const { language, data } = content;
-            const { audience, overviewType } = data;
+            const { audience, overviewType, excludedContent } = data;
 
             if (!audience?._selected) {
                 logger.error(`Audience not set for overview page id ${contentId}`);
@@ -285,7 +290,12 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
                 return [];
             }
 
-            return buildFormDetailsList(audience, language, overviewType);
+            return buildFormDetailsList(
+                audience,
+                language,
+                overviewType,
+                forceArray(excludedContent)
+            );
         },
     };
 };

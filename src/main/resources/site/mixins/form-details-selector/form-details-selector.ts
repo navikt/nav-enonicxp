@@ -4,9 +4,4 @@ export interface FormDetailsSelector {
    * Velg alle detaljer som skal brukes på denne siden
    */
   formDetailsTargets?: Array<string>;
-
-  /**
-   * Skjul fra skjemaoversikter
-   */
-  overviewsDisabled?: Array<"application" | "complaint" | "addendum">;
 }
