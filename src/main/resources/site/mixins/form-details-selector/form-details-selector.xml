@@ -1,16 +1,28 @@
 <mixin>
     <form>
-    <field-set>
+        <field-set>
             <label>Skjemadetaljer</label>
             <items>
                 <input name="formDetailsTargets" type="ContentSelector">
-                <label>Velg alle detaljer som skal brukes på denne siden</label>
+                    <label>Velg alle detaljer som skal brukes på denne siden</label>
                     <occurrences minimum="0" maximum="0"/>
                     <config>
                         <allowContentType>${app}:form-details</allowContentType>
                     </config>
                 </input>
             </items>
+        </field-set>
+        <field-set>
+            <label>Skjul fra skjemaoversikter</label>
+            <input name="overviewsDisabled" type="ComboBox">
+                <label>Velg skjemaoversikter der dette produktet IKKE skal vises</label>
+                <occurrences minimum="0" maximum="0"/>
+                <config>
+                    <option value="application">Søknad / skjema</option>
+                    <option value="complaint">Klage- og anke</option>
+                    <option value="addendum">Ettersendelse</option>
+                </config>
+            </input>
         </field-set>
     </form>
 </mixin>

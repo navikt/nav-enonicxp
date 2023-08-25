@@ -169,6 +169,12 @@ const buildFormDetailsList = (
                             values: [true],
                         },
                     },
+                    {
+                        hasValue: {
+                            field: 'data.overviewsDisabled',
+                            values: [overviewType],
+                        },
+                    },
                 ],
             },
         },
