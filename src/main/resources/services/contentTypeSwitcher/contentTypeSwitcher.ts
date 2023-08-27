@@ -4,6 +4,7 @@ import { contentTypesInContentSwitcher } from '../../lib/contenttype-lists';
 import { logger } from '../../lib/utils/logging';
 import { stringArrayToSet } from '../../lib/utils/array-utils';
 import { applyModifiedData } from '../../lib/utils/content-utils';
+import { contentTypesWithCustomPath } from './contentTypeProperties';
 
 const contentTypesMap = stringArrayToSet(contentTypesInContentSwitcher);
 
@@ -30,7 +31,11 @@ const setContentType = (
                 }
 
                 if (wipeData) {
-                    content.data = {};
+                    const { customPath } = content.data;
+                    content.data =
+                        contentTypesWithCustomPath.includes(contentType) && customPath
+                            ? { customPath }
+                            : {};
                 }
 
                 return applyModifiedData(content);
