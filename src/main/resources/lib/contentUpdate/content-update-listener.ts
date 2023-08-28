@@ -2,10 +2,11 @@ import * as eventLib from '/lib/xp/event';
 import * as contentLib from '/lib/xp/content';
 import * as clusterLib from '/lib/xp/cluster';
 import { runInContext } from '../context/run-in-context';
-import { CONTENT_REPO_PREFIX } from '../constants';
+import { CONTENT_REPO_PREFIX, CONTENT_ROOT_REPO_ID } from '../constants';
 import { transformFragmentCreatorToFragment } from '../fragmentCreator/fragment-creator';
 import { isContentLocalized } from '../localization/locale-utils';
 import { updateQbrickVideoContent } from './video-update';
+import { logger } from '../utils/logging';
 
 let hasContentUpdateListener = false;
 
@@ -27,7 +28,9 @@ const handleEvent = (event: eventLib.EnonicEvent) => {
                 return;
             }
 
-            switch (content.type) {
+            const { _path, type } = content;
+
+            switch (type) {
                 case 'no.nav.navno:video': {
                     updateQbrickVideoContent(content);
                     break;
@@ -37,6 +40,23 @@ const handleEvent = (event: eventLib.EnonicEvent) => {
                         content,
                         repoId: repo,
                     });
+                    break;
+                }
+                // These content types should never be localized
+                case 'no.nav.navno:payout-dates':
+                case 'no.nav.navno:global-value-set':
+                case 'no.nav.navno:global-case-time-set': {
+                    if (repo !== CONTENT_ROOT_REPO_ID) {
+                        const layerId = repo.replace(`${CONTENT_REPO_PREFIX}.`, '');
+                        logger.info(
+                            `Content on "${_path}" with type "${type}" was localized to layer "${layerId}" - reverting!`
+                        );
+                        contentLib.resetInheritance({
+                            key: id,
+                            projectName: layerId,
+                            inherit: ['CONTENT', 'PARENT', 'NAME', 'SORT'],
+                        });
+                    }
                     break;
                 }
             }
