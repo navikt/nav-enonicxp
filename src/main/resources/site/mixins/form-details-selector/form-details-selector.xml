@@ -1,10 +1,10 @@
 <mixin>
     <form>
-    <field-set>
+        <field-set>
             <label>Skjemadetaljer</label>
             <items>
                 <input name="formDetailsTargets" type="ContentSelector">
-                <label>Velg alle detaljer som skal brukes på denne siden</label>
+                    <label>Velg alle detaljer som skal brukes på denne siden</label>
                     <occurrences minimum="0" maximum="0"/>
                     <config>
                         <allowContentType>${app}:form-details</allowContentType>

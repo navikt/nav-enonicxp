@@ -106,6 +106,25 @@
                 </input>
             </items>
         </field-set>
+        <field-set>
+            <label>Ekskluderte sider</label>
+            <items>
+                <input name="excludedContent" type="CustomSelector">
+                    <label>Velg innhold som ikke skal vises i denne oversikten</label>
+                    <occurrences minimum="0" maximum="0"/>
+                    <config>
+                        <service>contentSelector</service>
+                        <param value="contentTypes">
+                            ["no.nav.navno:content-page-with-sidemenus","no.nav.navno:guide-page"]
+                        </param>
+                        <param value="selectorQuery">language="{language}" AND
+                            data.audience._selected="{data.audience._selected}" AND data.formDetailsTargets LIKE "*"
+                        </param>
+                        <param value="sort">data.area ASC, displayName ASC</param>
+                    </config>
+                </input>
+            </items>
+        </field-set>
         <mixin name="owner"/>
         <field-set>
             <label>Søkeoptimalisering</label>

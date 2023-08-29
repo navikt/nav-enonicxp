@@ -7,19 +7,19 @@
     <allow-child-content>true</allow-child-content>
     <form>
         <field-set>
-            <label>Videoinfo</label>
+            <label>Videoinfo fra Qbrick</label>
             <items>
                 <input name="title" type="TextLine">
                     <label>Videotittel</label>
                     <occurrences minimum="1" maximum="1"/>
                 </input>
                 <input name="mediaId" type="TextLine">
-                    <label>Media id</label>
-                    <help-text>For eksempel ddf118c6-00015227-86825a7e. Denne id'en henter du fra Qbrick eller ber om hjelp fra noen som har tilgang.</help-text>
+                    <label>Qbrick media-id</label>
+                    <help-text>For eksempel ddf118c6-00015227-86825a7e. Denne id'en henter du fra Qbrick eller ber om hjelp fra noen som har tilgang. Du kan ikke bruke denne innholdstypen til videoer fra Vimeo eller liknende.</help-text>
                     <occurrences minimum="1" maximum="1"/>
                 </input>
                 <input name="accountId" type="Long">
-                    <label>Konto-id</label>
+                    <label>Qbrick konto-id</label>
                     <help-text>I de fleste tilfeller kan du bruke standard foreslått id '763558'.</help-text>
                     <occurrences minimum="1" maximum="1"/>
                     <default>763558</default>

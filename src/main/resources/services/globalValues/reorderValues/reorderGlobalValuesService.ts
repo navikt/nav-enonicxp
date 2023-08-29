@@ -5,6 +5,7 @@ import { logger } from '../../../lib/utils/logging';
 import { GlobalValueItem } from '../../../lib/global-values/types';
 import { forceArray, parseJsonArray } from '../../../lib/utils/array-utils';
 import { applyModifiedData } from '../../../lib/utils/content-utils';
+import { CONTENT_ROOT_REPO_ID } from '../../../lib/constants';
 
 // Verify that the keys-array from the request matches the keys in the global values set
 const validateKeys = (keysFromParam: string[], valueItems: GlobalValueItem[]) => {
@@ -44,7 +45,7 @@ export const reorderGlobalValuesService = (req: XP.Request) => {
 
     try {
         const repo = getRepoConnection({
-            repoId: 'com.enonic.cms.default',
+            repoId: CONTENT_ROOT_REPO_ID,
             branch: 'draft',
         });
 

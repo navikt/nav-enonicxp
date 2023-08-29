@@ -41,6 +41,7 @@ export const linkContentTypes: ContentTypeList = [
 export const contentTypesInSitemap: ContentTypeList = [
     ...dynamicPageContentTypes,
     ...legacyPageContentTypes,
+    `${APP_DESCRIPTOR}:office-branch`,
 ];
 
 export const contentTypesInDataQuery: ContentTypeList = [

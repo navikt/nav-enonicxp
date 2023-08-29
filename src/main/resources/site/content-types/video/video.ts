@@ -6,12 +6,12 @@ export interface Video {
   title: string;
 
   /**
-   * Media id
+   * Qbrick media-id
    */
   mediaId: string;
 
   /**
-   * Konto-id
+   * Qbrick konto-id
    */
   accountId: number;
 
