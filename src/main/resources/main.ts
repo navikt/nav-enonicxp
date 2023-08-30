@@ -27,12 +27,12 @@ initLayersData();
 activateLayersEventListeners();
 
 startReliableEventAckListener();
-activateCacheEventListeners();
-activateSitemapDataUpdateEventListener();
-activateContentListItemUnpublishedListener();
-activateCustomPathNodeListeners();
-activateSearchIndexEventHandlers();
-activateContentUpdateListener();
+// activateCacheEventListeners();
+// activateSitemapDataUpdateEventListener();
+// activateContentListItemUnpublishedListener();
+// activateCustomPathNodeListeners();
+// activateSearchIndexEventHandlers();
+// activateContentUpdateListener();
 
 hookLibsWithTimeTravel();
 

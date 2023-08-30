@@ -6,6 +6,8 @@ import { nodeLibConnectStandard } from '../time-travel/standard-functions';
 import { logger } from './logging';
 import { getUnixTimeFromDateTimeString } from './datetime-utils';
 import { contentTypesWithCustomEditor } from '../contenttype-lists';
+import { COMPONENT_APP_KEY } from '../constants';
+import { LayerMigration } from '../../site/x-data/layerMigration/layerMigration';
 
 const MAX_VERSIONS_COUNT_TO_RETRIEVE = 1000;
 
@@ -59,18 +61,21 @@ export const getNodeVersions = ({
     // Reverse the versions array to process oldest versions first
     // This ensures the initial committed version is kept, and subsequent (unmodified)
     // commits are discarded
-    const modifiedVersions = commitedVersions.reverse().reduce((acc, version) => {
-        const content = repoConnectionStandard.get({
-            key: version.nodeId,
-            versionId: version.versionId,
-        });
+    const modifiedVersions = commitedVersions.reverse().reduce(
+        (acc, version) => {
+            const content = repoConnectionStandard.get({
+                key: version.nodeId,
+                versionId: version.versionId,
+            });
 
-        if (!content || content.modifiedTime === acc[0]?.modifiedTime) {
-            return acc;
-        }
+            if (!content || content.modifiedTime === acc[0]?.modifiedTime) {
+                return acc;
+            }
 
-        return [{ ...version, modifiedTime: content.modifiedTime }, ...acc];
-    }, [] as (NodeVersionMetadata & { modifiedTime?: string })[]);
+            return [{ ...version, modifiedTime: content.modifiedTime }, ...acc];
+        },
+        [] as (NodeVersionMetadata & { modifiedTime?: string })[]
+    );
 
     return modifiedVersions;
 };
@@ -107,6 +112,51 @@ export const getVersionFromTime = ({
     return foundVersion;
 };
 
+const getPreMigrationVersions = ({
+    nodeKey,
+    repoId,
+    branch,
+}: {
+    nodeKey: string;
+    repoId: string;
+    branch: RepoBranch;
+}) => {
+    const contentNode = getRepoConnection({ repoId, branch: 'draft' }).get(nodeKey);
+    if (!contentNode) {
+        logger.info(`Content not found: ${nodeKey} ${repoId}`);
+        return [];
+    }
+
+    const layerMigrationData = contentNode.x?.[COMPONENT_APP_KEY]?.layerMigration as LayerMigration;
+    if (!layerMigrationData) {
+        logger.info(`Layer migration data not found: ${nodeKey} ${repoId}`);
+        return [];
+    }
+
+    const {
+        targetReferenceType,
+        repoId: archiveRepoId,
+        contentId: archivedContentId,
+        ts: migrationTimestamp,
+    } = layerMigrationData;
+
+    if (targetReferenceType !== 'archived') {
+        logger.info(`Layer migration reference is wrong type: ${nodeKey} ${repoId}`);
+        return [];
+    }
+
+    const versions = getNodeVersions({
+        nodeKey: archivedContentId,
+        branch: branch,
+        repoId: archiveRepoId,
+    }).filter(
+        (version) =>
+            version.nodePath.startsWith('/content') && version.timestamp < migrationTimestamp
+    );
+
+    return versions;
+};
+
 // Workaround for content types with a custom editor, which does not update the modifiedTime field
 // in the same way as the Content Studio editor. We always need to include all timestamps for these
 // types.
@@ -123,14 +173,33 @@ const shouldGetModifiedTimestampsOnly = (contentRef: string, repoId: string) => 
 export const getPublishedVersionTimestamps = (contentRef: string) => {
     const { repository } = contextLib.get();
 
+    const nodeKey = getNodeKey(contentRef);
+
     const versions = getNodeVersions({
-        nodeKey: getNodeKey(contentRef),
+        nodeKey,
         branch: 'master',
         repoId: repository,
         modifiedOnly: shouldGetModifiedTimestampsOnly(contentRef, repository),
     });
 
-    return versions.map((version) => version.timestamp);
+    const archivedVersions = getPreMigrationVersions({
+        nodeKey,
+        repoId: repository,
+        branch: 'master',
+    });
+
+    const liveTs = versions.map((version) => version.timestamp);
+
+    const oldestLiveTs = liveTs.slice(-1)[0];
+
+    const archivedTs = archivedVersions
+        .map((version) => version.timestamp)
+        .filter((ts) => ts < oldestLiveTs);
+
+    logger.info(`Found live versions: ${JSON.stringify(liveTs)}`);
+    logger.info(`Found archived versions: ${JSON.stringify(archivedTs)}`);
+
+    return [...liveTs, ...archivedTs];
 };
 
 // If the requested time is older than the oldest version of the content,

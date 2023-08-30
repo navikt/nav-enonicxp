@@ -17,7 +17,7 @@ export const publishedVersionsReqHandler = (req: XP.Request) => {
         };
     }
 
-    const publisedTimestamps = runInLocaleContext(
+    const publishedTimestamps = runInLocaleContext(
         { locale: locale || getLayersData().defaultLocale },
         () => getPublishedVersionTimestamps(id)
     );
@@ -26,7 +26,7 @@ export const publishedVersionsReqHandler = (req: XP.Request) => {
         return {
             status: 200,
             contentType: 'application/json',
-            body: publisedTimestamps,
+            body: publishedTimestamps,
         };
     } catch (e) {
         logger.error(`Error while retrieving published version timestamps - ${e}`);

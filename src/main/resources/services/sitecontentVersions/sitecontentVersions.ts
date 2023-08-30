@@ -4,7 +4,7 @@ import { logger } from '../../lib/utils/logging';
 import { getContentVersionFromDateTime } from '../../lib/time-travel/get-content-from-datetime';
 import { getServiceRequestSubPath } from '../service-utils';
 import { userIsAuthenticated, validateServiceSecretHeader } from '../../lib/utils/auth-utils';
-import { publishedVersionsReqHandler } from './publishedVersions/publisedVersions';
+import { publishedVersionsReqHandler } from './publishedVersions/publishedVersions';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { getLayersData } from '../../lib/localization/layers-data';
 import { SITECONTENT_404_MSG_PREFIX } from '../../lib/constants';
