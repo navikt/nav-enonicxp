@@ -21,6 +21,11 @@ export interface InternalLink {
   redirectSubpaths: boolean;
 
   /**
+   * Skriv inn ønsket kort-url
+   */
+  customPath?: string;
+
+  /**
    * Permanent redirect (innhold flyttet til ny url)
    */
   permanentRedirect: boolean;
