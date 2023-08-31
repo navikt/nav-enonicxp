@@ -26,7 +26,7 @@ export const getContentVersionFromDateTime = ({
         return null;
     }
 
-    const repoConnection = getRepoConnection({ repoId, branch });
+    const repoConnection = getRepoConnection({ repoId, branch: 'draft' });
 
     const baseContent = repoConnection.get(contentRef);
     if (!baseContent) {
