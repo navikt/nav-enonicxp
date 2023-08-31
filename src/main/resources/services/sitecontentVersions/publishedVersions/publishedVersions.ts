@@ -26,13 +26,13 @@ export const publishedVersionsReqHandler = (req: XP.Request) => {
         };
     }
 
-    const publishedTimestamps = getPublishedVersionRefs(id, locale);
+    const publishedVersionRefs = getPublishedVersionRefs(id, locale);
 
     try {
         return {
             status: 200,
             contentType: 'application/json',
-            body: publishedTimestamps,
+            body: publishedVersionRefs,
         };
     } catch (e) {
         logger.error(`Error while retrieving published version timestamps - ${e}`);

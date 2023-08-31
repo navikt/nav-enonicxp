@@ -137,26 +137,25 @@ const getLayerMigrationVersionRefs = ({
     }
 
     const {
-        targetReferenceType,
+        // targetReferenceType,
         repoId: archiveRepoId,
         contentId: archivedContentId,
         locale: archivedLocale,
         ts: migrationTimestamp,
     } = layerMigrationData;
 
-    if (targetReferenceType !== 'archived') {
-        logger.info(`Layer migration reference is wrong type: ${nodeKey} ${repoId}`);
-        return [];
-    }
+    // if (targetReferenceType !== 'archived') {
+    //     logger.info(`Layer migration reference is wrong type: ${nodeKey} ${repoId}`);
+    //     return [];
+    // }
+
+    logger.info(`Found layer migration data: ${JSON.stringify(layerMigrationData)}`);
 
     const versions = getNodeVersions({
         nodeKey: archivedContentId,
         branch: branch,
         repoId: archiveRepoId,
-    }).filter(
-        (version) =>
-            version.nodePath.startsWith('/content') && version.timestamp < migrationTimestamp
-    );
+    }).filter((version) => version.nodePath.startsWith('/content'));
 
     return versions.map((version) => ({
         contentId: version.nodeId,
@@ -194,22 +193,22 @@ export const getPublishedVersionRefs = (
     });
 
     const baseRefs = versions.map((version) => ({
-        timestamp: version.timestamp,
         contentId: version.nodeId,
+        timestamp: version.timestamp,
         locale,
     }));
 
-    const archivedVersions = getLayerMigrationVersionRefs({
+    const migrationRefs = getLayerMigrationVersionRefs({
         nodeKey,
         repoId,
         branch: 'master',
     });
 
-    if (archivedVersions.length === 0) {
+    if (migrationRefs.length === 0) {
         return baseRefs;
     }
 
-    return [...baseRefs, ...archivedVersions].sort((a, b) => (a.timestamp < b.timestamp ? 1 : -1));
+    return [...baseRefs, ...migrationRefs].sort((a, b) => (a.timestamp < b.timestamp ? 1 : -1));
 };
 
 // If the requested time is older than the oldest version of the content,
