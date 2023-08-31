@@ -8,11 +8,14 @@ import { getUnixTimeFromDateTimeString } from './datetime-utils';
 import { contentTypesWithCustomEditor } from '../contenttype-lists';
 import { COMPONENT_APP_KEY } from '../constants';
 import { LayerMigration } from '../../site/x-data/layerMigration/layerMigration';
+import { getLayersData } from '../localization/layers-data';
 
 const MAX_VERSIONS_COUNT_TO_RETRIEVE = 1000;
 
 export const getNodeKey = (contentRef: string) =>
     contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
+
+type VersionHistoryReference = { contentId: string; timestamp: string; locale: string };
 
 type GetNodeVersionsParams = {
     nodeKey: string;
@@ -112,7 +115,7 @@ export const getVersionFromTime = ({
     return foundVersion;
 };
 
-const getPreMigrationVersions = ({
+const getLayerMigrationVersionRefs = ({
     nodeKey,
     repoId,
     branch,
@@ -120,7 +123,7 @@ const getPreMigrationVersions = ({
     nodeKey: string;
     repoId: string;
     branch: RepoBranch;
-}) => {
+}): VersionHistoryReference[] => {
     const contentNode = getRepoConnection({ repoId, branch: 'draft' }).get(nodeKey);
     if (!contentNode) {
         logger.info(`Content not found: ${nodeKey} ${repoId}`);
@@ -137,6 +140,7 @@ const getPreMigrationVersions = ({
         targetReferenceType,
         repoId: archiveRepoId,
         contentId: archivedContentId,
+        locale: archivedLocale,
         ts: migrationTimestamp,
     } = layerMigrationData;
 
@@ -154,7 +158,11 @@ const getPreMigrationVersions = ({
             version.nodePath.startsWith('/content') && version.timestamp < migrationTimestamp
     );
 
-    return versions;
+    return versions.map((version) => ({
+        contentId: version.nodeId,
+        timestamp: version.timestamp,
+        locale: archivedLocale,
+    }));
 };
 
 // Workaround for content types with a custom editor, which does not update the modifiedTime field
@@ -170,36 +178,38 @@ const shouldGetModifiedTimestampsOnly = (contentRef: string, repoId: string) => 
 };
 
 // Used by the version history selector in the frontend
-export const getPublishedVersionTimestamps = (contentRef: string) => {
-    const { repository } = contextLib.get();
+export const getPublishedVersionRefs = (
+    contentRef: string,
+    locale: string
+): VersionHistoryReference[] => {
+    const repoId = getLayersData().localeToRepoIdMap[locale];
 
     const nodeKey = getNodeKey(contentRef);
 
     const versions = getNodeVersions({
         nodeKey,
         branch: 'master',
-        repoId: repository,
-        modifiedOnly: shouldGetModifiedTimestampsOnly(contentRef, repository),
+        repoId,
+        modifiedOnly: shouldGetModifiedTimestampsOnly(contentRef, repoId),
     });
 
-    const archivedVersions = getPreMigrationVersions({
+    const baseRefs = versions.map((version) => ({
+        timestamp: version.timestamp,
+        contentId: version.nodeId,
+        locale,
+    }));
+
+    const archivedVersions = getLayerMigrationVersionRefs({
         nodeKey,
-        repoId: repository,
+        repoId,
         branch: 'master',
     });
 
-    const liveTs = versions.map((version) => version.timestamp);
+    if (archivedVersions.length === 0) {
+        return baseRefs;
+    }
 
-    const oldestLiveTs = liveTs.slice(-1)[0];
-
-    const archivedTs = archivedVersions
-        .map((version) => version.timestamp)
-        .filter((ts) => ts < oldestLiveTs);
-
-    logger.info(`Found live versions: ${JSON.stringify(liveTs)}`);
-    logger.info(`Found archived versions: ${JSON.stringify(archivedTs)}`);
-
-    return [...liveTs, ...archivedTs];
+    return [...baseRefs, ...archivedVersions];
 };
 
 // If the requested time is older than the oldest version of the content,

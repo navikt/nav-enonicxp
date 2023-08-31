@@ -1,8 +1,7 @@
 import { isUUID } from '../../../lib/utils/uuid';
-import { getPublishedVersionTimestamps } from '../../../lib/utils/version-utils';
+import { getPublishedVersionRefs } from '../../../lib/utils/version-utils';
 import { logger } from '../../../lib/utils/logging';
 import { getLayersData } from '../../../lib/localization/layers-data';
-import { runInLocaleContext } from '../../../lib/localization/locale-context';
 
 export const publishedVersionsReqHandler = (req: XP.Request) => {
     const { id, locale } = req.params;
@@ -11,16 +10,23 @@ export const publishedVersionsReqHandler = (req: XP.Request) => {
         return {
             status: 400,
             body: {
-                message: 'No valid id parameter was provided',
+                message: 'Parameter "id" must be a valid contentId',
             },
             contentType: 'application/json',
         };
     }
 
-    const publishedTimestamps = runInLocaleContext(
-        { locale: locale || getLayersData().defaultLocale },
-        () => getPublishedVersionTimestamps(id)
-    );
+    if (!locale || !getLayersData().localeToRepoIdMap[locale]) {
+        return {
+            status: 400,
+            body: {
+                message: 'Parameter "locale" must be a valid layer locale',
+            },
+            contentType: 'application/json',
+        };
+    }
+
+    const publishedTimestamps = getPublishedVersionRefs(id, locale);
 
     try {
         return {
