@@ -16,7 +16,7 @@ import { URLS } from '../constants';
 import { dateTimesAreEqual, fixDateFormat } from '../utils/datetime-utils';
 import { forceArray } from '../utils/array-utils';
 import { hasExternalProductUrl } from '../paths/path-utils';
-import { externalSearchIndexHandler } from './external-search-index';
+import { externalSearchPostDocument } from './external-search-index';
 
 const SEARCH_REPO_CONTENT_PARENT_PATH = `/${SEARCH_REPO_CONTENT_BASE_NODE}`;
 
@@ -162,7 +162,7 @@ export const createOrUpdateSearchNode = ({
     locale: string;
     searchRepoConnection?: RepoConnection;
 }): UpdateResult => {
-    externalSearchIndexHandler(contentNode, locale);
+    externalSearchPostDocument(contentNode, locale);
 
     const existingSearchNodes = getExistingSearchNodes(
         contentNode._id,

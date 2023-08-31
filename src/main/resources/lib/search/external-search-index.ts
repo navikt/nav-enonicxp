@@ -32,12 +32,18 @@ type SearchIndexDocument = {
     };
 };
 
-const buildDocumentId = (content: IndexableContentNode, locale: string) =>
-    `${content._id}-${locale}`;
+const buildDocumentId = (contentId: string, locale: string) => `${contentId}-${locale}`;
 
-const buildDocument = (content: IndexableContentNode, locale: string): SearchIndexDocument => {
+const buildDocument = (
+    content: IndexableContentNode,
+    locale: string
+): SearchIndexDocument | null => {
+    if (!content) {
+        return null;
+    }
+
     return {
-        id: buildDocumentId(content, locale),
+        id: buildDocumentId(content._id, locale),
         href: `${URLS.FRONTEND_ORIGIN}${stripPathPrefix(content._path)}`,
         title: content.data.title || content.displayName,
         ingress: content.data.ingress || '',
@@ -63,7 +69,7 @@ const postDocument = (document: SearchIndexDocument) => {
         body: JSON.stringify([document]),
     });
 
-    logger.info(`[POST] Response from search index api: ${response.status} - ${response.message}`);
+    logger.info(`[POST] Response from search index api: ${JSON.stringify(response)}`);
 };
 
 const deleteDocument = (id: string) => {
@@ -75,11 +81,14 @@ const deleteDocument = (id: string) => {
         connectionTimeout: 10000,
     });
 
-    logger.info(`[DELETE]Response from search index api: ${response.status} - ${response.message}`);
+    logger.info(`[DELETE]Response from search index api: ${JSON.stringify(response)}`);
 };
 
-const _externalSearchIndexHandler = (content: RepoNode<Content>, locale: string) => {
+const _externalSearchPostDocument = (content: RepoNode<Content>, locale: string) => {
     const document = buildDocument(content, locale);
+    if (!document) {
+        return;
+    }
 
     taskLib.executeFunction({
         description: `Updating external search index for ${content._path} - ${locale}`,
@@ -96,8 +105,12 @@ const _externalSearchDeleteDocument = (contentId: string, locale: string) => {
     });
 };
 
-export const externalSearchIndexHandler =
-    app.config.env === 'dev' ? _externalSearchIndexHandler : () => ({});
+export const externalSearchPostDocument =
+    app.config.env === 'dev' || app.config.env === 'localhost'
+        ? _externalSearchPostDocument
+        : () => ({});
 
 export const externalSearchDeleteDocument =
-    app.config.env === 'dev' ? _externalSearchDeleteDocument : () => ({});
+    app.config.env === 'dev' || app.config.env === 'localhost'
+        ? _externalSearchDeleteDocument
+        : () => ({});
