@@ -4,7 +4,6 @@ import { RepoBranch } from '../../types/common';
 import { runInContext } from '../context/run-in-context';
 import { runInTimeTravelContext } from './run-with-time-travel';
 import { runSitecontentGuillotineQuery } from '../guillotine/queries/run-sitecontent-query';
-import { getPublishedVersionRefs } from '../utils/version-utils';
 import { logger } from '../utils/logging';
 import { getRepoConnection } from '../utils/repo-utils';
 import { getLayersData } from '../localization/layers-data';
@@ -59,7 +58,6 @@ export const getContentVersionFromDateTime = ({
 
                 return {
                     ...content,
-                    versionRefs: getPublishedVersionRefs(content._id, locale),
                     livePath: baseContent._path,
                 };
             }

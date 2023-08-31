@@ -209,7 +209,7 @@ export const getPublishedVersionRefs = (
         return baseRefs;
     }
 
-    return [...baseRefs, ...archivedVersions];
+    return [...baseRefs, ...archivedVersions].sort((a, b) => (a.timestamp < b.timestamp ? 1 : -1));
 };
 
 // If the requested time is older than the oldest version of the content,
