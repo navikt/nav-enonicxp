@@ -5,7 +5,6 @@ import { getContentVersionFromDateTime } from '../../lib/time-travel/get-content
 import { getServiceRequestSubPath } from '../service-utils';
 import { userIsAuthenticated, validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { publishedVersionsReqHandler } from './publishedVersions/publishedVersions';
-import { getLayersData } from '../../lib/localization/layers-data';
 import { SITECONTENT_404_MSG_PREFIX } from '../../lib/constants';
 
 const isValidTime = (time?: string): time is string => {
@@ -50,12 +49,23 @@ const sitecontentVersionsReqHandler = (req: XP.Request) => {
         };
     }
 
+    if (!locale) {
+        return {
+            status: 400,
+            body: {
+                message: 'No valid locale parameter was provided',
+            },
+            contentType: 'application/json',
+        };
+    }
+
     try {
-        const { localeToRepoIdMap, defaultLocale } = getLayersData();
-
-        const repoId = localeToRepoIdMap[locale || defaultLocale];
-
-        const content = getContentVersionFromDateTime(id, branch, time, repoId);
+        const content = getContentVersionFromDateTime({
+            contentRef: id,
+            branch,
+            time,
+            locale,
+        });
 
         if (!content) {
             const msg = `${SITECONTENT_404_MSG_PREFIX}: ${id} - ${time}`;
