@@ -65,7 +65,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'guide-page': GuidePage;
     'internal-link': InternalLink;
     'large-table': LargeTable;
-    'main-article': MainArticle; 
+    'main-article': MainArticle;
     'main-article-chapter': MainArticleChapter;
     'megamenu-item': MegamenuItem;
     melding: Melding;
