@@ -5,6 +5,9 @@ on:
       imagename:
         required: true
         type: string
+    secrets:
+      NAIS_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
     outputs:
       image:
         description: "Docker image tag"
@@ -44,5 +47,6 @@ jobs:
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
           dockerfil: .nais-deploy-job/Dockerfile
+          image_suffix: ${{ inputs.imagename }}
           build_args: |
             appFileName=navno.jar
