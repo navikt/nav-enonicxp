@@ -11,7 +11,8 @@ import { getLayersData } from '../localization/layers-data';
 import { createOrUpdateSearchNode } from './create-or-update-search-node';
 import { forceArray, stringArrayToSet } from '../utils/array-utils';
 import { isArchivedContentNode } from '../utils/content-utils';
-import { externalSearchDeleteDocument } from './external-search-index';
+import { externalSearchDeleteDocument } from './external/delete-document';
+import { externalSearchCreateOrUpdateDocuments } from './external/create-or-update-document';
 
 const isQueryMatchingContent = (query: string, contentId: string, locale: string) =>
     runInLocaleContext(
@@ -89,4 +90,6 @@ export const updateSearchNode = (contentId: string, repoId: string) => {
         facets: matchedFacets,
         locale: contentLocale,
     });
+
+    externalSearchCreateOrUpdateDocuments([{ content: contentNode as any, locale: contentLocale }]);
 };

@@ -1,5 +1,5 @@
 import { getRepoConnection } from '../utils/repo-utils';
-import { RepoConnection } from '/lib/xp/node';
+import { RepoConnection, RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
 import { getSearchConfig } from './config';
@@ -15,6 +15,7 @@ import {
     sortMultiRepoNodeHitIdsToRepoIdBuckets,
 } from '../localization/locale-utils';
 import { getLayersData } from '../localization/layers-data';
+import { externalSearchCreateOrUpdateDocuments } from './external/create-or-update-document';
 
 type ContentIdsToFacetsMap = Record<string, ContentFacet[]>;
 type RepoIdsToContentMap = Record<string, ContentIdsToFacetsMap>;
@@ -286,61 +287,83 @@ export const revalidateAllSearchNodesSync = () => {
         `Found ${contentWithMatchedFacets.length} matching contents for facets, running updates`
     );
 
-    let updateCounter = 0;
-    const validSearchNodeIds: string[] = [];
+    // let updateCounter = 0;
+    // const validSearchNodeIds: string[] = [];
 
-    const wasCompleted = contentWithMatchedFacets.every(({ contentId, locale, facets }, index) => {
-        if (index && index % 1000 === 0) {
-            logger.info(
-                `Processed search nodes for ${index}/${contentWithMatchedFacets.length} contents (${updateCounter} search nodes updated so far)`
-            );
-        }
+    // const wasCompleted = contentWithMatchedFacets.every(({ contentId, locale, facets }, index) => {
+    //     if (index && index % 1000 === 0) {
+    //         logger.info(
+    //             `Processed search nodes for ${index}/${contentWithMatchedFacets.length} contents (${updateCounter} search nodes updated so far)`
+    //         );
+    //     }
+    //
+    //     if (abortFlag) {
+    //         logger.warning(`Abort flag was set, aborting search nodes update!`);
+    //         abortFlag = false;
+    //         return false;
+    //     }
+    //
+    //     const contentNode = localeToRepoConnection[locale]?.get<Content>(contentId);
+    //     if (!contentNode) {
+    //         logger.error(`Content not found for id ${contentId}!`);
+    //         return true;
+    //     }
+    //
+    //     const { didUpdate, searchNodeId } = createOrUpdateSearchNode({
+    //         contentNode,
+    //         facets,
+    //         searchRepoConnection,
+    //         locale,
+    //     });
+    //
+    //     if (didUpdate) {
+    //         updateCounter++;
+    //     }
+    //     if (searchNodeId) {
+    //         validSearchNodeIds.push(searchNodeId);
+    //     }
+    //
+    //     return true;
+    // });
+    //
+    // if (!wasCompleted) {
+    //     logger.warning(
+    //         `Search nodes update was aborted after ${
+    //             Date.now() - startTime
+    //         }ms - ${updateCounter} nodes were updated`
+    //     );
+    //     return;
+    // }
+    //
+    // deleteInvalidNodes(validSearchNodeIds, searchRepoConnection);
+    //
+    // logger.info(
+    //     `Updated ${updateCounter} search nodes from ${
+    //         contentWithMatchedFacets.length
+    //     } matched contents - total valid search nodes: ${validSearchNodeIds.length} - time spent: ${
+    //         Date.now() - startTime
+    //     }ms`
+    // );
 
-        if (abortFlag) {
-            logger.warning(`Abort flag was set, aborting search nodes update!`);
-            abortFlag = false;
-            return false;
-        }
+    if (app.config.env === 'dev' || app.config.env === 'localhost') {
+        const facetsToIndex = new Set(['1']);
 
-        const contentNode = localeToRepoConnection[locale]?.get<Content>(contentId);
-        if (!contentNode) {
-            logger.error(`Content not found for id ${contentId}!`);
-            return true;
-        }
+        const contentToIndex = contentWithMatchedFacets
+            .filter((content) => content.facets.some((facet) => facetsToIndex.has(facet.facet)))
+            .reduce<
+                Array<{
+                    content: RepoNode<Content>;
+                    locale: string;
+                }>
+            >((acc, { contentId, locale }) => {
+                const contentNode = localeToRepoConnection[locale]?.get<Content>(contentId);
+                if (contentNode) {
+                    acc.push({ content: contentNode, locale });
+                }
 
-        const { didUpdate, searchNodeId } = createOrUpdateSearchNode({
-            contentNode,
-            facets,
-            searchRepoConnection,
-            locale,
-        });
+                return acc;
+            }, []);
 
-        if (didUpdate) {
-            updateCounter++;
-        }
-        if (searchNodeId) {
-            validSearchNodeIds.push(searchNodeId);
-        }
-
-        return true;
-    });
-
-    if (!wasCompleted) {
-        logger.warning(
-            `Search nodes update was aborted after ${
-                Date.now() - startTime
-            }ms - ${updateCounter} nodes were updated`
-        );
-        return;
+        externalSearchCreateOrUpdateDocuments(contentToIndex as any);
     }
-
-    deleteInvalidNodes(validSearchNodeIds, searchRepoConnection);
-
-    logger.info(
-        `Updated ${updateCounter} search nodes from ${
-            contentWithMatchedFacets.length
-        } matched contents - total valid search nodes: ${validSearchNodeIds.length} - time spent: ${
-            Date.now() - startTime
-        }ms`
-    );
 };
