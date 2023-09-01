@@ -5,6 +5,8 @@ on:
 jobs:
   build:
     uses: ./.github/workflows/build-deploy-image.yml
+    permissions:
+      packages: write
     with:
       imagename: 'dev-deploy'
   deploy:
