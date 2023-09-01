@@ -45,7 +45,7 @@ const runQueuedUpdates = () => {
     }
 };
 
-export const revalidateAllSearchNodesAsync = () => {
+export const revalidateAllSearchNodesAsync = (updateExternal?: boolean) => {
     if (isRunningConfigUpdate) {
         logger.warning(
             'Attempted to run concurrent update-all jobs - Queueing a new update-all job'
@@ -64,7 +64,7 @@ export const revalidateAllSearchNodesAsync = () => {
             try {
                 const updateIsValid = revalidateSearchConfigCache();
                 if (updateIsValid) {
-                    revalidateAllSearchNodesSync();
+                    revalidateAllSearchNodesSync(updateExternal);
                 }
             } catch (e) {
                 logger.critical(`Error while running search config updates - ${e}`);
