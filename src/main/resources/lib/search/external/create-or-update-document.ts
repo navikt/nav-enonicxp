@@ -143,12 +143,18 @@ const postDocuments = (documents: SearchIndexDocument[]) => {
         const documentsBatch = documents.slice(i, i + BATCH_SIZE);
 
         try {
+            const body = JSON.stringify(documentsBatch);
+
+            logger.info(
+                `[POST] Sending batch ${i} - ${i + documentsBatch.length} with size ${body.length}`
+            );
+
             const response = httpClient.request({
                 url: SERVICE_URL,
                 method: 'POST',
                 contentType: 'application/json',
                 connectionTimeout: 30000,
-                body: JSON.stringify(documentsBatch),
+                body,
             });
 
             logger.info(
