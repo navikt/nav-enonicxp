@@ -27,6 +27,7 @@
             <label>Redirect alle url'er under denne til valgt link (unntatt url'er med publisert innhold)</label>
             <default>unchecked</default>
         </input>
+        <mixin name="custom-path-selector"/>
         <mixin name="type-of-redirect"/>
         <mixin name="keywords"/>
     </form>

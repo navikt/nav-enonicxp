@@ -1,3 +1,5 @@
+import * as contentLib from '/lib/xp/content';
+
 import { getRepoConnection } from '../../lib/utils/repo-utils';
 import { validateCurrentUserPermissionForContent } from '../../lib/utils/auth-utils';
 import { contentTypesInContentSwitcher } from '../../lib/contenttype-lists';
@@ -5,7 +7,18 @@ import { logger } from '../../lib/utils/logging';
 import { stringArrayToSet } from '../../lib/utils/array-utils';
 import { applyModifiedData } from '../../lib/utils/content-utils';
 
+type FormItem = contentLib.FormItem<unknown> & { items?: contentLib.FormItem[] };
+
 const contentTypesMap = stringArrayToSet(contentTypesInContentSwitcher);
+
+const contentHasField = (contentSchema: contentLib.ContentType, fieldName: string) => {
+    return contentSchema.form.some((form: FormItem) => {
+        if (form.items) {
+            return !!form.items?.find((item: FormItem) => item.name === fieldName);
+        }
+        return form.name === fieldName;
+    });
+};
 
 const setContentType = (
     repoId: string,
@@ -24,13 +37,22 @@ const setContentType = (
             key: contentId,
             editor: (content) => {
                 content.type = contentType;
+                const contentSchema = contentLib.getType(contentType);
+
+                if (!contentSchema) {
+                    throw new Error(`Content type ${contentType} does not exist`);
+                }
 
                 if (wipeComponents) {
                     content.components = [];
                 }
 
                 if (wipeData) {
-                    content.data = {};
+                    const { customPath } = content.data;
+                    const hasCustomPath =
+                        customPath && contentHasField(contentSchema, 'customPath');
+
+                    content.data = hasCustomPath ? { customPath } : {};
                 }
 
                 return applyModifiedData(content);
