@@ -5,6 +5,9 @@ on:
 
 jobs:
   build:
+    permissions:
+      contents: "read"
+      id-token: "write"
     if: github.event.release.target_commitish == 'master'
     uses: ./.github/workflows/build-deploy-image.yml
     with:
