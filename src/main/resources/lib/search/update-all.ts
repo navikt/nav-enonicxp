@@ -46,7 +46,7 @@ const externalSearchUpdateAll = (contentWithMatchedFacets: ContentIdWithMatchedF
         {}
     );
 
-    const facetsToIndex = new Set(['1']);
+    const facetsToIndex = new Set(['0', '1', '3', '4', '5', 'en']);
 
     const contentToIndex = contentWithMatchedFacets
         .filter((content) => content.facets.some((facet) => facetsToIndex.has(facet.facet)))
