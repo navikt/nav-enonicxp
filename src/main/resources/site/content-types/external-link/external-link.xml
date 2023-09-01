@@ -19,6 +19,7 @@
                     <occurrences maximum="1" minimum="1"/>
                 </input>
                 <mixin name="type-of-redirect"/>
+                <mixin name="custom-path-selector"/>
             </items>
         </field-set>
         <mixin name="keywords"/>

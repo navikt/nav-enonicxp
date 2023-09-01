@@ -16,6 +16,11 @@ export interface ExternalLink {
   permanentRedirect: boolean;
 
   /**
+   * Skriv inn ønsket kort-url
+   */
+  customPath?: string;
+
+  /**
    * Nøkkelord (internt søk)
    */
   keywords?: Array<string>;
