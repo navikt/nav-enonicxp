@@ -29,6 +29,7 @@ const DELETION_BATCH_SIZE = 1000;
 // Temporary functionality for testing batch updates to the external search index
 const externalSearchUpdateAll = (contentWithMatchedFacets: ContentIdWithMatchedFacets[]) => {
     if (app.config.env !== 'dev' && app.config.env !== 'localhost') {
+        logger.info(`External search update not active in env ${app.config.env} - aborting`);
         return;
     }
 

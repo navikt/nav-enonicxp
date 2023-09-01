@@ -142,19 +142,27 @@ const postDocuments = (documents: SearchIndexDocument[]) => {
     for (let i = 0; i < documents.length; i += BATCH_SIZE) {
         const documentsBatch = documents.slice(i, i + BATCH_SIZE);
 
-        const response = httpClient.request({
-            url: SERVICE_URL,
-            method: 'POST',
-            contentType: 'application/json',
-            connectionTimeout: 30000,
-            body: JSON.stringify(documentsBatch),
-        });
+        try {
+            const response = httpClient.request({
+                url: SERVICE_URL,
+                method: 'POST',
+                contentType: 'application/json',
+                connectionTimeout: 30000,
+                body: JSON.stringify(documentsBatch),
+            });
 
-        logger.info(
-            `[POST] Response from search api for batch ${i} - ${i + documentsBatch.length}: ${
-                response.status
-            } - ${response.message}`
-        );
+            logger.info(
+                `[POST] Response from search api for batch ${i} - ${i + documentsBatch.length}: ${
+                    response.status
+                } - ${response.message}`
+            );
+        } catch (e) {
+            logger.error(
+                `Error from search index service for batch ${i} - ${
+                    i + documentsBatch.length
+                } - ${e}`
+            );
+        }
     }
 };
 
