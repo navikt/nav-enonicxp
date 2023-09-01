@@ -139,6 +139,8 @@ const buildDocument = (
 const postDocuments = (documents: SearchIndexDocument[]) => {
     logger.info(`Posting ${documents.length} documents to search index`);
 
+    const start = Date.now();
+
     for (let i = 0; i < documents.length; i += BATCH_SIZE) {
         const documentsBatch = documents.slice(i, i + BATCH_SIZE);
 
@@ -170,6 +172,12 @@ const postDocuments = (documents: SearchIndexDocument[]) => {
             );
         }
     }
+
+    logger.info(
+        `Finished posting ${documents.length} documents after ${Math.round(
+            (Date.now() - start) / 1000
+        )} seconds`
+    );
 };
 
 const _externalSearchCreateOrUpdateDocuments = (
