@@ -38,12 +38,20 @@ const xpOrigins: EnvRecord = {
     localhost: 'http://localhost:8080',
 };
 
+const searchApiUrls: EnvRecord = {
+    p: '',
+    dev: 'https://navno-search-api.intern.dev.nav.no/content/personbruker',
+    q6: '',
+    localhost: '', // 'https://navno-search-api.intern.dev.nav.no/content/personbruker-local',
+};
+
 export const URLS = Object.freeze({
     FRONTEND_ORIGIN: frontendOrigins[env],
     XP_ORIGIN: xpOrigins[env],
     REVALIDATOR_PROXY_ORIGIN: revalidatorProxyOrigins[env],
     PORTAL_ADMIN_ORIGIN: portalAdminOrigins[env],
     NORG_OFFICE_API_URL: norgOfficeApiUrls[env],
+    SEARCH_API_URL: searchApiUrls[env],
 });
 
 export const COMPONENT_APP_KEY = 'no-nav-navno';

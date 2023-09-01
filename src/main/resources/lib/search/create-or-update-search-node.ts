@@ -19,7 +19,7 @@ import { hasExternalProductUrl } from '../paths/path-utils';
 
 const SEARCH_REPO_CONTENT_PARENT_PATH = `/${SEARCH_REPO_CONTENT_BASE_NODE}`;
 
-const getHref = (content: Content, locale: string) => {
+export const getSearchNodeHref = (content: Content, locale: string) => {
     switch (content.type) {
         case 'navno.nav.no.search:search-api2':
         case 'no.nav.navno:external-link': {
@@ -74,7 +74,7 @@ const transformContentToSearchNodeParams = (
     facets: ContentFacet[],
     locale: string
 ): SearchNodeCreateParams | null => {
-    const href = getHref(contentNode, locale);
+    const href = getSearchNodeHref(contentNode, locale);
 
     if (!href) {
         return null;
@@ -125,7 +125,7 @@ const searchNodeIsFresh = (
     searchNode.contentId === contentNode._id &&
     searchNode.contentPath === contentNode._path &&
     searchNode.layerLocale === locale &&
-    searchNode.href === getHref(contentNode, locale);
+    searchNode.href === getSearchNodeHref(contentNode, locale);
 
 const getExistingSearchNodes = (
     contentId: string,
