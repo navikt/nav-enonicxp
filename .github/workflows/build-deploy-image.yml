@@ -46,7 +46,7 @@ jobs:
           team: personbruker
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
-          dockerfil: .nais-deploy-job/Dockerfile
+          dockerfile: .nais-deploy-job/Dockerfile
           image_suffix: ${{ inputs.imagename }}
           build_args: |
             appFileName=navno.jar
