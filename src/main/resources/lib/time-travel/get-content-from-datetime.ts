@@ -9,6 +9,9 @@ import { getRepoConnection } from '../utils/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { getLayerMigrationData } from '../localization/layers-migration/migration-data';
 
+// If the content contains a reference to another archived/migrated content, and the requested
+// timestamp matches a time prior to the migration, we try to retrieve the pre-migration content
+// from the archive, rather than the current live content
 const getBaseContentForRequestedTime = (
     contentId: string,
     repoId: string,
@@ -28,7 +31,6 @@ const getBaseContentForRequestedTime = (
 
     const { ts: migratedTimestamp, targetReferenceType } = layerMigrationData;
     if (targetReferenceType !== 'archived' || requestedTimestamp > migratedTimestamp) {
-        logger.info(`Returning content for ${contentId} ${repoId}`);
         return content;
     }
 
@@ -42,13 +44,12 @@ const getBaseContentForRequestedTime = (
         key: targetContentId,
     });
     if (!targetContent) {
-        logger.info(
-            `Content not found for ${targetContentId} ${targetRepoId} - Returning content for ${contentId} ${repoId}`
+        logger.error(
+            `Content not found for ${targetContentId} ${targetRepoId} - Returning live content for ${contentId} ${repoId}`
         );
         return content;
     }
 
-    logger.info(`Returning content for target ${targetContentId} ${targetRepoId}`);
     return targetContent;
 };
 

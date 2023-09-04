@@ -26,7 +26,7 @@ export const publishedVersionsReqHandler = (req: XP.Request) => {
         };
     }
 
-    const publishedVersionRefs = getPublishedVersionRefs(id, locale).map(
+    const publishedVersionTimestamps = getPublishedVersionRefs(id, locale).map(
         (version) => version.timestamp
     );
 
@@ -34,7 +34,7 @@ export const publishedVersionsReqHandler = (req: XP.Request) => {
         return {
             status: 200,
             contentType: 'application/json',
-            body: publishedVersionRefs,
+            body: publishedVersionTimestamps,
         };
     } catch (e) {
         logger.error(`Error while retrieving published version timestamps - ${e}`);

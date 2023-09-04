@@ -125,8 +125,6 @@ export const getPreArchiveContent = (idOrArchivedPath: string, repoId: string, t
     return {
         ...content,
         page: getPageTemplate(content) || content.page,
-        versionRefs: preArchivedVersions.map((version) => version.timestamp),
-        livePath: archivedNode._path,
     };
 };
 
