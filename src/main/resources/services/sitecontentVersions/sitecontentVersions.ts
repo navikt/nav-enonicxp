@@ -61,7 +61,7 @@ const sitecontentVersionsReqHandler = (req: XP.Request) => {
 
     try {
         const content = getContentVersionFromDateTime({
-            contentRef: id,
+            liveContentId: id,
             branch,
             time,
             locale,

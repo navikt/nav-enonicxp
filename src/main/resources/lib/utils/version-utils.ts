@@ -1,4 +1,3 @@
-import * as contextLib from '/lib/xp/context';
 import { getRepoConnection } from './repo-utils';
 import { NodeVersionMetadata } from '/lib/xp/node';
 import { RepoBranch } from '../../types/common';
@@ -6,16 +5,15 @@ import { nodeLibConnectStandard } from '../time-travel/standard-functions';
 import { logger } from './logging';
 import { getUnixTimeFromDateTimeString } from './datetime-utils';
 import { contentTypesWithCustomEditor } from '../contenttype-lists';
-import { COMPONENT_APP_KEY } from '../constants';
-import { LayerMigration } from '../../site/x-data/layerMigration/layerMigration';
 import { getLayersData } from '../localization/layers-data';
+import { getLayerMigrationData } from '../localization/layers-migration/migration-data';
 
 const MAX_VERSIONS_COUNT_TO_RETRIEVE = 1000;
 
 export const getNodeKey = (contentRef: string) =>
     contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
 
-type VersionHistoryReference = { contentId: string; timestamp: string; locale: string };
+type VersionHistoryReference = NodeVersionMetadata & { locale: string };
 
 type GetNodeVersionsParams = {
     nodeKey: string;
@@ -126,30 +124,24 @@ const getLayerMigrationVersionRefs = ({
 }): VersionHistoryReference[] => {
     const contentNode = getRepoConnection({ repoId, branch: 'draft' }).get(nodeKey);
     if (!contentNode) {
-        logger.info(`Content not found: ${nodeKey} ${repoId}`);
         return [];
     }
 
-    const layerMigrationData = contentNode.x?.[COMPONENT_APP_KEY]?.layerMigration as LayerMigration;
+    const layerMigrationData = getLayerMigrationData(contentNode);
     if (!layerMigrationData) {
-        logger.info(`Layer migration data not found: ${nodeKey} ${repoId}`);
         return [];
     }
 
     const {
-        // targetReferenceType,
+        targetReferenceType,
         repoId: archiveRepoId,
         contentId: archivedContentId,
         locale: archivedLocale,
-        ts: migrationTimestamp,
     } = layerMigrationData;
 
-    // if (targetReferenceType !== 'archived') {
-    //     logger.info(`Layer migration reference is wrong type: ${nodeKey} ${repoId}`);
-    //     return [];
-    // }
-
-    logger.info(`Found layer migration data: ${JSON.stringify(layerMigrationData)}`);
+    if (targetReferenceType !== 'archived') {
+        return [];
+    }
 
     const versions = getNodeVersions({
         nodeKey: archivedContentId,
@@ -158,8 +150,7 @@ const getLayerMigrationVersionRefs = ({
     }).filter((version) => version.nodePath.startsWith('/content'));
 
     return versions.map((version) => ({
-        contentId: version.nodeId,
-        timestamp: version.timestamp,
+        ...version,
         locale: archivedLocale,
     }));
 };
@@ -193,8 +184,7 @@ export const getPublishedVersionRefs = (
     });
 
     const baseRefs = versions.map((version) => ({
-        contentId: version.nodeId,
-        timestamp: version.timestamp,
+        ...version,
         locale,
     }));
 

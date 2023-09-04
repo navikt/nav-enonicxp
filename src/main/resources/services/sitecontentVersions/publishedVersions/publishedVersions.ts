@@ -26,7 +26,9 @@ export const publishedVersionsReqHandler = (req: XP.Request) => {
         };
     }
 
-    const publishedVersionRefs = getPublishedVersionRefs(id, locale);
+    const publishedVersionRefs = getPublishedVersionRefs(id, locale).map(
+        (version) => version.timestamp
+    );
 
     try {
         return {
