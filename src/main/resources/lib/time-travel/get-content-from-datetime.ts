@@ -12,11 +12,11 @@ import { getLayerMigrationData } from '../localization/layers-migration/migratio
 // If the content contains a reference to another archived/migrated content, and the requested
 // timestamp matches a time prior to the migration, we try to retrieve the pre-migration content
 // from the archive, rather than the current live content
-const getBaseContentForRequestedTime = (
+const getBaseContentDataForRequestedTime = (
     contentId: string,
     repoId: string,
     requestedTimestamp: string
-) => {
+): { baseContentKey: string; baseRepoId: string } | null => {
     const content = getRepoConnection({ branch: 'draft', repoId, asAdmin: true }).get({
         key: contentId,
     });
@@ -26,12 +26,12 @@ const getBaseContentForRequestedTime = (
 
     const layerMigrationData = getLayerMigrationData(content);
     if (!layerMigrationData) {
-        return content;
+        return { baseContentKey: contentId, baseRepoId: repoId };
     }
 
     const { ts: migratedTimestamp, targetReferenceType } = layerMigrationData;
     if (targetReferenceType !== 'archived' || requestedTimestamp > migratedTimestamp) {
-        return content;
+        return { baseContentKey: contentId, baseRepoId: repoId };
     }
 
     const { contentId: targetContentId, repoId: targetRepoId } = layerMigrationData;
@@ -47,10 +47,10 @@ const getBaseContentForRequestedTime = (
         logger.error(
             `Content not found for ${targetContentId} ${targetRepoId} - Returning live content for ${contentId} ${repoId}`
         );
-        return content;
+        return { baseContentKey: contentId, baseRepoId: repoId };
     }
 
-    return targetContent;
+    return { baseContentKey: targetContentId, baseRepoId: targetRepoId };
 };
 
 // Get content from a specific datetime (used for requests from the internal version history selector)
@@ -71,24 +71,28 @@ export const getContentVersionFromDateTime = ({
         return null;
     }
 
-    const baseContent = getBaseContentForRequestedTime(liveContentId, repoId, requestedDateTime);
-    if (!baseContent) {
+    const baseContentData = getBaseContentDataForRequestedTime(
+        liveContentId,
+        repoId,
+        requestedDateTime
+    );
+    if (!baseContentData) {
         logger.info(`No content found for ${liveContentId} in repo ${repoId}`);
         return null;
     }
 
-    const baseContentKey = baseContent._id;
+    const { baseContentKey, baseRepoId } = baseContentData;
 
     try {
         return runInTimeTravelContext(
-            { dateTime: requestedDateTime, branch, baseContentKey, repoId },
+            { dateTime: requestedDateTime, branch, baseContentKey, repoId: baseRepoId },
             () => {
                 const contentFromDateTime = runInContext({ branch: 'draft' }, () =>
                     contentLib.get({ key: baseContentKey })
                 );
                 if (!contentFromDateTime) {
                     logger.info(
-                        `No content found for requested timestamp - ${baseContentKey} in repo ${repoId} (time: ${requestedDateTime})`
+                        `No content found for requested timestamp - ${baseContentKey} in repo ${baseRepoId} (time: ${requestedDateTime})`
                     );
                     return null;
                 }
@@ -96,7 +100,7 @@ export const getContentVersionFromDateTime = ({
                 const content = runSitecontentGuillotineQuery(contentFromDateTime, 'draft');
                 if (!content) {
                     logger.info(
-                        `No content resolved through Guillotine for requested timestamp - ${baseContentKey} in repo ${repoId} (time: ${requestedDateTime})`
+                        `No content resolved through Guillotine for requested timestamp - ${baseContentKey} in repo ${baseRepoId} (time: ${requestedDateTime})`
                     );
                     return null;
                 }
