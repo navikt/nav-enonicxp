@@ -5,8 +5,13 @@ on:
 
 jobs:
   build:
+    permissions:
+      contents: "read"
+      id-token: "write"
     if: github.event.release.target_commitish == 'master'
     uses: ./.github/workflows/build-deploy-image.yml
+    secrets:
+      NAIS_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
     with:
       imagename: 'prod-release-${{ github.ref_name }}'
   deploy:
