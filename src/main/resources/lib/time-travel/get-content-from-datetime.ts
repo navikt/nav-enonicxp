@@ -56,55 +56,58 @@ const getBaseContentForRequestedTime = (
 // Get content from a specific datetime (used for requests from the internal version history selector)
 export const getContentVersionFromDateTime = ({
     liveContentId,
+    liveLocale,
     branch,
-    time,
-    locale,
+    requestedDateTime,
 }: {
     liveContentId: string;
+    liveLocale: string;
     branch: RepoBranch;
-    time: string;
-    locale: string;
+    requestedDateTime: string;
 }): Content | null => {
-    const repoId = getLayersData().localeToRepoIdMap[locale];
+    const repoId = getLayersData().localeToRepoIdMap[liveLocale];
     if (!repoId) {
-        logger.error(`No layer repo found for locale ${locale}`);
+        logger.error(`No layer repo found for locale ${liveLocale}`);
         return null;
     }
 
-    const baseContent = getBaseContentForRequestedTime(liveContentId, repoId, time);
+    const baseContent = getBaseContentForRequestedTime(liveContentId, repoId, requestedDateTime);
     if (!baseContent) {
-        logger.info(`No content found - ${liveContentId} in repo ${repoId}`);
+        logger.info(`No content found for ${liveContentId} in repo ${repoId}`);
         return null;
     }
 
     const baseContentKey = baseContent._id;
 
     try {
-        return runInTimeTravelContext({ dateTime: time, branch, baseContentKey }, () => {
-            const contentFromDateTime = runInContext({ branch: 'draft' }, () =>
-                contentLib.get({ key: baseContentKey })
-            );
-            if (!contentFromDateTime) {
-                logger.info(
-                    `No content found for requested timestamp - ${baseContentKey} in repo ${repoId} (time: ${time})`
+        return runInTimeTravelContext(
+            { dateTime: requestedDateTime, branch, baseContentKey, repoId },
+            () => {
+                const contentFromDateTime = runInContext({ branch: 'draft' }, () =>
+                    contentLib.get({ key: baseContentKey })
                 );
-                return null;
-            }
+                if (!contentFromDateTime) {
+                    logger.info(
+                        `No content found for requested timestamp - ${baseContentKey} in repo ${repoId} (time: ${requestedDateTime})`
+                    );
+                    return null;
+                }
 
-            const content = runSitecontentGuillotineQuery(contentFromDateTime, 'draft');
-            if (!content) {
-                logger.info(
-                    `No content resolved through Guillotine for requested timestamp - ${baseContentKey} in repo ${repoId} (time: ${time})`
-                );
-                return null;
-            }
+                const content = runSitecontentGuillotineQuery(contentFromDateTime, 'draft');
+                if (!content) {
+                    logger.info(
+                        `No content resolved through Guillotine for requested timestamp - ${baseContentKey} in repo ${repoId} (time: ${requestedDateTime})`
+                    );
+                    return null;
+                }
 
-            return {
-                ...content,
-                liveId: liveContentId,
-                liveLocale: locale,
-            };
-        });
+                return {
+                    ...content,
+                    liveId: liveContentId,
+                    liveLocale: liveLocale,
+                };
+            }
+        );
     } catch (e) {
         logger.error(`Time travel: Error retrieving data from version history: ${e}`);
         return null;
