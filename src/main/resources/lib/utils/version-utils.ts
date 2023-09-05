@@ -1,4 +1,3 @@
-import * as contextLib from '/lib/xp/context';
 import { getRepoConnection } from './repo-utils';
 import { NodeVersionMetadata } from '/lib/xp/node';
 import { RepoBranch } from '../../types/common';
@@ -6,11 +5,15 @@ import { nodeLibConnectStandard } from '../time-travel/standard-functions';
 import { logger } from './logging';
 import { getUnixTimeFromDateTimeString } from './datetime-utils';
 import { contentTypesWithCustomEditor } from '../contenttype-lists';
+import { getLayersData } from '../localization/layers-data';
+import { getLayerMigrationData } from '../localization/layers-migration/migration-data';
 
 const MAX_VERSIONS_COUNT_TO_RETRIEVE = 1000;
 
 export const getNodeKey = (contentRef: string) =>
     contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
+
+type VersionHistoryReference = NodeVersionMetadata & { locale: string };
 
 type GetNodeVersionsParams = {
     nodeKey: string;
@@ -59,18 +62,21 @@ export const getNodeVersions = ({
     // Reverse the versions array to process oldest versions first
     // This ensures the initial committed version is kept, and subsequent (unmodified)
     // commits are discarded
-    const modifiedVersions = commitedVersions.reverse().reduce((acc, version) => {
-        const content = repoConnectionStandard.get({
-            key: version.nodeId,
-            versionId: version.versionId,
-        });
+    const modifiedVersions = commitedVersions.reverse().reduce(
+        (acc, version) => {
+            const content = repoConnectionStandard.get({
+                key: version.nodeId,
+                versionId: version.versionId,
+            });
 
-        if (!content || content.modifiedTime === acc[0]?.modifiedTime) {
-            return acc;
-        }
+            if (!content || content.modifiedTime === acc[0]?.modifiedTime) {
+                return acc;
+            }
 
-        return [{ ...version, modifiedTime: content.modifiedTime }, ...acc];
-    }, [] as (NodeVersionMetadata & { modifiedTime?: string })[]);
+            return [{ ...version, modifiedTime: content.modifiedTime }, ...acc];
+        },
+        [] as (NodeVersionMetadata & { modifiedTime?: string })[]
+    );
 
     return modifiedVersions;
 };
@@ -107,6 +113,48 @@ export const getVersionFromTime = ({
     return foundVersion;
 };
 
+const getLayerMigrationVersionRefs = ({
+    nodeKey,
+    repoId,
+    branch,
+}: {
+    nodeKey: string;
+    repoId: string;
+    branch: RepoBranch;
+}): VersionHistoryReference[] => {
+    const contentNode = getRepoConnection({ repoId, branch: 'draft' }).get(nodeKey);
+    if (!contentNode) {
+        return [];
+    }
+
+    const layerMigrationData = getLayerMigrationData(contentNode);
+    if (!layerMigrationData) {
+        return [];
+    }
+
+    const {
+        targetReferenceType,
+        repoId: archiveRepoId,
+        contentId: archivedContentId,
+        locale: archivedLocale,
+    } = layerMigrationData;
+
+    if (targetReferenceType !== 'archived') {
+        return [];
+    }
+
+    const versions = getNodeVersions({
+        nodeKey: archivedContentId,
+        branch: branch,
+        repoId: archiveRepoId,
+    }).filter((version) => version.nodePath.startsWith('/content'));
+
+    return versions.map((version) => ({
+        ...version,
+        locale: archivedLocale,
+    }));
+};
+
 // Workaround for content types with a custom editor, which does not update the modifiedTime field
 // in the same way as the Content Studio editor. We always need to include all timestamps for these
 // types.
@@ -120,17 +168,37 @@ const shouldGetModifiedTimestampsOnly = (contentRef: string, repoId: string) => 
 };
 
 // Used by the version history selector in the frontend
-export const getPublishedVersionTimestamps = (contentRef: string) => {
-    const { repository } = contextLib.get();
+export const getPublishedVersionRefs = (
+    contentRef: string,
+    locale: string
+): VersionHistoryReference[] => {
+    const repoId = getLayersData().localeToRepoIdMap[locale];
+
+    const nodeKey = getNodeKey(contentRef);
 
     const versions = getNodeVersions({
-        nodeKey: getNodeKey(contentRef),
+        nodeKey,
         branch: 'master',
-        repoId: repository,
-        modifiedOnly: shouldGetModifiedTimestampsOnly(contentRef, repository),
+        repoId,
+        modifiedOnly: shouldGetModifiedTimestampsOnly(contentRef, repoId),
     });
 
-    return versions.map((version) => version.timestamp);
+    const baseRefs = versions.map((version) => ({
+        ...version,
+        locale,
+    }));
+
+    const migrationRefs = getLayerMigrationVersionRefs({
+        nodeKey,
+        repoId,
+        branch: 'master',
+    });
+
+    if (migrationRefs.length === 0) {
+        return baseRefs;
+    }
+
+    return [...baseRefs, ...migrationRefs].sort((a, b) => (a.timestamp < b.timestamp ? 1 : -1));
 };
 
 // If the requested time is older than the oldest version of the content,
