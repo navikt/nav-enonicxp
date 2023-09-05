@@ -105,6 +105,9 @@ const getAudience = (content: IndexableContentNode) => {
     return forceArray(audienceSelected).map((audience) => audienceMap[audience]);
 };
 
+const getLanguage = (content: IndexableContentNode) =>
+    content.language === 'no' ? 'nb' : content.language;
+
 const buildDocument = (
     content: IndexableContentNode,
     locale: string
@@ -127,7 +130,7 @@ const buildDocument = (
         metadata: {
             createdAt: content.createdTime,
             lastUpdated: content.modifiedTime,
-            language: content.language,
+            language: getLanguage(content),
             audience: getAudience(content),
             isFile: isMedia(content),
             fylke: getFylke(content),
