@@ -11,8 +11,8 @@ import { getLayerMigrationData } from '../localization/layers-migration/migratio
 
 // If the content contains a reference to another archived/migrated content, and the requested
 // timestamp matches a time prior to the migration, we try to retrieve the pre-migration content
-// from the archive, rather than the current live content
-const getBaseContentDataForRequestedTime = (
+// rather than the current live content
+const getBaseContentRefForRequestedDateTime = (
     contentId: string,
     repoId: string,
     requestedTimestamp: string
@@ -71,17 +71,17 @@ export const getContentVersionFromDateTime = ({
         return null;
     }
 
-    const baseContentData = getBaseContentDataForRequestedTime(
+    const baseContentRef = getBaseContentRefForRequestedDateTime(
         liveContentId,
         repoId,
         requestedDateTime
     );
-    if (!baseContentData) {
-        logger.info(`No content found for ${liveContentId} in repo ${repoId}`);
+    if (!baseContentRef) {
+        logger.error(`No content found for ${liveContentId} in repo ${repoId}`);
         return null;
     }
 
-    const { baseContentKey, baseRepoId } = baseContentData;
+    const { baseContentKey, baseRepoId } = baseContentRef;
 
     try {
         return runInTimeTravelContext(
@@ -113,7 +113,7 @@ export const getContentVersionFromDateTime = ({
             }
         );
     } catch (e) {
-        logger.error(`Time travel: Error retrieving data from version history: ${e}`);
+        logger.error(`Error retrieving data from version history: ${e}`);
         return null;
     }
 };
