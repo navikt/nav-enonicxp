@@ -90,7 +90,7 @@ const migrateBranch = (params: ContentMigrationParams, branch: RepoBranch) => {
         repoId: targetRepoId,
         requireValid: false,
         editor: () => {
-            logger.info(`Copying node content from ${sourceId} to ${sourceId}`);
+            logger.info(`Copying node content from ${sourceId} to ${targetId}`);
             return transformToLayerContent(sourceContent, sourceLocale, targetLocale, targetId);
         },
     });
@@ -105,8 +105,10 @@ const migrateBranch = (params: ContentMigrationParams, branch: RepoBranch) => {
         resolve: false,
     });
 
-    pushResult.failed.forEach(({ id, reason }) => `Pushing ${id} to master failed: ${reason}`);
-    pushResult.success.forEach((id) => `Pushing ${id} to master succeeded`);
+    pushResult.failed.forEach(({ id, reason }) =>
+        logger.info(`Pushing ${id} to master failed: ${reason}`)
+    );
+    pushResult.success.forEach((id) => logger.info(`Pushing ${id} to master succeeded`));
 
     return pushResult.success.length > 0;
 };

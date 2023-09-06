@@ -14,6 +14,7 @@ import fragmentComponentsQuery from './component-queries/fragmentComponents.grap
 import { PortalComponent } from '../../../types/components/component-portal';
 import { guillotineTransformSpecialComponents } from './transform-special-components';
 import { stringArrayToSet } from '../../utils/array-utils';
+import { logger } from '../../utils/logging';
 
 export type GuillotineUnresolvedComponentType = { type: ComponentType; path: string };
 export type GuillotineComponentQueryResult = {
@@ -77,29 +78,37 @@ export const runGuillotineComponentsQuery = (
 
     // Resolve fragments through separate queries to workaround a bug in the Guillotine resolver which prevents
     // nested fragments from resolving
-    const fragments = components.reduce((acc, component) => {
-        if (component.type !== 'fragment' || !component.fragment?.id) {
+    const fragments = components.reduce<PortalComponent<'fragment'>[]>((acc, component) => {
+        const fragmentId = component.fragment?.id;
+
+        if (component.type !== 'fragment' || !fragmentId) {
             return acc;
         }
 
         const fragment = runGuillotineQuery({
             ...queryParams,
             query: fragmentComponentsQuery,
-            params: { ref: component.fragment.id },
+            params: { ref: fragmentId },
         })?.get;
 
-        return [
-            ...acc,
-            {
-                type: 'fragment',
-                path: component.path,
-                // If the fragment was not found, set the fragment component tree to an empty object
-                // to ensure it is rendered (as an error) in the CS preview. This allows editors to remove
-                // the invalid fragment
-                fragment: fragment ? buildFragmentComponentTree(fragment.components) : {},
-            } as PortalComponent<'fragment'>,
-        ];
-    }, [] as PortalComponent<'fragment'>[]);
+        if (!fragment) {
+            logger.critical(
+                `Invalid fragment reference ${fragmentId} in content ${baseContent._id}`,
+                true
+            );
+        }
+
+        acc.push({
+            type: 'fragment',
+            path: component.path,
+            // If the fragment was not found, set the fragment component tree to an empty object
+            // to ensure it is rendered (as an error) in the CS preview. This allows editors to remove
+            // the invalid fragment
+            fragment: fragment ? buildFragmentComponentTree(fragment.components) : {},
+        });
+
+        return acc;
+    }, []);
 
     const transformedComponents = guillotineTransformSpecialComponents({
         components,

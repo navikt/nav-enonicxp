@@ -4,9 +4,7 @@ import { logger } from '../../lib/utils/logging';
 import { getContentVersionFromDateTime } from '../../lib/time-travel/get-content-from-datetime';
 import { getServiceRequestSubPath } from '../service-utils';
 import { userIsAuthenticated, validateServiceSecretHeader } from '../../lib/utils/auth-utils';
-import { publishedVersionsReqHandler } from './publishedVersions/publisedVersions';
-import { runInLocaleContext } from '../../lib/localization/locale-context';
-import { getLayersData } from '../../lib/localization/layers-data';
+import { publishedVersionsReqHandler } from './publishedVersions/publishedVersions';
 import { SITECONTENT_404_MSG_PREFIX } from '../../lib/constants';
 
 const isValidTime = (time?: string): time is string => {
@@ -51,11 +49,23 @@ const sitecontentVersionsReqHandler = (req: XP.Request) => {
         };
     }
 
+    if (!locale) {
+        return {
+            status: 400,
+            body: {
+                message: 'No valid locale parameter was provided',
+            },
+            contentType: 'application/json',
+        };
+    }
+
     try {
-        const content = runInLocaleContext(
-            { locale: locale || getLayersData().defaultLocale },
-            () => getContentVersionFromDateTime(id, branch, time)
-        );
+        const content = getContentVersionFromDateTime({
+            liveContentId: id,
+            liveLocale: locale,
+            branch,
+            requestedDateTime: time,
+        });
 
         if (!content) {
             const msg = `${SITECONTENT_404_MSG_PREFIX}: ${id} - ${time}`;
