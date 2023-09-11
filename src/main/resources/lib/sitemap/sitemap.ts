@@ -7,7 +7,6 @@ import { stringArrayToSet } from '../utils/array-utils';
 import { runInContext } from '../context/run-in-context';
 import { URLS } from '../constants';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
-import { addReliableEventListener, sendReliableEvent } from '../events/reliable-custom-events';
 import { contentTypesInSitemap } from '../contenttype-lists';
 import { logger } from '../utils/logging';
 import {
@@ -170,8 +169,9 @@ const generateAndBroadcastSitemapData = () => {
                     const startTime = Date.now();
                     const sitemapEntries = generateSitemapEntries();
 
-                    sendReliableEvent({
+                    eventLib.send({
                         type: EVENT_TYPE_SITEMAP_GENERATED,
+                        distributed: true,
                         data: { entries: sitemapEntries },
                     });
 
@@ -227,21 +227,24 @@ const updateSitemapData = (entries: SitemapEntry[]) => {
 };
 
 export const requestSitemapUpdate = () => {
-    sendReliableEvent({
+    eventLib.send({
+        distributed: true,
         type: EVENT_TYPE_SITEMAP_REQUESTED,
     });
 };
 
 export const activateSitemapDataUpdateEventListener = () => {
-    addReliableEventListener<{ entries: SitemapEntry[] }>({
+    eventLib.listener<{ entries: SitemapEntry[] }>({
         type: EVENT_TYPE_SITEMAP_GENERATED,
+        localOnly: false,
         callback: (event) => {
             updateSitemapData(event.data.entries);
         },
     });
 
-    addReliableEventListener({
+    eventLib.listener({
         type: EVENT_TYPE_SITEMAP_REQUESTED,
+        localOnly: false,
         callback: generateAndBroadcastSitemapData,
     });
 

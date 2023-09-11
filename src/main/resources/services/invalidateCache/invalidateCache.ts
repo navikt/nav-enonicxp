@@ -1,7 +1,6 @@
 import * as contentLib from '/lib/xp/content';
-import { sendReliableEvent } from '../../lib/events/reliable-custom-events';
+import * as eventLib from '/lib/xp/event';
 import { CACHE_INVALIDATE_EVENT_NAME } from '../../lib/cache/cache-invalidate';
-import { NodeEventData } from '../../lib/cache/utils';
 import { logger } from '../../lib/utils/logging';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { getLayersData } from '../../lib/localization/layers-data';
@@ -39,8 +38,9 @@ export const get = (req: XP.Request) => {
 
     const { localeToRepoIdMap } = getLayersData();
 
-    sendReliableEvent<NodeEventData>({
+    eventLib.send({
         type: CACHE_INVALIDATE_EVENT_NAME,
+        distributed: true,
         data: {
             id: content._id,
             path: content._path,
