@@ -1,11 +1,11 @@
 import * as clusterLib from '/lib/xp/cluster';
+import * as eventLib from '/lib/xp/event';
 import { invalidateLocalCache } from './local-cache';
 import { frontendInvalidateAllAsync } from './frontend-cache';
 import { generateUUID } from '../utils/uuid';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { CacheInvalidationDeferConfig } from '../../tasks/cache-invalidation-defer/cache-invalidation-defer-config';
 import { APP_DESCRIPTOR } from '../constants';
-import { addReliableEventListener, sendReliableEvent } from '../events/reliable-custom-events';
 import { logger } from '../utils/logging';
 
 type DeferCacheInvalidationEventData = CacheInvalidationDeferConfig;
@@ -54,8 +54,9 @@ const deferInvalidationCallback = (eventData: DeferCacheInvalidationEventData) =
 export const toggleCacheInvalidationOnNodeEvents = (eventData: DeferCacheInvalidationEventData) => {
     deferInvalidationCallback(eventData);
 
-    sendReliableEvent({
+    eventLib.send({
         type: deferInvalidationEventName,
+        distributed: true,
         data: eventData,
     });
 };
@@ -72,8 +73,9 @@ export const activateDeferCacheInvalidationEventListener = () => {
     // Pause cache invalidation on node events for a period of time, then do a full wipe. Useful if
     // we do certain large batch jobs which generates a lot of events, for which we may not want to
     // trigger cache invalidation.
-    addReliableEventListener<DeferCacheInvalidationEventData>({
+    eventLib.listener<DeferCacheInvalidationEventData>({
         type: deferInvalidationEventName,
+        localOnly: false,
         callback: (event) => deferInvalidationCallback(event.data),
     });
 };

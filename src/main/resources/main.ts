@@ -8,7 +8,6 @@ import {
     activateSitemapDataUpdateEventListener,
     generateSitemapDataAndActivateSchedule,
 } from './lib/sitemap/sitemap';
-import { startReliableEventAckListener } from './lib/events/reliable-custom-events';
 import { updateClusterInfo } from './lib/utils/cluster-utils';
 import { startOfficeInfoPeriodicUpdateSchedule } from './lib/officeInformation';
 import { activateContentListItemUnpublishedListener } from './lib/contentlists/remove-unpublished';
@@ -26,7 +25,6 @@ updateClusterInfo();
 initLayersData();
 activateLayersEventListeners();
 
-startReliableEventAckListener();
 activateCacheEventListeners();
 activateSitemapDataUpdateEventListener();
 activateContentListItemUnpublishedListener();
