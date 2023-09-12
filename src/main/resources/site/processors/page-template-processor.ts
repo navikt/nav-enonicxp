@@ -10,6 +10,7 @@ const contentTypesToMigrate: { [key in ContentDescriptor]?: true } = {
     'no.nav.navno:area-page': true,
     'no.nav.navno:current-topic-page': true,
     'no.nav.navno:front-page': true,
+    'no.nav.navno:front-page-nested': true,
     'no.nav.navno:situation-page': true,
     'no.nav.navno:tools-page': true,
     'no.nav.navno:generic-page': true,
