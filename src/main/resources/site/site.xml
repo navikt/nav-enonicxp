@@ -10,6 +10,7 @@
     <x-data name="menu-item" optional="true" allowContentTypes="^$"/>
     <x-data name="oldContentType" optional="true" allowContentTypes="^$"/>
     <x-data name="layerMigration" optional="true" allowContentTypes="^$"/>
+    <x-data name="dummy" optional="true" allowContentTypes="^$"/>
     <mappings>
         <mapping controller="/lib/controllers/site-info-controller.js">
             <!-- Match root path without query parameters -->

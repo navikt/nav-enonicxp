@@ -23,6 +23,7 @@ type SourceAndTargetContent = { sourceContent: Content; targetBaseContent: Conte
 
 type LayerMigrationBatchJobResult = {
     status: string;
+    current?: any;
     params: any;
     result: any;
 };
@@ -52,7 +53,7 @@ const getTargetBaseContentReverse = (sourceContent: Content, sourceLocale: strin
                     },
                     {
                         notExists: {
-                            field: 'x.no-nav-navno.layerMigration',
+                            field: 'x.no-nav-navno.layerMigration.ts',
                         },
                     },
                 ],
@@ -118,7 +119,7 @@ const getContentToMigrate = ({
                         },
                         {
                             notExists: {
-                                field: 'x.no-nav-navno.layerMigration',
+                                field: 'x.no-nav-navno.layerMigration.ts',
                             },
                         },
                     ],

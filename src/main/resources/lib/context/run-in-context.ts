@@ -7,16 +7,18 @@ export type RunInContextOptions = {
     asAdmin?: boolean;
 } & Omit<RunContext<ContextAttributes>, 'branch' | 'user' | 'principals'>;
 
-const adminContextOptions: Pick<RunContext<ContextAttributes>, 'user' | 'principals'> = {
+type ContextAuthInfo = Pick<RunContext<ContextAttributes>, 'user' | 'principals'>;
+
+const adminContextOptions: ContextAuthInfo = {
     user: {
         login: 'su',
         idProvider: 'system',
     },
     principals: ['role:system.admin'],
-};
+} as const;
 
 export const runInContext = <ReturnType>(
-    { branch, repository, asAdmin, attributes }: RunInContextOptions,
+    { branch, repository, asAdmin = true, attributes }: RunInContextOptions,
     func: () => ReturnType
 ): ReturnType => {
     const currentContext = contextLib.get();

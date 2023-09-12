@@ -1,9 +1,10 @@
-import * as portalLib from '/lib/xp/portal';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { Melding } from '../../site/content-types/melding/melding';
 import { getFromLocalCache } from '../../lib/cache/local-cache';
 import { forceArray } from '../../lib/utils/array-utils';
+import { getPublicPath } from '../../lib/paths/public-path';
+import { CONTENT_LOCALE_DEFAULT } from '../../lib/constants';
 
 const CACHE_KEY = 'driftsmeldinger-cache';
 const DRIFTSMELDINGER_PATH = '/www.nav.no/no/driftsmeldinger';
@@ -21,7 +22,7 @@ type Message = {
 const transformMessageContent = (message: MessageContent): Message => {
     return {
         heading: message.displayName,
-        url: portalLib.pageUrl({ path: message._path }),
+        url: getPublicPath(message, CONTENT_LOCALE_DEFAULT),
         type: message.data.type,
         urlscope: forceArray(message.data.urlscope?.urls),
     };

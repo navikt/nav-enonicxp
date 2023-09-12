@@ -54,6 +54,11 @@ const updateReferenceFromNode = ({
                 );
             }
 
+            const oldAudience = contentWithUpdates.data?.audience;
+            if (typeof oldAudience === 'string') {
+                contentWithUpdates.data.audience = { _selected: oldAudience };
+            }
+
             return contentWithUpdates;
         },
     });
@@ -100,9 +105,9 @@ const updateContentReferencesInLocaleLayer = (
     logger.info(
         `Found ${
             references.length
-        } references to ${sourceId} in locale ${localeToUpdate}:\n${references
-            .map((ref) => ref._path)
-            .join('\n')}`
+        } references to ${sourceId} in locale ${localeToUpdate}: ${references
+            .map((ref) => ref._id)
+            .join(', ')}`
     );
 
     references.forEach((refContent) => {
@@ -110,8 +115,8 @@ const updateContentReferencesInLocaleLayer = (
             return;
         }
 
-        const { _id } = refContent;
-        if (_id === sourceId && localeToUpdate === sourceLocale) {
+        const refContentId = refContent._id;
+        if (refContentId === sourceId && localeToUpdate === sourceLocale) {
             return;
         }
 
@@ -119,14 +124,14 @@ const updateContentReferencesInLocaleLayer = (
             branch: 'master',
             repoId: repoToUpdate,
             asAdmin: true,
-        }).get(_id);
+        }).get(refContentId);
 
         // Get the content node from draft before updating master, as it may be overwritten
         const contentNodeDraft = getRepoConnection({
             branch: 'draft',
             repoId: repoToUpdate,
             asAdmin: true,
-        }).get(_id);
+        }).get(refContentId);
 
         if (contentNodeMaster) {
             updateReferenceFromNode({

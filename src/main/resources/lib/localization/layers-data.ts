@@ -50,7 +50,7 @@ export const getLocaleFromRepoId = (repoId: string) => data.repoIdToLocaleMap[re
 export const getLayersData = () => data;
 
 const contentOnlyQueryParams = {
-    query: '_path LIKE "/content/*"'
+    query: '_path LIKE "/content/*"',
 };
 
 // Pushes any nodes which exists on master in the root project to master on

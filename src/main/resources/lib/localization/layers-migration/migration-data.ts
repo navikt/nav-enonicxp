@@ -12,6 +12,14 @@ export const insertLayerMigrationXData = ({
     content: RepoNode<any>;
     migrationParams: LayerMigrationParams;
 }) => {
+    if (!content.x) {
+        content.x = {};
+    }
+
+    if (!content.x[COMPONENT_APP_KEY]) {
+        content.x[COMPONENT_APP_KEY] = {};
+    }
+
     content.x[COMPONENT_APP_KEY].layerMigration = {
         ...migrationParams,
         ts: new Date().toISOString(),

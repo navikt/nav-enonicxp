@@ -1,14 +1,36 @@
 import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { getRepoConnection } from '../../utils/repo-utils';
 import { logger } from '../../utils/logging';
 import { runInLocaleContext } from '../locale-context';
 import { NodeModifyParams } from '/lib/xp/node';
 import { getLayersData } from '../layers-data';
+import { COMPONENT_APP_KEY } from '../../constants';
 
 type Params = {
     repoId: string;
     requireValid?: boolean;
 } & NodeModifyParams;
+
+// Ensure a mutation of the content occurs, in order to force the content to always update
+// in the database.
+const insertDummyData = (content: Content) => {
+    if (!content.x) {
+        content.x = {};
+    }
+
+    if (!content.x[COMPONENT_APP_KEY]) {
+        content.x[COMPONENT_APP_KEY] = {};
+    }
+
+    if (!content.x[COMPONENT_APP_KEY].dummy) {
+        content.x[COMPONENT_APP_KEY].dummy = {};
+    }
+
+    content.x[COMPONENT_APP_KEY].dummy.dummy = new Date().toISOString();
+
+    return content;
+};
 
 // Modifies a content node, while ensuring property types are valid according to the content type schema
 export const modifyContentNode = ({ key, repoId, editor, requireValid }: Params) => {
@@ -53,7 +75,9 @@ export const modifyContentNode = ({ key, repoId, editor, requireValid }: Params)
                 contentLib.modify({
                     requireValid,
                     key,
-                    editor: (content) => content,
+                    editor: (content) => {
+                        return insertDummyData(content);
+                    },
                 })
         );
         if (!contentModifyResult) {
@@ -61,7 +85,9 @@ export const modifyContentNode = ({ key, repoId, editor, requireValid }: Params)
             return false;
         }
 
-        logger.info(`Modify content ${targetLogString} succeeded (stage 2)`);
+        logger.info(
+            `Modify content ${targetLogString} succeeded (stage 2) - ${contentModifyResult.x[COMPONENT_APP_KEY].dummy?.dummy}`
+        );
     } catch (e) {
         logger.error(`Failed to modify content ${targetLogString} (stage 2 exception) ${e}`);
         return false;
