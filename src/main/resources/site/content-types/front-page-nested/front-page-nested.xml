@@ -1,0 +1,18 @@
+<content-type>
+    <display-name>Underforside</display-name>
+    <description>Underforside med utgang til redaksjonelt styrte sider</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <mixin name="audience"/>
+        <field-set>
+            <label>Kort-url</label>
+            <items>
+                <mixin name="custom-path-selector"/>
+            </items>
+        </field-set>
+        <mixin name="dynamic-page-common"/>
+    </form>
+</content-type>
