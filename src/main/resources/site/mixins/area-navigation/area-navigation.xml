@@ -10,6 +10,13 @@
                         <allowContentType>${app}:area-page</allowContentType>
                     </config>
                 </input>
+                <input name="frontPageNestedRefs" type="ContentSelector">
+                    <label>Velg underforsider</label>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allowContentType>${app}:front-page-nested</allowContentType>
+                    </config>
+                </input>
                 <input name="situationsRefs" type="ContentSelector">
                     <label>Velg situasjonssider</label>
                     <occurrences maximum="0" minimum="0"/>

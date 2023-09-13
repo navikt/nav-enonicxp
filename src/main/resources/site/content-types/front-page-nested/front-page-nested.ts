@@ -50,6 +50,11 @@ export interface FrontPageNested {
       };
 
   /**
+   * Velg piktogram
+   */
+  illustration: string;
+
+  /**
    * Skriv inn ønsket kort-url
    */
   customPath?: string;

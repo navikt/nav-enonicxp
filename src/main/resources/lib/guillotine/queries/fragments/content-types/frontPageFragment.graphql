@@ -1,4 +1,5 @@
 #import "../mixins/areasFragment.graphql"
+#import "../mixins/frontPageNestedFragment.graphql"
 #import "../mixins/situationFragment.graphql"
 
 fragment contentFrontPage on no_nav_navno_FrontPage {
@@ -6,6 +7,9 @@ fragment contentFrontPage on no_nav_navno_FrontPage {
     data {
         areasRefs {
             ...areasMixin
+        }
+        frontPageNestedRefs {
+            ...frontPageNestedMixin
         }
         situationsRefs {
             ...situationMixin
