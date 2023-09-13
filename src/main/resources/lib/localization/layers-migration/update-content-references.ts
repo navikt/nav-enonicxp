@@ -1,3 +1,4 @@
+import * as contentLib from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { findReferences } from '../../cache/find-references';
@@ -10,6 +11,7 @@ import { RepoBranch } from '../../../types/common';
 import { modifyContentNode } from './modify-content-node';
 import { forceArray } from '../../utils/array-utils';
 import { isContentLocalized } from '../locale-utils';
+import { runInContext } from '../../context/run-in-context';
 
 const updateReferenceFromNode = ({
     contentNodeToUpdate,
@@ -67,28 +69,17 @@ const updateReferenceFromNode = ({
         return true;
     }
 
-    const repoConnection = getRepoConnection({
-        branch: 'draft',
-        repoId,
-        asAdmin: true,
-    });
-
-    const pushResult = repoConnection.push({
-        key: contentNodeToUpdateId,
-        target: 'master',
-        resolve: false,
-        includeChildren: false,
-    });
-
-    pushResult.failed.forEach(({ id, reason }) => `Pushing ${id} to master failed: ${reason}`);
-    pushResult.success.forEach((id) => `Pushing ${id} to master succeeded`);
-
-    if (pushResult.success.length > 0) {
-        repoConnection.commit({
+    const publishResult = runInContext({ asAdmin: true, branch: 'draft', repository: repoId }, () =>
+        contentLib.publish({
             keys: [contentNodeToUpdateId],
-            message: 'Oppdatert referanser til innhold etter layers-migrering',
-        });
-    }
+            includeDependencies: false,
+        })
+    );
+
+    publishResult.failedContents.forEach((contentId) =>
+        logger.error(`Publishing ${contentId} failed`)
+    );
+    publishResult.pushedContents.forEach((contentId) => logger.error(`Published ${contentId}`));
 };
 
 const updateContentReferencesInLocaleLayer = (

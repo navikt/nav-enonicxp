@@ -1,3 +1,4 @@
+import * as contentLib from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
 import { getLayersData } from '../layers-data';
 import {
@@ -12,6 +13,7 @@ import { modifyContentNode } from './modify-content-node';
 import { insertLayerMigrationXData } from './migration-data';
 import { archiveMigratedContent } from './archive-migrated-content';
 import { forceArray } from '../../utils/array-utils';
+import { runInContext } from '../../context/run-in-context';
 
 export type ContentMigrationParams = {
     sourceId: string;
@@ -99,33 +101,21 @@ const migrateBranch = (params: ContentMigrationParams, branch: RepoBranch) => {
         return true;
     }
 
-    const pushResult = targetRepoDraft.push({
-        key: targetId,
-        target: 'master',
-        resolve: false,
-    });
-
-    pushResult.failed.forEach(({ id, reason }) =>
-        logger.info(`Pushing ${id} to master failed: ${reason}`)
+    const publishResult = runInContext(
+        { asAdmin: true, branch: 'draft', repository: targetRepoId },
+        () =>
+            contentLib.publish({
+                keys: [targetId],
+                includeDependencies: false,
+            })
     );
-    pushResult.success.forEach((id) => logger.info(`Pushing ${id} to master succeeded`));
 
-    if (pushResult.success.length > 0) {
-        const targetRepoMaster = getRepoConnection({
-            branch: 'master',
-            repoId: targetRepoId,
-            asAdmin: true,
-        });
+    publishResult.failedContents.forEach((contentId) =>
+        logger.error(`Publishing ${contentId} failed`)
+    );
+    publishResult.pushedContents.forEach((contentId) => logger.error(`Published ${contentId}`));
 
-        targetRepoMaster.commit({
-            keys: [targetId],
-            message: 'Migrert innhold til språk-layer',
-        });
-
-        return true;
-    }
-
-    return false;
+    return publishResult.pushedContents.length > 0;
 };
 
 export const migrateContentToLayer = (contentMigrationParams: ContentMigrationParams) => {

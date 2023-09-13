@@ -18,7 +18,6 @@ import {
     migrateContentToLayer,
 } from '../../lib/localization/layers-migration/migrate-content-to-layer';
 import { toggleCacheInvalidationOnNodeEvents } from '../../lib/cache/invalidate-event-defer';
-import { getRepoConnection } from '../../lib/utils/repo-utils';
 
 type Params = {
     sourceLocale: string;
@@ -239,32 +238,6 @@ export const get = (req: XP.Request) => {
             status: 401,
             body: {
                 message: 'Not authorized',
-            },
-            contentType: 'application/json',
-        };
-    }
-
-    if (req.params.fixCommits && req.params.repoId && req.params.contentId) {
-        const commitResult = getRepoConnection({
-            branch: 'master',
-            asAdmin: true,
-            repoId: req.params.repoId,
-        }).commit({ keys: [req.params.contentId], message: 'Fixed commit' });
-
-        if (!commitResult) {
-            return {
-                status: 404,
-                body: {
-                    msg: 'Failed to commit',
-                },
-                contentType: 'application/json',
-            };
-        }
-
-        return {
-            status: 200,
-            body: {
-                commitResult: JSON.stringify(commitResult),
             },
             contentType: 'application/json',
         };
