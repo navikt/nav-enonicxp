@@ -82,6 +82,13 @@ const updateReferenceFromNode = ({
 
     pushResult.failed.forEach(({ id, reason }) => `Pushing ${id} to master failed: ${reason}`);
     pushResult.success.forEach((id) => `Pushing ${id} to master succeeded`);
+
+    if (pushResult.success.length > 0) {
+        repoConnection.commit({
+            keys: [contentNodeToUpdateId],
+            message: 'Oppdatert referanser til innhold etter layers-migrering',
+        });
+    }
 };
 
 const updateContentReferencesInLocaleLayer = (
@@ -143,7 +150,7 @@ const updateContentReferencesInLocaleLayer = (
             });
         }
 
-        // If the draft version was not committed to master, we need to update this as well
+        // If the draft version is not the same as master, we need to update draft as well
         if (contentNodeDraft && !isDraftAndMasterSameVersion(refContent._id, repoToUpdate)) {
             updateReferenceFromNode({
                 contentNodeToUpdate: contentNodeDraft,
