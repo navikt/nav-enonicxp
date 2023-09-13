@@ -10,7 +10,7 @@ import { logger } from '../../utils/logging';
 import { RepoBranch } from '../../../types/common';
 import { updateContentReferences } from './update-content-references';
 import { modifyContentNode } from './modify-content-node';
-import { insertLayerMigrationXData } from './migration-data';
+import { insertLayerMigrationData } from './migration-data';
 import { archiveMigratedContent } from './archive-migrated-content';
 import { forceArray } from '../../utils/array-utils';
 import { runInContext } from '../../context/run-in-context';
@@ -39,7 +39,7 @@ const transformToLayerContent = (
             languageVersionContentId !== targetId && languageVersionContentId !== sourceContent._id
     );
 
-    return insertLayerMigrationXData({
+    return insertLayerMigrationData({
         content: {
             ...sourceContent,
             data: { ...sourceContent.data, languages },

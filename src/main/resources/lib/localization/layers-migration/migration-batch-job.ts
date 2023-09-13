@@ -53,7 +53,7 @@ const getTargetBaseContentReverse = (sourceContent: Content, sourceLocale: strin
                     },
                     {
                         notExists: {
-                            field: 'x.no-nav-navno.layerMigration.ts',
+                            field: 'data._layerMigration.ts',
                         },
                     },
                 ],
@@ -119,7 +119,7 @@ const getContentToMigrate = ({
                         },
                         {
                             notExists: {
-                                field: 'x.no-nav-navno.layerMigration.ts',
+                                field: 'data._layerMigration.ts',
                             },
                         },
                     ],
