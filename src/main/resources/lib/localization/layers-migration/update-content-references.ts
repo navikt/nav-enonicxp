@@ -1,4 +1,3 @@
-import * as contentLib from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { findReferences } from '../../cache/find-references';
@@ -11,7 +10,6 @@ import { RepoBranch } from '../../../types/common';
 import { modifyContentNode } from './modify-content-node';
 import { forceArray } from '../../utils/array-utils';
 import { isContentLocalized } from '../locale-utils';
-import { runInContext } from '../../context/run-in-context';
 
 const updateReferenceFromNode = ({
     contentNodeToUpdate,
@@ -69,17 +67,23 @@ const updateReferenceFromNode = ({
         return true;
     }
 
-    const publishResult = runInContext({ asAdmin: true, branch: 'draft', repository: repoId }, () =>
-        contentLib.publish({
-            keys: [contentNodeToUpdateId],
-            includeDependencies: false,
-        })
-    );
+    const repoConnection = getRepoConnection({
+        branch: 'draft',
+        repoId,
+        asAdmin: true,
+    });
 
-    publishResult.failedContents.forEach((contentId) =>
-        logger.error(`Publishing ${contentId} failed`)
+    const pushResult = repoConnection.push({
+        key: contentNodeToUpdateId,
+        target: 'master',
+        resolve: false,
+        includeChildren: false,
+    });
+
+    pushResult.failed.forEach(({ id, reason }) =>
+        logger.error(`Pushing ${id} to master failed: ${reason}`)
     );
-    publishResult.pushedContents.forEach((contentId) => logger.error(`Published ${contentId}`));
+    pushResult.success.forEach((id) => logger.info(`Pushing ${id} to master succeeded`));
 };
 
 const updateContentReferencesInLocaleLayer = (

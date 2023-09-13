@@ -12,22 +12,14 @@ type Params = {
     requireValid?: boolean;
 } & NodeModifyParams;
 
-// Ensure a mutation of the content occurs, in order to force the content to always update
-// in the database.
-const insertDummyData = (content: Content) => {
-    if (!content.x) {
-        content.x = {};
+// Ensure a mutation of the content occurs, in order to force the content api
+// to always trigger a database update
+const insertDummyData = (content: Content<any>) => {
+    if (!content.data) {
+        content.data = {};
     }
 
-    if (!content.x[COMPONENT_APP_KEY]) {
-        content.x[COMPONENT_APP_KEY] = {};
-    }
-
-    if (!content.x[COMPONENT_APP_KEY].dummy) {
-        content.x[COMPONENT_APP_KEY].dummy = {};
-    }
-
-    content.x[COMPONENT_APP_KEY].dummy.dummy = new Date().toISOString();
+    content.data._dummy = new Date().toISOString();
 
     return content;
 };
