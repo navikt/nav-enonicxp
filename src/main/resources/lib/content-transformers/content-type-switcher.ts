@@ -10,19 +10,15 @@ const setContentTypeOnInheritedContent = (
     repoId: string,
     contentType: string
 ) => {
-    logger.info(`Checking ${contentId} ${repoId} ${contentType}`);
-
     const { defaultLocale, repoIdToLocaleMap, localeToRepoIdMap, locales } = getLayersData();
 
     const selectedLocale = repoIdToLocaleMap[repoId];
     if (selectedLocale !== defaultLocale) {
-        logger.info(`${selectedLocale} is not ${defaultLocale}`);
         return;
     }
 
     locales.forEach((locale) => {
         if (locale === selectedLocale) {
-            logger.info(`${locale} is not ${selectedLocale}`);
             return;
         }
 
@@ -36,14 +32,12 @@ const setContentTypeOnInheritedContent = (
 
         const content = repoConnection.get<Content>(contentId);
         if (!content || isContentLocalized(content)) {
-            logger.info(`Content is localized ${contentId} - ${locale}`);
             return;
         }
 
         repoConnection.modify({
             key: contentId,
             editor: (contentNode) => {
-                logger.info(`modifying`);
                 contentNode.type = contentType;
                 return contentNode;
             },
@@ -65,6 +59,7 @@ export const switchContentType = ({ repoId, contentId, contentType, editor }: Pa
         const repo = getRepoConnection({
             repoId: repoId,
             branch: 'draft',
+            asAdmin: true,
         });
 
         const result = repo.modify({
@@ -80,7 +75,7 @@ export const switchContentType = ({ repoId, contentId, contentType, editor }: Pa
             },
         });
 
-        logger.info(`Changed content type for ${contentId} to ${contentType}`);
+        logger.info(`Changed content type for ${contentId} in ${repoId} to ${contentType}`);
 
         return !!result;
     } catch (e) {

@@ -1,15 +1,15 @@
+import * as contentLib from '/lib/xp/content';
 import { validateCurrentUserPermissionForContent } from '../../lib/utils/auth-utils';
 import { contentTypesInContentSwitcher } from '../../lib/contenttype-lists';
 import { logger } from '../../lib/utils/logging';
 import { stringArrayToSet } from '../../lib/utils/array-utils';
 import { switchContentType } from '../../lib/content-transformers/content-type-switcher';
-import contentLib from '*/lib/xp/content';
 import { applyModifiedData } from '../../lib/utils/content-utils';
 import { hasValidCustomPath } from '../../lib/paths/custom-paths/custom-path-utils';
 
-const contentTypesMap = stringArrayToSet(contentTypesInContentSwitcher);
+type FormItem = contentLib.FormItem & { items?: contentLib.FormItem[] };
 
-type FormItem = contentLib.FormItem<unknown> & { items?: contentLib.FormItem[] };
+const contentTypesMap = stringArrayToSet(contentTypesInContentSwitcher);
 
 const contentHasField = (contentSchema: contentLib.ContentType, fieldName: string) => {
     return contentSchema.form.some((form: FormItem) => {
