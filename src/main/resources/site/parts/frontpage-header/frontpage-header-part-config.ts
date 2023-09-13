@@ -6,7 +6,7 @@ export interface FrontpageHeaderPartConfig {
   title?: string;
 
   /**
-   * Overstyr bakgrunnsfarge
+   * Sett bakgrunnsfarge
    */
   bgColor?: string;
 }

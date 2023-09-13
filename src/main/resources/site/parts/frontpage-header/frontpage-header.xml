@@ -1,12 +1,12 @@
 <part xmlns="urn:enonic:xp:model:1.0">
     <display-name>Tittel til underforside</display-name>
-    <description>Til bruk på underforside</description>
+    <description>Skal kun brukes til underforside, øverst. Annen bruk kan skape UU-feil!</description>
     <form>
         <input name="title" type="TextLine">
             <label>Tittel på underforside</label>
         </input>
         <input name="bgColor" type="CustomSelector">
-            <label>Overstyr bakgrunnsfarge</label>
+            <label>Sett bakgrunnsfarge</label>
             <help-text>Velg fra designsystemets fargepalett, eller en egendefinert hex-code, f.eks. #0451ff</help-text>
             <occurrences minimum="0" maximum="1"/>
             <config>
