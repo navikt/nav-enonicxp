@@ -1,3 +1,4 @@
+import * as contentLib from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { findReferences } from '../../cache/find-references';
@@ -54,9 +55,17 @@ const updateReferenceFromNode = ({
                 );
             }
 
-            const oldAudience = contentWithUpdates.data?.audience;
-            if (typeof oldAudience === 'string') {
-                contentWithUpdates.data.audience = { _selected: oldAudience };
+            const audience = contentWithUpdates.data?.audience;
+            if (typeof audience === 'string') {
+                const contentTypeSchema = contentLib.getType(contentWithUpdates.type);
+                if (
+                    contentTypeSchema?.form.some(
+                        (formItem) =>
+                            formItem.name === 'audience' && formItem.inputType !== 'TextLine'
+                    )
+                ) {
+                    contentWithUpdates.data.audience = { _selected: audience };
+                }
             }
 
             return contentWithUpdates;
