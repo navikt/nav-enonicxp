@@ -1,5 +1,4 @@
 import { RepoNode } from '/lib/xp/node';
-import { Content } from '/lib/xp/content';
 
 type LayerMigration = {
     /**
@@ -53,5 +52,5 @@ export const insertLayerMigrationData = ({
     return content;
 };
 
-export const getLayerMigrationData = (content: RepoNode<Content>) =>
-    (content.data as any)?._layerMigration as LayerMigration | null;
+export const getLayerMigrationData = (content: RepoNode<any>) =>
+    content.data?._layerMigration as LayerMigration | null;
