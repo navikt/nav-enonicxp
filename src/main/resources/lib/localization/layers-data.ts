@@ -92,7 +92,7 @@ export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
             return;
         }
 
-        logger.info(`Pushing ${nodesToPush.length} to master in layer repo ${repoId}`);
+        logger.info(`Pushing ${nodesToPush.length} nodes to master in layer repo ${repoId}`);
 
         const repoConnection = getRepoConnection({
             repoId: repoId,
