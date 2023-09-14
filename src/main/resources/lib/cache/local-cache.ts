@@ -1,5 +1,5 @@
 import cacheLib from '/lib/cache';
-import { sendReliableEvent } from '../events/reliable-custom-events';
+import * as eventLib from '/lib/xp/event';
 
 export const LOCAL_CACHE_INVALIDATION_EVENT_NAME = 'local-cache-invalidation';
 
@@ -13,7 +13,8 @@ export const invalidateLocalCache = () => {
 };
 
 export const sendLocalCacheInvalidationEvent = () => {
-    sendReliableEvent({
+    eventLib.send({
         type: LOCAL_CACHE_INVALIDATION_EVENT_NAME,
+        distributed: true,
     });
 };

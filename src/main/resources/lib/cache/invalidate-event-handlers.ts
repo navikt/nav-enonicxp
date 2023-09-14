@@ -1,7 +1,6 @@
 import * as eventLib from '/lib/xp/event';
 import { EnonicEvent } from '/lib/xp/event';
 import { handleScheduledPublish } from '../scheduling/scheduled-publish';
-import { addReliableEventListener } from '../events/reliable-custom-events';
 import { invalidateLocalCache, LOCAL_CACHE_INVALIDATION_EVENT_NAME } from './local-cache';
 import { NodeEventData } from './utils';
 import { CACHE_INVALIDATE_EVENT_NAME, invalidateCacheForNode } from './cache-invalidate';
@@ -73,14 +72,16 @@ export const activateCacheEventListeners = () => {
 
     // This event triggers invalidation of local caches and is sent when invalidateCacheForNode
     // is not executed cluster-wide
-    addReliableEventListener({
+    eventLib.listener({
         type: LOCAL_CACHE_INVALIDATION_EVENT_NAME,
+        localOnly: false,
         callback: invalidateLocalCache,
     });
 
     // This event is sent via the Content Studio widget for manual invalidation of a single page
-    addReliableEventListener<NodeEventData>({
+    eventLib.listener<NodeEventData>({
         type: CACHE_INVALIDATE_EVENT_NAME,
+        localOnly: false,
         callback: manualInvalidationCallback,
     });
 

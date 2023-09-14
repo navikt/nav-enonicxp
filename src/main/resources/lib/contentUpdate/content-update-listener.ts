@@ -3,7 +3,7 @@ import * as contentLib from '/lib/xp/content';
 import * as clusterLib from '/lib/xp/cluster';
 import { runInContext } from '../context/run-in-context';
 import { CONTENT_REPO_PREFIX, CONTENT_ROOT_REPO_ID } from '../constants';
-import { transformFragmentCreatorToFragment } from '../fragmentCreator/fragment-creator';
+import { transformFragmentCreatorToFragment } from '../content-transformers/fragment-creator';
 import { isContentLocalized } from '../localization/locale-utils';
 import { updateQbrickVideoContent } from './video-update';
 import { logger } from '../utils/logging';
