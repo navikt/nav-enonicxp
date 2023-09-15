@@ -3,7 +3,7 @@ import {
     getGlobalValueSet,
     getGvKeyAndContentIdFromUniqueKey,
 } from './global-value-utils';
-import { CONTENT_STUDIO_EDIT_PATH_PREFIX } from '../constants';
+import { CONTENT_STUDIO_PATH_PREFIX } from '../constants';
 import { GlobalValueItem } from './types';
 import { CaseTimeUnit } from '../../types/content-types/global-case-time-set';
 
@@ -48,7 +48,7 @@ export const createGlobalValueMacroPreview = (key: string) => {
         <div>
             <span style='font-size:20px'>${displayName}</span><br/>
             <span style='color:#888888'>${_path}</span><br/>
-            <a href='${CONTENT_STUDIO_EDIT_PATH_PREFIX}/${contentId}' target='_blank'>[Åpne i editoren]</a><br/>
+            <a href='${CONTENT_STUDIO_PATH_PREFIX}/${contentId}' target='_blank'>[Åpne i editoren]</a><br/>
             <br/>
             ${buildGlobalValuePreviewString(valueItem)}
         </div>

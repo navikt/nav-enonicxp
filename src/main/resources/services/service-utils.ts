@@ -1,5 +1,9 @@
 import { Content } from '/lib/xp/content';
+import * as contextLib from '/lib/xp/context';
 import { customSelectorEditIcon } from './custom-selector-icons';
+import { CONTENT_ROOT_PROJECT_ID, CONTENT_STUDIO_PATH_PREFIX } from '../lib/constants';
+import { logger } from '../lib/utils/logging';
+import { getContentProjectIdFromRepoId } from '../lib/utils/repo-utils';
 
 type CustomSelectorUsageHit = {
     name: string;
@@ -28,12 +32,27 @@ const iconWithLink = (href: string, iconData: string) => {
     return `<a href="${href}" class="custom-selector-link">${iconData}</a>`;
 };
 
+const buildEditorUrlFromContext = (contentId: string) => {
+    const { repository } = contextLib.get();
+    if (!repository) {
+        logger.error('Could not determine current repo from context!');
+    }
+
+    const projectId = repository
+        ? getContentProjectIdFromRepoId(repository)
+        : CONTENT_ROOT_PROJECT_ID;
+
+    return `${CONTENT_STUDIO_PATH_PREFIX}/${projectId}/edit/${contentId}`;
+};
+
 // Injects a link in the optional icon field of a customselector hit object
 // (this is almost certainly not an intended usage, but it works :D)
 export const customSelectorHitWithLink = (
     hit: XP.CustomSelectorServiceResponseHit,
-    url: string
+    contentId: string
 ): XP.CustomSelectorServiceResponseHit => {
+    const url = buildEditorUrlFromContext(contentId);
+
     return {
         ...hit,
         icon: {
