@@ -1,6 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { getKeyWithoutMacroDescription } from '../../../lib/utils/component-utils';
-import { CONTENT_STUDIO_EDIT_PATH_PREFIX } from '../../../lib/constants';
+import { buildEditorPathFromContext } from '../../../lib/paths/editor-path';
 
 export const macro = (context: XP.MacroContext) => {
     const { fragmentId } = context.params;
@@ -28,7 +28,9 @@ export const macro = (context: XP.MacroContext) => {
             <div>
                 <span style='font-size:20px'>${displayName}</span><br/>
                 <span style='color:#888888'>${_path}</span><br/>
-                <a href='${CONTENT_STUDIO_EDIT_PATH_PREFIX}/${contentId}' target='_blank'>[Åpne i editoren]</a>
+                <a href='${buildEditorPathFromContext(
+                    contentId
+                )}' target='_blank'>[Åpne i editoren]</a>
             </div>
             `,
     };

@@ -12,7 +12,6 @@ import {
     transformUsageHit,
 } from '../service-utils';
 import { runInContext } from '../../lib/context/run-in-context';
-import { CONTENT_STUDIO_EDIT_PATH_PREFIX } from '../../lib/constants';
 import { forceArray } from '../../lib/utils/array-utils';
 
 type Hit = XP.CustomSelectorServiceResponseHit;
@@ -26,7 +25,7 @@ const hitFromFragment = (fragment: Content<'portal:fragment'>, withDescription?:
             displayName: fragment.displayName,
             description: fragment._path,
         },
-        `${CONTENT_STUDIO_EDIT_PATH_PREFIX}/${fragment._id}`
+        fragment._id
     );
 
 const selectorHandler = (req: XP.CustomSelectorServiceRequest) => {
