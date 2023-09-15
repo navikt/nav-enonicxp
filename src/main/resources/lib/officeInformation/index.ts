@@ -9,7 +9,12 @@ import { OfficeInformation } from '../../site/content-types/office-information/o
 import { NavNoDescriptor } from '../../types/common';
 import { UpdateOfficeInfoConfig } from '../../tasks/update-office-info/update-office-info-config';
 import { logger } from '../utils/logging';
-import { CONTENT_ROOT_REPO_ID } from '../constants';
+import {
+    ADMIN_PRINCIPAL,
+    CONTENT_ROOT_REPO_ID,
+    SUPER_USER,
+    SYSTEM_ID_PROVIDER,
+} from '../constants';
 import { createObjectChecksum } from '../utils/object-utils';
 
 type OfficeInformationDescriptor = NavNoDescriptor<'office-information'>;
@@ -244,10 +249,10 @@ export const fetchAndUpdateOfficeInfo = (retry?: boolean) => {
         {
             repository: CONTENT_ROOT_REPO_ID,
             user: {
-                login: 'su',
-                idProvider: 'system',
+                login: SUPER_USER,
+                idProvider: SYSTEM_ID_PROVIDER,
             },
-            principals: ['role:system.admin'],
+            principals: [ADMIN_PRINCIPAL],
         },
         () => updateOfficeInfo(newOfficeInfo)
     );

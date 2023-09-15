@@ -79,3 +79,4 @@ export const SYSTEM_ID_PROVIDER = 'system';
 export const SYSTEM_USER = 'system-user';
 export const SUPER_USER = 'su';
 export const ADMIN_PRINCIPAL = 'role:system.admin';
+export const AUTHENTICATED_PRINCIPAL = 'role:system.authenticated';
