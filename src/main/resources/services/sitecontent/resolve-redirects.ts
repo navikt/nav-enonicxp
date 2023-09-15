@@ -7,6 +7,7 @@ import { REDIRECTS_ROOT_PATH } from '../../lib/constants';
 import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-sitecontent-query';
 import { getParentPath, stripPathPrefix } from '../../lib/paths/path-utils';
 import { getPublicPath } from '../../lib/paths/public-path';
+import { buildLocalePath } from '../../lib/localization/locale-utils';
 
 export const transformToRedirectResponse = ({
     content,
@@ -67,7 +68,9 @@ export const getCustomPathRedirectIfApplicable = ({
     locale: string;
 }) => {
     const shouldRedirect =
-        hasValidCustomPath(content) && requestedPath === content._path && branch === 'master';
+        hasValidCustomPath(content) &&
+        requestedPath === buildLocalePath(content._path, locale) &&
+        branch === 'master';
 
     return shouldRedirect
         ? transformToRedirectResponse({

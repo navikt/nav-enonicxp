@@ -148,29 +148,30 @@ const runPresetMigrationJob = (migrationParams: ContentMigrationParams[]) => {
             const resultsAcc: any[] = [];
 
             toggleCacheInvalidationOnNodeEvents({ shouldDefer: true });
+
             migrationParams.forEach((params, index) => {
+                resultCache.put(jobId, {
+                    status: `Migration job ${jobId} progress: [${index} / ${migrationParams.length}]`,
+                    result: resultsAcc,
+                    params: migrationParams,
+                });
+
                 try {
                     const result = migrateContentToLayer(params);
                     resultsAcc.push(result);
                 } catch (e) {
                     resultsAcc.push(e);
                 }
-
-                resultCache.put(jobId, {
-                    status: `Migration job ${jobId} progress: [${index + 1} / ${
-                        migrationParams.length
-                    }]`,
-                    result: resultsAcc,
-                    params,
-                });
             });
+
             toggleCacheInvalidationOnNodeEvents({ shouldDefer: false });
 
             const durationSec = (Date.now() - start) / 1000;
 
             resultCache.put(jobId, {
-                ...resultCache.getIfPresent(jobId),
                 status: `Migration job ${jobId} completed in ${durationSec} sec.`,
+                result: resultsAcc,
+                params: migrationParams,
             });
         },
     });
@@ -179,9 +180,9 @@ const runPresetMigrationJob = (migrationParams: ContentMigrationParams[]) => {
         status: 200,
         body: {
             msg: 'Started batch migration job!',
-            params: migrationParams,
             jobId,
             jobStatusUrl,
+            params: migrationParams,
         },
         contentType: 'application/json',
     };

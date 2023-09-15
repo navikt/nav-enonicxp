@@ -4,7 +4,7 @@ import { logger } from '../../utils/logging';
 import { runInLocaleContext } from '../locale-context';
 import { getLayersData } from '../layers-data';
 import { getRepoConnection } from '../../utils/repo-utils';
-import { insertLayerMigrationXData } from './migration-data';
+import { insertLayerMigrationData } from './migration-data';
 
 type ArchiveMigratedContentParams = {
     preMigrationContentId: string;
@@ -18,7 +18,7 @@ const transformToArchivedContent = (
     postMigrationLocale: string,
     postMigrationContentId: string
 ) => {
-    return insertLayerMigrationXData({
+    return insertLayerMigrationData({
         content: {
             ...preMigrationContent,
             displayName: `${preMigrationContent.displayName} - Migrert til layer: [${postMigrationLocale}] ${postMigrationContentId}`,

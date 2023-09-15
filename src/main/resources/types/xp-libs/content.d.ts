@@ -17,7 +17,7 @@ declare module '*/lib/xp/content' {
             // TODO: add typing for filters
             query<
                 ContentType extends ContentDescriptor = ContentDescriptor,
-                AggregationKeys extends string = never
+                AggregationKeys extends string = never,
             >(
                 params: QueryParams<ContentType, AggregationKeys>
             ): QueryResponse<ContentType, AggregationKeys>;
@@ -71,7 +71,7 @@ declare module '*/lib/xp/content' {
 
         type QueryParams<
             ContentType extends ContentDescriptor = ContentDescriptor,
-            AggregationKeys extends string = never
+            AggregationKeys extends string = never,
         > = {
             contentTypes?: ContentType[] | ReadonlyArray<ContentType>;
             start?: number;
@@ -85,7 +85,7 @@ declare module '*/lib/xp/content' {
 
         type QueryResponse<
             ContentType extends ContentDescriptor = ContentDescriptor,
-            AggregationKeys extends string = never
+            AggregationKeys extends string = never,
         > = Readonly<{
             hits: Array<Content<ContentType>>;
             count: number;
@@ -95,7 +95,7 @@ declare module '*/lib/xp/content' {
         }>;
 
         type CreateContentParams<
-            ContentType extends CustomContentDescriptor = CustomContentDescriptor
+            ContentType extends CustomContentDescriptor = CustomContentDescriptor,
         > = {
             contentType: ContentType;
             data: CustomContentDataConfigs[ContentType];
@@ -117,8 +117,8 @@ declare module '*/lib/xp/content' {
 
         type PublishContentParams = {
             keys: Array<string>;
-            sourceBranch: RepoBranch;
-            targetBranch: RepoBranch;
+            sourceBranch?: RepoBranch;
+            targetBranch?: RepoBranch;
             schedule?: ScheduleParams;
             excludeChildrenIds?: Array<string>;
             includeDependencies?: boolean;
@@ -685,7 +685,7 @@ declare module '*/lib/xp/content' {
         interface Site<
             Config extends object,
             PageConfig extends object = never,
-            XData extends object = object
+            XData extends object = object,
         > {
             readonly _id: string;
             readonly _name: string;
