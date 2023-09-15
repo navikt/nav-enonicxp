@@ -1,6 +1,7 @@
 import * as contextLib from '/lib/xp/context';
 import { ContextAttributes, RunContext } from '/lib/xp/context';
 import { RepoBranch } from '../../types/common';
+import { ADMIN_PRINCIPAL, SUPER_USER, SYSTEM_ID_PROVIDER, SYSTEM_USER } from '../constants';
 
 export type RunInContextOptions = {
     branch?: RepoBranch;
@@ -11,11 +12,18 @@ type ContextAuthInfo = Pick<RunContext<ContextAttributes>, 'user' | 'principals'
 
 const adminContextOptions: ContextAuthInfo = {
     user: {
-        login: 'su',
-        idProvider: 'system',
+        login: SUPER_USER,
+        idProvider: SYSTEM_ID_PROVIDER,
     },
-    principals: ['role:system.admin'],
+    principals: [ADMIN_PRINCIPAL],
 } as const;
+
+const standardContextOptions: ContextAuthInfo = {
+    user: {
+        login: SYSTEM_USER,
+        idProvider: SYSTEM_ID_PROVIDER,
+    },
+};
 
 export const runInContext = <ReturnType>(
     { branch, repository, asAdmin, attributes }: RunInContextOptions,
@@ -27,16 +35,7 @@ export const runInContext = <ReturnType>(
         {
             ...currentContext,
             ...(attributes && { attributes: { ...currentContext.attributes, ...attributes } }),
-            ...(asAdmin
-                ? adminContextOptions
-                : {
-                      principals: [
-                          ...currentContext.authInfo.principals,
-                          'role:cms.project.navno-engelsk.editor',
-                          'role:cms.project.navno-nynorsk.editor',
-                          'role:cms.project.navno-samisk.editor',
-                      ],
-                  }),
+            ...(asAdmin ? adminContextOptions : standardContextOptions),
             repository: repository || currentContext.repository,
             branch: branch || currentContext.branch,
         },

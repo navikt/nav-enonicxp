@@ -74,3 +74,8 @@ export const CONTENT_STUDIO_EDIT_PATH_PREFIX =
 // 404 returned from a sitecontent service and general 404 from the server
 // Don't change it without also changing the implementation in the frontend!
 export const SITECONTENT_404_MSG_PREFIX = 'Site path not found';
+
+export const SYSTEM_ID_PROVIDER = 'system';
+export const SYSTEM_USER = 'system-user';
+export const SUPER_USER = 'su';
+export const ADMIN_PRINCIPAL = 'role:system.admin';
