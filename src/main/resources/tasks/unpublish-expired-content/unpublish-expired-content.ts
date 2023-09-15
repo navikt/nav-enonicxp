@@ -38,7 +38,7 @@ export const run = (params: UnpublishExpiredContentConfig) => {
 
     try {
         const locale = getLayersData().repoIdToLocaleMap[repoId];
-        const unpublished = runInLocaleContext({ locale }, () =>
+        const unpublished = runInLocaleContext({ locale, asAdmin: true }, () =>
             contentLib.unpublish({ keys: [id] })
         );
         if (unpublished && unpublished.length > 0) {
