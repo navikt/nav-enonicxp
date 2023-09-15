@@ -23,7 +23,7 @@ const standardContextOptions: ContextAuthInfo = {
         login: SYSTEM_USER,
         idProvider: SYSTEM_ID_PROVIDER,
     },
-};
+} as const;
 
 export const runInContext = <ReturnType>(
     { branch, repository, asAdmin, attributes }: RunInContextOptions,

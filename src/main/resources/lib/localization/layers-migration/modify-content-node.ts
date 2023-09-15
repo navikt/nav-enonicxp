@@ -77,9 +77,7 @@ export const modifyContentNode = ({ key, repoId, editor, requireValid }: Params)
             return false;
         }
 
-        logger.info(
-            `Modify content ${targetLogString} succeeded (stage 2) - ${contentModifyResult.x[COMPONENT_APP_KEY].dummy?.dummy}`
-        );
+        logger.info(`Modify content ${targetLogString} succeeded (stage 2)`);
     } catch (e) {
         logger.error(`Failed to modify content ${targetLogString} (stage 2 exception) ${e}`);
         return false;
