@@ -34,6 +34,7 @@ export const runInContext = <ReturnType>(
                           ...currentContext.authInfo.principals,
                           'role:cms.project.navno-engelsk.editor',
                           'role:cms.project.navno-nynorsk.editor',
+                          'role:cms.project.navno-samisk.editor',
                       ],
                   }),
             repository: repository || currentContext.repository,
