@@ -129,7 +129,7 @@ export const activateSearchIndexEventHandlers = () => {
             }
 
             event.data.nodes.forEach((nodeData) => {
-                if (nodeData.branch !== 'master') {
+                if (nodeData.branch !== 'master' || !nodeData.path.startsWith('/content/')) {
                     return;
                 }
 

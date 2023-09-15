@@ -14,11 +14,17 @@ import {
     SEARCH_NODES_UPDATE_ABORT_EVENT,
 } from '../lib/search/search-event-handlers';
 import { pushLayerContentToMaster } from '../lib/localization/layers-data';
+import { oneTimeReindexFragmentsJob } from '../lib/reindex-fragments';
 
 type ActionsMap = { [key: string]: { description: string; callback: () => any } };
 
 const view = resolve('webapp.html');
+
 const validActions: ActionsMap = {
+    updateFragmentsIndexConfig: {
+        description: 'Oppdater index-config for html-fragmenter',
+        callback: oneTimeReindexFragmentsJob,
+    },
     norg: {
         description: 'Oppdater kontor-info fra norg',
         callback: () => runOfficeBranchFetchTask(),

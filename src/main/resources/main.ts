@@ -23,14 +23,14 @@ import { activateContentUpdateListener } from './lib/contentUpdate/content-updat
 
 updateClusterInfo();
 initLayersData();
-activateLayersEventListeners();
 
-activateCacheEventListeners();
-activateSitemapDataUpdateEventListener();
-activateContentListItemUnpublishedListener();
-activateCustomPathNodeListeners();
-activateSearchIndexEventHandlers();
-activateContentUpdateListener();
+// activateLayersEventListeners();
+// activateCacheEventListeners();
+// activateSitemapDataUpdateEventListener();
+// activateContentListItemUnpublishedListener();
+// activateCustomPathNodeListeners();
+// activateSearchIndexEventHandlers();
+// activateContentUpdateListener();
 
 hookLibsWithTimeTravel();
 
