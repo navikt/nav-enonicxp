@@ -23,8 +23,8 @@ import { activateContentUpdateListener } from './lib/contentUpdate/content-updat
 
 updateClusterInfo();
 initLayersData();
-activateLayersEventListeners();
 
+// activateLayersEventListeners();
 // activateCacheEventListeners();
 // activateSitemapDataUpdateEventListener();
 // activateContentListItemUnpublishedListener();
