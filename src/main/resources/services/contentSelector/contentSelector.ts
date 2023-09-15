@@ -2,7 +2,6 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import * as portalLib from '/lib/xp/portal';
 import { generateFulltextQuery } from '../../lib/utils/mixed-bag-of-utils';
-import { CONTENT_LOCALE_DEFAULT } from '../../lib/constants';
 import { customSelectorHitWithLink } from '../service-utils';
 import { logger } from '../../lib/utils/logging';
 import { ContentDescriptor } from '../../types/content-types/content-config';
