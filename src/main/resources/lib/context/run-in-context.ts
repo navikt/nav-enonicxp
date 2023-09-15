@@ -18,7 +18,7 @@ const adminContextOptions: ContextAuthInfo = {
 } as const;
 
 export const runInContext = <ReturnType>(
-    { branch, repository, asAdmin = true, attributes }: RunInContextOptions,
+    { branch, repository, asAdmin, attributes }: RunInContextOptions,
     func: () => ReturnType
 ): ReturnType => {
     const currentContext = contextLib.get();
@@ -27,7 +27,15 @@ export const runInContext = <ReturnType>(
         {
             ...currentContext,
             ...(attributes && { attributes: { ...currentContext.attributes, ...attributes } }),
-            ...(asAdmin && adminContextOptions),
+            ...(asAdmin
+                ? adminContextOptions
+                : {
+                      principals: [
+                          ...currentContext.authInfo.principals,
+                          'role:cms.project.navno-engelsk.editor',
+                          'role:cms.project.navno-nynorsk.editor',
+                      ],
+                  }),
             repository: repository || currentContext.repository,
             branch: branch || currentContext.branch,
         },
