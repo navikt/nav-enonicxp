@@ -57,11 +57,12 @@ const updateReferenceFromNode = ({
 
             // Fix audience type to prevent validation error
             const audience = contentWithUpdates.data?.audience;
-            if (typeof audience === 'string') {
+            if (typeof forceArray(audience)[0] === 'string') {
                 const contentTypeSchema = contentLib.getType(contentWithUpdates.type);
 
                 const audienceShouldNotBeString = contentTypeSchema?.form.some(
-                    (formItem) => formItem.name === 'audience' && formItem.inputType !== 'TextLine'
+                    (formItem) =>
+                        formItem.name === 'audience' && formItem.formItemType === 'OptionSet'
                 );
 
                 if (audienceShouldNotBeString) {
