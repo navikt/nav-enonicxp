@@ -17,6 +17,7 @@ import { getLayersData } from '../localization/layers-data';
 import { runInLocaleContext } from '../localization/locale-context';
 import { isContentLocalized, queryAllLayersToLocaleBuckets } from '../localization/locale-utils';
 import { getPublicPath } from '../paths/public-path';
+import { customListenerType } from '../utils/events';
 
 const MAX_COUNT = 50000;
 const EVENT_TYPE_SITEMAP_GENERATED = 'sitemap-generated';
@@ -235,7 +236,7 @@ export const requestSitemapUpdate = () => {
 
 export const activateSitemapDataUpdateEventListener = () => {
     eventLib.listener<{ entries: SitemapEntry[] }>({
-        type: EVENT_TYPE_SITEMAP_GENERATED,
+        type: customListenerType(EVENT_TYPE_SITEMAP_GENERATED),
         localOnly: false,
         callback: (event) => {
             updateSitemapData(event.data.entries);
@@ -243,7 +244,7 @@ export const activateSitemapDataUpdateEventListener = () => {
     });
 
     eventLib.listener({
-        type: EVENT_TYPE_SITEMAP_REQUESTED,
+        type: customListenerType(EVENT_TYPE_SITEMAP_REQUESTED),
         localOnly: false,
         callback: generateAndBroadcastSitemapData,
     });
