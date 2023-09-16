@@ -34,7 +34,6 @@ const propagatePublishEventsToLayers = (event: EnonicEvent) => {
             }
 
             if (event.type === 'node.pushed') {
-                logger.info(`Pushing ${id} to master in layer ${locale}`);
                 const result = getRepoConnection({ branch: 'draft', repoId, asAdmin: true }).push({
                     key: id,
                     target: 'master',
@@ -42,17 +41,19 @@ const propagatePublishEventsToLayers = (event: EnonicEvent) => {
                 });
 
                 logger.info(
-                    `Pushing ${id} to master in layer ${locale} result: ${JSON.stringify(result)}`
+                    `Pushing ${id} to master in ${locale}/${repoId} result: ${JSON.stringify(
+                        result
+                    )}`
                 );
             } else if (event.type === 'node.deleted') {
-                logger.info(`Deleting ${id} from master in layer ${locale}`);
                 const result = getRepoConnection({
                     branch: 'master',
                     repoId,
                     asAdmin: true,
                 }).delete(id);
+
                 logger.info(
-                    `Deleting ${id} from master in layer ${locale} result: ${JSON.stringify(
+                    `Deleting ${id} from master in ${locale}/${repoId} result: ${JSON.stringify(
                         result
                     )}`
                 );
