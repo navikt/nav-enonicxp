@@ -32,12 +32,14 @@ const pushToMasterIfContentIsPublishedInRootRepo = ({ id, repo, branch }: NodeDa
         return;
     }
 
-    const updatedContent = getRepoConnection({ repoId: repo, branch: 'draft', asAdmin: true }).get(
-        id
-    );
+    const layerContentDraft = getRepoConnection({
+        repoId: repo,
+        branch: 'draft',
+        asAdmin: true,
+    }).get(id);
 
-    // For content which is localized to the layer repo, no action is needed
-    if (!updatedContent || isContentLocalized(updatedContent)) {
+    // For content which is localized, no action is needed
+    if (!layerContentDraft || isContentLocalized(layerContentDraft)) {
         return;
     }
 
@@ -46,17 +48,18 @@ const pushToMasterIfContentIsPublishedInRootRepo = ({ id, repo, branch }: NodeDa
         branch: 'master',
     }).get(id);
 
-    // We only want to push content in the layer repo if it's the same as the current
-    // master in the root repo
-    if (!rootContentMaster || rootContentMaster._versionKey !== updatedContent._versionKey) {
+    // We only want to push the layer content if it has an equal or newer timestamp, compared
+    // to the root master content. Layer content will "always" have a higher timestamp for
+    // the same version, as it is updated after the root content is saved.
+    if (!rootContentMaster || rootContentMaster._ts > layerContentDraft._ts) {
         return;
     }
 
     pushToMaster(id, repo);
 };
 
-// Publish/unpublish actions in the root layer should be propagated to non-localized content in child
-// layers, as XP does not do this automatically
+// Publish/unpublish actions in the root layer should be propagated to non-localized content in
+// child layers, as XP does not do this automatically
 const propagatePublishEventsToLayers = (event: EnonicEvent) => {
     if (!clusterLib.isMaster()) {
         return;
