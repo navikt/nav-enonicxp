@@ -27,7 +27,7 @@ const pushToMaster = (contentId: string, repoId: string) => {
 // handler for the root repo may have been triggered before the content was synced to
 // the layers.
 const pushToMasterIfContentIsPublishedInRootRepo = ({ id, repo, branch }: NodeData) => {
-    // For content updated in the root repo, we don't do anything
+    // For content updated in the root repo, no action is needed
     if (branch !== 'draft' || repo === CONTENT_ROOT_REPO_ID) {
         return;
     }
