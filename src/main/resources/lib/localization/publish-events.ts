@@ -1,12 +1,59 @@
 import * as eventLib from '/lib/xp/event';
-import { EnonicEvent } from '/lib/xp/event';
+import { EnonicEvent, EnonicEventData } from '/lib/xp/event';
 import * as clusterLib from '/lib/xp/cluster';
 import { getRepoConnection } from '../utils/repo-utils';
 import { logger } from '../utils/logging';
-import { getContentFromAllLayers } from './locale-utils';
-import { CONTENT_ROOT_REPO_ID } from '../constants';
+import { getContentFromAllLayers, isContentLocalized } from './locale-utils';
+import { CONTENT_REPO_PREFIX, CONTENT_ROOT_REPO_ID } from '../constants';
 
 let hasSetupListeners = false;
+
+type NodeData = EnonicEventData['nodes'][number];
+
+const pushToMaster = (contentId: string, repoId: string) => {
+    const result = getRepoConnection({ branch: 'draft', repoId, asAdmin: true }).push({
+        key: contentId,
+        target: 'master',
+        resolve: false,
+        includeChildren: false,
+    });
+
+    logger.info(`Pushed ${contentId} to master in ${repoId} - result: ${JSON.stringify(result)}`);
+};
+
+// Handles the case where content may have already been published in the root repo
+// by the time the layer update event is fired. This will usually only happen when content
+// is programmatically updated and immediately published. In this case, the node.pushed
+// handler for the root repo may have been triggered before the content was synced to
+// the layers.
+const pushToMasterIfContentIsPublishedInRootRepo = ({ id, repo, branch }: NodeData) => {
+    // For content updated in the root repo, we don't do anything
+    if (branch !== 'draft' || repo === CONTENT_ROOT_REPO_ID) {
+        return;
+    }
+
+    const updatedContent = getRepoConnection({ repoId: repo, branch: 'draft', asAdmin: true }).get(
+        id
+    );
+
+    // For content which is localized to the layer repo, no action is needed
+    if (!updatedContent || isContentLocalized(updatedContent)) {
+        return;
+    }
+
+    const rootContentMaster = getRepoConnection({
+        repoId: CONTENT_ROOT_REPO_ID,
+        branch: 'master',
+    }).get(id);
+
+    // We only want to push content in the layer repo if it's the same as the current
+    // master in the root repo
+    if (!rootContentMaster || rootContentMaster._versionKey !== updatedContent._versionKey) {
+        return;
+    }
+
+    pushToMaster(id, repo);
+};
 
 // Publish/unpublish actions in the root layer should be propagated to non-localized content in child
 // layers, as XP does not do this automatically
@@ -17,6 +64,15 @@ const propagatePublishEventsToLayers = (event: EnonicEvent) => {
 
     event.data.nodes.forEach((node) => {
         const { id, branch, repo } = node;
+
+        if (!repo.startsWith(CONTENT_REPO_PREFIX)) {
+            return;
+        }
+
+        if (event.type === 'node.updated') {
+            logger.info(`Node: ${JSON.stringify(node)}`);
+            return pushToMasterIfContentIsPublishedInRootRepo(node);
+        }
 
         if (branch !== 'master' || repo !== CONTENT_ROOT_REPO_ID) {
             return;
@@ -34,17 +90,7 @@ const propagatePublishEventsToLayers = (event: EnonicEvent) => {
             }
 
             if (event.type === 'node.pushed') {
-                const result = getRepoConnection({ branch: 'draft', repoId, asAdmin: true }).push({
-                    key: id,
-                    target: 'master',
-                    resolve: false,
-                });
-
-                logger.info(
-                    `Pushing ${id} to master in ${locale}/${repoId} result: ${JSON.stringify(
-                        result
-                    )}`
-                );
+                pushToMaster(id, repoId);
             } else if (event.type === 'node.deleted') {
                 const result = getRepoConnection({
                     branch: 'master',
@@ -53,9 +99,7 @@ const propagatePublishEventsToLayers = (event: EnonicEvent) => {
                 }).delete(id);
 
                 logger.info(
-                    `Deleting ${id} from master in ${locale}/${repoId} result: ${JSON.stringify(
-                        result
-                    )}`
+                    `Deleted ${id} from master in ${repoId} - result: ${JSON.stringify(result)}`
                 );
             }
         });
@@ -71,7 +115,7 @@ export const activateLayersEventListeners = () => {
     hasSetupListeners = true;
 
     eventLib.listener({
-        type: '(node.pushed|node.deleted)',
+        type: '(node.pushed|node.deleted|node.updated)',
         localOnly: false,
         callback: propagatePublishEventsToLayers,
     });
