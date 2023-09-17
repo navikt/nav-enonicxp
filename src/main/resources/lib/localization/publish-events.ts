@@ -55,6 +55,8 @@ const pushToMasterIfContentIsPublishedInRootRepo = ({ id, repo, branch }: NodeDa
         return;
     }
 
+    logger.info(`Pushing newest version of ${id} in ${repo} to master`);
+
     pushToMaster(id, repo);
 };
 
@@ -73,7 +75,6 @@ const propagatePublishEventsToLayers = (event: EnonicEvent) => {
         }
 
         if (event.type === 'node.updated') {
-            logger.info(`Node: ${JSON.stringify(node)}`);
             return pushToMasterIfContentIsPublishedInRootRepo(node);
         }
 
