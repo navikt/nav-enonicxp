@@ -43,6 +43,17 @@ const pushToMasterIfContentIsPublishedInRootRepo = ({ id, repo, branch }: NodeDa
         return;
     }
 
+    const layerContentMaster = getRepoConnection({
+        repoId: repo,
+        branch: 'master',
+        asAdmin: true,
+    }).get(id);
+
+    if (layerContentMaster?._versionKey === layerContentDraft._versionKey) {
+        logger.info(`Layer content ${id} in ${repo} already has newest version, skipping push`);
+        return;
+    }
+
     const rootContentMaster = getRepoConnection({
         repoId: CONTENT_ROOT_REPO_ID,
         branch: 'master',
@@ -56,7 +67,7 @@ const pushToMasterIfContentIsPublishedInRootRepo = ({ id, repo, branch }: NodeDa
         return;
     }
 
-    logger.info(`Pushing newest version of ${id} in ${repo} to master`);
+    logger.info(`Pushing ${id} in ${repo} to master from update event`);
 
     pushToMaster(id, repo);
 };
