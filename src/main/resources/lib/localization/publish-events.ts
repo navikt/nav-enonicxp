@@ -46,6 +46,7 @@ const pushToMasterIfContentIsPublishedInRootRepo = ({ id, repo, branch }: NodeDa
     const rootContentMaster = getRepoConnection({
         repoId: CONTENT_ROOT_REPO_ID,
         branch: 'master',
+        asAdmin: true,
     }).get(id);
 
     // We only want to push the layer content if it has an equal or newer timestamp, compared
