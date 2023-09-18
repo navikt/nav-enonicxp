@@ -72,23 +72,23 @@ export const getRedirectIfApplicable = ({
     branch: RepoBranch;
     locale: string;
 }) => {
-    const localeRedirectTarget =
+    const localeTarget =
         locale === CONTENT_LOCALE_DEFAULT &&
         content.x?.[COMPONENT_APP_KEY]?.redirectToLayer?.locale;
-    if (localeRedirectTarget) {
-        const targetContent = runInLocaleContext({ locale: localeRedirectTarget, branch }, () =>
+    if (localeTarget) {
+        const targetContent = runInLocaleContext({ locale: localeTarget, branch }, () =>
             contentLib.get({ key: content._id })
         );
 
         if (targetContent && isContentLocalized(targetContent)) {
             return transformToRedirectResponse({
                 content,
-                target: getPublicPath(targetContent, localeRedirectTarget),
+                target: getPublicPath(targetContent, localeTarget),
                 type: 'internal',
             });
         } else {
             logger.error(
-                `Layer redirect was set on ${content._id} to ${localeRedirectTarget} but the target locale content was not localized!`
+                `Layer redirect was set on ${content._id} to ${localeTarget} but the target locale content was not localized!`
             );
         }
     }
