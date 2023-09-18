@@ -61,7 +61,6 @@ export const transformToRedirectResponse = ({
           };
 };
 
-// If the content has a custom path, we should redirect requests from the internal _path
 export const getRedirectIfApplicable = ({
     content,
     requestedPath,
@@ -94,6 +93,7 @@ export const getRedirectIfApplicable = ({
         }
     }
 
+    // If the content has a custom path, we should redirect requests from the internal _path
     const shouldRedirectToCustomPath =
         hasValidCustomPath(content) &&
         requestedPath === buildLocalePath(content._path, locale) &&
