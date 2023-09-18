@@ -1,4 +1,3 @@
-import * as contentLib from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { findReferences } from '../../cache/find-references';
@@ -53,21 +52,6 @@ const updateReferenceFromNode = ({
                 contentWithUpdates.data.languages = languages.filter(
                     (language) => language !== contentNodeToUpdateId
                 );
-            }
-
-            // Fix audience type to prevent validation error
-            const audience = contentWithUpdates.data?.audience;
-            if (typeof forceArray(audience)[0] === 'string') {
-                const contentTypeSchema = contentLib.getType(contentWithUpdates.type);
-
-                const audienceShouldNotBeString = contentTypeSchema?.form.some(
-                    (formItem) =>
-                        formItem.name === 'audience' && formItem.formItemType === 'OptionSet'
-                );
-
-                if (audienceShouldNotBeString) {
-                    contentWithUpdates.data.audience = { _selected: audience };
-                }
             }
 
             return contentWithUpdates;
