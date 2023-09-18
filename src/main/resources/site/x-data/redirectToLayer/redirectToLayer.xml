@@ -4,7 +4,7 @@
     <form>
         <input name="locale" type="ComboBox">
             <label>Velg en lokalisert språkversjon</label>
-            <help-text>Dette feltet skal kun brukes dersom innholdet ikke finnes på norsk bokmål</help-text>
+            <help-text>Dette feltet skal kun brukes dersom denne siden ikke finnes på norsk bokmål</help-text>
             <occurrences minimum="0" maximum="1" />
             <config>
                 <option value="nn">Nynorsk</option>
