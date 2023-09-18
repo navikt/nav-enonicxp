@@ -83,7 +83,7 @@ export const getRedirectIfApplicable = ({
         if (targetContent && isContentLocalized(targetContent)) {
             return transformToRedirectResponse({
                 content,
-                target: getPublicPath(content, localeRedirectTarget),
+                target: getPublicPath(targetContent, localeRedirectTarget),
                 type: 'internal',
             });
         } else {
