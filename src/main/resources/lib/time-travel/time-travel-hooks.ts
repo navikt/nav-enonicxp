@@ -6,6 +6,7 @@
 
 import * as contentLib from '/lib/xp/content';
 import * as nodeLib from '/lib/xp/node';
+import * as contextLib from '/lib/xp/context';
 import { RepoConnection } from '/lib/xp/node';
 import { getNodeKey, getVersionFromTime } from '../utils/version-utils';
 import { runInContext } from '../context/run-in-context';
@@ -35,9 +36,13 @@ export const hookLibsWithTimeTravel = () => {
             try {
                 return contentLibGetStandard(args);
             } catch (e) {
+                const context = contextLib.get();
                 logger.warning(
-                    `Error from contentLib.get - args: ${JSON.stringify(args)} - error: ${e}`
+                    `Error from contentLib.get - args: ${JSON.stringify(
+                        args
+                    )} - context: ${JSON.stringify(context)} - error: ${e}`
                 );
+
                 return null;
             }
         }
