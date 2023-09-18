@@ -1,8 +1,8 @@
 import * as contentLib from '/lib/xp/content';
+import * as portalLib from '/lib/xp/portal';
 import { Content } from '/lib/xp/content';
 import { ProductDetails } from '../../site/content-types/product-details/product-details';
 import { generateFulltextQuery } from '../../lib/utils/mixed-bag-of-utils';
-import { runInContext } from '../../lib/context/run-in-context';
 import {
     customSelectorHitWithLink,
     getServiceRequestSubPath,
@@ -12,6 +12,7 @@ import { getProductDetailsUsage } from '../../lib/product-utils/productDetails';
 import { logger } from '../../lib/utils/logging';
 import { customSelectorErrorIcon } from '../custom-selector-icons';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
+import { runInLocaleContext } from '../../lib/localization/locale-context';
 
 type ProductDetailsType = ProductDetails['detailType'];
 type ProductDetailsContentType = Content<'no.nav.navno:product-details'>;
@@ -48,13 +49,13 @@ const makeErrorHit = (id: string, displayName: string, description: string): Sel
         id
     );
 
-const getSelectedHit = (selectedId: string, detailType: ProductDetailsType) => {
-    const publishedContent = runInContext({ branch: 'master' }, () =>
+const getSelectedHit = (selectedId: string, detailType: ProductDetailsType, locale: string) => {
+    const publishedContent = runInLocaleContext({ branch: 'master', locale }, () =>
         contentLib.get({ key: selectedId })
     );
 
     if (!publishedContent) {
-        const unpublishedContent = runInContext({ branch: 'draft' }, () =>
+        const unpublishedContent = runInLocaleContext({ branch: 'draft', locale }, () =>
             contentLib.get({ key: selectedId })
         );
 
@@ -88,8 +89,12 @@ const getSelectedHit = (selectedId: string, detailType: ProductDetailsType) => {
     return transformHit(publishedContent);
 };
 
-const getHitsFromQuery = (detailType: ProductDetailsType, query?: string): SelectorHit[] => {
-    const { hits } = runInContext({ branch: 'master' }, () =>
+const getHitsFromQuery = (
+    detailType: ProductDetailsType,
+    locale: string,
+    query?: string
+): SelectorHit[] => {
+    const { hits } = runInLocaleContext({ branch: 'master', locale }, () =>
         contentLib.query({
             count: 1000,
             contentTypes: ['no.nav.navno:product-details'],
@@ -113,7 +118,11 @@ const getHitsFromQuery = (detailType: ProductDetailsType, query?: string): Selec
 const selectorHandler = (req: XP.Request) => {
     const { detailType, query, ids } = req.params as SelectorParams;
 
-    const hits = ids ? [getSelectedHit(ids, detailType)] : getHitsFromQuery(detailType, query);
+    const { language } = portalLib.getContent();
+
+    const hits = ids
+        ? [getSelectedHit(ids, detailType, language)]
+        : getHitsFromQuery(detailType, language, query);
 
     return {
         status: 200,
