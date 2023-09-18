@@ -3,7 +3,6 @@ import { Content } from '/lib/xp/content';
 import { ProductDetails } from '../../site/content-types/product-details/product-details';
 import { generateFulltextQuery } from '../../lib/utils/mixed-bag-of-utils';
 import { runInContext } from '../../lib/context/run-in-context';
-import { CONTENT_STUDIO_EDIT_PATH_PREFIX } from '../../lib/constants';
 import {
     customSelectorHitWithLink,
     getServiceRequestSubPath,
@@ -36,7 +35,7 @@ const transformHit = (content: ProductDetailsContentType): SelectorHit =>
             displayName: content.displayName,
             description: makeDescription(content),
         },
-        `${CONTENT_STUDIO_EDIT_PATH_PREFIX}/${content._id}`
+        content._id
     );
 
 const makeErrorHit = (id: string, displayName: string, description: string): SelectorHit =>
@@ -47,7 +46,7 @@ const makeErrorHit = (id: string, displayName: string, description: string): Sel
             description,
             icon: customSelectorErrorIcon,
         },
-        `${CONTENT_STUDIO_EDIT_PATH_PREFIX}/${id}`
+        id
     );
 
 const getSelectedHit = (selectedId: string, detailType: ProductDetailsType) => {

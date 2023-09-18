@@ -2,7 +2,6 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import * as portalLib from '/lib/xp/portal';
 import { generateFulltextQuery } from '../../lib/utils/mixed-bag-of-utils';
-import { CONTENT_LOCALE_DEFAULT, CONTENT_STUDIO_EDIT_PATH_PREFIX } from '../../lib/constants';
 import { customSelectorHitWithLink } from '../service-utils';
 import { logger } from '../../lib/utils/logging';
 import { ContentDescriptor } from '../../types/content-types/content-config';
@@ -50,12 +49,10 @@ const transformHit = (content: Content): SelectorHit =>
     customSelectorHitWithLink(
         {
             id: content._id,
-            displayName: `${
-                content.language !== CONTENT_LOCALE_DEFAULT ? `[${content.language}]` : ''
-            } ${content.displayName}`,
+            displayName: `[${content.language}] ${content.displayName}`,
             description: stripPathPrefix(content._path),
         },
-        `${CONTENT_STUDIO_EDIT_PATH_PREFIX}/${content._id}`
+        content._id
     );
 
 const getHitsFromQuery = (

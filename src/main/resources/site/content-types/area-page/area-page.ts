@@ -107,7 +107,7 @@ export interface AreaPage {
   /**
    * Skriv inn ønsket kort-url
    */
-  customPath?: string;
+  customPath: string;
 
   /**
    * Legg til andre språkversjoner

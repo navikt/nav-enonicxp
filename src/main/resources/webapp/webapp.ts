@@ -18,6 +18,7 @@ import { pushLayerContentToMaster } from '../lib/localization/layers-data';
 type ActionsMap = { [key: string]: { description: string; callback: () => any } };
 
 const view = resolve('webapp.html');
+
 const validActions: ActionsMap = {
     norg: {
         description: 'Oppdater kontor-info fra norg',

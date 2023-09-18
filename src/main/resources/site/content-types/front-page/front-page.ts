@@ -67,7 +67,7 @@ export interface FrontPage {
   /**
    * Skriv inn ønsket kort-url
    */
-  customPath?: string;
+  customPath: string;
 
   /**
    * Legg til andre språkversjoner

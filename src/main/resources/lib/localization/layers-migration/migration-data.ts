@@ -1,18 +1,50 @@
 import { RepoNode } from '/lib/xp/node';
-import { LayerMigration } from '../../../site/x-data/layerMigration/layerMigration';
-import { COMPONENT_APP_KEY } from '../../constants';
-import { Content } from '/lib/xp/content';
+
+type LayerMigration = {
+    /**
+     * Type (live eller arkivert)
+     */
+    targetReferenceType?: 'live' | 'archived';
+
+    /**
+     * Content id (viser til arkivert innhold fra live innhold og vice versa)
+     */
+    contentId: string;
+
+    /**
+     * Repo id (viser til arkivert innhold fra live innhold og vice versa)
+     */
+    repoId: string;
+
+    /**
+     * Locale (viser til arkivert innhold fra live innhold og vice versa)
+     */
+    locale: string;
+
+    /**
+     * Timestamp for migrering
+     */
+    ts: string;
+};
 
 type LayerMigrationParams = Omit<LayerMigration, 'ts'>;
 
-export const insertLayerMigrationXData = ({
+export const insertLayerMigrationData = ({
     content,
     migrationParams,
 }: {
     content: RepoNode<any>;
     migrationParams: LayerMigrationParams;
 }) => {
-    content.x[COMPONENT_APP_KEY].layerMigration = {
+    if (!content.data) {
+        content.data = {};
+    }
+
+    if (!content.data._layerMigration) {
+        content.data._layerMigration = {};
+    }
+
+    content.data._layerMigration = {
         ...migrationParams,
         ts: new Date().toISOString(),
     };
@@ -20,5 +52,5 @@ export const insertLayerMigrationXData = ({
     return content;
 };
 
-export const getLayerMigrationData = (content: RepoNode<Content>) =>
-    content.x?.[COMPONENT_APP_KEY]?.layerMigration as LayerMigration | null;
+export const getLayerMigrationData = (content: RepoNode<any>) =>
+    content.data?._layerMigration as LayerMigration | null;

@@ -14,6 +14,7 @@ import {
 } from './search-repo';
 import { getLayersData } from '../localization/layers-data';
 import { forceArray } from '../utils/array-utils';
+import { customListenerType } from '../utils/events';
 
 let isActive = false;
 let isRunningConfigUpdate = false;
@@ -129,7 +130,7 @@ export const activateSearchIndexEventHandlers = () => {
             }
 
             event.data.nodes.forEach((nodeData) => {
-                if (nodeData.branch !== 'master') {
+                if (nodeData.branch !== 'master' || !nodeData.path.startsWith('/content/')) {
                     return;
                 }
 
@@ -152,7 +153,7 @@ export const activateSearchIndexEventHandlers = () => {
     });
 
     eventLib.listener({
-        type: `custom.${SEARCH_NODES_UPDATE_ABORT_EVENT}`,
+        type: customListenerType(SEARCH_NODES_UPDATE_ABORT_EVENT),
         callback: () => {
             revalidateAllSearchNodesAbort();
         },

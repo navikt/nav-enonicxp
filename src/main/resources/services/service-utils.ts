@@ -1,5 +1,6 @@
 import { Content } from '/lib/xp/content';
 import { customSelectorEditIcon } from './custom-selector-icons';
+import { buildEditorPathFromContext } from '../lib/paths/editor-path';
 
 type CustomSelectorUsageHit = {
     name: string;
@@ -32,12 +33,14 @@ const iconWithLink = (href: string, iconData: string) => {
 // (this is almost certainly not an intended usage, but it works :D)
 export const customSelectorHitWithLink = (
     hit: XP.CustomSelectorServiceResponseHit,
-    url: string
+    contentId: string
 ): XP.CustomSelectorServiceResponseHit => {
+    const editorPath = buildEditorPathFromContext(contentId);
+
     return {
         ...hit,
         icon: {
-            data: iconWithLink(url, hit.icon?.data || customSelectorEditIcon.data),
+            data: iconWithLink(editorPath, hit.icon?.data || customSelectorEditIcon.data),
             type: hit.icon?.type || customSelectorEditIcon.type,
         },
     };

@@ -1,3 +1,4 @@
+import * as contentLib from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { findReferences } from '../../cache/find-references';
@@ -54,6 +55,21 @@ const updateReferenceFromNode = ({
                 );
             }
 
+            // Fix audience type to prevent validation error
+            const audience = contentWithUpdates.data?.audience;
+            if (typeof forceArray(audience)[0] === 'string') {
+                const contentTypeSchema = contentLib.getType(contentWithUpdates.type);
+
+                const audienceShouldNotBeString = contentTypeSchema?.form.some(
+                    (formItem) =>
+                        formItem.name === 'audience' && formItem.formItemType === 'OptionSet'
+                );
+
+                if (audienceShouldNotBeString) {
+                    contentWithUpdates.data.audience = { _selected: audience };
+                }
+            }
+
             return contentWithUpdates;
         },
     });
@@ -75,8 +91,10 @@ const updateReferenceFromNode = ({
         includeChildren: false,
     });
 
-    pushResult.failed.forEach(({ id, reason }) => `Pushing ${id} to master failed: ${reason}`);
-    pushResult.success.forEach((id) => `Pushing ${id} to master succeeded`);
+    pushResult.failed.forEach(({ id, reason }) =>
+        logger.error(`Pushing ${id} to master failed: ${reason}`)
+    );
+    pushResult.success.forEach((id) => logger.info(`Pushing ${id} to master succeeded`));
 };
 
 const updateContentReferencesInLocaleLayer = (
@@ -100,9 +118,9 @@ const updateContentReferencesInLocaleLayer = (
     logger.info(
         `Found ${
             references.length
-        } references to ${sourceId} in locale ${localeToUpdate}:\n${references
-            .map((ref) => ref._path)
-            .join('\n')}`
+        } references to ${sourceId} in locale ${localeToUpdate}: ${references
+            .map((ref) => ref._id)
+            .join(', ')}`
     );
 
     references.forEach((refContent) => {
@@ -110,8 +128,8 @@ const updateContentReferencesInLocaleLayer = (
             return;
         }
 
-        const { _id } = refContent;
-        if (_id === sourceId && localeToUpdate === sourceLocale) {
+        const refContentId = refContent._id;
+        if (refContentId === sourceId && localeToUpdate === sourceLocale) {
             return;
         }
 
@@ -119,14 +137,14 @@ const updateContentReferencesInLocaleLayer = (
             branch: 'master',
             repoId: repoToUpdate,
             asAdmin: true,
-        }).get(_id);
+        }).get(refContentId);
 
         // Get the content node from draft before updating master, as it may be overwritten
         const contentNodeDraft = getRepoConnection({
             branch: 'draft',
             repoId: repoToUpdate,
             asAdmin: true,
-        }).get(_id);
+        }).get(refContentId);
 
         if (contentNodeMaster) {
             updateReferenceFromNode({
@@ -138,7 +156,7 @@ const updateContentReferencesInLocaleLayer = (
             });
         }
 
-        // If the draft version was not committed to master, we need to update this as well
+        // If the draft version is not the same as master, we need to update draft as well
         if (contentNodeDraft && !isDraftAndMasterSameVersion(refContent._id, repoToUpdate)) {
             updateReferenceFromNode({
                 contentNodeToUpdate: contentNodeDraft,
