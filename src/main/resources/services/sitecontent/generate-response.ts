@@ -11,7 +11,7 @@ import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { resolvePathToTarget } from '../../lib/localization/locale-paths';
 import {
     transformToRedirectResponse,
-    getCustomPathRedirectIfApplicable,
+    getRedirectIfApplicable,
     getRedirectContent,
 } from './resolve-redirects';
 import { getLanguageVersions } from '../../lib/localization/resolve-language-versions';
@@ -161,15 +161,15 @@ export const generateSitecontentResponse = ({
         return specialPreviewResponse.response;
     }
 
-    const customPathRedirect = getCustomPathRedirectIfApplicable({
+    const redirectResponse = getRedirectIfApplicable({
         content,
         locale,
         branch,
         requestedPath: idOrPathRequested,
     });
 
-    if (customPathRedirect) {
-        return customPathRedirect;
+    if (redirectResponse) {
+        return redirectResponse;
     }
 
     return resolveContent(content, branch, locale);
