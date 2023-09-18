@@ -25,8 +25,7 @@ type UsageCheckParams = {
     id: string;
 };
 
-const makeDescription = (content: Content) =>
-    `[${content.language}] ${stripPathPrefix(content._path)}`;
+const makeDescription = (content: Content) => stripPathPrefix(content._path);
 
 const transformHit = (content: ProductDetailsContentType): SelectorHit =>
     customSelectorHitWithLink(
