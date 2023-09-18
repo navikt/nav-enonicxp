@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x-data>
+    <display-name>Redirect til språkversjon</display-name>
+    <form>
+        <input name="locale" type="ComboBox">
+            <label>Dette feltet skal kun brukes dersom denne siden ikke finnes på norsk bokmål</label>
+            <help-text>Obs: språkversjonen må være lokalisert</help-text>
+            <occurrences minimum="0" maximum="1" />
+            <config>
+                <option value="nn">Nynorsk</option>
+                <option value="en">Engelsk</option>
+                <option value="se">Samisk</option>
+            </config>
+        </input>
+    </form>
+</x-data>
