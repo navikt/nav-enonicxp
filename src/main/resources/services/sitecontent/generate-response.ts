@@ -11,7 +11,7 @@ import { resolvePathToTarget } from '../../lib/localization/locale-paths';
 import {
     transformToRedirectResponse,
     getSpecialRedirectIfApplicable,
-    getRedirectContent,
+    getRedirectFallback,
 } from './resolve-redirects';
 import { getLanguageVersions } from '../../lib/localization/resolve-language-versions';
 import { contentTypesRenderedByEditorFrontend } from '../../lib/contenttype-lists';
@@ -139,7 +139,7 @@ export const generateSitecontentResponse = ({
     // If the content was not found, check if there are any applicable redirects
     // for the requested path
     if (!target) {
-        return getRedirectContent({ pathRequested: idOrPathRequested, branch });
+        return getRedirectFallback({ pathRequested: idOrPathRequested, branch });
     }
 
     const { content, locale } = target;
