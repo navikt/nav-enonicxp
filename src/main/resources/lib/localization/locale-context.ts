@@ -7,7 +7,7 @@ import { getLayersData } from './layers-data';
 type RunInLocaleContextOptions = Omit<RunInContextOptions, 'repository'> & { locale: string };
 
 export const runInLocaleContext = <ReturnType>(
-    { locale, branch, asAdmin, attributes }: RunInLocaleContextOptions,
+    { locale, branch, asAdmin, asCurrentUser, attributes }: RunInLocaleContextOptions,
     func: () => ReturnType
 ): ReturnType => {
     const { localeToRepoIdMap, defaultLocale } = getLayersData();
@@ -27,6 +27,7 @@ export const runInLocaleContext = <ReturnType>(
             repository: repoIdActual,
             branch,
             asAdmin,
+            asCurrentUser,
             attributes: { ...attributes, locale: localeActual },
         },
         func

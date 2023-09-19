@@ -47,5 +47,7 @@ export const get = (req: XP.Request) => {
     const { defaultLocale } = getLayersData();
 
     // Global values should always use the default layer
-    return runInLocaleContext({ locale: defaultLocale }, () => reqHandler(req));
+    return runInLocaleContext({ locale: defaultLocale, asCurrentUser: true }, () =>
+        reqHandler(req)
+    );
 };
