@@ -259,9 +259,19 @@ export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranchDat
 
     summary.deleted = deleteStaleOfficePages(existingOfficePages, processedOfficeEnhetsNr);
 
-    // Publish all updated and created offices by id.
+    if (summary.deleted.length > 0) {
+        logger.info(`Office pages deleted: ${summary.deleted.length}`);
+    }
+
+    const contentToPublish = [...summary.created, ...summary.updated];
+
+    if (contentToPublish.length === 0) {
+        logger.info('No offices were updated');
+        return;
+    }
+
     const publishResponse = contentLib.publish({
-        keys: [...summary.created, ...summary.updated],
+        keys: contentToPublish,
         sourceBranch: 'draft',
         targetBranch: 'master',
         includeDependencies: false,
@@ -276,6 +286,6 @@ export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranchDat
     }
 
     logger.info(
-        `OfficeImporting: Import summary from NORG2 - Updated: ${summary.updated.length} Created: ${summary.created.length} Deleted: ${summary.deleted.length}`
+        `Import summary from NORG2 - Updated: ${summary.updated.length} Created: ${summary.created.length}`
     );
 };

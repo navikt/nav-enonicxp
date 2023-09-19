@@ -61,7 +61,7 @@ export const transformToRedirectResponse = ({
           };
 };
 
-export const getRedirectIfApplicable = ({
+export const getSpecialRedirectIfApplicable = ({
     content,
     requestedPath,
     branch,
