@@ -18,7 +18,7 @@ import { contentTypesRenderedByEditorFrontend } from '../../lib/contenttype-list
 import { stringArrayToSet } from '../../lib/utils/array-utils';
 import { resolveLegacyContentRedirects } from './resolve-legacy-content-redirects';
 import { getContentFromCustomPath } from '../../lib/paths/custom-paths/custom-path-utils';
-import { contentIsPreviewOnly } from '../../lib/utils/content-utils';
+import { isContentPreviewOnly } from '../../lib/utils/content-utils';
 
 const contentTypesForGuillotineQuery = stringArrayToSet(contentTypesRenderedByEditorFrontend);
 
@@ -30,7 +30,7 @@ const getSpecialPreviewResponseIfApplicable = (
     requestedPath: string,
     isPreview: boolean
 ) => {
-    const isPreviewOnly = contentIsPreviewOnly(content);
+    const isPreviewOnly = isContentPreviewOnly(content);
     const externalRedirectUrl = content.data?.externalProductUrl;
 
     if ((isPreviewOnly || !!externalRedirectUrl) === isPreview) {

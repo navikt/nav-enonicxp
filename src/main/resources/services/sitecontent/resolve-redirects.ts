@@ -14,7 +14,7 @@ import { getPublicPath } from '../../lib/paths/public-path';
 import { buildLocalePath, isContentLocalized } from '../../lib/localization/locale-utils';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { logger } from '../../lib/utils/logging';
-import { contentIsPreviewOnly } from '../../lib/utils/content-utils';
+import { isContentPreviewOnly } from '../../lib/utils/content-utils';
 
 export const transformToRedirectResponse = ({
     content,
@@ -73,7 +73,7 @@ export const getSpecialRedirectIfApplicable = ({
     branch: RepoBranch;
     locale: string;
 }) => {
-    if (contentIsPreviewOnly(content)) {
+    if (isContentPreviewOnly(content)) {
         return null;
     }
 

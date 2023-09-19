@@ -32,6 +32,6 @@ export const applyModifiedData = <ContentType extends ContentDescriptor>(
     return content;
 };
 
-export const contentIsPreviewOnly = (content: Content) => {
+export const isContentPreviewOnly = (content: Content) => {
     return !!content.x?.[COMPONENT_APP_KEY]?.previewOnly?.previewOnly;
 };
