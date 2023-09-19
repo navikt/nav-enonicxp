@@ -11,6 +11,7 @@ import {
     activateDeferCacheInvalidationEventListener,
     isDeferringCacheInvalidation,
 } from './invalidate-event-defer';
+import { customListenerType } from '../utils/events';
 
 let hasSetupListeners = false;
 
@@ -73,14 +74,14 @@ export const activateCacheEventListeners = () => {
     // This event triggers invalidation of local caches and is sent when invalidateCacheForNode
     // is not executed cluster-wide
     eventLib.listener({
-        type: LOCAL_CACHE_INVALIDATION_EVENT_NAME,
+        type: customListenerType(LOCAL_CACHE_INVALIDATION_EVENT_NAME),
         localOnly: false,
         callback: invalidateLocalCache,
     });
 
     // This event is sent via the Content Studio widget for manual invalidation of a single page
     eventLib.listener<NodeEventData>({
-        type: CACHE_INVALIDATE_EVENT_NAME,
+        type: customListenerType(CACHE_INVALIDATE_EVENT_NAME),
         localOnly: false,
         callback: manualInvalidationCallback,
     });

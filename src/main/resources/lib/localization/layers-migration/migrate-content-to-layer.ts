@@ -9,7 +9,7 @@ import { logger } from '../../utils/logging';
 import { RepoBranch } from '../../../types/common';
 import { updateContentReferences } from './update-content-references';
 import { modifyContentNode } from './modify-content-node';
-import { insertLayerMigrationXData } from './migration-data';
+import { insertLayerMigrationData } from './migration-data';
 import { archiveMigratedContent } from './archive-migrated-content';
 import { forceArray } from '../../utils/array-utils';
 
@@ -37,7 +37,7 @@ const transformToLayerContent = (
             languageVersionContentId !== targetId && languageVersionContentId !== sourceContent._id
     );
 
-    return insertLayerMigrationXData({
+    return insertLayerMigrationData({
         content: {
             ...sourceContent,
             data: { ...sourceContent.data, languages },
@@ -106,11 +106,26 @@ const migrateBranch = (params: ContentMigrationParams, branch: RepoBranch) => {
     });
 
     pushResult.failed.forEach(({ id, reason }) =>
-        logger.info(`Pushing ${id} to master failed: ${reason}`)
+        logger.error(`Pushing ${id} to master failed: ${reason}`)
     );
     pushResult.success.forEach((id) => logger.info(`Pushing ${id} to master succeeded`));
 
-    return pushResult.success.length > 0;
+    if (pushResult.success.length > 0) {
+        const targetRepoMaster = getRepoConnection({
+            branch: 'master',
+            repoId: targetRepoId,
+            asAdmin: true,
+        });
+
+        targetRepoMaster.commit({
+            keys: [targetId],
+            message: 'Migrert innhold til språk-layer',
+        });
+
+        return true;
+    }
+
+    return false;
 };
 
 export const migrateContentToLayer = (contentMigrationParams: ContentMigrationParams) => {

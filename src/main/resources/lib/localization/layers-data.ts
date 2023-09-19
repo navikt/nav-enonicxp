@@ -50,7 +50,7 @@ export const getLocaleFromRepoId = (repoId: string) => data.repoIdToLocaleMap[re
 export const getLayersData = () => data;
 
 const contentOnlyQueryParams = {
-    query: '_path LIKE "/content/*"'
+    query: '_path LIKE "/content/*"',
 };
 
 // Pushes any nodes which exists on master in the root project to master on
@@ -92,7 +92,7 @@ export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
             return;
         }
 
-        logger.info(`Pushing ${nodesToPush.length} to master in layer repo ${repoId}`);
+        logger.info(`Pushing ${nodesToPush.length} nodes to master in layer repo ${repoId}`);
 
         const repoConnection = getRepoConnection({
             repoId: repoId,

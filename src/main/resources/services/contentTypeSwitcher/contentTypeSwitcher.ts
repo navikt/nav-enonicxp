@@ -1,13 +1,13 @@
 import * as contentLib from '/lib/xp/content';
-
-import { getRepoConnection } from '../../lib/utils/repo-utils';
 import { validateCurrentUserPermissionForContent } from '../../lib/utils/auth-utils';
 import { contentTypesInContentSwitcher } from '../../lib/contenttype-lists';
 import { logger } from '../../lib/utils/logging';
 import { stringArrayToSet } from '../../lib/utils/array-utils';
+import { switchContentType } from '../../lib/content-transformers/content-type-switcher';
 import { applyModifiedData } from '../../lib/utils/content-utils';
+import { hasValidCustomPath } from '../../lib/paths/custom-paths/custom-path-utils';
 
-type FormItem = contentLib.FormItem<unknown> & { items?: contentLib.FormItem[] };
+type FormItem = contentLib.FormItem & { items?: contentLib.FormItem[] };
 
 const contentTypesMap = stringArrayToSet(contentTypesInContentSwitcher);
 
@@ -18,52 +18,6 @@ const contentHasField = (contentSchema: contentLib.ContentType, fieldName: strin
         }
         return form.name === fieldName;
     });
-};
-
-const setContentType = (
-    repoId: string,
-    contentId: string,
-    contentType: string,
-    wipeData: boolean,
-    wipeComponents: boolean
-) => {
-    try {
-        const repo = getRepoConnection({
-            repoId: repoId,
-            branch: 'draft',
-        });
-
-        repo.modify({
-            key: contentId,
-            editor: (content) => {
-                content.type = contentType;
-                const contentSchema = contentLib.getType(contentType);
-
-                if (!contentSchema) {
-                    throw new Error(`Content type ${contentType} does not exist`);
-                }
-
-                if (wipeComponents) {
-                    content.components = [];
-                }
-
-                if (wipeData) {
-                    const { customPath } = content.data;
-                    const hasCustomPath =
-                        customPath && contentHasField(contentSchema, 'customPath');
-
-                    content.data = hasCustomPath ? { customPath } : {};
-                }
-
-                return applyModifiedData(content);
-            },
-        });
-        logger.info(`Changed content type for ${contentId} to ${contentType}`);
-    } catch (e) {
-        logger.error(
-            `Error while attempting to change content type for ${contentId} to ${contentType} - ${e}`
-        );
-    }
 };
 
 export const get = (req: XP.Request) => {
@@ -102,7 +56,32 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    setContentType(repoId, contentId, contentType, wipeData === 'true', wipeComponents === 'true');
+    switchContentType({
+        repoId,
+        contentId,
+        contentType,
+        editor: (content) => {
+            const contentSchema = contentLib.getType(contentType);
+
+            if (!contentSchema) {
+                throw new Error(`Content type ${contentType} does not exist`);
+            }
+
+            if (wipeComponents === 'true') {
+                content.components = [];
+            }
+
+            if (wipeData === 'true') {
+                if (hasValidCustomPath(content) && contentHasField(contentSchema, 'customPath')) {
+                    (content.data as any) = { customPath: content.data.customPath };
+                } else {
+                    content.data = {};
+                }
+            }
+
+            return applyModifiedData(content);
+        },
+    });
 
     return {
         status: 204,

@@ -67,10 +67,15 @@ export const SEARCH_REPO_ID = 'nav.no.search';
 export const NAVNO_ROOT_PATH = '/www.nav.no';
 export const REDIRECTS_ROOT_PATH = `${NAVNO_ROOT_PATH}/redirects`;
 export const FRONTEND_APP_NAME = 'nav-enonicxp-frontend';
-export const CONTENT_STUDIO_EDIT_PATH_PREFIX =
-    '/admin/tool/com.enonic.app.contentstudio/main/default/edit';
+export const CONTENT_STUDIO_PATH_PREFIX = '/admin/tool/com.enonic.app.contentstudio/main';
 
 // This message is used by the frontend to differentiate between
 // 404 returned from a sitecontent service and general 404 from the server
 // Don't change it without also changing the implementation in the frontend!
 export const SITECONTENT_404_MSG_PREFIX = 'Site path not found';
+
+export const SYSTEM_ID_PROVIDER = 'system';
+export const SYSTEM_USER = 'system-user';
+export const SUPER_USER = 'su';
+export const ADMIN_PRINCIPAL = 'role:system.admin';
+export const AUTHENTICATED_PRINCIPAL = 'role:system.authenticated';

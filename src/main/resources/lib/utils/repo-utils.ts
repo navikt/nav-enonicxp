@@ -1,12 +1,12 @@
 import * as nodeLib from '/lib/xp/node';
 import { Source } from '/lib/xp/node';
-import { CONTENT_REPO_PREFIX } from '../constants';
+import { ADMIN_PRINCIPAL, CONTENT_REPO_PREFIX, SUPER_USER } from '../constants';
 
 const asAdminParams: Pick<Source, 'user' | 'principals'> = {
     user: {
-        login: 'su',
+        login: SUPER_USER,
     },
-    principals: ['role:system.admin'],
+    principals: [ADMIN_PRINCIPAL],
 };
 
 type Params = Omit<Source, 'user' | 'principals'> & { asAdmin?: boolean };

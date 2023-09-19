@@ -1,14 +1,28 @@
 import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { getRepoConnection } from '../../utils/repo-utils';
 import { logger } from '../../utils/logging';
 import { runInLocaleContext } from '../locale-context';
 import { NodeModifyParams } from '/lib/xp/node';
 import { getLayersData } from '../layers-data';
+import { COMPONENT_APP_KEY } from '../../constants';
 
 type Params = {
     repoId: string;
     requireValid?: boolean;
 } & NodeModifyParams;
+
+// Ensure a mutation of the content occurs, in order to force the content api
+// to always trigger a database update
+const insertDummyData = (content: Content<any>) => {
+    if (!content.data) {
+        content.data = {};
+    }
+
+    content.data._dummy = new Date().toISOString();
+
+    return content;
+};
 
 // Modifies a content node, while ensuring property types are valid according to the content type schema
 export const modifyContentNode = ({ key, repoId, editor, requireValid }: Params) => {
@@ -53,7 +67,9 @@ export const modifyContentNode = ({ key, repoId, editor, requireValid }: Params)
                 contentLib.modify({
                     requireValid,
                     key,
-                    editor: (content) => content,
+                    editor: (content) => {
+                        return insertDummyData(content);
+                    },
                 })
         );
         if (!contentModifyResult) {

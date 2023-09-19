@@ -7,17 +7,18 @@ import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { CacheInvalidationDeferConfig } from '../../tasks/cache-invalidation-defer/cache-invalidation-defer-config';
 import { APP_DESCRIPTOR } from '../constants';
 import { logger } from '../utils/logging';
+import { customListenerType } from '../utils/events';
 
 type DeferCacheInvalidationEventData = CacheInvalidationDeferConfig;
 
-const deferredTimeMsDefault = 1000 * 60 * 30;
-const deferInvalidationEventName = 'deferCacheInvalidation';
+const DEFERRED_TIME_DEFAULT_MS = 1000 * 60 * 30;
+const DEFER_CACHE_INVALIDATION_EVENT = 'deferCacheInvalidation';
 
 let hasSetupListeners = false;
 let isDeferring = false;
 
 const deferInvalidationCallback = (eventData: DeferCacheInvalidationEventData) => {
-    const { shouldDefer, maxDeferTime = deferredTimeMsDefault } = eventData;
+    const { shouldDefer, maxDeferTime = DEFERRED_TIME_DEFAULT_MS } = eventData;
 
     if (isDeferring && !shouldDefer) {
         logger.info('Deferred cache invalidation toggled OFF');
@@ -55,7 +56,7 @@ export const toggleCacheInvalidationOnNodeEvents = (eventData: DeferCacheInvalid
     deferInvalidationCallback(eventData);
 
     eventLib.send({
-        type: deferInvalidationEventName,
+        type: DEFER_CACHE_INVALIDATION_EVENT,
         distributed: true,
         data: eventData,
     });
@@ -74,7 +75,7 @@ export const activateDeferCacheInvalidationEventListener = () => {
     // we do certain large batch jobs which generates a lot of events, for which we may not want to
     // trigger cache invalidation.
     eventLib.listener<DeferCacheInvalidationEventData>({
-        type: deferInvalidationEventName,
+        type: customListenerType(DEFER_CACHE_INVALIDATION_EVENT),
         localOnly: false,
         callback: (event) => deferInvalidationCallback(event.data),
     });

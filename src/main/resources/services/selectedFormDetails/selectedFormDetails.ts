@@ -2,7 +2,6 @@ import * as contentLib from '/lib/xp/content';
 import * as portalLib from '/lib/xp/portal';
 import { customSelectorHitWithLink } from '../service-utils';
 import { forceArray } from '../../lib/utils/array-utils';
-import { CONTENT_STUDIO_EDIT_PATH_PREFIX } from '../../lib/constants';
 
 const iconData = `\
 <svg width="32" height="32" viewBox="0 0 134 134">
@@ -38,7 +37,7 @@ const getFormDetailContent = (formDetailIds: string[], query: string) => {
                 displayName: hit.displayName,
                 icon: { data: iconData, type: 'image/svg+xml' },
             },
-            `${CONTENT_STUDIO_EDIT_PATH_PREFIX}/${hit._id}`
+            hit._id
         )
     );
 };

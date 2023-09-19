@@ -71,7 +71,7 @@ export const getContentFromAllLayers = ({
 
         const content = runInLocaleContext({ branch, locale }, () => contentLib.get({ key: id }));
         if (!content) {
-            logger.critical(`Content not found: ${id} in repo ${repoId} in branch ${branch}`);
+            logger.warning(`Content not found: ${id} in repo ${repoId} in branch ${branch}`);
             return acc;
         }
 
