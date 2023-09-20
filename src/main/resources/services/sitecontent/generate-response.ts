@@ -18,7 +18,10 @@ import { contentTypesRenderedByEditorFrontend } from '../../lib/contenttype-list
 import { stringArrayToSet } from '../../lib/utils/array-utils';
 import { resolveLegacyContentRedirects } from './resolve-legacy-content-redirects';
 import { getContentFromCustomPath } from '../../lib/paths/custom-paths/custom-path-utils';
-import { isContentPreviewOnly } from '../../lib/utils/content-utils';
+import {
+    getContentLocaleRedirectTarget,
+    isContentPreviewOnly,
+} from '../../lib/utils/content-utils';
 
 const contentTypesForGuillotineQuery = stringArrayToSet(contentTypesRenderedByEditorFrontend);
 
@@ -78,6 +81,7 @@ const resolveContent = (baseContent: Content, branch: RepoBranch, locale: string
                           branch,
                           baseContentLocale: locale,
                       }),
+                      contentLayer: locale,
                   }
                 : null;
         }
@@ -107,9 +111,19 @@ const resolveContentStudioRequest = (
 
         // If the content type does not support a full frontend preview in the editor, just return
         // the raw content, which is used to show certain info in place of the preview.
-        return contentTypesForGuillotineQuery[content.type]
+        const contentResolved = contentTypesForGuillotineQuery[content.type]
             ? resolveContent(content, branch, localeActual)
             : content;
+
+        const localeTarget = getContentLocaleRedirectTarget(content, localeActual);
+        if (contentResolved && localeTarget) {
+            return {
+                ...contentResolved,
+                redirectToLayer: localeTarget,
+            };
+        }
+
+        return contentResolved;
     });
 };
 

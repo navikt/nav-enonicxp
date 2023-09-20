@@ -11,7 +11,7 @@ buildscript {
             }
         }
         dependencies {
-            classpath "gradle.plugin.com.enonic.gradle:xp-gradle-plugin:3.1.0"
+            classpath "gradle.plugin.com.enonic.gradle:xp-gradle-plugin:3.4.0"
         }
     }
 
@@ -23,13 +23,13 @@ buildscript {
 
 // Build plugins
 plugins {
-    id 'com.enonic.xp.app' version '3.1.0'
-    id "com.github.node-gradle.node" version '3.5.0'
+    id 'com.enonic.xp.app' version '3.4.0'
+    id "com.github.node-gradle.node" version '7.0.0'
     id 'java'
     id 'no.item.xp.codegen' version '1.1.9'
 }
 node {
-    version = '16.14.0'
+    version = '18.18.0'
 }
 apply plugin: "com.enonic.xp.app"
 
@@ -77,8 +77,8 @@ dependencies {
     include "com.enonic.lib:lib-cache:2.2.0"
     include "com.enonic.lib:lib-graphql-playground:0.0.1"
     include "com.enonic.lib:lib-guillotine:6.2.1"
-    include "com.enonic.lib:lib-http-client:2.4.0"
-    include "com.enonic.lib:lib-thymeleaf:2.0.1"
+    include "com.enonic.lib:lib-http-client:2.4.0" // 3.x has breaking changes, fix before upgrading
+    include "com.enonic.lib:lib-thymeleaf:2.0.2"
     include 'com.enonic.lib:lib-urlredirect:3.0.0'
     webjar "org.webjars.npm:html-entities:2.3.3"
     webjar "org.webjars.npm:striptags:3.1.1"
