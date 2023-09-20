@@ -148,7 +148,9 @@ export const migrateContentToLayer = (contentMigrationParams: ContentMigrationPa
     const copyMasterResult = migrateBranch(contentMigrationParams, 'master');
     if (copyMasterResult === 'success') {
         response.statusMsgs.push('Migrering av publisert innhold var vellykket.');
-    } else if (copyMasterResult === 'error') {
+    } else if (copyMasterResult === 'sourceNotFound') {
+        response.statusMsgs.push('Innholdet er ikke publisert (ikke noe å migrere)');
+    } else {
         response.errorMsgs.push(
             'Migrering av publisert innhold feilet. Sjekk logger for detaljer.'
         );
