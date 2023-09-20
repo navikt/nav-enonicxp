@@ -77,7 +77,7 @@ dependencies {
     include "com.enonic.lib:lib-cache:2.2.0"
     include "com.enonic.lib:lib-graphql-playground:0.0.1"
     include "com.enonic.lib:lib-guillotine:6.2.1"
-    include "com.enonic.lib:lib-http-client:3.2.2"
+    include "com.enonic.lib:lib-http-client:2.4.0" // 3.x has breaking changes, fix before upgrading
     include "com.enonic.lib:lib-thymeleaf:2.0.2"
     include 'com.enonic.lib:lib-urlredirect:3.0.0'
     webjar "org.webjars.npm:html-entities:2.3.3"
