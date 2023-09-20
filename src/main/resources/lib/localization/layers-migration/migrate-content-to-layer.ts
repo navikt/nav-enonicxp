@@ -110,22 +110,22 @@ const migrateBranch = (params: ContentMigrationParams, branch: RepoBranch) => {
     );
     pushResult.success.forEach((id) => logger.info(`Pushing ${id} to master succeeded`));
 
-    if (pushResult.success.length > 0) {
-        const targetRepoMaster = getRepoConnection({
-            branch: 'master',
-            repoId: targetRepoId,
-            asAdmin: true,
-        });
-
-        targetRepoMaster.commit({
-            keys: [targetId],
-            message: 'Migrert innhold til språk-layer',
-        });
-
-        return 'success';
+    if (pushResult.failed.length > 0) {
+        return 'error';
     }
 
-    return 'error';
+    const targetRepoMaster = getRepoConnection({
+        branch: 'master',
+        repoId: targetRepoId,
+        asAdmin: true,
+    });
+
+    targetRepoMaster.commit({
+        keys: [targetId],
+        message: 'Migrert innhold til språk-layer',
+    });
+
+    return 'success';
 };
 
 export const migrateContentToLayer = (contentMigrationParams: ContentMigrationParams) => {
