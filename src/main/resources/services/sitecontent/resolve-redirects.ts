@@ -14,7 +14,10 @@ import { getPublicPath } from '../../lib/paths/public-path';
 import { buildLocalePath, isContentLocalized } from '../../lib/localization/locale-utils';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { logger } from '../../lib/utils/logging';
-import { isContentPreviewOnly } from '../../lib/utils/content-utils';
+import {
+    getContentLocaleRedirectTarget,
+    isContentPreviewOnly,
+} from '../../lib/utils/content-utils';
 
 export const transformToRedirectResponse = ({
     content,
@@ -77,9 +80,7 @@ export const getSpecialRedirectIfApplicable = ({
         return null;
     }
 
-    const localeTarget =
-        locale === CONTENT_LOCALE_DEFAULT &&
-        content.x?.[COMPONENT_APP_KEY]?.redirectToLayer?.locale;
+    const localeTarget = getContentLocaleRedirectTarget(content, locale);
     if (localeTarget) {
         const targetContent = runInLocaleContext({ locale: localeTarget, branch }, () =>
             contentLib.get({ key: content._id })
