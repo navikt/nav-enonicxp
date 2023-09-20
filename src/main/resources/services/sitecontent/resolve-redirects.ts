@@ -14,6 +14,10 @@ import { getPublicPath } from '../../lib/paths/public-path';
 import { buildLocalePath, isContentLocalized } from '../../lib/localization/locale-utils';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { logger } from '../../lib/utils/logging';
+import {
+    getContentLocaleRedirectTarget,
+    isContentPreviewOnly,
+} from '../../lib/utils/content-utils';
 
 export const transformToRedirectResponse = ({
     content,
@@ -61,7 +65,7 @@ export const transformToRedirectResponse = ({
           };
 };
 
-export const getRedirectIfApplicable = ({
+export const getSpecialRedirectIfApplicable = ({
     content,
     requestedPath,
     branch,
@@ -72,9 +76,11 @@ export const getRedirectIfApplicable = ({
     branch: RepoBranch;
     locale: string;
 }) => {
-    const localeTarget =
-        locale === CONTENT_LOCALE_DEFAULT &&
-        content.x?.[COMPONENT_APP_KEY]?.redirectToLayer?.locale;
+    if (isContentPreviewOnly(content)) {
+        return null;
+    }
+
+    const localeTarget = getContentLocaleRedirectTarget(content, locale);
     if (localeTarget) {
         const targetContent = runInLocaleContext({ locale: localeTarget, branch }, () =>
             contentLib.get({ key: content._id })
@@ -182,7 +188,7 @@ const getParentRedirectContent = (path: string): null | Content => {
 const getContentFromRedirectsFolder = (path: string) =>
     contentLib.get({ key: `${REDIRECTS_ROOT_PATH}${path}` });
 
-export const getRedirectContent = ({
+export const getRedirectFallback = ({
     pathRequested,
     branch,
 }: {
