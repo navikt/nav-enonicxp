@@ -6,11 +6,12 @@ import { ADMIN_PRINCIPAL, SUPER_USER, SYSTEM_ID_PROVIDER, SYSTEM_USER } from '..
 export type RunInContextOptions = {
     branch?: RepoBranch;
     asAdmin?: boolean;
+    asCurrentUser?: boolean;
 } & Omit<RunContext<ContextAttributes>, 'branch' | 'user' | 'principals'>;
 
 type ContextAuthInfo = Pick<RunContext<ContextAttributes>, 'user' | 'principals'>;
 
-const adminContextOptions: ContextAuthInfo = {
+const superUserOptions: ContextAuthInfo = {
     user: {
         login: SUPER_USER,
         idProvider: SYSTEM_ID_PROVIDER,
@@ -18,7 +19,7 @@ const adminContextOptions: ContextAuthInfo = {
     principals: [ADMIN_PRINCIPAL],
 } as const;
 
-const standardContextOptions: ContextAuthInfo = {
+const systemUserOptions: ContextAuthInfo = {
     user: {
         login: SYSTEM_USER,
         idProvider: SYSTEM_ID_PROVIDER,
@@ -26,16 +27,18 @@ const standardContextOptions: ContextAuthInfo = {
 } as const;
 
 export const runInContext = <ReturnType>(
-    { branch, repository, asAdmin, attributes }: RunInContextOptions,
+    { branch, repository, asAdmin, asCurrentUser, attributes }: RunInContextOptions,
     func: () => ReturnType
 ): ReturnType => {
     const currentContext = contextLib.get();
+
+    const userOptions = asAdmin ? superUserOptions : !asCurrentUser ? systemUserOptions : {};
 
     return contextLib.run<ReturnType, ContextAttributes>(
         {
             ...currentContext,
             ...(attributes && { attributes: { ...currentContext.attributes, ...attributes } }),
-            ...(asAdmin ? adminContextOptions : standardContextOptions),
+            ...userOptions,
             repository: repository || currentContext.repository,
             branch: branch || currentContext.branch,
         },

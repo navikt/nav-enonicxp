@@ -2,7 +2,6 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-sitecontent-query';
-import { COMPONENT_APP_KEY } from '../../lib/constants';
 import { getModifiedTimeIncludingFragments } from '../../lib/utils/fragment-utils';
 import { isUUID } from '../../lib/utils/uuid';
 import { logger } from '../../lib/utils/logging';
@@ -11,15 +10,18 @@ import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { resolvePathToTarget } from '../../lib/localization/locale-paths';
 import {
     transformToRedirectResponse,
-    getRedirectIfApplicable,
-    getRedirectContent,
+    getSpecialRedirectIfApplicable,
+    getRedirectFallback,
 } from './resolve-redirects';
 import { getLanguageVersions } from '../../lib/localization/resolve-language-versions';
 import { contentTypesRenderedByEditorFrontend } from '../../lib/contenttype-lists';
 import { stringArrayToSet } from '../../lib/utils/array-utils';
-
 import { resolveLegacyContentRedirects } from './resolve-legacy-content-redirects';
 import { getContentFromCustomPath } from '../../lib/paths/custom-paths/custom-path-utils';
+import {
+    getContentLocaleRedirectTarget,
+    isContentPreviewOnly,
+} from '../../lib/utils/content-utils';
 
 const contentTypesForGuillotineQuery = stringArrayToSet(contentTypesRenderedByEditorFrontend);
 
@@ -31,10 +33,10 @@ const getSpecialPreviewResponseIfApplicable = (
     requestedPath: string,
     isPreview: boolean
 ) => {
-    const contentIsPreviewOnly = !!content.x?.[COMPONENT_APP_KEY]?.previewOnly?.previewOnly;
+    const isPreviewOnly = isContentPreviewOnly(content);
     const externalRedirectUrl = content.data?.externalProductUrl;
 
-    if ((contentIsPreviewOnly || !!externalRedirectUrl) === isPreview) {
+    if ((isPreviewOnly || !!externalRedirectUrl) === isPreview) {
         return null;
     }
 
@@ -51,7 +53,7 @@ const getSpecialPreviewResponseIfApplicable = (
     // If the content is flagged for preview only we want a 404 response. Otherwise, redirect to the
     // actual content url
     return {
-        response: contentIsPreviewOnly
+        response: isPreviewOnly
             ? null
             : transformToRedirectResponse({ content, target: requestedPath, type: 'internal' }),
     };
@@ -79,6 +81,7 @@ const resolveContent = (baseContent: Content, branch: RepoBranch, locale: string
                           branch,
                           baseContentLocale: locale,
                       }),
+                      contentLayer: locale,
                   }
                 : null;
         }
@@ -108,9 +111,19 @@ const resolveContentStudioRequest = (
 
         // If the content type does not support a full frontend preview in the editor, just return
         // the raw content, which is used to show certain info in place of the preview.
-        return contentTypesForGuillotineQuery[content.type]
+        const contentResolved = contentTypesForGuillotineQuery[content.type]
             ? resolveContent(content, branch, localeActual)
             : content;
+
+        const localeTarget = getContentLocaleRedirectTarget(content, localeActual);
+        if (contentResolved && localeTarget) {
+            return {
+                ...contentResolved,
+                redirectToLayer: localeTarget,
+            };
+        }
+
+        return contentResolved;
     });
 };
 
@@ -140,7 +153,7 @@ export const generateSitecontentResponse = ({
     // If the content was not found, check if there are any applicable redirects
     // for the requested path
     if (!target) {
-        return getRedirectContent({ pathRequested: idOrPathRequested, branch });
+        return getRedirectFallback({ pathRequested: idOrPathRequested, branch });
     }
 
     const { content, locale } = target;
@@ -161,7 +174,7 @@ export const generateSitecontentResponse = ({
         return specialPreviewResponse.response;
     }
 
-    const redirectResponse = getRedirectIfApplicable({
+    const redirectResponse = getSpecialRedirectIfApplicable({
         content,
         locale,
         branch,

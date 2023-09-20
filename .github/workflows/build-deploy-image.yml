@@ -5,6 +5,9 @@ on:
       imagename:
         required: true
         type: string
+      xpVersion:
+        required: true
+        type: string
     secrets:
       NAIS_WORKLOAD_IDENTITY_PROVIDER:
         required: true
@@ -38,7 +41,7 @@ jobs:
             ${{ runner.os }}-gradle-
       - name: Build application
         run: |
-          gradle clean build deploy
+          gradle clean build deploy -PxpVersion=${{ inputs.xpVersion }}
       - name: Build and push docker image
         uses: nais/docker-build-push@v0
         id: docker-push
