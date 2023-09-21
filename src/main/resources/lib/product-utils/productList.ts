@@ -13,6 +13,7 @@ import { Audience as _Audience } from '../../site/mixins/audience/audience';
 import { contentTypesWithProductDetails } from '../contenttype-lists';
 import { getPublicPath } from '../paths/public-path';
 import { getLocaleFromContext } from '../localization/locale-context';
+import { runInContext } from '../context/run-in-context';
 
 type OverviewType = Overview['overviewType'];
 type Audience = _Audience['audience']['_selected'];
@@ -160,5 +161,7 @@ const getProductListData = (overviewType: OverviewType, audience: Audience[]) =>
 };
 
 export const getProductDataForOverviewPage = (overviewType: OverviewType, audience: Audience[]) => {
-    return getProductListData(overviewType, audience).sort(sortFunc);
+    return runInContext({ branch: 'master' }, () =>
+        getProductListData(overviewType, audience).sort(sortFunc)
+    );
 };
