@@ -133,14 +133,14 @@ const getTypeSpecificProductData = (
             const { _id: productDetailsId } = productDetailsContent;
             const { _id: productPageId } = productPageContent;
 
-            const productPageLanguageIsRequestedLanguage =
-                productPageContent.language !== requestedLanguage;
+            const isProductPageInRequestedLanguage =
+                productPageContent.language === requestedLanguage;
 
             // If the product details have already been added, we don't want to do anything if
             // the product page is not in the requested language. We only want duplicate product
             // details if they belong to multiple product pages.
             if (
-                !productPageLanguageIsRequestedLanguage &&
+                !isProductPageInRequestedLanguage &&
                 productDetailsAdded.has(productDetailsId)
             ) {
                 return acc;
@@ -152,7 +152,7 @@ const getTypeSpecificProductData = (
 
             // If the product details are in a different language from the product page
             // we use the name of the product details as the displayed/sorted title
-            const sortTitle = productPageLanguageIsRequestedLanguage
+            const sortTitle = isProductPageInRequestedLanguage
                 ? commonData.sortTitle
                 : productDetailsContent.displayName;
 
@@ -163,7 +163,7 @@ const getTypeSpecificProductData = (
                 productDetailsPath: getPublicPath(productDetailsContent, requestedLanguage),
             };
 
-            if (productPageLanguageIsRequestedLanguage) {
+            if (isProductPageInRequestedLanguage) {
                 acc[productPageId] = productData;
                 delete acc[productDetailsId];
             } else {
