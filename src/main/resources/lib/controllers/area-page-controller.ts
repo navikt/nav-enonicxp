@@ -7,7 +7,6 @@ import { frontendProxy } from './frontend-proxy';
 import { logger } from '../utils/logging';
 import { NodeComponent } from '../../types/components/component-node';
 import { runInContext } from '../context/run-in-context';
-import { CONTENT_LOCALE_DEFAULT } from '../constants';
 import { forceArray } from '../utils/array-utils';
 import { applyModifiedData } from '../utils/content-utils';
 
@@ -38,74 +37,41 @@ const getSituationsLayout = (
     return situationsLayouts[0];
 };
 
-const getSituationPages = (area: string, audience: string) =>
-    contentLib.query({
-        start: 0,
-        count: 1000,
-        contentTypes: ['no.nav.navno:situation-page'],
-        filters: {
-            boolean: {
-                must: [
-                    {
-                        hasValue: {
-                            field: 'data.area',
-                            values: [area],
-                        },
-                    },
-                    {
-                        hasValue: {
-                            field: 'data.audience._selected',
-                            values: [audience],
-                        },
-                    },
-                ],
-                mustNot: [
-                    {
-                        hasValue: {
-                            field: 'x.no-nav-navno.previewOnly.previewOnly',
-                            values: [true],
-                        },
-                    },
-                ],
-            },
-        },
-    }).hits;
-
-// TODO: this can be removed after we've migrated these pages to layers
-const pageContainsLegacyLanguagesRef = (
-    defaultSituationPage: SituationPageContent,
-    localizedSituationPages: SituationPageContent[]
-) => {
-    return forceArray(defaultSituationPage.data.languages).some((languageVersionContentId) =>
-        localizedSituationPages.some(
-            (localizedContent) => localizedContent._id === languageVersionContentId
-        )
-    );
-};
-
 const getRelevantSituationPages = (areaPageNodeContent: AreaPageNodeContent) =>
     runInContext({ branch: 'master' }, () => {
-        const { language, data } = areaPageNodeContent;
-        const { area, audience } = data;
+        const { area, audience } = areaPageNodeContent.data;
 
-        const situationPages = getSituationPages(area, audience._selected);
-
-        const situationPagesLocalized = situationPages.filter(
-            (situationContent) => situationContent.language === language
-        );
-
-        if (language === CONTENT_LOCALE_DEFAULT) {
-            return situationPagesLocalized;
-        }
-
-        // If there are any default-language (ie non-localized) pages in the current layer, include them as well
-        const situationPagesFallback = situationPages.filter(
-            (situationContent) =>
-                situationContent.language === CONTENT_LOCALE_DEFAULT &&
-                !pageContainsLegacyLanguagesRef(situationContent, situationPagesLocalized)
-        );
-
-        return [...situationPagesLocalized, ...situationPagesFallback];
+        return contentLib.query({
+            start: 0,
+            count: 1000,
+            contentTypes: ['no.nav.navno:situation-page'],
+            filters: {
+                boolean: {
+                    must: [
+                        {
+                            hasValue: {
+                                field: 'data.area',
+                                values: [area],
+                            },
+                        },
+                        {
+                            hasValue: {
+                                field: 'data.audience._selected',
+                                values: [audience],
+                            },
+                        },
+                    ],
+                    mustNot: [
+                        {
+                            hasValue: {
+                                field: 'x.no-nav-navno.previewOnly.previewOnly',
+                                values: [true],
+                            },
+                        },
+                    ],
+                },
+            },
+        }).hits;
     });
 
 const buildSituationCardPart = (path: string, target: string): SituationCardPartComponent => ({
@@ -193,7 +159,7 @@ const validateRegionComponents = (
 const populateSituationsLayout = (req: XP.Request) => {
     const content = portalLib.getContent();
     if (!content) {
-        logger.error(`Could not get contextual content from request path - ${req.rawPath}`);
+        logger.error(`Could not get contextual content from request - path: ${req.rawPath}`);
         return;
     }
 
