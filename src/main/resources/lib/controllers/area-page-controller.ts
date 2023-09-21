@@ -41,6 +41,11 @@ const getRelevantSituationPages = (areaPageNodeContent: AreaPageNodeContent) =>
     runInContext({ branch: 'master' }, () => {
         const { area, audience } = areaPageNodeContent.data;
 
+        const selectedAudience = audience?._selected;
+        if (!selectedAudience) {
+            return [];
+        }
+
         return contentLib.query({
             start: 0,
             count: 1000,
@@ -57,7 +62,7 @@ const getRelevantSituationPages = (areaPageNodeContent: AreaPageNodeContent) =>
                         {
                             hasValue: {
                                 field: 'data.audience._selected',
-                                values: [audience],
+                                values: [selectedAudience],
                             },
                         },
                     ],
