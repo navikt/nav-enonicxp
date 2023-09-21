@@ -37,7 +37,6 @@ import { areapageSituationCardPartCallback } from './schema-creation-callbacks/a
 import { CreationCallback } from '../utils/creation-callback-utils';
 import { contentInterfaceCallback } from './schema-creation-callbacks/content-interface';
 import { externalLinkCallback } from './schema-creation-callbacks/external-link-callback';
-import { microCardTargetPageCallback } from './schema-creation-callbacks/microcard-part';
 import { createOpeningHoursFields } from './schema-creation-callbacks/common/opening-hours-mixin';
 import { formsOverviewDataCallback } from './schema-creation-callbacks/forms-overview-data-callback';
 import { pressLandingPageDataCallback } from './schema-creation-callbacks/press-landing-page-data';
@@ -79,7 +78,6 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     Part_no_nav_navno_page_navigation_menu_AnchorLinks: anchorLinksCallback,
     Page_no_nav_navno_page_with_side_menus: pageNavigationMenuCallback,
     Page_no_nav_navno_page_with_side_menus_AnchorLinks: anchorLinksCallback,
-    Part_no_nav_navno_product_card_micro_CardList: microCardTargetPageCallback,
     Part_no_nav_navno_filters_menu_Filters: filterCallback,
     Part_no_nav_navno_form_details: formDetailsCallback,
     Macro_no_nav_navno_saksbehandlingstid_DataConfig: saksbehandlingstidMacroCallback,
