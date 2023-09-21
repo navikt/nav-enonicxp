@@ -1,21 +1,17 @@
 import { Content } from '/lib/xp/content';
 import { getContentFromCustomPath, isValidCustomPath } from './custom-path-utils';
 import { logger } from '../../utils/logging';
-import { Audience } from '../../../site/mixins/audience/audience';
 import { sanitize } from '/lib/xp/common';
-import { getAudience } from '../../utils/audience';
-
-type AudienceNewOrLegacy = Audience['audience'] | Audience['audience']['_selected'];
 
 export const FORM_INTERMEDIATE_STEP_CUSTOM_PATH_PREFIX = '/start';
 
 const audienceSegmentMap: Record<string, string> = {
     employer: 'arbeidsgiver',
     provider: 'samarbeidspartner',
-};
+} as const;
 
-const getAudienceSegmentWithSlash = (audience: AudienceNewOrLegacy) => {
-    const audienceSelected = getAudience(audience);
+const getAudienceSegmentWithSlash = (content: Content<'no.nav.navno:form-intermediate-step'>) => {
+    const audienceSelected = content.data.audience?._selected;
 
     const audienceSegment = audienceSelected && audienceSegmentMap[audienceSelected];
     return audienceSegment ? `/${audienceSegment}` : '';
@@ -29,9 +25,7 @@ export const formIntermediateStepValidateCustomPath = (
         return false;
     }
 
-    const { audience } = content.data;
-
-    const audienceSegment = getAudienceSegmentWithSlash(audience as AudienceNewOrLegacy);
+    const audienceSegment = getAudienceSegmentWithSlash(content);
 
     const isValid = new RegExp(
         `${FORM_INTERMEDIATE_STEP_CUSTOM_PATH_PREFIX}${audienceSegment}/.+`
@@ -43,9 +37,11 @@ export const formIntermediateStepValidateCustomPath = (
 export const formIntermediateStepGenerateCustomPath = (
     content: Content<'no.nav.navno:form-intermediate-step'>
 ) => {
-    const suggestedPath = `${FORM_INTERMEDIATE_STEP_CUSTOM_PATH_PREFIX}${getAudienceSegmentWithSlash(
-        content.data.audience as AudienceNewOrLegacy
-    )}/${sanitize(content._name)}`;
+    const audienceSegment = getAudienceSegmentWithSlash(content);
+
+    const suggestedPath = `${FORM_INTERMEDIATE_STEP_CUSTOM_PATH_PREFIX}${audienceSegment}/${sanitize(
+        content._name
+    )}`;
 
     const contentWithCustomPath = getContentFromCustomPath(suggestedPath);
     if (

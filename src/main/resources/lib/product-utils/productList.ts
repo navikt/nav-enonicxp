@@ -191,24 +191,13 @@ const getProductPages = (
             : contentTypesWithProductDetails,
         filters: {
             boolean: {
-                // Må ta høyde for at audience kan befinne seg i to forskjellige felter,
-                // alt etter om siden er publisert eller ikke etter migrering til ny datamodell for audience
-                // TODO: Kan endres til EN must etter at alle sider med audience er publisert
-                should: [
-                    {
-                        hasValue: {
-                            field: 'data.audience',
-                            values: audience,
-                        },
-                    },
+                must: [
                     {
                         hasValue: {
                             field: 'data.audience._selected',
                             values: audience,
                         },
                     },
-                ],
-                must: [
                     ...(languages
                         ? [
                               {
@@ -282,10 +271,10 @@ export const getProductDataForOverviewPage = (
         .sort(sortFunc);
 
     // Check for duplicates in other languages than no
-    return language === 'no' ?
-        productDataList :
-        removeDuplicates(
-            productDataList,
-            (a, b) => a.productDetailsPath === b.productDetailsPath
-        );
+    return language === 'no'
+        ? productDataList
+        : removeDuplicates(
+              productDataList,
+              (a, b) => a.productDetailsPath === b.productDetailsPath
+          );
 };

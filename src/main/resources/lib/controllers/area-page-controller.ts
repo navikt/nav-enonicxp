@@ -45,28 +45,17 @@ const getSituationPages = (area: string, audience: string) =>
         contentTypes: ['no.nav.navno:situation-page'],
         filters: {
             boolean: {
-                // Må ta høyde for at audience kan befinne seg i to forskjellige felter,
-                // alt etter om siden er publisert eller ikke etter migrering til ny datamodell for audience
-                // TODO: Kan endres til EN must etter at alle sider med audience er publisert
-                should: [
+                must: [
                     {
                         hasValue: {
-                            field: 'data.audience',
-                            values: [audience],
+                            field: 'data.area',
+                            values: [area],
                         },
                     },
                     {
                         hasValue: {
                             field: 'data.audience._selected',
                             values: [audience],
-                        },
-                    },
-                ],
-                must: [
-                    {
-                        hasValue: {
-                            field: 'data.area',
-                            values: [area],
                         },
                     },
                 ],
@@ -218,7 +207,7 @@ const populateSituationsLayout = (req: XP.Request) => {
         return;
     }
 
-    if (!content.data.audience) {
+    if (!content.data.audience?._selected) {
         logger.error(`No audience specified for area page - ${content._id}`, true);
         return;
     }

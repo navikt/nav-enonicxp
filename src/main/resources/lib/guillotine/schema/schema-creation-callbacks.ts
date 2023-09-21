@@ -40,7 +40,6 @@ import { externalLinkCallback } from './schema-creation-callbacks/external-link-
 import { microCardTargetPageCallback } from './schema-creation-callbacks/microcard-part';
 import { createOpeningHoursFields } from './schema-creation-callbacks/common/opening-hours-mixin';
 import { formsOverviewDataCallback } from './schema-creation-callbacks/forms-overview-data-callback';
-import { audienceCallback } from './schema-creation-callbacks/common/audience-mixin';
 import { pressLandingPageDataCallback } from './schema-creation-callbacks/press-landing-page-data';
 
 export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
@@ -90,13 +89,4 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     Macro_no_nav_navno_form_details_DataConfig: formDetailsCallback,
     Macro_no_nav_navno_alert_box_DataConfig: macroAlertboxCallback,
     RichText: richTextCallback,
-    no_nav_navno_AreaPage_Audience: audienceCallback,
-    no_nav_navno_CurrentTopicPage_Audience: audienceCallback,
-    no_nav_navno_FrontPage_Audience: audienceCallback,
-    no_nav_navno_SituationPage_Audience: audienceCallback,
-    no_nav_navno_GenericPage_Audience: audienceCallback,
-    no_nav_navno_ContentPageWithSidemenus_Audience: audienceCallback,
-    no_nav_navno_ThemedArticlePage_Audience: audienceCallback,
-    no_nav_navno_ToolsPage_Audience: audienceCallback,
-    no_nav_navno_GuidePage_Audience: audienceCallback,
 };
