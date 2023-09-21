@@ -5,7 +5,6 @@ import { logger } from '../../utils/logging';
 import { runInLocaleContext } from '../locale-context';
 import { NodeModifyParams } from '/lib/xp/node';
 import { getLayersData } from '../layers-data';
-import { COMPONENT_APP_KEY } from '../../constants';
 
 type Params = {
     repoId: string;

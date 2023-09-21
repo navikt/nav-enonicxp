@@ -55,8 +55,7 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
                 return [];
             }
 
-            const { language, data } = content;
-            const { overviewType, audience } = data;
+            const { overviewType, audience } = content.data;
 
             if (!overviewType) {
                 logger.error(`Type not set for overview page id ${contentId}`);
@@ -68,7 +67,7 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
                 return [];
             }
 
-            return getProductDataForOverviewPage(language, overviewType, forceArray(audience));
+            return getProductDataForOverviewPage(overviewType, forceArray(audience));
         },
     };
 };
