@@ -42,7 +42,7 @@ import { formsOverviewDataCallback } from './schema-creation-callbacks/forms-ove
 import { audienceCallback } from './schema-creation-callbacks/common/audience-mixin';
 import { pressLandingPageDataCallback } from './schema-creation-callbacks/press-landing-page-data';
 
-export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
+export const schemaCreationCallbacks: Record<string, CreationCallback> = {
     Attachment: attachmentCallback,
     Content: contentInterfaceCallback,
     FragmentComponentData: fragmentComponentDataCallback,
@@ -88,18 +88,13 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     Macro_no_nav_navno_form_details_DataConfig: formDetailsCallback,
     Macro_no_nav_navno_alert_box_DataConfig: macroAlertboxCallback,
     RichText: richTextCallback,
-
-    // TODO: this is no longer needed for production, can be removed once we have updated
-    // all environments :)
-    ...((app.config.env === 'localhost' || app.config.env === 'q6') && {
-        no_nav_navno_AreaPage_Audience: audienceCallback,
-        no_nav_navno_CurrentTopicPage_Audience: audienceCallback,
-        no_nav_navno_FrontPage_Audience: audienceCallback,
-        no_nav_navno_SituationPage_Audience: audienceCallback,
-        no_nav_navno_GenericPage_Audience: audienceCallback,
-        no_nav_navno_ContentPageWithSidemenus_Audience: audienceCallback,
-        no_nav_navno_ThemedArticlePage_Audience: audienceCallback,
-        no_nav_navno_ToolsPage_Audience: audienceCallback,
-        no_nav_navno_GuidePage_Audience: audienceCallback,
-    }),
-};
+    no_nav_navno_AreaPage_Audience: audienceCallback,
+    no_nav_navno_CurrentTopicPage_Audience: audienceCallback,
+    no_nav_navno_FrontPage_Audience: audienceCallback,
+    no_nav_navno_SituationPage_Audience: audienceCallback,
+    no_nav_navno_GenericPage_Audience: audienceCallback,
+    no_nav_navno_ContentPageWithSidemenus_Audience: audienceCallback,
+    no_nav_navno_ThemedArticlePage_Audience: audienceCallback,
+    no_nav_navno_ToolsPage_Audience: audienceCallback,
+    no_nav_navno_GuidePage_Audience: audienceCallback,
+} as const;
