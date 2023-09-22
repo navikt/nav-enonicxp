@@ -3,18 +3,20 @@ import { Content } from '/lib/xp/content';
 import { contentTypesWithBreadcrumbs } from '../../contenttype-lists';
 import { COMPONENT_APP_KEY, NAVNO_ROOT_PATH } from '../../constants';
 import { logger } from '../../utils/logging';
-import { getParentPath, stripPathPrefix } from '../../paths/path-utils';
-import { stringArrayToSet } from '../../utils/array-utils';
+import { getParentPath } from '../../paths/path-utils';
+import { ContentDescriptor } from '../../../types/content-types/content-config';
+import { getPublicPath } from '../../paths/public-path';
+import { getLocaleFromContext } from '../../localization/locale-context';
 
 type Breadcrumb = {
     title: string;
     url: string;
 };
 
-const allowedContentTypes = stringArrayToSet(contentTypesWithBreadcrumbs);
+const allowedContentTypes: ReadonlySet<ContentDescriptor> = new Set(contentTypesWithBreadcrumbs);
 
 // The breadcrumbs trail should stop when we hit any of these paths
-const rootPaths = stringArrayToSet([
+const rootPaths: ReadonlySet<string> = new Set([
     NAVNO_ROOT_PATH,
     `${NAVNO_ROOT_PATH}/no/person`,
     `${NAVNO_ROOT_PATH}/no/bedrift`,
@@ -25,8 +27,8 @@ const rootPaths = stringArrayToSet([
 ]);
 
 const generateBreadcrumb = (content: Content): Breadcrumb => ({
-    title: content.displayName || 'Uten tittel',
-    url: stripPathPrefix(content._path),
+    title: content.displayName,
+    url: getPublicPath(content, getLocaleFromContext()),
 });
 
 const getParentContent = (content: Content): Content | null => {
@@ -71,10 +73,10 @@ const getParentBreadcrumbs = (content: Content, segments: Content[]): Breadcrumb
     }
 
     // Generate more parent segments until we hit one of the root paths
-    if (!rootPaths[parentContent._path]) {
+    if (!rootPaths.has(parentContent._path)) {
         return getParentBreadcrumbs(
             parentContent,
-            allowedContentTypes[parentContent.type] ? [parentContent, ...segments] : segments
+            allowedContentTypes.has(parentContent.type) ? [parentContent, ...segments] : segments
         );
     }
 
@@ -83,7 +85,7 @@ const getParentBreadcrumbs = (content: Content, segments: Content[]): Breadcrumb
 
 export const getBreadcrumbs = (contentRef: string) => {
     const content = contentLib.get({ key: contentRef });
-    if (!content || !allowedContentTypes[content.type] || rootPaths[content._path]) {
+    if (!content || !allowedContentTypes.has(content.type) || rootPaths.has(content._path)) {
         return null;
     }
 
