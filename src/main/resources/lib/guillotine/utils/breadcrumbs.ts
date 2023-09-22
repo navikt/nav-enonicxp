@@ -56,7 +56,7 @@ const getParentContent = (content: Content): Content | null => {
     return contentLib.get({ key: parentPath });
 };
 
-const getParentBreadcrumbs = (content: Content, segments: Content[]): Breadcrumb[] | null => {
+const generateBreadcrumbsFromParent = (content: Content, segments: Content[]): Breadcrumb[] | null => {
     const parentContent = getParentContent(content);
 
     if (!parentContent) {
@@ -74,7 +74,7 @@ const getParentBreadcrumbs = (content: Content, segments: Content[]): Breadcrumb
 
     // Generate more parent segments until we hit one of the root paths
     if (!rootPaths.has(parentContent._path)) {
-        return getParentBreadcrumbs(
+        return generateBreadcrumbsFromParent(
             parentContent,
             allowedContentTypes.has(parentContent.type) ? [parentContent, ...segments] : segments
         );
@@ -83,11 +83,10 @@ const getParentBreadcrumbs = (content: Content, segments: Content[]): Breadcrumb
     return segments.map(generateBreadcrumb);
 };
 
-export const getBreadcrumbs = (contentRef: string) => {
-    const content = contentLib.get({ key: contentRef });
+export const generateBreadcrumbs = (content: Content) => {
     if (!content || !allowedContentTypes.has(content.type) || rootPaths.has(content._path)) {
         return null;
     }
 
-    return getParentBreadcrumbs(content, [content]);
+    return generateBreadcrumbsFromParent(content, [content]);
 };
