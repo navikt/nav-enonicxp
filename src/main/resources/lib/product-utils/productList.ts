@@ -21,7 +21,7 @@ type ContentWithProductDetails = Content<ContentTypeWithProductDetails>;
 // Generated data type definitions are incorrect due to nested mixins
 type ProductDetailsContent = Content<'no.nav.navno:product-details'>;
 
-const CONTENT_TYPES_IN_PRODUCT_LISTS = [
+const CONTENT_TYPES_IN_ALL_PRODUCTS_LISTS = [
     `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
     `${APP_DESCRIPTOR}:guide-page`,
 ] as const;
@@ -71,7 +71,7 @@ const getProductPages = (overviewType: OverviewType, audience: Audience[]) => {
         start: 0,
         count: 1000,
         contentTypes: isAllProductsType
-            ? CONTENT_TYPES_IN_PRODUCT_LISTS
+            ? CONTENT_TYPES_IN_ALL_PRODUCTS_LISTS
             : contentTypesWithProductDetails,
         filters: {
             boolean: {
@@ -111,18 +111,23 @@ const getProductPages = (overviewType: OverviewType, audience: Audience[]) => {
     }).hits;
 };
 
-const getTypeSpecificProductData = (
-    overviewType: Exclude<OverviewType, 'all_products'>,
+const getAllProductsData = (audience: Audience[]) => {
+    return getProductPages('all_products', audience).map(buildCommonProductData);
+};
+
+const getTypeSpecificProductsData = (
+    overviewType: DetailedOverviewType,
     audience: Audience[],
     requestedLanguage: string
 ) => {
     const productPages = getProductPages(overviewType, audience);
 
-    // Keep track of which product details have been added. Some product details may be added
-    // multiple times to the final list, if they are used on multiple product pages.
-    //
+    // Keep track of which product details have been added, to ensure we do not get unwanted dupes
     const productDetailsAdded = new Set<string>();
 
+    // The rule here is that we want every product detail in the requested language included in the
+    // final list, at least once. Each detail can be included multiple times, but only if they are
+    // used on multiple product pages in the requested language.
     const productDataMap = productPages.reduce<Record<string, OverviewPageProductData>>(
         (acc, productPageContent) => {
             const productDetailsContent = getProductDetails(productPageContent, overviewType);
@@ -136,13 +141,9 @@ const getTypeSpecificProductData = (
             const isProductPageInRequestedLanguage =
                 productPageContent.language === requestedLanguage;
 
-            // If the product details have already been added, we don't want to do anything if
-            // the product page is not in the requested language. We only want duplicate product
-            // details if they belong to multiple product pages.
-            if (
-                !isProductPageInRequestedLanguage &&
-                productDetailsAdded.has(productDetailsId)
-            ) {
+            // We do not want the possibility of duplicate product details, unless they belong to
+            // product pages in the requested language
+            if (!isProductPageInRequestedLanguage && productDetailsAdded.has(productDetailsId)) {
                 return acc;
             }
 
@@ -150,8 +151,8 @@ const getTypeSpecificProductData = (
 
             const commonData = buildCommonProductData(productPageContent);
 
-            // If the product details are in a different language from the product page
-            // we use the name of the product details as the displayed/sorted title
+            // If the product is not in the requested language, we use the name of the product details
+            // as the displayed/sorted title
             const sortTitle = isProductPageInRequestedLanguage
                 ? commonData.sortTitle
                 : productDetailsContent.displayName;
@@ -165,6 +166,7 @@ const getTypeSpecificProductData = (
 
             if (isProductPageInRequestedLanguage) {
                 acc[productPageId] = productData;
+                // Delete the data keyed with the product details own id, in case it was previously added
                 delete acc[productDetailsId];
             } else {
                 acc[productDetailsId] = productData;
@@ -178,22 +180,16 @@ const getTypeSpecificProductData = (
     return Object.values(productDataMap);
 };
 
-const getAllProductData = (audience: Audience[]) => {
-    return getProductPages('all_products', audience).map(buildCommonProductData);
-};
-
 export const getProductDataForOverviewPage = (
     overviewType: OverviewType,
     audience: Audience[],
     language: string
 ) => {
-    const productDataList = runInContext({ branch: 'master' }, () => {
-        if (overviewType === 'all_products') {
-            return getAllProductData(audience);
-        }
+    const productData = runInContext({ branch: 'master' }, () =>
+        overviewType === 'all_products'
+            ? getAllProductsData(audience)
+            : getTypeSpecificProductsData(overviewType, audience, language)
+    );
 
-        return getTypeSpecificProductData(overviewType, audience, language);
-    });
-
-    return productDataList.sort((a, b) => a.sortTitle.localeCompare(b.sortTitle));
+    return productData.sort((a, b) => a.sortTitle.localeCompare(b.sortTitle));
 };
