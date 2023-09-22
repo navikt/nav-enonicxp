@@ -16,9 +16,8 @@ export type OverviewPageProductData = {
     productDetailsPath?: string;
     path: string;
     language: string;
-} & Required<
-    Pick<ContentPageWithSidemenus, 'title' | 'ingress' | 'audience' | 'sortTitle' | 'illustration'>
->;
+    audience: string;
+} & Required<Pick<ContentPageWithSidemenus, 'title' | 'ingress' | 'sortTitle' | 'illustration'>>;
 
 export type DetailedOverviewType = Exclude<Overview['overviewType'], 'all_products'>;
 

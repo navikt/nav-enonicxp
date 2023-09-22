@@ -2,7 +2,7 @@
 
 fragment partComponentProductCardMicro on Part_no_nav_navno_product_card_micro {
     card_list {
-        targetPage(baseContentId: $ref) {
+        targetPage {
             ...productTargetMicroMixin
         }
     }

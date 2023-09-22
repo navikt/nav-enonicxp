@@ -126,21 +126,13 @@ const buildFormDetailsList = (
         contentTypes: contentTypesWithFormDetails,
         filters: {
             boolean: {
-                should: [
-                    {
-                        hasValue: {
-                            field: 'data.audience',
-                            values: [selectedAudience],
-                        },
-                    },
+                must: [
                     {
                         hasValue: {
                             field: 'data.audience._selected',
                             values: [selectedAudience],
                         },
                     },
-                ],
-                must: [
                     {
                         exists: {
                             field: 'data.formDetailsTargets',
