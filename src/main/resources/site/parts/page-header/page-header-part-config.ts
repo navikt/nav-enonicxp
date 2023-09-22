@@ -6,11 +6,6 @@ export interface PageHeaderPartConfig {
   title?: string;
 
   /**
-   * Sett bakgrunnsfarge
-   */
-  bgColor?: string;
-
-  /**
    * Velg visning
    */
   renderOnAuthState: "always" | "loggedIn" | "loggedOut";
