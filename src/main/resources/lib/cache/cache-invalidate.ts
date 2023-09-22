@@ -30,7 +30,7 @@ const getPaths = (contents: Content[], locale: string) =>
         return acc;
     }, []);
 
-const resolveReferencePaths = (id: string, eventType: string) => {
+export const resolveReferencePaths = (id: string, eventType: string) => {
     // If the content was deleted, we must check in the draft branch for references
     const branch = eventType === 'node.deleted' ? 'draft' : 'master';
 
@@ -67,8 +67,9 @@ const resolveReferencesAndInvalidateFrontend = ({
     const { repoIdToLocaleMap } = getLayersData();
     const locale = repoIdToLocaleMap[node.repo];
 
+    const eventId = generateCacheEventId(node, timestamp);
+
     runInLocaleContext({ branch: 'master', locale }, () => {
-        const eventId = generateCacheEventId(node, timestamp);
         const pathsToInvalidate = resolveReferencePaths(node.id, eventType);
 
         if (!pathsToInvalidate) {
@@ -101,7 +102,7 @@ const resolveReferencesAndInvalidateFrontend = ({
     });
 };
 
-type InvalidateCacheParams = {
+export type InvalidateCacheParams = {
     node: NodeEventData;
     eventType: string;
     timestamp: number;

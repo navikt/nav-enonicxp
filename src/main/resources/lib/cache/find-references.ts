@@ -9,7 +9,10 @@ import {
 import { RepoBranch } from '../../types/common';
 import { logger } from '../utils/logging';
 import { getParentPath } from '../paths/path-utils';
-import { batchedContentQuery } from '../utils/batched-query';
+import { batchedContentQuery, batchedNodeQuery } from '../utils/batched-query';
+import { isUUID } from '../utils/uuid';
+import { getRepoConnection } from '../utils/repo-utils';
+import { CONTENT_ROOT_REPO_ID } from '../constants';
 
 type ReferencesMap = Record<string, Content>;
 
@@ -26,9 +29,9 @@ const isTypeWithOverviewPages = (content: Content): content is ContentWithOvervi
 // Search all fields for a content id string. Handles ids set with custom selectors, macros or
 // "references" set programmatically, which are not indexed as references in the database
 const getStringTypeReferences = (contentId: string) => {
-    const references = batchedContentQuery({
+    const references = contentLib.query({
         start: 0,
-        count: 10000,
+        count: 1000,
         query: `fulltext('components.part.config.*,components.layout.config.*,data.*', '"${contentId}"')`,
     }).hits;
 
@@ -272,25 +275,27 @@ const getReferences = (id: string, branch: RepoBranch) => {
     const refs = [
         ...getExplicitReferences(id),
         ...getStringTypeReferences(id),
-        ...getCustomReferences(content),
-        ...getReferencesFromParent(content),
+        // ...getCustomReferences(content),
+        // ...getReferencesFromParent(content),
     ];
 
     if (content) {
         refs.push(content);
     }
 
-    // Handle main-article-chapter references. There is a unique system of relations between
-    // articles/chapters which is most effectively handled as a separate step.
-    const chapterRefs = refs.reduce((acc, ref) => {
-        if (ref.type !== 'no.nav.navno:main-article') {
-            return acc;
-        }
+    return refs;
 
-        return [...acc, ...getMainArticleChapterReferences(ref)];
-    }, [] as Content[]);
-
-    return chapterRefs.length === 0 ? refs : [...refs, ...chapterRefs];
+    // // Handle main-article-chapter references. There is a unique system of relations between
+    // // articles/chapters which is most effectively handled as a separate step.
+    // const chapterRefs = refs.reduce((acc, ref) => {
+    //     if (ref.type !== 'no.nav.navno:main-article') {
+    //         return acc;
+    //     }
+    //
+    //     return [...acc, ...getMainArticleChapterReferences(ref)];
+    // }, [] as Content[]);
+    //
+    // return chapterRefs.length === 0 ? refs : [...refs, ...chapterRefs];
 };
 
 const _findReferences = ({
@@ -370,6 +375,11 @@ export const findReferences = ({
     deadline?: number;
     withDeepSearch?: boolean;
 }) => {
+    if (!isUUID(id)) {
+        logger.error(`${id} is not a valid content id!`);
+        return null;
+    }
+
     const start = Date.now();
 
     const references = _findReferences({
