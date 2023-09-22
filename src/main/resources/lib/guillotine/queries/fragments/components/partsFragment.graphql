@@ -15,7 +15,6 @@
 #import "./parts/partFrontpageContact.graphql"
 #import "./parts/partFrontpageCurrentTopics.graphql"
 #import "./parts/partFrontpageShortcuts.graphql"
-#import "./parts/partFrontpageHeader.graphql"
 #import "./parts/partHtmlArea.graphql"
 #import "./parts/partPageHeader.graphql"
 #import "./parts/partPageNavigationMenu.graphql"
@@ -80,9 +79,6 @@ fragment partComponents on PartComponentData {
                 }
                 frontpage_shortcuts {
                     ...partFrontpageShortcuts
-                }
-                frontpage_header {
-                    ...partFrontpageHeader
                 }
                 html_area {
                     ...partComponentHtmlArea
