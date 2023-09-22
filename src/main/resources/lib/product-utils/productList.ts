@@ -50,15 +50,16 @@ const getProductDetails = (
 };
 
 const buildCommonProductData = (product: ContentWithProductDetails) => {
-    const data = product.data;
-    const fullTitle = data.title || product.displayName;
+    const { _id, type, data, language, displayName } = product;
+    const fullTitle = data.title || displayName;
 
     return {
         ...data,
-        _id: product._id,
-        type: product.type,
-        path: product._path,
-        language: product.language,
+        _id,
+        language,
+        type,
+        path: getPublicPath(product, language),
+        audience: product.data.audience._selected,
         title: fullTitle,
         sortTitle: data.sortTitle || fullTitle,
     };
