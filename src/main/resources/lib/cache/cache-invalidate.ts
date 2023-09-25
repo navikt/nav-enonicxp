@@ -10,11 +10,18 @@ import { findPathsToInvalidate } from './find-paths';
 import { invalidateLocalCache, sendLocalCacheInvalidationEvent } from './local-cache';
 import { logger } from '../utils/logging';
 
+export type InvalidateCacheParams = {
+    node: NodeEventData;
+    eventType: string;
+    timestamp: number;
+    isRunningClusterWide: boolean;
+};
+
 export const CACHE_INVALIDATE_EVENT_NAME = 'invalidate-cache';
 
 const DEFER_TIME_ON_ERROR = 20000;
 
-const resolvePathsAndInvalidateFrontend = ({
+const resolvePathsAndInvalidateFrontendCache = ({
     node,
     eventType,
     timestamp,
@@ -47,13 +54,6 @@ const resolvePathsAndInvalidateFrontend = ({
     });
 };
 
-export type InvalidateCacheParams = {
-    node: NodeEventData;
-    eventType: string;
-    timestamp: number;
-    isRunningClusterWide: boolean;
-};
-
 const _invalidateCacheForNode = (params: InvalidateCacheParams) => {
     const { isRunningClusterWide, node } = params;
 
@@ -78,12 +78,12 @@ const _invalidateCacheForNode = (params: InvalidateCacheParams) => {
         return;
     }
 
-    resolvePathsAndInvalidateFrontend(params);
+    resolvePathsAndInvalidateFrontendCache(params);
 };
 
 export const invalidateCacheForNode = (params: InvalidateCacheParams) => {
     taskLib.executeFunction({
-        description: `Cache invalidation for node ${params.node.id}`,
+        description: `Cache invalidation for node ${params.node.id}/${params.node.repo}`,
         func: () => _invalidateCacheForNode(params),
     });
 };

@@ -9,6 +9,7 @@ import { logger } from '../utils/logging';
 import { getLayersData } from '../localization/layers-data';
 import { ContentReferencesFinder } from './find-refs-new';
 import { removeDuplicates } from '../utils/array-utils';
+import { RepoBranch } from '../../types/common';
 
 const REFERENCE_SEARCH_TIMEOUT_MS = 10000;
 
@@ -27,10 +28,7 @@ const getPublicPathsForContent = (contents: Content[], locale: string) =>
         return acc;
     }, []);
 
-const findReferencedPaths = (id: string, eventType: string) => {
-    // If the content was deleted, we must check in the draft branch for references
-    const branch = eventType === 'node.deleted' ? 'draft' : 'master';
-
+const findReferencedPaths = (id: string, branch: RepoBranch) => {
     const { locales, localeToRepoIdMap } = getLayersData();
 
     const pathsToInvalidate: string[] = [];
@@ -124,7 +122,11 @@ export const findPathsToInvalidate = (nodeEventData: NodeEventData, eventType: s
     const changedPaths = findChangedPaths(nodeEventData);
     logger.info(`Changed paths: ${JSON.stringify(changedPaths)}`);
 
-    const referencePaths = findReferencedPaths(id, eventType);
+    // If the content was deleted, we must check in the draft branch for references
+    const referencePaths = findReferencedPaths(
+        id,
+        eventType === 'node.deleted' ? 'draft' : 'master'
+    );
     if (!referencePaths) {
         return null;
     }
