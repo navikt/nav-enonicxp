@@ -1,7 +1,7 @@
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
-import { findReferences } from '../../lib/cache/find-references';
+import { findReferencesOld } from '../../lib/cache/find-references-old';
 import { isValidBranch } from '../../lib/context/branches';
-import { ContentReferencesFinder } from '../../lib/cache/find-refs-new';
+import { ContentReferencesFinder } from '../../lib/cache/content-references-finder';
 
 export const get = (req: XP.Request) => {
     if (!validateServiceSecretHeader(req)) {
@@ -12,13 +12,7 @@ export const get = (req: XP.Request) => {
 
     const { id, repoId, branch, deepSearch, v2, timeout } = req.params;
 
-    if (
-        typeof id !== 'string' ||
-        typeof repoId !== 'string' ||
-        !branch ||
-        !isValidBranch(branch) ||
-        typeof deepSearch !== 'string'
-    ) {
+    if (typeof id !== 'string' || typeof repoId !== 'string' || !branch || !isValidBranch(branch)) {
         return {
             status: 400,
         };
@@ -37,7 +31,7 @@ export const get = (req: XP.Request) => {
     const refs =
         v2 === 'true'
             ? newImpl.run()
-            : findReferences({ id, branch, withDeepSearch: deepSearch === 'true' });
+            : findReferencesOld({ id, branch, withDeepSearch: deepSearch === 'true' });
 
     const duration = Date.now() - start;
 

@@ -84,12 +84,18 @@ export class ContentReferencesFinder {
             this.deadline = Date.now() + this.timeout;
         }
 
+        const start = Date.now();
+
         try {
             this.findReferences(this.baseContentId);
         } catch (e) {
             logger.error(`Reference search failed with error: ${e} - [${this.logSummary}]`);
             return null;
         }
+
+        const duration = Date.now() - start;
+
+        logger.info(`Reference search completed in ${duration} ms - [${this.logSummary}]`);
 
         return Object.values(this.referencesFound);
     }
@@ -165,7 +171,7 @@ export class ContentReferencesFinder {
 
     private findAndProcessReferences(findReferencesCallback: () => QueryResult) {
         if (this.deadline && Date.now() > this.deadline) {
-            throw new Error(`Reference search timed out!`);
+            throw new Error(`Reference search timed out after ${this.timeout} ms`);
         }
 
         return findReferencesCallback.bind(this)().forEach(this.processReference, this);

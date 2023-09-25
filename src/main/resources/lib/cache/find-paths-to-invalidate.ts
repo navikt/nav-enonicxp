@@ -7,7 +7,7 @@ import { stripPathPrefix } from '../paths/path-utils';
 import { getPublicPath } from '../paths/public-path';
 import { logger } from '../utils/logging';
 import { getLayersData } from '../localization/layers-data';
-import { ContentReferencesFinder } from './find-refs-new';
+import { ContentReferencesFinder } from './content-references-finder';
 import { removeDuplicates } from '../utils/array-utils';
 import { RepoBranch } from '../../types/common';
 

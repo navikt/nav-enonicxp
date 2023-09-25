@@ -359,7 +359,7 @@ const _findReferences = ({
 };
 
 // Returns null if the search goes past the deadline timestamp
-export const findReferences = ({
+export const findReferencesOld = ({
     id,
     branch,
     deadline,
