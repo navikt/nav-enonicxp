@@ -6,7 +6,7 @@ import {
     isFrontendInvalidateAllScheduled,
 } from './frontend-cache';
 import { generateCacheEventId, NodeEventData } from './utils';
-import { findPathsToInvalidate } from './find-paths';
+import { findPathsToInvalidate } from './find-paths-to-invalidate';
 import { invalidateLocalCache, sendLocalCacheInvalidationEvent } from './local-cache';
 import { logger } from '../utils/logging';
 
