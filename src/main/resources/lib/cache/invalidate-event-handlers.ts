@@ -47,9 +47,6 @@ const nodeListenerCallback = (event: EnonicEvent) => {
         }).get(node.id);
 
         if (!content || !isContentLocalized(content)) {
-            logger.info(
-                `Content is not localized, skipping cache invalidation ${JSON.stringify(node)}`
-            );
             return;
         }
 

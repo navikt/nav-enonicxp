@@ -31,7 +31,7 @@ const resolvePathsAndInvalidateFrontendCache = ({
     const pathsToInvalidate = findPathsToInvalidate(node, eventType);
 
     if (!pathsToInvalidate) {
-        logger.warning(`Resolving paths for invalidation failed - eventId: "${eventId}"`);
+        logger.error(`Resolving paths for invalidation failed - eventId: "${eventId}"`);
         // If resolving reference paths fails, schedule a full invalidation of the frontend cache
         // We defer this call a bit in case there are other events queued
         frontendInvalidateAllDeferred(eventId, DEFER_TIME_ON_ERROR, true);
