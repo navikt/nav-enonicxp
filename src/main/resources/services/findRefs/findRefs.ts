@@ -28,7 +28,7 @@ export const get = (req: XP.Request) => {
         branch,
         repoId,
         withDeepSearch: deepSearch === 'true',
-        baseContentId: id,
+        contentId: id,
         timeout: Number(timeout),
     });
 

@@ -5,7 +5,6 @@ import { APP_DESCRIPTOR, URLS } from '../constants';
 import { logger } from '../utils/logging';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { CacheInvalidateAllConfig } from '../../tasks/cache-invalidate-all/cache-invalidate-all-config';
-import { getFrontendPathname } from '../paths/path-utils';
 
 const NUM_RETRIES = 3;
 const TIMEOUT_MS = 10000;
@@ -115,11 +114,7 @@ export const frontendInvalidatePaths = ({
     taskLib.executeFunction({
         description: `Send invalidate with event id ${eventId}`,
         func: () => {
-            // Ensure the paths we send to the frontend for invalidation are of the same format as used
-            // by the frontend
-            const frontendPaths = paths.map(getFrontendPathname);
-
-            frontendInvalidatePathsRequest(frontendPaths, eventId);
+            frontendInvalidatePathsRequest(paths, eventId);
         },
     });
 };

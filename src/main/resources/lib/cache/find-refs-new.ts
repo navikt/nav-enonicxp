@@ -47,19 +47,19 @@ export class ContentReferencesFinder {
     private deadline?: number;
 
     constructor({
-        baseContentId,
+        contentId,
         repoId,
         branch,
         withDeepSearch,
         timeout,
     }: {
-        baseContentId: string;
+        contentId: string;
         repoId: string;
         branch: RepoBranch;
         withDeepSearch?: boolean;
         timeout?: number;
     }) {
-        this.baseContentId = baseContentId;
+        this.baseContentId = contentId;
         this.repoId = repoId;
         this.branch = branch;
         this.withDeepSearch = withDeepSearch;
@@ -87,7 +87,7 @@ export class ContentReferencesFinder {
         try {
             this.findReferences(this.baseContentId);
         } catch (e) {
-            logger.error(`${e} - [${this.logSummary}]`);
+            logger.error(`Reference search failed with error: ${e} - [${this.logSummary}]`);
             return null;
         }
 
