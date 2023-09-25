@@ -43,6 +43,32 @@ const pushToMasterIfContentIsPublishedInRootRepo = ({ id, repo, branch }: NodeDa
         return;
     }
 
+    const rootContentDraft = getRepoConnection({
+        repoId: CONTENT_ROOT_REPO_ID,
+        branch: 'draft',
+        asAdmin: true,
+    }).get(id);
+
+    if (!rootContentDraft) {
+        return;
+    }
+
+    const rootContentMaster = getRepoConnection({
+        repoId: CONTENT_ROOT_REPO_ID,
+        branch: 'master',
+        asAdmin: true,
+    }).get(id);
+
+    if (!rootContentMaster) {
+        return;
+    }
+
+    // If the update has not been pushed to master in the root repo, we don't
+    // want to do so in the layer repo either
+    if (rootContentDraft._versionKey !== rootContentMaster._versionKey) {
+        return;
+    }
+
     const layerContentMaster = getRepoConnection({
         repoId: repo,
         branch: 'master',
@@ -54,16 +80,10 @@ const pushToMasterIfContentIsPublishedInRootRepo = ({ id, repo, branch }: NodeDa
         return;
     }
 
-    const rootContentMaster = getRepoConnection({
-        repoId: CONTENT_ROOT_REPO_ID,
-        branch: 'master',
-        asAdmin: true,
-    }).get(id);
-
     // We only want to push the layer content if it has an equal or newer timestamp, compared
     // to the root master content. Layer content will "always" have a higher timestamp for
     // the same version, as it is updated after the root content is saved.
-    if (!rootContentMaster || rootContentMaster._ts > layerContentDraft._ts) {
+    if (rootContentMaster._ts > layerContentDraft._ts) {
         return;
     }
 

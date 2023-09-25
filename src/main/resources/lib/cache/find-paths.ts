@@ -3,7 +3,7 @@ import { Content } from '/lib/xp/content';
 import { getNodeVersions } from '../utils/version-utils';
 import { isPublicRenderedType, NodeEventData } from './utils';
 import { getCustomPathFromContent } from '../paths/custom-paths/custom-path-utils';
-import { getFrontendPathname, stripPathPrefix } from '../paths/path-utils';
+import { stripPathPrefix } from '../paths/path-utils';
 import { getPublicPath } from '../paths/public-path';
 import { logger } from '../utils/logging';
 import { getLayersData } from '../localization/layers-data';
@@ -71,8 +71,8 @@ const findChangedPaths = ({ id, path, repo }: NodeEventData) => {
 
     const changedPaths = [];
 
-    const previousPath = getFrontendPathname(previousVersion.nodePath);
-    const currentPath = getFrontendPathname(path);
+    const previousPath = stripPathPrefix(previousVersion.nodePath);
+    const currentPath = stripPathPrefix(path);
 
     // If the "normal" path changed, include the previous path
     if (previousPath !== currentPath) {
