@@ -9,7 +9,7 @@ import {
 import { RepoBranch } from '../../types/common';
 import { logger } from '../utils/logging';
 import { getParentPath } from '../paths/path-utils';
-import { isUUID } from '../utils/uuid';
+import { batchedContentQuery } from '../utils/batched-query';
 
 type ReferencesMap = Record<string, Content>;
 
@@ -26,9 +26,9 @@ const isTypeWithOverviewPages = (content: Content): content is ContentWithOvervi
 // Search all fields for a content id string. Handles ids set with custom selectors, macros or
 // "references" set programmatically, which are not indexed as references in the database
 const getStringTypeReferences = (contentId: string) => {
-    const references = contentLib.query({
+    const references = batchedContentQuery({
         start: 0,
-        count: 1000,
+        count: 10000,
         query: `fulltext('components.part.config.*,components.layout.config.*,data.*', '"${contentId}"')`,
     }).hits;
 
@@ -370,11 +370,6 @@ export const findReferences = ({
     deadline?: number;
     withDeepSearch?: boolean;
 }) => {
-    if (!isUUID(id)) {
-        logger.error(`${id} is not a valid content id!`);
-        return null;
-    }
-
     const start = Date.now();
 
     const references = _findReferences({

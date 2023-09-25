@@ -1,7 +1,7 @@
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { findReferences } from '../../lib/cache/find-references';
 import { isValidBranch } from '../../lib/context/branches';
-import { FindContentReferences } from '../../lib/cache/find-refs-new';
+import { ContentReferenceFinder } from '../../lib/cache/find-refs-new';
 
 export const get = (req: XP.Request) => {
     if (!validateServiceSecretHeader(req)) {
@@ -10,10 +10,11 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const { id, branch, deepSearch, v2 } = req.params;
+    const { id, repoId, branch, deepSearch, v2 } = req.params;
 
     if (
         typeof id !== 'string' ||
+        typeof repoId !== 'string' ||
         !branch ||
         !isValidBranch(branch) ||
         typeof deepSearch !== 'string'
@@ -23,8 +24,9 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const newImpl = new FindContentReferences({
+    const newImpl = new ContentReferenceFinder({
         branch,
+        repoId,
         withDeepSearch: deepSearch === 'true',
         baseContentId: id,
     });
@@ -44,7 +46,11 @@ export const get = (req: XP.Request) => {
         body: JSON.stringify({
             duration,
             count: refs?.length,
-            refs: refs?.map((ref) => ({ id: ref._id, path: ref._path, name: ref.displayName })),
+            refs: refs?.map((ref: any) => ({
+                id: ref._id,
+                path: ref._path,
+                name: ref.displayName,
+            })),
         }),
     };
 };

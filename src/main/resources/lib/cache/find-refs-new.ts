@@ -1,4 +1,4 @@
-import { Content } from '/lib/xp/content';
+import { Content, BooleanFilter } from '/lib/xp/content';
 import { RepoConnection, NodeQueryHit, RepoNode } from '/lib/xp/node';
 import { RepoBranch } from '../../types/common';
 import { logger } from '../utils/logging';
@@ -8,18 +8,24 @@ import {
     contentTypesWithDeepReferences,
 } from '../contenttype-lists';
 import { getRepoConnection } from '../utils/repo-utils';
-import { APP_DESCRIPTOR, CONTENT_ROOT_REPO_ID } from '../constants';
+import { APP_DESCRIPTOR } from '../constants';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { getParentPath } from '../paths/path-utils';
+import { NON_LOCALIZED_QUERY_FILTER } from '../localization/locale-utils';
+import { forceArray } from '../utils/array-utils';
 
 type ConstructorParams = {
     baseContentId: string;
+    repoId: string;
     branch: RepoBranch;
     withDeepSearch?: boolean;
 };
 
 type ContentDescriptorSet = ReadonlySet<ContentDescriptor>;
 type ContentNode = RepoNode<Content<any>>;
+
+type NodeQueryHitId = Pick<NodeQueryHit, 'id'>;
+type ReferenceSearchResult = ReadonlyArray<NodeQueryHitId>;
 
 const typesWithDeepReferences: ContentDescriptorSet = new Set(contentTypesWithDeepReferences);
 const typesWithOverviewPages: ContentDescriptorSet = new Set([
@@ -31,35 +37,77 @@ const typesWithFormsOverviewPages: ContentDescriptorSet = new Set([
     `${APP_DESCRIPTOR}:form-details`,
 ]);
 
-export class FindContentReferences {
+export class ContentReferenceFinder {
     private readonly baseContentId: string;
     private readonly branch: RepoBranch;
     private readonly withDeepSearch: boolean;
 
     private readonly repoConnection: RepoConnection;
 
-    private readonly referencesFound: Record<string, Content>;
-    private readonly referencesChecked: Set<string>;
+    private referencesFound: Record<string, Content>;
+    private referencesChecked: Set<string>;
 
-    constructor({ baseContentId, branch, withDeepSearch }: ConstructorParams) {
+    constructor({ baseContentId, repoId, branch, withDeepSearch }: ConstructorParams) {
         this.baseContentId = baseContentId;
         this.branch = branch;
         this.withDeepSearch = !!withDeepSearch;
+
         this.referencesFound = {};
         this.referencesChecked = new Set();
 
         this.repoConnection = getRepoConnection({
             branch,
-            repoId: CONTENT_ROOT_REPO_ID,
+            repoId,
             asAdmin: true,
         });
     }
 
     public run(): Content[] {
+        this.reset();
         this.findReferences(this.baseContentId);
 
         return Object.values(this.referencesFound);
     }
+
+    private reset() {
+        this.referencesFound = {};
+        this.referencesChecked.clear();
+    }
+
+    private contentNodeQuery = ({
+        filters,
+        query,
+    }: {
+        filters?: BooleanFilter;
+        query?: string;
+    }) => {
+        const result = this.repoConnection.query({
+            start: 0,
+            count: 1000,
+            query: `_path NOT LIKE "/archive/*"${query ? ` AND (${query})` : ''}`,
+            filters: {
+                ...filters,
+                boolean: {
+                    ...filters?.boolean,
+                    mustNot: [
+                        ...forceArray(filters?.boolean?.mustNot),
+                        ...NON_LOCALIZED_QUERY_FILTER,
+                    ],
+                    must: [
+                        ...forceArray(filters?.boolean?.must),
+                        {
+                            hasValue: {
+                                field: '_nodeType',
+                                values: ['content'],
+                            },
+                        },
+                    ],
+                },
+            },
+        }).hits;
+
+        return result;
+    };
 
     private findReferences(contentId: string) {
         if (this.referencesChecked.has(contentId)) {
@@ -71,7 +119,7 @@ export class FindContentReferences {
         this.findExplicitRefs(contentId).forEach(this.processReference, this);
         this.findTextRefs(contentId).forEach(this.processReference, this);
 
-        const content = this.repoConnection.get<Content>(this.baseContentId);
+        const content = this.repoConnection.get<Content>(contentId);
         if (!content) {
             return;
         }
@@ -80,12 +128,12 @@ export class FindContentReferences {
         this.findFormsOverviewRefs(content).forEach(this.processReference, this);
         this.findOfficeBranchRefs(content).forEach(this.processReference, this);
         this.findContactInfoRefs(content).forEach(this.processReference, this);
-        this.findParentRefs(content).forEach(this.processReference, this);
         this.findMainArticleChapterRefs(content).forEach(this.processReference, this);
+        this.findParentRefs(content).forEach(this.processReference, this);
     }
 
-    private processReference(nodeQueryHit: NodeQueryHit) {
-        const { id } = nodeQueryHit;
+    private processReference(nodeQueryHitId: NodeQueryHitId) {
+        const { id } = nodeQueryHitId;
 
         if (this.referencesFound[id]) {
             return;
@@ -103,9 +151,8 @@ export class FindContentReferences {
         }
     }
 
-    private findExplicitRefs(contentId: string) {
-        const result = this.repoConnection.query({
-            count: 1000,
+    private findExplicitRefs(contentId: string): ReferenceSearchResult {
+        const result = this.contentNodeQuery({
             filters: {
                 boolean: {
                     must: {
@@ -116,18 +163,17 @@ export class FindContentReferences {
                     },
                 },
             },
-        }).hits;
+        });
 
         logger.info(`Found ${result.length} contents with explicit references to "${contentId}"`);
 
         return result;
     }
 
-    private findTextRefs(contentId: string) {
-        const result = this.repoConnection.query({
-            count: 1000,
-            query: `_path NOT LIKE "/archive/*" AND fulltext('_allText', '"${contentId}"')`,
-        }).hits;
+    private findTextRefs(contentId: string): ReferenceSearchResult {
+        const result = this.contentNodeQuery({
+            query: `fulltext('_allText', '"${contentId}"')`,
+        });
 
         logger.info(`Found ${result.length} contents with text references to "${contentId}"`);
 
@@ -136,7 +182,7 @@ export class FindContentReferences {
 
     // Overview pages are generated from meta-data of certain content types, and does not generate
     // references to the listed content
-    private findOverviewRefs(content: ContentNode) {
+    private findOverviewRefs(content: ContentNode): ReferenceSearchResult {
         if (!typesWithOverviewPages.has(content.type)) {
             return [];
         }
@@ -148,8 +194,7 @@ export class FindContentReferences {
             return [];
         }
 
-        const result = this.repoConnection.query({
-            count: 1000,
+        const result = this.contentNodeQuery({
             filters: {
                 boolean: {
                     must: [
@@ -174,14 +219,14 @@ export class FindContentReferences {
                     ],
                 },
             },
-        }).hits;
+        });
 
         logger.info(`Found ${result.length} relevant overview pages`);
 
         return result;
     }
 
-    private findFormsOverviewRefs(content: ContentNode) {
+    private findFormsOverviewRefs(content: ContentNode): ReferenceSearchResult {
         if (!typesWithFormsOverviewPages.has(content.type)) {
             return [];
         }
@@ -193,8 +238,7 @@ export class FindContentReferences {
             return [];
         }
 
-        const result = this.repoConnection.query({
-            count: 1000,
+        const result = this.contentNodeQuery({
             filters: {
                 boolean: {
                     must: [
@@ -219,7 +263,7 @@ export class FindContentReferences {
                     ],
                 },
             },
-        }).hits;
+        });
 
         logger.info(`Found ${result.length} relevant forms overview pages`);
 
@@ -228,15 +272,14 @@ export class FindContentReferences {
 
     // Editorial pages are merged into office-branch-pages, which in turn is cached.
     // Therefore, any changes to a editorial page must invalidate all office-branch-page cache.
-    private findOfficeBranchRefs(content: ContentNode) {
+    private findOfficeBranchRefs(content: ContentNode): ReferenceSearchResult {
         if (content.type !== 'no.nav.navno:office-editorial-page') {
             return [];
         }
 
         const { language } = content;
 
-        const officeBranches = this.repoConnection.query({
-            count: 1000,
+        const officeBranches = this.contentNodeQuery({
             filters: {
                 boolean: {
                     must: [
@@ -255,14 +298,14 @@ export class FindContentReferences {
                     ],
                 },
             },
-        }).hits;
+        });
 
         return officeBranches;
     }
 
     // Contact-option parts for chat which does not have a sharedContactInformation field set will have
     // a default option set via graphql schema creation callback.
-    private findContactInfoRefs(content: ContentNode) {
+    private findContactInfoRefs(content: ContentNode): ReferenceSearchResult {
         if (
             content.type !== 'no.nav.navno:contact-information' ||
             content.data.contactType._selected !== 'chat'
@@ -270,8 +313,7 @@ export class FindContentReferences {
             return [];
         }
 
-        const result = this.repoConnection.query({
-            count: 1000,
+        const result = this.contentNodeQuery({
             filters: {
                 boolean: {
                     must: [
@@ -295,44 +337,43 @@ export class FindContentReferences {
                     ],
                 },
             },
-        }).hits;
+        });
 
         logger.info(`Found ${result.length} references for chat contact info ${content._path}`);
 
         return result;
     }
 
-    // Handle types which generates content from their children without explicit references
-    private findParentRefs(content: ContentNode) {
+    // Handle content types which generates content from their parent, without explicit references
+    private findParentRefs(content: ContentNode): ReferenceSearchResult {
         const { _path, type } = content;
 
-        const parent = this.repoConnection.get({ key: getParentPath(_path) });
-
-        if (!parent) {
+        const parentContentNode = this.repoConnection.get<Content>({ key: getParentPath(_path) });
+        if (!parentContentNode) {
             return [];
         }
 
-        if (parent.type === 'no.nav.navno:publishing-calendar') {
-            return [parent];
+        const parentIdHit = { id: parentContentNode._id };
+
+        if (parentContentNode.type === 'no.nav.navno:publishing-calendar') {
+            return [parentIdHit];
         }
 
         if (type === 'no.nav.navno:main-article-chapter') {
-            return [parent, ...this.findMainArticleChapterRefs(parent)];
+            return [parentIdHit, ...this.findMainArticleChapterRefs(parentContentNode)];
         }
 
         return [];
     }
 
     // Chapters are attached to an article only via the parent/children relation, not with explicit
-    // content references. Find any chapters which references the article, as well as the article's
-    // child chapters and their references articles
-    private findMainArticleChapterRefs(content: ContentNode) {
+    // content references.
+    private findMainArticleChapterRefs(content: ContentNode): ReferenceSearchResult {
         if (content.type !== 'no.nav.navno:main-article') {
             return [];
         }
 
-        const result = this.repoConnection.query({
-            count: 1000,
+        const result = this.contentNodeQuery({
             filters: {
                 boolean: {
                     must: [
@@ -351,7 +392,7 @@ export class FindContentReferences {
                     ],
                 },
             },
-        }).hits;
+        });
 
         return result;
     }
