@@ -20,6 +20,8 @@ type ContentNode = RepoNode<Content<any>>;
 type QueryHit = Pick<NodeQueryHit, 'id'>;
 type QueryResult = ReadonlyArray<QueryHit>;
 
+const QUERY_COUNT = 1000;
+
 const typesWithDeepReferences: ContentDescriptorSet = new Set(contentTypesWithDeepReferences);
 const typesWithOverviewPages: ContentDescriptorSet = new Set([
     ...contentTypesInOverviewPages,
@@ -30,28 +32,40 @@ const typesWithFormsOverviewPages: ContentDescriptorSet = new Set([
     `${APP_DESCRIPTOR}:form-details`,
 ]);
 
-export class ContentReferenceFinder {
+export class ContentReferencesFinder {
     private readonly baseContentId: string;
-    private readonly withDeepSearch: boolean;
+    private readonly repoId: string;
+    private readonly branch: string;
+    private readonly withDeepSearch?: boolean;
+    private readonly timeout?: number;
 
+    private readonly logSummary: string;
     private readonly repoConnection: RepoConnection;
 
     private referencesFound: Record<string, Content>;
     private referencesChecked: Set<string>;
+    private deadline?: number;
 
     constructor({
         baseContentId,
         repoId,
         branch,
         withDeepSearch,
+        timeout,
     }: {
         baseContentId: string;
         repoId: string;
         branch: RepoBranch;
         withDeepSearch?: boolean;
+        timeout?: number;
     }) {
         this.baseContentId = baseContentId;
-        this.withDeepSearch = !!withDeepSearch;
+        this.repoId = repoId;
+        this.branch = branch;
+        this.withDeepSearch = withDeepSearch;
+        this.timeout = timeout;
+
+        this.logSummary = `base contentId: "${this.baseContentId}" - repoId: ${this.repoId} - branch: ${this.branch}`;
 
         this.referencesFound = {};
         this.referencesChecked = new Set();
@@ -63,16 +77,25 @@ export class ContentReferenceFinder {
         });
     }
 
-    public run(): Content[] {
-        this.reset();
-        this.findReferences(this.baseContentId);
+    public run(): Content[] | null {
+        this.referencesFound = {};
+        this.referencesChecked.clear();
+        if (this.timeout) {
+            this.deadline = Date.now() + this.timeout;
+        }
+
+        try {
+            this.findReferences(this.baseContentId);
+        } catch (e) {
+            logger.error(`${e} - [${this.logSummary}]`);
+            return null;
+        }
 
         return Object.values(this.referencesFound);
     }
 
-    private reset() {
-        this.referencesFound = {};
-        this.referencesChecked.clear();
+    private logResult(msg: string, contentId: string) {
+        logger.info(`${msg} [contentId: "${contentId}" - ${this.logSummary}]`);
     }
 
     // Should only return localized content nodes
@@ -83,9 +106,9 @@ export class ContentReferenceFinder {
         filters?: BooleanFilter;
         query?: string;
     }) => {
-        const result = this.repoConnection.query({
+        const { total, hits } = this.repoConnection.query({
             start: 0,
-            count: 1000,
+            count: QUERY_COUNT,
             query: `_path NOT LIKE "/archive/*"${query ? ` AND (${query})` : ''}`,
             filters: {
                 ...filters,
@@ -106,9 +129,15 @@ export class ContentReferenceFinder {
                     ],
                 },
             },
-        }).hits;
+        });
 
-        return result;
+        if (total > QUERY_COUNT) {
+            logger.error(
+                `References query matched ${total} content nodes, maximum allowed is set to ${QUERY_COUNT} - [${this.logSummary}]`
+            );
+        }
+
+        return hits;
     };
 
     private findReferences(contentId: string) {
@@ -118,20 +147,28 @@ export class ContentReferenceFinder {
 
         this.referencesChecked.add(contentId);
 
-        this.findExplicitRefs(contentId).forEach(this.processReference, this);
-        this.findTextRefs(contentId).forEach(this.processReference, this);
+        this.findAndProcessReferences(() => this.findExplicitRefs(contentId));
+        this.findAndProcessReferences(() => this.findTextRefs(contentId));
 
         const content = this.repoConnection.get<Content>(contentId);
         if (!content) {
             return;
         }
 
-        this.findOverviewRefs(content).forEach(this.processReference, this);
-        this.findFormsOverviewRefs(content).forEach(this.processReference, this);
-        this.findOfficeBranchRefs(content).forEach(this.processReference, this);
-        this.findContactInfoRefs(content).forEach(this.processReference, this);
-        this.findMainArticleChapterRefs(content).forEach(this.processReference, this);
-        this.findParentRefs(content).forEach(this.processReference, this);
+        this.findAndProcessReferences(() => this.findOverviewRefs(content));
+        this.findAndProcessReferences(() => this.findFormsOverviewRefs(content));
+        this.findAndProcessReferences(() => this.findOfficeBranchRefs(content));
+        this.findAndProcessReferences(() => this.findContactInfoRefs(content));
+        this.findAndProcessReferences(() => this.findMainArticleChapterRefs(content));
+        this.findAndProcessReferences(() => this.findParentRefs(content));
+    }
+
+    private findAndProcessReferences(findReferencesCallback: () => QueryResult) {
+        if (this.deadline && Date.now() > this.deadline) {
+            throw new Error(`Reference search timed out!`);
+        }
+
+        return findReferencesCallback.bind(this)().forEach(this.processReference, this);
     }
 
     // Get the full content node of the reference, and run a deeper search if applicable
@@ -168,9 +205,7 @@ export class ContentReferenceFinder {
             },
         });
 
-        logger.info(
-            `Found ${result.length} contents with explicit references to "${contentId}" (base node: ${this.baseContentId})`
-        );
+        this.logResult(`Found ${result.length} contents with explicit references`, contentId);
 
         return result;
     }
@@ -180,9 +215,7 @@ export class ContentReferenceFinder {
             query: `fulltext('_allText', '"${contentId}"')`,
         });
 
-        logger.info(
-            `Found ${result.length} contents with text references to "${contentId}" (base node: ${this.baseContentId})`
-        );
+        this.logResult(`Found ${result.length} contents with text references`, contentId);
 
         return result;
     }
@@ -227,9 +260,7 @@ export class ContentReferenceFinder {
             },
         });
 
-        logger.info(
-            `Found ${result.length} relevant overview pages for "${_id}" (base node: ${this.baseContentId})`
-        );
+        this.logResult(`Found ${result.length} relevant overview pages`, _id);
 
         return result;
     }
@@ -274,9 +305,7 @@ export class ContentReferenceFinder {
             },
         });
 
-        logger.info(
-            `Found ${result.length} relevant forms overview pages for "${_id}" (base node: ${this.baseContentId})`
-        );
+        this.logResult(`Found ${result.length} relevant forms overview pages`, _id);
 
         return result;
     }
@@ -310,9 +339,7 @@ export class ContentReferenceFinder {
             },
         });
 
-        logger.info(
-            `Found ${result.length} relevant office branch pages for "${_id}" (base node: ${this.baseContentId})`
-        );
+        this.logResult(`Found ${result.length} relevant office branch pages`, _id);
 
         return result;
     }
@@ -352,9 +379,7 @@ export class ContentReferenceFinder {
             },
         });
 
-        logger.info(
-            `Found ${result.length} references to chat contact info for "${_id}" (base node: ${this.baseContentId})`
-        );
+        this.logResult(`Found ${result.length} references to chat contact info`, _id);
 
         return result;
     }
@@ -414,9 +439,7 @@ export class ContentReferenceFinder {
             },
         });
 
-        logger.info(
-            `Found ${result.length} main-article chapters for "${_id}" (base node: ${this.baseContentId})`
-        );
+        this.logResult(`Found ${result.length} main-article chapters`, _id);
 
         return result;
     }

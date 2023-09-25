@@ -6,16 +6,15 @@ import {
     frontendInvalidatePaths,
     isFrontendInvalidateAllScheduled,
 } from './frontend-cache';
-import { findReferences } from './find-references';
 import { generateCacheEventId, isPublicRenderedType, NodeEventData } from './utils';
 import { findChangedPaths } from './find-changed-paths';
 import { invalidateLocalCache, sendLocalCacheInvalidationEvent } from './local-cache';
 import { logger } from '../utils/logging';
 import { runInLocaleContext } from '../localization/locale-context';
 import { getLayersData } from '../localization/layers-data';
-import { isContentLocalized } from '../localization/locale-utils';
 import { removeDuplicates } from '../utils/array-utils';
 import { getPublicPath } from '../paths/public-path';
+import { ContentReferencesFinder } from './find-refs-new';
 
 export const CACHE_INVALIDATE_EVENT_NAME = 'invalidate-cache';
 
@@ -34,23 +33,27 @@ export const resolveReferencePaths = (id: string, eventType: string) => {
     // If the content was deleted, we must check in the draft branch for references
     const branch = eventType === 'node.deleted' ? 'draft' : 'master';
 
-    const { locales } = getLayersData();
-
-    const deadline = Date.now() + REFERENCE_SEARCH_TIMEOUT_MS;
+    const { locales, localeToRepoIdMap } = getLayersData();
 
     const pathsToInvalidate: string[] = [];
 
     const success = locales.every((locale) => {
-        const references = runInLocaleContext({ locale }, () =>
-            findReferences({ id, branch, deadline })
-        );
+        const repoId = localeToRepoIdMap[locale];
+
+        const contentReferenceFinder = new ContentReferencesFinder({
+            baseContentId: id,
+            branch,
+            repoId,
+            withDeepSearch: true,
+            timeout: REFERENCE_SEARCH_TIMEOUT_MS,
+        });
+
+        const references = contentReferenceFinder.run();
         if (!references) {
             return false;
         }
 
-        const localizedContentOnly = references.filter(isContentLocalized);
-
-        const localizedPaths = getPaths(localizedContentOnly, locale);
+        const localizedPaths = getPaths(references, locale);
 
         pathsToInvalidate.push(...localizedPaths);
         return true;

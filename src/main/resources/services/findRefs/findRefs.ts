@@ -1,7 +1,7 @@
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { findReferences } from '../../lib/cache/find-references';
 import { isValidBranch } from '../../lib/context/branches';
-import { ContentReferenceFinder } from '../../lib/cache/find-refs-new';
+import { ContentReferencesFinder } from '../../lib/cache/find-refs-new';
 
 export const get = (req: XP.Request) => {
     if (!validateServiceSecretHeader(req)) {
@@ -10,7 +10,7 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const { id, repoId, branch, deepSearch, v2 } = req.params;
+    const { id, repoId, branch, deepSearch, v2, timeout } = req.params;
 
     if (
         typeof id !== 'string' ||
@@ -24,11 +24,12 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const newImpl = new ContentReferenceFinder({
+    const newImpl = new ContentReferencesFinder({
         branch,
         repoId,
         withDeepSearch: deepSearch === 'true',
         baseContentId: id,
+        timeout: Number(timeout),
     });
 
     const start = Date.now();
