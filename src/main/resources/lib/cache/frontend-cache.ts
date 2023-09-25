@@ -14,6 +14,7 @@ const REVALIDATOR_PROXY_URL_WIPE_ALL = `${URLS.REVALIDATOR_PROXY_ORIGIN}/revalid
 
 const DEFERRED_INVALIDATION_JOB_NAME = 'invalidate-all-job';
 const DEFERRED_TIME_MS_DEFAULT = 60000;
+const MAX_PATHS_TO_INVALIDATE = 300;
 
 export const isFrontendInvalidateAllScheduled = () => {
     const existingJob = schedulerLib.get({ name: DEFERRED_INVALIDATION_JOB_NAME });
@@ -108,6 +109,14 @@ export const frontendInvalidatePaths = ({
 }) => {
     if (paths.length === 0) {
         logger.info(`Nothing to invalidate for event ${eventId} - aborting frontend request`);
+        return;
+    }
+
+    if (paths.length > MAX_PATHS_TO_INVALIDATE) {
+        logger.warning(
+            `Invalidation event ${eventId} contained more paths than the maximum allowed (${paths.length} paths - max ${MAX_PATHS_TO_INVALIDATE}) - wiping everything!`
+        );
+        frontendInvalidateAllAsync(eventId, true);
         return;
     }
 
