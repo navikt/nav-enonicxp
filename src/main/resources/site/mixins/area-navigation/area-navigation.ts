@@ -6,6 +6,11 @@ export interface AreaNavigation {
   areasRefs?: Array<string>;
 
   /**
+   * Velg underforsider
+   */
+  frontPageNestedRefs?: Array<string>;
+
+  /**
    * Velg situasjonssider
    */
   situationsRefs?: Array<string>;

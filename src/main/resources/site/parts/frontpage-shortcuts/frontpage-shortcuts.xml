@@ -40,7 +40,15 @@
             </items>
         </item-set>
         <input name="bgColor" type="CustomSelector">
-            <label>Velg bakgrunnsfarge</label>
+            <label>Overstyr bakgrunnsfarge</label>
+            <help-text>Velg fra designsystemets fargepalett, eller en egendefinert hex-code, f.eks. #0451ff</help-text>
+            <occurrences minimum="0" maximum="1"/>
+            <config>
+                <service>colorPicker</service>
+            </config>
+        </input>
+        <input name="itemColor" type="CustomSelector">
+            <label>Overstyr farge på farge på snarveiene</label>
             <help-text>Velg fra designsystemets fargepalett, eller en egendefinert hex-code, f.eks. #0451ff</help-text>
             <occurrences minimum="0" maximum="1"/>
             <config>
@@ -48,7 +56,7 @@
             </config>
         </input>
         <input name="hoverColor" type="CustomSelector">
-            <label>Velg farge på hover-effekt</label>
+            <label>Overstyr farge på hover-effekt på snarveiene</label>
             <help-text>Velg fra designsystemets fargepalett, eller en egendefinert hex-code, f.eks. #0451ff</help-text>
             <occurrences minimum="0" maximum="1"/>
             <config>
@@ -58,6 +66,7 @@
     </form>
     <config>
         <allow-on-content-type>${app}:front-page</allow-on-content-type>
+        <allow-on-content-type>${app}:front-page-nested</allow-on-content-type>
         <allow-on-content-type>portal:page-template</allow-on-content-type>
     </config>
 </part>

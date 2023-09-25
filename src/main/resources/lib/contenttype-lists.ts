@@ -26,6 +26,7 @@ export const dynamicPageContentTypes: ContentTypeList = [
     `${APP_DESCRIPTOR}:generic-page`,
     `${APP_DESCRIPTOR}:overview`,
     `${APP_DESCRIPTOR}:front-page`,
+    `${APP_DESCRIPTOR}:front-page-nested`,
     `${APP_DESCRIPTOR}:current-topic-page`,
     `${APP_DESCRIPTOR}:area-page`,
     `${APP_DESCRIPTOR}:press-landing-page`,
