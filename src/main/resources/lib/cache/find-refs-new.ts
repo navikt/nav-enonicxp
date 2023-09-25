@@ -14,18 +14,11 @@ import { getParentPath } from '../paths/path-utils';
 import { NON_LOCALIZED_QUERY_FILTER } from '../localization/locale-utils';
 import { forceArray } from '../utils/array-utils';
 
-type ConstructorParams = {
-    baseContentId: string;
-    repoId: string;
-    branch: RepoBranch;
-    withDeepSearch?: boolean;
-};
-
 type ContentDescriptorSet = ReadonlySet<ContentDescriptor>;
 type ContentNode = RepoNode<Content<any>>;
 
-type NodeQueryHitId = Pick<NodeQueryHit, 'id'>;
-type ReferenceSearchResult = ReadonlyArray<NodeQueryHitId>;
+type QueryHit = Pick<NodeQueryHit, 'id'>;
+type QueryResult = ReadonlyArray<QueryHit>;
 
 const typesWithDeepReferences: ContentDescriptorSet = new Set(contentTypesWithDeepReferences);
 const typesWithOverviewPages: ContentDescriptorSet = new Set([
@@ -39,7 +32,6 @@ const typesWithFormsOverviewPages: ContentDescriptorSet = new Set([
 
 export class ContentReferenceFinder {
     private readonly baseContentId: string;
-    private readonly branch: RepoBranch;
     private readonly withDeepSearch: boolean;
 
     private readonly repoConnection: RepoConnection;
@@ -47,9 +39,18 @@ export class ContentReferenceFinder {
     private referencesFound: Record<string, Content>;
     private referencesChecked: Set<string>;
 
-    constructor({ baseContentId, repoId, branch, withDeepSearch }: ConstructorParams) {
+    constructor({
+        baseContentId,
+        repoId,
+        branch,
+        withDeepSearch,
+    }: {
+        baseContentId: string;
+        repoId: string;
+        branch: RepoBranch;
+        withDeepSearch?: boolean;
+    }) {
         this.baseContentId = baseContentId;
-        this.branch = branch;
         this.withDeepSearch = !!withDeepSearch;
 
         this.referencesFound = {};
@@ -74,6 +75,7 @@ export class ContentReferenceFinder {
         this.referencesChecked.clear();
     }
 
+    // Should only return localized content nodes
     private contentNodeQuery = ({
         filters,
         query,
@@ -132,7 +134,8 @@ export class ContentReferenceFinder {
         this.findParentRefs(content).forEach(this.processReference, this);
     }
 
-    private processReference(nodeQueryHitId: NodeQueryHitId) {
+    // Get the full content node of the reference, and run a deeper search if applicable
+    private processReference(nodeQueryHitId: QueryHit) {
         const { id } = nodeQueryHitId;
 
         if (this.referencesFound[id]) {
@@ -151,7 +154,7 @@ export class ContentReferenceFinder {
         }
     }
 
-    private findExplicitRefs(contentId: string): ReferenceSearchResult {
+    private findExplicitRefs(contentId: string): QueryResult {
         const result = this.contentNodeQuery({
             filters: {
                 boolean: {
@@ -165,29 +168,32 @@ export class ContentReferenceFinder {
             },
         });
 
-        logger.info(`Found ${result.length} contents with explicit references to "${contentId}"`);
+        logger.info(
+            `Found ${result.length} contents with explicit references to "${contentId}" (base node: ${this.baseContentId})`
+        );
 
         return result;
     }
 
-    private findTextRefs(contentId: string): ReferenceSearchResult {
+    private findTextRefs(contentId: string): QueryResult {
         const result = this.contentNodeQuery({
             query: `fulltext('_allText', '"${contentId}"')`,
         });
 
-        logger.info(`Found ${result.length} contents with text references to "${contentId}"`);
+        logger.info(
+            `Found ${result.length} contents with text references to "${contentId}" (base node: ${this.baseContentId})`
+        );
 
         return result;
     }
 
-    // Overview pages are generated from meta-data of certain content types, and does not generate
-    // references to the listed content
-    private findOverviewRefs(content: ContentNode): ReferenceSearchResult {
+    // Overview pages are generated from meta-data of certain content types
+    private findOverviewRefs(content: ContentNode): QueryResult {
         if (!typesWithOverviewPages.has(content.type)) {
             return [];
         }
 
-        const { language, data } = content;
+        const { _id, language, data } = content;
 
         const selectedAudience = data?.audience?._selected;
         if (!selectedAudience) {
@@ -221,17 +227,20 @@ export class ContentReferenceFinder {
             },
         });
 
-        logger.info(`Found ${result.length} relevant overview pages`);
+        logger.info(
+            `Found ${result.length} relevant overview pages for "${_id}" (base node: ${this.baseContentId})`
+        );
 
         return result;
     }
 
-    private findFormsOverviewRefs(content: ContentNode): ReferenceSearchResult {
+    // Forms overview pages are generated from meta-data of certain content types
+    private findFormsOverviewRefs(content: ContentNode): QueryResult {
         if (!typesWithFormsOverviewPages.has(content.type)) {
             return [];
         }
 
-        const { language, data } = content;
+        const { _id, language, data } = content;
 
         const selectedAudience = data?.audience?._selected;
         if (!selectedAudience) {
@@ -265,21 +274,22 @@ export class ContentReferenceFinder {
             },
         });
 
-        logger.info(`Found ${result.length} relevant forms overview pages`);
+        logger.info(
+            `Found ${result.length} relevant forms overview pages for "${_id}" (base node: ${this.baseContentId})`
+        );
 
         return result;
     }
 
-    // Editorial pages are merged into office-branch-pages, which in turn is cached.
-    // Therefore, any changes to a editorial page must invalidate all office-branch-page cache.
-    private findOfficeBranchRefs(content: ContentNode): ReferenceSearchResult {
+    // Changes to an office editorial page affects all office-branch pages in the same language
+    private findOfficeBranchRefs(content: ContentNode): QueryResult {
         if (content.type !== 'no.nav.navno:office-editorial-page') {
             return [];
         }
 
-        const { language } = content;
+        const { _id, language } = content;
 
-        const officeBranches = this.contentNodeQuery({
+        const result = this.contentNodeQuery({
             filters: {
                 boolean: {
                     must: [
@@ -300,16 +310,19 @@ export class ContentReferenceFinder {
             },
         });
 
-        return officeBranches;
+        logger.info(
+            `Found ${result.length} relevant office branch pages for "${_id}" (base node: ${this.baseContentId})`
+        );
+
+        return result;
     }
 
     // Contact-option parts for chat which does not have a sharedContactInformation field set will have
     // a default option set via graphql schema creation callback.
-    private findContactInfoRefs(content: ContentNode): ReferenceSearchResult {
-        if (
-            content.type !== 'no.nav.navno:contact-information' ||
-            content.data.contactType._selected !== 'chat'
-        ) {
+    private findContactInfoRefs(content: ContentNode): QueryResult {
+        const { _id, language, type, data } = content;
+
+        if (type !== 'no.nav.navno:contact-information' || data.contactType._selected !== 'chat') {
             return [];
         }
 
@@ -326,7 +339,7 @@ export class ContentReferenceFinder {
                         {
                             hasValue: {
                                 field: 'language',
-                                values: [content.language],
+                                values: [language],
                             },
                         },
                         {
@@ -339,37 +352,44 @@ export class ContentReferenceFinder {
             },
         });
 
-        logger.info(`Found ${result.length} references for chat contact info ${content._path}`);
+        logger.info(
+            `Found ${result.length} references to chat contact info for "${_id}" (base node: ${this.baseContentId})`
+        );
 
         return result;
     }
 
     // Handle content types which generates content from their parent, without explicit references
-    private findParentRefs(content: ContentNode): ReferenceSearchResult {
+    private findParentRefs(content: ContentNode): QueryResult {
         const { _path, type } = content;
 
-        const parentContentNode = this.repoConnection.get<Content>({ key: getParentPath(_path) });
-        if (!parentContentNode) {
+        const parentNode = this.repoConnection.get<Content>({ key: getParentPath(_path) });
+        if (!parentNode) {
             return [];
         }
 
-        const parentIdHit = { id: parentContentNode._id };
+        const parentIdHit = { id: parentNode._id };
 
-        if (parentContentNode.type === 'no.nav.navno:publishing-calendar') {
-            return [parentIdHit];
+        // Publishing calendars are generated from their entry children
+        if (type === 'no.nav.navno:publishing-calendar-entry') {
+            return parentNode.type === 'no.nav.navno:publishing-calendar' ? [parentIdHit] : [];
         }
 
+        // Changes to a main-article-chapter also affects its parent main-article, and sibling chapters
         if (type === 'no.nav.navno:main-article-chapter') {
-            return [parentIdHit, ...this.findMainArticleChapterRefs(parentContentNode)];
+            return parentNode.type === 'no.nav.navno:main-article'
+                ? [parentIdHit, ...this.findMainArticleChapterRefs(parentNode)]
+                : [];
         }
 
         return [];
     }
 
-    // Chapters are attached to an article only via the parent/children relation, not with explicit
-    // content references.
-    private findMainArticleChapterRefs(content: ContentNode): ReferenceSearchResult {
-        if (content.type !== 'no.nav.navno:main-article') {
+    // Chapters are attached to an article only via the parent/children relation
+    private findMainArticleChapterRefs(content: ContentNode): QueryResult {
+        const { _id, _path, type } = content;
+
+        if (type !== 'no.nav.navno:main-article') {
             return [];
         }
 
@@ -380,7 +400,7 @@ export class ContentReferenceFinder {
                         {
                             hasValue: {
                                 field: '_parentPath',
-                                values: [content._path],
+                                values: [_path],
                             },
                         },
                         {
@@ -393,6 +413,10 @@ export class ContentReferenceFinder {
                 },
             },
         });
+
+        logger.info(
+            `Found ${result.length} main-article chapters for "${_id}" (base node: ${this.baseContentId})`
+        );
 
         return result;
     }
