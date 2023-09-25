@@ -3,25 +3,22 @@ import { Content } from '/lib/xp/content';
 import { stringArrayToSet } from '../utils/array-utils';
 import { runInContext } from '../context/run-in-context';
 import {
-    typesWithDeepReferences as _typesWithDeepReferences,
-    contentTypesWithProductDetails,
+    contentTypesWithDeepReferences as _typesWithDeepReferences,
+    contentTypesInOverviewPages,
 } from '../contenttype-lists';
 import { RepoBranch } from '../../types/common';
 import { logger } from '../utils/logging';
 import { getParentPath } from '../paths/path-utils';
-import { batchedContentQuery, batchedNodeQuery } from '../utils/batched-query';
 import { isUUID } from '../utils/uuid';
-import { getRepoConnection } from '../utils/repo-utils';
-import { CONTENT_ROOT_REPO_ID } from '../constants';
 
 type ReferencesMap = Record<string, Content>;
 
 const MAX_DEPTH = 5;
 
 const typesWithDeepReferences = stringArrayToSet(_typesWithDeepReferences);
-const typesWithOverviewPages = stringArrayToSet(contentTypesWithProductDetails);
+const typesWithOverviewPages = stringArrayToSet(contentTypesInOverviewPages);
 
-type ContentWithOverviewPages = Content<(typeof contentTypesWithProductDetails)[number]>;
+type ContentWithOverviewPages = Content<(typeof contentTypesInOverviewPages)[number]>;
 
 const isTypeWithOverviewPages = (content: Content): content is ContentWithOverviewPages =>
     typesWithOverviewPages[content.type];
@@ -275,8 +272,8 @@ const getReferences = (id: string, branch: RepoBranch) => {
     const refs = [
         ...getExplicitReferences(id),
         ...getStringTypeReferences(id),
-        // ...getCustomReferences(content),
-        // ...getReferencesFromParent(content),
+        ...getCustomReferences(content),
+        ...getReferencesFromParent(content),
     ];
 
     if (content) {
@@ -285,17 +282,17 @@ const getReferences = (id: string, branch: RepoBranch) => {
 
     return refs;
 
-    // // Handle main-article-chapter references. There is a unique system of relations between
-    // // articles/chapters which is most effectively handled as a separate step.
-    // const chapterRefs = refs.reduce((acc, ref) => {
-    //     if (ref.type !== 'no.nav.navno:main-article') {
-    //         return acc;
-    //     }
-    //
-    //     return [...acc, ...getMainArticleChapterReferences(ref)];
-    // }, [] as Content[]);
-    //
-    // return chapterRefs.length === 0 ? refs : [...refs, ...chapterRefs];
+    // Handle main-article-chapter references. There is a unique system of relations between
+    // articles/chapters which is most effectively handled as a separate step.
+    const chapterRefs = refs.reduce((acc, ref) => {
+        if (ref.type !== 'no.nav.navno:main-article') {
+            return acc;
+        }
+
+        return [...acc, ...getMainArticleChapterReferences(ref)];
+    }, [] as Content[]);
+
+    return chapterRefs.length === 0 ? refs : [...refs, ...chapterRefs];
 };
 
 const _findReferences = ({

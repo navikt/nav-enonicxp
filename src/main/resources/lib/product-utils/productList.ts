@@ -10,7 +10,7 @@ import {
 } from './types';
 import { APP_DESCRIPTOR } from '../constants';
 import { Audience as _Audience } from '../../site/mixins/audience/audience';
-import { contentTypesWithProductDetails } from '../contenttype-lists';
+import { contentTypesInOverviewPages } from '../contenttype-lists';
 import { getPublicPath } from '../paths/public-path';
 import { runInContext } from '../context/run-in-context';
 
@@ -73,7 +73,7 @@ const getProductPages = (overviewType: OverviewType, audience: Audience[]) => {
         count: 1000,
         contentTypes: isAllProductsType
             ? CONTENT_TYPES_IN_ALL_PRODUCTS_LISTS
-            : contentTypesWithProductDetails,
+            : contentTypesInOverviewPages,
         filters: {
             boolean: {
                 must: [

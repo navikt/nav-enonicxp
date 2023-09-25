@@ -36,11 +36,13 @@ export const get = (req: XP.Request) => {
             ? newImpl.run()
             : findReferences({ id, branch, withDeepSearch: deepSearch === 'true' });
 
+    const duration = Date.now() - start;
+
     return {
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({
-            duration: Date.now() - start,
+            duration,
             count: refs?.length,
             refs: refs?.map((ref) => ({ id: ref._id, path: ref._path, name: ref.displayName })),
         }),

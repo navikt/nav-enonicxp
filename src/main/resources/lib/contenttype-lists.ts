@@ -59,7 +59,7 @@ export const contentTypesInContentSwitcher: ContentTypeList = [
     `${APP_DESCRIPTOR}:redirects-folder`,
 ];
 
-export const typesWithDeepReferences: ContentTypeList = [
+export const contentTypesWithDeepReferences: ContentTypeList = [
     'portal:fragment',
     `${APP_DESCRIPTOR}:content-list`,
     `${APP_DESCRIPTOR}:global-value-set`,
@@ -94,9 +94,14 @@ export const contentTypesWithComponents: ContentTypeList = [
     'portal:page-template',
 ];
 
-export const contentTypesWithProductDetails = [
+export const contentTypesInOverviewPages = [
     `${APP_DESCRIPTOR}:guide-page`,
     `${APP_DESCRIPTOR}:themed-article-page`,
+    `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
+] as const;
+
+export const contentTypesInFormsOverviewPages = [
+    `${APP_DESCRIPTOR}:guide-page`,
     `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
 ] as const;
 

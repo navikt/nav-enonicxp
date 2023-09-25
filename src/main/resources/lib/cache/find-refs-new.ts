@@ -1,11 +1,15 @@
 import { Content } from '/lib/xp/content';
-import { RepoConnection } from '/lib/xp/node';
-import { NodeQueryHit } from '/lib/xp/node';
+import { RepoConnection, NodeQueryHit, RepoNode } from '/lib/xp/node';
 import { RepoBranch } from '../../types/common';
 import { logger } from '../utils/logging';
-import { typesWithDeepReferences as _typesWithDeepReferences } from '../contenttype-lists';
+import {
+    contentTypesInFormsOverviewPages,
+    contentTypesInOverviewPages,
+    contentTypesWithDeepReferences,
+} from '../contenttype-lists';
 import { getRepoConnection } from '../utils/repo-utils';
-import { CONTENT_ROOT_REPO_ID } from '../constants';
+import { APP_DESCRIPTOR, CONTENT_ROOT_REPO_ID } from '../constants';
+import { ContentDescriptor } from '../../types/content-types/content-config';
 
 type ConstructorParams = {
     baseContentId: string;
@@ -13,7 +17,17 @@ type ConstructorParams = {
     withDeepSearch?: boolean;
 };
 
-const typesWithDeepReferences: ReadonlySet<string> = new Set(_typesWithDeepReferences);
+type ContentDescriptorSet = ReadonlySet<ContentDescriptor>;
+
+const typesWithDeepReferences: ContentDescriptorSet = new Set(contentTypesWithDeepReferences);
+const typesWithOverviewPages: ContentDescriptorSet = new Set([
+    ...contentTypesInOverviewPages,
+    `${APP_DESCRIPTOR}:product-details`,
+]);
+const typesWithFormsOverviewPages: ContentDescriptorSet = new Set([
+    ...contentTypesInFormsOverviewPages,
+    `${APP_DESCRIPTOR}:form-details`,
+]);
 
 export class FindContentReferences {
     private readonly baseContentId: string;
@@ -52,8 +66,15 @@ export class FindContentReferences {
 
         this.referencesChecked.add(contentId);
 
-        this.findTrueReferences(contentId).forEach((content) => this.processReference(content));
-        this.findStringReferences(contentId).forEach((content) => this.processReference(content));
+        this.findExplicitReferences(contentId).forEach(this.processReference);
+        this.findTextReferences(contentId).forEach(this.processReference);
+
+        const content = this.repoConnection.get<Content>(this.baseContentId);
+        if (!content) {
+            return;
+        }
+
+        this.findOverviewReferences(content).forEach(this.processReference);
     }
 
     private processReference(nodeQueryHit: NodeQueryHit) {
@@ -68,17 +89,15 @@ export class FindContentReferences {
             return;
         }
 
-        const { _id, type } = content;
+        this.referencesFound[id] = content;
 
-        this.referencesFound[_id] = content;
-
-        if (this.withDeepSearch && typesWithDeepReferences.has(type)) {
-            this.findReferences(_id);
+        if (this.withDeepSearch && typesWithDeepReferences.has(content.type)) {
+            this.findReferences(id);
         }
     }
 
-    private findTrueReferences(contentId: string) {
-        const references = this.repoConnection.query({
+    private findExplicitReferences(contentId: string) {
+        const result = this.repoConnection.query({
             start: 0,
             count: 1000,
             filters: {
@@ -93,22 +112,114 @@ export class FindContentReferences {
             },
         }).hits;
 
-        logger.info(
-            `Found ${references.length} contents with explicit references to "${contentId}"`
-        );
+        logger.info(`Found ${result.length} contents with explicit references to "${contentId}"`);
 
-        return references;
+        return result;
     }
 
-    private findStringReferences(contentId: string) {
-        const references = this.repoConnection.query({
+    private findTextReferences(contentId: string) {
+        const result = this.repoConnection.query({
             start: 0,
             count: 1000,
-            query: `fulltext('components.part.config.*,components.layout.config.*,data.*', '"${contentId}"')`,
+            query: `_path NOT LIKE "/archive/*" AND fulltext('_allText', '"${contentId}"')`,
         }).hits;
 
-        logger.info(`Found ${references.length} contents with string references to "${contentId}"`);
+        logger.info(`Found ${result.length} contents with text references to "${contentId}"`);
 
-        return references;
+        return result;
+    }
+
+    // Overview pages are generated from meta-data of certain content types, and does not generate
+    // references to the listed content
+    private findOverviewReferences(content: RepoNode<Content<any>>) {
+        if (!typesWithOverviewPages.has(content.type)) {
+            return [];
+        }
+
+        const { language, data } = content;
+
+        const selectedAudience = data?.audience?._selected;
+        if (!selectedAudience) {
+            return [];
+        }
+
+        const result = this.repoConnection.query({
+            start: 0,
+            count: 1000,
+            filters: {
+                boolean: {
+                    must: [
+                        {
+                            hasValue: {
+                                field: 'type',
+                                values: ['no.nav.navno:overview'],
+                            },
+                        },
+                        {
+                            hasValue: {
+                                field: 'language',
+                                values: [language],
+                            },
+                        },
+                        {
+                            hasValue: {
+                                field: 'data.audience',
+                                values: [selectedAudience],
+                            },
+                        },
+                    ],
+                },
+            },
+        }).hits;
+
+        logger.info(`Found ${result.length} relevant overview pages`);
+
+        return result;
+    }
+
+    private findFormsOverviewReferences(content: RepoNode<Content<any>>) {
+        if (!typesWithFormsOverviewPages.has(content.type)) {
+            return [];
+        }
+
+        const { language, data } = content;
+
+        const selectedAudience = data?.audience?._selected;
+        if (!selectedAudience) {
+            return [];
+        }
+
+        const result = this.repoConnection.query({
+            start: 0,
+            count: 1000,
+            filters: {
+                boolean: {
+                    must: [
+                        {
+                            hasValue: {
+                                field: 'type',
+                                values: ['no.nav.navno:forms-overview'],
+                            },
+                        },
+                        {
+                            hasValue: {
+                                field: 'language',
+                                values: [language],
+                            },
+                        },
+                        {
+                            hasValue: {
+                                field: 'data.audience._selected',
+                                values: [selectedAudience],
+                            },
+                        },
+                    ],
+                },
+            },
+        }).hits;
+
+        logger.info(`Found ${result.length} relevant forms overview pages`);
+
+        return result;
     }
 }
