@@ -65,7 +65,7 @@ export class ContentReferencesFinder {
         this.withDeepSearch = withDeepSearch;
         this.timeout = timeout;
 
-        this.logSummary = `base contentId: "${this.baseContentId}" - repoId: ${this.repoId} - branch: ${this.branch}`;
+        this.logSummary = `base contentId: "${this.baseContentId}" - repoId: "${this.repoId}" - branch: ${this.branch}`;
 
         this.referencesFound = {};
         this.referencesChecked = new Set();
@@ -121,17 +121,17 @@ export class ContentReferencesFinder {
                 boolean: {
                     ...filters?.boolean,
                     mustNot: [
-                        ...forceArray(filters?.boolean?.mustNot),
                         ...NON_LOCALIZED_QUERY_FILTER,
+                        ...forceArray(filters?.boolean?.mustNot),
                     ],
                     must: [
-                        ...forceArray(filters?.boolean?.must),
                         {
                             hasValue: {
                                 field: '_nodeType',
                                 values: ['content'],
                             },
                         },
+                        ...forceArray(filters?.boolean?.must),
                     ],
                 },
             },
@@ -174,7 +174,7 @@ export class ContentReferencesFinder {
             throw new Error(`Reference search timed out after ${this.timeout} ms`);
         }
 
-        return findReferencesCallback.bind(this)().forEach(this.processReference, this);
+        findReferencesCallback.bind(this)().forEach(this.processReference, this);
     }
 
     // Get the full content node of the reference, and run a deeper search if applicable
@@ -232,9 +232,7 @@ export class ContentReferencesFinder {
             return [];
         }
 
-        const { _id, language, data } = content;
-
-        const selectedAudience = data?.audience?._selected;
+        const selectedAudience = content.data?.audience?._selected;
         if (!selectedAudience) {
             return [];
         }
@@ -251,14 +249,14 @@ export class ContentReferencesFinder {
                         },
                         {
                             hasValue: {
-                                field: 'language',
-                                values: [language],
+                                field: 'data.audience',
+                                values: [selectedAudience],
                             },
                         },
                         {
                             hasValue: {
-                                field: 'data.audience',
-                                values: [selectedAudience],
+                                field: 'language',
+                                values: [content.language],
                             },
                         },
                     ],
@@ -266,7 +264,7 @@ export class ContentReferencesFinder {
             },
         });
 
-        this.logResult(`Found ${result.length} relevant overview pages`, _id);
+        this.logResult(`Found ${result.length} relevant overview pages`, content._id);
 
         return result;
     }
@@ -277,9 +275,7 @@ export class ContentReferencesFinder {
             return [];
         }
 
-        const { _id, language, data } = content;
-
-        const selectedAudience = data?.audience?._selected;
+        const selectedAudience = content.data?.audience?._selected;
         if (!selectedAudience) {
             return [];
         }
@@ -296,14 +292,14 @@ export class ContentReferencesFinder {
                         },
                         {
                             hasValue: {
-                                field: 'language',
-                                values: [language],
+                                field: 'data.audience._selected',
+                                values: [selectedAudience],
                             },
                         },
                         {
                             hasValue: {
-                                field: 'data.audience._selected',
-                                values: [selectedAudience],
+                                field: 'language',
+                                values: [content.language],
                             },
                         },
                     ],
@@ -311,7 +307,7 @@ export class ContentReferencesFinder {
             },
         });
 
-        this.logResult(`Found ${result.length} relevant forms overview pages`, _id);
+        this.logResult(`Found ${result.length} relevant forms overview pages`, content._id);
 
         return result;
     }
@@ -322,22 +318,20 @@ export class ContentReferencesFinder {
             return [];
         }
 
-        const { _id, language } = content;
-
         const result = this.contentNodeQuery({
             filters: {
                 boolean: {
                     must: [
                         {
                             hasValue: {
-                                field: 'language',
-                                values: [language],
+                                field: 'type',
+                                values: ['no.nav.navno:office-branch'],
                             },
                         },
                         {
                             hasValue: {
-                                field: 'type',
-                                values: ['no.nav.navno:office-branch'],
+                                field: 'language',
+                                values: [content.language],
                             },
                         },
                     ],
@@ -345,7 +339,7 @@ export class ContentReferencesFinder {
             },
         });
 
-        this.logResult(`Found ${result.length} relevant office branch pages`, _id);
+        this.logResult(`Found ${result.length} relevant office branch pages`, content._id);
 
         return result;
     }
@@ -353,9 +347,10 @@ export class ContentReferencesFinder {
     // Contact-option parts for chat which does not have a sharedContactInformation field set will have
     // a default option set via graphql schema creation callback.
     private findContactInfoRefs(content: ContentNode): QueryResult {
-        const { _id, language, type, data } = content;
-
-        if (type !== 'no.nav.navno:contact-information' || data.contactType._selected !== 'chat') {
+        if (
+            content.type !== 'no.nav.navno:contact-information' ||
+            content.data.contactType._selected !== 'chat'
+        ) {
             return [];
         }
 
@@ -370,14 +365,14 @@ export class ContentReferencesFinder {
                             },
                         },
                         {
-                            hasValue: {
-                                field: 'language',
-                                values: [language],
+                            notExists: {
+                                field: 'components.part.config.no-nav-navno.contact-option.contactOptions.chat.sharedContactInformation',
                             },
                         },
                         {
-                            notExists: {
-                                field: 'components.part.config.no-nav-navno.contact-option.contactOptions.chat.sharedContactInformation',
+                            hasValue: {
+                                field: 'language',
+                                values: [content.language],
                             },
                         },
                     ],
@@ -385,16 +380,14 @@ export class ContentReferencesFinder {
             },
         });
 
-        this.logResult(`Found ${result.length} references to chat contact info`, _id);
+        this.logResult(`Found ${result.length} references to chat contact info`, content._id);
 
         return result;
     }
 
     // Handle content types which generates content from their parent, without explicit references
     private findParentRefs(content: ContentNode): QueryResult {
-        const { _path, type } = content;
-
-        const parentNode = this.repoConnection.get<Content>({ key: getParentPath(_path) });
+        const parentNode = this.repoConnection.get<Content>({ key: getParentPath(content._path) });
         if (!parentNode) {
             return [];
         }
@@ -402,12 +395,12 @@ export class ContentReferencesFinder {
         const parentIdHit = { id: parentNode._id };
 
         // Publishing calendars are generated from their entry children
-        if (type === 'no.nav.navno:publishing-calendar-entry') {
+        if (content.type === 'no.nav.navno:publishing-calendar-entry') {
             return parentNode.type === 'no.nav.navno:publishing-calendar' ? [parentIdHit] : [];
         }
 
         // Changes to a main-article-chapter also affects its parent main-article, and sibling chapters
-        if (type === 'no.nav.navno:main-article-chapter') {
+        if (content.type === 'no.nav.navno:main-article-chapter') {
             return parentNode.type === 'no.nav.navno:main-article'
                 ? [parentIdHit, ...this.findMainArticleChapterRefs(parentNode)]
                 : [];
@@ -418,9 +411,7 @@ export class ContentReferencesFinder {
 
     // Chapters are attached to an article only via the parent/children relation
     private findMainArticleChapterRefs(content: ContentNode): QueryResult {
-        const { _id, _path, type } = content;
-
-        if (type !== 'no.nav.navno:main-article') {
+        if (content.type !== 'no.nav.navno:main-article') {
             return [];
         }
 
@@ -431,7 +422,7 @@ export class ContentReferencesFinder {
                         {
                             hasValue: {
                                 field: '_parentPath',
-                                values: [_path],
+                                values: [content._path],
                             },
                         },
                         {
@@ -445,7 +436,7 @@ export class ContentReferencesFinder {
             },
         });
 
-        this.logResult(`Found ${result.length} main-article chapters`, _id);
+        this.logResult(`Found ${result.length} main-article chapters`, content._id);
 
         return result;
     }
