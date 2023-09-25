@@ -117,10 +117,8 @@ export const findPathsToInvalidate = (nodeEventData: NodeEventData, eventType: s
     const locale = getLayersData().repoIdToLocaleMap[repo];
 
     const nodePaths = getNodePaths(id, locale);
-    logger.info(`Node paths: ${JSON.stringify(nodePaths)}`);
 
     const changedPaths = findChangedPaths(nodeEventData);
-    logger.info(`Changed paths: ${JSON.stringify(changedPaths)}`);
 
     // If the content was deleted, we must check in the draft branch for references
     const referencePaths = findReferencedPaths(

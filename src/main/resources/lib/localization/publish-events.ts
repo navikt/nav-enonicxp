@@ -76,7 +76,6 @@ const pushToMasterIfContentIsPublishedInRootRepo = ({ id, repo, branch }: NodeDa
     }).get(id);
 
     if (layerContentMaster?._versionKey === layerContentDraft._versionKey) {
-        logger.info(`Layer content ${id} in ${repo} already has newest version, skipping push`);
         return;
     }
 
