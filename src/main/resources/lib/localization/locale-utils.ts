@@ -80,11 +80,15 @@ export const getContentFromAllLayers = ({
 };
 
 export const buildLocalePath = (basePath: string, locale: string) => {
-    const { defaultLocale } = getLayersData();
+    const { defaultLocale, localeToRepoIdMap } = getLayersData();
+
+    if (locale === defaultLocale || !localeToRepoIdMap[locale]) {
+        return basePath;
+    }
 
     const localeSuffix = `/${locale}`;
 
-    if (locale === defaultLocale || basePath.endsWith(localeSuffix)) {
+    if (basePath.endsWith(localeSuffix)) {
         return basePath;
     }
 

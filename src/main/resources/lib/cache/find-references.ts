@@ -9,7 +9,6 @@ import {
 import { RepoBranch } from '../../types/common';
 import { logger } from '../utils/logging';
 import { getParentPath } from '../paths/path-utils';
-import { getAudience } from '../utils/audience';
 import { batchedContentQuery } from '../utils/batched-query';
 
 type ReferencesMap = Record<string, Content>;
@@ -49,7 +48,10 @@ const getOverviewReferences = (content: Content) => {
 
     const { language, data } = content;
 
-    const selectedAudience = getAudience(data.audience);
+    const selectedAudience = data.audience?._selected;
+    if (!selectedAudience) {
+        return [];
+    }
 
     const relevantOverviewPages = contentLib.query({
         start: 0,

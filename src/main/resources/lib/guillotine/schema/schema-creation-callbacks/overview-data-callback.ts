@@ -55,7 +55,7 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
                 return [];
             }
 
-            const { language, data } = content;
+            const { data, language } = content;
             const { overviewType, audience } = data;
 
             if (!overviewType) {
@@ -68,7 +68,7 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
                 return [];
             }
 
-            return getProductDataForOverviewPage(language, overviewType, forceArray(audience));
+            return getProductDataForOverviewPage(overviewType, forceArray(audience), language);
         },
     };
 };
