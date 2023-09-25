@@ -68,20 +68,20 @@ export class FindContentReferences {
 
         this.referencesChecked.add(contentId);
 
-        this.findExplicitRefs(contentId).forEach(this.processReference);
-        this.findTextRefs(contentId).forEach(this.processReference);
+        this.findExplicitRefs(contentId).forEach(this.processReference, this);
+        this.findTextRefs(contentId).forEach(this.processReference, this);
 
         const content = this.repoConnection.get<Content>(this.baseContentId);
         if (!content) {
             return;
         }
 
-        this.findOverviewRefs(content).forEach(this.processReference);
-        this.findFormsOverviewRefs(content).forEach(this.processReference);
-        this.findOfficeBranchRefs(content).forEach(this.processReference);
-        this.findContactInfoRefs(content).forEach(this.processReference);
-        this.findParentRefs(content).forEach(this.processReference);
-        this.findMainArticleChapterRefs(content).forEach(this.processReference);
+        this.findOverviewRefs(content).forEach(this.processReference, this);
+        this.findFormsOverviewRefs(content).forEach(this.processReference, this);
+        this.findOfficeBranchRefs(content).forEach(this.processReference, this);
+        this.findContactInfoRefs(content).forEach(this.processReference, this);
+        this.findParentRefs(content).forEach(this.processReference, this);
+        this.findMainArticleChapterRefs(content).forEach(this.processReference, this);
     }
 
     private processReference(nodeQueryHit: NodeQueryHit) {
