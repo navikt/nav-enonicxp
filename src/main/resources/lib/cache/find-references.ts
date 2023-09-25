@@ -280,8 +280,6 @@ const getReferences = (id: string, branch: RepoBranch) => {
         refs.push(content);
     }
 
-    return refs;
-
     // Handle main-article-chapter references. There is a unique system of relations between
     // articles/chapters which is most effectively handled as a separate step.
     const chapterRefs = refs.reduce((acc, ref) => {
