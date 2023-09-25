@@ -59,7 +59,7 @@ export const contentTypesInContentSwitcher: ContentTypeList = [
     `${APP_DESCRIPTOR}:redirects-folder`,
 ];
 
-export const contentTypesWithDeepReferences: ContentTypeList = [
+export const contentTypesWithDeepReferences = [
     'portal:fragment',
     `${APP_DESCRIPTOR}:content-list`,
     `${APP_DESCRIPTOR}:global-value-set`,
@@ -67,7 +67,7 @@ export const contentTypesWithDeepReferences: ContentTypeList = [
     `${APP_DESCRIPTOR}:product-details`,
     `${APP_DESCRIPTOR}:payout-dates`,
     `${APP_DESCRIPTOR}:contact-information`,
-];
+] as const;
 
 export const contentTypesWithBreadcrumbs: ContentTypeList = [
     `${APP_DESCRIPTOR}:situation-page`,
