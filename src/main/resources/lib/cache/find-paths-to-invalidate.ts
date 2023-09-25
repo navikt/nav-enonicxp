@@ -122,7 +122,7 @@ export const findPathsToInvalidate = (nodeEventData: NodeEventData, eventType: s
     const changedPaths = findChangedPaths(nodeEventData);
     const referencePaths = findReferencedPaths(id, branch);
 
-    // If the reference search failed, we want to invalidate the entire cach
+    // If the reference search failed, return null to trigger invalidation of the entire cache
     if (!referencePaths) {
         return null;
     }

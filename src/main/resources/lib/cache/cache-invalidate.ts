@@ -39,13 +39,9 @@ const resolvePathsAndInvalidateFrontendCache = ({
     }
 
     logger.info(
-        `Invalidate event ${eventId} - Invalidating ${
-            pathsToInvalidate.length
-        } paths for root node ${node.id} in repo ${node.repo}: ${JSON.stringify(
-            pathsToInvalidate,
-            null,
-            4
-        )}`
+        `Invalidate event ${eventId} - Invalidating ${pathsToInvalidate.length} paths for node ${
+            node.id
+        } in repo ${node.repo}: ${JSON.stringify(pathsToInvalidate, null, 4)}`
     );
 
     frontendInvalidatePaths({
