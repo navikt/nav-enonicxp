@@ -94,7 +94,7 @@ const findChangedPaths = (contentId: string, repoId: string, path: string) => {
 
 const getNodePaths = (contentId: string, repoId: string, branch: RepoBranch) => {
     const content = getRepoConnection({ branch, repoId, asAdmin: true }).get(contentId);
-    if (!content) {
+    if (!content || !isPublicRenderedType(content)) {
         return [];
     }
 
@@ -102,18 +102,18 @@ const getNodePaths = (contentId: string, repoId: string, branch: RepoBranch) => 
 
     const internalPath = stripPathPrefix(content._path);
     const publicPath = getPublicPath(content, locale);
+    const changedPaths = findChangedPaths(contentId, repoId, content._path);
 
-    return [internalPath, publicPath];
+    return [internalPath, publicPath, ...changedPaths];
 };
 
 export const findPathsToInvalidate = (nodeEventData: NodeEventData, eventType: string) => {
-    const { id, path, repo } = nodeEventData;
+    const { id, repo } = nodeEventData;
 
     // If the content was deleted, we must check in the draft branch
     const branch = eventType === 'node.deleted' ? 'draft' : 'master';
 
     const nodePaths = getNodePaths(id, repo, branch);
-    const changedPaths = findChangedPaths(id, repo, path);
     const referencePaths = findReferencedPaths(id, repo, branch);
 
     // If the reference search failed, return null to trigger invalidation of the entire cache
@@ -121,5 +121,5 @@ export const findPathsToInvalidate = (nodeEventData: NodeEventData, eventType: s
         return null;
     }
 
-    return removeDuplicates([...nodePaths, ...changedPaths, ...referencePaths]);
+    return removeDuplicates([...nodePaths, ...referencePaths]);
 };
