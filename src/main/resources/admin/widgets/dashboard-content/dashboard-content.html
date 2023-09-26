@@ -1,0 +1,12 @@
+<widget>
+	<div id="admin-widget-content" style="text-shadow: 0 0 1px #000, 0 0 1px #000, 0 0 1px #000, 0 0 1px #000; color: white" >
+		<h1>Sist redigert innhold</h1>
+		<table>
+			<tr th-each="result: ${results}">
+				<td><a th-text="${result.displayName}" href="${result.url}"></a></td>
+				<td th-text="${result.modifiedTime}"></td>
+				<td th-text="${result.published}"></td>
+			</tr>
+		</table>
+	</div>
+</widget>
