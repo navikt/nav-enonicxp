@@ -7,7 +7,7 @@
         </input>
         <item-set name="shortcuts">
             <label>Velg snarveier</label>
-            <occurrences minimum="0" maximum="4"/>
+            <occurrences minimum="0" maximum="0"/>
             <items>
                 <input name="customTitle" type="TextLine">
                     <label>Tittel på snarvei</label>
