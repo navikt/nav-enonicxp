@@ -34,6 +34,7 @@ import { PublishingCalendarEntry } from '../../site/content-types/publishing-cal
 import { GlobalCaseTimeSetData } from './global-case-time-set';
 import { PayoutDates } from '../../site/content-types/payout-dates/payout-dates';
 import { FrontPage } from '../../site/content-types/front-page/front-page';
+import { FrontPageNested } from '../../site/content-types/front-page/front-page-nested';
 import { AreaPage } from '../../site/content-types/area-page/area-page';
 import { OfficeBranch } from 'site/content-types/office-branch/office-branch';
 import { CurrentTopicPage } from 'site/content-types/current-topic-page/current-topic-page';
@@ -60,6 +61,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'external-link': ExternalLink;
     'fragment-creator': FragmentCreator;
     'front-page': FrontPage;
+    'front-page-nested': FrontPageNested;
     'global-case-time-set': GlobalCaseTimeSetData;
     'global-value-set': GlobalNumberValueSetData;
     'guide-page': GuidePage;

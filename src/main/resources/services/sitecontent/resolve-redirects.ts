@@ -3,11 +3,21 @@ import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { hasValidCustomPath } from '../../lib/paths/custom-paths/custom-path-utils';
 import { runInContext } from '../../lib/context/run-in-context';
-import { REDIRECTS_ROOT_PATH } from '../../lib/constants';
+import {
+    COMPONENT_APP_KEY,
+    CONTENT_LOCALE_DEFAULT,
+    REDIRECTS_ROOT_PATH,
+} from '../../lib/constants';
 import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-sitecontent-query';
 import { getParentPath, stripPathPrefix } from '../../lib/paths/path-utils';
 import { getPublicPath } from '../../lib/paths/public-path';
-import { buildLocalePath } from '../../lib/localization/locale-utils';
+import { buildLocalePath, isContentLocalized } from '../../lib/localization/locale-utils';
+import { runInLocaleContext } from '../../lib/localization/locale-context';
+import { logger } from '../../lib/utils/logging';
+import {
+    getContentLocaleRedirectTarget,
+    isContentPreviewOnly,
+} from '../../lib/utils/content-utils';
 
 export const transformToRedirectResponse = ({
     content,
@@ -55,8 +65,7 @@ export const transformToRedirectResponse = ({
           };
 };
 
-// If the content has a custom path, we should redirect requests from the internal _path
-export const getCustomPathRedirectIfApplicable = ({
+export const getSpecialRedirectIfApplicable = ({
     content,
     requestedPath,
     branch,
@@ -67,18 +76,43 @@ export const getCustomPathRedirectIfApplicable = ({
     branch: RepoBranch;
     locale: string;
 }) => {
-    const shouldRedirect =
+    if (isContentPreviewOnly(content)) {
+        return null;
+    }
+
+    const localeTarget = getContentLocaleRedirectTarget(content, locale);
+    if (localeTarget) {
+        const targetContent = runInLocaleContext({ locale: localeTarget, branch }, () =>
+            contentLib.get({ key: content._id })
+        );
+
+        if (targetContent && isContentLocalized(targetContent)) {
+            return transformToRedirectResponse({
+                content,
+                target: getPublicPath(targetContent, localeTarget),
+                type: 'internal',
+            });
+        } else {
+            logger.error(
+                `Layer redirect was set on ${content._id} to ${localeTarget} but the target locale content was not localized!`
+            );
+        }
+    }
+
+    // If the content has a custom path, we should redirect requests from the internal _path
+    const shouldRedirectToCustomPath =
         hasValidCustomPath(content) &&
         requestedPath === buildLocalePath(content._path, locale) &&
         branch === 'master';
+    if (shouldRedirectToCustomPath) {
+        return transformToRedirectResponse({
+            content,
+            target: getPublicPath(content, locale),
+            type: 'internal',
+        });
+    }
 
-    return shouldRedirect
-        ? transformToRedirectResponse({
-              content,
-              target: getPublicPath(content, locale),
-              type: 'internal',
-          })
-        : null;
+    return null;
 };
 
 // The old Enonic CMS had urls suffixed with <contentKey>.cms
@@ -154,7 +188,7 @@ const getParentRedirectContent = (path: string): null | Content => {
 const getContentFromRedirectsFolder = (path: string) =>
     contentLib.get({ key: `${REDIRECTS_ROOT_PATH}${path}` });
 
-export const getRedirectContent = ({
+export const getRedirectFallback = ({
     pathRequested,
     branch,
 }: {

@@ -26,6 +26,7 @@ export const dynamicPageContentTypes: ContentTypeList = [
     `${APP_DESCRIPTOR}:generic-page`,
     `${APP_DESCRIPTOR}:overview`,
     `${APP_DESCRIPTOR}:front-page`,
+    `${APP_DESCRIPTOR}:front-page-nested`,
     `${APP_DESCRIPTOR}:current-topic-page`,
     `${APP_DESCRIPTOR}:area-page`,
     `${APP_DESCRIPTOR}:press-landing-page`,
@@ -59,7 +60,7 @@ export const contentTypesInContentSwitcher: ContentTypeList = [
     `${APP_DESCRIPTOR}:redirects-folder`,
 ];
 
-export const typesWithDeepReferences: ContentTypeList = [
+export const contentTypesWithDeepReferences = [
     'portal:fragment',
     `${APP_DESCRIPTOR}:content-list`,
     `${APP_DESCRIPTOR}:global-value-set`,
@@ -67,7 +68,7 @@ export const typesWithDeepReferences: ContentTypeList = [
     `${APP_DESCRIPTOR}:product-details`,
     `${APP_DESCRIPTOR}:payout-dates`,
     `${APP_DESCRIPTOR}:contact-information`,
-];
+] as const;
 
 export const contentTypesWithBreadcrumbs: ContentTypeList = [
     `${APP_DESCRIPTOR}:situation-page`,
@@ -94,9 +95,14 @@ export const contentTypesWithComponents: ContentTypeList = [
     'portal:page-template',
 ];
 
-export const contentTypesWithProductDetails = [
+export const contentTypesInOverviewPages = [
     `${APP_DESCRIPTOR}:guide-page`,
     `${APP_DESCRIPTOR}:themed-article-page`,
+    `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
+] as const;
+
+export const contentTypesInFormsOverviewPages = [
+    `${APP_DESCRIPTOR}:guide-page`,
     `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
 ] as const;
 

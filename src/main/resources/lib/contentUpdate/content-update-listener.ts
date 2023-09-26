@@ -48,7 +48,7 @@ const handleEvent = (event: eventLib.EnonicEvent) => {
                 case 'no.nav.navno:global-case-time-set': {
                     if (repo !== CONTENT_ROOT_REPO_ID) {
                         const layerId = repo.replace(`${CONTENT_REPO_PREFIX}.`, '');
-                        logger.info(
+                        logger.error(
                             `Content on "${_path}" with type "${type}" was localized to layer "${layerId}" - reverting!`
                         );
                         contentLib.resetInheritance({

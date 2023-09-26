@@ -7,7 +7,7 @@ import { isMedia } from '../../utils/content-utils';
 import { GuillotineQueryParams, runGuillotineQuery } from '../utils/run-guillotine-query';
 import { buildFragmentComponentTree, GuillotineComponent } from '../utils/process-components';
 import { runInContext } from '../../context/run-in-context';
-import { getBreadcrumbs } from '../utils/breadcrumbs';
+import { generateBreadcrumbs } from '../utils/breadcrumbs';
 import { GuillotineUnresolvedComponentType } from './run-sitecontent-query';
 import { PortalComponent } from '../../../types/components/component-portal';
 import { NodeComponent } from '../../../types/components/component-node';
@@ -33,6 +33,7 @@ import contentPageWithSidemenusQuery from './content-queries/contentPageWithSide
 import dynamicPageQuery from './content-queries/dynamicPageQuery.graphql';
 import externalLinkQuery from './content-queries/externalLinkQuery.graphql';
 import frontPageQuery from './content-queries/frontPageQuery.graphql';
+import frontPageNestedQuery from './content-queries/frontPageNestedQuery.graphql';
 import globalCaseTimeQuery from './content-queries/globalCaseTimeSetQuery.graphql';
 import globalValueSetQuery from './content-queries/globalValueSetQuery.graphql';
 import guidePageQuery from './content-queries/guidePageQuery.graphql';
@@ -91,6 +92,7 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:external-link': externalLinkQuery,
     'no.nav.navno:forms-overview': formsOverviewQuery,
     'no.nav.navno:front-page': frontPageQuery,
+    'no.nav.navno:front-page-nested': frontPageNestedQuery,
     'no.nav.navno:internal-link': internalLinkQuery,
     'no.nav.navno:global-case-time-set': globalCaseTimeQuery,
     'no.nav.navno:global-value-set': globalValueSetQuery,
@@ -175,7 +177,9 @@ export const runGuillotineContentQuery = (
         };
     }
 
-    const breadcrumbs = runInContext({ branch: baseQueryParams.branch }, () => getBreadcrumbs(_id));
+    const breadcrumbs = runInContext({ branch: baseQueryParams.branch }, () =>
+        generateBreadcrumbs(baseContent)
+    );
 
     return {
         ...contentQueryResult,

@@ -3,6 +3,7 @@ import { Content } from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
 import { ContentDescriptor, MediaDescriptor } from '../../types/content-types/content-config';
 import { logger } from './logging';
+import { COMPONENT_APP_KEY, CONTENT_LOCALE_DEFAULT } from '../constants';
 
 export const isMedia = (content: Content): content is Content<MediaDescriptor> =>
     content.type.startsWith('media:');
@@ -29,4 +30,14 @@ export const applyModifiedData = <ContentType extends ContentDescriptor>(
     (content.modifiedTime as string) = new Date().toISOString();
 
     return content;
+};
+
+export const isContentPreviewOnly = (content: Content) => {
+    return !!content.x?.[COMPONENT_APP_KEY]?.previewOnly?.previewOnly;
+};
+
+export const getContentLocaleRedirectTarget = (content: Content, locale: string) => {
+    return locale === CONTENT_LOCALE_DEFAULT
+        ? content.x?.[COMPONENT_APP_KEY]?.redirectToLayer?.locale
+        : null;
 };

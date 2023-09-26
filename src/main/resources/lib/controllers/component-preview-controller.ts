@@ -7,6 +7,7 @@ import {
 } from '../guillotine/utils/process-components';
 import { logger } from '../utils/logging';
 import { runGuillotineComponentsQuery } from '../guillotine/queries/run-sitecontent-query';
+import { runInLocaleContext } from '../localization/locale-context';
 
 const fallbackResponse = {
     contentType: 'text/html',
@@ -17,14 +18,16 @@ const getComponentProps = () => {
     const content = portalLib.getContent();
     const portalComponent = portalLib.getComponent();
 
-    const { components, fragments } = runGuillotineComponentsQuery(
-        {
-            params: {
-                ref: content._id,
+    const { components, fragments } = runInLocaleContext({ locale: content.language }, () =>
+        runGuillotineComponentsQuery(
+            {
+                params: {
+                    ref: content._id,
+                },
+                branch: 'draft',
             },
-            branch: 'draft',
-        },
-        content
+            content
+        )
     );
 
     const componentPath = portalComponent.path || '/';

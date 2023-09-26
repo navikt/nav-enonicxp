@@ -1,16 +1,14 @@
-import * as contentLib from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
-import { findReferences } from '../../cache/find-references';
 import { logger } from '../../utils/logging';
 import { ContentMigrationParams } from './migrate-content-to-layer';
-import { runInLocaleContext } from '../locale-context';
 import { getRepoConnection, isDraftAndMasterSameVersion } from '../../utils/repo-utils';
 import { getLayersData } from '../layers-data';
 import { RepoBranch } from '../../../types/common';
 import { modifyContentNode } from './modify-content-node';
 import { forceArray } from '../../utils/array-utils';
 import { isContentLocalized } from '../locale-utils';
+import { ContentReferencesFinder } from '../../cache/content-references-finder';
 
 const updateReferenceFromNode = ({
     contentNodeToUpdate,
@@ -55,21 +53,6 @@ const updateReferenceFromNode = ({
                 );
             }
 
-            // Fix audience type to prevent validation error
-            const audience = contentWithUpdates.data?.audience;
-            if (typeof forceArray(audience)[0] === 'string') {
-                const contentTypeSchema = contentLib.getType(contentWithUpdates.type);
-
-                const audienceShouldNotBeString = contentTypeSchema?.form.some(
-                    (formItem) =>
-                        formItem.name === 'audience' && formItem.formItemType === 'OptionSet'
-                );
-
-                if (audienceShouldNotBeString) {
-                    contentWithUpdates.data.audience = { _selected: audience };
-                }
-            }
-
             return contentWithUpdates;
         },
     });
@@ -107,9 +90,14 @@ const updateContentReferencesInLocaleLayer = (
         return;
     }
 
-    const references = runInLocaleContext({ locale: localeToUpdate }, () =>
-        findReferences({ id: sourceId, branch: 'master', withDeepSearch: false })
-    );
+    const contentReferencesFinder = new ContentReferencesFinder({
+        contentId: sourceId,
+        repoId: repoToUpdate,
+        branch: 'master',
+        withDeepSearch: false,
+    });
+
+    const references = contentReferencesFinder.run();
     if (!references) {
         logger.error(`References search failed for ${sourceId} in locale ${localeToUpdate}`);
         return false;

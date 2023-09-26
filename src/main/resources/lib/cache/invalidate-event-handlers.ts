@@ -12,8 +12,13 @@ import {
     isDeferringCacheInvalidation,
 } from './invalidate-event-defer';
 import { customListenerType } from '../utils/events';
+import { getRepoConnection } from '../utils/repo-utils';
+import { isContentLocalized } from '../localization/locale-utils';
+import { NAVNO_ROOT_PATH } from '../constants';
 
 let hasSetupListeners = false;
+
+const NODE_ROOT_PATH = `/content${NAVNO_ROOT_PATH}/`;
 
 const nodeListenerCallback = (event: EnonicEvent) => {
     if (isDeferringCacheInvalidation()) {
@@ -25,21 +30,37 @@ const nodeListenerCallback = (event: EnonicEvent) => {
             return;
         }
 
+        if (!node.path.startsWith(NODE_ROOT_PATH)) {
+            return;
+        }
+
         // This callback is only applicable to repos belonging to a content layer
         const locale = getLayersData().repoIdToLocaleMap[node.repo];
         if (!locale) {
             return;
         }
 
-        const isPrepublished = handleScheduledPublish(node, event.type);
-        if (!isPrepublished) {
-            invalidateCacheForNode({
-                node,
-                eventType: event.type,
-                timestamp: event.timestamp,
-                isRunningClusterWide: true,
-            });
+        const content = getRepoConnection({
+            branch: 'draft',
+            asAdmin: true,
+            repoId: node.repo,
+        }).get(node.id);
+
+        if (!content || !isContentLocalized(content)) {
+            return;
         }
+
+        const isPrepublished = handleScheduledPublish(node, event.type);
+        if (isPrepublished) {
+            return;
+        }
+
+        invalidateCacheForNode({
+            node,
+            eventType: event.type,
+            timestamp: event.timestamp,
+            isRunningClusterWide: true,
+        });
     });
 };
 

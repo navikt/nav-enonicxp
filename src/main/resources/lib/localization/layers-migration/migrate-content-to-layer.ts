@@ -67,8 +67,8 @@ const migrateBranch = (params: ContentMigrationParams, branch: RepoBranch) => {
 
     const sourceContent = sourceRepo.get(sourceId);
     if (!sourceContent) {
-        logger.error(`Source node not found: [${sourceLocale}] ${sourceId} in branch ${branch}`);
-        return false;
+        logger.info(`Source node not found: [${sourceLocale}] ${sourceId} in branch ${branch}`);
+        return 'sourceNotFound';
     }
 
     const targetRepoId = localeToRepoIdMap[targetLocale];
@@ -82,7 +82,7 @@ const migrateBranch = (params: ContentMigrationParams, branch: RepoBranch) => {
     const targetContent = targetRepoDraft.get(targetId);
     if (!targetContent) {
         logger.error(`Target node not found: [${targetLocale}] ${targetId}`);
-        return false;
+        return 'error';
     }
 
     modifyContentNode({
@@ -95,8 +95,8 @@ const migrateBranch = (params: ContentMigrationParams, branch: RepoBranch) => {
         },
     });
 
-    if (branch !== 'master') {
-        return true;
+    if (branch === 'draft') {
+        return 'success';
     }
 
     const pushResult = targetRepoDraft.push({
@@ -110,22 +110,22 @@ const migrateBranch = (params: ContentMigrationParams, branch: RepoBranch) => {
     );
     pushResult.success.forEach((id) => logger.info(`Pushing ${id} to master succeeded`));
 
-    if (pushResult.success.length > 0) {
-        const targetRepoMaster = getRepoConnection({
-            branch: 'master',
-            repoId: targetRepoId,
-            asAdmin: true,
-        });
-
-        targetRepoMaster.commit({
-            keys: [targetId],
-            message: 'Migrert innhold til språk-layer',
-        });
-
-        return true;
+    if (pushResult.failed.length > 0) {
+        return 'error';
     }
 
-    return false;
+    const targetRepoMaster = getRepoConnection({
+        branch: 'master',
+        repoId: targetRepoId,
+        asAdmin: true,
+    });
+
+    targetRepoMaster.commit({
+        keys: [targetId],
+        message: 'Migrert innhold til språk-layer',
+    });
+
+    return 'success';
 };
 
 export const migrateContentToLayer = (contentMigrationParams: ContentMigrationParams) => {
@@ -145,9 +145,11 @@ export const migrateContentToLayer = (contentMigrationParams: ContentMigrationPa
         return response;
     }
 
-    const copyMasterSuccess = migrateBranch(contentMigrationParams, 'master');
-    if (copyMasterSuccess) {
+    const copyMasterResult = migrateBranch(contentMigrationParams, 'master');
+    if (copyMasterResult === 'success') {
         response.statusMsgs.push('Migrering av publisert innhold var vellykket.');
+    } else if (copyMasterResult === 'sourceNotFound') {
+        response.statusMsgs.push('Innholdet er ikke publisert (ikke noe å migrere)');
     } else {
         response.errorMsgs.push(
             'Migrering av publisert innhold feilet. Sjekk logger for detaljer.'
@@ -158,7 +160,7 @@ export const migrateContentToLayer = (contentMigrationParams: ContentMigrationPa
     const sourceRepoId = getLayersData().localeToRepoIdMap[sourceLocale];
     if (!isDraftAndMasterSameVersion(sourceId, sourceRepoId)) {
         const copyDraftSuccess = migrateBranch(contentMigrationParams, 'draft');
-        if (copyDraftSuccess) {
+        if (copyDraftSuccess === 'success') {
             response.statusMsgs.push('Migrering av innhold under arbeid var vellykket.');
         } else {
             response.errorMsgs.push(
