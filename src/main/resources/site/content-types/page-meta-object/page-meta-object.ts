@@ -15,26 +15,6 @@ export interface PageMetaObject {
          */
         "product-page": {
           /**
-           * Sett side-tittel
-           */
-          title?: string;
-
-          /**
-           * Tittel for utlisting og sortering
-           */
-          sortTitle?: string;
-
-          /**
-           * Norsk tittel (hvis fremmedspråklig innhold)
-           */
-          norwegianTitle?: string;
-
-          /**
-           * Ingress
-           */
-          ingress: string;
-
-          /**
            * Målgruppe
            */
           audience:
@@ -84,29 +64,19 @@ export interface PageMetaObject {
               };
 
           /**
-           * Kategori
-           */
-          taxonomy?: Array<"insurance" | "measures" | "service" | "rights" | "assistive_tools" | "benefits" | "employee_benefits" | "refund">;
-
-          /**
            * Områdekategori
            */
           area: Array<"health" | "other" | "work" | "family" | "accessibility" | "pension" | "social_counselling" | "inclusion" | "downsizing" | "recruitment">;
 
           /**
+           * Kategori
+           */
+          taxonomy?: Array<"insurance" | "measures" | "service" | "rights" | "assistive_tools" | "benefits" | "employee_benefits" | "refund">;
+
+          /**
            * Velg piktogram
            */
           illustration: string;
-
-          /**
-           * Videresend alle besøk til annen url:
-           */
-          externalProductUrl?: string;
-
-          /**
-           * Skriv inn ønsket kort-url
-           */
-          customPath: string;
 
           /**
            * Velg eier
@@ -139,11 +109,6 @@ export interface PageMetaObject {
           formDetailsTargets?: Array<string>;
 
           /**
-           * Legg til andre språkversjoner
-           */
-          languages?: Array<string>;
-
-          /**
            * Fant du det du lette etter?
            */
           feedbackToggle: boolean;
@@ -152,26 +117,6 @@ export interface PageMetaObject {
            * Chatbot Frida
            */
           chatbotToggle: boolean;
-
-          /**
-           * Oppsummering
-           */
-          description?: string;
-
-          /**
-           * Sidebeskrivelse for søk og sosiale medier
-           */
-          metaDescription?: string;
-
-          /**
-           * Canonical url - NB! Skal bare legges inn av hovedredaktør/administrator
-           */
-          canonicalUrl?: string;
-
-          /**
-           * Skal ikke vises i søk
-           */
-          noindex: boolean;
         };
       }
     | {
@@ -184,26 +129,6 @@ export interface PageMetaObject {
          * Situasjonsside
          */
         "situation-page": {
-          /**
-           * Sett side-tittel
-           */
-          title?: string;
-
-          /**
-           * Tittel for utlisting og sortering
-           */
-          sortTitle?: string;
-
-          /**
-           * Norsk tittel (hvis fremmedspråklig innhold)
-           */
-          norwegianTitle?: string;
-
-          /**
-           * Ingress
-           */
-          ingress: string;
-
           /**
            * Målgruppe
            */
@@ -284,11 +209,6 @@ export interface PageMetaObject {
           "managed-by"?: Array<"po_aap" | "po_arbeid" | "po_familie" | "po_helse" | "po_pensjon" | "po_arbeidsgiver" | "digisos">;
 
           /**
-           * Legg til andre språkversjoner
-           */
-          languages?: Array<string>;
-
-          /**
            * Fant du det du lette etter?
            */
           feedbackToggle: boolean;
@@ -297,26 +217,6 @@ export interface PageMetaObject {
            * Chatbot Frida
            */
           chatbotToggle: boolean;
-
-          /**
-           * Oppsummering
-           */
-          description?: string;
-
-          /**
-           * Sidebeskrivelse for søk og sosiale medier
-           */
-          metaDescription?: string;
-
-          /**
-           * Canonical url - NB! Skal bare legges inn av hovedredaktør/administrator
-           */
-          canonicalUrl?: string;
-
-          /**
-           * Skal ikke vises i søk
-           */
-          noindex: boolean;
         };
       };
 }

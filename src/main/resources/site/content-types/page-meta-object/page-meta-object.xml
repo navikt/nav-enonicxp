@@ -13,46 +13,20 @@
                 <option name="product-page">
                     <label>Produktside</label>
                     <items>
-                        <field-set>
-                            <label>Tittel og ingress</label>
-                            <items>
-                                <mixin name="page-header"/>
-                                <mixin name="ingress-required" />
-                            </items>
-                        </field-set>
-                        <field-set>
-                            <label>Produktdata</label>
-                            <items>
-                                <mixin name="audience" />
-                                <mixin name="taxonomy" />
-                                <mixin name="area" />
-                            </items>
-                        </field-set>
-                        <field-set>
-                            <label>Piktogram</label>
-                            <items>
-                                <mixin name="illustration" />
-                            </items>
-                        </field-set>
-                        <field-set>
-                            <label>URL</label>
-                            <items>
-                                <mixin name="external-product-url" />
-                                <mixin name="custom-path-selector-required"/>
-                            </items>
-                        </field-set>
+                        <mixin name="audience" />
+                        <mixin name="area" />
+                        <mixin name="taxonomy" />
+                        <mixin name="illustration" />
                         <mixin name="owner" />
                         <mixin name="managed-by" />
                         <mixin name="product-details-selector"/>
                         <mixin name="form-details-selector"/>
-                        <mixin name="dynamic-page-common"/>
+                        <mixin name="decorator-toggles"/>
                     </items>
                 </option>
                 <option name="situation-page">
                     <label>Situasjonsside</label>
                     <items>
-                        <mixin name="page-header"/>
-                        <mixin name="ingress-required" />
                         <mixin name="audience" />
                         <mixin name="area" />
                         <mixin name="illustration" />
@@ -60,7 +34,7 @@
                         <mixin name="custom-path-selector-required"/>
                         <mixin name="owner"/>
                         <mixin name="managed-by"/>
-                        <mixin name="dynamic-page-common"/>
+                        <mixin name="decorator-toggles"/>
                     </items>
                 </option>
             </options>
