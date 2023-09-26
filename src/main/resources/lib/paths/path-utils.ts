@@ -9,8 +9,6 @@ export const stripPathPrefix = (path: string) => path.replace(navnoRootPathFilte
 
 export const getParentPath = (path: string) => path.split('/').slice(0, -1).join('/');
 
-export const getFrontendPathname = (path: string) => path.replace(navnoRootPathFilter, '/');
-
 export const hasExternalProductUrl = (
     content: Content | ContentWithExternalProductUrl
 ): content is ContentWithExternalProductUrl =>
