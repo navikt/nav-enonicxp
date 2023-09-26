@@ -1,5 +1,4 @@
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
-import { findReferencesOld } from '../../lib/cache/find-references-old';
 import { isValidBranch } from '../../lib/context/branches';
 import { ContentReferencesFinder } from '../../lib/cache/content-references-finder';
 
@@ -10,7 +9,7 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const { id, repoId, branch, deepSearch, v2, timeout } = req.params;
+    const { id, repoId, branch, deepSearch, timeout } = req.params;
 
     if (typeof id !== 'string' || typeof repoId !== 'string' || !branch || !isValidBranch(branch)) {
         return {
@@ -18,7 +17,7 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const newImpl = new ContentReferencesFinder({
+    const contentReferencesFinder = new ContentReferencesFinder({
         branch,
         repoId,
         withDeepSearch: deepSearch === 'true',
@@ -28,10 +27,7 @@ export const get = (req: XP.Request) => {
 
     const start = Date.now();
 
-    const refs =
-        v2 === 'true'
-            ? newImpl.run()
-            : findReferencesOld({ id, branch, withDeepSearch: deepSearch === 'true' });
+    const refs = contentReferencesFinder.run();
 
     const duration = Date.now() - start;
 
@@ -41,7 +37,7 @@ export const get = (req: XP.Request) => {
         body: JSON.stringify({
             duration,
             count: refs?.length,
-            refs: refs?.map((ref: any) => ({
+            refs: refs?.map((ref) => ({
                 id: ref._id,
                 path: ref._path,
                 name: ref.displayName,
