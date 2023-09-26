@@ -27,16 +27,22 @@ const getPathsForContent = (content: Content, locale: string) => {
     return [publicPath];
 };
 
-const findReferencedPaths = (id: string, branch: RepoBranch) => {
-    const { locales, localeToRepoIdMap } = getLayersData();
+const findReferencedPaths = (contentId: string, repoId: string, branch: RepoBranch) => {
+    const { locales, localeToRepoIdMap, repoIdToLocaleMap, defaultLocale } = getLayersData();
 
     const pathsToInvalidate: string[] = [];
 
-    const success = locales.every((locale) => {
+    const sourceLocale = repoIdToLocaleMap[repoId];
+
+    // If the source locale is the default from which the other layers inherit
+    // we need to search in all locales.
+    const localesToSearch = sourceLocale === defaultLocale ? locales : [sourceLocale];
+
+    const success = localesToSearch.every((locale) => {
         const repoId = localeToRepoIdMap[locale];
 
         const contentReferenceFinder = new ContentReferencesFinder({
-            contentId: id,
+            contentId,
             branch,
             repoId,
             withDeepSearch: true,
@@ -58,10 +64,10 @@ const findReferencedPaths = (id: string, branch: RepoBranch) => {
     return success ? removeDuplicates(pathsToInvalidate) : null;
 };
 
-const findChangedPaths = ({ id, path, repo }: NodeEventData) => {
+const findChangedPaths = (contentId: string, repoId: string, path: string) => {
     const previousVersion = getNodeVersions({
-        nodeKey: id,
-        repoId: repo,
+        nodeKey: contentId,
+        repoId: repoId,
         branch: 'master',
     })?.[1];
 
@@ -79,7 +85,7 @@ const findChangedPaths = ({ id, path, repo }: NodeEventData) => {
         changedPaths.push(previousPath);
     }
 
-    const currentCustomPath = getCustomPathFromContent(id);
+    const currentCustomPath = getCustomPathFromContent(contentId);
     const previousCustomPath = getCustomPathFromContent(
         previousVersion.nodeId,
         previousVersion.versionId
@@ -111,14 +117,14 @@ const getNodePaths = (contentId: string, repoId: string, branch: RepoBranch) => 
 };
 
 export const findPathsToInvalidate = (nodeEventData: NodeEventData, eventType: string) => {
-    const { id, repo } = nodeEventData;
+    const { id, path, repo } = nodeEventData;
 
     // If the content was deleted, we must check in the draft branch
     const branch = eventType === 'node.deleted' ? 'draft' : 'master';
 
     const nodePaths = getNodePaths(id, repo, branch);
-    const changedPaths = findChangedPaths(nodeEventData);
-    const referencePaths = findReferencedPaths(id, branch);
+    const changedPaths = findChangedPaths(id, repo, path);
+    const referencePaths = findReferencedPaths(id, repo, branch);
 
     // If the reference search failed, return null to trigger invalidation of the entire cache
     if (!referencePaths) {
