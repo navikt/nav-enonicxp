@@ -1,0 +1,69 @@
+<content-type>
+    <display-name>Metadata for sider</display-name>
+    <description>Benyttes for å sette metadata for en side.</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <option-set name="contentType">
+            <label>Type innhold</label>
+            <occurrences minimum="1" maximum="1"/>
+            <options minimum="1" maximum="1">
+                <option name="product-page">
+                    <label>Produktside</label>
+                    <items>
+                        <field-set>
+                            <label>Tittel og ingress</label>
+                            <items>
+                                <mixin name="page-header"/>
+                                <mixin name="ingress-required" />
+                            </items>
+                        </field-set>
+                        <field-set>
+                            <label>Produktdata</label>
+                            <items>
+                                <mixin name="audience" />
+                                <mixin name="taxonomy" />
+                                <mixin name="area" />
+                            </items>
+                        </field-set>
+                        <field-set>
+                            <label>Piktogram</label>
+                            <items>
+                                <mixin name="illustration" />
+                            </items>
+                        </field-set>
+                        <field-set>
+                            <label>URL</label>
+                            <items>
+                                <mixin name="external-product-url" />
+                                <mixin name="custom-path-selector-required"/>
+                            </items>
+                        </field-set>
+                        <mixin name="owner" />
+                        <mixin name="managed-by" />
+                        <mixin name="product-details-selector"/>
+                        <mixin name="form-details-selector"/>
+                        <mixin name="dynamic-page-common"/>
+                    </items>
+                </option>
+                <option name="situation-page">
+                    <label>Situasjonsside</label>
+                    <items>
+                        <mixin name="page-header"/>
+                        <mixin name="ingress-required" />
+                        <mixin name="audience" />
+                        <mixin name="area" />
+                        <mixin name="illustration" />
+                        <mixin name="external-product-url" />
+                        <mixin name="custom-path-selector-required"/>
+                        <mixin name="owner"/>
+                        <mixin name="managed-by"/>
+                        <mixin name="dynamic-page-common"/>
+                    </items>
+                </option>
+            </options>
+        </option-set>
+    </form>
+</content-type>
