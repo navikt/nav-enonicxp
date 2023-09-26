@@ -8,6 +8,7 @@
     <form>
         <mixin name="audience"/>
         <mixin name="illustration" />
+        <mixin name="external-product-url" />
         <field-set>
             <label>Kort-url</label>
             <items>

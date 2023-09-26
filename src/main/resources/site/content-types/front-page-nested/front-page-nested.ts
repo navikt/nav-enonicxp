@@ -55,6 +55,11 @@ export interface FrontPageNested {
   illustration: string;
 
   /**
+   * Videresend alle besøk til annen url:
+   */
+  externalProductUrl?: string;
+
+  /**
    * Skriv inn ønsket kort-url
    */
   customPath: string;
