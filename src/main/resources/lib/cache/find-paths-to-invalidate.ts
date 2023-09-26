@@ -12,21 +12,6 @@ import { getRepoConnection } from '../utils/repo-utils';
 
 const REFERENCE_SEARCH_TIMEOUT_MS = 10000;
 
-const getPathsForContent = (content: Content, locale: string) => {
-    if (!isPublicRenderedType(content)) {
-        return [];
-    }
-
-    const publicPath = getPublicPath(content, locale);
-    const internalPath = stripPathPrefix(content._path);
-
-    if (internalPath !== publicPath) {
-        return [internalPath, publicPath];
-    }
-
-    return [publicPath];
-};
-
 const findReferencedPaths = (contentId: string, repoId: string, branch: RepoBranch) => {
     const { locales, localeToRepoIdMap, repoIdToLocaleMap, defaultLocale } = getLayersData();
 
@@ -55,13 +40,15 @@ const findReferencedPaths = (contentId: string, repoId: string, branch: RepoBran
         }
 
         references.forEach((content) => {
-            pathsToInvalidate.push(...getPathsForContent(content, locale));
+            if (isPublicRenderedType(content)) {
+                pathsToInvalidate.push(getPublicPath(content, locale));
+            }
         });
 
         return true;
     });
 
-    return success ? removeDuplicates(pathsToInvalidate) : null;
+    return success ? pathsToInvalidate : null;
 };
 
 const findChangedPaths = (contentId: string, repoId: string, path: string) => {
@@ -113,7 +100,10 @@ const getNodePaths = (contentId: string, repoId: string, branch: RepoBranch) => 
 
     const locale = getLayersData().repoIdToLocaleMap[repoId];
 
-    return getPathsForContent(content, locale);
+    const internalPath = stripPathPrefix(content._path);
+    const publicPath = getPublicPath(content, locale);
+
+    return [internalPath, publicPath];
 };
 
 export const findPathsToInvalidate = (nodeEventData: NodeEventData, eventType: string) => {
