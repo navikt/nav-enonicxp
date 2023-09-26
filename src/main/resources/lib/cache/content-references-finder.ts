@@ -236,34 +236,47 @@ export class ContentReferencesFinder {
             return [];
         }
 
+        const mustRules = [
+            {
+                hasValue: {
+                    field: 'type',
+                    values: ['no.nav.navno:overview'],
+                },
+            },
+            {
+                hasValue: {
+                    field: 'language',
+                    values: [content.language],
+                },
+            },
+        ];
+
         const selectedAudience = content.data?.audience?._selected;
-        if (!selectedAudience) {
-            return [];
+
+        if (selectedAudience) {
+            mustRules.push({
+                hasValue: {
+                    field: 'data.audience',
+                    values: [selectedAudience],
+                },
+            });
+        }
+
+        const overviewType = content.data?.detailType;
+
+        if (overviewType) {
+            mustRules.push({
+                hasValue: {
+                    field: 'data.overviewType',
+                    values: [overviewType],
+                },
+            });
         }
 
         const result = this.contentNodeQuery({
             filters: {
                 boolean: {
-                    must: [
-                        {
-                            hasValue: {
-                                field: 'type',
-                                values: ['no.nav.navno:overview'],
-                            },
-                        },
-                        {
-                            hasValue: {
-                                field: 'data.audience',
-                                values: [selectedAudience],
-                            },
-                        },
-                        {
-                            hasValue: {
-                                field: 'language',
-                                values: [content.language],
-                            },
-                        },
-                    ],
+                    must: mustRules,
                 },
             },
         });
