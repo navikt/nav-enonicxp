@@ -100,8 +100,12 @@ export class ContentReferencesFinder {
         return Object.values(this.referencesFound);
     }
 
-    private logResult(msg: string, contentId: string) {
-        logger.info(`${msg} [contentId: "${contentId}" - ${this.logSummary}]`);
+    private logResult(msg: string, contentId: string, result: ReadonlyArray<NodeQueryHit>) {
+        if (result.length > 0) {
+            logger.info(
+                `Found ${result.length} refs for ${msg} - [contentId: "${contentId}" - ${this.logSummary}]`
+            );
+        }
     }
 
     // Should only return localized content nodes
@@ -211,7 +215,7 @@ export class ContentReferencesFinder {
             },
         });
 
-        this.logResult(`Found ${result.length} contents with explicit references`, contentId);
+        this.logResult('explicit references', contentId, result);
 
         return result;
     }
@@ -221,7 +225,7 @@ export class ContentReferencesFinder {
             query: `fulltext('_allText', '"${contentId}"')`,
         });
 
-        this.logResult(`Found ${result.length} contents with text references`, contentId);
+        this.logResult('text references', contentId, result);
 
         return result;
     }
@@ -264,7 +268,7 @@ export class ContentReferencesFinder {
             },
         });
 
-        this.logResult(`Found ${result.length} relevant overview pages`, content._id);
+        this.logResult('overview pages', content._id, result);
 
         return result;
     }
@@ -307,7 +311,7 @@ export class ContentReferencesFinder {
             },
         });
 
-        this.logResult(`Found ${result.length} relevant forms overview pages`, content._id);
+        this.logResult('forms overview pages', content._id, result);
 
         return result;
     }
@@ -339,7 +343,7 @@ export class ContentReferencesFinder {
             },
         });
 
-        this.logResult(`Found ${result.length} relevant office branch pages`, content._id);
+        this.logResult('office branch pages', content._id, result);
 
         return result;
     }
@@ -380,7 +384,7 @@ export class ContentReferencesFinder {
             },
         });
 
-        this.logResult(`Found ${result.length} references to chat contact info`, content._id);
+        this.logResult('chat contact info', content._id, result);
 
         return result;
     }
@@ -436,7 +440,7 @@ export class ContentReferencesFinder {
             },
         });
 
-        this.logResult(`Found ${result.length} main-article chapters`, content._id);
+        this.logResult('main-article chapters', content._id, result);
 
         return result;
     }
