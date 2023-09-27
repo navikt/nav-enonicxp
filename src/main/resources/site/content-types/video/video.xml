@@ -1,6 +1,6 @@
 <content-type>
-    <display-name>Video</display-name>
-    <description>Video med metadata og diverse informasjon</description>
+    <display-name>Qbrick Video</display-name>
+    <description>Video fra Qbrick med metadata og diverse informasjon</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>

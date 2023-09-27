@@ -5,7 +5,6 @@ import { APP_DESCRIPTOR, URLS } from '../constants';
 import { logger } from '../utils/logging';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { CacheInvalidateAllConfig } from '../../tasks/cache-invalidate-all/cache-invalidate-all-config';
-import { getFrontendPathname } from '../paths/path-utils';
 
 const NUM_RETRIES = 3;
 const TIMEOUT_MS = 10000;
@@ -15,6 +14,7 @@ const REVALIDATOR_PROXY_URL_WIPE_ALL = `${URLS.REVALIDATOR_PROXY_ORIGIN}/revalid
 
 const DEFERRED_INVALIDATION_JOB_NAME = 'invalidate-all-job';
 const DEFERRED_TIME_MS_DEFAULT = 60000;
+const MAX_PATHS_TO_INVALIDATE = 300;
 
 export const isFrontendInvalidateAllScheduled = () => {
     const existingJob = schedulerLib.get({ name: DEFERRED_INVALIDATION_JOB_NAME });
@@ -112,14 +112,18 @@ export const frontendInvalidatePaths = ({
         return;
     }
 
+    if (paths.length > MAX_PATHS_TO_INVALIDATE) {
+        logger.warning(
+            `Invalidation event ${eventId} contained more paths than the maximum allowed (${paths.length} paths - max ${MAX_PATHS_TO_INVALIDATE}) - wiping everything!`
+        );
+        frontendInvalidateAllAsync(eventId, true);
+        return;
+    }
+
     taskLib.executeFunction({
         description: `Send invalidate with event id ${eventId}`,
         func: () => {
-            // Ensure the paths we send to the frontend for invalidation are of the same format as used
-            // by the frontend
-            const frontendPaths = paths.map(getFrontendPathname);
-
-            frontendInvalidatePathsRequest(frontendPaths, eventId);
+            frontendInvalidatePathsRequest(paths, eventId);
         },
     });
 };
