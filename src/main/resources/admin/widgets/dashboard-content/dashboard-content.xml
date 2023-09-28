@@ -1,4 +1,4 @@
-<widget>
+<widget xmlns="urn:enonic:xp:model:1.0">
 	<interfaces>
 		<interface>admin.dashboard</interface>
 	</interfaces>
