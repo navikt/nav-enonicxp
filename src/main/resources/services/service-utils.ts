@@ -1,16 +1,22 @@
 import { Content } from '/lib/xp/content';
 import { customSelectorEditIcon } from './custom-selector-icons';
 import { buildEditorPathFromContext } from '../lib/paths/editor-path';
+import { CONTENT_ROOT_PROJECT_ID, CONTENT_STUDIO_PATH_PREFIX } from '../lib/constants';
 
 type CustomSelectorUsageHit = {
     name: string;
     path: string;
+    editorPath: string;
     id: string;
 };
 
-export const transformUsageHit = (content: Content): CustomSelectorUsageHit => ({
+export const transformUsageHit = (
+    content: Content,
+    projectId = CONTENT_ROOT_PROJECT_ID
+): CustomSelectorUsageHit => ({
     name: content.displayName,
     path: content._path,
+    editorPath: `${CONTENT_STUDIO_PATH_PREFIX}/${projectId}/edit/${content._id}`,
     id: content._id,
 });
 

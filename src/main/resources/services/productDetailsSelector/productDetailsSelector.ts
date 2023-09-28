@@ -151,7 +151,9 @@ const usageCheckHandler = (req: XP.Request) => {
         };
     }
 
-    const usageHits = getProductDetailsUsage(detailsContent).map(transformUsageHit);
+    const usageHits = getProductDetailsUsage(detailsContent).map((content) =>
+        transformUsageHit(content)
+    );
 
     return {
         status: 200,

@@ -1,6 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { getKeyWithoutMacroDescription } from '../utils/component-utils';
-import { findContentsWithHtmlAreaText } from '../utils/htmlarea-utils';
+import { findContentsWithText } from '../utils/htmlarea-utils';
 import { logger } from '../utils/logging';
 import { GlobalNumberValueItem } from '../../types/content-types/global-value-set';
 import { CaseTimeItem } from '../../types/content-types/global-case-time-set';
@@ -36,7 +36,7 @@ export const getGvKeyAndContentIdFromUniqueKey = (key: string) => {
 export const getGlobalValueUsage = (gvKey: string, contentId: string) => {
     const key = getGlobalValueUniqueKey(gvKey, contentId);
 
-    const macroUsage = findContentsWithHtmlAreaText(key);
+    const macroUsage = findContentsWithText(key);
     const calcUsage = getGlobalValueCalcUsage(key);
 
     return [...macroUsage, ...calcUsage];

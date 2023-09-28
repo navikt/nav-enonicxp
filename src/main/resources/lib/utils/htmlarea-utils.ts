@@ -26,14 +26,7 @@ export const htmlAreaDataPaths = [
     'pressCall',
 ];
 
-export const htmlAreaNodePaths = [
-    ...htmlAreaDataPaths.map((path) => `data.${path}`),
-    ...htmlAreaComponentPaths.map((path) => `components.${path}`),
-];
-
-const htmlAreaNodePathsString = htmlAreaNodePaths.join(',');
-
-export const findContentsWithHtmlAreaText = (text: string) => {
+export const findContentsWithText = (text: string) => {
     if (!text) {
         return [];
     }
@@ -41,12 +34,8 @@ export const findContentsWithHtmlAreaText = (text: string) => {
     const queryResult = batchedContentQuery({
         start: 0,
         count: 10000,
-        query: `fulltext('${htmlAreaNodePathsString}', '"${text}"', 'AND')`,
+        query: `fulltext('_allText', '"${text}"')`,
     }).hits;
 
     return queryResult;
-};
-
-export const findContentsWithFragmentMacro = (fragmentId: string) => {
-    return findContentsWithHtmlAreaText(fragmentId);
 };

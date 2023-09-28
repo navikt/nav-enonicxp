@@ -1,8 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-
 import { getServiceRequestSubPath, transformUsageHit } from '../service-utils';
-
 import { logger } from '../../lib/utils/logging';
 
 type UsageCheckParams = {
@@ -34,7 +32,7 @@ const usageCheckHandler = (req: XP.Request) => {
         };
     }
 
-    const usageHits = getVideoUsage(detailsContent).map(transformUsageHit);
+    const usageHits = getVideoUsage(detailsContent).map((content) => transformUsageHit(content));
 
     return {
         status: 200,
