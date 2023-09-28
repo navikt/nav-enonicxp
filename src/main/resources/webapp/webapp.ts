@@ -10,6 +10,10 @@ import { generateUUID } from '../lib/utils/uuid';
 import { removeUnpublishedFromAllContentLists } from '../lib/contentlists/remove-unpublished';
 import { userIsAdmin } from '../lib/utils/auth-utils';
 import {
+    deleteOldMetadataFromContent,
+    migrateMetaData,
+} from '../lib/migrate-meta-data/migrate-meta-data';
+import {
     revalidateAllSearchNodesAsync,
     SEARCH_NODES_UPDATE_ABORT_EVENT,
 } from '../lib/search/search-event-handlers';
@@ -71,6 +75,20 @@ const validActions: ActionsMap = {
             description:
                 'Push ALT layer content til master (OBS: denne kan føre til at avpublisert innhold i layeret blir republisert! Ikke la denne være aktiv i prod med mindre det er et spesielt behov :))',
             callback: () => pushLayerContentToMaster(false),
+        },
+    }),
+    ...(app.config.env !== 'p' && {
+        migrateMetaToSeparateMetaContent: {
+            description:
+                'Starter migreringsjobb for å flytte metadata til eget metaobjekt (OBS: Ikke prod-klar!)',
+            callback: () => migrateMetaData(),
+        },
+    }),
+    ...(app.config.env !== 'p' && {
+        deleteOldMetadataFromContent: {
+            description:
+                'Starter slettejobb for å fjerne innhold i nøkler etter at migrering er ferdig(OBS: Ikke prod-klar!)',
+            callback: () => deleteOldMetadataFromContent(),
         },
     }),
 };
