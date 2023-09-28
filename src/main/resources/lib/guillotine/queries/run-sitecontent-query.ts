@@ -15,6 +15,7 @@ import { PortalComponent } from '../../../types/components/component-portal';
 import { guillotineTransformSpecialComponents } from './transform-special-components';
 import { stringArrayToSet } from '../../utils/array-utils';
 import { logger } from '../../utils/logging';
+import { getLocaleFromContext } from '../../localization/locale-context';
 
 export type GuillotineUnresolvedComponentType = { type: ComponentType; path: string };
 export type GuillotineComponentQueryResult = {
@@ -92,8 +93,9 @@ export const runGuillotineComponentsQuery = (
         })?.get;
 
         if (!fragment) {
+            const locale = getLocaleFromContext();
             logger.critical(
-                `Invalid fragment reference ${fragmentId} in content ${baseContent._id}`,
+                `Invalid fragment reference ${fragmentId} in content [${locale}] ${baseContent._id}`,
                 true
             );
         }
