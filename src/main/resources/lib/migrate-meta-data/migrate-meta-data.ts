@@ -4,7 +4,11 @@ import { runInContext } from '../../lib/context/run-in-context';
 
 import { keysToMigrate, contentTypesToMigrate } from './migration-config';
 
-// Migration
+// Preflight
+// ------------------
+// 1. Move all content to new content names "*-v2"
+
+// Migration of meta data
 // -----------------
 // 1. Doing one content type at a time.
 // 2. Find all content in default draft repo (no) for each content type.
@@ -14,6 +18,10 @@ import { keysToMigrate, contentTypesToMigrate } from './migration-config';
 // - 3.3 Extract meta data from content
 // - 3.4 Add meta data to meta object
 // - 3.5 Attach meta object to content
+// - 3.5 Copy displayName to title in content.
+
+// Cleanup
+// ------------------
 
 const extractMetaDataBasedOnContentType = (content: contentLib.Content) => {
     const keys = keysToMigrate[content.type];

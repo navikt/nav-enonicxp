@@ -10,7 +10,7 @@
             <label>Type innhold</label>
             <occurrences minimum="1" maximum="1"/>
             <options minimum="1" maximum="1">
-                <option name="no.nav.navno:content-page-with-sidemenus">
+                <option name="content-page-with-sidemenus">
                     <label>Produktside</label>
                     <items>
                         <mixin name="audience" />

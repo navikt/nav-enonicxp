@@ -35,14 +35,20 @@ export const buildSelectorQuery = (selectorInput: string) => {
 
     return selectorInput.replace(/{(\w|\.|-)+}/g, (match) => {
         const fieldKey = match.replace(/[{}]/g, '');
-        return getNestedValue(content, fieldKey);
+
+        const value = getNestedValue(content, fieldKey);
+
+        if (fieldKey === 'type' && value) {
+            return value.split(':')[1];
+        }
+        return value;
     });
 };
 
 const buildQuery = (userInput?: string, selectorInput?: string) => {
     const userQuery = userInput ? generateFulltextQuery(userInput, ['displayName'], 'AND') : null;
     const selectorQuery = selectorInput ? buildSelectorQuery(selectorInput) : null;
-
+    log.info(selectorQuery);
     return [userQuery, selectorQuery].filter(Boolean).join(' AND ');
 };
 const transformHit = (content: Content): SelectorHit =>

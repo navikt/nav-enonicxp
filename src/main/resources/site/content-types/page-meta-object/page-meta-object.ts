@@ -8,12 +8,12 @@ export interface PageMetaObject {
         /**
          * Selected
          */
-        _selected: "no.nav.navno:content-page-with-sidemenus";
+        _selected: "content-page-with-sidemenus";
 
         /**
          * Produktside
          */
-        "no.nav.navno:content-page-with-sidemenus": {
+        "content-page-with-sidemenus": {
           /**
            * Målgruppe
            */

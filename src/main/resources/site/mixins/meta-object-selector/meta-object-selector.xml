@@ -9,7 +9,7 @@
                 ["no.nav.navno:page-meta-object"]
             </param>
             <param value="selectorQuery">
-                data.contentType._selected="{type}"
+              data.contentType._selected = "{type}"
             </param>
         </config>
     </input>
