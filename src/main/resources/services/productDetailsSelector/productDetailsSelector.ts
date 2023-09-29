@@ -3,16 +3,16 @@ import * as portalLib from '/lib/xp/portal';
 import { Content } from '/lib/xp/content';
 import { ProductDetails } from '../../site/content-types/product-details/product-details';
 import { generateFulltextQuery } from '../../lib/utils/mixed-bag-of-utils';
-import {
-    customSelectorHitWithLink,
-    getServiceRequestSubPath,
-    transformUsageHit,
-} from '../service-utils';
+import { customSelectorHitWithLink, getServiceRequestSubPath } from '../service-utils';
 import { getProductDetailsUsage } from '../../lib/product-utils/productDetails';
 import { logger } from '../../lib/utils/logging';
 import { customSelectorErrorIcon } from '../custom-selector-icons';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
+import {
+    CustomDependenciesCheckParams,
+    transformToCustomDependencyData,
+} from '../../lib/references/custom-dependencies-check';
 
 type ProductDetailsType = ProductDetails['detailType'];
 type ProductDetailsContentType = Content<'no.nav.navno:product-details'>;
@@ -21,10 +21,6 @@ type SelectorHit = XP.CustomSelectorServiceResponseHit;
 type SelectorParams = {
     detailType: ProductDetailsType;
 } & XP.CustomSelectorServiceRequestParams;
-
-type UsageCheckParams = {
-    id: string;
-};
 
 const makeDescription = (content: Content) =>
     `[${content.language}] ${stripPathPrefix(content._path)}`;
@@ -137,29 +133,31 @@ const selectorHandler = (req: XP.Request) => {
 };
 
 const usageCheckHandler = (req: XP.Request) => {
-    const { id } = req.params as UsageCheckParams;
+    const { id, layer } = req.params as CustomDependenciesCheckParams;
 
     const detailsContent = contentLib.get({ key: id });
     if (!detailsContent || detailsContent.type !== 'no.nav.navno:product-details') {
-        logger.warning(`Product details usage check for id ${id} failed - content does not exist`);
+        const msg = `Product details usage check for id ${id} failed - content does not exist`;
+        logger.warning(msg);
+
         return {
             status: 404,
             contentType: 'application/json',
             body: {
-                usage: [],
+                message: msg,
             },
         };
     }
 
     const usageHits = getProductDetailsUsage(detailsContent).map((content) =>
-        transformUsageHit(content)
+        transformToCustomDependencyData(content)
     );
 
     return {
         status: 200,
         contentType: 'application/json',
         body: {
-            usage: usageHits,
+            general: usageHits,
         },
     };
 };

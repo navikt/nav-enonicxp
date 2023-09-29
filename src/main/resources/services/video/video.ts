@@ -1,13 +1,13 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { getServiceRequestSubPath, transformUsageHit } from '../service-utils';
+import { getServiceRequestSubPath } from '../service-utils';
 import { logger } from '../../lib/utils/logging';
+import {
+    CustomDependenciesCheckParams,
+    transformToCustomDependencyData,
+} from '../../lib/references/custom-dependencies-check';
 
-type UsageCheckParams = {
-    id: string;
-};
-
-export const getVideoUsage = (content: Content<'no.nav.navno:video'>) => {
+export const getVideoDependencies = (content: Content<'no.nav.navno:video'>) => {
     const contentWithUsage = contentLib.query({
         start: 0,
         count: 1000,
@@ -17,28 +17,32 @@ export const getVideoUsage = (content: Content<'no.nav.navno:video'>) => {
     return contentWithUsage;
 };
 
-const usageCheckHandler = (req: XP.Request) => {
-    const { id } = req.params as UsageCheckParams;
+const dependenciesCheckHandler = (req: XP.Request) => {
+    const { id, layer } = req.params as CustomDependenciesCheckParams;
 
-    const detailsContent = contentLib.get({ key: id });
-    if (!detailsContent || detailsContent.type !== 'no.nav.navno:video') {
-        logger.warning(`Product details usage check for id ${id} failed - content does not exist`);
+    const videoContent = contentLib.get({ key: id });
+    if (!videoContent || videoContent.type !== 'no.nav.navno:video') {
+        const msg = `Video usage check for id ${id} failed - content does not exist`;
+        logger.warning(msg);
+
         return {
             status: 404,
             contentType: 'application/json',
             body: {
-                usage: [],
+                message: msg,
             },
         };
     }
 
-    const usageHits = getVideoUsage(detailsContent).map((content) => transformUsageHit(content));
+    const dependencies = getVideoDependencies(videoContent).map((content) =>
+        transformToCustomDependencyData(content)
+    );
 
     return {
         status: 200,
         contentType: 'application/json',
         body: {
-            usage: usageHits,
+            general: dependencies,
         },
     };
 };
@@ -47,7 +51,7 @@ export const get = (req: XP.Request) => {
     const subPath = getServiceRequestSubPath(req);
 
     if (subPath === 'usage') {
-        return usageCheckHandler(req);
+        return dependenciesCheckHandler(req);
     }
 
     return {

@@ -1,16 +1,16 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { findContentsWithText } from '../../../lib/utils/htmlarea-utils';
-import { transformUsageHit } from '../../service-utils';
 import { runInLocaleContext } from '../../../lib/localization/locale-context';
 import { getLayersData } from '../../../lib/localization/layers-data';
 import { getContentProjectIdFromRepoId } from '../../../lib/utils/repo-utils';
+import { transformToCustomDependencyData } from '../../../lib/references/custom-dependencies-check';
 
-const transformContentToResponseData = (contentArray: ReadonlyArray<Content>, locale: string) => {
+const transformToResponseData = (contentArray: ReadonlyArray<Content>, locale: string) => {
     const repoId = getLayersData().localeToRepoIdMap[locale];
 
     return contentArray.map((content) =>
-        transformUsageHit(content, getContentProjectIdFromRepoId(repoId))
+        transformToCustomDependencyData(content, getContentProjectIdFromRepoId(repoId))
     );
 };
 
@@ -36,32 +36,29 @@ const findContentsWithFragmentMacro = (fragmentId: string) => {
 };
 
 export const getFragmentUsageService = (req: XP.CustomSelectorServiceRequest) => {
-    const { fragmentId, locale } = req.params;
+    const { id, layer } = req.params;
 
-    if (!fragmentId || !locale) {
+    if (!id || !layer) {
         return {
             status: 400,
             body: {
-                message: `Invalid parameters for fragment usage check (${fragmentId} - ${locale})`,
+                message: `Invalid parameters for fragment usage check (id: ${id} - layer: ${layer})`,
             },
         };
     }
 
     const [contentWithMacro, contentWithComponent] = runInLocaleContext(
-        { locale, branch: 'master', asAdmin: true },
+        { locale: layer, branch: 'master', asAdmin: true },
         () => {
-            return [
-                findContentsWithFragmentMacro(fragmentId),
-                findContentsWithFragmentComponent(fragmentId),
-            ];
+            return [findContentsWithFragmentMacro(id), findContentsWithFragmentComponent(id)];
         }
     );
 
     return {
         status: 200,
         body: {
-            macroUsage: transformContentToResponseData(contentWithMacro, locale),
-            componentUsage: transformContentToResponseData(contentWithComponent, locale),
+            macros: transformToResponseData(contentWithMacro, layer),
+            components: transformToResponseData(contentWithComponent, layer),
         },
     };
 };
