@@ -4,15 +4,11 @@ import { Content } from '/lib/xp/content';
 import { ProductDetails } from '../../site/content-types/product-details/product-details';
 import { generateFulltextQuery } from '../../lib/utils/mixed-bag-of-utils';
 import { customSelectorHitWithLink, getServiceRequestSubPath } from '../service-utils';
-import { getProductDetailsUsage } from '../../lib/product-utils/productDetails';
 import { logger } from '../../lib/utils/logging';
 import { customSelectorErrorIcon } from '../custom-selector-icons';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
-import {
-    CustomDependenciesCheckParams,
-    transformToCustomDependencyData,
-} from '../../lib/references/custom-dependencies-check';
+import { dependenciesCheckHandler } from '../../lib/references/custom-dependencies-check';
 
 type ProductDetailsType = ProductDetails['detailType'];
 type ProductDetailsContentType = Content<'no.nav.navno:product-details'>;
@@ -132,41 +128,59 @@ const selectorHandler = (req: XP.Request) => {
     };
 };
 
-const usageCheckHandler = (req: XP.Request) => {
-    const { id, layer } = req.params as CustomDependenciesCheckParams;
+const getProductDetailsUsage = (contentId: string) => {
+    const content = contentLib.get({ key: contentId });
 
-    const detailsContent = contentLib.get({ key: id });
-    if (!detailsContent || detailsContent.type !== 'no.nav.navno:product-details') {
-        const msg = `Product details usage check for id ${id} failed - content does not exist`;
+    if (!content || content.type !== 'no.nav.navno:product-details') {
+        const msg = `Product details usage check for id ${contentId} failed - content does not exist`;
         logger.warning(msg);
 
-        return {
-            status: 404,
-            contentType: 'application/json',
-            body: {
-                message: msg,
-            },
-        };
+        return null;
     }
 
-    const usageHits = getProductDetailsUsage(detailsContent).map((content) =>
-        transformToCustomDependencyData(content)
-    );
-
-    return {
-        status: 200,
-        contentType: 'application/json',
-        body: {
-            general: usageHits,
+    const contentWithUsage = contentLib.query({
+        start: 0,
+        count: 1000,
+        filters: {
+            hasValue: {
+                field: `data.${content.data.detailType}`,
+                values: [content._id],
+            },
         },
-    };
+    }).hits;
+
+    const overviewPages = contentLib.query({
+        start: 0,
+        count: 1000,
+        contentTypes: ['no.nav.navno:overview'],
+        filters: {
+            boolean: {
+                must: [
+                    {
+                        hasValue: {
+                            field: 'data.overviewType',
+                            values: [content.data.detailType, 'all_products'],
+                        },
+                    },
+                    {
+                        hasValue: {
+                            field: 'language',
+                            values: [content.language],
+                        },
+                    },
+                ],
+            },
+        },
+    }).hits;
+
+    return [...contentWithUsage, ...overviewPages];
 };
 
 export const get = (req: XP.Request) => {
     const subPath = getServiceRequestSubPath(req);
 
     if (subPath === 'usage') {
-        return usageCheckHandler(req);
+        return dependenciesCheckHandler({ req, generalCallback: getProductDetailsUsage });
     }
 
     return selectorHandler(req);
