@@ -26,7 +26,7 @@ const findContentsWithFragmentMacro = (fragmentId: string) => {
 export const getFragmentUsageService = (req: XP.CustomSelectorServiceRequest) => {
     return dependenciesCheckHandler({
         req,
-        componentsCallback: findContentsWithFragmentComponent,
-        macrosCallback: findContentsWithFragmentMacro,
+        componentsResolver: findContentsWithFragmentComponent,
+        macrosResolver: findContentsWithFragmentMacro,
     });
 };

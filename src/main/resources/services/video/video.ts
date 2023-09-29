@@ -26,7 +26,7 @@ export const get = (req: XP.Request) => {
     const subPath = getServiceRequestSubPath(req);
 
     if (subPath === 'usage') {
-        return dependenciesCheckHandler({ req, generalCallback: getVideoUsage });
+        return dependenciesCheckHandler({ req, generalResolver: getVideoUsage });
     }
 
     return {

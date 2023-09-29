@@ -5,7 +5,7 @@ import { getCustomPathFromContent } from '../paths/custom-paths/custom-path-util
 import { stripPathPrefix } from '../paths/path-utils';
 import { getPublicPath } from '../paths/public-path';
 import { getLayersData } from '../localization/layers-data';
-import { ContentReferencesFinder } from './content-references-finder';
+import { ContentReferencesFinder } from '../references/content-references-finder';
 import { removeDuplicates } from '../utils/array-utils';
 import { RepoBranch } from '../../types/common';
 import { getRepoConnection } from '../utils/repo-utils';

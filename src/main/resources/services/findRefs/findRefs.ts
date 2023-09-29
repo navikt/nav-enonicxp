@@ -1,6 +1,6 @@
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { isValidBranch } from '../../lib/context/branches';
-import { ContentReferencesFinder } from '../../lib/cache/content-references-finder';
+import { ContentReferencesFinder } from '../../lib/references/content-references-finder';
 
 export const get = (req: XP.Request) => {
     if (!validateServiceSecretHeader(req)) {

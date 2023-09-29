@@ -180,7 +180,7 @@ export const get = (req: XP.Request) => {
     const subPath = getServiceRequestSubPath(req);
 
     if (subPath === 'usage') {
-        return dependenciesCheckHandler({ req, generalCallback: getProductDetailsUsage });
+        return dependenciesCheckHandler({ req, generalResolver: getProductDetailsUsage });
     }
 
     return selectorHandler(req);
