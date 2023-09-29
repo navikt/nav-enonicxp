@@ -94,19 +94,12 @@ const getFragmentIdsFromContent = (contentRef: string, branch: RepoBranch) => {
 // itself and any fragments used in the content
 export const getModifiedTimeIncludingFragments = (content: Content, branch: RepoBranch) =>
     runInContext({ branch }, () => {
-        const start = Date.now();
         const contentModifiedTime = content.modifiedTime || content.createdTime;
         const contentId = content._id;
 
         const fragmentIds = getFragmentIdsFromContent(contentId, branch);
 
-        logger.info(
-            `Found ${fragmentIds.length} fragments for ${content._path} (${
-                removeDuplicates(fragmentIds).length
-            } uniques)`
-        );
-
-        const result = fragmentIds.reduce((latestModifiedTime, fragmentId) => {
+        return fragmentIds.reduce((latestModifiedTime, fragmentId) => {
             const fragment = contentLib.get({ key: fragmentId });
             if (!fragment) {
                 if (branch === 'master') {
@@ -124,12 +117,4 @@ export const getModifiedTimeIncludingFragments = (content: Content, branch: Repo
                 ? modifiedTime
                 : latestModifiedTime;
         }, contentModifiedTime);
-
-        logger.info(
-            `Searching fragments for modifiedTime for ${content._path} took ${
-                Date.now() - start
-            } ms`
-        );
-
-        return result;
     });
