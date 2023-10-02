@@ -1,7 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { isValidLocale } from '../../lib/localization/layers-data';
 import { RepoBranch } from '../../types/common';
-import { isValidBranch } from '../../lib/context/branches';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import {
@@ -48,7 +47,7 @@ const getResolversForContentType = (
 };
 
 export const get = (req: XP.Request) => {
-    const { contentId, locale, branch = 'master' } = req.params as ReqParams;
+    const { contentId, locale } = req.params as ReqParams;
 
     if (!contentId) {
         return {
@@ -68,16 +67,7 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    if (!isValidBranch(branch)) {
-        return {
-            status: 400,
-            body: {
-                message: `Parameter "branch" must be a valid branch if specified (got ${branch})`,
-            },
-        };
-    }
-
-    const content = runInLocaleContext({ locale, branch, asAdmin: true }, () => {
+    const content = runInLocaleContext({ locale, branch: 'master', asAdmin: true }, () => {
         return contentLib.get({ key: contentId });
     });
 
@@ -86,7 +76,7 @@ export const get = (req: XP.Request) => {
             status: 404,
             contentType: 'application/json',
             body: {
-                message: `Content not found for "${contentId}" in locale "${locale}" / branch "${branch}"`,
+                message: `Content not found for "${contentId}" in locale "${locale}"`,
             },
         };
     }
