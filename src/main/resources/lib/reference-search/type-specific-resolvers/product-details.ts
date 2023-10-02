@@ -1,7 +1,8 @@
 import * as contentLib from '/lib/xp/content';
+import { runInContext } from '../../context/run-in-context';
 
 export const findProductDetailsReferences = (contentId: string) => {
-    const content = contentLib.get({ key: contentId });
+    const content = runInContext({ branch: 'draft' }, () => contentLib.get({ key: contentId }));
     if (!content) {
         return null;
     }
