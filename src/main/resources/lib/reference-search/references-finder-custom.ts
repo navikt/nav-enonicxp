@@ -108,6 +108,8 @@ type Params = {
     locale: string;
 } & { [key in `${ReferenceType}Resolver`]?: ReferencesResolver };
 
+// This is used to generate data for the custom references display in the editor-frontend.
+// Allows for a more precise reference-search tailored for specific content types.
 export const runCustomReferencesResolvers = ({
     contentId,
     locale,
