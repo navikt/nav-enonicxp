@@ -80,11 +80,11 @@ const resolveWithInheritedContent = (
                 return acc;
             }
 
-            const filteredResult = forceArray(inheritedResult)
+            const localizedOnly = forceArray(inheritedResult)
                 .filter(isContentLocalized)
                 .map((content) => ({ content, locale: inheritedLocale }));
 
-            acc.push(...filteredResult);
+            acc.push(...localizedOnly);
 
             return acc;
         },
