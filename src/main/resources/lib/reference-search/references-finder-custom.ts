@@ -5,6 +5,7 @@ import { getContentProjectIdFromRepoId } from '../utils/repo-utils';
 import { forceArray } from '../utils/array-utils';
 import { runInLocaleContext } from '../localization/locale-context';
 import { getContentFromAllLayers, isContentLocalized } from '../localization/locale-utils';
+import { RepoBranch } from '../../types/common';
 
 type ContentWithLocale = {
     content: Content;
@@ -41,11 +42,12 @@ const transformToReferenceItem = (content: Content, locale: string): ReferenceIt
 const resolveWithInheritedContent = (
     resolver: () => Content | Content[] | null,
     contentId: string,
-    locale: string
+    locale: string,
+    branch: RepoBranch = 'master'
 ): ContentWithLocale[] | null => {
     const { defaultLocale } = getLayersData();
 
-    const result = runInLocaleContext({ locale, branch: 'master', asAdmin: true }, resolver);
+    const result = runInLocaleContext({ locale, branch, asAdmin: true }, resolver);
     if (!result) {
         return null;
     }
@@ -54,20 +56,24 @@ const resolveWithInheritedContent = (
         .filter(isContentLocalized)
         .map((content) => ({ content, locale }));
 
+    // If the locale is not the default (from which other layer locales inherit) we don't need to do anything else
+    // For the default locale we also need to search for references from any inheriting contents
     if (locale !== defaultLocale) {
         return initialLocaleResult;
     }
 
+    // We only need to check for references in the layers in which this content is not localized
+    // If the content is localized, it will no longer be a dependent of the default content
     const nonLocalizedInheritedLocales = getContentFromAllLayers({
         contentId,
-        branch: 'master',
+        branch,
         state: 'nonlocalized',
     }).map((content) => content.locale);
 
     const layersResults = nonLocalizedInheritedLocales.reduce<ContentWithLocale[]>(
         (acc, inheritedLocale) => {
             const inheritedResult = runInLocaleContext(
-                { locale: inheritedLocale, branch: 'master', asAdmin: true },
+                { locale: inheritedLocale, branch, asAdmin: true },
                 resolver
             );
             if (!inheritedResult) {
