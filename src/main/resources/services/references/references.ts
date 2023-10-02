@@ -5,9 +5,9 @@ import { isValidBranch } from '../../lib/context/branches';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import {
-    referencesCheckHandler,
-    ReferencesResolvers,
-} from '../../lib/reference-search/custom-references-check';
+    runCustomReferencesResolvers,
+    ReferencesResolversMap,
+} from '../../lib/reference-search/references-finder-custom';
 import {
     findContentsWithFragmentComponent,
     findContentsWithFragmentMacro,
@@ -21,7 +21,9 @@ type ReqParams = Partial<{
     branch: RepoBranch;
 }>;
 
-const getResolversForContentType = (contentType: ContentDescriptor): ReferencesResolvers | null => {
+const getResolversForContentType = (
+    contentType: ContentDescriptor
+): ReferencesResolversMap | null => {
     switch (contentType) {
         case 'portal:fragment': {
             return {
@@ -102,17 +104,9 @@ export const get = (req: XP.Request) => {
     }
 
     try {
-        const references = referencesCheckHandler({ contentId, locale, ...resolvers });
-
+        const references = runCustomReferencesResolvers({ contentId, locale, ...resolvers });
         if (!references) {
-            return {
-                status: 500,
-                contentType: 'application/json',
-                body: {
-                    result: 'error',
-                    message: `Something went wrong while resolving dependencies for [${locale}] ${contentId}, check logs for details`,
-                },
-            };
+            throw new Error('Something went wrong!');
         }
 
         return {
@@ -120,7 +114,7 @@ export const get = (req: XP.Request) => {
             contentType: 'application/json',
             body: {
                 result: 'success',
-                refs: references,
+                references,
             },
         };
     } catch (e) {
@@ -129,7 +123,7 @@ export const get = (req: XP.Request) => {
             contentType: 'application/json',
             body: {
                 result: 'error',
-                message: `Something went wrong while resolving dependencies for [${locale}] ${contentId}, check logs for details - error: ${e}`,
+                message: `Error resolving dependencies for [${locale}] ${contentId}, check logs for details - error: ${e}`,
             },
         };
     }

@@ -5,7 +5,7 @@ import { getCustomPathFromContent } from '../paths/custom-paths/custom-path-util
 import { stripPathPrefix } from '../paths/path-utils';
 import { getPublicPath } from '../paths/public-path';
 import { getLayersData } from '../localization/layers-data';
-import { ContentReferencesFinder } from '../reference-search/content-references-finder';
+import { ReferencesFinder } from '../reference-search/references-finder';
 import { removeDuplicates } from '../utils/array-utils';
 import { RepoBranch } from '../../types/common';
 import { getRepoConnection } from '../utils/repo-utils';
@@ -26,7 +26,7 @@ const findReferencedPaths = (contentId: string, repoId: string, branch: RepoBran
     const success = localesToSearch.every((locale) => {
         const repoId = localeToRepoIdMap[locale];
 
-        const contentReferenceFinder = new ContentReferencesFinder({
+        const contentReferenceFinder = new ReferencesFinder({
             contentId,
             branch,
             repoId,

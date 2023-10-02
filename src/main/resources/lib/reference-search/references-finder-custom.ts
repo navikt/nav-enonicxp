@@ -1,56 +1,51 @@
 import { Content } from '/lib/xp/content';
 import { CONTENT_STUDIO_PATH_PREFIX } from '../constants';
-import { getLayersData, isValidLocale } from '../localization/layers-data';
+import { getLayersData } from '../localization/layers-data';
 import { getContentProjectIdFromRepoId } from '../utils/repo-utils';
 import { forceArray } from '../utils/array-utils';
 import { runInLocaleContext } from '../localization/locale-context';
 import { getContentFromAllLayers, isContentLocalized } from '../localization/locale-utils';
-import { RepoBranch } from '../../types/common';
 
-type DependencyItem = {
-    name: string;
-    path: string;
-    editorPath: string;
-    id: string;
-};
-
-export type ContentWithLocale = {
+type ContentWithLocale = {
     content: Content;
     locale: string;
 };
 
-type DependencyType = 'general' | 'components' | 'macros';
+type ReferenceItem = {
+    name: string;
+    path: string;
+    editorPath: string;
+    id: string;
+    layer: string;
+};
 
-type DependenciesResolver = (contentId: string, contentLayer: string) => Content[] | null;
+type ReferenceType = 'general' | 'components' | 'macros';
 
-export type ReferencesResolvers = { [key in `${DependencyType}Resolver`]?: DependenciesResolver };
+type ReferencesResolver = (contentId: string, contentLayer: string) => Content[] | null;
 
-type HandlerParams = {
-    contentId: string;
-    locale: string;
-} & { [key in `${DependencyType}Resolver`]?: DependenciesResolver };
+export type ReferencesResolversMap = { [key in `${ReferenceType}Resolver`]?: ReferencesResolver };
 
-const transformToDependencyItem = (content: Content, locale: string): DependencyItem => {
-    const { defaultLocale, localeToRepoIdMap } = getLayersData();
+const transformToReferenceItem = (content: Content, locale: string): ReferenceItem => {
+    const { localeToRepoIdMap } = getLayersData();
     const projectId = getContentProjectIdFromRepoId(localeToRepoIdMap[locale]);
 
     return {
-        name: `${locale !== defaultLocale ? `(Layer: ${locale}) ` : ''}${content.displayName}`,
+        name: content.displayName,
         path: content._path,
         editorPath: `${CONTENT_STUDIO_PATH_PREFIX}/${projectId}/edit/${content._id}`,
         id: content._id,
+        layer: locale,
     };
 };
 
-type Params = { contentId: string; locale: string; branch: RepoBranch };
-
 const resolveWithInheritedContent = (
-    { contentId, branch, locale }: Params,
-    resolver: () => Content | Content[] | null
+    resolver: () => Content | Content[] | null,
+    contentId: string,
+    locale: string
 ): ContentWithLocale[] | null => {
     const { defaultLocale } = getLayersData();
 
-    const result = runInLocaleContext({ locale, branch, asAdmin: true }, resolver);
+    const result = runInLocaleContext({ locale, branch: 'master', asAdmin: true }, resolver);
     if (!result) {
         return null;
     }
@@ -65,14 +60,14 @@ const resolveWithInheritedContent = (
 
     const nonLocalizedInheritedLocales = getContentFromAllLayers({
         contentId,
-        branch,
+        branch: 'master',
         state: 'nonlocalized',
     }).map((content) => content.locale);
 
     const layersResults = nonLocalizedInheritedLocales.reduce<ContentWithLocale[]>(
         (acc, inheritedLocale) => {
             const inheritedResult = runInLocaleContext(
-                { locale: inheritedLocale, branch, asAdmin: true },
+                { locale: inheritedLocale, branch: 'master', asAdmin: true },
                 resolver
             );
             if (!inheritedResult) {
@@ -93,32 +88,34 @@ const resolveWithInheritedContent = (
     return layersResults;
 };
 
-const resolverRunner = (
-    resolver: DependenciesResolver,
-    contentId: string,
-    contentLayer: string
-) => {
+const resolverRunner = (resolver: ReferencesResolver, contentId: string, contentLayer: string) => {
     const result = resolveWithInheritedContent(
-        { contentId, locale: contentLayer, branch: 'master' },
-        () => resolver(contentId, contentLayer)
+        () => resolver(contentId, contentLayer),
+        contentId,
+        contentLayer
     );
     if (!result) {
         return null;
     }
 
     return result.map(({ content, locale }) => {
-        return transformToDependencyItem(content, locale);
+        return transformToReferenceItem(content, locale);
     });
 };
 
-export const referencesCheckHandler = ({
+type Params = {
+    contentId: string;
+    locale: string;
+} & { [key in `${ReferenceType}Resolver`]?: ReferencesResolver };
+
+export const runCustomReferencesResolvers = ({
     contentId,
     locale,
     generalResolver,
     componentsResolver,
     macrosResolver,
-}: HandlerParams) => {
-    const results: { [key in DependencyType]?: DependencyItem[] } = {};
+}: Params) => {
+    const results: { [key in ReferenceType]?: ReferenceItem[] } = {};
 
     if (generalResolver) {
         const result = resolverRunner(generalResolver, contentId, locale);
