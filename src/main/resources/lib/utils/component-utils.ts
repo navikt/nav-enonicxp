@@ -1,7 +1,6 @@
 import * as portalLib from '/lib/xp/portal';
 import { Component } from '/lib/xp/portal';
 import { getRepoConnection } from './repo-utils';
-import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import * as commonLib from '/lib/xp/common';
 import { NodeComponent } from '../../types/components/component-node';
@@ -56,6 +55,7 @@ export const getComponentConfigByPath = (
 type ConfigWithAnchorId = Component['config'] & {
     anchorId?: string;
 };
+
 const configHasAnchorId = (config?: ConfigWithAnchorId): config is ConfigWithAnchorId =>
     !!config?.anchorId;
 
@@ -137,21 +137,4 @@ export const generateAnchorIdField = <Config extends ComponentConfigAll & { anch
             },
         });
     }
-};
-
-export const findContentsWithFragmentComponent = (fragmentId: string) => {
-    return contentLib.query({
-        start: 0,
-        count: 1000,
-        filters: {
-            boolean: {
-                must: {
-                    hasValue: {
-                        field: 'components.fragment.id',
-                        values: [fragmentId],
-                    },
-                },
-            },
-        },
-    }).hits;
 };

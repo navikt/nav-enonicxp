@@ -32,7 +32,7 @@ const typesWithFormsOverviewPages: ContentDescriptorSet = new Set([
     `${APP_DESCRIPTOR}:form-details`,
 ]);
 
-export class ContentReferencesFinder {
+export class ReferencesFinder {
     private readonly baseContentId: string;
     private readonly repoId: string;
     private readonly branch: string;

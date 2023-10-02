@@ -1,6 +1,6 @@
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { isValidBranch } from '../../lib/context/branches';
-import { ContentReferencesFinder } from '../../lib/cache/content-references-finder';
+import { ReferencesFinder } from '../../lib/reference-search/references-finder';
 
 export const get = (req: XP.Request) => {
     if (!validateServiceSecretHeader(req)) {
@@ -17,7 +17,7 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const contentReferencesFinder = new ContentReferencesFinder({
+    const contentReferencesFinder = new ReferencesFinder({
         branch,
         repoId,
         withDeepSearch: deepSearch === 'true',
