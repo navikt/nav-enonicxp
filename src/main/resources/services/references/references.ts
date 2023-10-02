@@ -67,7 +67,7 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const content = runInLocaleContext({ locale, branch: 'master', asAdmin: true }, () => {
+    const content = runInLocaleContext({ locale, branch: 'draft', asAdmin: true }, () => {
         return contentLib.get({ key: contentId });
     });
 
