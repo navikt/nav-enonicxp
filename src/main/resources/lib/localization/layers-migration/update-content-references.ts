@@ -8,7 +8,7 @@ import { RepoBranch } from '../../../types/common';
 import { modifyContentNode } from './modify-content-node';
 import { forceArray } from '../../utils/array-utils';
 import { isContentLocalized } from '../locale-utils';
-import { ContentReferencesFinder } from '../../references/content-references-finder';
+import { ContentReferencesFinder } from '../../reference-search/content-references-finder';
 
 const updateReferenceFromNode = ({
     contentNodeToUpdate,

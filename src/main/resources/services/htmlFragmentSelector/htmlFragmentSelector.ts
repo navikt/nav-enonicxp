@@ -4,10 +4,9 @@ import {
     appendMacroDescriptionToKey,
     getKeyWithoutMacroDescription,
 } from '../../lib/utils/component-utils';
-import { customSelectorHitWithLink, getServiceRequestSubPath } from '../service-utils';
+import { customSelectorHitWithLink } from '../service-utils';
 import { runInContext } from '../../lib/context/run-in-context';
 import { forceArray } from '../../lib/utils/array-utils';
-import { getFragmentUsageService } from './fragmentUsage/fragmentUsage';
 
 type Hit = XP.CustomSelectorServiceResponseHit;
 
@@ -71,12 +70,6 @@ const getHitsForSelector = (req: XP.CustomSelectorServiceRequest) => {
 };
 
 export const get = (req: XP.CustomSelectorServiceRequest) => {
-    const subPath = getServiceRequestSubPath(req);
-
-    if (subPath === 'fragmentUsage') {
-        return getFragmentUsageService(req);
-    }
-
     const hits = runInContext({ branch: 'master' }, () => getHitsForSelector(req));
 
     return {

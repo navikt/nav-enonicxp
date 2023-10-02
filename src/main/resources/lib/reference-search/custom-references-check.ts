@@ -7,11 +7,6 @@ import { runInLocaleContext } from '../localization/locale-context';
 import { getContentFromAllLayers, isContentLocalized } from '../localization/locale-utils';
 import { RepoBranch } from '../../types/common';
 
-type ReqParams = Partial<{
-    contentId: string;
-    locale: string;
-}>;
-
 type DependencyItem = {
     name: string;
     path: string;
@@ -28,8 +23,11 @@ type DependencyType = 'general' | 'components' | 'macros';
 
 type DependenciesResolver = (contentId: string, contentLayer: string) => Content[] | null;
 
+export type ReferencesResolvers = { [key in `${DependencyType}Resolver`]?: DependenciesResolver };
+
 type HandlerParams = {
-    req: XP.Request;
+    contentId: string;
+    locale: string;
 } & { [key in `${DependencyType}Resolver`]?: DependenciesResolver };
 
 const transformToDependencyItem = (content: Content, locale: string): DependencyItem => {
@@ -113,67 +111,41 @@ const resolverRunner = (
     });
 };
 
-export const dependenciesCheckHandler = ({
-    req,
+export const referencesCheckHandler = ({
+    contentId,
+    locale,
     generalResolver,
     componentsResolver,
     macrosResolver,
 }: HandlerParams) => {
-    const { contentId, locale } = req.params as ReqParams;
-
-    if (!contentId || !isValidLocale(locale)) {
-        return {
-            status: 400,
-            body: {
-                message: `Invalid parameters for dependencies check (id: ${contentId} - layer: ${locale})`,
-            },
-        };
-    }
-
-    const body: { [key in DependencyType]?: DependencyItem[] } = {};
-
-    let success = true;
+    const results: { [key in DependencyType]?: DependencyItem[] } = {};
 
     if (generalResolver) {
         const result = resolverRunner(generalResolver, contentId, locale);
-        if (result) {
-            body.general = result;
-        } else {
-            success = false;
+        if (!result) {
+            return null;
         }
+
+        results.general = result;
     }
 
     if (componentsResolver) {
         const result = resolverRunner(componentsResolver, contentId, locale);
-        if (result) {
-            body.components = result;
-        } else {
-            success = false;
+        if (!result) {
+            return null;
         }
+
+        results.components = result;
     }
 
     if (macrosResolver) {
         const result = resolverRunner(macrosResolver, contentId, locale);
-        if (result) {
-            body.macros = result;
-        } else {
-            success = false;
+        if (!result) {
+            return null;
         }
+
+        results.macros = result;
     }
 
-    if (!success) {
-        return {
-            status: 500,
-            contentType: 'application/json',
-            body: {
-                message: `Something went wrong while resolving dependencies for [${locale}] ${contentId}, check logs for details!`,
-            },
-        };
-    }
-
-    return {
-        status: 200,
-        contentType: 'application/json',
-        body,
-    };
+    return results;
 };

@@ -3,12 +3,10 @@ import * as portalLib from '/lib/xp/portal';
 import { Content } from '/lib/xp/content';
 import { ProductDetails } from '../../site/content-types/product-details/product-details';
 import { generateFulltextQuery } from '../../lib/utils/mixed-bag-of-utils';
-import { customSelectorHitWithLink, getServiceRequestSubPath } from '../service-utils';
-import { logger } from '../../lib/utils/logging';
+import { customSelectorHitWithLink } from '../service-utils';
 import { customSelectorErrorIcon } from '../custom-selector-icons';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
-import { dependenciesCheckHandler } from '../../lib/references/custom-dependencies-check';
 
 type ProductDetailsType = ProductDetails['detailType'];
 type ProductDetailsContentType = Content<'no.nav.navno:product-details'>;
@@ -128,60 +126,6 @@ const selectorHandler = (req: XP.Request) => {
     };
 };
 
-const getProductDetailsUsage = (contentId: string) => {
-    const content = contentLib.get({ key: contentId });
-
-    if (!content || content.type !== 'no.nav.navno:product-details') {
-        logger.warning(
-            `Product details usage check for id ${contentId} failed - content does not exist`
-        );
-        return null;
-    }
-
-    const contentWithUsage = contentLib.query({
-        start: 0,
-        count: 1000,
-        filters: {
-            hasValue: {
-                field: `data.${content.data.detailType}`,
-                values: [content._id],
-            },
-        },
-    }).hits;
-
-    const overviewPages = contentLib.query({
-        start: 0,
-        count: 1000,
-        contentTypes: ['no.nav.navno:overview'],
-        filters: {
-            boolean: {
-                must: [
-                    {
-                        hasValue: {
-                            field: 'data.overviewType',
-                            values: [content.data.detailType, 'all_products'],
-                        },
-                    },
-                    {
-                        hasValue: {
-                            field: 'language',
-                            values: [content.language],
-                        },
-                    },
-                ],
-            },
-        },
-    }).hits;
-
-    return [...contentWithUsage, ...overviewPages];
-};
-
 export const get = (req: XP.Request) => {
-    const subPath = getServiceRequestSubPath(req);
-
-    if (subPath === 'usage') {
-        return dependenciesCheckHandler({ req, generalResolver: getProductDetailsUsage });
-    }
-
     return selectorHandler(req);
 };
