@@ -1,9 +1,9 @@
 <widget> 
-	<div id="admin-widget-content" style="text-shadow: 0 0 1px #000, 0 0 1px #000, 0 0 1px #000, 0 0 1px #000; color: white" >
+	<div id="admin-widget-content" style="background-color: lightgray;" >
 		<h3>Ditt sist redigerte innhold</h3>	
 		<table>
 			<tr th:each="result: ${modified}">
-				<td><a th:text="${result.displayName}" th:href="${result.url}"></a></td>
+				<td><a th:text="${result.displayName}" th:href="${result.url}" th:target="_blank"></a></td>
 				<td th:text="${result.modifiedTime}"></td>
 				<td th:text="${result.status}"></td>
 			</tr>

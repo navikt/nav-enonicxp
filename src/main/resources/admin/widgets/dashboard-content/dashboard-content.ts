@@ -69,7 +69,7 @@ const getModifiedContentFromUser = () => {
             displayName: hit.displayName, 
             modifiedTime: convertModifiedTime,
             status, 
-            url: `/admin/tool/com.enonic.app.contentstudio/main/default/edit/target="_blank".${hit._id}`
+            url: `/admin/tool/com.enonic.app.contentstudio/main/default/edit/${hit._id}`
         }
     });
     
