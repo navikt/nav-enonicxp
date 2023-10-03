@@ -1,0 +1,41 @@
+<macro>
+    <display-name>Lenke til layer</display-name>
+    <description>Benyttes dersom du skal lenke til en spesifikk språkversjon i et annet layer</description>
+    <form>
+        <input name="locale" type="ComboBox">
+            <label>Velg språkversjon</label>
+            <occurrences minimum="1" maximum="1" />
+            <config>
+                <option value="no">Norsk bokmål</option>
+                <option value="nn">Nynorsk</option>
+                <option value="en">Engelsk</option>
+                <option value="se">Samisk</option>
+            </config>
+        </input>
+        <input name="body" type="TextLine">
+            <label>Tekst</label>
+            <occurrences minimum="1" maximum="1"/>
+        </input>
+        <input name="tooltip" type="TextLine">
+            <label>Tooltip</label>
+            <occurrences minimum="0" maximum="1"/>
+        </input>
+        <input name="target" type="ContentSelector">
+            <label>Innhold</label>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <allowPath>/www.nav.no/*</allowPath>
+                <allowContentType>^(?!media:*$).*</allowContentType>
+                <showStatus>true</showStatus>
+            </config>
+        </input>
+        <input name="newTab" type="CheckBox">
+            <label>Åpne i ny fane</label>
+            <default>unchecked</default>
+        </input>
+        <input name="anchorId" type="TextLine">
+            <label>Anker</label>
+            <occurrences minimum="0" maximum="1"/>
+        </input>
+    </form>
+</macro>
