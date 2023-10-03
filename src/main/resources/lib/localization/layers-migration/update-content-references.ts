@@ -8,7 +8,7 @@ import { RepoBranch } from '../../../types/common';
 import { modifyContentNode } from './modify-content-node';
 import { forceArray } from '../../utils/array-utils';
 import { isContentLocalized } from '../locale-utils';
-import { ContentReferencesFinder } from '../../cache/content-references-finder';
+import { ReferencesFinder } from '../../reference-search/references-finder';
 
 const updateReferenceFromNode = ({
     contentNodeToUpdate,
@@ -90,7 +90,7 @@ const updateContentReferencesInLocaleLayer = (
         return;
     }
 
-    const contentReferencesFinder = new ContentReferencesFinder({
+    const contentReferencesFinder = new ReferencesFinder({
         contentId: sourceId,
         repoId: repoToUpdate,
         branch: 'master',

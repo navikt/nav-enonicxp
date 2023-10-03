@@ -1,18 +1,5 @@
-import { Content } from '/lib/xp/content';
 import { customSelectorEditIcon } from './custom-selector-icons';
 import { buildEditorPathFromContext } from '../lib/paths/editor-path';
-
-type CustomSelectorUsageHit = {
-    name: string;
-    path: string;
-    id: string;
-};
-
-export const transformUsageHit = (content: Content): CustomSelectorUsageHit => ({
-    name: content.displayName,
-    path: content._path,
-    id: content._id,
-});
 
 const getServiceName = (req: XP.Request) => req.contextPath.split('/').slice(-1)[0];
 

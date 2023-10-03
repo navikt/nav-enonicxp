@@ -113,7 +113,7 @@ const resolveContentStudioRequest = (
         // the raw content, which is used to show certain info in place of the preview.
         const contentResolved = contentTypesForGuillotineQuery[content.type]
             ? resolveContent(content, branch, localeActual)
-            : content;
+            : { ...content, contentLayer: localeActual };
 
         const localeTarget = getContentLocaleRedirectTarget(content, localeActual);
         if (contentResolved && localeTarget) {
