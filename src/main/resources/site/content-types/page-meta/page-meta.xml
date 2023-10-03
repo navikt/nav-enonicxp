@@ -30,7 +30,6 @@
                         <mixin name="audience" />
                         <mixin name="area" />
                         <mixin name="illustration" />
-                        <mixin name="external-product-url" />
                         <mixin name="custom-path-selector-required"/>
                         <mixin name="owner"/>
                         <mixin name="managed-by"/>
@@ -40,41 +39,18 @@
                 <option name="tools-page">
                     <label>Verktøyside</label>
                     <items>
-                        <field-set>
-                            <label>Tittel og ingress</label>
-                            <items>
-                                <mixin name="page-header"/>
-                                <mixin name="ingress-required"/>
-                            </items>
-                        </field-set>
-                        <field-set>
+                        <mixin name="audience"/>
+                        <input name="taxonomy" type="ComboBox">
                             <label>Kategorier</label>
-                            <items>
-                                <mixin name="audience"/>
-                                <input name="taxonomy" type="ComboBox">
-                                    <label>Kategorier</label>
-                                    <occurrences minimum="0" maximum="99"/>
-                                    <config>
-                                        <option value="calculator">Kalkulator</option>
-                                        <option value="navigator">Veiviser</option>
-                                    </config>
-                                </input>
-                                <mixin name="area"/>
-                            </items>
-                        </field-set>
-                        <field-set>
-                            <label>Piktogram</label>
-                            <items>
-                                <mixin name="illustration"/>
-                            </items>
-                        </field-set>
-                        <field-set>
-                            <label>URL</label>
-                            <items>
-                                <mixin name="external-product-url"/>
-                                <mixin name="custom-path-selector-required"/>
-                            </items>
-                        </field-set>
+                            <occurrences minimum="0" maximum="99"/>
+                            <config>
+                                <option value="calculator">Kalkulator</option>
+                                <option value="navigator">Veiviser</option>
+                            </config>
+                        </input>
+                        <mixin name="area"/>
+                        <mixin name="illustration"/>
+                        <mixin name="custom-path-selector-required"/>
                         <mixin name="owner"/>
                         <mixin name="managed-by"/>
                         <mixin name="languages-legacy"/>
@@ -83,33 +59,38 @@
                 <option name="generic-page">
                     <label>Generisk side</label>
                     <items>
-                    <field-set>
-                        <label>Tittel og ingress</label>
-                        <items>
-                            <mixin name="page-header"/>
-                            <mixin name="ingress-required" />
-                        </items>
-                    </field-set>
-                    <field-set>
-                        <label>Generisk sidedata</label>
-                        <items>
-                            <mixin name="audience" />
-                        </items>
-                    </field-set>
-                    <field-set>
-                        <label>Piktogram</label>
-                        <items>
-                            <mixin name="illustration" />
-                        </items>
-                    </field-set>
-                    <field-set>
-                        <label>URL</label>
-                        <items>
-                            <mixin name="external-product-url" />
-                            <mixin name="custom-path-selector-required"/>
-                        </items>
-                    </field-set>
-                    <mixin name="dynamic-page-common"/>
+                        <mixin name="audience" />
+                        <mixin name="illustration" />
+                        <mixin name="custom-path-selector-required"/>
+                        <mixin name="dynamic-page-common"/>
+                    </items>
+                </option>
+                <option name="themed-article-page">
+                    <label>Temaartikkel</label>
+                    <items>
+                        <mixin name="audience" />
+                        <input name="taxonomy" type="ComboBox">
+                            <label>Kategorier</label>
+                            <occurrences minimum="0" maximum="0"/>
+                            <config>
+                                <option value="tips_job">Jobbsøkertips</option>
+                                <option value="help_work">Hjelp til å komme i jobb</option>
+                                <option value="when_sick">Når du er syk</option>
+                                <option value="payment">Utbetaling</option>
+                                <option value="complaint_rights">Klagerettigheter</option>
+                                <option value="user_support">Brukerstøtte</option>
+                                <option value="about_nav">Om NAV</option>
+                                <option value="membership_national_insurance">Medlemskap i folketrygden</option>
+                                <option value="recruitment">Rekruttering (for arbeidsgivere)</option>
+                            </config>
+                        </input>
+                        <mixin name="area" />
+                        <mixin name="illustration" />
+                        <mixin name="custom-path-selector-required"/>
+                        <mixin name="owner"/>
+                        <mixin name="managed-by"/>
+                        <mixin name="product-details-selector"/>
+                        <mixin name="dynamic-page-common"/>
                     </items>
                 </option>
             </options>
