@@ -5,21 +5,6 @@ import { keysToMigrate, contentTypesToMigrate, allValidTaxonomies } from './migr
 
 const dataPageParentPath = '/www.nav.no/page-meta';
 
-// Migration of meta data
-// -----------------
-// 1. Doing one content type at a time.
-// 2. Find all content in default draft repo (no) for each content type.
-// 3. For each found content
-// - 3.1 Check if content already has a reference to a meta object
-// - 3.2 If not, create a meta object, else stop.
-// - 3.3 Extract meta data from content
-// - 3.4 Add meta data to meta object
-// - 3.5 Attach meta object to content
-// - 3.5 Copy displayName to title in content.
-
-// Cleanup
-// ------------------
-
 const normalizeInvalidData = (content: contentLib.Content) => {
     const { type, data } = content;
     const validFields = keysToMigrate[type];
@@ -35,8 +20,8 @@ const normalizeInvalidData = (content: contentLib.Content) => {
         }
     });
 
-    // audience was changed from string to option set, so we need to
-    // normalize for older content that wasn't migrated.
+    // audience was changed from string to option set. This is fixed in
+    // prod, but with some legacy data in dev/q6/local.
     if (typeof data.audience === 'string') {
         mutatedData.audience = {
             _selected: data.audience,
@@ -47,15 +32,13 @@ const normalizeInvalidData = (content: contentLib.Content) => {
     if (validTaxonomies) {
         mutatedData.taxonomy = validTaxonomies.includes(mutatedData.taxonomy)
             ? mutatedData.taxonomy
-            : validTaxonomies[0];
+            : null;
     }
 
     return mutatedData;
 };
 
-const createPageMetaObject = (data: any, originalContent: contentLib.Content) => {
-    log.info(`Create meta data page for ${originalContent._id}, ${originalContent.type}}`);
-
+const createPageMeta = (data: any, originalContent: contentLib.Content) => {
     const fullPath = `${dataPageParentPath}/${originalContent._id}`;
 
     if (contentLib.exists({ key: fullPath })) {
@@ -90,7 +73,7 @@ const createPageMetaObject = (data: any, originalContent: contentLib.Content) =>
     }
 };
 
-const buildMetaPageData = (sourceData: any, content: contentLib.Content) => {
+const buildPageMetaData = (sourceData: any, content: contentLib.Content) => {
     const selectedContentType = content.type.split(':')[1];
     const data = {
         contentType: {
@@ -105,15 +88,16 @@ const buildMetaPageData = (sourceData: any, content: contentLib.Content) => {
 
 const processSingleContent = (content: contentLib.Content) => {
     log.info('-----------------------------------------------------------------');
-    log.info(`Processing content ${content._id}`);
+    log.info(`Processing content ${content.type}: ${content._id}`);
     log.info('-----------------------------------------------------------------');
-    const sourceData = normalizeInvalidData(content);
-    const metaPageData = buildMetaPageData(sourceData, content);
 
-    createPageMetaObject(metaPageData, content);
+    const normalizedData = normalizeInvalidData(content);
+    const pageMetaData = buildPageMetaData(normalizedData, content);
+
+    createPageMeta(pageMetaData, content);
 };
 
-export const startPageMetaDataCreation = () => {
+export const startPageMetaCreation = () => {
     log.info('Starting meta-object-page generation process');
 
     runInContext({ branch: 'draft', asAdmin: true }, () => {
