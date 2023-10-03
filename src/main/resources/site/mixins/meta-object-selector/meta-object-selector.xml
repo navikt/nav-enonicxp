@@ -6,7 +6,7 @@
         <config>
             <service>contentSelector</service>
             <param value="contentTypes">
-                ["no.nav.navno:page-meta-object"]
+                ["no.nav.navno:page-meta"]
             </param>
             <param value="selectorQuery">
               data.contentType._selected = "{type}"

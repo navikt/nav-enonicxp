@@ -1,12 +1,9 @@
-const nodeLib = require('/lib/xp/node');
 import * as contentLib from '/lib/xp/content';
 import { runInContext } from '../../lib/context/run-in-context';
 
-import { keysToMigrate, contentTypesToMigrate } from './migration-config';
+import { keysToMigrate, contentTypesToMigrate, allValidTaxonomies } from './migration-config';
 
-// Preflight
-// ------------------
-// 1. Move all content to new content names "*-v2"
+const dataPageParentPath = '/www.nav.no/page-meta';
 
 // Migration of meta data
 // -----------------
@@ -23,46 +20,118 @@ import { keysToMigrate, contentTypesToMigrate } from './migration-config';
 // Cleanup
 // ------------------
 
-const extractMetaDataBasedOnContentType = (content: contentLib.Content) => {
-    const keys = keysToMigrate[content.type];
-    const data: { [key: string]: any } = {};
+const normalizeInvalidData = (data: any, contentType: string) => {
+    const validFields = keysToMigrate[contentType];
+    const validTaxonomies = allValidTaxonomies[contentType];
+    const mutatedData = { ...data };
+    const { audience } = data;
 
-    keys.forEach((key) => {
-        if (content.data[key]) {
-            data[key] = content.data[key];
+    // Some content has had it's schema changed with fields removed, while
+    // the actual data still exist. This data would no longer be
+    // valid, so we need to remove these orphan fields.
+    Object.keys(mutatedData).forEach((key) => {
+        if (!validFields.includes(key)) {
+            delete mutatedData[key];
         }
     });
+
+    // audience was changed from string to option set, so we need to
+    // normalize for older content that wasn't migrated.
+    if (typeof audience === 'string') {
+        mutatedData.audience = {
+            _selected: audience,
+        };
+    }
+
+    if (contentType === 'navno:tools-page') {
+        mutatedData.audience = ['calculator', 'navigator'];
+    }
+
+    // If undefined, the content is not using taxonomies.
+    if (validTaxonomies) {
+        mutatedData.taxonomy = validTaxonomies.includes(mutatedData.taxonomy)
+            ? mutatedData.taxonomy
+            : validTaxonomies[0];
+    }
+
+    return mutatedData;
+};
+
+const createPageMetaObject = (data: any, originalContent: contentLib.Content) => {
+    log.info(`Create meta data page for ${originalContent._id}`);
+
+    const fullPath = `${dataPageParentPath}/${originalContent._id}`;
+    let metaDataPage;
+
+    if (contentLib.exists({ key: fullPath })) {
+        log.info(`Updating data for: ${fullPath}`);
+        try {
+            metaDataPage = contentLib.modify({
+                key: fullPath,
+                editor: (c) => {
+                    c.data = data;
+                    c.displayName = originalContent.displayName;
+                    return c;
+                },
+            });
+        } catch (e: any) {
+            log.info(`Failed to update data for: ${fullPath} failed with ${e}`);
+        }
+    } else {
+        try {
+            log.info(`Creating data for: ${fullPath}`);
+            metaDataPage = contentLib.create({
+                name: originalContent._id,
+                parentPath: dataPageParentPath,
+                displayName: originalContent.displayName,
+                contentType: 'no.nav.navno:page-meta',
+                data,
+            });
+            log.info(JSON.stringify(metaDataPage));
+        } catch (e: any) {
+            log.info(`Failed to create meta data page for ${e}`);
+        }
+    }
+};
+
+const buildMetaPageData = (sourceData: any, contentType: string) => {
+    const selectedContentType = contentType.split(':')[1];
+    const data = {
+        contentType: {
+            _selected: selectedContentType,
+            [selectedContentType]: sourceData,
+        },
+    };
 
     return data;
 };
 
-const singleMigrateContent = (content: contentLib.Content) => {
-    const data = extractMetaDataBasedOnContentType(content);
+const processSingleContent = (content: contentLib.Content) => {
+    log.info('-----------------------------------------------------------------');
+    log.info(`Processing content ${content._id}`);
+    log.info('-----------------------------------------------------------------');
+    const sourceData = normalizeInvalidData(content.data, content.type);
+    const metaPageData = buildMetaPageData(sourceData, content.type);
 
-    log.info(JSON.stringify(data));
+    createPageMetaObject(metaPageData, content);
+
+    log.info(JSON.stringify(sourceData));
 };
 
-export const migrateMetaData = () => {
-    log.info('Migrating now!');
+export const startPageMetaDataCreation = () => {
+    log.info('Starting meta-object-page generation process');
 
     runInContext({ branch: 'draft', asAdmin: true }, () => {
         contentTypesToMigrate.forEach((contentType) => {
-            log.info(`Migrating content type ${contentType}`);
-            const contentWithFormDetails = contentLib.query({
+            const content = contentLib.query({
                 count: 2000,
                 contentTypes: [contentType],
             });
+            log.info(`Found ${content.total} content of type ${contentType}`);
 
-            contentWithFormDetails.hits.forEach((content) => {
-                singleMigrateContent(content);
+            content.hits.forEach((content) => {
+                processSingleContent(content);
             });
         });
     });
-};
-
-// Cleanup
-// -----------------
-
-export const deleteOldMetadataFromContent = () => {
-    log.info('Deleting old metadata from content');
 };

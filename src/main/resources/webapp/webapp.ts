@@ -9,10 +9,7 @@ import { updateScheduledPublishJobs } from '../lib/scheduling/scheduled-publish-
 import { generateUUID } from '../lib/utils/uuid';
 import { removeUnpublishedFromAllContentLists } from '../lib/contentlists/remove-unpublished';
 import { userIsAdmin } from '../lib/utils/auth-utils';
-import {
-    deleteOldMetadataFromContent,
-    migrateMetaData,
-} from '../lib/migrate-meta-data/migrate-meta-data';
+import { startPageMetaDataCreation } from '../lib/migrate-meta-data/migrate-meta-data';
 import {
     revalidateAllSearchNodesAsync,
     SEARCH_NODES_UPDATE_ABORT_EVENT,
@@ -79,16 +76,8 @@ const validActions: ActionsMap = {
     }),
     ...(app.config.env !== 'p' && {
         migrateMetaToSeparateMetaContent: {
-            description:
-                'Starter migreringsjobb for å flytte metadata til eget metaobjekt (OBS: Ikke prod-klar!)',
-            callback: () => migrateMetaData(),
-        },
-    }),
-    ...(app.config.env !== 'p' && {
-        deleteOldMetadataFromContent: {
-            description:
-                'Starter slettejobb for å fjerne innhold i nøkler etter at migrering er ferdig(OBS: Ikke prod-klar!)',
-            callback: () => deleteOldMetadataFromContent(),
+            description: 'Starter jobb for å opprette meta-objekter',
+            callback: () => startPageMetaDataCreation(),
         },
     }),
 };
