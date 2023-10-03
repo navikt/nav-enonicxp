@@ -11,7 +11,7 @@ export interface LinkToLayerConfig {
   body: string;
 
   /**
-   * Tooltip
+   * Pekertekst
    */
   tooltip?: string;
 
