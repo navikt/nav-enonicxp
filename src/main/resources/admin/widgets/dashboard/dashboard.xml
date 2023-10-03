@@ -1,0 +1,13 @@
+<widget xmlns="urn:enonic:xp:model:1.0">
+	<interfaces>
+		<interface>admin.dashboard</interface>
+	</interfaces>
+	<allow>
+		<principal>role:system.admin</principal>
+	</allow>
+	<config>
+		<property name="width" value="small"/>
+		<property name="style" value="custom"/>
+		<property name="order" value="0"/>
+	</config>
+</widget>
