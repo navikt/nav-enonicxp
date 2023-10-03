@@ -20,11 +20,11 @@ const dataPageParentPath = '/www.nav.no/page-meta';
 // Cleanup
 // ------------------
 
-const normalizeInvalidData = (data: any, contentType: string) => {
-    const validFields = keysToMigrate[contentType];
-    const validTaxonomies = allValidTaxonomies[contentType];
+const normalizeInvalidData = (content: contentLib.Content) => {
+    const { type, data } = content;
+    const validFields = keysToMigrate[type];
+    const validTaxonomies = allValidTaxonomies[type];
     const mutatedData = { ...data };
-    const { audience } = data;
 
     // Some content has had it's schema changed with fields removed, while
     // the actual data still exist. This data would no longer be
@@ -37,14 +37,10 @@ const normalizeInvalidData = (data: any, contentType: string) => {
 
     // audience was changed from string to option set, so we need to
     // normalize for older content that wasn't migrated.
-    if (typeof audience === 'string') {
+    if (typeof data.audience === 'string') {
         mutatedData.audience = {
-            _selected: audience,
+            _selected: data.audience,
         };
-    }
-
-    if (contentType === 'navno:tools-page') {
-        mutatedData.audience = ['calculator', 'navigator'];
     }
 
     // If undefined, the content is not using taxonomies.
@@ -58,21 +54,21 @@ const normalizeInvalidData = (data: any, contentType: string) => {
 };
 
 const createPageMetaObject = (data: any, originalContent: contentLib.Content) => {
-    log.info(`Create meta data page for ${originalContent._id}`);
+    log.info(`Create meta data page for ${originalContent._id}, ${originalContent.type}}`);
 
     const fullPath = `${dataPageParentPath}/${originalContent._id}`;
-    let metaDataPage;
 
     if (contentLib.exists({ key: fullPath })) {
         log.info(`Updating data for: ${fullPath}`);
         try {
-            metaDataPage = contentLib.modify({
+            contentLib.modify({
                 key: fullPath,
                 editor: (c) => {
                     c.data = data;
                     c.displayName = originalContent.displayName;
                     return c;
                 },
+                requireValid: false,
             });
         } catch (e: any) {
             log.info(`Failed to update data for: ${fullPath} failed with ${e}`);
@@ -80,27 +76,28 @@ const createPageMetaObject = (data: any, originalContent: contentLib.Content) =>
     } else {
         try {
             log.info(`Creating data for: ${fullPath}`);
-            metaDataPage = contentLib.create({
+            contentLib.create({
                 name: originalContent._id,
                 parentPath: dataPageParentPath,
                 displayName: originalContent.displayName,
                 contentType: 'no.nav.navno:page-meta',
+                requireValid: false,
                 data,
             });
-            log.info(JSON.stringify(metaDataPage));
         } catch (e: any) {
             log.info(`Failed to create meta data page for ${e}`);
         }
     }
 };
 
-const buildMetaPageData = (sourceData: any, contentType: string) => {
-    const selectedContentType = contentType.split(':')[1];
+const buildMetaPageData = (sourceData: any, content: contentLib.Content) => {
+    const selectedContentType = content.type.split(':')[1];
     const data = {
         contentType: {
             _selected: selectedContentType,
             [selectedContentType]: sourceData,
         },
+        targetId: content._id,
     };
 
     return data;
@@ -110,12 +107,10 @@ const processSingleContent = (content: contentLib.Content) => {
     log.info('-----------------------------------------------------------------');
     log.info(`Processing content ${content._id}`);
     log.info('-----------------------------------------------------------------');
-    const sourceData = normalizeInvalidData(content.data, content.type);
-    const metaPageData = buildMetaPageData(sourceData, content.type);
+    const sourceData = normalizeInvalidData(content);
+    const metaPageData = buildMetaPageData(sourceData, content);
 
     createPageMetaObject(metaPageData, content);
-
-    log.info(JSON.stringify(sourceData));
 };
 
 export const startPageMetaDataCreation = () => {
