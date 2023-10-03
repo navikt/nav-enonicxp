@@ -1,7 +1,12 @@
 import * as contentLib from '/lib/xp/content';
-import { Content } from '/lib/xp/content';
+import { runInContext } from '../../context/run-in-context';
 
-export const getProductDetailsUsage = (content: Content<'no.nav.navno:product-details'>) => {
+export const findProductDetailsReferences = (contentId: string) => {
+    const content = runInContext({ branch: 'draft' }, () => contentLib.get({ key: contentId }));
+    if (!content) {
+        return null;
+    }
+
     const contentWithUsage = contentLib.query({
         start: 0,
         count: 1000,

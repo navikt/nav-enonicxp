@@ -33,7 +33,7 @@ const resolvePublicPathsInLinks = (processedHtml: string, links?: Links[]) => {
 
         const targetContent = contentLib.get({ key: contentId });
         if (!targetContent) {
-            logger.warning(
+            logger.error(
                 `Invalid reference to contentId ${contentId} in html-area on [${localeFromContext}] ${baseContentId}`,
                 true
             );

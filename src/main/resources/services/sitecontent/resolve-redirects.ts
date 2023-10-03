@@ -213,5 +213,9 @@ export const getRedirectFallback = ({
             getParentRedirectContent(pathRequested) ||
             getParentRedirectContent(`${REDIRECTS_ROOT_PATH}${strippedPath}`);
 
-        return redirectContent ? runSitecontentGuillotineQuery(redirectContent, branch) : null;
+        return redirectContent
+            ? runInLocaleContext({ locale: redirectContent.language }, () =>
+                  runSitecontentGuillotineQuery(redirectContent, branch)
+              )
+            : null;
     });

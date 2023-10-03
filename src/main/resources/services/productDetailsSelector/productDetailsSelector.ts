@@ -3,13 +3,7 @@ import * as portalLib from '/lib/xp/portal';
 import { Content } from '/lib/xp/content';
 import { ProductDetails } from '../../site/content-types/product-details/product-details';
 import { generateFulltextQuery } from '../../lib/utils/mixed-bag-of-utils';
-import {
-    customSelectorHitWithLink,
-    getServiceRequestSubPath,
-    transformUsageHit,
-} from '../service-utils';
-import { getProductDetailsUsage } from '../../lib/product-utils/productDetails';
-import { logger } from '../../lib/utils/logging';
+import { customSelectorHitWithLink } from '../service-utils';
 import { customSelectorErrorIcon } from '../custom-selector-icons';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
@@ -21,10 +15,6 @@ type SelectorHit = XP.CustomSelectorServiceResponseHit;
 type SelectorParams = {
     detailType: ProductDetailsType;
 } & XP.CustomSelectorServiceRequestParams;
-
-type UsageCheckParams = {
-    id: string;
-};
 
 const makeDescription = (content: Content) =>
     `[${content.language}] ${stripPathPrefix(content._path)}`;
@@ -136,38 +126,6 @@ const selectorHandler = (req: XP.Request) => {
     };
 };
 
-const usageCheckHandler = (req: XP.Request) => {
-    const { id } = req.params as UsageCheckParams;
-
-    const detailsContent = contentLib.get({ key: id });
-    if (!detailsContent || detailsContent.type !== 'no.nav.navno:product-details') {
-        logger.warning(`Product details usage check for id ${id} failed - content does not exist`);
-        return {
-            status: 404,
-            contentType: 'application/json',
-            body: {
-                usage: [],
-            },
-        };
-    }
-
-    const usageHits = getProductDetailsUsage(detailsContent).map(transformUsageHit);
-
-    return {
-        status: 200,
-        contentType: 'application/json',
-        body: {
-            usage: usageHits,
-        },
-    };
-};
-
 export const get = (req: XP.Request) => {
-    const subPath = getServiceRequestSubPath(req);
-
-    if (subPath === 'usage') {
-        return usageCheckHandler(req);
-    }
-
     return selectorHandler(req);
 };
