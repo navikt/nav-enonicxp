@@ -72,6 +72,12 @@ fragment macros on Macro {
             }
             text
         }
+        link_to_layer {
+            body
+            href
+            newTab
+            tooltip
+        }
         payout_dates {
             payoutDates {
                 ...contentPayoutDates
