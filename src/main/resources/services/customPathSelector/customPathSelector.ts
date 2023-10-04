@@ -70,7 +70,7 @@ const getResult = ({
     if (!isValidCustomPath(suggestedPath)) {
         return generateErrorHit(
             `Feil: "${suggestedPath}" er ikke en gyldig kort-url`,
-            'Kort-url må starte med "/" og kan inneholde tall, bokstaver (a-z) og bindestrek'
+            'Må starte med "/" og kan inneholde tall, bokstaver (a-z) og bindestrek. Kan ikke slutte med "/"'
         );
     }
 
