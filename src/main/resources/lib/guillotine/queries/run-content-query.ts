@@ -143,8 +143,6 @@ export const runGuillotineContentQuery = (
 ) => {
     const { _id } = baseContent;
 
-    log.info(`Running Guillotine query for content: ${_id}`);
-
     const contentQuery = graphQlContentQueries[baseContent.type];
     if (!contentQuery) {
         return null;

@@ -41,10 +41,12 @@ const normalizeInvalidData = (content: contentLib.Content) => {
 const createPageMeta = (data: any, originalContent: contentLib.Content) => {
     const fullPath = `${dataPageParentPath}/${originalContent._id}`;
 
+    let content;
+
     if (contentLib.exists({ key: fullPath })) {
         log.info(`Updating data for: ${fullPath}`);
         try {
-            contentLib.modify({
+            content = contentLib.modify({
                 key: fullPath,
                 editor: (c) => {
                     c.data = data;
@@ -59,7 +61,7 @@ const createPageMeta = (data: any, originalContent: contentLib.Content) => {
     } else {
         try {
             log.info(`Creating data for: ${fullPath}`);
-            contentLib.create({
+            content = contentLib.create({
                 name: originalContent._id,
                 parentPath: dataPageParentPath,
                 displayName: originalContent.displayName,
@@ -71,6 +73,8 @@ const createPageMeta = (data: any, originalContent: contentLib.Content) => {
             log.info(`Failed to create meta data page for ${e}`);
         }
     }
+
+    return content;
 };
 
 const buildPageMetaData = (sourceData: any, content: contentLib.Content) => {
@@ -81,7 +85,7 @@ const buildPageMetaData = (sourceData: any, content: contentLib.Content) => {
             _selected: selectedContentType,
             [selectedContentType]: sourceData,
         },
-        targetId: content._id,
+        targetId: content,
     };
 
     return data;
@@ -95,11 +99,14 @@ const processSingleContent = (content: contentLib.Content) => {
     const normalizedData = normalizeInvalidData(content);
     const pageMetaData = buildPageMetaData(normalizedData, content);
 
-    createPageMeta(pageMetaData, content);
+    const newContent = createPageMeta(pageMetaData, content);
+    return newContent?._id;
 };
 
 export const startPageMetaCreation = () => {
     log.info('Starting meta-object-page generation process');
+
+    const publishableIds: string[] = [];
 
     runInContext({ branch: 'draft', asAdmin: true }, () => {
         contentTypesToMigrate.forEach((contentType) => {
@@ -110,8 +117,26 @@ export const startPageMetaCreation = () => {
             log.info(`Found ${content.total} content of type ${contentType}`);
 
             content.hits.forEach((content) => {
-                processSingleContent(content);
+                const contentId = processSingleContent(content);
+
+                if (contentId) {
+                    publishableIds.push(contentId);
+                }
             });
         });
+        log.info(`Publishing ${publishableIds.length} PageMeta objects`);
+
+        const publishResponse = contentLib.publish({
+            keys: [...publishableIds],
+            includeDependencies: false,
+        });
+
+        if (publishResponse.failedContents.length > 0) {
+            log.warning(
+                `Failed to publish ${
+                    publishResponse.failedContents.length
+                } PageMeta objects: ${JSON.stringify(publishResponse.failedContents.join(','))}`
+            );
+        }
     });
 };
