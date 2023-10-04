@@ -74,7 +74,8 @@ const createPageMeta = (data: any, originalContent: contentLib.Content) => {
 };
 
 const buildPageMetaData = (sourceData: any, content: contentLib.Content) => {
-    const selectedContentType = content.type.split(':')[1];
+    // Graphql doesn't support hyphen, so key names in option set has to be underscore. ie 'situation_page';
+    const selectedContentType = content.type.split(':')[1]?.replace(/-/g, '_');
     const data = {
         contentType: {
             _selected: selectedContentType,

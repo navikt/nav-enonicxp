@@ -10,7 +10,7 @@
             <label>Type innhold</label>
             <occurrences minimum="1" maximum="1"/>
             <options minimum="1" maximum="1">
-                <option name="content-page-with-sidemenus">
+                <option name="content_page_with_sidemenus">
                     <label>Produktside</label>
                     <items>
                         <mixin name="audience" />
@@ -20,11 +20,12 @@
                         <mixin name="owner" />
                         <mixin name="managed-by" />
                         <mixin name="product-details-selector"/>
+                        <mixin name="custom-path-selector-required"/>
                         <mixin name="form-details-selector"/>
                         <mixin name="decorator-toggles"/>
                     </items>
                 </option>
-                <option name="situation-page">
+                <option name="situation_page">
                     <label>Situasjonsside</label>
                     <items>
                         <mixin name="audience" />
@@ -36,7 +37,7 @@
                         <mixin name="decorator-toggles"/>
                     </items>
                 </option>
-                <option name="tools-page">
+                <option name="tools_page">
                     <label>Verktøyside</label>
                     <items>
                         <mixin name="audience"/>
@@ -53,10 +54,9 @@
                         <mixin name="custom-path-selector-required"/>
                         <mixin name="owner"/>
                         <mixin name="managed-by"/>
-                        <mixin name="languages-legacy"/>
                     </items>
                 </option>
-                <option name="generic-page">
+                <option name="generic_page">
                     <label>Generisk side</label>
                     <items>
                         <mixin name="audience" />
@@ -65,7 +65,7 @@
                         <mixin name="dynamic-page-common"/>
                     </items>
                 </option>
-                <option name="themed-article-page">
+                <option name="themed_article_page">
                     <label>Temaartikkel</label>
                     <items>
                         <mixin name="audience" />
@@ -90,6 +90,39 @@
                         <mixin name="owner"/>
                         <mixin name="managed-by"/>
                         <mixin name="product-details-selector"/>
+                        <mixin name="dynamic-page-common"/>
+                    </items>
+                </option>
+                <option name="guide_page">
+                    <label>Slik gjør du det</label>
+                    <items>
+                        <input type="CheckBox" name="hideFromProductlist">
+                            <label>Ikke vis denne siden på oversiktssider (gjelder ikke skjemaoversikter)</label>
+                            <default>unchecked</default>
+                        </input>
+                        <mixin name="audience" />
+                        <mixin name="area" />
+                        <mixin name="illustration" />
+                        <mixin name="custom-path-selector-required"/>
+                        <mixin name="owner" />
+                        <mixin name="managed-by" />
+                        <mixin name="product-details-selector"/>
+                        <mixin name="form-details-selector"/>
+                        <mixin name="dynamic-page-common"/>
+                    </items>
+                </option>
+                <option name="current_topic_page">
+                    <label>Aktuelt</label>
+                    <items>
+                        <input type="TextLine" name="title">
+                            <label>Sett side-tittel</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
+                        <mixin name="audience" />
+                        <mixin name="area" />
+                        <mixin name="custom-path-selector-required"/>
+                        <mixin name="owner"/>
+                        <mixin name="managed-by"/>
                         <mixin name="dynamic-page-common"/>
                     </items>
                 </option>

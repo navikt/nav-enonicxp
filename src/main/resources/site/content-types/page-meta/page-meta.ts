@@ -8,12 +8,12 @@ export interface PageMeta {
         /**
          * Selected
          */
-        _selected: "content-page-with-sidemenus";
+        _selected: "content_page_with_sidemenus";
 
         /**
          * Produktside
          */
-        "content-page-with-sidemenus": {
+        content_page_with_sidemenus: {
           /**
            * Målgruppe
            */
@@ -104,6 +104,11 @@ export interface PageMeta {
           rates?: string;
 
           /**
+           * Skriv inn ønsket kort-url
+           */
+          customPath: string;
+
+          /**
            * Velg alle detaljer som skal brukes på denne siden
            */
           formDetailsTargets?: Array<string>;
@@ -123,12 +128,12 @@ export interface PageMeta {
         /**
          * Selected
          */
-        _selected: "situation-page";
+        _selected: "situation_page";
 
         /**
          * Situasjonsside
          */
-        "situation-page": {
+        situation_page: {
           /**
            * Målgruppe
            */
@@ -218,12 +223,12 @@ export interface PageMeta {
         /**
          * Selected
          */
-        _selected: "tools-page";
+        _selected: "tools_page";
 
         /**
          * Verktøyside
          */
-        "tools-page": {
+        tools_page: {
           /**
            * Målgruppe
            */
@@ -302,23 +307,18 @@ export interface PageMeta {
            * Velg forvalter
            */
           "managed-by"?: Array<"po_aap" | "po_arbeid" | "po_familie" | "po_helse" | "po_pensjon" | "po_arbeidsgiver" | "digisos">;
-
-          /**
-           * Legg til andre språkversjoner
-           */
-          languages?: Array<string>;
         };
       }
     | {
         /**
          * Selected
          */
-        _selected: "generic-page";
+        _selected: "generic_page";
 
         /**
          * Generisk side
          */
-        "generic-page": {
+        generic_page: {
           /**
            * Målgruppe
            */
@@ -418,12 +418,12 @@ export interface PageMeta {
         /**
          * Selected
          */
-        _selected: "themed-article-page";
+        _selected: "themed_article_page";
 
         /**
          * Temaartikkel
          */
-        "themed-article-page": {
+        themed_article_page: {
           /**
            * Målgruppe
            */
@@ -517,6 +517,271 @@ export interface PageMeta {
            * Satser
            */
           rates?: string;
+
+          /**
+           * Legg til andre språkversjoner
+           */
+          languages?: Array<string>;
+
+          /**
+           * Fant du det du lette etter?
+           */
+          feedbackToggle: boolean;
+
+          /**
+           * Chatbot Frida
+           */
+          chatbotToggle: boolean;
+
+          /**
+           * Oppsummering
+           */
+          description?: string;
+
+          /**
+           * Sidebeskrivelse for søk og sosiale medier
+           */
+          metaDescription?: string;
+
+          /**
+           * Canonical url - NB! Skal bare legges inn av hovedredaktør/administrator
+           */
+          canonicalUrl?: string;
+
+          /**
+           * Skal ikke vises i søk
+           */
+          noindex: boolean;
+        };
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "guide_page";
+
+        /**
+         * Slik gjør du det
+         */
+        guide_page: {
+          /**
+           * Ikke vis denne siden på oversiktssider (gjelder ikke skjemaoversikter)
+           */
+          hideFromProductlist: boolean;
+
+          /**
+           * Målgruppe
+           */
+          audience:
+            | {
+                /**
+                 * Selected
+                 */
+                _selected: "person";
+
+                /**
+                 * Privatperson
+                 */
+                person: Record<string, unknown>;
+              }
+            | {
+                /**
+                 * Selected
+                 */
+                _selected: "employer";
+
+                /**
+                 * Arbeidsgiver
+                 */
+                employer: Record<string, unknown>;
+              }
+            | {
+                /**
+                 * Selected
+                 */
+                _selected: "provider";
+
+                /**
+                 * Samarbeidspartner
+                 */
+                provider: Record<string, unknown>;
+              }
+            | {
+                /**
+                 * Selected
+                 */
+                _selected: "other";
+
+                /**
+                 * Annet
+                 */
+                other: Record<string, unknown>;
+              };
+
+          /**
+           * Områdekategori
+           */
+          area: Array<"health" | "other" | "work" | "family" | "accessibility" | "pension" | "social_counselling" | "inclusion" | "downsizing" | "recruitment">;
+
+          /**
+           * Velg piktogram
+           */
+          illustration: string;
+
+          /**
+           * Skriv inn ønsket kort-url
+           */
+          customPath: string;
+
+          /**
+           * Velg eier
+           */
+          owner: Array<"ytelsesavdelingen" | "arbeids_og_tjenesteavdelingen" | "arbeid_og_ytelser_styringsenhet" | "familie_og_pensjonsytelser_styringsenhet" | "hr_avdelingen" | "juridisk_avdeling" | "kunnskapsavdelingen" | "kommunikasjonsavdelingen" | "okonomi" | "statistikk" | "hjelpemidler_og_tilrettelegging" | "kontaktsenteret" | "team_personbruker" | "it_avdelingen" | "fylke" | "hjelpemiddelsentralen" | "arbeidslivssenter" | "min_side" | "direktoratet" | "annet">;
+
+          /**
+           * Velg forvalter
+           */
+          "managed-by"?: Array<"po_aap" | "po_arbeid" | "po_familie" | "po_helse" | "po_pensjon" | "po_arbeidsgiver" | "digisos">;
+
+          /**
+           * Saksbehandlingstider
+           */
+          processing_times?: string;
+
+          /**
+           * Utbetalingsdatoer
+           */
+          payout_dates?: string;
+
+          /**
+           * Satser
+           */
+          rates?: string;
+
+          /**
+           * Velg alle detaljer som skal brukes på denne siden
+           */
+          formDetailsTargets?: Array<string>;
+
+          /**
+           * Legg til andre språkversjoner
+           */
+          languages?: Array<string>;
+
+          /**
+           * Fant du det du lette etter?
+           */
+          feedbackToggle: boolean;
+
+          /**
+           * Chatbot Frida
+           */
+          chatbotToggle: boolean;
+
+          /**
+           * Oppsummering
+           */
+          description?: string;
+
+          /**
+           * Sidebeskrivelse for søk og sosiale medier
+           */
+          metaDescription?: string;
+
+          /**
+           * Canonical url - NB! Skal bare legges inn av hovedredaktør/administrator
+           */
+          canonicalUrl?: string;
+
+          /**
+           * Skal ikke vises i søk
+           */
+          noindex: boolean;
+        };
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "current_topic_page";
+
+        /**
+         * Aktuelt
+         */
+        current_topic_page: {
+          /**
+           * Sett side-tittel
+           */
+          title?: string;
+
+          /**
+           * Målgruppe
+           */
+          audience:
+            | {
+                /**
+                 * Selected
+                 */
+                _selected: "person";
+
+                /**
+                 * Privatperson
+                 */
+                person: Record<string, unknown>;
+              }
+            | {
+                /**
+                 * Selected
+                 */
+                _selected: "employer";
+
+                /**
+                 * Arbeidsgiver
+                 */
+                employer: Record<string, unknown>;
+              }
+            | {
+                /**
+                 * Selected
+                 */
+                _selected: "provider";
+
+                /**
+                 * Samarbeidspartner
+                 */
+                provider: Record<string, unknown>;
+              }
+            | {
+                /**
+                 * Selected
+                 */
+                _selected: "other";
+
+                /**
+                 * Annet
+                 */
+                other: Record<string, unknown>;
+              };
+
+          /**
+           * Områdekategori
+           */
+          area: Array<"health" | "other" | "work" | "family" | "accessibility" | "pension" | "social_counselling" | "inclusion" | "downsizing" | "recruitment">;
+
+          /**
+           * Skriv inn ønsket kort-url
+           */
+          customPath: string;
+
+          /**
+           * Velg eier
+           */
+          owner: Array<"ytelsesavdelingen" | "arbeids_og_tjenesteavdelingen" | "arbeid_og_ytelser_styringsenhet" | "familie_og_pensjonsytelser_styringsenhet" | "hr_avdelingen" | "juridisk_avdeling" | "kunnskapsavdelingen" | "kommunikasjonsavdelingen" | "okonomi" | "statistikk" | "hjelpemidler_og_tilrettelegging" | "kontaktsenteret" | "team_personbruker" | "it_avdelingen" | "fylke" | "hjelpemiddelsentralen" | "arbeidslivssenter" | "min_side" | "direktoratet" | "annet">;
+
+          /**
+           * Velg forvalter
+           */
+          "managed-by"?: Array<"po_aap" | "po_arbeid" | "po_familie" | "po_helse" | "po_pensjon" | "po_arbeidsgiver" | "digisos">;
 
           /**
            * Legg til andre språkversjoner
