@@ -6,8 +6,8 @@ import { RepoBranch } from '../../../types/common';
 
 type ContentWithCustomPath = Content & { data: { customPath: string } };
 
-// Valid: 0-9 OR a-z OR - OR / AND NOT trailing /
-const validCustomPathPattern = new RegExp('^/[0-9a-z-/]*[^/]$');
+// Valid: (0-9 OR a-z OR - OR / AND NOT trailing /) OR /
+const validCustomPathPattern = new RegExp('^(/[0-9a-z-/]*[^/]|/)$');
 
 // For custom paths, we need the leading slash on the root path
 const stripPathPrefix = (path: string) => _stripPathPrefix(path) || '/';
