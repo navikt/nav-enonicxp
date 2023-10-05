@@ -85,7 +85,7 @@ const buildPageMetaData = (sourceData: any, content: contentLib.Content) => {
             _selected: selectedContentType,
             [selectedContentType]: sourceData,
         },
-        targetId: content,
+        targetId: content._id,
     };
 
     return data;
@@ -108,7 +108,7 @@ export const startPageMetaCreation = () => {
 
     const publishableIds: string[] = [];
 
-    runInContext({ branch: 'draft', asAdmin: true }, () => {
+    runInContext({ branch: 'draft', repository: 'com.enonic.cms.default', asAdmin: true }, () => {
         contentTypesToMigrate.forEach((contentType) => {
             const content = contentLib.query({
                 count: 2000,
@@ -128,7 +128,6 @@ export const startPageMetaCreation = () => {
 
         const publishResponse = contentLib.publish({
             keys: [...publishableIds],
-            includeDependencies: false,
         });
 
         if (publishResponse.failedContents.length > 0) {
