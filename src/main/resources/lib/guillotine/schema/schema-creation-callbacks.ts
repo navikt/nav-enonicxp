@@ -41,6 +41,7 @@ import { createOpeningHoursFields } from './schema-creation-callbacks/common/ope
 import { formsOverviewDataCallback } from './schema-creation-callbacks/forms-overview-data-callback';
 import { audienceCallback } from './schema-creation-callbacks/common/audience-mixin';
 import { pressLandingPageDataCallback } from './schema-creation-callbacks/press-landing-page-data';
+import { macroLinkToLayerCallback } from './schema-creation-callbacks/macro-link-to-layer';
 
 export const schemaCreationCallbacks: Record<string, CreationCallback> = {
     Attachment: attachmentCallback,
@@ -87,6 +88,7 @@ export const schemaCreationCallbacks: Record<string, CreationCallback> = {
     Macro_no_nav_navno_html_fragment_DataConfig: macroHtmlFragmentCallback,
     Macro_no_nav_navno_form_details_DataConfig: formDetailsCallback,
     Macro_no_nav_navno_alert_box_DataConfig: macroAlertboxCallback,
+    Macro_no_nav_navno_link_to_layer_DataConfig: macroLinkToLayerCallback,
     RichText: richTextCallback,
     no_nav_navno_AreaPage_Audience: audienceCallback,
     no_nav_navno_CurrentTopicPage_Audience: audienceCallback,
