@@ -100,7 +100,14 @@ const processSingleContent = (content: contentLib.Content) => {
     const pageMetaData = buildPageMetaData(normalizedData, content);
 
     const newContent = createPageMeta(pageMetaData, content);
-    return newContent?._id;
+
+    if (!newContent) {
+        return;
+    }
+
+    contentLib.publish({
+        keys: [newContent?._id],
+    });
 };
 
 export const startPageMetaCreation = () => {
@@ -117,25 +124,10 @@ export const startPageMetaCreation = () => {
             log.info(`Found ${content.total} content of type ${contentType}`);
 
             content.hits.forEach((content) => {
-                const contentId = processSingleContent(content);
-
-                if (contentId) {
-                    publishableIds.push(contentId);
-                }
+                processSingleContent(content);
             });
         });
+
         log.info(`Publishing ${publishableIds.length} PageMeta objects`);
-
-        const publishResponse = contentLib.publish({
-            keys: [...publishableIds],
-        });
-
-        if (publishResponse.failedContents.length > 0) {
-            log.warning(
-                `Failed to publish ${
-                    publishResponse.failedContents.length
-                } PageMeta objects: ${JSON.stringify(publishResponse.failedContents.join(','))}`
-            );
-        }
     });
 };
