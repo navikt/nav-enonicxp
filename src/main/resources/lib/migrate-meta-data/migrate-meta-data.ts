@@ -108,7 +108,7 @@ export const startPageMetaCreation = () => {
 
     const publishableIds: string[] = [];
 
-    runInContext({ branch: 'draft', repository: 'com.enonic.cms.default', asAdmin: true }, () => {
+    runInContext({ branch: 'draft', asAdmin: true }, () => {
         contentTypesToMigrate.forEach((contentType) => {
             const content = contentLib.query({
                 count: 2000,
