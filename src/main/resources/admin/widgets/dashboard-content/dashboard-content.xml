@@ -6,9 +6,9 @@
 		<principal>role:system.admin</principal>
 	</allow>
 	<config>
-		<property name="width" value="small"/>
+		<property name="width" value="medium"/>
 		<property name="style" value="custom"/>
-		<property name="order" value="0"/>
+		<property name="order" value="3"/>
 	</config>
 </widget>
 
