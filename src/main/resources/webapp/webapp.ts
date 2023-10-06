@@ -74,12 +74,10 @@ const validActions: ActionsMap = {
             callback: () => pushLayerContentToMaster(false),
         },
     }),
-    ...(app.config.env !== 'p' && {
-        migrateMetaToSeparateMetaContent: {
-            description: 'Starter jobb for å opprette meta-objekter',
-            callback: () => startPageMetaCreation(),
-        },
-    }),
+    migrateMetaToSeparateMetaContent: {
+        description: 'Starter jobb for å opprette meta-objekter.',
+        callback: () => startPageMetaCreation(),
+    },
 };
 
 type Params = {
