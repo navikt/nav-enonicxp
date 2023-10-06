@@ -6,7 +6,6 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <mixin name="meta-object-selector" />
         <field-set>
             <label>Tittel og ingress</label>
             <items>
