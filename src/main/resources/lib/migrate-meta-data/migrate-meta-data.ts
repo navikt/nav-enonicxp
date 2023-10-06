@@ -95,14 +95,14 @@ const processSingleContent = (content: contentLib.Content) => {
     const normalizedData = normalizeInvalidData(content);
     const pageMetaData = buildPageMetaData(normalizedData, content);
 
-    const newContent = createPageMeta(pageMetaData, content);
+    const pageMeta = createPageMeta(pageMetaData, content);
 
-    if (!newContent) {
+    if (!pageMeta?._id) {
         return;
     }
 
     contentLib.publish({
-        keys: [newContent?._id],
+        keys: [pageMeta._id],
     });
 };
 
