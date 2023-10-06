@@ -37,7 +37,6 @@ export const keysToMigrate: { [key: string]: string[] } = {
         'feedbackToggle',
         'chatbotToggle',
         'customPath',
-        'noindex',
     ],
     [`${APP_DESCRIPTOR}:guide-page`]: [
         'audience',
@@ -53,7 +52,6 @@ export const keysToMigrate: { [key: string]: string[] } = {
         'feedbackToggle',
         'chatbotToggle',
         'customPath',
-        'noindex',
     ],
     [`${APP_DESCRIPTOR}:themed-article-page`]: [
         'audience',
@@ -68,7 +66,6 @@ export const keysToMigrate: { [key: string]: string[] } = {
         'feedbackToggle',
         'chatbotToggle',
         'customPath',
-        'noindex',
     ],
     [`${APP_DESCRIPTOR}:tools-page`]: [
         'audience',
@@ -85,7 +82,6 @@ export const keysToMigrate: { [key: string]: string[] } = {
         'customPath',
         'feedbackToggle',
         'chatbotToggle',
-        'noindex',
     ],
     [`${APP_DESCRIPTOR}:current-topic-page`]: [
         'audience',
@@ -95,7 +91,6 @@ export const keysToMigrate: { [key: string]: string[] } = {
         'customPath',
         'feedbackToggle',
         'chatbotToggle',
-        'noindex',
     ],
 };
 
