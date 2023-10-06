@@ -1,11 +1,9 @@
 import thymeleafLib from '/lib/thymeleaf';
-import { runInContext } from '../../../lib/context/run-in-context';
 import * as authLib from '/lib/xp/auth';
-import * as contentLib from '/lib/xp/content';
-import { logger } from '../../../lib/utils/logging';
 import * as nodeLib from '/lib/xp/node';
 import { Source } from '/lib/xp/node';
-import { ADMIN_PRINCIPAL, CONTENT_REPO_PREFIX, SUPER_USER } from '../../../lib/constants';
+import { ADMIN_PRINCIPAL, SUPER_USER } from '../../../lib/constants';
+import { getLayersMultiConnection } from '../../../lib/localization/locale-utils';
 
 const asAdminParams: Pick<Source, 'user' | 'principals'> = {
     user: {
@@ -34,7 +32,8 @@ const view = resolve('./dashboard-content.html');
 
 const getModifiedContentFromUser = () => {
     const user = authLib.getUser()?.key;
-    const results = contentLib
+    const repos = getLayersMultiConnection('draft');
+    const results = repos
         .query({
             start: 0,
             count: 10,
@@ -44,19 +43,16 @@ const getModifiedContentFromUser = () => {
         .hits.map((hit) => {
             const draftContent = getRepoConnection({
                 branch: 'draft',
-                repoId: 'com.enonic.cms.default',
-            }).get(hit._id);
+                repoId: hit.repoId,
+            }).get(hit.id);
             const masterContent = getRepoConnection({
                 branch: 'master',
-                repoId: 'com.enonic.cms.default',
-            }).get(hit._id);
-
-            const convertModifiedTime = hit.modifiedTime?.substring(0, 10);
-
+                repoId: hit.repoId,
+            }).get(hit.id);
+            const modifiedStr = draftContent.modifiedTime.substring(0,19).replace('T',' ');
             let status = 'Ny';
-
-            if (hit.publish?.first) {
-                if (hit.publish?.from) {
+            if (masterContent?.publish?.first) {
+                if (masterContent?.publish?.from) {
                     if (draftContent?._versionKey === masterContent?._versionKey) {
                         status = 'Publisert';
                     } else {
@@ -67,10 +63,10 @@ const getModifiedContentFromUser = () => {
                 }
             }
             return {
-                displayName: hit.displayName,
-                modifiedTime: convertModifiedTime,
+                displayName: draftContent.displayName,
+                modifiedTime:  modifiedStr,
                 status,
-                url: `/admin/tool/com.enonic.app.contentstudio/main/default/edit/${hit._id}`,
+                url: `/admin/tool/com.enonic.app.contentstudio/main/default/edit/${draftContent._id}`,
             };
         });
 

@@ -1,15 +1,23 @@
-<widget> 
-	<div id="admin-widget-content" style="background-color: lightgray; margin: 10px; align-items: center">
-		<h3 style="margin: 10px">Ditt sist redigerte innhold</h3>	
-		<table style="margin: 10px">
+<widget>
+	<style>
+		table {
+			font-size: 1rem;
+		}
+		td {
+			padding: 0 0.25rem 0.25rem 0;
+		}
+	</style>
+	<div id="admin-widget-content" style="background-color: lightgray; padding: 1rem; align-items: center">
+		<h3>Ditt sist redigerte innhold</h3>
+		<table>
 			<tr th:each="result: ${modified}">
 				<td><a th:text="${result.displayName}" th:href="${result.url}" th:target="_blank"></a></td>
 				<td th:text="${result.modifiedTime}"></td>
 				<td th:text="${result.status}"></td>
 			</tr>
 		</table>
-		<h3 style="margin: 10px">Ditt sist publiserte innhold</h3>
-		<table style="margin: 10px">
+		<h3>Ditt sist publiserte innhold</h3>
+		<table>
 			<tr th:each="result: ${published}">
 				<td><a th:text="${result.displayName}" th:href="${result.url}" th:target="_blank"></a></td>
 				<td th:text="${result.modifiedTime}"></td>
