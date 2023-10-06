@@ -92,10 +92,6 @@ const buildPageMetaData = (sourceData: any, content: contentLib.Content) => {
 };
 
 const processSingleContent = (content: contentLib.Content) => {
-    log.info('-----------------------------------------------------------------');
-    log.info(`Processing content ${content.type}: ${content._id}`);
-    log.info('-----------------------------------------------------------------');
-
     const normalizedData = normalizeInvalidData(content);
     const pageMetaData = buildPageMetaData(normalizedData, content);
 
@@ -113,21 +109,16 @@ const processSingleContent = (content: contentLib.Content) => {
 export const startPageMetaCreation = () => {
     log.info('Starting meta-object-page generation process');
 
-    const publishableIds: string[] = [];
-
     runInContext({ branch: 'draft', asAdmin: true }, () => {
         contentTypesToMigrate.forEach((contentType) => {
             const content = contentLib.query({
                 count: 2000,
                 contentTypes: [contentType],
             });
-            log.info(`Found ${content.total} content of type ${contentType}`);
 
             content.hits.forEach((content) => {
                 processSingleContent(content);
             });
         });
-
-        log.info(`Publishing ${publishableIds.length} PageMeta objects`);
     });
 };
