@@ -42,6 +42,7 @@ export const buildSelectorQuery = (selectorInput: string) => {
 const buildQuery = (userInput?: string, selectorInput?: string) => {
     const userQuery = userInput ? generateFulltextQuery(userInput, ['displayName'], 'AND') : null;
     const selectorQuery = selectorInput ? buildSelectorQuery(selectorInput) : null;
+
     return [userQuery, selectorQuery].filter(Boolean).join(' AND ');
 };
 const transformHit = (content: Content): SelectorHit =>
