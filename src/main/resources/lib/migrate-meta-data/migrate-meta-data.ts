@@ -12,8 +12,8 @@ const normalizeInvalidData = (content: contentLib.Content) => {
     const mutatedData = { ...data };
 
     // Some content has had it's schema changed with fields removed, while
-    // the actual data still exist. This data would no longer be
-    // valid, so we need to remove these orphan fields.
+    // the actual data still exist. This is cleaned up in prod, but
+    // not always locally.
     Object.keys(mutatedData).forEach((key) => {
         if (!validFields.includes(key)) {
             delete mutatedData[key];
