@@ -8,6 +8,7 @@ import { logger } from '../../../utils/logging';
 import { runInContext } from '../../../context/run-in-context';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
 import { isContentPreviewOnly } from '../../../utils/content-utils';
+import { getLocaleFromContext } from '../../../localization/locale-context';
 
 export const macroHtmlFragmentCallback: CreationCallback = (context, params) => {
     params.fields.processedHtml = {
@@ -27,16 +28,16 @@ export const macroHtmlFragmentCallback: CreationCallback = (context, params) => 
                 const baseContentId = getGuillotineContentQueryBaseContentId();
                 if (baseContentId) {
                     const baseContent = contentLib.get({ key: baseContentId });
-                    if (!baseContent || isContentPreviewOnly(baseContent)) {
-                        return null;
+                    if (baseContent && !isContentPreviewOnly(baseContent)) {
+                        const locale = getLocaleFromContext();
+                        logger.critical(
+                            `Content not found for fragment in html-fragment macro: ${fragmentId} / [${locale}] ${baseContent._id}`,
+                            true,
+                            true
+                        );
                     }
                 }
 
-                logger.critical(
-                    `Content not found for fragment in html-fragment macro: ${fragmentId}`,
-                    true,
-                    true
-                );
                 return null;
             }
 
