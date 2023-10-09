@@ -10,6 +10,19 @@ import { getGuillotineContentQueryBaseContentId } from '../../utils/content-quer
 import { isContentPreviewOnly } from '../../../utils/content-utils';
 import { getLocaleFromContext } from '../../../localization/locale-context';
 
+const getInvalidReferenceLogLevel = (baseContentId?: string) => {
+    if (!baseContentId) {
+        return 'critical';
+    }
+
+    const baseContent = contentLib.get({ key: baseContentId });
+    if (!baseContent) {
+        return 'critical';
+    }
+
+    return isContentPreviewOnly(baseContent) ? 'warning' : 'critical';
+};
+
 export const macroHtmlFragmentCallback: CreationCallback = (context, params) => {
     params.fields.processedHtml = {
         type: graphQlLib.reference('RichText'),
@@ -26,18 +39,14 @@ export const macroHtmlFragmentCallback: CreationCallback = (context, params) => 
             );
             if (!fragmentContent) {
                 const baseContentId = getGuillotineContentQueryBaseContentId();
-                if (baseContentId) {
-                    const baseContent = contentLib.get({ key: baseContentId });
-                    if (baseContent && !isContentPreviewOnly(baseContent)) {
-                        const locale = getLocaleFromContext();
-                        logger.critical(
-                            `Content not found for fragment in html-fragment macro: ${fragmentId} / [${locale}] ${baseContent._id}`,
-                            true,
-                            true
-                        );
-                    }
-                }
+                const locale = getLocaleFromContext();
+                const logLevel = getInvalidReferenceLogLevel(baseContentId);
 
+                logger[logLevel](
+                    `Content not found for fragment in html-fragment macro: ${fragmentId} / [${locale}] ${baseContentId}`,
+                    true,
+                    true
+                );
                 return null;
             }
 

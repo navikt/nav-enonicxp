@@ -95,13 +95,11 @@ export const runGuillotineComponentsQuery = (
 
         if (!fragment) {
             const locale = getLocaleFromContext();
-
-            if (!isContentPreviewOnly(baseContent)) {
-                logger.critical(
-                    `Invalid fragment reference ${fragmentId} in content [${locale}] ${baseContent._id}`,
-                    true
-                );
-            }
+            const logLevel = isContentPreviewOnly(baseContent) ? 'warning' : 'critical';
+            logger[logLevel](
+                `Invalid fragment reference ${fragmentId} in content [${locale}] ${baseContent._id}`,
+                true
+            );
         }
 
         acc.push({
