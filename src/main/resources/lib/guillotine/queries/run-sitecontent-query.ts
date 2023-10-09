@@ -16,6 +16,7 @@ import { guillotineTransformSpecialComponents } from './transform-special-compon
 import { stringArrayToSet } from '../../utils/array-utils';
 import { logger } from '../../utils/logging';
 import { getLocaleFromContext } from '../../localization/locale-context';
+import { isContentPreviewOnly } from '../../utils/content-utils';
 
 export type GuillotineUnresolvedComponentType = { type: ComponentType; path: string };
 export type GuillotineComponentQueryResult = {
@@ -94,10 +95,13 @@ export const runGuillotineComponentsQuery = (
 
         if (!fragment) {
             const locale = getLocaleFromContext();
-            logger.critical(
-                `Invalid fragment reference ${fragmentId} in content [${locale}] ${baseContent._id}`,
-                true
-            );
+
+            if (!isContentPreviewOnly(baseContent)) {
+                logger.critical(
+                    `Invalid fragment reference ${fragmentId} in content [${locale}] ${baseContent._id}`,
+                    true
+                );
+            }
         }
 
         acc.push({
