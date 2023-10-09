@@ -49,6 +49,11 @@ const getModifiedContentFromUser = () => {
                 branch: 'master',
                 repoId: hit.repoId,
             }).get(hit.id);
+
+            if ( !draftContent ) {
+                return null;
+            }
+
             const modifiedStr = draftContent.modifiedTime.substring(0,19).replace('T',' ');
             let status = 'Ny';
             if (masterContent?.publish?.first) {
@@ -62,6 +67,7 @@ const getModifiedContentFromUser = () => {
                     status = 'Avpublisert';
                 }
             }
+
             return {
                 displayName: draftContent.displayName,
                 modifiedTime:  modifiedStr,
@@ -72,7 +78,7 @@ const getModifiedContentFromUser = () => {
 
     const published: ContentInfo[] = [];
     const modified = results.map((result) => {
-        if (result.status === 'Publisert') {
+        if (result?.status === 'Publisert') {
             published.push(result);
         } else {
             return result;
