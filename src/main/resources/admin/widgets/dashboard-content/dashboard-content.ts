@@ -50,27 +50,34 @@ const getModifiedContentFromUser = () => {
                 repoId: hit.repoId,
             }).get(hit.id);
 
-            if ( !draftContent ) {
+            if (!draftContent) {
                 return null;
             }
 
-            const modifiedStr = draftContent.modifiedTime.substring(0,19).replace('T',' ');
+            let modifiedStr = draftContent.modifiedTime.substring(0, 16).replace('T', ' ');
+
+            if (!draftContent.displayName) {
+                draftContent.displayName = 'Uten tittel';
+            }
+
             let status = 'Ny';
+
             if (masterContent?.publish?.first) {
                 if (masterContent?.publish?.from) {
                     if (draftContent?._versionKey === masterContent?._versionKey) {
                         status = 'Publisert';
+                        modifiedStr = masterContent.publish.from.substring(0, 16).replace('T', ' ');
                     } else {
                         status = 'Endret';
                     }
-                } else {
-                    status = 'Avpublisert';
                 }
+            } else if (draftContent?.publish?.first) {
+                status = 'Avpublisert';
             }
 
             return {
                 displayName: draftContent.displayName,
-                modifiedTime:  modifiedStr,
+                modifiedTime: modifiedStr,
                 status,
                 url: `/admin/tool/com.enonic.app.contentstudio/main/default/edit/${draftContent._id}`,
             };
