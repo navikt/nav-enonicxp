@@ -1,17 +1,31 @@
 <widget>
 	<style>
+		h3 {
+			margin-top: 1rem;
+			margin-bottom: 0.5rem;
+		}
 		table {
 			font-size: 1rem;
 		}
 		td {
-			padding: 0 0.25rem 0.25rem 0;
+			padding: 0 0.5rem 0.5rem 0;
+		}
+		.first-col {
+			min-width: 15rem;
 		}
 	</style>
 	<div id="admin-widget-content" style="background-color: lightgray; padding: 1rem; align-items: center">
 		<h3>Ditt sist redigerte innhold</h3>
 		<table>
 			<tr th:each="result: ${modified}">
-				<td><a th:text="${result.displayName}" th:href="${result.url}" th:target="_blank"></a></td>
+				<td class="first-col">
+					<a th:text="${result.displayName}"
+					   th:href="${result.url}"
+					   th:title="${result.title}"
+					   th:target="_blank"
+					>
+					</a>
+				</td>
 				<td th:text="${result.modifiedTime}"></td>
 				<td th:text="${result.status}"></td>
 			</tr>
@@ -19,7 +33,14 @@
 		<h3>Ditt sist publiserte innhold</h3>
 		<table>
 			<tr th:each="result: ${published}">
-				<td><a th:text="${result.displayName}" th:href="${result.url}" th:target="_blank"></a></td>
+				<td class="first-col">
+					<a th:text="${result.displayName}"
+					   th:href="${result.url}"
+					   th:title="${result.title}"
+					   th:target="_blank"
+					>
+					</a>
+				</td>
 				<td th:text="${result.modifiedTime}"></td>
 				<td th:text="${result.status}"></td>
 			</tr>

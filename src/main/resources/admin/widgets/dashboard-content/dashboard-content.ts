@@ -25,6 +25,7 @@ type ContentInfo = {
     displayName: string;
     modifiedTime: string;
     status: string;
+    title: string;
     url: string;
 };
 
@@ -79,6 +80,7 @@ const getModifiedContentFromUser = () => {
                 displayName: draftContent.displayName,
                 modifiedTime: modifiedStr,
                 status,
+                title: draftContent._path.replace('/content/www.nav.no/', ''),
                 url: `/admin/tool/com.enonic.app.contentstudio/main/default/edit/${draftContent._id}`,
             };
         });
