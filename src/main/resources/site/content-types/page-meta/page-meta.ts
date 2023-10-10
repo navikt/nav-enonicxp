@@ -379,11 +379,6 @@ export interface PageMeta {
           customPath: string;
 
           /**
-           * Legg til andre språkversjoner
-           */
-          languages?: Array<string>;
-
-          /**
            * Fant du det du lette etter?
            */
           feedbackToggle: boolean;
@@ -392,26 +387,6 @@ export interface PageMeta {
            * Chatbot Frida
            */
           chatbotToggle: boolean;
-
-          /**
-           * Oppsummering
-           */
-          description?: string;
-
-          /**
-           * Sidebeskrivelse for søk og sosiale medier
-           */
-          metaDescription?: string;
-
-          /**
-           * Canonical url - NB! Skal bare legges inn av hovedredaktør/administrator
-           */
-          canonicalUrl?: string;
-
-          /**
-           * Skal ikke vises i søk
-           */
-          noindex: boolean;
         };
       }
     | {
@@ -519,11 +494,6 @@ export interface PageMeta {
           rates?: string;
 
           /**
-           * Legg til andre språkversjoner
-           */
-          languages?: Array<string>;
-
-          /**
            * Fant du det du lette etter?
            */
           feedbackToggle: boolean;
@@ -532,26 +502,6 @@ export interface PageMeta {
            * Chatbot Frida
            */
           chatbotToggle: boolean;
-
-          /**
-           * Oppsummering
-           */
-          description?: string;
-
-          /**
-           * Sidebeskrivelse for søk og sosiale medier
-           */
-          metaDescription?: string;
-
-          /**
-           * Canonical url - NB! Skal bare legges inn av hovedredaktør/administrator
-           */
-          canonicalUrl?: string;
-
-          /**
-           * Skal ikke vises i søk
-           */
-          noindex: boolean;
         };
       }
     | {
@@ -664,11 +614,6 @@ export interface PageMeta {
           formDetailsTargets?: Array<string>;
 
           /**
-           * Legg til andre språkversjoner
-           */
-          languages?: Array<string>;
-
-          /**
            * Fant du det du lette etter?
            */
           feedbackToggle: boolean;
@@ -677,26 +622,6 @@ export interface PageMeta {
            * Chatbot Frida
            */
           chatbotToggle: boolean;
-
-          /**
-           * Oppsummering
-           */
-          description?: string;
-
-          /**
-           * Sidebeskrivelse for søk og sosiale medier
-           */
-          metaDescription?: string;
-
-          /**
-           * Canonical url - NB! Skal bare legges inn av hovedredaktør/administrator
-           */
-          canonicalUrl?: string;
-
-          /**
-           * Skal ikke vises i søk
-           */
-          noindex: boolean;
         };
       }
     | {
@@ -784,11 +709,6 @@ export interface PageMeta {
           "managed-by"?: Array<"po_aap" | "po_arbeid" | "po_familie" | "po_helse" | "po_pensjon" | "po_arbeidsgiver" | "digisos">;
 
           /**
-           * Legg til andre språkversjoner
-           */
-          languages?: Array<string>;
-
-          /**
            * Fant du det du lette etter?
            */
           feedbackToggle: boolean;
@@ -797,26 +717,6 @@ export interface PageMeta {
            * Chatbot Frida
            */
           chatbotToggle: boolean;
-
-          /**
-           * Oppsummering
-           */
-          description?: string;
-
-          /**
-           * Sidebeskrivelse for søk og sosiale medier
-           */
-          metaDescription?: string;
-
-          /**
-           * Canonical url - NB! Skal bare legges inn av hovedredaktør/administrator
-           */
-          canonicalUrl?: string;
-
-          /**
-           * Skal ikke vises i søk
-           */
-          noindex: boolean;
         };
       };
 }

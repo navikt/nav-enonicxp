@@ -62,7 +62,7 @@
                         <mixin name="audience" />
                         <mixin name="illustration" />
                         <mixin name="custom-path-selector-required"/>
-                        <mixin name="dynamic-page-common"/>
+                        <mixin name="decorator-toggles"/>
                     </items>
                 </option>
                 <option name="themed_article_page">
@@ -90,7 +90,7 @@
                         <mixin name="owner"/>
                         <mixin name="managed-by"/>
                         <mixin name="product-details-selector"/>
-                        <mixin name="dynamic-page-common"/>
+                        <mixin name="decorator-toggles"/>
                     </items>
                 </option>
                 <option name="guide_page">
@@ -108,7 +108,7 @@
                         <mixin name="managed-by" />
                         <mixin name="product-details-selector"/>
                         <mixin name="form-details-selector"/>
-                        <mixin name="dynamic-page-common"/>
+                        <mixin name="decorator-toggles"/>
                     </items>
                 </option>
                 <option name="current_topic_page">
@@ -123,7 +123,7 @@
                         <mixin name="custom-path-selector-required"/>
                         <mixin name="owner"/>
                         <mixin name="managed-by"/>
-                        <mixin name="dynamic-page-common"/>
+                        <mixin name="decorator-toggles"/>
                     </items>
                 </option>
             </options>
