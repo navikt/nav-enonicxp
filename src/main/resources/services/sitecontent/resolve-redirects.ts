@@ -3,11 +3,7 @@ import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { hasValidCustomPath } from '../../lib/paths/custom-paths/custom-path-utils';
 import { runInContext } from '../../lib/context/run-in-context';
-import {
-    COMPONENT_APP_KEY,
-    CONTENT_LOCALE_DEFAULT,
-    REDIRECTS_ROOT_PATH,
-} from '../../lib/constants';
+import { REDIRECTS_ROOT_PATH } from '../../lib/constants';
 import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-sitecontent-query';
 import { getParentPath, stripPathPrefix } from '../../lib/paths/path-utils';
 import { getPublicPath } from '../../lib/paths/public-path';
@@ -80,7 +76,7 @@ export const getSpecialRedirectIfApplicable = ({
         return null;
     }
 
-    const localeTarget = getContentLocaleRedirectTarget(content, locale);
+    const localeTarget = getContentLocaleRedirectTarget(content);
     if (localeTarget) {
         const targetContent = runInLocaleContext({ locale: localeTarget, branch }, () =>
             contentLib.get({ key: content._id })
