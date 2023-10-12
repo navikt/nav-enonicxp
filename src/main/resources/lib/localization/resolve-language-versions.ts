@@ -5,9 +5,10 @@ import { RepoBranch } from '../../types/common';
 import { runInContext } from '../context/run-in-context';
 import { LanguagesLegacy } from '../../site/mixins/languages-legacy/languages-legacy';
 import { getPublicPath } from '../paths/public-path';
-import { COMPONENT_APP_KEY, CONTENT_LOCALE_DEFAULT } from '../constants';
+import { CONTENT_LOCALE_DEFAULT } from '../constants';
 import { logger } from '../utils/logging';
 import { forceArray } from '../utils/array-utils';
+import { getContentLocaleRedirectTarget, isContentPreviewOnly } from '../utils/content-utils';
 
 type ContentWithLegacyLanguages = Content & {
     data: Required<LanguagesLegacy>;
@@ -49,14 +50,11 @@ const getLayersLanguages = (
     return localizedContent.reduce<Content[]>((acc, localizedContent) => {
         const { content, locale } = localizedContent;
 
-        const contentHasLayersRedirect =
-            locale === CONTENT_LOCALE_DEFAULT &&
-            content.x?.[COMPONENT_APP_KEY]?.redirectToLayer?.locale;
-
         if (
             locale === baseContentLocale ||
             content.language === baseContent.language ||
-            contentHasLayersRedirect
+            isContentPreviewOnly(content) ||
+            !!getContentLocaleRedirectTarget(content)
         ) {
             return acc;
         }
