@@ -77,7 +77,7 @@ export const getSpecialRedirectIfApplicable = ({
     }
 
     const localeTarget = getContentLocaleRedirectTarget(content);
-    if (localeTarget) {
+    if (localeTarget && localeTarget !== locale) {
         const targetContent = runInLocaleContext({ locale: localeTarget, branch }, () =>
             contentLib.get({ key: content._id })
         );
