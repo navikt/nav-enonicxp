@@ -10,8 +10,7 @@ import {
 import {
     findContentsWithFragmentComponent,
     findContentsWithFragmentMacro,
-} from '../../lib/reference-search/type-specific-resolvers/portal-fragment';
-import { findVideoReferences } from '../../lib/reference-search/type-specific-resolvers/video';
+} from '../../lib/reference-search/fragment-references-resolvers';
 import { ReferencesFinder } from '../../lib/reference-search/references-finder';
 
 type ReqParams = Partial<{
@@ -33,11 +32,6 @@ const getResolversForContentType = (
             return {
                 componentsResolver: findContentsWithFragmentComponent,
                 macrosResolver: findContentsWithFragmentMacro,
-            };
-        }
-        case 'no.nav.navno:video': {
-            return {
-                generalResolver: findVideoReferences,
             };
         }
         default: {
