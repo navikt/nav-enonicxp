@@ -6,6 +6,7 @@ import { forceArray } from '../utils/array-utils';
 import { runInLocaleContext } from '../localization/locale-context';
 import { getContentFromAllLayers, isContentLocalized } from '../localization/locale-utils';
 import { RepoBranch } from '../../types/common';
+import { stripPathPrefix } from '../paths/path-utils';
 
 type ContentWithLocale = {
     content: Content;
@@ -32,7 +33,7 @@ const transformToReferenceItem = (content: Content, locale: string): ReferenceIt
 
     return {
         name: content.displayName,
-        path: content._path,
+        path: stripPathPrefix(content._path),
         editorPath: `${CONTENT_STUDIO_PATH_PREFIX}/${projectId}/edit/${content._id}`,
         id: content._id,
         layer: locale,

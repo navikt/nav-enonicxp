@@ -12,7 +12,6 @@ import {
     findContentsWithFragmentMacro,
 } from '../../lib/reference-search/type-specific-resolvers/portal-fragment';
 import { findVideoReferences } from '../../lib/reference-search/type-specific-resolvers/video';
-import { findProductDetailsReferences } from '../../lib/reference-search/type-specific-resolvers/product-details';
 import { ReferencesFinder } from '../../lib/reference-search/references-finder';
 
 type ReqParams = Partial<{
