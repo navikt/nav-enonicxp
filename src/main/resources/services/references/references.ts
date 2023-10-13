@@ -10,15 +10,19 @@ import {
 import {
     findContentsWithFragmentComponent,
     findContentsWithFragmentMacro,
-} from '../../lib/reference-search/type-specific-resolvers/portal-fragment';
-import { findVideoReferences } from '../../lib/reference-search/type-specific-resolvers/video';
-import { findProductDetailsReferences } from '../../lib/reference-search/type-specific-resolvers/product-details';
+} from '../../lib/reference-search/fragment-references-resolvers';
+import { ReferencesFinder } from '../../lib/reference-search/references-finder';
 
 type ReqParams = Partial<{
     contentId: string;
     locale: string;
     branch: RepoBranch;
 }>;
+
+const genericResolver = (contentId: string) => {
+    const referencesFinder = new ReferencesFinder({ contentId, withDeepSearch: false });
+    return referencesFinder.run();
+};
 
 const getResolversForContentType = (
     contentType: ContentDescriptor
@@ -30,18 +34,10 @@ const getResolversForContentType = (
                 macrosResolver: findContentsWithFragmentMacro,
             };
         }
-        case 'no.nav.navno:video': {
-            return {
-                generalResolver: findVideoReferences,
-            };
-        }
-        case 'no.nav.navno:product-details': {
-            return {
-                generalResolver: findProductDetailsReferences,
-            };
-        }
         default: {
-            return null;
+            return {
+                generalResolver: genericResolver,
+            };
         }
     }
 };

@@ -1,5 +1,6 @@
 import { Content, BooleanFilter } from '/lib/xp/content';
 import { RepoConnection, NodeQueryHit, RepoNode } from '/lib/xp/node';
+import * as contextLib from '/lib/xp/context';
 import { RepoBranch } from '../../types/common';
 import { logger } from '../utils/logging';
 import {
@@ -13,6 +14,7 @@ import { ContentDescriptor } from '../../types/content-types/content-config';
 import { getParentPath } from '../paths/path-utils';
 import { NON_LOCALIZED_QUERY_FILTER } from '../localization/locale-utils';
 import { forceArray } from '../utils/array-utils';
+import { isValidBranch } from '../context/branches';
 
 type ContentDescriptorSet = ReadonlySet<ContentDescriptor>;
 type ContentNode = RepoNode<Content<any>>;
@@ -35,7 +37,7 @@ const typesWithFormsOverviewPages: ContentDescriptorSet = new Set([
 export class ReferencesFinder {
     private readonly baseContentId: string;
     private readonly repoId: string;
-    private readonly branch: string;
+    private readonly branch: RepoBranch;
     private readonly withDeepSearch?: boolean;
     private readonly timeout?: number;
 
@@ -54,14 +56,16 @@ export class ReferencesFinder {
         timeout,
     }: {
         contentId: string;
-        repoId: string;
-        branch: RepoBranch;
+        branch?: RepoBranch;
+        repoId?: string;
         withDeepSearch?: boolean;
         timeout?: number;
     }) {
+        const { repository: repoIdFromContext, branch: branchFromContext } = contextLib.get();
+
         this.baseContentId = contentId;
-        this.repoId = repoId;
-        this.branch = branch;
+        this.repoId = repoId || repoIdFromContext;
+        this.branch = branch || (isValidBranch(branchFromContext) ? branchFromContext : 'master');
         this.withDeepSearch = withDeepSearch;
         this.timeout = timeout;
 
@@ -71,8 +75,8 @@ export class ReferencesFinder {
         this.referencesChecked = new Set();
 
         this.repoConnection = getRepoConnection({
-            branch,
-            repoId,
+            branch: this.branch,
+            repoId: this.repoId,
             asAdmin: true,
         });
     }
