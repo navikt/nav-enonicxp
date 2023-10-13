@@ -13,12 +13,18 @@ import {
 } from '../../lib/reference-search/type-specific-resolvers/portal-fragment';
 import { findVideoReferences } from '../../lib/reference-search/type-specific-resolvers/video';
 import { findProductDetailsReferences } from '../../lib/reference-search/type-specific-resolvers/product-details';
+import { ReferencesFinder } from '../../lib/reference-search/references-finder';
 
 type ReqParams = Partial<{
     contentId: string;
     locale: string;
     branch: RepoBranch;
 }>;
+
+const genericResolver = (contentId: string) => {
+    const referencesFinder = new ReferencesFinder({ contentId, withDeepSearch: false });
+    return referencesFinder.run();
+};
 
 const getResolversForContentType = (
     contentType: ContentDescriptor
@@ -35,13 +41,10 @@ const getResolversForContentType = (
                 generalResolver: findVideoReferences,
             };
         }
-        case 'no.nav.navno:product-details': {
-            return {
-                generalResolver: findProductDetailsReferences,
-            };
-        }
         default: {
-            return null;
+            return {
+                generalResolver: genericResolver,
+            };
         }
     }
 };
