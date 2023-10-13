@@ -4,6 +4,10 @@ import * as nodeLib from '/lib/xp/node';
 import { Source } from '/lib/xp/node';
 import { ADMIN_PRINCIPAL, SUPER_USER } from '../../../lib/constants';
 import { getLayersMultiConnection } from '../../../lib/localization/locale-utils';
+import dayjs from '/assets/dayjs/1.11.9/dayjs.min.js';
+import utc from '/assets/dayjs/1.11.9/plugin/utc.js';
+
+dayjs.extend(utc);
 
 const asAdminParams: Pick<Source, 'user' | 'principals'> = {
     user: {
@@ -76,9 +80,14 @@ const getModifiedContentFromUser = () => {
                 status = 'Avpublisert';
             }
 
+            const modifiedStrLocalTime = dayjs(modifiedStr)
+                .utc(true)
+                .local()
+                .format('DD.MM.YYYY HH.mm');
+
             return {
                 displayName: draftContent.displayName,
-                modifiedTime: modifiedStr,
+                modifiedTime: modifiedStrLocalTime,
                 status,
                 title: draftContent._path.replace('/content/www.nav.no/', ''),
                 url: `/admin/tool/com.enonic.app.contentstudio/main/default/edit/${draftContent._id}`,
