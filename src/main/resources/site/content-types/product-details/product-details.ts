@@ -4,9 +4,4 @@ export interface ProductDetails {
    * Type produktdetaljer
    */
   detailType: "rates" | "payout_dates" | "processing_times";
-
-  /**
-   * Velg innhold for alternative språk
-   */
-  languages?: Array<string>;
 }
