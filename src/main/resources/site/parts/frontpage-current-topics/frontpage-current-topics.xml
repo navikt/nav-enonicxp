@@ -21,6 +21,13 @@
                 <max>2</max>
             </config>
         </input>
+        <input type="CheckBox" name="sortByPublishDate">
+            <label>Sorter etter publiseringsdato</label>
+            <default>false</default>
+            <config>
+                <alignment>right</alignment>
+            </config>
+        </input>
     </form>
     <config>
         <allow-on-content-type>${app}:front-page</allow-on-content-type>
