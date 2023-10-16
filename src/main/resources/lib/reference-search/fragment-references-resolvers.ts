@@ -1,5 +1,5 @@
 import * as contentLib from '/lib/xp/content';
-import { findContentsWithText } from '../../utils/htmlarea-utils';
+import { findContentsWithText } from '../utils/htmlarea-utils';
 
 export const findContentsWithFragmentComponent = (fragmentId: string) => {
     return contentLib.query({

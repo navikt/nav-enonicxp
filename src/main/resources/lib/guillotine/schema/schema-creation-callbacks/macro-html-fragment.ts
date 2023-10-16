@@ -6,6 +6,22 @@ import { getKeyWithoutMacroDescription } from '../../../utils/component-utils';
 import { HtmlAreaPartConfig } from '../../../../site/parts/html-area/html-area-part-config';
 import { logger } from '../../../utils/logging';
 import { runInContext } from '../../../context/run-in-context';
+import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
+import { isContentPreviewOnly } from '../../../utils/content-utils';
+import { getLocaleFromContext } from '../../../localization/locale-context';
+
+const getInvalidReferenceLogLevel = (baseContentId?: string) => {
+    if (!baseContentId) {
+        return 'critical';
+    }
+
+    const baseContent = contentLib.get({ key: baseContentId });
+    if (!baseContent) {
+        return 'critical';
+    }
+
+    return isContentPreviewOnly(baseContent) ? 'warning' : 'critical';
+};
 
 export const macroHtmlFragmentCallback: CreationCallback = (context, params) => {
     params.fields.processedHtml = {
@@ -18,18 +34,24 @@ export const macroHtmlFragmentCallback: CreationCallback = (context, params) => 
 
             const key = getKeyWithoutMacroDescription(fragmentId);
 
-            const content = runInContext({ branch: 'master' }, () => contentLib.get({ key }));
-            if (!content) {
-                logger.critical(
-                    `Content not found for fragment in html-fragment macro: ${fragmentId}`,
+            const fragmentContent = runInContext({ branch: 'master' }, () =>
+                contentLib.get({ key })
+            );
+            if (!fragmentContent) {
+                const baseContentId = getGuillotineContentQueryBaseContentId();
+                const locale = getLocaleFromContext();
+                const logLevel = getInvalidReferenceLogLevel(baseContentId);
+
+                logger[logLevel](
+                    `Content not found for fragment in html-fragment macro: ${fragmentId} / [${locale}] ${baseContentId}`,
                     true,
                     true
                 );
                 return null;
             }
 
-            if (content.type !== 'portal:fragment') {
-                logger.error(
+            if (fragmentContent.type !== 'portal:fragment') {
+                logger.critical(
                     `Content specified for html-fragment macro is not a fragment: ${fragmentId}`,
                     false,
                     true
@@ -37,9 +59,9 @@ export const macroHtmlFragmentCallback: CreationCallback = (context, params) => 
                 return null;
             }
 
-            const html = (content.fragment?.config as HtmlAreaPartConfig)?.html;
+            const html = (fragmentContent.fragment?.config as HtmlAreaPartConfig)?.html;
             if (!html) {
-                logger.warning(
+                logger.error(
                     `Fragment in html-fragment macro did not contain html: ${fragmentId}`,
                     false,
                     true

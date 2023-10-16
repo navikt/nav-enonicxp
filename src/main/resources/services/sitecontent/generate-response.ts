@@ -115,7 +115,7 @@ const resolveContentStudioRequest = (
             ? resolveContent(content, branch, localeActual)
             : { ...content, contentLayer: localeActual };
 
-        const localeTarget = getContentLocaleRedirectTarget(content, localeActual);
+        const localeTarget = getContentLocaleRedirectTarget(content);
         if (contentResolved && localeTarget) {
             return {
                 ...contentResolved,
