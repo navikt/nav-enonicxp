@@ -120,6 +120,7 @@ export const contentTypesRenderedByEditorFrontend: ContentTypeList = [
     `${APP_DESCRIPTOR}:calculator`,
     `${APP_DESCRIPTOR}:product-details`,
     `${APP_DESCRIPTOR}:form-details`,
+    `${APP_DESCRIPTOR}:page-meta`,
     `${APP_DESCRIPTOR}:office-branch`,
     `${APP_DESCRIPTOR}:payout-dates`,
     `${APP_DESCRIPTOR}:office-editorial-page`,
