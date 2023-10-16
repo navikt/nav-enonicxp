@@ -8,12 +8,12 @@ export interface PageMeta {
         /**
          * Selected
          */
-        _selected: "content_page_with_sidemenus";
+        _selected: "product_page";
 
         /**
          * Produktside
          */
-        content_page_with_sidemenus: {
+        product_page: {
           /**
            * Målgruppe
            */

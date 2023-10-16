@@ -6,7 +6,7 @@ fragment contentPageMeta on no_nav_navno_PageMeta {
     data {
         contentType {
             _selected
-            content_page_with_sidemenus {
+            product_page {
                 area
                 taxonomy
                 owner

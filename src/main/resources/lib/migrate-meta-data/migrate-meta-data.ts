@@ -77,9 +77,18 @@ const createPageMeta = (data: any, originalContent: contentLib.Content) => {
     return content;
 };
 
+const resolveSelectedOption = (content: contentLib.Content) => {
+    const selectedContentType = content.type.split(':')[1]?.replace(/-/g, '_');
+    if (selectedContentType === 'content_page_with_sidemenus') {
+        return 'product_page';
+    }
+
+    return selectedContentType;
+};
+
 const buildPageMetaData = (sourceData: any, content: contentLib.Content) => {
     // Graphql doesn't support hyphen, so key names in option set has to be underscore. ie 'situation_page';
-    const selectedContentType = content.type.split(':')[1]?.replace(/-/g, '_');
+    const selectedContentType = resolveSelectedOption(content);
     const data = {
         contentType: {
             _selected: selectedContentType,
