@@ -1,0 +1,65 @@
+<content-type xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Oppsett for nytt søk</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <item-set name="defaultConfig">
+            <label>Standard-oppsett</label>
+            <help-text>Ved flere valg brukes første definerte felt</help-text>
+            <occurrences minimum="1" maximum="1"/>
+            <items>
+                <input name="titleKey" type="TextLine">
+                    <label>Felt for tittel</label>
+                    <occurrences minimum="1" maximum="0"/>
+                </input>
+                <input name="ingressKey" type="TextLine">
+                    <label>Felt for ingress</label>
+                    <occurrences minimum="1" maximum="0"/>
+                </input>
+                <input name="audienceKey" type="TextLine">
+                    <label>Felt for målgrupper</label>
+                    <occurrences minimum="1" maximum="0"/>
+                </input>
+            </items>
+        </item-set>
+        <item-set name="groupConfig">
+            <label>Oppsett for innholdstyper</label>
+            <occurrences minimum="0" maximum="0"/>
+            <items>
+                <input name="name" type="TextLine">
+                    <label>Navn på denne gruppen</label>
+                </input>
+                <input name="contentTypes" type="ContentTypeFilter">
+                    <label>Velg innholdstyper for denne gruppen</label>
+                    <occurrences minimum="1" maximum="0"/>
+                </input>
+                <field-set>
+                    <label>Mapping av felter</label>
+                    <items>
+                        <input name="titleKey" type="TextLine">
+                            <label>Felt for tittel</label>
+                            <help-text>Hvis tom benyttes standard-feltet</help-text>
+                            <occurrences minimum="0" maximum="0"/>
+                        </input>
+                        <input name="ingressKey" type="TextLine">
+                            <label>Felt for ingress</label>
+                            <help-text>Hvis tom benyttes standard-feltet</help-text>
+                            <occurrences minimum="0" maximum="0"/>
+                        </input>
+                        <input name="audienceKey" type="TextLine">
+                            <label>Felt for målgrupper</label>
+                            <help-text>Hvis tom benyttes standard-feltet</help-text>
+                            <occurrences minimum="0" maximum="0"/>
+                        </input>
+                        <input name="textKey" type="TextLine">
+                            <label>Felter for innhold</label>
+                            <occurrences minimum="0" maximum="0"/>
+                        </input>
+                    </items>
+                </field-set>
+            </items>
+        </item-set>
+    </form>
+</content-type>

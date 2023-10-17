@@ -65,18 +65,12 @@ const getMetaTags = (content: IndexableContentNode) => {
 
     if (type === 'no.nav.navno:office-branch') {
         metaTags.push('kontor');
-    }
-
-    if (type === 'no.nav.navno:form-details') {
+    } else if (type === 'no.nav.navno:form-details') {
         metaTags.push('skjema');
-    }
-
-    if (type === 'no.nav.navno:main-article') {
+    } else if (type === 'no.nav.navno:main-article') {
         if (data.contentType === 'news') {
             metaTags.push('nyhet');
-        }
-
-        if (data.contentType === 'pressRelease') {
+        } else if (data.contentType === 'pressRelease') {
             metaTags.push('pressemelding');
         }
     }
