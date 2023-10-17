@@ -1,0 +1,114 @@
+#import "../mixins/animatedIconsTargetFragment.graphql"
+#import "../mixins/formDetailsTargetFragment.graphql"
+
+fragment contentPageMeta on no_nav_navno_PageMeta {
+    dataAsJson
+    data {
+        contentType {
+            _selected
+            product_page {
+                area
+                taxonomy
+                owner
+                audience {
+                    _selected
+                }
+                illustration {
+                    ...animatedIconsTargetMixin
+                }
+                processing_times
+                customPath
+                payout_dates
+                rates
+                formDetailsTargets {
+                    ...formDetailsMixin
+                }
+                feedbackToggle
+                chatbotToggle
+            }
+            situation_page {
+                area
+                audience {
+                    _selected
+                }
+                illustration {
+                    ...animatedIconsTargetMixin
+                }
+                customPath
+                owner
+                feedbackToggle
+                chatbotToggle
+            }
+            tools_page {
+                audience {
+                    _selected
+                }
+                taxonomy
+                area
+                illustration {
+                    ...animatedIconsTargetMixin
+                }
+                customPath
+                owner
+            }
+            generic_page {
+                audience {
+                    _selected
+                }
+                illustration {
+                    ...animatedIconsTargetMixin
+                }
+                customPath
+                feedbackToggle
+                chatbotToggle
+            }
+            themed_article_page {
+                audience {
+                    _selected
+                }
+                taxonomy
+                area
+                illustration {
+                    ...animatedIconsTargetMixin
+                }
+                customPath
+                owner
+                processing_times
+                payout_dates
+                rates
+                feedbackToggle
+                chatbotToggle
+            }
+            guide_page {
+                hideFromProductlist
+                audience {
+                    _selected
+                }
+                area
+                illustration {
+                    ...animatedIconsTargetMixin
+                }
+                customPath
+                owner
+                processing_times
+                payout_dates
+                rates
+                formDetailsTargets {
+                    ...formDetailsMixin
+                }
+                feedbackToggle
+                chatbotToggle
+            }
+            current_topic_page {
+                audience {
+                    _selected
+                }
+                area
+                owner
+                customPath
+                feedbackToggle
+                chatbotToggle
+            }
+        }
+    }
+}

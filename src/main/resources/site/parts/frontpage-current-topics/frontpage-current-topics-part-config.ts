@@ -14,4 +14,9 @@ export interface FrontpageCurrentTopicsPartConfig {
    * Maks antall lenker
    */
   maxItems?: number;
+
+  /**
+   * Sorter etter publiseringsdato
+   */
+  sortByPublishDate: boolean;
 }

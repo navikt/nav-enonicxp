@@ -1,4 +1,3 @@
-import { Content } from '/lib/xp/content';
 import { getNodeVersions } from '../utils/version-utils';
 import { isPublicRenderedType, NodeEventData } from './utils';
 import { getCustomPathFromContent } from '../paths/custom-paths/custom-path-utils';
@@ -8,7 +7,7 @@ import { getLayersData } from '../localization/layers-data';
 import { ReferencesFinder } from '../reference-search/references-finder';
 import { removeDuplicates } from '../utils/array-utils';
 import { RepoBranch } from '../../types/common';
-import { getRepoConnection } from '../utils/repo-utils';
+import { getContentFromAllLayers } from '../localization/locale-utils';
 
 const REFERENCE_SEARCH_TIMEOUT_MS = 10000;
 
@@ -93,18 +92,28 @@ const findChangedPaths = (contentId: string, repoId: string, path: string) => {
 };
 
 const getNodePaths = (contentId: string, repoId: string, branch: RepoBranch) => {
-    const content = getRepoConnection({ branch, repoId, asAdmin: true }).get(contentId);
-    if (!content || !isPublicRenderedType(content)) {
+    const allVersions = getContentFromAllLayers({ contentId, branch, state: 'localized' });
+    if (allVersions.length === 0) {
         return [];
     }
 
-    const locale = getLayersData().repoIdToLocaleMap[repoId];
+    const publicPaths = allVersions.map((version) =>
+        getPublicPath(version.content, version.locale)
+    );
 
-    const internalPath = stripPathPrefix(content._path);
-    const publicPath = getPublicPath(content, locale);
-    const changedPaths = findChangedPaths(contentId, repoId, content._path);
+    const baseContent = allVersions.find((version) => version.repoId === repoId)?.content;
+    if (!baseContent) {
+        return publicPaths;
+    }
 
-    return [internalPath, publicPath, ...changedPaths];
+    if (!isPublicRenderedType(baseContent)) {
+        return [];
+    }
+
+    const internalPath = stripPathPrefix(baseContent._path);
+    const changedPaths = findChangedPaths(contentId, repoId, baseContent._path);
+
+    return [internalPath, ...publicPaths, ...changedPaths];
 };
 
 export const findPathsToInvalidate = (nodeEventData: NodeEventData, eventType: string) => {

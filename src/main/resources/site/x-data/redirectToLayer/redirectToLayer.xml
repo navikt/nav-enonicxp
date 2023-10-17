@@ -3,10 +3,10 @@
     <display-name>Redirect til språkversjon</display-name>
     <form>
         <input name="locale" type="ComboBox">
-            <label>Dette feltet skal kun brukes dersom denne siden ikke finnes på norsk bokmål</label>
-            <help-text>Obs: språkversjonen må være lokalisert</help-text>
+            <label>Obs: språkversjonen må være lokalisert</label>
             <occurrences minimum="0" maximum="1" />
             <config>
+                <option value="no">Norsk bokmål</option>
                 <option value="nn">Nynorsk</option>
                 <option value="en">Engelsk</option>
                 <option value="se">Samisk</option>
