@@ -1,5 +1,5 @@
 import { getRepoConnection } from '../utils/repo-utils';
-import { RepoConnection, RepoNode } from '/lib/xp/node';
+import { RepoConnection } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
 import { getSearchConfig } from './config';
@@ -15,7 +15,6 @@ import {
     sortMultiRepoNodeHitIdsToRepoIdBuckets,
 } from '../localization/locale-utils';
 import { getLayersData } from '../localization/layers-data';
-import { externalSearchCreateOrUpdateDocuments } from './external/create-or-update-document';
 
 type ContentIdsToFacetsMap = Record<string, ContentFacet[]>;
 type RepoIdsToContentMap = Record<string, ContentIdsToFacetsMap>;
@@ -25,48 +24,6 @@ const MAX_NODES_PER_FACET_COUNT = 50000;
 
 const MAX_DELETE_COUNT = 100000;
 const DELETION_BATCH_SIZE = 1000;
-
-// Temporary functionality for testing batch updates to the external search index
-const externalSearchUpdateAll = (contentWithMatchedFacets: ContentIdWithMatchedFacets[]) => {
-    if (app.config.env !== 'dev' && app.config.env !== 'localhost') {
-        logger.info(`External search update not active in env ${app.config.env} - aborting`);
-        return;
-    }
-
-    const { sources, repoIdToLocaleMap } = getLayersData();
-
-    const localeToRepoConnection = sources.master.reduce<Record<string, RepoConnection>>(
-        (acc, source) => {
-            const { repoId } = source;
-
-            const locale = repoIdToLocaleMap[repoId];
-            const repoConnection = getRepoConnection({ repoId, branch: 'master' });
-
-            return { ...acc, [locale]: repoConnection };
-        },
-        {}
-    );
-
-    const facetsToIndex = new Set(['0', '1', '3', '4', '5', 'en']);
-
-    const contentToIndex = contentWithMatchedFacets
-        .filter((content) => content.facets.some((facet) => facetsToIndex.has(facet.facet)))
-        .reduce<
-            Array<{
-                content: RepoNode<Content>;
-                locale: string;
-            }>
-        >((acc, { contentId, locale }) => {
-            const contentNode = localeToRepoConnection[locale]?.get<Content>(contentId);
-            if (contentNode) {
-                acc.push({ content: contentNode, locale });
-            }
-
-            return acc;
-        }, []);
-
-    externalSearchCreateOrUpdateDocuments(contentToIndex as any);
-};
 
 // Remove any existing search nodes which no longer points to content
 // that should be indexed by the search
@@ -297,7 +254,7 @@ export const revalidateAllSearchNodesAbort = () => {
     abortFlag = true;
 };
 
-export const revalidateAllSearchNodesSync = (updateExternal?: boolean) => {
+export const revalidateAllSearchNodesSync = () => {
     abortFlag = false;
     const startTime = Date.now();
     logger.info(`Updating all search nodes!`);
@@ -309,12 +266,6 @@ export const revalidateAllSearchNodesSync = (updateExternal?: boolean) => {
     }
 
     const contentWithMatchedFacets = getContentWithMatchingFacets(config);
-
-    if (updateExternal) {
-        logger.info('Running full external search index update');
-        externalSearchUpdateAll(contentWithMatchedFacets);
-        return;
-    }
 
     const searchRepoConnection = getSearchRepoConnection();
 

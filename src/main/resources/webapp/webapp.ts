@@ -50,7 +50,7 @@ const validActions: ActionsMap = {
     ...(app.config.env !== 'p' && {
         updateAllSearchNodesExternal: {
             description: 'Oppdater alle søke-noder (eksternt søk)',
-            callback: () => revalidateAllSearchNodesAsync(true),
+            callback: () => revalidateAllSearchNodesAsync(),
         },
     }),
     abortSearchNodesUpdate: {

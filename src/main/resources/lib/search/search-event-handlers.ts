@@ -15,6 +15,7 @@ import {
 import { getLayersData } from '../localization/layers-data';
 import { forceArray } from '../utils/array-utils';
 import { customListenerType } from '../utils/events';
+import { getExternalSearchConfig } from './external/config';
 
 let isActive = false;
 let isRunningConfigUpdate = false;
@@ -46,7 +47,7 @@ const runQueuedUpdates = () => {
     }
 };
 
-export const revalidateAllSearchNodesAsync = (updateExternal?: boolean) => {
+export const revalidateAllSearchNodesAsync = () => {
     if (isRunningConfigUpdate) {
         logger.warning(
             'Attempted to run concurrent update-all jobs - Queueing a new update-all job'
@@ -65,7 +66,7 @@ export const revalidateAllSearchNodesAsync = (updateExternal?: boolean) => {
             try {
                 const updateIsValid = revalidateSearchConfigCache();
                 if (updateIsValid) {
-                    revalidateAllSearchNodesSync(updateExternal);
+                    revalidateAllSearchNodesSync();
                 }
             } catch (e) {
                 logger.critical(`Error while running search config updates - ${e}`);
@@ -121,6 +122,10 @@ export const activateSearchIndexEventHandlers = () => {
         callback: (event) => {
             if (!clusterLib.isMaster()) {
                 return;
+            }
+
+            const searchConfigExternal = getExternalSearchConfig();
+            if (searchConfigExternal) {
             }
 
             const searchConfig = getSearchConfig();
