@@ -8,6 +8,7 @@ import { logger } from '../../utils/logging';
 import { isMedia } from '../../utils/content-utils';
 import { generateSearchDocumentId } from './utils';
 import { getSearchNodeHref } from '../create-or-update-search-node';
+import { ArrayOrSingle } from '../../../types/util-types';
 
 const SERVICE_URL = URLS.SEARCH_API_URL;
 
@@ -18,6 +19,7 @@ type IndexableContentNode = RepoNode<Content> & {
         title?: string;
         ingress?: string;
         text?: string;
+        keywords?: ArrayOrSingle<string>;
         audience?: { _selected: string } | string;
     };
 };
@@ -37,6 +39,7 @@ type SearchIndexDocument = {
     title: string;
     ingress: string;
     text: string;
+    keywords: string[];
     metadata: {
         createdAt: string;
         lastUpdated: string;
@@ -112,7 +115,7 @@ const buildDocument = (
     content: IndexableContentNode,
     locale: string
 ): SearchIndexDocument | null => {
-    if (!content) {
+    if (!content?.data) {
         return null;
     }
 
@@ -124,9 +127,10 @@ const buildDocument = (
     return {
         id: generateSearchDocumentId(content._id, locale),
         href,
-        title: content.data?.title || content.displayName,
-        ingress: content.data?.ingress || '',
-        text: content.data?.text || '',
+        title: content.data.title || content.displayName,
+        ingress: content.data.ingress || '',
+        text: content.data.text || '',
+        keywords: forceArray(content.data.keywords),
         metadata: {
             createdAt: content.createdTime,
             lastUpdated: content.modifiedTime,
