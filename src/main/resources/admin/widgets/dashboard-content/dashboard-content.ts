@@ -77,6 +77,7 @@ const getModifiedContentFromUser = () => {
                     }
                 }
             } else if (draftContent?.publish?.first) {
+                modifiedStr = JSON.stringify(draftContent._ts.substring(0, 16).replace('T', ' '));
                 status = 'Avpublisert';
             }
 
