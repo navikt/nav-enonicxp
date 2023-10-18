@@ -3,7 +3,7 @@ import * as authLib from '/lib/xp/auth';
 import * as nodeLib from '/lib/xp/node';
 import { Source } from '/lib/xp/node';
 import { ADMIN_PRINCIPAL, SUPER_USER } from '../../../lib/constants';
-import { getLayersMultiConnection } from '../../../lib/localization/locale-utils';
+import { getLayersMultiConnection, NON_LOCALIZED_QUERY_FILTER } from '../../../lib/localization/locale-utils';
 import dayjs from '/assets/dayjs/1.11.9/dayjs.min.js';
 import utc from '/assets/dayjs/1.11.9/plugin/utc.js';
 
@@ -48,12 +48,7 @@ const getModifiedContentFromUser = () => {
             query: `modifier = "${user}"`,
             filters: {
                 boolean: {
-                    mustNot: {
-                        hasValue: {
-                            field: 'inherit',
-                            values: ['CONTENT'],
-                        },
-                    }
+                    mustNot: NON_LOCALIZED_QUERY_FILTER
                 }
             }
         })
