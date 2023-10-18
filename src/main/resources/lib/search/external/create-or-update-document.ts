@@ -4,7 +4,6 @@ import { logger } from '../../utils/logging';
 import { generateSearchDocumentId } from './utils';
 import { getRepoConnection } from '../../utils/repo-utils';
 import { getLayersData } from '../../localization/layers-data';
-import { getExternalSearchConfig } from './config';
 import { searchApiPostDocuments } from './api-handlers/post-document';
 import { searchApiDeleteDocument } from './api-handlers/delete-document';
 import { buildExternalSearchDocument } from './document-builder';
@@ -33,13 +32,7 @@ export const updateExternalSearchDocumentForContent = (contentId: string, repoId
         return;
     }
 
-    const searchConfig = getExternalSearchConfig();
-    if (!searchConfig) {
-        logger.error('No search config found!');
-        return;
-    }
-
-    const document = buildExternalSearchDocument(content, locale, searchConfig);
+    const document = buildExternalSearchDocument(content, locale);
     if (!document) {
         return;
     }

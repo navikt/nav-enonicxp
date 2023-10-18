@@ -11,17 +11,16 @@ import { CONTENT_ROOT_REPO_ID } from '../../constants';
 
 type SearchConfig = Content<'no.nav.navno:search-config-v2'>;
 type PersistedSearchConfig = { config?: SearchConfig };
-type ConfigGroup = Pick<
-    NonNullable<SearchConfig['data']['groupConfig']>[number],
-    'titleKey' | 'ingressKey' | 'audienceKey' | 'textKey'
+type KeysConfig = Partial<
+    Pick<SearchConfig['data']['defaultKeys'], 'titleKey' | 'ingressKey' | 'audienceKey' | 'textKey'>
 >;
 
 const SEARCH_CONFIG_KEY = `/${SEARCH_REPO_EXTERNAL_CONFIG_NODE}`;
 
 let searchConfig: SearchConfig | null = null;
 
-const validateConfigGroup = (group: ConfigGroup, repo: RepoConnection) => {
-    const keysString = [group.titleKey, group.ingressKey, group.audienceKey, group.textKey]
+const validateKeysConfig = (keys: KeysConfig, repo: RepoConnection) => {
+    const keysString = [keys.titleKey, keys.ingressKey, keys.audienceKey, keys.textKey]
         .flat()
         .filter(Boolean)
         .join(',');
@@ -42,10 +41,15 @@ const validateConfigGroup = (group: ConfigGroup, repo: RepoConnection) => {
 const validateConfigs = (config: SearchConfig) => {
     const repo = getRepoConnection({ branch: 'master', repoId: CONTENT_ROOT_REPO_ID });
 
-    const defaultIsValid = validateConfigGroup(config.data.defaultConfig, repo);
+    const defaultIsValid = validateKeysConfig(config.data.defaultKeys, repo);
 
-    const groupsAreValid = forceArray(config.data.groupConfig).reduce((acc, group) => {
-        const groupIsValid = validateConfigGroup(group, repo);
+    const groupsAreValid = forceArray(config.data.contentGroups).reduce((acc, group) => {
+        const groupKeys = group?.groupKeys;
+        if (!groupKeys) {
+            return acc;
+        }
+
+        const groupIsValid = validateKeysConfig(groupKeys, repo);
         return groupIsValid ? acc : false;
     }, true);
 

@@ -5,6 +5,8 @@ import { getSearchNodeHref } from '../create-or-update-search-node';
 import { generateSearchDocumentId } from './utils';
 import { isMedia } from '../../utils/content-utils';
 import { getNestedValue } from '../../utils/object-utils';
+import { getExternalSearchConfig } from './config';
+import { logger } from '../../utils/logging';
 
 type SearchConfig = Content<'no.nav.navno:search-config-v2'>;
 type KeysConfig = NonNullable<SearchConfig['data']['defaultKeys']>;
@@ -77,11 +79,13 @@ class ExternalSearchDocumentBuilder {
 
         const href = getSearchNodeHref(content, locale);
         if (!href) {
+            logger.error('No href found!');
             return null;
         }
 
         const title = this.getTitle();
         if (!title) {
+            logger.error('No title found!');
             return null;
         }
 
@@ -104,17 +108,33 @@ class ExternalSearchDocumentBuilder {
         };
     }
 
-    private getFieldValue(key: MetaKey) {
-        const possibleKeys = this.getKeys(key);
+    private getFieldValues(metaKey: MetaKey, mode: 'first' | 'all') {
+        const possibleKeys = this.getKeys(metaKey);
 
-        for (const key in possibleKeys) {
+        logger.info(`Possible keys for ${metaKey}: ${possibleKeys.join(', ')}`);
+
+        const values: string[] = [];
+
+        for (const key of possibleKeys) {
             const value = getNestedValue(this.content, key);
-            if (value) {
-                return value;
+            logger.info(`Value for ${key}: ${JSON.stringify(value)}`);
+
+            if (!value) {
+                continue;
+            }
+
+            if (Array.isArray(value)) {
+                values.push(...value);
+            } else {
+                values.push(value);
+            }
+
+            if (mode === 'first') {
+                break;
             }
         }
 
-        return null;
+        return values;
     }
 
     private getKeys(metaKey: MetaKey) {
@@ -134,28 +154,26 @@ class ExternalSearchDocumentBuilder {
     }
 
     private getText(): string {
-        const keys = this.getKeys('textKey');
-
-        return '';
+        return this.getFieldValues('textKey', 'all').join(' ');
     }
 
     private getTitle(): string | null {
-        const title = this.getFieldValue('titleKey');
-        return typeof title === 'string' ? title : null;
+        const title = this.getFieldValues('titleKey', 'first')[0];
+        return title || null;
     }
 
     private getIngress(): string {
-        const ingress = this.getFieldValue('ingressKey');
-        return typeof ingress === 'string' ? ingress : '';
+        const ingress = this.getFieldValues('ingressKey', 'first')[0];
+        return ingress || '';
     }
 
     private getAudience(): DocumentAudience[] {
-        const audienceValue = this.getFieldValue('audienceKey');
-        if (!audienceValue) {
+        const audienceValue = this.getFieldValues('audienceKey', 'first');
+        if (audienceValue.length === 0) {
             return [AUDIENCE_DEFAULT];
         }
 
-        return forceArray(audienceValue).map((audience) => audienceMap[audience]);
+        return audienceValue.map((audience) => audienceMap[audience]);
     }
 
     private getMetaTags() {
@@ -200,10 +218,16 @@ class ExternalSearchDocumentBuilder {
 
 export const buildExternalSearchDocument = (
     content: ContentNode,
-    locale: string,
-    searchConfig: SearchConfig
+    locale: string
 ): ExternalSearchDocument | null => {
     if (!content?.data) {
+        logger.error('No content data found!');
+        return null;
+    }
+
+    const searchConfig = getExternalSearchConfig();
+    if (!searchConfig) {
+        logger.error('No search config found!');
         return null;
     }
 

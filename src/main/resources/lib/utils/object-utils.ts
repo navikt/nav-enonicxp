@@ -13,6 +13,14 @@ export const getNestedValueFromKeyArray = (obj: Record<string, any>, keys: strin
         return currentValue;
     }
 
+    if (Array.isArray(currentValue)) {
+        const values = currentValue
+            .map((value) => getNestedValueFromKeyArray(value, rest))
+            .filter(Boolean);
+
+        return values.length > 0 ? values : null;
+    }
+
     return getNestedValueFromKeyArray(currentValue, rest);
 };
 // Get a nested object value from a dot-delimited string of keys
