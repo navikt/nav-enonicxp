@@ -4,7 +4,7 @@ import { forceArray } from '../../utils/array-utils';
 import { getSearchNodeHref } from '../create-or-update-search-node';
 import { generateSearchDocumentId } from './utils';
 import { isMedia } from '../../utils/content-utils';
-import { getNestedValue } from '../../utils/object-utils';
+import { getNestedValues } from '../../utils/object-utils';
 import { getExternalSearchConfig } from './config';
 import { logger } from '../../utils/logging';
 
@@ -116,7 +116,7 @@ class ExternalSearchDocumentBuilder {
         const values: string[] = [];
 
         for (const key of possibleKeys) {
-            const value = getNestedValue(this.content, key);
+            const value = getNestedValues(this.content, key);
             logger.info(`Value for ${key}: ${JSON.stringify(value)}`);
 
             if (!value) {
@@ -124,9 +124,11 @@ class ExternalSearchDocumentBuilder {
             }
 
             if (Array.isArray(value)) {
-                values.push(...value);
-            } else {
+                values.push(...value.filter((item) => typeof item === 'string'));
+            } else if (typeof value === 'string') {
                 values.push(value);
+            } else {
+                continue;
             }
 
             if (mode === 'first') {
