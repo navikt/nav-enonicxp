@@ -3,41 +3,11 @@ export interface SearchConfigV2 {
   /**
    * Standard-oppsett
    */
-  defaultConfig: {
+  defaultKeys: {
     /**
      * Felt for tittel
      */
     titleKey: Array<string>;
-
-    /**
-     * Felt for ingress
-     */
-    ingressKey: Array<string>;
-
-    /**
-     * Felt for målgrupper
-     */
-    audienceKey: Array<string>;
-  };
-
-  /**
-   * Oppsett for innholdstyper
-   */
-  groupConfig?: Array<{
-    /**
-     * Navn på denne gruppen
-     */
-    name?: string;
-
-    /**
-     * Velg innholdstyper for denne gruppen
-     */
-    contentTypes: Array<string>;
-
-    /**
-     * Felt for tittel
-     */
-    titleKey?: Array<string>;
 
     /**
      * Felt for ingress
@@ -53,5 +23,45 @@ export interface SearchConfigV2 {
      * Felter for innhold
      */
     textKey?: Array<string>;
+  };
+
+  /**
+   * Oppsett for innholdstyper
+   */
+  contentGroups?: Array<{
+    /**
+     * Navn på denne gruppen
+     */
+    name?: string;
+
+    /**
+     * Velg innholdstyper for denne gruppen
+     */
+    contentTypes: Array<string>;
+
+    /**
+     * Oppsett av felter (overstyrer standard-oppsett)
+     */
+    groupKeys?: {
+      /**
+       * Felt for tittel
+       */
+      titleKey?: Array<string>;
+
+      /**
+       * Felt for ingress
+       */
+      ingressKey?: Array<string>;
+
+      /**
+       * Felt for målgrupper
+       */
+      audienceKey?: Array<string>;
+
+      /**
+       * Felter for innhold
+       */
+      textKey?: Array<string>;
+    };
   }>;
 }

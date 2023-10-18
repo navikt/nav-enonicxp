@@ -77,7 +77,7 @@ const getLastValidConfig = (repo: RepoConnection) => {
 };
 
 // Returns true if the latest config is valid
-const revalidateSearchConfigCache = () => {
+export const revalidateExternalSearchConfigCache = () => {
     const searchRepoConnection = getSearchRepoConnection();
 
     const searchConfigHits = runInContext(
@@ -124,7 +124,7 @@ const revalidateSearchConfigCache = () => {
 
 export const getExternalSearchConfig = () => {
     if (!searchConfig) {
-        revalidateSearchConfigCache();
+        revalidateExternalSearchConfigCache();
     }
 
     return searchConfig;

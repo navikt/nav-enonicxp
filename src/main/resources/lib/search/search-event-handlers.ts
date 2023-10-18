@@ -15,7 +15,6 @@ import {
 import { getLayersData } from '../localization/layers-data';
 import { forceArray } from '../utils/array-utils';
 import { customListenerType } from '../utils/events';
-import { getExternalSearchConfig } from './external/config';
 
 let isActive = false;
 let isRunningConfigUpdate = false;
@@ -122,10 +121,6 @@ export const activateSearchIndexEventHandlers = () => {
         callback: (event) => {
             if (!clusterLib.isMaster()) {
                 return;
-            }
-
-            const searchConfigExternal = getExternalSearchConfig();
-            if (searchConfigExternal) {
             }
 
             const searchConfig = getSearchConfig();
