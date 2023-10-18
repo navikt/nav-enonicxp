@@ -40,12 +40,22 @@ const getModifiedContentFromUser = () => {
     const user = authLib.getUser()?.key;
     const repos = getLayersMultiConnection('draft');
 
-    // 1. Fetch all content modified by current user, find status and sort
+    // 1. Fetch all localized content modified by current user, find status and sort
     const results = repos
         .query({
             start: 0,
             count: 1000,
             query: `modifier = "${user}"`,
+            filters: {
+                boolean: {
+                    mustNot: {
+                        hasValue: {
+                            field: 'inherit',
+                            values: ['CONTENT'],
+                        },
+                    }
+                }
+            }
         })
         .hits.map((hit) => {
             const draftContent = getRepoConnection({
