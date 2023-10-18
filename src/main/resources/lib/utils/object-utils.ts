@@ -14,9 +14,14 @@ export const getNestedValueFromKeyArray = (obj: Record<string, any>, keys: strin
     }
 
     if (Array.isArray(currentValue)) {
-        const values = currentValue
-            .map((value) => getNestedValueFromKeyArray(value, rest))
-            .filter(Boolean);
+        const values = currentValue.reduce((acc, value) => {
+            const deepValue = getNestedValueFromKeyArray(value, rest);
+            if (deepValue) {
+                acc.push(deepValue);
+            }
+
+            return acc;
+        }, []);
 
         return values.length > 0 ? values : null;
     }
