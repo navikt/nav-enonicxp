@@ -15,6 +15,9 @@ import {
 import { getLayersData } from '../localization/layers-data';
 import { forceArray } from '../utils/array-utils';
 import { customListenerType } from '../utils/events';
+import { EnonicEvent } from '/lib/xp/event';
+import { getExternalSearchConfig } from './external/config';
+import { updateExternalSearchDocumentForContent } from './external/create-or-update-document';
 
 let isActive = false;
 let isRunningConfigUpdate = false;
@@ -100,6 +103,34 @@ const runUpdateSingleContentTask = (contentId: string, repoId: string) => {
     });
 };
 
+const externalSearchEventHandler = (event: EnonicEvent) => {
+    const searchConfig = getExternalSearchConfig();
+    if (!searchConfig) {
+        logger.error(`No external search config found - could not run event handler!`);
+        return;
+    }
+
+    event.data.nodes.forEach((nodeData) => {
+        if (nodeData.branch !== 'master' || !nodeData.path.startsWith('/content/')) {
+            return;
+        }
+
+        if (nodeData.repo === CONTENT_ROOT_REPO_ID && nodeData.id === searchConfig._id) {
+            revalidateAllSearchNodesAsync();
+            return;
+        }
+
+        const { repoIdToLocaleMap } = getLayersData();
+
+        // Only nodes from a content repo should be indexed
+        if (!repoIdToLocaleMap[nodeData.repo]) {
+            return;
+        }
+
+        updateExternalSearchDocumentForContent(nodeData.id, nodeData.repo);
+    });
+};
+
 export const activateSearchIndexEventHandlers = () => {
     if (isActive) {
         logger.error(
@@ -122,6 +153,8 @@ export const activateSearchIndexEventHandlers = () => {
             if (!clusterLib.isMaster()) {
                 return;
             }
+
+            externalSearchEventHandler(event);
 
             const searchConfig = getSearchConfig();
             if (!searchConfig) {
