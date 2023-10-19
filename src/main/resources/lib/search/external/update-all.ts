@@ -49,26 +49,33 @@ const sendToSearchApi = (repoId: string, contentIds: string[]) => {
         return;
     }
 
-    for (let i = 0; i < contentIds.length; i += BATCH_SIZE) {
-        const contentBatch = repo.get<Content>(contentIds.slice(i, i + BATCH_SIZE));
+    const totalContents = contentIds.length;
 
-        const documents = forceArray(contentBatch).reduce<ExternalSearchDocument[]>(
-            (acc, content) => {
-                if (!content) {
-                    return acc;
-                }
-
-                const document = buildExternalSearchDocument(content, locale);
-                if (document) {
-                    acc.push(document);
-                }
-
-                return acc;
-            },
-            []
+    for (let batchStart = 0; batchStart < totalContents; batchStart += BATCH_SIZE) {
+        const contentBatch = forceArray(
+            repo.get<Content>(contentIds.slice(batchStart, batchStart + BATCH_SIZE))
         );
 
-        logger.info(`Poasting ${documents.length} documents!`);
+        const documents = contentBatch.reduce<ExternalSearchDocument[]>((acc, content) => {
+            if (!content) {
+                return acc;
+            }
+
+            const document = buildExternalSearchDocument(content, locale);
+            if (!document) {
+                return acc;
+            }
+
+            acc.push(document);
+
+            return acc;
+        }, []);
+
+        const progress = batchStart + contentBatch.length;
+
+        logger.info(
+            `Posting documents for ${documents.length}/${contentBatch.length} contents to search api - Total progress for locale "${locale}": ${progress}/${totalContents}`
+        );
 
         // searchApiPostDocuments(documents);
     }

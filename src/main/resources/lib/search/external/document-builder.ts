@@ -75,13 +75,13 @@ class ExternalSearchDocumentBuilder {
 
         const href = getSearchNodeHref(content, locale);
         if (!href) {
-            logger.error('No href found!');
+            logger.error(`No href found for ${content._id} / ${locale}`);
             return null;
         }
 
         const title = this.getTitle();
         if (!title) {
-            logger.error('No title found!');
+            logger.error(`No title found for ${content._id} / ${locale}`);
             return null;
         }
 
@@ -106,8 +106,6 @@ class ExternalSearchDocumentBuilder {
 
     private getFieldValues(metaKey: MetaKey, mode: 'first' | 'all') {
         const possibleKeys = this.getKeys(metaKey);
-
-        logger.info(`Possible keys for ${metaKey}: ${possibleKeys.join(', ')}`);
 
         const values: string[] = [];
 
