@@ -13,5 +13,5 @@ export const searchApiDeleteDocument = (documentId: string) => {
         connectionTimeout: 10000,
     });
 
-    logger.info(`[DELETE] Response from search api: ${JSON.stringify(response)}`);
+    logger.info(`Response from search api: ${JSON.stringify(response)}`);
 };

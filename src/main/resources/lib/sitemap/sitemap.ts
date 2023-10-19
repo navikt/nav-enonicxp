@@ -3,7 +3,6 @@ import { Content } from '/lib/xp/content';
 import * as taskLib from '/lib/xp/task';
 import * as eventLib from '/lib/xp/event';
 import * as clusterLib from '/lib/xp/cluster';
-import { stringArrayToSet } from '../utils/array-utils';
 import { runInContext } from '../context/run-in-context';
 import { URLS } from '../constants';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
@@ -66,12 +65,12 @@ const sitemapData: SitemapData = {
     },
 };
 
-const contentTypesInSitemapSet = stringArrayToSet(contentTypesInSitemap);
+const contentTypesInSitemapSet: ReadonlySet<string> = new Set(contentTypesInSitemap);
 
 const shouldIncludeContent = (content: Content<any> | null): content is Content =>
     !!(
         content &&
-        contentTypesInSitemapSet[content.type] &&
+        contentTypesInSitemapSet.has(content.type) &&
         !content.data?.externalProductUrl &&
         !content.data?.noindex &&
         isContentLocalized(content)

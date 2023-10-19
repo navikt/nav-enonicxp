@@ -43,7 +43,7 @@ export const searchApiPostDocuments = (documents: ExternalSearchDocument[]) => {
             const body = JSON.stringify(documentsBatch);
 
             logger.info(
-                `[POST] Sending batch ${i} - ${i + documentsBatch.length} with size ${body.length}`
+                `Sending batch ${i} - ${i + documentsBatch.length} with size ${body.length}`
             );
 
             const response = httpClient.request({
@@ -55,7 +55,7 @@ export const searchApiPostDocuments = (documents: ExternalSearchDocument[]) => {
             });
 
             logger.info(
-                `[POST] Response from search api for batch ${i} - ${i + documentsBatch.length}: ${
+                `Response from search api for batch ${i} - ${i + documentsBatch.length}: ${
                     response.status
                 } - ${response.message}`
             );
