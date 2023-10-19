@@ -74,10 +74,10 @@ const sendToSearchApi = (repoId: string, contentIds: string[]) => {
         const progress = batchStart + contentBatch.length;
 
         logger.info(
-            `Posting documents for ${documents.length}/${contentBatch.length} contents to search api - Total progress for locale "${locale}": ${progress}/${totalContents}`
+            `Sending documents batch for ${documents.length}/${contentBatch.length} contents to search api - Total progress for locale "${locale}": ${progress}/${totalContents}`
         );
 
-        // searchApiPostDocuments(documents);
+        searchApiPostDocuments(documents);
     }
 };
 
@@ -94,9 +94,13 @@ export const externalSearchUpdateAll = () => {
         return;
     }
 
+    const start = Date.now();
+
     const contentToIndex = getContentToIndex(validContentTypes);
 
     Object.entries(contentToIndex).forEach(([repoId, contentIds]) => {
         sendToSearchApi(repoId, contentIds);
     });
+
+    logger.info(`External search full update completed in ${(Date.now() - start) / 1000} seconds`);
 };

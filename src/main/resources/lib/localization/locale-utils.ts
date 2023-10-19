@@ -32,6 +32,32 @@ const localizationStateFilters: Record<LocalizationState, BooleanFilter['boolean
     all: {},
 };
 
+const insertLocalizationStateFilterIntoParams = (
+    params: any, // Should be NodeQueryParams, but the type for this is really crap atm :D
+    state: LocalizationState
+): NodeQueryParams => {
+    if (state === 'all') {
+        return params;
+    }
+
+    if (!params.filters) {
+        params.filters = {};
+    }
+
+    if (!params.filters.boolean) {
+        params.filters.boolean = {};
+    }
+
+    const booleanFilterKey = state === 'localized' ? 'mustNot' : 'must';
+
+    params.filters.boolean[booleanFilterKey] = [
+        ...forceArray(params.filters.boolean[booleanFilterKey]),
+        NON_LOCALIZED_QUERY_FILTER,
+    ];
+
+    return params;
+};
+
 type ContentAndLayerData = {
     content: Content;
     locale: string;
@@ -150,7 +176,7 @@ export function queryAllLayersToLocaleBuckets({
 
     const multiRepoQueryResult = batchedMultiRepoNodeQuery({
         repo: multiRepoConnection,
-        queryParams,
+        queryParams: insertLocalizationStateFilterIntoParams(queryParams, state),
     });
 
     const buckets = sortMultiRepoNodeHitIdsToRepoIdBuckets(multiRepoQueryResult.hits);
@@ -168,7 +194,6 @@ export function queryAllLayersToLocaleBuckets({
                     ids: {
                         values: contentIds,
                     },
-                    boolean: localizationStateFilters[state],
                 },
             })
         );
