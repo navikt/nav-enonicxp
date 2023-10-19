@@ -1,0 +1,16 @@
+#import "../mixins/animatedIconsTargetFragment.graphql"
+
+fragment contentGenericPageV2 on no_nav_navno_GenericPageV2 {
+    dataAsJson
+    data {
+        audience {
+            _selected
+            provider {
+                provider_audience
+            }
+        }
+        illustration {
+            ...animatedIconsTargetMixin
+        }
+    }
+}

@@ -1,0 +1,8 @@
+#import "../contentCommonFragment.graphql"
+
+fragment contentCurrentTopicPageV2 on no_nav_navno_CurrentTopicPageV2 {
+    dataAsJson
+    data {
+        area
+    }
+}

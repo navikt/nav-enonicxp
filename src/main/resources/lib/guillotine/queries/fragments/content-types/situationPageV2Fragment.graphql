@@ -1,0 +1,18 @@
+#import "../contentCommonFragment.graphql"
+#import "../mixins/animatedIconsTargetFragment.graphql"
+
+fragment contentSituationPageV2 on no_nav_navno_SituationPageV2 {
+    dataAsJson
+    data {
+        area
+        audience {
+            _selected
+            provider {
+                provider_audience
+            }
+        }
+        illustration {
+            ...animatedIconsTargetMixin
+        }
+    }
+}

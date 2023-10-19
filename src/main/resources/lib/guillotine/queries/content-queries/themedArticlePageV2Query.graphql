@@ -1,11 +1,11 @@
 #import "../fragments/contentCommonWithPageFragment.graphql"
-#import "../fragments/content-types/genericPageV2Fragment.graphql"
+#import "../fragments/content-types/themedArticlePageV2Fragment.graphql"
 
-query genericPageV2Query($ref: ID!) {
+query themedArticlePageQuery($ref: ID!) {
     guillotine {
         get(key: $ref) {
             ...contentCommonWithPage
-            ...contentGenericPageV2
+            ...contentThemedArticlePageV2
         }
     }
 }
