@@ -6,7 +6,7 @@ import { logger } from '../../utils/logging';
 import { CONTENT_ROOT_REPO_ID } from '../../constants';
 import { getLayersData } from '../../localization/layers-data';
 import { getExternalSearchConfig, revalidateExternalSearchConfigCache } from './config';
-import { updateExternalSearchDocumentForContent } from './create-or-update-document';
+import { updateExternalSearchDocumentForContent } from './update-one';
 
 let isActive = false;
 

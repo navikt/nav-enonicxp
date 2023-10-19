@@ -31,7 +31,6 @@ export type ExternalSearchDocument = {
     title: string;
     ingress: string;
     text: string;
-    keywords?: string[];
     metadata: {
         createdAt: string;
         lastUpdated: string;
@@ -40,6 +39,7 @@ export type ExternalSearchDocument = {
         metatags?: DocumentMetaTag[];
         fylke?: string;
         isFile?: boolean;
+        keywords?: string[];
     };
 };
 
@@ -91,7 +91,6 @@ class ExternalSearchDocumentBuilder {
             title,
             ingress: this.getIngress(),
             text: this.getText(),
-            keywords: forceArray(content.data.keywords),
             metadata: {
                 audience: this.getAudience(),
                 language: this.getLanguage(),
@@ -100,6 +99,7 @@ class ExternalSearchDocumentBuilder {
                 isFile: isMedia(content),
                 createdAt: content.createdTime,
                 lastUpdated: content.modifiedTime,
+                keywords: forceArray(content.data.keywords),
             },
         };
     }

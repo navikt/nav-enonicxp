@@ -15,6 +15,7 @@ import {
     SEARCH_NODES_UPDATE_ABORT_EVENT,
 } from '../lib/search/search-event-handlers';
 import { pushLayerContentToMaster } from '../lib/localization/layers-data';
+import { externalSearchUpdateAll } from '../lib/search/external/update-all';
 
 type ActionsMap = { [key: string]: { description: string; callback: () => any } };
 
@@ -50,7 +51,7 @@ const validActions: ActionsMap = {
     ...(app.config.env !== 'p' && {
         updateAllSearchNodesExternal: {
             description: 'Oppdater alle søke-noder (eksternt søk)',
-            callback: () => revalidateAllSearchNodesAsync(),
+            callback: externalSearchUpdateAll,
         },
     }),
     abortSearchNodesUpdate: {

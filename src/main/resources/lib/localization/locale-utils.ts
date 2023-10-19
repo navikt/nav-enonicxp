@@ -101,7 +101,9 @@ export const isContentLocalized = (content: Content) =>
 
 export type NodeHitsLocaleBuckets = Record<string, string[]>;
 
-export const sortMultiRepoNodeHitIdsToRepoIdBuckets = (hits: readonly MultiRepoNodeQueryHit[]) => {
+export const sortMultiRepoNodeHitIdsToRepoIdBuckets = (
+    hits: readonly MultiRepoNodeQueryHit[]
+): NodeHitsLocaleBuckets => {
     return hits.reduce<NodeHitsLocaleBuckets>((acc, node) => {
         const { repoId, id } = node;
 
@@ -115,17 +117,35 @@ export const sortMultiRepoNodeHitIdsToRepoIdBuckets = (hits: readonly MultiRepoN
     }, {});
 };
 
-export type LocaleContentBuckets = Record<string, Content[]>;
+type LocaleContentBuckets = Record<string, Content[]>;
 
-export const queryAllLayersToLocaleBuckets = ({
+type QueryAllLayersToLocaleBucketsCommonArgs = {
+    branch: RepoBranch;
+    state?: LocalizationState;
+    queryParams: NodeQueryParams;
+};
+
+export function queryAllLayersToLocaleBuckets(
+    args: {
+        resolveContentData: false;
+    } & QueryAllLayersToLocaleBucketsCommonArgs
+): NodeHitsLocaleBuckets;
+export function queryAllLayersToLocaleBuckets(
+    args: {
+        resolveContentData: true;
+    } & QueryAllLayersToLocaleBucketsCommonArgs
+): LocaleContentBuckets;
+export function queryAllLayersToLocaleBuckets({
     branch,
     state = 'localized',
+    resolveContentData = true,
     queryParams,
 }: {
     branch: RepoBranch;
-    state: LocalizationState;
+    state?: LocalizationState;
+    resolveContentData?: boolean;
     queryParams: NodeQueryParams;
-}) => {
+}) {
     const multiRepoConnection = getLayersMultiConnection(branch);
 
     const multiRepoQueryResult = batchedMultiRepoNodeQuery({
@@ -134,6 +154,10 @@ export const queryAllLayersToLocaleBuckets = ({
     });
 
     const buckets = sortMultiRepoNodeHitIdsToRepoIdBuckets(multiRepoQueryResult.hits);
+
+    if (!resolveContentData) {
+        return buckets;
+    }
 
     return Object.entries(buckets).reduce<LocaleContentBuckets>((acc, [repoId, contentIds]) => {
         const locale = getLayersData().repoIdToLocaleMap[repoId];
@@ -153,4 +177,4 @@ export const queryAllLayersToLocaleBuckets = ({
 
         return acc;
     }, {});
-};
+}

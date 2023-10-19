@@ -1,7 +1,6 @@
 import { buildExternalSearchDocument } from '../../lib/search/external/document-builder';
 import { getRepoConnection } from '../../lib/utils/repo-utils';
 import { getLayersData } from '../../lib/localization/layers-data';
-import { logger } from '../../lib/utils/logging';
 
 export const get = (req: XP.Request) => {
     const { contentId, locale } = req.params;
