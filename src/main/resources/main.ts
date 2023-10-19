@@ -20,7 +20,7 @@ import { initSearchRepo } from './lib/search/search-repo';
 import { initLayersData } from './lib/localization/layers-data';
 import { activateLayersEventListeners } from './lib/localization/publish-events';
 import { activateContentUpdateListener } from './lib/contentUpdate/content-update-listener';
-import { activateExternalSearchIndexEventHandlers } from './lib/search/external/search-event-handlers';
+import { activateExternalSearchIndexEventHandlers } from './lib/search/external/event-handlers';
 
 updateClusterInfo();
 initLayersData();
@@ -31,13 +31,10 @@ activateSitemapDataUpdateEventListener();
 activateContentListItemUnpublishedListener();
 activateCustomPathNodeListeners();
 activateSearchIndexEventHandlers();
+activateExternalSearchIndexEventHandlers();
 activateContentUpdateListener();
 
 hookLibsWithTimeTravel();
-
-if (app.config.env === 'dev') {
-    activateExternalSearchIndexEventHandlers();
-}
 
 if (clusterLib.isMaster()) {
     log.info('Running master only init scripts');

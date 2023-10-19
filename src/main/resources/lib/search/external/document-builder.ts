@@ -9,7 +9,7 @@ import { getExternalSearchConfig } from './config';
 import { logger } from '../../utils/logging';
 
 type SearchConfig = Content<'no.nav.navno:search-config-v2'>;
-type KeysConfig = NonNullable<SearchConfig['data']['defaultKeys']>;
+type KeysConfig = Partial<SearchConfig['data']['defaultKeys']>;
 type MetaKey = keyof KeysConfig;
 
 type ContentNode = RepoNode<Content>;
@@ -56,26 +56,24 @@ class ExternalSearchDocumentBuilder {
     private readonly content: ContentNode;
     private readonly locale: string;
     private readonly searchConfig: SearchConfig;
-
-    private readonly contentGroupConfig: KeysConfig | null = null;
+    private readonly contentGroupKeys?: KeysConfig;
 
     constructor(content: ContentNode, locale: string, searchConfig: SearchConfig) {
         this.content = content;
         this.locale = locale;
         this.searchConfig = searchConfig;
-
-        const contentGroupConfig = forceArray(searchConfig.data.contentGroups).find((group) =>
-            forceArray(group.contentTypes).some((contentType) => contentType === content.type)
-        )?.groupKeys;
-
-        if (contentGroupConfig) {
-            this.contentGroupConfig = contentGroupConfig as KeysConfig;
-        }
+        this.contentGroupKeys = this.getContentGroupKeys();
     }
 
     public build(): ExternalSearchDocument | null {
-        const content = this.content;
-        const locale = this.locale;
+        const { content, locale } = this;
+
+        if (!this.contentGroupKeys) {
+            logger.info(
+                `Search is not configured for content-type ${content.type} - Content: ${content._id} / ${locale}`
+            );
+            return null;
+        }
 
         const href = getSearchNodeHref(content, locale);
         if (!href) {
@@ -106,6 +104,14 @@ class ExternalSearchDocumentBuilder {
                 lastUpdated: content.modifiedTime,
             },
         };
+    }
+
+    private getContentGroupKeys(): KeysConfig | undefined {
+        const contentGroupConfig = forceArray(this.searchConfig.data.contentGroups).find((group) =>
+            forceArray(group.contentTypes).some((contentType) => contentType === this.content.type)
+        )?.groupKeys;
+
+        return contentGroupConfig;
     }
 
     private getFieldValues(metaKey: MetaKey, mode: 'first' | 'all') {
@@ -142,8 +148,8 @@ class ExternalSearchDocumentBuilder {
     private getKeys(metaKey: MetaKey) {
         const keys: string[] = [];
 
-        if (this.contentGroupConfig) {
-            const contentConfigKeys = forceArray(this.contentGroupConfig[metaKey]);
+        if (this.contentGroupKeys) {
+            const contentConfigKeys = forceArray(this.contentGroupKeys[metaKey]);
             keys.push(...contentConfigKeys);
         }
 

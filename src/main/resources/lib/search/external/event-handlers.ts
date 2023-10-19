@@ -1,6 +1,7 @@
 import * as eventLib from '/lib/xp/event';
 import * as clusterLib from '/lib/xp/cluster';
 import * as taskLib from '/lib/xp/task';
+import { CONTENT_ROOT_PATH } from '/lib/xp/content';
 import { logger } from '../../utils/logging';
 import { CONTENT_ROOT_REPO_ID } from '../../constants';
 import { getLayersData } from '../../localization/layers-data';
@@ -50,7 +51,7 @@ export const activateExternalSearchIndexEventHandlers = () => {
             }
 
             event.data.nodes.forEach((nodeData) => {
-                if (nodeData.branch !== 'master' || !nodeData.path.startsWith('/content/')) {
+                if (nodeData.branch !== 'master' || !nodeData.path.startsWith(CONTENT_ROOT_PATH)) {
                     return;
                 }
 
@@ -72,5 +73,5 @@ export const activateExternalSearchIndexEventHandlers = () => {
         localOnly: false,
     });
 
-    logger.info('Started event listener for search index updates');
+    logger.info('Started event listener for external search index updates');
 };
