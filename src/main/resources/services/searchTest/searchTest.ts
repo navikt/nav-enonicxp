@@ -26,8 +26,6 @@ export const get = (req: XP.Request) => {
 
     const searchDocument = buildExternalSearchDocument(content, locale);
 
-    logger.info(`Search document: ${JSON.stringify(searchDocument)}`);
-
     return {
         status: 200,
         contentType: 'application/json',

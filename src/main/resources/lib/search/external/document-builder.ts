@@ -56,24 +56,22 @@ class ExternalSearchDocumentBuilder {
     private readonly content: ContentNode;
     private readonly locale: string;
     private readonly searchConfig: SearchConfig;
-    private readonly contentGroupKeys?: KeysConfig;
+    private readonly contentGroupKeys: KeysConfig;
 
-    constructor(content: ContentNode, locale: string, searchConfig: SearchConfig) {
+    constructor(
+        content: ContentNode,
+        locale: string,
+        searchConfig: SearchConfig,
+        contentGroupKeys: KeysConfig
+    ) {
         this.content = content;
         this.locale = locale;
         this.searchConfig = searchConfig;
-        this.contentGroupKeys = this.getContentGroupKeys();
+        this.contentGroupKeys = contentGroupKeys;
     }
 
     public build(): ExternalSearchDocument | null {
         const { content, locale } = this;
-
-        if (!this.contentGroupKeys) {
-            logger.info(
-                `Search is not configured for content-type ${content.type} - Content: ${content._id} / ${locale}`
-            );
-            return null;
-        }
 
         const href = getSearchNodeHref(content, locale);
         if (!href) {
@@ -106,14 +104,6 @@ class ExternalSearchDocumentBuilder {
         };
     }
 
-    private getContentGroupKeys(): KeysConfig | undefined {
-        const contentGroupConfig = forceArray(this.searchConfig.data.contentGroups).find((group) =>
-            forceArray(group.contentTypes).some((contentType) => contentType === this.content.type)
-        )?.groupKeys;
-
-        return contentGroupConfig;
-    }
-
     private getFieldValues(metaKey: MetaKey, mode: 'first' | 'all') {
         const possibleKeys = this.getKeys(metaKey);
 
@@ -123,8 +113,6 @@ class ExternalSearchDocumentBuilder {
 
         for (const key of possibleKeys) {
             const value = getNestedValues(this.content, key);
-            logger.info(`Value for ${key}: ${JSON.stringify(value)}`);
-
             if (!value) {
                 continue;
             }
@@ -224,6 +212,14 @@ class ExternalSearchDocumentBuilder {
     }
 }
 
+const getContentGroupKeys = (searchConfig: SearchConfig, content: ContentNode) => {
+    const contentGroupConfig = forceArray(searchConfig.data.contentGroups).find((group) =>
+        forceArray(group.contentTypes).some((contentType) => contentType === content.type)
+    )?.groupKeys;
+
+    return contentGroupConfig;
+};
+
 export const buildExternalSearchDocument = (
     content: ContentNode,
     locale: string
@@ -239,5 +235,18 @@ export const buildExternalSearchDocument = (
         return null;
     }
 
-    return new ExternalSearchDocumentBuilder(content, locale, searchConfig).build();
+    const contentGroupKeys = getContentGroupKeys(searchConfig, content);
+    if (!contentGroupKeys) {
+        logger.info(
+            `Search is not configured for content-type ${content.type} - Content: ${content._id} / ${locale}`
+        );
+        return null;
+    }
+
+    return new ExternalSearchDocumentBuilder(
+        content,
+        locale,
+        searchConfig,
+        contentGroupKeys
+    ).build();
 };
