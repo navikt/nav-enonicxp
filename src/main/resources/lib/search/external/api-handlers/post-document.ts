@@ -1,3 +1,4 @@
+import * as taskLib from '/lib/xp/task';
 import httpClient from '/lib/http-client';
 import { logger } from '../../../utils/logging';
 import { URLS } from '../../../constants';
@@ -6,7 +7,31 @@ import { ExternalSearchDocument } from '../document-builder';
 const SERVICE_URL = URLS.SEARCH_API_URL;
 const BATCH_SIZE = 100;
 
+// This won't be thread safe, but problems here should be very unlikely, and in any case the
+// consequences are not significant (some document-batches may be sent twice)
+const queueState: { isBusy: boolean; queue: ExternalSearchDocument[] } = {
+    isBusy: false,
+    queue: [],
+};
+
+export const searchApiPostDocumentsAsync = (documents: ExternalSearchDocument[]) => {
+    taskLib.executeFunction({
+        description: `Sending document batch to search api`,
+        func: () => searchApiPostDocuments(documents),
+    });
+};
+
 export const searchApiPostDocuments = (documents: ExternalSearchDocument[]) => {
+    if (queueState.isBusy) {
+        queueState.queue.push(...documents);
+        logger.info(
+            `Search api handler is busy, queueing ${documents.length} documents for processing`
+        );
+        return;
+    }
+
+    queueState.isBusy = true;
+
     logger.info(`Posting ${documents.length} documents to search index`);
 
     const start = Date.now();
@@ -48,4 +73,12 @@ export const searchApiPostDocuments = (documents: ExternalSearchDocument[]) => {
             (Date.now() - start) / 1000
         )} seconds`
     );
+
+    queueState.isBusy = false;
+
+    if (queueState.queue.length > 0) {
+        const queue = queueState.queue;
+        queueState.queue = [];
+        searchApiPostDocuments(queue);
+    }
 };

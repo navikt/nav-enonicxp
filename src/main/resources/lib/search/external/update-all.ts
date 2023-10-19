@@ -6,7 +6,7 @@ import { getRepoConnection } from '../../utils/repo-utils';
 import { queryAllLayersToLocaleBuckets } from '../../localization/locale-utils';
 import { buildExternalSearchDocument, ExternalSearchDocument } from './document-builder';
 import { getLayersData } from '../../localization/layers-data';
-import { searchApiPostDocuments } from './api-handlers/post-document';
+import { searchApiPostDocumentsAsync } from './api-handlers/post-document';
 
 const MAX_COUNT = 50000;
 const BATCH_SIZE = 2000;
@@ -77,7 +77,7 @@ const sendToSearchApi = (repoId: string, contentIds: string[]) => {
             `Sending documents batch for ${documents.length}/${contentBatch.length} contents to search api - Total progress for locale "${locale}": ${progress}/${totalContents}`
         );
 
-        searchApiPostDocuments(documents);
+        searchApiPostDocumentsAsync(documents);
     }
 };
 
