@@ -33,6 +33,16 @@ export const dynamicPageContentTypes: ContentTypeList = [
     `${APP_DESCRIPTOR}:forms-overview`,
 ];
 
+export const dynamicPageContentTypesV2: ContentTypeList = [
+    `${APP_DESCRIPTOR}:situation-page-v2`,
+    `${APP_DESCRIPTOR}:guide-page-v2`,
+    `${APP_DESCRIPTOR}:themed-article-page-v2`,
+    `${APP_DESCRIPTOR}:product-page-v2`,
+    `${APP_DESCRIPTOR}:tools-page-v2`,
+    `${APP_DESCRIPTOR}:generic-page-v2`,
+    `${APP_DESCRIPTOR}:current-topic-page-v2`,
+];
+
 export const linkContentTypes: ContentTypeList = [
     `${APP_DESCRIPTOR}:internal-link`,
     `${APP_DESCRIPTOR}:external-link`,
@@ -109,6 +119,7 @@ export const contentTypesInFormsOverviewPages = [
 export const contentTypesRenderedByPublicFrontend: ContentTypeList = [
     ...legacyPageContentTypes,
     ...dynamicPageContentTypes,
+    ...dynamicPageContentTypesV2,
     ...linkContentTypes,
 ];
 

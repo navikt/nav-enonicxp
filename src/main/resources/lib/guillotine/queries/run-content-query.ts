@@ -30,6 +30,7 @@ import areaPageQuery from './content-queries/areaPageQuery.graphql';
 import contactInformationQuery from './content-queries/contactInformationQuery.graphql';
 import calculatorQuery from './content-queries/calculatorQuery.graphql';
 import contentPageWithSidemenusQuery from './content-queries/contentPageWithSidemenusQuery.graphql';
+import productPageV2Query from './content-queries/productPageV2Query.graphql';
 import dynamicPageQuery from './content-queries/dynamicPageQuery.graphql';
 import externalLinkQuery from './content-queries/externalLinkQuery.graphql';
 import frontPageQuery from './content-queries/frontPageQuery.graphql';
@@ -37,7 +38,9 @@ import frontPageNestedQuery from './content-queries/frontPageNestedQuery.graphql
 import globalCaseTimeQuery from './content-queries/globalCaseTimeSetQuery.graphql';
 import globalValueSetQuery from './content-queries/globalValueSetQuery.graphql';
 import guidePageQuery from './content-queries/guidePageQuery.graphql';
+import guidePageV2Query from './content-queries/guidePageV2Query.graphql';
 import genericPageQuery from './content-queries/genericPageQuery.graphql';
+import genericPageV2Query from './content-queries/genericPageV2Query.graphql';
 import internalLinkQuery from './content-queries/internalLinkQuery.graphql';
 import largeTableQuery from './content-queries/largeTableQuery.graphql';
 import mainArticleQuery from './content-queries/mainArticleQuery.graphql';
@@ -60,9 +63,12 @@ import publishingCalendarQuery from './content-queries/publishingCalendarQuery.g
 import publishingCalendarEntryQuery from './content-queries/publishingCalendarEntryQuery.graphql';
 import sectionPageQuery from './content-queries/sectionPageQuery.graphql';
 import situationPageQuery from './content-queries/situationPageQuery.graphql';
+import situationPageV2Query from './content-queries/situationPageV2Query.graphql';
 import currentTopicPageQuery from './content-queries/currentTopicPageQuery.graphql';
+import currentTopicPageV2Query from './content-queries/currentTopicPageV2Query.graphql';
 import themedArticlePageQuery from './content-queries/themedArticlePageQuery.graphql';
 import toolsPageQuery from './content-queries/toolsPageQuery.graphql';
+import toolsPageV2Query from './content-queries/toolsPageV2Query.graphql';
 import transportPageQuery from './content-queries/transportPageQuery.graphql';
 import urlQuery from './content-queries/urlQuery.graphql';
 import pressLandingPageQuery from './content-queries/pressLandingPageQuery.graphql';
@@ -86,43 +92,49 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:calculator': calculatorQuery,
     'no.nav.navno:contact-information': contactInformationQuery,
     'no.nav.navno:content-page-with-sidemenus': contentPageWithSidemenusQuery,
-    'no.nav.navno:product-details': productDetailsQuery,
-    'no.nav.navno:form-details': formDetailsQuery,
-    'no.nav.navno:form-intermediate-step': formIntermediateStepQuery,
+    'no.nav.navno:current-topic-page-v2': currentTopicPageV2Query,
+    'no.nav.navno:current-topic-page': currentTopicPageQuery,
     'no.nav.navno:dynamic-page': dynamicPageQuery,
     'no.nav.navno:external-link': externalLinkQuery,
+    'no.nav.navno:form-details': formDetailsQuery,
+    'no.nav.navno:form-intermediate-step': formIntermediateStepQuery,
     'no.nav.navno:forms-overview': formsOverviewQuery,
-    'no.nav.navno:front-page': frontPageQuery,
     'no.nav.navno:front-page-nested': frontPageNestedQuery,
-    'no.nav.navno:internal-link': internalLinkQuery,
+    'no.nav.navno:front-page': frontPageQuery,
+    'no.nav.navno:generic-page': genericPageQuery,
+    'no.nav.navno:generic-page-v2': genericPageV2Query,
     'no.nav.navno:global-case-time-set': globalCaseTimeQuery,
     'no.nav.navno:global-value-set': globalValueSetQuery,
     'no.nav.navno:guide-page': guidePageQuery,
-    'no.nav.navno:generic-page': genericPageQuery,
+    'no.nav.navno:guide-page-v2': guidePageV2Query,
+    'no.nav.navno:internal-link': internalLinkQuery,
     'no.nav.navno:large-table': largeTableQuery,
-    'no.nav.navno:main-article': mainArticleQuery,
     'no.nav.navno:main-article-chapter': mainArticleChapterQuery,
+    'no.nav.navno:main-article': mainArticleQuery,
     'no.nav.navno:melding': meldingQuery,
-    'no.nav.navno:office-information': officeInformationQuery,
     'no.nav.navno:office-branch': officeBranchQuery,
     'no.nav.navno:office-editorial-page': officeEditorialPageQuery,
-    'no.nav.navno:payout-dates': payoutDatesQuery,
-    'no.nav.navno:page-list': pageListQuery,
-    'no.nav.navno:publishing-calendar': publishingCalendarQuery,
-    'no.nav.navno:publishing-calendar-entry': publishingCalendarEntryQuery,
-    'no.nav.navno:section-page': sectionPageQuery,
-    'no.nav.navno:page-meta': pageMetaQuery,
-    'no.nav.navno:situation-page': situationPageQuery,
-    'no.nav.navno:current-topic-page': currentTopicPageQuery,
+    'no.nav.navno:office-information': officeInformationQuery,
     'no.nav.navno:overview': overviewPageQuery,
+    'no.nav.navno:page-list': pageListQuery,
+    'no.nav.navno:page-meta': pageMetaQuery,
+    'no.nav.navno:payout-dates': payoutDatesQuery,
+    'no.nav.navno:press-landing-page': pressLandingPageQuery,
+    'no.nav.navno:product-details': productDetailsQuery,
+    'no.nav.navno:product-page-v2': productPageV2Query,
+    'no.nav.navno:publishing-calendar-entry': publishingCalendarEntryQuery,
+    'no.nav.navno:publishing-calendar': publishingCalendarQuery,
+    'no.nav.navno:section-page': sectionPageQuery,
+    'no.nav.navno:situation-page': situationPageQuery,
+    'no.nav.navno:situation-page-v2': situationPageV2Query,
     'no.nav.navno:themed-article-page': themedArticlePageQuery,
     'no.nav.navno:tools-page': toolsPageQuery,
-    'no.nav.navno:press-landing-page': pressLandingPageQuery,
+    'no.nav.navno:tools-page-v2': toolsPageV2Query,
     'no.nav.navno:transport-page': transportPageQuery,
     'no.nav.navno:url': urlQuery,
     'portal:fragment': portalFragmentQuery,
-    'portal:site': portalSiteQuery,
     'portal:page-template': portalPageTemplateQuery,
+    'portal:site': portalSiteQuery,
 };
 
 // TODO: improve these types if/when Guillotine gets better Typescript support
@@ -141,8 +153,6 @@ export const runGuillotineContentQuery = (
     baseContent: Content,
     baseQueryParams: Omit<GuillotineQueryParams, 'query'>
 ) => {
-    const { _id } = baseContent;
-
     const contentQuery = graphQlContentQueries[baseContent.type];
     if (!contentQuery) {
         return null;

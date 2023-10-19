@@ -1,5 +1,5 @@
 <content-type>
-    <display-name>Generisk side</display-name>
+    <display-name>(Legacy) Generisk side</display-name>
     <description>Side med innholdsmeny som brukes til enkelstående sider. Skal brukes unntaksvis.</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>

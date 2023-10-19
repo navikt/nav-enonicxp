@@ -1,0 +1,11 @@
+#import "../fragments/contentCommonWithPageFragment.graphql"
+#import "../fragments/content-types/currentTopicPageFragment.graphql"
+
+query currentTopicPageV2Query($ref: ID!) {
+    guillotine {
+        get(key: $ref) {
+            ...contentCommonWithPage
+            ...contentCurrentTopicPage
+        }
+    }
+}
