@@ -12,17 +12,18 @@
                         <allowContentType>${app}:main-article</allowContentType>
                         <allowContentType>${app}:dynamic-page</allowContentType>
                         <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
+                        <allowContentType>${app}:product-page*</allowContentType>
                         <allowContentType>${app}:section-page</allowContentType>
                         <allowContentType>${app}:page-list</allowContentType>
-                        <allowContentType>${app}:situation-page</allowContentType>
-                        <allowContentType>${app}:guide-page</allowContentType>
-                        <allowContentType>${app}:tools-page</allowContentType>
-                        <allowContentType>${app}:themed-article-page</allowContentType>
+                        <allowContentType>${app}:situation-page*</allowContentType>
+                        <allowContentType>${app}:guide-page*</allowContentType>
+                        <allowContentType>${app}:tools-page*</allowContentType>
+                        <allowContentType>${app}:themed-article-page*</allowContentType>
                         <allowContentType>${app}:overview</allowContentType>
                         <allowContentType>${app}:forms-overview</allowContentType>
                         <allowContentType>${app}:area-page</allowContentType>
                         <allowContentType>${app}:front-page</allowContentType>
-                        <allowContentType>${app}:generic-page</allowContentType>
+                        <allowContentType>${app}:generic-page*</allowContentType>
                         <allowContentType>${app}:external-link</allowContentType>
                         <showStatus>true</showStatus>
                     </config>

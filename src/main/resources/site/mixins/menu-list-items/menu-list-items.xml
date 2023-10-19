@@ -21,11 +21,12 @@
                                 <allowContentType>${app}:internal-link</allowContentType>
                                 <allowContentType>${app}:dynamic-page</allowContentType>
                                 <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
-                                <allowContentType>${app}:situation-page</allowContentType>
-                                <allowContentType>${app}:guide-page</allowContentType>
-                                <allowContentType>${app}:tools-page</allowContentType>
-                                <allowContentType>${app}:guide-page</allowContentType>
-                                <allowContentType>${app}:themed-article-page</allowContentType>
+                                <allowContentType>${app}:product-page*</allowContentType>
+                                <allowContentType>${app}:situation-page*</allowContentType>
+                                <allowContentType>${app}:guide-page*</allowContentType>
+                                <allowContentType>${app}:tools-page*</allowContentType>
+                                <allowContentType>${app}:guide-page*</allowContentType>
+                                <allowContentType>${app}:themed-article-page*</allowContentType>
                                 <allowContentType>${app}:overview</allowContentType>
                                 <allowContentType>${app}:forms-overview</allowContentType>
                                 <allowContentType>media:*</allowContentType>
@@ -50,11 +51,12 @@
                                 <allowContentType>${app}:internal-link</allowContentType>
                                 <allowContentType>${app}:dynamic-page</allowContentType>
                                 <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
-                                <allowContentType>${app}:situation-page</allowContentType>
-                                <allowContentType>${app}:guide-page</allowContentType>
-                                <allowContentType>${app}:tools-page</allowContentType>
-                                <allowContentType>${app}:guide-page</allowContentType>
-                                <allowContentType>${app}:themed-article-page</allowContentType>
+                                <allowContentType>${app}:product-page*</allowContentType>
+                                <allowContentType>${app}:situation-page*</allowContentType>
+                                <allowContentType>${app}:guide-page*</allowContentType>
+                                <allowContentType>${app}:tools-page*</allowContentType>
+                                <allowContentType>${app}:guide-page*</allowContentType>
+                                <allowContentType>${app}:themed-article-page*</allowContentType>
                                 <allowContentType>${app}:overview</allowContentType>
                                 <allowContentType>${app}:forms-overview</allowContentType>
                                 <allowContentType>media:*</allowContentType>
@@ -79,10 +81,11 @@
                                 <allowContentType>${app}:internal-link</allowContentType>
                                 <allowContentType>${app}:dynamic-page</allowContentType>
                                 <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
-                                <allowContentType>${app}:situation-page</allowContentType>
-                                <allowContentType>${app}:tools-page</allowContentType>
-                                <allowContentType>${app}:guide-page</allowContentType>
-                                <allowContentType>${app}:themed-article-page</allowContentType>
+                                <allowContentType>${app}:product-page*</allowContentType>
+                                <allowContentType>${app}:situation-page*</allowContentType>
+                                <allowContentType>${app}:tools-page*</allowContentType>
+                                <allowContentType>${app}:guide-page*</allowContentType>
+                                <allowContentType>${app}:themed-article-page*</allowContentType>
                                 <allowContentType>${app}:overview</allowContentType>
                                 <allowContentType>${app}:forms-overview</allowContentType>
                                 <allowContentType>media:*</allowContentType>
@@ -107,10 +110,11 @@
                                 <allowContentType>${app}:internal-link</allowContentType>
                                 <allowContentType>${app}:dynamic-page</allowContentType>
                                 <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
-                                <allowContentType>${app}:situation-page</allowContentType>
-                                <allowContentType>${app}:tools-page</allowContentType>
-                                <allowContentType>${app}:guide-page</allowContentType>
-                                <allowContentType>${app}:themed-article-page</allowContentType>
+                                <allowContentType>${app}:product-page*</allowContentType>
+                                <allowContentType>${app}:situation-page*</allowContentType>
+                                <allowContentType>${app}:tools-page*</allowContentType>
+                                <allowContentType>${app}:guide-page*</allowContentType>
+                                <allowContentType>${app}:themed-article-page*</allowContentType>
                                 <allowContentType>${app}:overview</allowContentType>
                                 <allowContentType>${app}:forms-overview</allowContentType>
                                 <allowContentType>media:*</allowContentType>
@@ -144,10 +148,11 @@
                                 <allowContentType>${app}:internal-link</allowContentType>
                                 <allowContentType>${app}:dynamic-page</allowContentType>
                                 <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
-                                <allowContentType>${app}:situation-page</allowContentType>
-                                <allowContentType>${app}:tools-page</allowContentType>
-                                <allowContentType>${app}:guide-page</allowContentType>
-                                <allowContentType>${app}:themed-article-page</allowContentType>
+                                <allowContentType>${app}:product-page*</allowContentType>
+                                <allowContentType>${app}:situation-page*</allowContentType>
+                                <allowContentType>${app}:tools-page*</allowContentType>
+                                <allowContentType>${app}:guide-page*</allowContentType>
+                                <allowContentType>${app}:themed-article-page*</allowContentType>
                                 <allowContentType>${app}:overview</allowContentType>
                                 <allowContentType>${app}:forms-overview</allowContentType>
                                 <allowContentType>media:*</allowContentType>
@@ -172,10 +177,11 @@
                                 <allowContentType>${app}:internal-link</allowContentType>
                                 <allowContentType>${app}:dynamic-page</allowContentType>
                                 <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
-                                <allowContentType>${app}:situation-page</allowContentType>
-                                <allowContentType>${app}:tools-page</allowContentType>
-                                <allowContentType>${app}:guide-page</allowContentType>
-                                <allowContentType>${app}:themed-article-page</allowContentType>
+                                <allowContentType>${app}:product-page*</allowContentType>
+                                <allowContentType>${app}:situation-page*</allowContentType>
+                                <allowContentType>${app}:tools-page*</allowContentType>
+                                <allowContentType>${app}:guide-page*</allowContentType>
+                                <allowContentType>${app}:themed-article-page*</allowContentType>
                                 <allowContentType>${app}:overview</allowContentType>
                                 <allowContentType>${app}:forms-overview</allowContentType>
                                 <allowContentType>media:*</allowContentType>
@@ -200,10 +206,11 @@
                                 <allowContentType>${app}:internal-link</allowContentType>
                                 <allowContentType>${app}:dynamic-page</allowContentType>
                                 <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
-                                <allowContentType>${app}:situation-page</allowContentType>
-                                <allowContentType>${app}:tools-page</allowContentType>
-                                <allowContentType>${app}:guide-page</allowContentType>
-                                <allowContentType>${app}:themed-article-page</allowContentType>
+                                <allowContentType>${app}:product-page*</allowContentType>
+                                <allowContentType>${app}:situation-page*</allowContentType>
+                                <allowContentType>${app}:tools-page*</allowContentType>
+                                <allowContentType>${app}:guide-page*</allowContentType>
+                                <allowContentType>${app}:themed-article-page*</allowContentType>
                                 <allowContentType>${app}:overview</allowContentType>
                                 <allowContentType>${app}:forms-overview</allowContentType>
                                 <allowContentType>media:*</allowContentType>
@@ -228,10 +235,11 @@
                                 <allowContentType>${app}:internal-link</allowContentType>
                                 <allowContentType>${app}:dynamic-page</allowContentType>
                                 <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
-                                <allowContentType>${app}:situation-page</allowContentType>
-                                <allowContentType>${app}:tools-page</allowContentType>
-                                <allowContentType>${app}:guide-page</allowContentType>
-                                <allowContentType>${app}:themed-article-page</allowContentType>
+                                <allowContentType>${app}:product-page*</allowContentType>
+                                <allowContentType>${app}:situation-page*</allowContentType>
+                                <allowContentType>${app}:tools-page*</allowContentType>
+                                <allowContentType>${app}:guide-page*</allowContentType>
+                                <allowContentType>${app}:themed-article-page*</allowContentType>
                                 <allowContentType>${app}:overview</allowContentType>
                                 <allowContentType>${app}:forms-overview</allowContentType>
                                 <allowContentType>media:*</allowContentType>
@@ -256,10 +264,11 @@
                                 <allowContentType>${app}:internal-link</allowContentType>
                                 <allowContentType>${app}:dynamic-page</allowContentType>
                                 <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
-                                <allowContentType>${app}:situation-page</allowContentType>
-                                <allowContentType>${app}:tools-page</allowContentType>
-                                <allowContentType>${app}:guide-page</allowContentType>
-                                <allowContentType>${app}:themed-article-page</allowContentType>
+                                <allowContentType>${app}:product-page*</allowContentType>
+                                <allowContentType>${app}:situation-page*</allowContentType>
+                                <allowContentType>${app}:tools-page*</allowContentType>
+                                <allowContentType>${app}:guide-page*</allowContentType>
+                                <allowContentType>${app}:themed-article-page*</allowContentType>
                                 <allowContentType>${app}:overview</allowContentType>
                                 <allowContentType>${app}:forms-overview</allowContentType>
                                 <allowContentType>media:*</allowContentType>
@@ -284,10 +293,11 @@
                                 <allowContentType>${app}:internal-link</allowContentType>
                                 <allowContentType>${app}:dynamic-page</allowContentType>
                                 <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
-                                <allowContentType>${app}:situation-page</allowContentType>
-                                <allowContentType>${app}:tools-page</allowContentType>
-                                <allowContentType>${app}:guide-page</allowContentType>
-                                <allowContentType>${app}:themed-article-page</allowContentType>
+                                <allowContentType>${app}:product-page*</allowContentType>
+                                <allowContentType>${app}:situation-page*</allowContentType>
+                                <allowContentType>${app}:tools-page*</allowContentType>
+                                <allowContentType>${app}:guide-page*</allowContentType>
+                                <allowContentType>${app}:themed-article-page*</allowContentType>
                                 <allowContentType>${app}:overview</allowContentType>
                                 <allowContentType>${app}:forms-overview</allowContentType>
                                 <allowContentType>media:*</allowContentType>

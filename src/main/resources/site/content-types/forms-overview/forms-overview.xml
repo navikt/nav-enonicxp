@@ -115,7 +115,7 @@
                     <config>
                         <service>contentSelector</service>
                         <param value="contentTypes">
-                            ["no.nav.navno:content-page-with-sidemenus","no.nav.navno:guide-page"]
+                            ["no.nav.navno:content-page-with-sidemenus","no.nav.navno:product-page-v2","no.nav.navno:guide-page","no.nav.navno:guide-page-v2"]
                         </param>
                         <param value="selectorQuery">language="{language}" AND
                             data.audience._selected="{data.audience._selected}" AND data.formDetailsTargets LIKE "*"

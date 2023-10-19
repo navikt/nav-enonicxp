@@ -56,6 +56,8 @@ const getPreselectedFormIds = () => {
         !(
             currentContent.type === 'no.nav.navno:content-page-with-sidemenus' ||
             currentContent.type === 'no.nav.navno:guide-page' ||
+            currentContent.type === 'no.nav.navno:product-page-v2' ||
+            currentContent.type === 'no.nav.navno:guide-page-v2' ||
             currentContent.type === 'no.nav.navno:main-article'
         )
     ) {

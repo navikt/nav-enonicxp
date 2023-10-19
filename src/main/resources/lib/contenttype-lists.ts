@@ -107,13 +107,17 @@ export const contentTypesWithComponents: ContentTypeList = [
 
 export const contentTypesInOverviewPages = [
     `${APP_DESCRIPTOR}:guide-page`,
-    `${APP_DESCRIPTOR}:themed-article-page`,
+    `${APP_DESCRIPTOR}:guide-page-v2`,
+    `${APP_DESCRIPTOR}:themed-article-page-v2`,
     `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
+    `${APP_DESCRIPTOR}:product-page-v2`,
 ] as const;
 
 export const contentTypesInFormsOverviewPages = [
     `${APP_DESCRIPTOR}:guide-page`,
     `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
+    `${APP_DESCRIPTOR}:guide-page-v2`,
+    `${APP_DESCRIPTOR}:product-page-v2`,
 ] as const;
 
 export const contentTypesRenderedByPublicFrontend: ContentTypeList = [

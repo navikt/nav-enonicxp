@@ -20,12 +20,19 @@
                         <allowContentType>${app}:page-list</allowContentType>
                         <allowContentType>${app}:dynamic-page</allowContentType>
                         <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
+                        <allowContentType>${app}:product-page-v2</allowContentType>
                         <allowContentType>${app}:situation-page</allowContentType>
+                        <allowContentType>${app}:situation-page-v2</allowContentType>
                         <allowContentType>${app}:guide-page</allowContentType>
+                        <allowContentType>${app}:guide-page-v2</allowContentType>
                         <allowContentType>${app}:tools-page</allowContentType>
+                        <allowContentType>${app}:tools-page-v2</allowContentType>
                         <allowContentType>${app}:guide-page</allowContentType>
+                        <allowContentType>${app}:guide-page-v2</allowContentType>
                         <allowContentType>${app}:current-topic-page</allowContentType>
+                        <allowContentType>${app}:current-topic-page-v2</allowContentType>
                         <allowContentType>${app}:themed-article-page</allowContentType>
+                        <allowContentType>${app}:themed-article-page-v2</allowContentType>
                         <allowContentType>${app}:overview</allowContentType>
                         <allowContentType>${app}:forms-overview</allowContentType>
                     </config>

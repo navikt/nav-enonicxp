@@ -26,6 +26,8 @@ const testContentTypes: ContentDescriptor[] = [
     'no.nav.navno:dynamic-page',
     'no.nav.navno:content-page-with-sidemenus',
     'no.nav.navno:situation-page',
+    'no.nav.navno:product-page-v2',
+    'no.nav.navno:situation-page-v2',
 ];
 
 const ONE_YEAR_MS = 1000 * 3600 * 24 * 365;

@@ -51,7 +51,7 @@ import { FormsOverview } from '../../site/content-types/forms-overview/forms-ove
 import { FragmentCreator } from '../../site/content-types/fragment-creator/fragment-creator';
 import { PageMeta } from 'site/content-types/page-meta/page-meta';
 import { ProductPageV2 } from 'site/content-types/product-page-v2/product-page-v2';
-import { CurrentTopicPageV2 } from 'site/content-types/current-topic-page-2/current-topic-page-v2';
+import { CurrentTopicPageV2 } from 'site/content-types/current-topic-page-v2/current-topic-page-v2';
 import { GenericPageV2 } from 'site/content-types/generic-page-v2/generic-page-v2';
 import { GuidePageV2 } from 'site/content-types/guide-page-v2/guide-page-v2';
 import { ThemedArticlePageV2 } from 'site/content-types/themed-article-page-v2/themed-article-page-v2';

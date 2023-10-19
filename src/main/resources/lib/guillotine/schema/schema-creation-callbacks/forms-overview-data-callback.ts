@@ -45,7 +45,9 @@ type FormDetailsMap = Record<string, Content<'no.nav.navno:form-details'>>;
 
 const contentTypesWithFormDetails = [
     'no.nav.navno:content-page-with-sidemenus',
+    'no.nav.navno:product-page-v2',
     'no.nav.navno:guide-page',
+    'no.nav.navno:guide-page-v2',
 ] as const;
 
 const getUrl = (content: ContentWithFormDetails) => {

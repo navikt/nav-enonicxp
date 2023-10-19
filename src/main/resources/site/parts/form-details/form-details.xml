@@ -35,7 +35,8 @@
     </form>
     <config>
         <allow-on-content-type>${app}:content-page-with-sidemenus</allow-on-content-type>
-        <allow-on-content-type>${app}:guide-page</allow-on-content-type>
+        <allow-on-content-type>${app}:product-page*</allow-on-content-type>
+        <allow-on-content-type>${app}:guide-page*</allow-on-content-type>
         <allow-on-content-type>portal:fragment</allow-on-content-type>
     </config>
 </part>
