@@ -122,6 +122,7 @@ const generateSitemapEntries = (): SitemapEntry[] => {
     const localeContentBuckets = queryAllLayersToLocaleBuckets({
         branch: 'master',
         state: 'localized',
+        resolveContentData: true,
         queryParams: {
             filters: {
                 boolean: {

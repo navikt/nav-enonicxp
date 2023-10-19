@@ -121,7 +121,7 @@ type LocaleContentBuckets = Record<string, Content[]>;
 
 type QueryAllLayersToLocaleBucketsCommonArgs = {
     branch: RepoBranch;
-    state?: LocalizationState;
+    state: LocalizationState;
     queryParams: NodeQueryParams;
 };
 
@@ -137,13 +137,13 @@ export function queryAllLayersToLocaleBuckets(
 ): LocaleContentBuckets;
 export function queryAllLayersToLocaleBuckets({
     branch,
-    state = 'localized',
-    resolveContentData = true,
+    state,
+    resolveContentData,
     queryParams,
 }: {
     branch: RepoBranch;
-    state?: LocalizationState;
-    resolveContentData?: boolean;
+    state: LocalizationState;
+    resolveContentData: boolean;
     queryParams: NodeQueryParams;
 }) {
     const multiRepoConnection = getLayersMultiConnection(branch);

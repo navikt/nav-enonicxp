@@ -66,6 +66,7 @@ const getPathsToRender = (isTest?: boolean) => {
     const localeContentBuckets = queryAllLayersToLocaleBuckets({
         branch: 'master',
         state: 'localized',
+        resolveContentData: true,
         queryParams: {
             start: 0,
             count: 20000,

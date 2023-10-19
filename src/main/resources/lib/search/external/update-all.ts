@@ -3,9 +3,7 @@ import { Content } from '/lib/xp/content';
 import { logger } from '../../utils/logging';
 import { forceArray } from '../../utils/array-utils';
 import { getRepoConnection } from '../../utils/repo-utils';
-import {
-    queryAllLayersToLocaleBuckets,
-} from '../../localization/locale-utils';
+import { queryAllLayersToLocaleBuckets } from '../../localization/locale-utils';
 import { buildExternalSearchDocument, ExternalSearchDocument } from './document-builder';
 import { getLayersData } from '../../localization/layers-data';
 import { searchApiPostDocuments } from './api-handlers/post-document';
