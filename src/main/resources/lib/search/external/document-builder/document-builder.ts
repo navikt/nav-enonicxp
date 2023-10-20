@@ -40,13 +40,13 @@ class ExternalSearchDocumentBuilder {
     private readonly content: ContentNode;
     private readonly locale: string;
     private readonly searchConfig: SearchConfig;
-    private readonly contentGroupKeys: KeysConfig;
+    private readonly contentGroupKeys?: KeysConfig;
 
     constructor(
         content: ContentNode,
         locale: string,
         searchConfig: SearchConfig,
-        contentGroupKeys: KeysConfig
+        contentGroupKeys?: KeysConfig
     ) {
         this.content = content;
         this.locale = locale;
@@ -142,12 +142,10 @@ class ExternalSearchDocumentBuilder {
     }
 }
 
-const getContentGroupKeys = (searchConfig: SearchConfig, content: ContentNode) => {
-    const contentGroupConfig = forceArray(searchConfig.data.contentGroups).find((group) =>
+const getContentGroupConfig = (searchConfig: SearchConfig, content: ContentNode) => {
+    return forceArray(searchConfig.data.contentGroups).find((group) =>
         forceArray(group.contentTypes).some((contentType) => contentType === content.type)
-    )?.groupKeys;
-
-    return contentGroupConfig;
+    );
 };
 
 export const buildExternalSearchDocument = (
@@ -165,8 +163,8 @@ export const buildExternalSearchDocument = (
         return null;
     }
 
-    const contentGroupKeys = getContentGroupKeys(searchConfig, content);
-    if (!contentGroupKeys) {
+    const contentGroupConfig = getContentGroupConfig(searchConfig, content);
+    if (!contentGroupConfig) {
         logger.info(
             `Search is not configured for content-type ${content.type} - Content: ${content._id} / ${locale}`
         );
@@ -177,6 +175,6 @@ export const buildExternalSearchDocument = (
         content,
         locale,
         searchConfig,
-        contentGroupKeys
+        contentGroupConfig.groupKeys
     ).build();
 };

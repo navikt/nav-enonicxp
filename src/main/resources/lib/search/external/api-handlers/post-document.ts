@@ -40,24 +40,18 @@ export const searchApiPostDocuments = (documents: SearchDocument[]) => {
         const documentsBatch = documents.slice(i, i + BATCH_SIZE);
 
         try {
-            const body = JSON.stringify(documentsBatch);
-
-            logger.info(
-                `Sending batch ${i} - ${i + documentsBatch.length} with size ${body.length}`
-            );
-
             const response = httpClient.request({
                 url: SERVICE_URL,
                 method: 'POST',
                 contentType: 'application/json',
                 connectionTimeout: 30000,
-                body,
+                body: JSON.stringify(documentsBatch),
             });
 
             logger.info(
-                `Response from search api for batch ${i} - ${
-                    i + documentsBatch.length
-                }: ${JSON.stringify(response)}`
+                `Response from search api for batch ${i} - ${i + documentsBatch.length}: ${
+                    response.status
+                } - ${JSON.stringify(response.body)}`
             );
         } catch (e) {
             logger.error(
