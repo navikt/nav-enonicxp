@@ -54,6 +54,8 @@ export const getSearchDocumentTextSegments = (content: ContentNode, fieldKeys: s
 
     const otherFieldValues = getFieldValues(content, otherFieldKeys);
 
+    // For component fields, we need to ensure the final order of values are consistent
+    // with their original order in the components array
     const componentsFieldValues = forceArray(content.components)
         .map((component) => getFieldValues(component, componentsFieldKeys))
         .flat();
