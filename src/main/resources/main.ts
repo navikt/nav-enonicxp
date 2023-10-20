@@ -31,11 +31,8 @@ activateSitemapDataUpdateEventListener();
 activateContentListItemUnpublishedListener();
 activateCustomPathNodeListeners();
 activateSearchIndexEventHandlers();
+activateExternalSearchIndexEventHandlers();
 activateContentUpdateListener();
-
-if (app.config.env !== 'p') {
-    activateExternalSearchIndexEventHandlers();
-}
 
 hookLibsWithTimeTravel();
 
