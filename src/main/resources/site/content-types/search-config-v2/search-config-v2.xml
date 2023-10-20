@@ -6,16 +6,16 @@
     <allow-child-content>true</allow-child-content>
     <form>
         <item-set name="defaultKeys">
-            <label>Standard-oppsett</label>
-            <help-text>Ved flere valg brukes første felt som eksisterer på innholdet</help-text>
+            <label>Standard-felter</label>
+            <help-text>Ved flere valg brukes første felt som er definert på innholdet</help-text>
             <occurrences minimum="1" maximum="1"/>
             <items>
                 <input name="titleKey" type="TextLine">
-                    <label>Felt for tittel</label>
+                    <label>Felter for tittel</label>
                     <occurrences minimum="1" maximum="0"/>
                 </input>
                 <input name="ingressKey" type="TextLine">
-                    <label>Felt for ingress</label>
+                    <label>Felter for ingress</label>
                     <occurrences minimum="0" maximum="0"/>
                 </input>
                 <input name="textKey" type="TextLine">
@@ -37,14 +37,15 @@
                 </input>
                 <item-set name="groupKeys">
                     <label>Oppsett av felter (overstyrer standard-oppsett)</label>
+                    <help-text>Ved flere valg brukes første felt som er definert på innholdet</help-text>
                     <occurrences minimum="0" maximum="1"/>
                     <items>
                         <input name="titleKey" type="TextLine">
-                            <label>Felt for tittel</label>
+                            <label>Felter for tittel</label>
                             <occurrences minimum="0" maximum="0"/>
                         </input>
                         <input name="ingressKey" type="TextLine">
-                            <label>Felt for ingress</label>
+                            <label>Felter for ingress</label>
                             <occurrences minimum="0" maximum="0"/>
                         </input>
                         <input name="textKey" type="TextLine">

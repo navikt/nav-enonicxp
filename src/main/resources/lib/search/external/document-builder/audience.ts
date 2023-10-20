@@ -11,14 +11,14 @@ export type SearchDocumentAudience =
     | 'samarbeidspartner'
     | 'andre';
 
-const audienceMap: Record<string, SearchDocumentAudience> = {
+const dataAudienceToSearchAudience: Record<string, SearchDocumentAudience> = {
     person: 'privatperson',
     employer: 'arbeidsgiver',
     provider: 'samarbeidspartner',
     other: 'andre',
 } as const;
 
-const pathSegmentToAudience: Record<string, SearchDocumentAudience> = {
+const pathSegmentToSearchAudience: Record<string, SearchDocumentAudience> = {
     person: 'privatperson',
     samegiella: 'privatperson',
     'work-and-stay-in-norway': 'privatperson',
@@ -31,7 +31,7 @@ const pathSegmentToAudience: Record<string, SearchDocumentAudience> = {
     samarbeid: 'samarbeidspartner',
 } as const;
 
-const DEFAULT_AUDIENCE = [audienceMap.person];
+const DEFAULT_AUDIENCE = [dataAudienceToSearchAudience.person];
 
 const getAudienceFromData = (content: ContentNode) => {
     const audience = content.data?.audience;
@@ -59,7 +59,7 @@ const getAudienceFromPath = (content: ContentNode) => {
     const pathSegments = stripPathPrefix(content._path).split('/');
 
     for (const segment of pathSegments) {
-        const audienceFromPath = pathSegmentToAudience[segment];
+        const audienceFromPath = pathSegmentToSearchAudience[segment];
         if (audienceFromPath) {
             return [audienceFromPath];
         }

@@ -128,16 +128,16 @@ class ExternalSearchDocumentBuilder {
         return keys.filter(Boolean);
     }
 
-    private getText(): string {
-        return this.getFieldValues('textKey', 'all').join('\n');
-    }
-
     private getTitle(): string | null {
         return this.getFieldValues('titleKey', 'first')[0] || null;
     }
 
     private getIngress(): string {
         return this.getFieldValues('ingressKey', 'first')[0] || '';
+    }
+
+    private getText(): string {
+        return this.getFieldValues('textKey', 'all').join('\n');
     }
 
     private getLanguage(): string {
