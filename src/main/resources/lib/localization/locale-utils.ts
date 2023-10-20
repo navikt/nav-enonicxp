@@ -33,29 +33,31 @@ const localizationStateFilters: Record<LocalizationState, BooleanFilter['boolean
 };
 
 const insertLocalizationStateFilterIntoParams = (
-    params: any, // Should be NodeQueryParams, but the type for this is really crap atm :D
+    queryParams: NodeQueryParams,
     state: LocalizationState
 ): NodeQueryParams => {
     if (state === 'all') {
-        return params;
+        return queryParams;
     }
 
-    if (!params.filters) {
-        params.filters = {};
+    if (!queryParams.filters) {
+        queryParams.filters = {} as BooleanFilter;
     }
 
-    if (!params.filters.boolean) {
-        params.filters.boolean = {};
+    const filters = queryParams.filters as BooleanFilter;
+
+    if (!filters.boolean) {
+        filters.boolean = {};
     }
 
-    const booleanFilterKey = state === 'localized' ? 'mustNot' : 'must';
+    const conditionKey = state === 'localized' ? 'mustNot' : 'must';
 
-    params.filters.boolean[booleanFilterKey] = [
-        ...forceArray(params.filters.boolean[booleanFilterKey]),
-        NON_LOCALIZED_QUERY_FILTER,
+    filters.boolean[conditionKey] = [
+        ...forceArray(filters.boolean[conditionKey]),
+        ...NON_LOCALIZED_QUERY_FILTER,
     ];
 
-    return params;
+    return queryParams;
 };
 
 type ContentAndLayerData = {
