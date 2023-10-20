@@ -12,7 +12,7 @@ import { CONTENT_ROOT_REPO_ID } from '../../constants';
 type SearchConfig = Content<'no.nav.navno:search-config-v2'>;
 type PersistedSearchConfig = { config?: SearchConfig };
 type KeysConfig = Partial<
-    Pick<SearchConfig['data']['defaultKeys'], 'titleKey' | 'ingressKey' | 'audienceKey' | 'textKey'>
+    Pick<SearchConfig['data']['defaultKeys'], 'titleKey' | 'ingressKey' | 'textKey'>
 >;
 
 const SEARCH_CONFIG_KEY = `/${SEARCH_REPO_EXTERNAL_CONFIG_NODE}`;
@@ -20,7 +20,7 @@ const SEARCH_CONFIG_KEY = `/${SEARCH_REPO_EXTERNAL_CONFIG_NODE}`;
 let searchConfig: SearchConfig | null = null;
 
 const validateKeysConfig = (keys: KeysConfig, repo: RepoConnection) => {
-    const keysString = [keys.titleKey, keys.ingressKey, keys.audienceKey, keys.textKey]
+    const keysString = [keys.titleKey, keys.ingressKey, keys.textKey]
         .flat()
         .filter(Boolean)
         .join(',');

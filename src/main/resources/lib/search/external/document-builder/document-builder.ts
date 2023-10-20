@@ -27,10 +27,10 @@ export type SearchDocument = {
         createdAt: string;
         lastUpdated: string;
         language: string;
+        isFile?: boolean;
         audience: SearchDocumentAudience[];
         metatags?: SearchDocumentMetatag[];
         fylke?: SearchDocumentFylke;
-        isFile?: boolean;
         keywords?: string[];
     };
 };
@@ -75,7 +75,7 @@ class ExternalSearchDocumentBuilder {
             ingress: this.getIngress(),
             text: this.getText(),
             metadata: {
-                audience: this.getAudience(),
+                audience: getSearchDocumentAudience(content),
                 language: this.getLanguage(),
                 fylke: getSearchDocumentFylke(content),
                 metatags: getSearchDocumentMetatags(content),
@@ -138,11 +138,6 @@ class ExternalSearchDocumentBuilder {
 
     private getIngress(): string {
         return this.getFieldValues('ingressKey', 'first')[0] || '';
-    }
-
-    private getAudience(): SearchDocumentAudience[] {
-        const audienceValue = this.getFieldValues('audienceKey', 'first');
-        return getSearchDocumentAudience(audienceValue);
     }
 
     private getLanguage(): string {

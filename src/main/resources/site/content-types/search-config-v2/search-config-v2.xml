@@ -18,10 +18,6 @@
                     <label>Felt for ingress</label>
                     <occurrences minimum="0" maximum="0"/>
                 </input>
-                <input name="audienceKey" type="TextLine">
-                    <label>Felt for målgrupper</label>
-                    <occurrences minimum="0" maximum="0"/>
-                </input>
                 <input name="textKey" type="TextLine">
                     <label>Felter for innhold</label>
                     <occurrences minimum="0" maximum="0"/>
@@ -49,10 +45,6 @@
                         </input>
                         <input name="ingressKey" type="TextLine">
                             <label>Felt for ingress</label>
-                            <occurrences minimum="0" maximum="0"/>
-                        </input>
-                        <input name="audienceKey" type="TextLine">
-                            <label>Felt for målgrupper</label>
                             <occurrences minimum="0" maximum="0"/>
                         </input>
                         <input name="textKey" type="TextLine">

@@ -1,3 +1,10 @@
+import { RepoNode } from '/lib/xp/node';
+import { Content } from '/lib/xp/content';
+import { forceArray } from '../../../utils/array-utils';
+import { stripPathPrefix } from '../../../paths/path-utils';
+
+type ContentNode = RepoNode<Content>;
+
 export type SearchDocumentAudience =
     | 'privatperson'
     | 'arbeidsgiver'
@@ -11,12 +18,56 @@ const audienceMap: Record<string, SearchDocumentAudience> = {
     other: 'andre',
 } as const;
 
+const pathSegmentToAudience: Record<string, SearchDocumentAudience> = {
+    person: 'privatperson',
+    samegiella: 'privatperson',
+    'work-and-stay-in-norway': 'privatperson',
+    'benefits-and-services': 'privatperson',
+    'rules-and-regulations': 'privatperson',
+    bedrift: 'arbeidsgiver',
+    arbeidsgiver: 'arbeidsgiver',
+    employers: 'arbeidsgiver',
+    samarbeidspartner: 'samarbeidspartner',
+    samarbeid: 'samarbeidspartner',
+} as const;
+
 const DEFAULT_AUDIENCE = [audienceMap.person];
 
-export const getSearchDocumentAudience = (audienceValue: string[]) => {
-    if (audienceValue.length === 0) {
-        return DEFAULT_AUDIENCE;
+const getAudienceFromData = (content: ContentNode) => {
+    const audience = content.data?.audience;
+
+    if (!audience) {
+        return null;
     }
 
-    return audienceValue.map((audience) => audienceMap[audience]);
+    if (typeof audience === 'string') {
+        return [audience];
+    }
+
+    if (Array.isArray(audience)) {
+        return audience;
+    }
+
+    if (audience._selected) {
+        return forceArray(audience._selected);
+    }
+
+    return null;
+};
+
+const getAudienceFromPath = (content: ContentNode) => {
+    const pathSegments = stripPathPrefix(content._path).split('/');
+
+    for (const segment of pathSegments) {
+        const audienceFromPath = pathSegmentToAudience[segment];
+        if (audienceFromPath) {
+            return [audienceFromPath];
+        }
+    }
+
+    return null;
+};
+
+export const getSearchDocumentAudience = (content: ContentNode) => {
+    return getAudienceFromData(content) || getAudienceFromPath(content) || DEFAULT_AUDIENCE;
 };

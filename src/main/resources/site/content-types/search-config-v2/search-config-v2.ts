@@ -15,11 +15,6 @@ export interface SearchConfigV2 {
     ingressKey?: Array<string>;
 
     /**
-     * Felt for målgrupper
-     */
-    audienceKey?: Array<string>;
-
-    /**
      * Felter for innhold
      */
     textKey?: Array<string>;
@@ -52,11 +47,6 @@ export interface SearchConfigV2 {
        * Felt for ingress
        */
       ingressKey?: Array<string>;
-
-      /**
-       * Felt for målgrupper
-       */
-      audienceKey?: Array<string>;
 
       /**
        * Felter for innhold
