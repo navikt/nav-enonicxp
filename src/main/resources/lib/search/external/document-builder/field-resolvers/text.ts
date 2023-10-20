@@ -6,7 +6,7 @@ import { forceArray } from '../../../../utils/array-utils';
 type ContentNode = RepoNode<Content>;
 
 type FieldKeyBuckets = {
-    componentFieldKeys: string[];
+    componentsFieldKeys: string[];
     otherFieldKeys: string[];
 };
 
@@ -19,7 +19,7 @@ const getFieldKeyBuckets = (fieldKeys: string[]) => {
     return fieldKeys.reduce<FieldKeyBuckets>(
         (acc, key) => {
             if (key.startsWith(COMPONENTS_PARENT_FIELD)) {
-                acc.componentFieldKeys.push(stripComponentsPrefix(key));
+                acc.componentsFieldKeys.push(stripComponentsPrefix(key));
             } else {
                 acc.otherFieldKeys.push(key);
             }
@@ -27,7 +27,7 @@ const getFieldKeyBuckets = (fieldKeys: string[]) => {
             return acc;
         },
         {
-            componentFieldKeys: [],
+            componentsFieldKeys: [],
             otherFieldKeys: [],
         }
     );
@@ -50,12 +50,12 @@ const getFieldValues = (
 };
 
 export const getSearchDocumentTextSegments = (content: ContentNode, fieldKeys: string[]) => {
-    const { componentFieldKeys, otherFieldKeys } = getFieldKeyBuckets(fieldKeys);
+    const { componentsFieldKeys, otherFieldKeys } = getFieldKeyBuckets(fieldKeys);
 
     const otherFieldValues = getFieldValues(content, otherFieldKeys);
 
     const componentsFieldValues = forceArray(content.components)
-        .map((component) => getFieldValues(component, componentFieldKeys))
+        .map((component) => getFieldValues(component, componentsFieldKeys))
         .flat();
 
     return otherFieldValues.concat(componentsFieldValues);
