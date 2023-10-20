@@ -10,6 +10,7 @@ import { logger } from '../../../utils/logging';
 import { SearchDocumentFylke, getSearchDocumentFylke } from './fylke';
 import { SearchDocumentMetatag, getSearchDocumentMetatags } from './metatags';
 import { getSearchDocumentAudience, SearchDocumentAudience } from './audience';
+import { getSearchDocumentTextSegments } from './text';
 
 type SearchConfig = Content<'no.nav.navno:search-config-v2'>;
 type KeysConfig = Partial<SearchConfig['data']['defaultKeys']>;
@@ -87,57 +88,53 @@ class ExternalSearchDocumentBuilder {
         };
     }
 
-    private getFieldValues(metaKey: MetaKey, mode: 'first' | 'all') {
-        const possibleKeys = this.getKeys(metaKey);
+    private getFirstMatchingFieldValue(metaKey: MetaKey) {
+        const fieldKeys = this.getFieldKeys(metaKey);
 
-        const values: string[] = [];
-
-        for (const key of possibleKeys) {
+        for (const key of fieldKeys) {
             const value = getNestedValues(this.content, key);
             if (!value) {
                 continue;
             }
 
             if (Array.isArray(value)) {
-                values.push(...value.filter((item) => typeof item === 'string'));
+                const stringValue = value.find((item) => typeof item === 'string');
+                if (stringValue) {
+                    return stringValue;
+                }
             } else if (typeof value === 'string') {
-                values.push(value);
-            } else {
-                continue;
-            }
-
-            if (mode === 'first') {
-                break;
+                return value;
             }
         }
 
-        return values;
+        return null;
     }
 
-    private getKeys(metaKey: MetaKey) {
-        const keys: string[] = [];
+    private getFieldKeys(metaKey: MetaKey) {
+        const fieldKeys: string[] = [];
 
         if (this.contentGroupKeys) {
             const contentConfigKeys = forceArray(this.contentGroupKeys[metaKey]);
-            keys.push(...contentConfigKeys);
+            fieldKeys.push(...contentConfigKeys);
         }
 
         const defaultConfigKeys = forceArray(this.searchConfig.data.defaultKeys[metaKey]);
-        keys.push(...defaultConfigKeys);
+        fieldKeys.push(...defaultConfigKeys);
 
-        return keys.filter(Boolean);
+        return fieldKeys.filter(Boolean);
     }
 
     private getTitle(): string | null {
-        return this.getFieldValues('titleKey', 'first')[0] || null;
+        return this.getFirstMatchingFieldValue('titleKey') || null;
     }
 
     private getIngress(): string {
-        return this.getFieldValues('ingressKey', 'first')[0] || '';
+        return this.getFirstMatchingFieldValue('ingressKey') || '';
     }
 
     private getText(): string {
-        return this.getFieldValues('textKey', 'all').join('\n');
+        const fieldKeys = this.getFieldKeys('textKey');
+        return getSearchDocumentTextSegments(this.content, fieldKeys).join('\n');
     }
 
     private getLanguage(): string {
