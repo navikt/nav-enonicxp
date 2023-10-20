@@ -25,6 +25,8 @@ type DocumentMetaTag =
 
 type DocumentAudience = 'privatperson' | 'arbeidsgiver' | 'samarbeidspartner' | 'andre';
 
+type Fylke = (typeof FYLKER)[number];
+
 export type ExternalSearchDocument = {
     id: string;
     href: string;
@@ -37,11 +39,28 @@ export type ExternalSearchDocument = {
         language: string;
         audience: DocumentAudience[];
         metatags?: DocumentMetaTag[];
-        fylke?: string;
+        fylke?: Fylke;
         isFile?: boolean;
         keywords?: string[];
     };
 };
+
+const FYLKER = [
+    'agder',
+    'innlandet',
+    'more-og-romsdal',
+    'nordland',
+    'oslo',
+    'rogaland',
+    'troms-og-finnmark',
+    'trondelag',
+    'vest-viken',
+    'vestfold-og-telemark',
+    'vestland',
+    'ost-viken',
+] as const;
+
+const fylkerSet: ReadonlySet<string> = new Set(FYLKER);
 
 const audienceMap: Record<string, DocumentAudience> = {
     person: 'privatperson',
@@ -49,8 +68,6 @@ const audienceMap: Record<string, DocumentAudience> = {
     provider: 'samarbeidspartner',
     other: 'andre',
 } as const;
-
-const AUDIENCE_DEFAULT = audienceMap.person;
 
 class ExternalSearchDocumentBuilder {
     private readonly content: ContentNode;
@@ -164,7 +181,7 @@ class ExternalSearchDocumentBuilder {
     private getAudience(): DocumentAudience[] {
         const audienceValue = this.getFieldValues('audienceKey', 'first');
         if (audienceValue.length === 0) {
-            return [AUDIENCE_DEFAULT];
+            return [audienceMap.person];
         }
 
         return audienceValue.map((audience) => audienceMap[audience]);
@@ -202,7 +219,11 @@ class ExternalSearchDocumentBuilder {
     }
 
     private getFylke() {
-        return this.content._path.match(/\/content\/www\.nav\.no\/no\/lokalt\/(([a-z]|-)+)/)?.[1];
+        const fylke = this.content._path.match(
+            /\/content\/www\.nav\.no\/no\/lokalt\/(([a-z]|-)+)/
+        )?.[1] as Fylke | undefined;
+
+        return fylke && fylkerSet.has(fylke) ? fylke : undefined;
     }
 
     private getLanguage() {
