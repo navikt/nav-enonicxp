@@ -1,12 +1,13 @@
 import { Content } from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
-import { forceArray } from '../../utils/array-utils';
-import { getSearchNodeHref } from '../create-or-update-search-node';
-import { generateSearchDocumentId } from './utils';
-import { isMedia } from '../../utils/content-utils';
-import { getNestedValues } from '../../utils/object-utils';
-import { getExternalSearchConfig } from './config';
-import { logger } from '../../utils/logging';
+import { forceArray } from '../../../utils/array-utils';
+import { getSearchNodeHref } from '../../create-or-update-search-node';
+import { generateSearchDocumentId } from '../utils';
+import { isMedia } from '../../../utils/content-utils';
+import { getNestedValues } from '../../../utils/object-utils';
+import { getExternalSearchConfig } from '../config';
+import { logger } from '../../../utils/logging';
+import { Fylke, isFylke } from './fylke';
 
 type SearchConfig = Content<'no.nav.navno:search-config-v2'>;
 type KeysConfig = Partial<SearchConfig['data']['defaultKeys']>;
@@ -25,8 +26,6 @@ type DocumentMetaTag =
 
 type DocumentAudience = 'privatperson' | 'arbeidsgiver' | 'samarbeidspartner' | 'andre';
 
-type Fylke = (typeof FYLKER)[number];
-
 export type ExternalSearchDocument = {
     id: string;
     href: string;
@@ -44,23 +43,6 @@ export type ExternalSearchDocument = {
         keywords?: string[];
     };
 };
-
-const FYLKER = [
-    'agder',
-    'innlandet',
-    'more-og-romsdal',
-    'nordland',
-    'oslo',
-    'rogaland',
-    'troms-og-finnmark',
-    'trondelag',
-    'vest-viken',
-    'vestfold-og-telemark',
-    'vestland',
-    'ost-viken',
-] as const;
-
-const fylkerSet: ReadonlySet<string> = new Set(FYLKER);
 
 const audienceMap: Record<string, DocumentAudience> = {
     person: 'privatperson',
@@ -156,16 +138,14 @@ class ExternalSearchDocumentBuilder {
             keys.push(...contentConfigKeys);
         }
 
-        if (metaKey !== 'textKey') {
-            const defaultConfigKeys = forceArray(this.searchConfig.data.defaultKeys[metaKey]);
-            keys.push(...defaultConfigKeys);
-        }
+        const defaultConfigKeys = forceArray(this.searchConfig.data.defaultKeys[metaKey]);
+        keys.push(...defaultConfigKeys);
 
         return keys.filter(Boolean);
     }
 
     private getText(): string {
-        return this.getFieldValues('textKey', 'all').join(' ');
+        return this.getFieldValues('textKey', 'all').join('\n');
     }
 
     private getTitle(): string | null {
@@ -187,7 +167,7 @@ class ExternalSearchDocumentBuilder {
         return audienceValue.map((audience) => audienceMap[audience]);
     }
 
-    private getMetaTags() {
+    private getMetaTags(): DocumentMetaTag[] | undefined {
         const { type, _path, data } = this.content;
 
         const metaTags: DocumentMetaTag[] = [];
@@ -219,11 +199,11 @@ class ExternalSearchDocumentBuilder {
     }
 
     private getFylke() {
-        const fylke = this.content._path.match(
+        const fylkePathSegment = this.content._path.match(
             /\/content\/www\.nav\.no\/no\/lokalt\/(([a-z]|-)+)/
-        )?.[1] as Fylke | undefined;
+        )?.[1];
 
-        return fylke && fylkerSet.has(fylke) ? fylke : undefined;
+        return fylkePathSegment && isFylke(fylkePathSegment) ? fylkePathSegment : undefined;
     }
 
     private getLanguage() {

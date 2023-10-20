@@ -6,7 +6,7 @@ import { getRepoConnection } from '../../utils/repo-utils';
 import { getLayersData } from '../../localization/layers-data';
 import { searchApiPostDocuments } from './api-handlers/post-document';
 import { searchApiDeleteDocument } from './api-handlers/delete-document';
-import { buildExternalSearchDocument } from './document-builder';
+import { buildExternalSearchDocument } from './document-builder/document-builder';
 
 const deleteExternalSearchDocumentForContent = (contentId: string, locale: string) => {
     const id = generateSearchDocumentId(contentId, locale);

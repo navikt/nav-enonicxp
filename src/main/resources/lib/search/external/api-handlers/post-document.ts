@@ -2,7 +2,7 @@ import * as taskLib from '/lib/xp/task';
 import httpClient from '/lib/http-client';
 import { logger } from '../../../utils/logging';
 import { URLS } from '../../../constants';
-import { ExternalSearchDocument } from '../document-builder';
+import { ExternalSearchDocument } from '../document-builder/document-builder';
 
 const SERVICE_URL = URLS.SEARCH_API_URL;
 const BATCH_SIZE = 100;
