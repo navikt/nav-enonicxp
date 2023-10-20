@@ -99,6 +99,7 @@ export const externalSearchUpdateAll = () => {
     const contentToIndex = getContentToIndex(validContentTypes);
 
     Object.entries(contentToIndex).forEach(([repoId, contentIds]) => {
+        logger.info(`Found ${contentIds.length} content to index in repo ${repoId}`);
         sendToSearchApi(repoId, contentIds);
     });
 

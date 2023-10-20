@@ -42,7 +42,7 @@ const searchApiUrls: EnvRecord = {
     p: '',
     dev: 'https://navno-search-api.intern.dev.nav.no/content/personbruker',
     q6: '',
-    localhost: '', // 'https://navno-search-api.intern.dev.nav.no/content/personbruker-local',
+    localhost: 'https://navno-search-api.intern.dev.nav.no/content/personbruker-local',
 };
 
 export const URLS = Object.freeze({
