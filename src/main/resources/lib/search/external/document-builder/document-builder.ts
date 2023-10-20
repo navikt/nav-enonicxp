@@ -7,10 +7,10 @@ import { isMedia } from '../../../utils/content-utils';
 import { getNestedValues } from '../../../utils/object-utils';
 import { getExternalSearchConfig } from '../config';
 import { logger } from '../../../utils/logging';
-import { SearchDocumentFylke, getSearchDocumentFylke } from './fylke';
-import { SearchDocumentMetatag, getSearchDocumentMetatags } from './metatags';
-import { getSearchDocumentAudience, SearchDocumentAudience } from './audience';
-import { getSearchDocumentTextSegments } from './text';
+import { SearchDocumentFylke, getSearchDocumentFylke } from './field-resolvers/fylke';
+import { SearchDocumentMetatag, getSearchDocumentMetatags } from './field-resolvers/metatags';
+import { getSearchDocumentAudience, SearchDocumentAudience } from './field-resolvers/audience';
+import { getSearchDocumentTextSegments } from './field-resolvers/text';
 
 type SearchConfig = Content<'no.nav.navno:search-config-v2'>;
 type KeysConfig = Partial<SearchConfig['data']['defaultKeys']>;

@@ -5,12 +5,12 @@ export interface SearchConfigV2 {
    */
   defaultKeys: {
     /**
-     * Felt for tittel
+     * Felter for tittel
      */
     titleKey: Array<string>;
 
     /**
-     * Felt for ingress
+     * Felter for ingress
      */
     ingressKey?: Array<string>;
 
@@ -39,12 +39,12 @@ export interface SearchConfigV2 {
      */
     groupKeys?: {
       /**
-       * Felt for tittel
+       * Felter for tittel
        */
       titleKey?: Array<string>;
 
       /**
-       * Felt for ingress
+       * Felter for ingress
        */
       ingressKey?: Array<string>;
 
