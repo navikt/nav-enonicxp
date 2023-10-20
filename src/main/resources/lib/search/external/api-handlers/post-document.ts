@@ -55,9 +55,9 @@ export const searchApiPostDocuments = (documents: SearchDocument[]) => {
             });
 
             logger.info(
-                `Response from search api for batch ${i} - ${i + documentsBatch.length}: ${
-                    response.status
-                } - ${response.message}`
+                `Response from search api for batch ${i} - ${
+                    i + documentsBatch.length
+                }: ${JSON.stringify(response)}`
             );
         } catch (e) {
             logger.error(
