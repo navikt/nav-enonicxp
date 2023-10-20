@@ -48,7 +48,9 @@ export const searchApiPostDocuments = (documents: SearchDocument[]) => {
                 body: JSON.stringify(documentsBatch),
             });
 
-            logger.info(
+            const logLevel = response.status < 300 ? 'info' : 'error';
+
+            logger[logLevel](
                 `Response from search api for batch ${i} - ${i + documentsBatch.length}: ${
                     response.status
                 } - ${JSON.stringify(response.body)}`

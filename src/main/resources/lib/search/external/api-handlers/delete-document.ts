@@ -13,5 +13,9 @@ export const searchApiDeleteDocument = (documentId: string) => {
         connectionTimeout: 10000,
     });
 
-    logger.info(`Response from search api: ${response.status} - ${JSON.stringify(response.body)}`);
+    const logLevel = response.status < 300 ? 'info' : 'error';
+
+    logger[logLevel](
+        `Response from search api: ${response.status} - ${JSON.stringify(response.body)}`
+    );
 };
