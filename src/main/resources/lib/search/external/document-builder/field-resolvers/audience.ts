@@ -68,6 +68,11 @@ const getAudienceFromPath = (content: ContentNode) => {
     return null;
 };
 
-export const getSearchDocumentAudience = (content: ContentNode) => {
-    return getAudienceFromData(content) || getAudienceFromPath(content) || DEFAULT_AUDIENCE;
+export const getSearchDocumentAudience = (content: ContentNode): SearchDocumentAudience[] => {
+    const audienceFromData = getAudienceFromData(content);
+    if (audienceFromData) {
+        return audienceFromData.map((audience) => dataAudienceToSearchAudience[audience]);
+    }
+
+    return getAudienceFromPath(content) || DEFAULT_AUDIENCE;
 };
