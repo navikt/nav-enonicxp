@@ -7,7 +7,9 @@ import { isMedia } from '../../../utils/content-utils';
 import { getNestedValues } from '../../../utils/object-utils';
 import { getExternalSearchConfig } from '../config';
 import { logger } from '../../../utils/logging';
-import { Fylke, isFylke } from './fylke';
+import { SearchDocumentFylke, getSearchDocumentFylke } from './fylke';
+import { SearchDocumentMetatag, getSearchDocumentMetatags } from './metatags';
+import { getSearchDocumentAudience, SearchDocumentAudience } from './audience';
 
 type SearchConfig = Content<'no.nav.navno:search-config-v2'>;
 type KeysConfig = Partial<SearchConfig['data']['defaultKeys']>;
@@ -15,18 +17,7 @@ type MetaKey = keyof KeysConfig;
 
 type ContentNode = RepoNode<Content>;
 
-type DocumentMetaTag =
-    | 'kontor'
-    | 'skjema'
-    | 'nyhet'
-    | 'pressemelding'
-    | 'nav-og-samfunn'
-    | 'analyse'
-    | 'statistikk';
-
-type DocumentAudience = 'privatperson' | 'arbeidsgiver' | 'samarbeidspartner' | 'andre';
-
-export type ExternalSearchDocument = {
+export type SearchDocument = {
     id: string;
     href: string;
     title: string;
@@ -36,20 +27,13 @@ export type ExternalSearchDocument = {
         createdAt: string;
         lastUpdated: string;
         language: string;
-        audience: DocumentAudience[];
-        metatags?: DocumentMetaTag[];
-        fylke?: Fylke;
+        audience: SearchDocumentAudience[];
+        metatags?: SearchDocumentMetatag[];
+        fylke?: SearchDocumentFylke;
         isFile?: boolean;
         keywords?: string[];
     };
 };
-
-const audienceMap: Record<string, DocumentAudience> = {
-    person: 'privatperson',
-    employer: 'arbeidsgiver',
-    provider: 'samarbeidspartner',
-    other: 'andre',
-} as const;
 
 class ExternalSearchDocumentBuilder {
     private readonly content: ContentNode;
@@ -69,7 +53,7 @@ class ExternalSearchDocumentBuilder {
         this.contentGroupKeys = contentGroupKeys;
     }
 
-    public build(): ExternalSearchDocument | null {
+    public build(): SearchDocument | null {
         const { content, locale } = this;
 
         const href = getSearchNodeHref(content, locale);
@@ -93,8 +77,8 @@ class ExternalSearchDocumentBuilder {
             metadata: {
                 audience: this.getAudience(),
                 language: this.getLanguage(),
-                fylke: this.getFylke(),
-                metatags: this.getMetaTags(),
+                fylke: getSearchDocumentFylke(content),
+                metatags: getSearchDocumentMetatags(content),
                 isFile: isMedia(content),
                 createdAt: content.createdTime,
                 lastUpdated: content.modifiedTime,
@@ -149,64 +133,19 @@ class ExternalSearchDocumentBuilder {
     }
 
     private getTitle(): string | null {
-        const title = this.getFieldValues('titleKey', 'first')[0];
-        return title || null;
+        return this.getFieldValues('titleKey', 'first')[0] || null;
     }
 
     private getIngress(): string {
-        const ingress = this.getFieldValues('ingressKey', 'first')[0];
-        return ingress || '';
+        return this.getFieldValues('ingressKey', 'first')[0] || '';
     }
 
-    private getAudience(): DocumentAudience[] {
+    private getAudience(): SearchDocumentAudience[] {
         const audienceValue = this.getFieldValues('audienceKey', 'first');
-        if (audienceValue.length === 0) {
-            return [audienceMap.person];
-        }
-
-        return audienceValue.map((audience) => audienceMap[audience]);
+        return getSearchDocumentAudience(audienceValue);
     }
 
-    private getMetaTags(): DocumentMetaTag[] | undefined {
-        const { type, _path, data } = this.content;
-
-        const metaTags: DocumentMetaTag[] = [];
-
-        if (type === 'no.nav.navno:office-branch') {
-            metaTags.push('kontor');
-        } else if (type === 'no.nav.navno:form-details') {
-            metaTags.push('skjema');
-        } else if (type === 'no.nav.navno:main-article') {
-            if (data.contentType === 'news') {
-                metaTags.push('nyhet');
-            } else if (data.contentType === 'pressRelease') {
-                metaTags.push('pressemelding');
-            }
-        }
-
-        if (
-            _path.startsWith('/content/www.nav.no/no/nav-og-samfunn/statistikk') &&
-            (type !== 'no.nav.navno:main-article' || data.contentType !== 'lastingContent')
-        ) {
-            metaTags.push('statistikk');
-        }
-
-        if (_path.startsWith('/content/www.nav.no/no/nav-og-samfunn/kunnskap')) {
-            metaTags.push('analyse');
-        }
-
-        return metaTags.length > 0 ? metaTags : undefined;
-    }
-
-    private getFylke() {
-        const fylkePathSegment = this.content._path.match(
-            /\/content\/www\.nav\.no\/no\/lokalt\/(([a-z]|-)+)/
-        )?.[1];
-
-        return fylkePathSegment && isFylke(fylkePathSegment) ? fylkePathSegment : undefined;
-    }
-
-    private getLanguage() {
+    private getLanguage(): string {
         return this.content.language === 'no' ? 'nb' : this.content.language;
     }
 }
@@ -222,7 +161,7 @@ const getContentGroupKeys = (searchConfig: SearchConfig, content: ContentNode) =
 export const buildExternalSearchDocument = (
     content: ContentNode,
     locale: string
-): ExternalSearchDocument | null => {
+): SearchDocument | null => {
     if (!content?.data) {
         logger.error('No content data found!');
         return null;

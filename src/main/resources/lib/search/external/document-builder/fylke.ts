@@ -1,4 +1,7 @@
-export type Fylke = (typeof FYLKER)[number];
+import { RepoNode } from '/lib/xp/node';
+import { Content } from '/lib/xp/content';
+
+export type SearchDocumentFylke = (typeof FYLKER)[number];
 
 const FYLKER = [
     'agder',
@@ -15,8 +18,16 @@ const FYLKER = [
     'ost-viken',
 ] as const;
 
-const fylkerSet: ReadonlySet<Fylke> = new Set(FYLKER);
+const fylkerSet: ReadonlySet<SearchDocumentFylke> = new Set(FYLKER);
 
-export const isFylke = (fylkeOrNot: string): fylkeOrNot is Fylke => {
-    return fylkerSet.has(fylkeOrNot as Fylke);
+const isFylke = (fylkeOrNot: string): fylkeOrNot is SearchDocumentFylke => {
+    return fylkerSet.has(fylkeOrNot as SearchDocumentFylke);
+};
+
+export const getSearchDocumentFylke = (content: RepoNode<Content>) => {
+    const fylkePathSegment = content._path.match(
+        /\/content\/www\.nav\.no\/no\/lokalt\/(([a-z]|-)+)/
+    )?.[1];
+
+    return fylkePathSegment && isFylke(fylkePathSegment) ? fylkePathSegment : undefined;
 };

@@ -4,10 +4,7 @@ import { logger } from '../../utils/logging';
 import { forceArray } from '../../utils/array-utils';
 import { getRepoConnection } from '../../utils/repo-utils';
 import { queryAllLayersToLocaleBuckets } from '../../localization/locale-utils';
-import {
-    buildExternalSearchDocument,
-    ExternalSearchDocument,
-} from './document-builder/document-builder';
+import { buildExternalSearchDocument, SearchDocument } from './document-builder/document-builder';
 import { getLayersData } from '../../localization/layers-data';
 import { searchApiPostDocumentsAsync } from './api-handlers/post-document';
 
@@ -59,7 +56,7 @@ const sendToSearchApi = (repoId: string, contentIds: string[]) => {
             repo.get<Content>(contentIds.slice(batchStart, batchStart + BATCH_SIZE))
         );
 
-        const documents = contentBatch.reduce<ExternalSearchDocument[]>((acc, content) => {
+        const documents = contentBatch.reduce<SearchDocument[]>((acc, content) => {
             if (!content) {
                 return acc;
             }

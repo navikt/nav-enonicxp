@@ -2,26 +2,26 @@ import * as taskLib from '/lib/xp/task';
 import httpClient from '/lib/http-client';
 import { logger } from '../../../utils/logging';
 import { URLS } from '../../../constants';
-import { ExternalSearchDocument } from '../document-builder/document-builder';
+import { SearchDocument } from '../document-builder/document-builder';
 
 const SERVICE_URL = URLS.SEARCH_API_URL;
 const BATCH_SIZE = 100;
 
 // This won't be thread safe, but problems here should be very unlikely, and in any case the
 // consequences are not significant (some document-batches may be sent twice)
-const queueState: { isBusy: boolean; queue: ExternalSearchDocument[] } = {
+const queueState: { isBusy: boolean; queue: SearchDocument[] } = {
     isBusy: false,
     queue: [],
 };
 
-export const searchApiPostDocumentsAsync = (documents: ExternalSearchDocument[]) => {
+export const searchApiPostDocumentsAsync = (documents: SearchDocument[]) => {
     taskLib.executeFunction({
         description: `Sending document batch to search api`,
         func: () => searchApiPostDocuments(documents),
     });
 };
 
-export const searchApiPostDocuments = (documents: ExternalSearchDocument[]) => {
+export const searchApiPostDocuments = (documents: SearchDocument[]) => {
     if (queueState.isBusy) {
         queueState.queue.push(...documents);
         logger.info(
