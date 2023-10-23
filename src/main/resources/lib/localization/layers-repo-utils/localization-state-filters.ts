@@ -13,12 +13,6 @@ export const NON_LOCALIZED_QUERY_FILTER: BasicFilters[] = [
     },
 ];
 
-const localizationStateFilters: Record<LocalizationState, BooleanFilter['boolean']> = {
-    localized: { mustNot: NON_LOCALIZED_QUERY_FILTER },
-    nonlocalized: { must: NON_LOCALIZED_QUERY_FILTER },
-    all: {},
-};
-
 export const insertLocalizationStateFilter = (
     queryParams: NodeQueryParams,
     state: LocalizationState
