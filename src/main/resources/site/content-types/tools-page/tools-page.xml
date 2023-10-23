@@ -1,5 +1,5 @@
 <content-type>
-    <display-name>(Legacy) Verktøy-side</display-name>
+    <display-name>Å (Legacy) Verktøy-side</display-name>
     <description>Side-type for kalkulatorer, veivisere, osv [ikke implementert]</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>

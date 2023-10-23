@@ -1,5 +1,5 @@
 <content-type>
-    <display-name>(Legacy) Guide ("Slik gjør du")</display-name>
+    <display-name>Å (Legacy) Guide ("Slik gjør du")</display-name>
     <description>En guide som beskriver hvordan man sender inn melding, frister og med lenker til søknadsskjemaer etc.</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>

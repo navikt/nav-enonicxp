@@ -51,6 +51,7 @@ export const linkContentTypes: ContentTypeList = [
 
 export const contentTypesInSitemap: ContentTypeList = [
     ...dynamicPageContentTypes,
+    ...dynamicPageContentTypesV2,
     ...legacyPageContentTypes,
     `${APP_DESCRIPTOR}:office-branch`,
 ];
@@ -65,6 +66,7 @@ export const contentTypesInDataQuery: ContentTypeList = [
 
 export const contentTypesInContentSwitcher: ContentTypeList = [
     ...dynamicPageContentTypes,
+    ...dynamicPageContentTypesV2,
     ...legacyPageContentTypes,
     ...linkContentTypes,
     `${APP_DESCRIPTOR}:redirects-folder`,
@@ -82,12 +84,18 @@ export const contentTypesWithDeepReferences = [
 
 export const contentTypesWithBreadcrumbs: ContentTypeList = [
     `${APP_DESCRIPTOR}:situation-page`,
+    `${APP_DESCRIPTOR}:situation-page-v2`,
     `${APP_DESCRIPTOR}:guide-page`,
+    `${APP_DESCRIPTOR}:guide-page-v2`,
     `${APP_DESCRIPTOR}:themed-article-page`,
+    `${APP_DESCRIPTOR}:themed-article-page-v2`,
     `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
+    `${APP_DESCRIPTOR}:product-page-v2`,
     `${APP_DESCRIPTOR}:tools-page`,
+    `${APP_DESCRIPTOR}:tools-page-v2`,
     `${APP_DESCRIPTOR}:dynamic-page`,
     `${APP_DESCRIPTOR}:generic-page`,
+    `${APP_DESCRIPTOR}:generic-page-v2`,
     `${APP_DESCRIPTOR}:main-article`,
     `${APP_DESCRIPTOR}:main-article-chapter`,
     `${APP_DESCRIPTOR}:section-page`,
@@ -100,6 +108,7 @@ export const contentTypesWithBreadcrumbs: ContentTypeList = [
 
 export const contentTypesWithComponents: ContentTypeList = [
     ...dynamicPageContentTypes,
+    ...dynamicPageContentTypesV2,
     `${APP_DESCRIPTOR}:product-details`,
     `${APP_DESCRIPTOR}:office-branch`,
     'portal:page-template',
