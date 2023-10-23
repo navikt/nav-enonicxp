@@ -143,9 +143,6 @@ const updateSitemapEntry = (contentId: string, locale: string) =>
     });
 
 const generateSitemapEntries = (): SitemapEntry[] => {
-    logger.info(`Starting!`);
-    const start = Date.now();
-
     const repoIdContentBuckets = queryAllLayersToRepoIdBuckets({
         branch: 'master',
         state: 'localized',
@@ -172,8 +169,6 @@ const generateSitemapEntries = (): SitemapEntry[] => {
             },
         },
     });
-
-    logger.info(`Finished query after ${Date.now() - start}`);
 
     const sitemapEntries: SitemapEntry[] = [];
 
