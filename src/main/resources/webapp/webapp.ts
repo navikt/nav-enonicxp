@@ -16,6 +16,7 @@ import {
 } from '../lib/search/search-event-handlers';
 import { pushLayerContentToMaster } from '../lib/localization/layers-data';
 import { externalSearchUpdateAll } from '../lib/search/external/update-all';
+import { URLS } from '../lib/constants';
 
 type ActionsMap = { [key: string]: { description: string; callback: () => any } };
 
@@ -48,7 +49,7 @@ const validActions: ActionsMap = {
         description: 'Oppdater alle søke-noder',
         callback: revalidateAllSearchNodesAsync,
     },
-    ...(app.config.env !== 'p' && {
+    ...(!!URLS.SEARCH_API_URL && {
         updateAllSearchNodesExternal: {
             description: 'Oppdater alle søke-noder (eksternt søk)',
             callback: externalSearchUpdateAll,
