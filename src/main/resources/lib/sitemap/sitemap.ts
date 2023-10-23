@@ -133,12 +133,12 @@ const buildSitemapEntry = (
 const updateSitemapEntry = (contentId: string, locale: string) =>
     runInLocaleContext({ branch: 'master', locale }, () => {
         const content = contentLib.get({ key: contentId });
-        const id = getKey(contentId, locale);
+        const key = getKey(contentId, locale);
 
         if (shouldIncludeContent(content)) {
-            sitemapEntriesMap.set(id, buildSitemapEntry(content, locale, true));
+            sitemapEntriesMap.set(key, buildSitemapEntry(content, locale, true));
         } else if (sitemapEntriesMap.get(contentId)) {
-            sitemapEntriesMap.delete(id);
+            sitemapEntriesMap.delete(key);
         }
     });
 
@@ -261,13 +261,13 @@ const updateSitemapData = (entries: SitemapEntry[]) => {
         return;
     }
 
-    const siteMapDataNew = new Map<string, SitemapEntry>();
+    const sitemapEntriesMapNew = new Map<string, SitemapEntry>();
 
     entries.forEach((entry) => {
-        siteMapDataNew.set(entry._key, entry);
+        sitemapEntriesMapNew.set(entry._key, entry);
     });
 
-    sitemapEntriesMap = siteMapDataNew;
+    sitemapEntriesMap = sitemapEntriesMapNew;
 
     logger.info(`Updated sitemap data with ${entries.length} entries`);
 };
