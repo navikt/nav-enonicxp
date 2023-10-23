@@ -5,8 +5,6 @@ import { logger } from '../../../utils/logging';
 const SERVICE_URL = URLS.SEARCH_API_URL;
 
 export const searchApiDeleteDocument = (documentId: string) => {
-    logger.info(`Deleting ${documentId} from search index`);
-
     const response = httpClient.request({
         url: `${SERVICE_URL}/${documentId}`,
         method: 'DELETE',
@@ -16,6 +14,8 @@ export const searchApiDeleteDocument = (documentId: string) => {
     const logLevel = response.status < 300 ? 'info' : 'error';
 
     logger[logLevel](
-        `Response from search api: ${response.status} - ${JSON.stringify(response.body)}`
+        `Response from search/delete api for ${documentId}: ${response.status} - ${JSON.stringify(
+            response.body
+        )}`
     );
 };

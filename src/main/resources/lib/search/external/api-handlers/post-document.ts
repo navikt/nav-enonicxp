@@ -8,7 +8,7 @@ const SERVICE_URL = URLS.SEARCH_API_URL;
 const BATCH_SIZE = 100;
 
 // This won't be thread safe, but problems here should be very unlikely, and in any case the
-// consequences are not significant (some document-batches may be sent twice)
+// consequences are not significant (some concurrent requests may occur)
 const queueState: { isBusy: boolean; queue: SearchDocument[] } = {
     isBusy: false,
     queue: [],
@@ -32,8 +32,6 @@ export const searchApiPostDocuments = (documents: SearchDocument[]) => {
 
     queueState.isBusy = true;
 
-    logger.info(`Posting ${documents.length} documents to search index`);
-
     const start = Date.now();
 
     for (let i = 0; i < documents.length; i += BATCH_SIZE) {
@@ -51,7 +49,7 @@ export const searchApiPostDocuments = (documents: SearchDocument[]) => {
             const logLevel = response.status < 300 ? 'info' : 'error';
 
             logger[logLevel](
-                `Response from search api for batch ${i} - ${i + documentsBatch.length}: ${
+                `Response from search/post api for batch ${i} - ${i + documentsBatch.length}: ${
                     response.status
                 } - ${JSON.stringify(response.body)}`
             );

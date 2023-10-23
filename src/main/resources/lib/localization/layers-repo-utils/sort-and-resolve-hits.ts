@@ -1,9 +1,8 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { MultiRepoNodeQueryHit } from '/lib/xp/node';
-import { runInLocaleContext } from '../locale-context';
-import { getLayersData } from '../layers-data';
 import { RepoBranch } from '../../../types/common';
+import { runInContext } from '../../context/run-in-context';
 
 type Hits = readonly MultiRepoNodeQueryHit[];
 
@@ -52,9 +51,8 @@ const createBucketsWithContent = (hits: Hits, branch: RepoBranch) => {
             acc[repoId] = [];
         }
 
-        const content = runInLocaleContext(
-            { locale: getLayersData().repoIdToLocaleMap[repoId], branch, asAdmin: true },
-            () => contentLib.get({ key: id })
+        const content = runInContext({ repository: repoId, branch, asAdmin: true }, () =>
+            contentLib.get({ key: id })
         );
 
         if (content) {
