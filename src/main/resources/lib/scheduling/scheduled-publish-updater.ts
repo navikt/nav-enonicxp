@@ -12,6 +12,7 @@ import { sortMultiRepoNodeHitsToBuckets } from '../localization/layers-repo-util
 import { runInLocaleContext } from '../localization/locale-context';
 import { getLayersData } from '../localization/layers-data';
 import { getLayersMultiConnection } from '../localization/layers-repo-utils/layers-repo-connection';
+
 const schedulePrepublishTasks = () => {
     const multiRepoConnection = getLayersMultiConnection('draft');
 
@@ -22,9 +23,9 @@ const schedulePrepublishTasks = () => {
 
     logger.info(`Updating scheduled prepublish jobs for ${nodeHits.length} items`);
 
-    const localeBuckets = sortMultiRepoNodeHitsToBuckets({ hits: nodeHits });
+    const nodeHitsBuckets = sortMultiRepoNodeHitsToBuckets({ hits: nodeHits });
 
-    Object.entries(localeBuckets).forEach(([repoId, nodeIds]) => {
+    Object.entries(nodeHitsBuckets).forEach(([repoId, nodeIds]) => {
         const { repoIdToLocaleMap } = getLayersData();
         const locale = repoIdToLocaleMap[repoId];
 
@@ -69,9 +70,9 @@ const scheduleUnpublishTasks = () => {
 
     logger.info(`Updating scheduled unpublish jobs for ${nodeHits.length} items`);
 
-    const localeBuckets = sortMultiRepoNodeHitsToBuckets({ hits: nodeHits });
+    const nodeHitsBuckets = sortMultiRepoNodeHitsToBuckets({ hits: nodeHits });
 
-    Object.entries(localeBuckets).forEach(([repoId, nodeIds]) => {
+    Object.entries(nodeHitsBuckets).forEach(([repoId, nodeIds]) => {
         const { repoIdToLocaleMap } = getLayersData();
         const locale = repoIdToLocaleMap[repoId];
 

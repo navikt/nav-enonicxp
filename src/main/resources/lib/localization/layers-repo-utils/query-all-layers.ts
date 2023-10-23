@@ -3,8 +3,8 @@ import { batchedMultiRepoNodeQuery } from '../../utils/batched-query';
 import { RepoBranch } from '../../../types/common';
 import { insertLocalizationStateFilter, LocalizationState } from './localization-state-filters';
 import {
-    LocaleContentBuckets,
-    LocaleNodeIdBuckets,
+    RepoIdContentBuckets,
+    RepoIdNodeIdBuckets,
     sortMultiRepoNodeHitsToBuckets,
 } from './sort-and-resolve-hits';
 import { getLayersMultiConnection } from './layers-repo-connection';
@@ -16,8 +16,8 @@ type Args<ResolveContent = boolean> = {
     resolveContent: ResolveContent;
 };
 
-export function queryAllLayersToRepoIdBuckets(args: Args<false>): LocaleNodeIdBuckets;
-export function queryAllLayersToRepoIdBuckets(args: Args<true>): LocaleContentBuckets;
+export function queryAllLayersToRepoIdBuckets(args: Args<false>): RepoIdNodeIdBuckets;
+export function queryAllLayersToRepoIdBuckets(args: Args<true>): RepoIdContentBuckets;
 export function queryAllLayersToRepoIdBuckets({
     branch,
     state,

@@ -7,23 +7,23 @@ import { RepoBranch } from '../../../types/common';
 
 type Hits = readonly MultiRepoNodeQueryHit[];
 
-export type LocaleContentBuckets = Record<string, Content[]>;
+export type RepoIdContentBuckets = Record<string, Content[]>;
 
-export type LocaleNodeIdBuckets = Record<string, string[]>;
+export type RepoIdNodeIdBuckets = Record<string, string[]>;
 
 type NonResolvedArgs = {
-    hits: readonly MultiRepoNodeQueryHit[];
+    hits: Hits;
     resolveContent?: false;
 };
 
 type ResolvedArgs = {
-    hits: readonly MultiRepoNodeQueryHit[];
+    hits: Hits;
     resolveContent: true;
     branch: RepoBranch;
 };
 
-export function sortMultiRepoNodeHitsToBuckets(props: NonResolvedArgs): LocaleNodeIdBuckets;
-export function sortMultiRepoNodeHitsToBuckets(props: ResolvedArgs): LocaleContentBuckets;
+export function sortMultiRepoNodeHitsToBuckets(props: NonResolvedArgs): RepoIdNodeIdBuckets;
+export function sortMultiRepoNodeHitsToBuckets(props: ResolvedArgs): RepoIdContentBuckets;
 export function sortMultiRepoNodeHitsToBuckets(props: ResolvedArgs | NonResolvedArgs) {
     return props.resolveContent
         ? createBucketsWithContent(props.hits, props.branch)
@@ -31,7 +31,7 @@ export function sortMultiRepoNodeHitsToBuckets(props: ResolvedArgs | NonResolved
 }
 
 const createBucketsWithIds = (hits: Hits) => {
-    return hits.reduce<LocaleNodeIdBuckets>((acc, node) => {
+    return hits.reduce<RepoIdNodeIdBuckets>((acc, node) => {
         const { repoId, id } = node;
 
         if (!acc[repoId]) {
@@ -45,7 +45,7 @@ const createBucketsWithIds = (hits: Hits) => {
 };
 
 const createBucketsWithContent = (hits: Hits, branch: RepoBranch) => {
-    return hits.reduce<LocaleContentBuckets>((acc, node) => {
+    return hits.reduce<RepoIdContentBuckets>((acc, node) => {
         const { repoId, id } = node;
 
         if (!acc[repoId]) {

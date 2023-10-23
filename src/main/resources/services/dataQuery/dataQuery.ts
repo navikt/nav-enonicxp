@@ -9,7 +9,7 @@ import { contentTypesInDataQuery } from '../../lib/contenttype-lists';
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import {
-    LocaleNodeIdBuckets,
+    RepoIdNodeIdBuckets,
     sortMultiRepoNodeHitsToBuckets,
 } from '../../lib/localization/layers-repo-utils/sort-and-resolve-hits';
 import { getLayersData } from '../../lib/localization/layers-data';
@@ -115,10 +115,10 @@ const transformRepoNode = (node: RepoNode<Content>): Content => {
     return content;
 };
 
-const runArchiveQuery = (nodeHitsLocaleBuckets: LocaleNodeIdBuckets) => {
+const runArchiveQuery = (nodeHitsBuckets: RepoIdNodeIdBuckets) => {
     const { repoIdToLocaleMap } = getLayersData();
 
-    return Object.entries(nodeHitsLocaleBuckets).reduce<ContentWithLocaleData[]>(
+    return Object.entries(nodeHitsBuckets).reduce<ContentWithLocaleData[]>(
         (acc, [repoId, nodeIds]) => {
             const locale = repoIdToLocaleMap[repoId];
 
@@ -150,10 +150,10 @@ const runArchiveQuery = (nodeHitsLocaleBuckets: LocaleNodeIdBuckets) => {
     );
 };
 
-const runContentQuery = (nodeHitsLocaleBuckets: LocaleNodeIdBuckets) => {
+const runContentQuery = (nodeHitsBuckets: RepoIdNodeIdBuckets) => {
     const { repoIdToLocaleMap } = getLayersData();
 
-    return Object.entries(nodeHitsLocaleBuckets).reduce<ContentWithLocaleData[]>(
+    return Object.entries(nodeHitsBuckets).reduce<ContentWithLocaleData[]>(
         (acc, [repoId, nodeIds]) => {
             const locale = repoIdToLocaleMap[repoId];
 
@@ -191,12 +191,10 @@ const runQuery = (params: RunQueryParams) => {
     const end = start + RESPONSE_BATCH_SIZE;
 
     const nodeHitsBatch = nodeHits.slice(start, end);
-    const nodeHitsLocaleBuckets = sortMultiRepoNodeHitsToBuckets({ hits: nodeHitsBatch });
+    const nodeHitsBuckets = sortMultiRepoNodeHitsToBuckets({ hits: nodeHitsBatch });
 
     const contentHits =
-        branch === 'archived'
-            ? runArchiveQuery(nodeHitsLocaleBuckets)
-            : runContentQuery(nodeHitsLocaleBuckets);
+        branch === 'archived' ? runArchiveQuery(nodeHitsBuckets) : runContentQuery(nodeHitsBuckets);
 
     if (contentHits.length !== nodeHitsBatch.length) {
         const diff = nodeHitsBatch.filter(
