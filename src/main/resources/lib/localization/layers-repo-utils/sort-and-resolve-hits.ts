@@ -10,23 +10,23 @@ export type RepoIdContentBuckets = Record<string, Content[]>;
 
 export type RepoIdNodeIdBuckets = Record<string, string[]>;
 
-type NonResolvedArgs = {
+type ArgsNoResolve = {
     hits: Hits;
     resolveContent?: false;
 };
 
-type ResolvedArgs = {
+type ArgsWithResolve = {
     hits: Hits;
     resolveContent: true;
     branch: RepoBranch;
 };
 
-export function sortMultiRepoNodeHitsToBuckets(props: NonResolvedArgs): RepoIdNodeIdBuckets;
-export function sortMultiRepoNodeHitsToBuckets(props: ResolvedArgs): RepoIdContentBuckets;
-export function sortMultiRepoNodeHitsToBuckets(props: ResolvedArgs | NonResolvedArgs) {
-    return props.resolveContent
-        ? createBucketsWithContent(props.hits, props.branch)
-        : createBucketsWithIds(props.hits);
+export function sortMultiRepoNodeHitsToBuckets(args: ArgsNoResolve): RepoIdNodeIdBuckets;
+export function sortMultiRepoNodeHitsToBuckets(args: ArgsWithResolve): RepoIdContentBuckets;
+export function sortMultiRepoNodeHitsToBuckets(args: ArgsWithResolve | ArgsNoResolve) {
+    return args.resolveContent
+        ? createBucketsWithContent(args.hits, args.branch)
+        : createBucketsWithIds(args.hits);
 }
 
 const createBucketsWithIds = (hits: Hits) => {
