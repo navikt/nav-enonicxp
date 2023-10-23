@@ -77,6 +77,8 @@ const shouldIncludeContent = (content: Content<any> | null): content is Content 
         isContentLocalized(content)
     );
 
+const getId = (contentId: string, locale: string) => `${contentId}-${locale}`;
+
 const getUrl = (content: Content<any>, locale: string) => {
     if (content.data?.canonicalUrl) {
         return content.data.canonicalUrl;
@@ -86,10 +88,12 @@ const getUrl = (content: Content<any>, locale: string) => {
     return `${URLS.FRONTEND_ORIGIN}${pathname}`;
 };
 
-const transformLanguageVersion = (languageSelectorData: LanguageSelectorData): LanguageVersion => ({
-    language: languageSelectorData.language,
-    url: `${URLS.FRONTEND_ORIGIN}${languageSelectorData._path}`,
-});
+const transformLanguageVersion = (languageSelectorData: LanguageSelectorData): LanguageVersion => {
+    return {
+        language: languageSelectorData.language,
+        url: `${URLS.FRONTEND_ORIGIN}${languageSelectorData._path}`,
+    };
+};
 
 const getSitemapEntry = (content: Content, locale: string): SitemapEntry => {
     const languageVersions = getLanguageVersions({
@@ -99,7 +103,7 @@ const getSitemapEntry = (content: Content, locale: string): SitemapEntry => {
     }).map(transformLanguageVersion);
 
     return {
-        id: `${content._id}-${locale}`,
+        id: getId(content._id, locale),
         url: getUrl(content, locale),
         modifiedTime: content.modifiedTime,
         language: content.language,
@@ -110,11 +114,12 @@ const getSitemapEntry = (content: Content, locale: string): SitemapEntry => {
 const updateSitemapEntry = (contentId: string, locale: string) =>
     runInLocaleContext({ branch: 'master', locale }, () => {
         const content = contentLib.get({ key: contentId });
+        const id = getId(contentId, locale);
 
         if (shouldIncludeContent(content)) {
-            sitemapData.set(contentId, getSitemapEntry(content, locale));
+            sitemapData.set(id, getSitemapEntry(content, locale));
         } else if (sitemapData.get(contentId)) {
-            sitemapData.remove(contentId);
+            sitemapData.remove(id);
         }
     });
 
