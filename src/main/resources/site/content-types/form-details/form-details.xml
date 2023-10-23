@@ -27,6 +27,9 @@
                 <input name="ingress" type="HtmlArea">
                     <label>Ingress</label>
                 </input>
+                <input name="languageDisclaimer" type="TextArea">
+                    <label>Informasjon om språk</label>
+                </input>
                 <option-set name="audience">
                     <label>Målgruppe</label>
                     <occurrences minimum="1" maximum="1"/>
