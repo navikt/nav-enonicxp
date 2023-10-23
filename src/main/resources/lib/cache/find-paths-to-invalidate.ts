@@ -7,7 +7,7 @@ import { getLayersData } from '../localization/layers-data';
 import { ReferencesFinder } from '../reference-search/references-finder';
 import { removeDuplicates } from '../utils/array-utils';
 import { RepoBranch } from '../../types/common';
-import { getContentFromAllLayers } from '../localization/locale-utils';
+import { getContentFromAllLayers } from '../localization/layers-repo-utils/get-content-from-all-layers';
 
 const REFERENCE_SEARCH_TIMEOUT_MS = 10000;
 

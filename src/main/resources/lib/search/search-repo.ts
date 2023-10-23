@@ -8,6 +8,7 @@ import {
     SEARCH_REPO_CONFIG_NODE,
     SEARCH_REPO_CONTENT_BASE_NODE,
     SEARCH_REPO_DELETION_QUEUE_BASE_NODE,
+    SEARCH_REPO_EXTERNAL_CONFIG_NODE,
     SEARCH_REPO_UPDATE_STATE_NODE,
 } from './search-utils';
 import { forceArray } from '../utils/array-utils';
@@ -16,6 +17,7 @@ const BASE_NODE_KEY = `/${SEARCH_REPO_CONTENT_BASE_NODE}`;
 const DELETION_QUEUE_NODE_KEY = `/${SEARCH_REPO_DELETION_QUEUE_BASE_NODE}`;
 const UPDATE_STATE_NODE_KEY = `/${SEARCH_REPO_UPDATE_STATE_NODE}`;
 const CONFIG_NODE_KEY = `/${SEARCH_REPO_CONFIG_NODE}`;
+const CONFIG_EXTERNAL_NODE_KEY = `/${SEARCH_REPO_EXTERNAL_CONFIG_NODE}`;
 
 type UpdateQueueEntry = {
     contentId: string;
@@ -110,6 +112,10 @@ const createBaseNodes = (repo: RepoConnection) => {
     if (!repo.exists(CONFIG_NODE_KEY)) {
         repo.create({ _name: SEARCH_REPO_CONFIG_NODE });
         logger.info(`Created node in search repo: ${SEARCH_REPO_CONFIG_NODE}`);
+    }
+    if (!repo.exists(CONFIG_EXTERNAL_NODE_KEY)) {
+        repo.create({ _name: SEARCH_REPO_EXTERNAL_CONFIG_NODE });
+        logger.info(`Created node in search repo: ${SEARCH_REPO_EXTERNAL_CONFIG_NODE}`);
     }
 };
 

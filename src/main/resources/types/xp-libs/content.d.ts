@@ -38,6 +38,9 @@ declare module '*/lib/xp/content' {
 
             // TODO: add media content types
             createMedia<Type = any>(params: CreateMediaParams): Type;
+
+            CONTENT_ROOT_PATH: string;
+            ARCHIVE_ROOT_PATH: string;
         }
 
         type LayerInherit = 'PARENT' | 'SORT' | 'CONTENT' | 'NAME';

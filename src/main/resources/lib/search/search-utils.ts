@@ -11,6 +11,7 @@ export const SEARCH_REPO_DELETION_QUEUE_BASE_NODE = 'deletionQueue';
 export const SEARCH_REPO_CONTENT_BASE_NODE = 'content';
 export const SEARCH_REPO_UPDATE_STATE_NODE = 'updateState';
 export const SEARCH_REPO_CONFIG_NODE = 'config';
+export const SEARCH_REPO_EXTERNAL_CONFIG_NODE = 'externalConfig';
 
 export const SEARCH_REPO_CONTENT_ID_KEY = 'contentId';
 export const SEARCH_REPO_CONTENT_PATH_KEY = 'contentPath';

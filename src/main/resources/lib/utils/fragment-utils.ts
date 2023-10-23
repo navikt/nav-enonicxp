@@ -9,7 +9,7 @@ import { runInContext } from '../context/run-in-context';
 import { logger } from './logging';
 import { getUnixTimeFromDateTimeString } from './datetime-utils';
 import { forceArray, removeDuplicates } from './array-utils';
-import { getNestedValue } from './object-utils';
+import { getNestedValues } from './object-utils';
 
 const htmlFragmentMacroPrefix = 'html-fragment fragmentId="';
 
@@ -64,15 +64,23 @@ const getFragmentIdsFromMacros = (contentRef: string, branch: RepoBranch) => {
     }
 
     const fragmentIdsFromData = htmlAreaDataPaths.reduce((fragmentIdsAcc, dataPath) => {
-        const htmlArea = getNestedValue(contentNode.data, dataPath);
-        return [...fragmentIdsAcc, ...getFragmentIdsFromHtmlArea(htmlArea)];
+        const htmlArea = getNestedValues(contentNode.data, dataPath);
+        if (typeof htmlArea === 'string') {
+            fragmentIdsAcc.push(...getFragmentIdsFromHtmlArea(htmlArea));
+        }
+
+        return fragmentIdsAcc;
     }, [] as string[]);
 
     const fragmentIdsFromComponents = htmlAreaComponentPaths.reduce(
         (fragmentIdsAcc, componentPath) => {
             const fragmentIds = forceArray(contentNode.components).reduce((acc, component) => {
-                const htmlArea = getNestedValue(component, componentPath);
-                return [...acc, ...getFragmentIdsFromHtmlArea(htmlArea)];
+                const htmlArea = getNestedValues(component, componentPath);
+                if (typeof htmlArea === 'string') {
+                    fragmentIdsAcc.push(...getFragmentIdsFromHtmlArea(htmlArea));
+                }
+
+                return acc;
             }, [] as string[]);
 
             return [...fragmentIdsAcc, ...fragmentIds];

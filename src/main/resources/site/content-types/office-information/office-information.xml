@@ -2,6 +2,7 @@
     <display-name>Enhetsinformasjon</display-name>
     <description>Kontorinformasjon</description>
     <super-type>base:unstructured</super-type>
+    <is-abstract>true</is-abstract>
     <form>
         <input name="checksum" type="TextLine">
             <label>Checksum</label>
@@ -293,6 +294,5 @@
                 </item-set>
             </items>
         </item-set>
-        <mixin name="decorator-toggles"/>
     </form>
 </content-type>

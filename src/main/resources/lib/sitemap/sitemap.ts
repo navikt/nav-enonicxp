@@ -3,7 +3,6 @@ import { Content } from '/lib/xp/content';
 import * as taskLib from '/lib/xp/task';
 import * as eventLib from '/lib/xp/event';
 import * as clusterLib from '/lib/xp/cluster';
-import { stringArrayToSet } from '../utils/array-utils';
 import { runInContext } from '../context/run-in-context';
 import { URLS } from '../constants';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
@@ -15,7 +14,8 @@ import {
 } from '../localization/resolve-language-versions';
 import { getLayersData } from '../localization/layers-data';
 import { runInLocaleContext } from '../localization/locale-context';
-import { isContentLocalized, queryAllLayersToLocaleBuckets } from '../localization/locale-utils';
+import { isContentLocalized } from '../localization/locale-utils';
+import { queryAllLayersToRepoIdBuckets } from '../localization/layers-repo-utils/query-all-layers';
 import { getPublicPath } from '../paths/public-path';
 import { customListenerType } from '../utils/events';
 
@@ -66,12 +66,12 @@ const sitemapData: SitemapData = {
     },
 };
 
-const contentTypesInSitemapSet = stringArrayToSet(contentTypesInSitemap);
+const contentTypesInSitemapSet: ReadonlySet<string> = new Set(contentTypesInSitemap);
 
 const shouldIncludeContent = (content: Content<any> | null): content is Content =>
     !!(
         content &&
-        contentTypesInSitemapSet[content.type] &&
+        contentTypesInSitemapSet.has(content.type) &&
         !content.data?.externalProductUrl &&
         !content.data?.noindex &&
         isContentLocalized(content)
@@ -119,9 +119,10 @@ const updateSitemapEntry = (contentId: string, locale: string) =>
     });
 
 const generateSitemapEntries = (): SitemapEntry[] => {
-    const localeContentBuckets = queryAllLayersToLocaleBuckets({
+    const localeContentBuckets = queryAllLayersToRepoIdBuckets({
         branch: 'master',
         state: 'localized',
+        resolveContent: true,
         queryParams: {
             filters: {
                 boolean: {
