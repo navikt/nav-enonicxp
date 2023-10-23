@@ -9,14 +9,14 @@ import { contentTypesInDataQuery } from '../../lib/contenttype-lists';
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import {
-    getLayersMultiConnection,
-    NodeHitsLocaleBuckets,
-    sortMultiRepoNodeHitIdsToRepoIdBuckets,
-} from '../../lib/localization/locale-utils';
+    LocaleNodeIdBuckets,
+    sortMultiRepoNodeHitsToBuckets,
+} from '../../lib/localization/layers-repo-utils/sort-and-resolve-hits';
 import { getLayersData } from '../../lib/localization/layers-data';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { getPublicPath } from '../../lib/paths/public-path';
 import { parseJsonArray } from '../../lib/utils/array-utils';
+import { getLayersMultiConnection } from '../../lib/localization/layers-repo-utils/layers-repo-connection';
 
 type Branch = 'published' | 'unpublished' | 'archived';
 
@@ -115,7 +115,7 @@ const transformRepoNode = (node: RepoNode<Content>): Content => {
     return content;
 };
 
-const runArchiveQuery = (nodeHitsLocaleBuckets: NodeHitsLocaleBuckets) => {
+const runArchiveQuery = (nodeHitsLocaleBuckets: LocaleNodeIdBuckets) => {
     const { repoIdToLocaleMap } = getLayersData();
 
     return Object.entries(nodeHitsLocaleBuckets).reduce<ContentWithLocaleData[]>(
@@ -150,7 +150,7 @@ const runArchiveQuery = (nodeHitsLocaleBuckets: NodeHitsLocaleBuckets) => {
     );
 };
 
-const runContentQuery = (nodeHitsLocaleBuckets: NodeHitsLocaleBuckets) => {
+const runContentQuery = (nodeHitsLocaleBuckets: LocaleNodeIdBuckets) => {
     const { repoIdToLocaleMap } = getLayersData();
 
     return Object.entries(nodeHitsLocaleBuckets).reduce<ContentWithLocaleData[]>(
@@ -191,7 +191,7 @@ const runQuery = (params: RunQueryParams) => {
     const end = start + RESPONSE_BATCH_SIZE;
 
     const nodeHitsBatch = nodeHits.slice(start, end);
-    const nodeHitsLocaleBuckets = sortMultiRepoNodeHitIdsToRepoIdBuckets(nodeHitsBatch);
+    const nodeHitsLocaleBuckets = sortMultiRepoNodeHitsToBuckets({ hits: nodeHitsBatch });
 
     const contentHits =
         branch === 'archived'

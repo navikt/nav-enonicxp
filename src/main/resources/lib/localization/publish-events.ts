@@ -3,8 +3,9 @@ import { EnonicEvent, EnonicEventData } from '/lib/xp/event';
 import * as clusterLib from '/lib/xp/cluster';
 import { getRepoConnection } from '../utils/repo-utils';
 import { logger } from '../utils/logging';
-import { getContentFromAllLayers, isContentLocalized } from './locale-utils';
+import { isContentLocalized } from './locale-utils';
 import { CONTENT_REPO_PREFIX, CONTENT_ROOT_REPO_ID } from '../constants';
+import { getContentFromAllLayers } from './layers-repo-utils/get-content-from-all-layers';
 
 let hasSetupListeners = false;
 

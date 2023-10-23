@@ -8,13 +8,10 @@ import {
     scheduleUnpublish,
 } from './scheduled-publish';
 import { logger } from '../utils/logging';
-import {
-    getLayersMultiConnection,
-    sortMultiRepoNodeHitIdsToRepoIdBuckets,
-} from '../localization/locale-utils';
+import { sortMultiRepoNodeHitsToBuckets } from '../localization/layers-repo-utils/sort-and-resolve-hits';
 import { runInLocaleContext } from '../localization/locale-context';
 import { getLayersData } from '../localization/layers-data';
-
+import { getLayersMultiConnection } from '../localization/layers-repo-utils/layers-repo-connection';
 const schedulePrepublishTasks = () => {
     const multiRepoConnection = getLayersMultiConnection('draft');
 
@@ -25,7 +22,7 @@ const schedulePrepublishTasks = () => {
 
     logger.info(`Updating scheduled prepublish jobs for ${nodeHits.length} items`);
 
-    const localeBuckets = sortMultiRepoNodeHitIdsToRepoIdBuckets(nodeHits);
+    const localeBuckets = sortMultiRepoNodeHitsToBuckets({ hits: nodeHits });
 
     Object.entries(localeBuckets).forEach(([repoId, nodeIds]) => {
         const { repoIdToLocaleMap } = getLayersData();
@@ -72,7 +69,7 @@ const scheduleUnpublishTasks = () => {
 
     logger.info(`Updating scheduled unpublish jobs for ${nodeHits.length} items`);
 
-    const localeBuckets = sortMultiRepoNodeHitIdsToRepoIdBuckets(nodeHits);
+    const localeBuckets = sortMultiRepoNodeHitsToBuckets({ hits: nodeHits });
 
     Object.entries(localeBuckets).forEach(([repoId, nodeIds]) => {
         const { repoIdToLocaleMap } = getLayersData();

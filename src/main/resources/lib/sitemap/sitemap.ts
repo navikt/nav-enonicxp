@@ -14,7 +14,8 @@ import {
 } from '../localization/resolve-language-versions';
 import { getLayersData } from '../localization/layers-data';
 import { runInLocaleContext } from '../localization/locale-context';
-import { isContentLocalized, queryAllLayersToLocaleBuckets } from '../localization/locale-utils';
+import { isContentLocalized } from '../localization/locale-utils';
+import { queryAllLayersToRepoIdBuckets } from '../localization/layers-repo-utils/query-all-layers';
 import { getPublicPath } from '../paths/public-path';
 import { customListenerType } from '../utils/events';
 
@@ -118,10 +119,10 @@ const updateSitemapEntry = (contentId: string, locale: string) =>
     });
 
 const generateSitemapEntries = (): SitemapEntry[] => {
-    const localeContentBuckets = queryAllLayersToLocaleBuckets({
+    const localeContentBuckets = queryAllLayersToRepoIdBuckets({
         branch: 'master',
         state: 'localized',
-        resolveContentData: true,
+        resolveContent: true,
         queryParams: {
             filters: {
                 boolean: {

@@ -3,7 +3,7 @@ import { Content } from '/lib/xp/content';
 import { logger } from '../../utils/logging';
 import { forceArray } from '../../utils/array-utils';
 import { getRepoConnection } from '../../utils/repo-utils';
-import { queryAllLayersToLocaleBuckets } from '../../localization/locale-utils';
+import { queryAllLayersToRepoIdBuckets } from '../../localization/layers-repo-utils/query-all-layers';
 import { buildExternalSearchDocument, SearchDocument } from './document-builder/document-builder';
 import { getLayersData } from '../../localization/layers-data';
 import { searchApiPostDocumentsAsync } from './api-handlers/post-document';
@@ -18,10 +18,10 @@ const getValidContentTypes = (searchConfig: Content<'no.nav.navno:search-config-
 };
 
 const getContentToIndex = (contentTypes: string[]) => {
-    return queryAllLayersToLocaleBuckets({
+    return queryAllLayersToRepoIdBuckets({
         branch: 'master',
         state: 'localized',
-        resolveContentData: false,
+        resolveContent: false,
         queryParams: {
             count: MAX_COUNT,
             filters: {

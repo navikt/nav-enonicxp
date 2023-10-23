@@ -9,12 +9,10 @@ import { ContentFacet } from '../../types/search';
 import { ConfigFacet, SearchConfigDescriptor } from '../../types/content-types/search-config';
 import { createOrUpdateSearchNode } from './create-or-update-search-node';
 import { forceArray, stringArrayToSet } from '../utils/array-utils';
-import {
-    getLayersMultiConnection,
-    NON_LOCALIZED_QUERY_FILTER,
-    sortMultiRepoNodeHitIdsToRepoIdBuckets,
-} from '../localization/locale-utils';
+import { NON_LOCALIZED_QUERY_FILTER } from '../localization/layers-repo-utils/localization-state-filters';
+import { sortMultiRepoNodeHitsToBuckets } from '../localization/layers-repo-utils/sort-and-resolve-hits';
 import { getLayersData } from '../localization/layers-data';
+import { getLayersMultiConnection } from '../localization/layers-repo-utils/layers-repo-connection';
 
 type ContentIdsToFacetsMap = Record<string, ContentFacet[]>;
 type RepoIdsToContentMap = Record<string, ContentIdsToFacetsMap>;
@@ -230,7 +228,7 @@ const getContentWithMatchingFacets = (
             );
         }
 
-        const repoIdMatchesBuckets = sortMultiRepoNodeHitIdsToRepoIdBuckets(matchesFromAllLayers);
+        const repoIdMatchesBuckets = sortMultiRepoNodeHitsToBuckets({ hits: matchesFromAllLayers });
 
         Object.entries(repoIdMatchesBuckets).forEach(([repoId, nodeIds]) => {
             if (!repoIdsToContentMaps[repoId]) {
