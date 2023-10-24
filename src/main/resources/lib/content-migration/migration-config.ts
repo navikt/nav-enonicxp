@@ -11,6 +11,16 @@ export const contentTypesToMigrate: ContentDescriptor[] = [
     `${APP_DESCRIPTOR}:current-topic-page`,
 ];
 
+export const contentTypesToNewVersionMap: { [key: string]: string } = {
+    [`${APP_DESCRIPTOR}:content-page-with-sidemenus`]: `${APP_DESCRIPTOR}:product-page-v2`,
+    [`${APP_DESCRIPTOR}:situation-page`]: `${APP_DESCRIPTOR}:situation-page-v2`,
+    [`${APP_DESCRIPTOR}:guide-page`]: `${APP_DESCRIPTOR}:guide-page-v2`,
+    [`${APP_DESCRIPTOR}:themed-article-page`]: `${APP_DESCRIPTOR}:themed-article-page-v2`,
+    [`${APP_DESCRIPTOR}:tools-page`]: `${APP_DESCRIPTOR}:tools-page-v2`,
+    [`${APP_DESCRIPTOR}:generic-page`]: `${APP_DESCRIPTOR}:generic-page-v2`,
+    [`${APP_DESCRIPTOR}:current-topic-page`]: `${APP_DESCRIPTOR}:current-topic-page-v2`,
+};
+
 export const keysToMigrate: { [key: string]: string[] } = {
     [`${APP_DESCRIPTOR}:content-page-with-sidemenus`]: [
         'audience',

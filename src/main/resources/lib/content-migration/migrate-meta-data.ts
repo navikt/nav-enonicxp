@@ -1,5 +1,5 @@
 import * as contentLib from '/lib/xp/content';
-import { runInContext } from '../../lib/context/run-in-context';
+import { runInContext } from '../context/run-in-context';
 
 import { keysToMigrate, contentTypesToMigrate, allValidTaxonomies } from './migration-config';
 
