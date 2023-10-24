@@ -21,8 +21,12 @@ const insertCustomPath = (req: XP.Request) => {
         return;
     }
 
-    const currentCustomPath = content.data.customPath;
-    if (formIntermediateStepValidateCustomPath(currentCustomPath, content)) {
+    if (!content.valid) {
+        logger.info(`Content ${content._id} is not valid - skipping customPath generation for now`);
+        return;
+    }
+
+    if (formIntermediateStepValidateCustomPath(content.data.customPath, content)) {
         return;
     }
 
