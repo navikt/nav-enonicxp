@@ -28,7 +28,7 @@ export const formIntermediateStepValidateCustomPath = (
     const audienceSegment = getAudienceSegmentWithSlash(content);
 
     const isValid = new RegExp(
-        `${FORM_INTERMEDIATE_STEP_CUSTOM_PATH_PREFIX}${audienceSegment}/.+`
+        `${FORM_INTERMEDIATE_STEP_CUSTOM_PATH_PREFIX}${audienceSegment}/(?!unnamed).+`
     ).test(customPath);
 
     return isValid;

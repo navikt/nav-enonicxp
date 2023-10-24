@@ -9,12 +9,19 @@ import {
 } from './sort-and-resolve-hits';
 import { getLayersMultiConnection } from './layers-repo-connection';
 
+// TODO: support including archived content with an argument?
+// (Not needed atm, but keep in mind it only includes live content!)
 type Args<ResolveContent = boolean> = {
     branch: RepoBranch;
     state: LocalizationState;
     queryParams: NodeQueryParams;
     resolveContent: ResolveContent;
 };
+
+const ARCHIVE_EXCLUDED = '_path NOT LIKE "/archive/*"';
+
+const insertArchiveExcludedQueryString = (query?: string) =>
+    query ? `${ARCHIVE_EXCLUDED} AND (${query})` : ARCHIVE_EXCLUDED;
 
 export function queryAllLayersToRepoIdBuckets(args: Args<false>): RepoIdNodeIdBuckets;
 export function queryAllLayersToRepoIdBuckets(args: Args<true>): RepoIdContentBuckets;
@@ -28,7 +35,10 @@ export function queryAllLayersToRepoIdBuckets({
 
     const multiRepoQueryResult = batchedMultiRepoNodeQuery({
         repo: multiRepoConnection,
-        queryParams: insertLocalizationStateFilter(queryParams, state),
+        queryParams: {
+            ...insertLocalizationStateFilter(queryParams, state),
+            query: insertArchiveExcludedQueryString(queryParams.query),
+        },
     });
 
     return resolveContent
