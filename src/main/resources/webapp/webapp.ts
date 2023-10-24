@@ -9,13 +9,11 @@ import { updateScheduledPublishJobs } from '../lib/scheduling/scheduled-publish-
 import { generateUUID } from '../lib/utils/uuid';
 import { removeUnpublishedFromAllContentLists } from '../lib/contentlists/remove-unpublished';
 import { userIsAdmin } from '../lib/utils/auth-utils';
-import { startPageMetaCreation } from '../lib/content-migration/migrate-meta-data';
 import {
     revalidateAllSearchNodesAsync,
     SEARCH_NODES_UPDATE_ABORT_EVENT,
 } from '../lib/search/search-event-handlers';
 import { pushLayerContentToMaster } from '../lib/localization/layers-data';
-import { migrateContentToV2 } from '../lib/content-migration/migrate-content-to-v2';
 
 type ActionsMap = { [key: string]: { description: string; callback: () => any } };
 
@@ -75,14 +73,6 @@ const validActions: ActionsMap = {
             callback: () => pushLayerContentToMaster(false),
         },
     }),
-    migrateMetaToSeparateMetaContent: {
-        description: 'Starter jobb for å opprette meta-objekter.',
-        callback: () => startPageMetaCreation(),
-    },
-    migrateContentToNewVersion: {
-        description: 'Starter jobb for migrere relevant innhold til å bruke V2 av innholdstyper.',
-        callback: () => migrateContentToV2(),
-    },
 };
 
 type Params = {

@@ -1,7 +1,12 @@
 import * as contentLib from '/lib/xp/content';
-import { runInContext } from '../context/run-in-context';
+import { runInContext } from '../../../lib/context/run-in-context';
 
-import { keysToMigrate, contentTypesToMigrate, allValidTaxonomies } from './migration-config';
+import {
+    keysToMigrate,
+    contentTypesToMigrate,
+    allValidTaxonomies,
+    ParamType,
+} from '../migration-config';
 
 const dataPageParentPath = '/www.nav.no/page-meta';
 
@@ -44,7 +49,7 @@ const createPageMeta = (data: any, originalContent: contentLib.Content) => {
     let content;
 
     if (contentLib.exists({ key: fullPath })) {
-        log.info(`Updating data for: ${fullPath}`);
+        log.info(`Updating meta page for content: ${originalContent._id}`);
         try {
             content = contentLib.modify({
                 key: fullPath,
@@ -60,7 +65,7 @@ const createPageMeta = (data: any, originalContent: contentLib.Content) => {
         }
     } else {
         try {
-            log.info(`Creating data for: ${fullPath}`);
+            log.info(`Creating data for content: ${originalContent._id}`);
             content = contentLib.create({
                 name: originalContent._id,
                 parentPath: dataPageParentPath,
@@ -115,7 +120,7 @@ const processSingleContent = (content: contentLib.Content) => {
     });
 };
 
-export const startPageMetaCreation = () => {
+export const startPageMetaCreation = (params: ParamType) => {
     log.info('Starting meta-object-page generation process');
 
     runInContext({ branch: 'draft', asAdmin: true }, () => {

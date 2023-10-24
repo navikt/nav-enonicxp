@@ -1,5 +1,7 @@
 import { ContentDescriptor } from 'types/content-types/content-config';
-import { APP_DESCRIPTOR } from '../constants';
+import { APP_DESCRIPTOR } from '../../lib/constants';
+
+export type ParamType = { [key: string]: string };
 
 export const contentTypesToMigrate: ContentDescriptor[] = [
     `${APP_DESCRIPTOR}:content-page-with-sidemenus`,

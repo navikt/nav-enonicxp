@@ -42,6 +42,7 @@ import { formsOverviewDataCallback } from './schema-creation-callbacks/forms-ove
 import { audienceCallback } from './schema-creation-callbacks/common/audience-mixin';
 import { pressLandingPageDataCallback } from './schema-creation-callbacks/press-landing-page-data';
 import { macroLinkToLayerCallback } from './schema-creation-callbacks/macro-link-to-layer';
+import { generalDataCallback } from './schema-creation-callbacks/general-data';
 
 export const schemaCreationCallbacks: Record<string, CreationCallback> = {
     Attachment: attachmentCallback,
@@ -59,6 +60,7 @@ export const schemaCreationCallbacks: Record<string, CreationCallback> = {
     no_nav_navno_ContentList_Data: contentListDataCallback,
     no_nav_navno_Overview_Data: overviewDataCallback,
     no_nav_navno_OfficeBranch: officeBranchCallback,
+    no_nav_navno_ProductPageV2: generalDataCallback,
     no_nav_navno_ContactInformation_Chat: createOpeningHoursFields('chat'),
     no_nav_navno_ContactInformation_Telephone: createOpeningHoursFields('telephone'),
     no_nav_navno_MainArticle_MenuListItems: menuListDataCallback,
