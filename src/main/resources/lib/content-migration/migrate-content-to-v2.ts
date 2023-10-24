@@ -1,4 +1,3 @@
-import * as contentLib from '/lib/xp/content';
 import * as nodeLib from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 
@@ -27,7 +26,7 @@ const getConnection = (branch: RepoBranch, repoId?: string) => {
     });
 };
 
-const getNewData = (content: Content, newType: string) => {
+const buildDataForMigratedContent = (content: Content) => {
     const keysToRemove = keysToMigrate[content.type];
     const newData = { ...content.data };
 
@@ -51,7 +50,7 @@ const migrateContentToNewVersion = ({
 }) => {
     log.info(`Migrating content: ${content._id} - ${content.displayName}`);
 
-    const remainingDataAfterMigration = getNewData(content, newType);
+    const remainingDataAfterMigration = buildDataForMigratedContent(content);
 
     log.info(`Remaining data: ${JSON.stringify(remainingDataAfterMigration)}`);
 
