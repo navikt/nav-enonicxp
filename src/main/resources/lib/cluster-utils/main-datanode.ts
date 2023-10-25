@@ -1,12 +1,12 @@
 import * as gridLib from '/lib/xp/grid';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
-import { ClusterInfo, ClusterNodeInfo, requestClusterInfo } from './cluster-api';
+import { clusterInfo, ClusterInfo, ClusterNodeInfo, requestClusterInfo } from './cluster-api';
 import { logger } from '../utils/logging';
 import { APP_DESCRIPTOR } from '../constants';
 
 const SHARED_MAP_KEY = 'main-datanode';
 
-const MAIN_DATANODE_NAME_KEY = 'datanode-name';
+const CURRENT_MAIN_DATANODE_KEY = 'current-node';
 
 const pickDatanode = (clusterInfo: ClusterInfo): ClusterNodeInfo | null => {
     const datanode = clusterInfo.members.find((member) => member.isDataNode);
@@ -18,28 +18,48 @@ const pickDatanode = (clusterInfo: ClusterInfo): ClusterNodeInfo | null => {
     return datanode;
 };
 
-const isNodeInCluster = (clusterInfo: ClusterInfo, nodeName?: string): boolean => {
-    if (!nodeName) {
+const isNodeInCluster = (clusterInfo: ClusterInfo, node: ClusterNodeInfo | null): boolean => {
+    if (!node) {
         return false;
     }
 
-    return !!clusterInfo.members.find((member) => member.name === nodeName);
+    return !!clusterInfo.members.find((member) => member.name === node.name);
+};
+
+const getSharedMap = () => {
+    const sharedMap = gridLib.getMap(SHARED_MAP_KEY);
+    if (!sharedMap) {
+        logger.critical(`Shared map with key ${SHARED_MAP_KEY} is not available!`);
+        return null;
+    }
+
+    return sharedMap;
+};
+
+const getCurrentMainDatanode = (sharedMap = getSharedMap()) => {
+    if (!sharedMap) {
+        return null;
+    }
+
+    return sharedMap.get<ClusterNodeInfo>(CURRENT_MAIN_DATANODE_KEY);
 };
 
 export const refreshMainDatanode = () => {
+    logger.info('Refreshing main datanode');
+
     const clusterInfo = requestClusterInfo();
     if (!clusterInfo) {
         logger.critical('Failed to get cluster info!');
         return;
     }
 
-    const sharedMap = gridLib.getMap(SHARED_MAP_KEY);
+    const sharedMap = getSharedMap();
     if (!sharedMap) {
-        logger.critical(`Shared map with key ${SHARED_MAP_KEY} is not available!`);
         return;
     }
 
-    const currentMainDatanode = sharedMap.get<string>(MAIN_DATANODE_NAME_KEY);
+    const currentMainDatanode = getCurrentMainDatanode(sharedMap);
+
     if (isNodeInCluster(clusterInfo, currentMainDatanode)) {
         logger.info(
             `Current main data node ${currentMainDatanode} is still valid, no action needed`
@@ -50,10 +70,17 @@ export const refreshMainDatanode = () => {
     const newMainDatanode = pickDatanode(clusterInfo);
 
     sharedMap.set({
-        key: MAIN_DATANODE_NAME_KEY,
+        key: CURRENT_MAIN_DATANODE_KEY,
         ttlSeconds: 0,
         value: newMainDatanode,
     });
+};
+
+export const isMainDatanode = () => {
+    const currentMainDatanode = getCurrentMainDatanode();
+    logger.info(`Current main data node: ${currentMainDatanode}`);
+
+    return currentMainDatanode?.name === clusterInfo.localServerName;
 };
 
 export const initializeMainDatanodeSelection = () => {

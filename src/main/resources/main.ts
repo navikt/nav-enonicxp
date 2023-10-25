@@ -21,7 +21,7 @@ import { initLayersData } from './lib/localization/layers-data';
 import { activateLayersEventListeners } from './lib/localization/publish-events';
 import { activateContentUpdateListener } from './lib/contentUpdate/content-update-listener';
 import { activateExternalSearchIndexEventHandlers } from './lib/search/external/event-handlers';
-import { initializeMainDatanodeSelection } from './lib/cluster-utils/run-on-datanode';
+import { initializeMainDatanodeSelection } from './lib/cluster-utils/main-datanode';
 
 updateClusterInfo();
 initLayersData();
@@ -47,9 +47,9 @@ if (clusterLib.isMaster()) {
 
     // This is somewhat annoying for local development, as it will run a fairly heavy task and spam
     // the logs when generating the sitemap. This happens on every redeploy of the app.
-    if (app.config.env !== 'localhost') {
-        generateSitemapDataAndActivateSchedule();
-    }
+    // if (app.config.env !== 'localhost') {
+    generateSitemapDataAndActivateSchedule();
+    // }
 }
 
 log.info('Finished running main');
