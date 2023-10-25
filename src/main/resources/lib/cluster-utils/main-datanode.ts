@@ -14,7 +14,6 @@ const CURRENT_MAIN_DATANODE_KEY = 'current-node';
 const pickDatanode = (clusterInfo: ClusterInfo): ClusterNodeInfo | null => {
     const datanode = clusterInfo.members.find((member) => member.isDataNode);
     if (!datanode) {
-        logger.critical('No data nodes found!');
         return null;
     }
 
@@ -67,10 +66,11 @@ export const refreshMainDatanode = () => {
 
     const newMainDatanode = pickDatanode(clusterInfo);
     if (!newMainDatanode) {
+        logger.critical('No data nodes found!');
         return;
     }
 
-    logger.info(`Setting main datanode to ${newMainDatanode.name}`);
+    logger.info(`Setting main data node to ${newMainDatanode.name}`);
 
     sharedMap.set({
         key: CURRENT_MAIN_DATANODE_KEY,
