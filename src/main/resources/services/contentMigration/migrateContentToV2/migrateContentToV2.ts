@@ -17,12 +17,9 @@ import { CONTENT_ROOT_REPO_ID } from '../../../lib/constants';
 // OK 2. if not work in progress, change content type for masterContent.
 // OK 3. repeat for all other layers
 // OK 4. remove migrated meta data
-// 4. Add callback to weave in metadata from PageMeta
-
-type ReqParams = {
-    contentTypes?: string;
-    selectorQuery?: string;
-} & XP.CustomSelectorServiceRequestParams;
+// OK 5. Add callback to weave in metadata from PageMeta
+// 6. Remove xml data from content definitions.
+// 7. Add schema creation?
 
 const getConnection = (branch: RepoBranch, repoId?: string) => {
     return getRepoConnection({
@@ -47,12 +44,10 @@ const migrateContentToNewVersion = ({
     content,
     newType,
     connection,
-    dryRun = true,
 }: {
     content: Content;
     newType: string;
     connection: nodeLib.RepoConnection;
-    dryRun?: boolean;
 }) => {
     log.info(`Migrating content: ${content._id} - ${content.displayName}`);
 
@@ -66,13 +61,6 @@ const migrateContentToNewVersion = ({
     }
 
     const remainingDataAfterMigration = buildDataForMigratedContent(content, pageMeta.id);
-
-    log.info('remainingdata');
-    log.info(JSON.stringify(remainingDataAfterMigration));
-
-    if (dryRun) {
-        return;
-    }
 
     connection.modify({
         key: content._id,
@@ -98,6 +86,10 @@ const processSingleContent = ({
         return;
     }
 
+    if (draftContent._id !== 'd40a9b42-a44b-4aa2-9ef0-5b36a2b9a672') {
+        return null;
+    }
+
     // Don't make changes to master content it the draft content is work in progress.
     const isWorkInProgress = draftContent._versionKey !== masterContent?._versionKey;
     const newType = contentTypesToNewVersionMap[draftContent.type];
@@ -109,11 +101,14 @@ const processSingleContent = ({
     });
 
     if (masterContent && !isWorkInProgress) {
-        connection.push({ keys: [draftContent._id], target: 'master' });
+        return draftContent._id;
     }
+
+    return null;
 };
 
 const migrateContentInRepo = (repoId: string, typeToMigrate: string) => {
+    log.info('------------------------------------------');
     log.info(`Migrating content for repo: ${repoId}`);
     log.info('------------------------------------------');
 
@@ -128,23 +123,35 @@ const migrateContentInRepo = (repoId: string, typeToMigrate: string) => {
         }
 
         const content = draftConnection.query({ query: `type = '${contentType}'`, count: 2000 });
+        const idsToPublish: string[] = [];
 
         // Migrate content for default repo
         content.hits.forEach((content) => {
             const draftContent = draftConnection.get<Content>(content.id);
             const masterContent = masterConnection.get<Content>(content.id);
 
-            processSingleContent({
+            const id = processSingleContent({
                 draftContent,
                 masterContent,
                 connection: draftConnection,
             });
+            if (id) {
+                idsToPublish.push(id);
+            }
         });
+        const pushResult = draftConnection.push({
+            keys: [...idsToPublish],
+            target: 'master',
+            resolve: false,
+        });
+        log.info('------------------------------------------');
+        log.info(`Published the following ids: ${JSON.stringify(idsToPublish)}`);
+        log.info(`Push result for ${contentType}: ${JSON.stringify(pushResult)}`);
+        log.info('------------------------------------------');
     });
 };
 
 export const migrateContentToV2 = (param: ParamType) => {
-    log.info('Starting content version migration');
     const { repoIdToLocaleMap } = getLayersData();
     const repos = Object.keys(repoIdToLocaleMap);
 

@@ -44,5 +44,6 @@
         <mixin name="owner"/>
         <mixin name="managed-by"/>
         <mixin name="languages-legacy"/>
+        <mixin name="page-meta-selector" />
     </form>
 </content-type>

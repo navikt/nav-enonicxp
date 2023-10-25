@@ -1,8 +1,6 @@
 import { getServiceRequestSubPath } from '../service-utils';
 import { startPageMetaCreation } from './migrateMetaData/migrateMetaData';
 import { migrateContentToV2 } from './migrateContentToV2/migrateContentToV2';
-import { runInLocaleContext } from '../../lib/localization/locale-context';
-import { getLayersData } from '../../lib/localization/layers-data';
 
 const getServiceFunction = (req: XP.Request): any => {
     const subPath = getServiceRequestSubPath(req);
@@ -13,9 +11,9 @@ const getServiceFunction = (req: XP.Request): any => {
 
     switch (subPath) {
         case 'migrateContentToV2':
-            return startPageMetaCreation;
-        case 'migrateMetaData':
             return migrateContentToV2;
+        case 'migrateMetaData':
+            return startPageMetaCreation;
         default:
             return null;
     }

@@ -33,5 +33,6 @@
             </items>
         </field-set>
         <mixin name="dynamic-page-common"/>
+        <mixin name="page-meta-selector" />
     </form>
 </content-type>

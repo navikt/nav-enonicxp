@@ -1,12 +1,7 @@
 import * as contentLib from '/lib/xp/content';
 import { runInContext } from '../../../lib/context/run-in-context';
 
-import {
-    keysToMigrate,
-    contentTypesToMigrate,
-    allValidTaxonomies,
-    ParamType,
-} from '../migration-config';
+import { keysToMigrate, contentTypesToMigrate, allValidTaxonomies } from '../migration-config';
 
 const dataPageParentPath = '/www.nav.no/page-meta';
 
@@ -120,7 +115,7 @@ const processSingleContent = (content: contentLib.Content) => {
     });
 };
 
-export const startPageMetaCreation = (params: ParamType) => {
+export const startPageMetaCreation = () => {
     log.info('Starting meta-object-page generation process');
 
     runInContext({ branch: 'draft', asAdmin: true }, () => {

@@ -26,5 +26,6 @@
         <mixin name="product-details-selector"/>
         <mixin name="form-details-selector"/>
         <mixin name="dynamic-page-common"/>
+        <mixin name="page-meta-selector" />
     </form>
 </content-type>
