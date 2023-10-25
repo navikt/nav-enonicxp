@@ -15,7 +15,6 @@ import { queryAllLayersToRepoIdBuckets } from '../localization/layers-repo-utils
 import { getPublicPath } from '../paths/public-path';
 import { customListenerType } from '../utils/events';
 import { forceArray, iterableToArray } from '../utils/array-utils';
-import { RepoIdContentBuckets } from '../localization/layers-repo-utils/sort-and-resolve-hits';
 
 const MAX_COUNT = 50000;
 const EVENT_TYPE_SITEMAP_GENERATED = 'sitemap-generated';
