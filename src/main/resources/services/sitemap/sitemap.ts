@@ -1,7 +1,7 @@
 import {
     getAllSitemapEntries,
     requestSitemapUpdate,
-    sitemapQueryResponse,
+    sitemapRawEntries,
 } from '../../lib/sitemap/sitemap';
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
@@ -22,7 +22,7 @@ export const get = (req: XP.Request) => {
     if (typeof queryResponse === 'string') {
         return {
             status: 200,
-            body: sitemapQueryResponse,
+            body: sitemapRawEntries,
             contentType: 'application/json',
         };
     }
