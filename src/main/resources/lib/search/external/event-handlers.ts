@@ -7,6 +7,7 @@ import { CONTENT_ROOT_REPO_ID, URLS } from '../../constants';
 import { getLayersData } from '../../localization/layers-data';
 import { getExternalSearchConfig, revalidateExternalSearchConfigCache } from './config';
 import { updateExternalSearchDocumentForContent } from './update-one';
+import { isMainDatanode } from '../../cluster-utils/main-datanode';
 
 let isActive = false;
 
@@ -45,7 +46,7 @@ export const activateExternalSearchIndexEventHandlers = () => {
     eventLib.listener({
         type: '(node.pushed|node.deleted)',
         callback: (event) => {
-            if (!clusterLib.isMaster()) {
+            if (!isMainDatanode()) {
                 return;
             }
 

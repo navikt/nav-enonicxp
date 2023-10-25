@@ -1,4 +1,5 @@
 import * as gridLib from '/lib/xp/grid';
+import * as clusterLib from '/lib/xp/cluster';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { clusterInfo, ClusterInfo, ClusterNodeInfo, requestClusterInfo } from './cluster-api';
 import { logger } from '../utils/logging';
@@ -63,9 +64,6 @@ export const refreshMainDatanode = () => {
     const currentMainDatanode = getCurrentMainDatanode(sharedMap);
 
     if (isNodeInCluster(clusterInfo, currentMainDatanode)) {
-        logger.info(
-            `Current main data node ${currentMainDatanode} is still valid, no action needed`
-        );
         return;
     }
 
@@ -80,9 +78,14 @@ export const refreshMainDatanode = () => {
 
 export const isMainDatanode = () => {
     const currentMainDatanode = getCurrentMainDatanode();
-    logger.info(`Current main data node: ${currentMainDatanode}`);
+    if (!currentMainDatanode?.name) {
+        logger.critical(
+            'Could not determine current main data node! Falling back to master as coordinating node.'
+        );
+        return clusterLib.isMaster();
+    }
 
-    return currentMainDatanode?.name === clusterInfo.localServerName;
+    return currentMainDatanode.name === clusterInfo.localServerName;
 };
 
 export const initializeMainDatanodeSelection = () => {
