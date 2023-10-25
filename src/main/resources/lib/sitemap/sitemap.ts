@@ -194,7 +194,15 @@ const generateSitemapEntries = (): SitemapEntry[] => {
 };
 
 export const getAllSitemapEntries = () => {
-    return iterableToArray(sitemapEntriesMap.values());
+    const array = iterableToArray(sitemapEntriesMap.values());
+
+    if (array.length !== sitemapEntriesMap.size) {
+        logger.error(
+            `Sitemap entries array has unexpected length - expected ${sitemapEntriesMap.size} - got ${array.length}`
+        );
+    }
+
+    return array;
 };
 
 const generateAndBroadcastSitemapData = () => {
@@ -264,12 +272,16 @@ const updateSitemapData = (entries: SitemapEntry[]) => {
     const sitemapEntriesMapNew = new Map<string, SitemapEntry>();
 
     entries.forEach((entry) => {
-        sitemapEntriesMapNew.set(entry._key, entry);
+        if (sitemapEntriesMapNew.has(entry._key)) {
+            logger.error(`Duplicate entry for sitemap data: ${JSON.stringify(entry)}`);
+        } else {
+            sitemapEntriesMapNew.set(entry._key, entry);
+        }
     });
 
     sitemapEntriesMap = sitemapEntriesMapNew;
 
-    logger.info(`Updated sitemap data with ${entries.length} entries`);
+    logger.info(`Updated sitemap data with ${sitemapEntriesMap.size} / ${entries.length} entries`);
 };
 
 export const requestSitemapUpdate = () => {
