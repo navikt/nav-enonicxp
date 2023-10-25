@@ -1,17 +1,17 @@
 import * as eventLib from '/lib/xp/event';
 import * as contentLib from '/lib/xp/content';
-import * as clusterLib from '/lib/xp/cluster';
 import { runInContext } from '../context/run-in-context';
 import { CONTENT_REPO_PREFIX, CONTENT_ROOT_REPO_ID } from '../constants';
 import { transformFragmentCreatorToFragment } from '../content-transformers/fragment-creator';
 import { isContentLocalized } from '../localization/locale-utils';
 import { updateQbrickVideoContent } from './video-update';
 import { logger } from '../utils/logging';
+import { isMainDatanode } from '../cluster-utils/main-datanode';
 
 let hasContentUpdateListener = false;
 
 const handleEvent = (event: eventLib.EnonicEvent) => {
-    if (!clusterLib.isMaster()) {
+    if (!isMainDatanode()) {
         return;
     }
 

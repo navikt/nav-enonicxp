@@ -1,12 +1,12 @@
 import * as eventLib from '/lib/xp/event';
 import { EnonicEvent } from '/lib/xp/event';
-import * as clusterLib from '/lib/xp/cluster';
 import { RepoConnection } from '/lib/xp/node';
 import { hasInvalidCustomPath, hasValidCustomPath } from './custom-path-utils';
 import { logger } from '../../utils/logging';
 import { getLayersData } from '../../localization/layers-data';
 import { isContentLocalized } from '../../localization/locale-utils';
 import { getRepoConnection } from '../../utils/repo-utils';
+import { isMainDatanode } from '../../cluster-utils/main-datanode';
 
 const removeCustomPath = (contentId: string, repoConnection: RepoConnection) => {
     repoConnection.modify<{ data: { customPath?: string } }>({
@@ -22,7 +22,7 @@ const removeCustomPath = (contentId: string, repoConnection: RepoConnection) => 
 // When a content is duplicated, we don't want the custom path
 // to be duplicated as well, as it must be unique
 const removeCustomPathOnDuplicate = (event: EnonicEvent) => {
-    if (!clusterLib.isMaster()) {
+    if (!isMainDatanode()) {
         return;
     }
 
@@ -52,7 +52,7 @@ const removeCustomPathOnDuplicate = (event: EnonicEvent) => {
 };
 
 const removeInvalidCustomPathOnPublish = (event: EnonicEvent) => {
-    if (!clusterLib.isMaster()) {
+    if (!isMainDatanode()) {
         return;
     }
 

@@ -1,5 +1,4 @@
 import * as eventLib from '/lib/xp/event';
-import * as clusterLib from '/lib/xp/cluster';
 import * as taskLib from '/lib/xp/task';
 import { getSearchConfig, revalidateSearchConfigCache } from './config';
 import { logger } from '../utils/logging';
@@ -15,6 +14,7 @@ import {
 import { getLayersData } from '../localization/layers-data';
 import { forceArray } from '../utils/array-utils';
 import { customListenerType } from '../utils/events';
+import { isMainDatanode } from '../cluster-utils/main-datanode';
 
 let isActive = false;
 let isRunningConfigUpdate = false;
@@ -112,14 +112,14 @@ export const activateSearchIndexEventHandlers = () => {
 
     revalidateSearchConfigCache();
 
-    if (clusterLib.isMaster()) {
+    if (isMainDatanode()) {
         runQueuedUpdates();
     }
 
     eventLib.listener({
         type: '(node.pushed|node.deleted)',
         callback: (event) => {
-            if (!clusterLib.isMaster()) {
+            if (!isMainDatanode()) {
                 return;
             }
 

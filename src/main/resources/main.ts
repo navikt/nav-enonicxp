@@ -25,7 +25,17 @@ import { initializeMainDatanodeSelection } from './lib/cluster-utils/main-datano
 
 updateClusterInfo();
 initLayersData();
+hookLibsWithTimeTravel();
 
+if (clusterLib.isMaster()) {
+    log.info('Running master only init scripts');
+    initializeMainDatanodeSelection();
+    initSearchRepo();
+}
+
+createOfficeBranchFetchSchedule();
+startOfficeInfoPeriodicUpdateSchedule();
+startFailsafeSchedule();
 activateLayersEventListeners();
 activateCacheEventListeners();
 activateSitemapDataUpdateEventListener();
@@ -34,17 +44,6 @@ activateCustomPathNodeListeners();
 activateSearchIndexEventHandlers();
 activateExternalSearchIndexEventHandlers();
 activateContentUpdateListener();
-
-hookLibsWithTimeTravel();
-
-if (clusterLib.isMaster()) {
-    log.info('Running master only init scripts');
-    initializeMainDatanodeSelection();
-    initSearchRepo();
-    startFailsafeSchedule();
-    startOfficeInfoPeriodicUpdateSchedule();
-    createOfficeBranchFetchSchedule();
-}
 
 // This is somewhat annoying for local development, as it will run a fairly heavy task and spam
 // the logs when generating the sitemap. This happens on every redeploy of the app.

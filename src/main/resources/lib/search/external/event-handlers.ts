@@ -1,5 +1,4 @@
 import * as eventLib from '/lib/xp/event';
-import * as clusterLib from '/lib/xp/cluster';
 import * as taskLib from '/lib/xp/task';
 import { CONTENT_ROOT_PATH } from '/lib/xp/content';
 import { logger } from '../../utils/logging';

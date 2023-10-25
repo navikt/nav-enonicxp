@@ -38,7 +38,7 @@ const validActions: ActionsMap = {
         callback: requestSitemapUpdate,
     },
     updatePrepublishJobs: {
-        description: 'Oppretter scheduler-jobs for prepublish/unpublish (må kjøres på master)',
+        description: 'Oppretter scheduler-jobs for prepublish/unpublish',
         callback: updateScheduledPublishJobs,
     },
     removeUnpublishedFromContentLists: {

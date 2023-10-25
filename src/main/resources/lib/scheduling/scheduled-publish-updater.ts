@@ -1,4 +1,3 @@
-import * as clusterLib from '/lib/xp/cluster';
 import * as schedulerLib from '/lib/xp/scheduler';
 import {
     getPrepublishJobName,
@@ -7,7 +6,6 @@ import {
     scheduleUnpublish,
 } from './scheduled-publish';
 import { logger } from '../utils/logging';
-import { getLayersData } from '../localization/layers-data';
 import { queryAllLayersToRepoIdBuckets } from '../localization/layers-repo-utils/query-all-layers';
 
 const schedulePrepublishTasks = () => {
@@ -63,8 +61,6 @@ const scheduleUnpublishTasks = () => {
             `Updating scheduled unpublish jobs for ${contentHits.length} items in repo ${repoId}`
         );
 
-        const { repoIdToLocaleMap } = getLayersData();
-
         contentHits.forEach((content) => {
             if (!content.publish?.to) {
                 return;
@@ -87,10 +83,6 @@ const scheduleUnpublishTasks = () => {
 };
 
 export const updateScheduledPublishJobs = () => {
-    if (clusterLib.isMaster()) {
-        schedulePrepublishTasks();
-        scheduleUnpublishTasks();
-    } else {
-        logger.warning('updateScheduledPublishJobs will only run on master');
-    }
+    schedulePrepublishTasks();
+    scheduleUnpublishTasks();
 };
