@@ -48,8 +48,6 @@ const getCurrentMainDatanode = (sharedMap = getSharedMap()) => {
 };
 
 export const refreshMainDatanode = () => {
-    logger.info('Refreshing main datanode');
-
     const clusterInfo = requestClusterInfo();
     if (!clusterInfo) {
         logger.critical('Failed to get cluster info!');
@@ -68,6 +66,11 @@ export const refreshMainDatanode = () => {
     }
 
     const newMainDatanode = pickDatanode(clusterInfo);
+    if (!newMainDatanode) {
+        return;
+    }
+
+    logger.info(`Setting main datanode to ${newMainDatanode.name}`);
 
     sharedMap.set({
         key: CURRENT_MAIN_DATANODE_KEY,
