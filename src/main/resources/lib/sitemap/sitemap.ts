@@ -2,8 +2,6 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import * as taskLib from '/lib/xp/task';
 import * as eventLib from '/lib/xp/event';
-import * as clusterLib from '/lib/xp/cluster';
-import { runInContext } from '../context/run-in-context';
 import { URLS } from '../constants';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { contentTypesInSitemap } from '../contenttype-lists';
@@ -15,7 +13,8 @@ import { queryAllLayersToRepoIdBuckets } from '../localization/layers-repo-utils
 import { getPublicPath } from '../paths/public-path';
 import { customListenerType } from '../utils/events';
 import { forceArray, iterableToArray } from '../utils/array-utils';
-import { clusterInfo } from '../utils/cluster-utils';
+import { clusterInfo } from '../cluster-utils/cluster-api';
+import { isMainDatanode } from '../cluster-utils/main-datanode';
 
 const MAX_COUNT = 50000;
 const EVENT_TYPE_SITEMAP_GENERATED = 'sitemap-generated';
@@ -143,8 +142,6 @@ const updateSitemapEntry = (contentId: string, locale: string) =>
         }
     });
 
-export let sitemapRawEntries: SitemapEntry[] = [];
-
 const generateSitemapEntries = (): SitemapEntry[] => {
     const repoIdContentBuckets = queryAllLayersToRepoIdBuckets({
         branch: 'master',
@@ -209,53 +206,47 @@ export const getAllSitemapEntries = () => {
 };
 
 const generateAndBroadcastSitemapData = () => {
-    if (clusterInfo?.localServerName !== 'a30apvl00087' || isGenerating) {
-        logger.info(`Skipping sitemap generation on ${clusterInfo?.localServerName}`);
+    if (!isMainDatanode() || isGenerating) {
+        logger.info(`Skipping sitemap generation on ${clusterInfo.localServerName}`);
         return;
     }
 
     isGenerating = true;
 
-    runInContext({ branch: 'master' }, () => {
-        taskLib.executeFunction({
-            description: 'sitemap-generator-task',
-            func: () => {
-                try {
-                    logger.info('Started generating sitemap data');
-                    const startTime = Date.now();
-                    const sitemapEntries = generateSitemapEntries();
+    taskLib.executeFunction({
+        description: 'sitemap-generator-task',
+        func: () => {
+            try {
+                logger.info('Started generating sitemap data');
+                const startTime = Date.now();
+                const sitemapEntries = generateSitemapEntries();
 
-                    eventLib.send({
-                        type: EVENT_TYPE_SITEMAP_GENERATED,
-                        distributed: true,
-                        data: { entries: sitemapEntries },
-                    });
+                eventLib.send({
+                    type: EVENT_TYPE_SITEMAP_GENERATED,
+                    distributed: true,
+                    data: { entries: sitemapEntries },
+                });
 
-                    logger.info(
-                        `Finished generating sitemap data with ${
-                            sitemapEntries.length
-                        } entries after ${Date.now() - startTime}ms`
-                    );
+                logger.info(
+                    `Finished generating sitemap data with ${sitemapEntries.length} entries after ${
+                        Date.now() - startTime
+                    }ms`
+                );
 
-                    if (sitemapEntries.length > MAX_COUNT) {
-                        logger.error(`Sitemap entries count exceeds recommended maximum`);
-                    }
-                } catch (e) {
-                    logger.critical(`Error while generating sitemap - ${e}`);
-                } finally {
-                    isGenerating = false;
+                if (sitemapEntries.length > MAX_COUNT) {
+                    logger.error(`Sitemap entries count exceeds recommended maximum`);
                 }
-            },
-        });
+            } catch (e) {
+                logger.critical(`Error while generating sitemap - ${e}`);
+            } finally {
+                isGenerating = false;
+            }
+        },
     });
 };
 
 export const generateSitemapDataAndActivateSchedule = () => {
     generateAndBroadcastSitemapData();
-
-    if (!clusterLib.isMaster()) {
-        return;
-    }
 
     // Regenerate sitemap from scratch at 06:00 daily
     createOrUpdateSchedule({
@@ -277,13 +268,11 @@ const updateSitemapData = (entries: SitemapEntry[]) => {
         return;
     }
 
-    sitemapRawEntries = entries;
-
     const sitemapEntriesMapNew = new Map<string, SitemapEntry>();
 
     entries.forEach((entry) => {
         if (sitemapEntriesMapNew.has(entry._key)) {
-            logger.info(`Duplicate entry for sitemap data: ${JSON.stringify(entry)}`);
+            logger.warning(`Duplicate entry for sitemap data: ${JSON.stringify(entry)}`);
         } else {
             sitemapEntriesMapNew.set(entry._key, entry);
         }

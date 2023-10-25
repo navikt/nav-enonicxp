@@ -1,5 +1,4 @@
 import * as eventLib from '/lib/xp/event';
-import * as clusterLib from '/lib/xp/cluster';
 import * as taskLib from '/lib/xp/task';
 import { CONTENT_ROOT_PATH } from '/lib/xp/content';
 import { logger } from '../../utils/logging';
@@ -7,6 +6,7 @@ import { CONTENT_ROOT_REPO_ID, URLS } from '../../constants';
 import { getLayersData } from '../../localization/layers-data';
 import { getExternalSearchConfig, revalidateExternalSearchConfigCache } from './config';
 import { updateExternalSearchDocumentForContent } from './update-one';
+import { isMainDatanode } from '../../cluster-utils/main-datanode';
 
 let isActive = false;
 
@@ -45,7 +45,7 @@ export const activateExternalSearchIndexEventHandlers = () => {
     eventLib.listener({
         type: '(node.pushed|node.deleted)',
         callback: (event) => {
-            if (!clusterLib.isMaster()) {
+            if (!isMainDatanode()) {
                 return;
             }
 

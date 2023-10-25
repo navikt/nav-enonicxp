@@ -41,11 +41,6 @@ export function queryAllLayersToRepoIdBuckets({
             query: insertArchiveExcludedQueryString(queryParams.query),
         },
     });
-
-    logger.info(
-        `Hits for multirepo layers query: ${multiRepoQueryResult.hits.length} ${multiRepoQueryResult.total}`
-    );
-
     return resolveContent
         ? sortMultiRepoNodeHitsToBuckets({
               hits: multiRepoQueryResult.hits,

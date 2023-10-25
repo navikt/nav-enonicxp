@@ -1,5 +1,5 @@
 import httpClient from '/lib/http-client';
-import { logger } from './logging';
+import { logger } from '../utils/logging';
 
 type LocalNodeInfo = {
     isMaster: boolean;
@@ -9,7 +9,7 @@ type LocalNodeInfo = {
     numberOfNodesSeen: number;
 };
 
-type ClusterNodeInfo = {
+export type ClusterNodeInfo = {
     isMaster: boolean;
     id: string;
     hostName: string;
@@ -22,7 +22,7 @@ type ClusterNodeInfo = {
 
 export type ClusterState = 'RED' | 'YELLOW' | 'GREEN';
 
-type ClusterInfo = {
+export type ClusterInfo = {
     name: string;
     localNode: LocalNodeInfo;
     members: ClusterNodeInfo[];
@@ -49,7 +49,7 @@ export const requestClusterInfo = () => {
     }
 };
 
-export const getLocalServerName = (clusterInfo: ClusterInfo) => {
+const getLocalServerName = (clusterInfo: ClusterInfo) => {
     const localMember = clusterInfo.members.find(
         (member) => member.id === clusterInfo.localNode.id
     );
