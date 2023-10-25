@@ -143,8 +143,6 @@ const updateSitemapEntry = (contentId: string, locale: string) =>
         }
     });
 
-export let sitemapRawEntries: SitemapEntry[] = [];
-
 const generateSitemapEntries = (): SitemapEntry[] => {
     const repoIdContentBuckets = queryAllLayersToRepoIdBuckets({
         branch: 'master',
@@ -277,13 +275,11 @@ const updateSitemapData = (entries: SitemapEntry[]) => {
         return;
     }
 
-    sitemapRawEntries = entries;
-
     const sitemapEntriesMapNew = new Map<string, SitemapEntry>();
 
     entries.forEach((entry) => {
         if (sitemapEntriesMapNew.has(entry._key)) {
-            logger.info(`Duplicate entry for sitemap data: ${JSON.stringify(entry)}`);
+            logger.warning(`Duplicate entry for sitemap data: ${JSON.stringify(entry)}`);
         } else {
             sitemapEntriesMapNew.set(entry._key, entry);
         }
