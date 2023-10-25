@@ -15,7 +15,7 @@ import { queryAllLayersToRepoIdBuckets } from '../localization/layers-repo-utils
 import { getPublicPath } from '../paths/public-path';
 import { customListenerType } from '../utils/events';
 import { forceArray, iterableToArray } from '../utils/array-utils';
-import { clusterInfo } from '../utils/cluster-utils';
+import { clusterInfo } from '../cluster-utils/cluster-api';
 
 const MAX_COUNT = 50000;
 const EVENT_TYPE_SITEMAP_GENERATED = 'sitemap-generated';
@@ -214,37 +214,35 @@ const generateAndBroadcastSitemapData = () => {
 
     isGenerating = true;
 
-    runInContext({ branch: 'master' }, () => {
-        taskLib.executeFunction({
-            description: 'sitemap-generator-task',
-            func: () => {
-                try {
-                    logger.info('Started generating sitemap data');
-                    const startTime = Date.now();
-                    const sitemapEntries = generateSitemapEntries();
+    taskLib.executeFunction({
+        description: 'sitemap-generator-task',
+        func: () => {
+            try {
+                logger.info('Started generating sitemap data');
+                const startTime = Date.now();
+                const sitemapEntries = generateSitemapEntries();
 
-                    eventLib.send({
-                        type: EVENT_TYPE_SITEMAP_GENERATED,
-                        distributed: true,
-                        data: { entries: sitemapEntries },
-                    });
+                eventLib.send({
+                    type: EVENT_TYPE_SITEMAP_GENERATED,
+                    distributed: true,
+                    data: { entries: sitemapEntries },
+                });
 
-                    logger.info(
-                        `Finished generating sitemap data with ${
-                            sitemapEntries.length
-                        } entries after ${Date.now() - startTime}ms`
-                    );
+                logger.info(
+                    `Finished generating sitemap data with ${sitemapEntries.length} entries after ${
+                        Date.now() - startTime
+                    }ms`
+                );
 
-                    if (sitemapEntries.length > MAX_COUNT) {
-                        logger.error(`Sitemap entries count exceeds recommended maximum`);
-                    }
-                } catch (e) {
-                    logger.critical(`Error while generating sitemap - ${e}`);
-                } finally {
-                    isGenerating = false;
+                if (sitemapEntries.length > MAX_COUNT) {
+                    logger.error(`Sitemap entries count exceeds recommended maximum`);
                 }
-            },
-        });
+            } catch (e) {
+                logger.critical(`Error while generating sitemap - ${e}`);
+            } finally {
+                isGenerating = false;
+            }
+        },
     });
 };
 
