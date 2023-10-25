@@ -61,6 +61,7 @@ export const schemaCreationCallbacks: Record<string, CreationCallback> = {
     no_nav_navno_Overview_Data: overviewDataCallback,
     no_nav_navno_OfficeBranch: officeBranchCallback,
     no_nav_navno_ProductPageV2: generalDataCallback,
+    no_nav_navno_GenericPageV2: generalDataCallback,
     no_nav_navno_ContactInformation_Chat: createOpeningHoursFields('chat'),
     no_nav_navno_ContactInformation_Telephone: createOpeningHoursFields('telephone'),
     no_nav_navno_MainArticle_MenuListItems: menuListDataCallback,

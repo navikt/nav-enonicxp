@@ -158,4 +158,9 @@ export interface ThemedArticlePageV2 {
    * Skal ikke vises i søk
    */
   noindex: boolean;
+
+  /**
+   * Velg meta-side
+   */
+  pageMeta: string;
 }

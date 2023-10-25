@@ -21,68 +21,9 @@ export interface GenericPageV2 {
   ingress: string;
 
   /**
-   * Målgruppe
-   */
-  audience:
-    | {
-        /**
-         * Selected
-         */
-        _selected: "person";
-
-        /**
-         * Privatperson
-         */
-        person: Record<string, unknown>;
-      }
-    | {
-        /**
-         * Selected
-         */
-        _selected: "employer";
-
-        /**
-         * Arbeidsgiver
-         */
-        employer: Record<string, unknown>;
-      }
-    | {
-        /**
-         * Selected
-         */
-        _selected: "provider";
-
-        /**
-         * Samarbeidspartner
-         */
-        provider: Record<string, unknown>;
-      }
-    | {
-        /**
-         * Selected
-         */
-        _selected: "other";
-
-        /**
-         * Annet
-         */
-        other: Record<string, unknown>;
-      };
-
-  /**
-   * Velg piktogram
-   */
-  illustration: string;
-
-  /**
    * Videresend alle besøk til annen url:
    */
   externalProductUrl?: string;
-
-  /**
-   * Skriv inn ønsket kort-url
-   */
-  customPath: string;
 
   /**
    * Legg til andre språkversjoner
@@ -118,4 +59,9 @@ export interface GenericPageV2 {
    * Skal ikke vises i søk
    */
   noindex: boolean;
+
+  /**
+   * Velg meta-side
+   */
+  pageMeta: string;
 }

@@ -13,25 +13,7 @@
                 <mixin name="ingress-required" />
             </items>
         </field-set>
-        <field-set>
-            <label>Generisk sidedata</label>
-            <items>
-                <mixin name="audience" />
-            </items>
-        </field-set>
-        <field-set>
-            <label>Piktogram</label>
-            <items>
-                <mixin name="illustration" />
-            </items>
-        </field-set>
-        <field-set>
-            <label>URL</label>
-            <items>
-                <mixin name="external-product-url" />
-                <mixin name="custom-path-selector-required"/>
-            </items>
-        </field-set>
+        <mixin name="external-product-url" />
         <mixin name="dynamic-page-common"/>
         <mixin name="page-meta-selector" />
     </form>

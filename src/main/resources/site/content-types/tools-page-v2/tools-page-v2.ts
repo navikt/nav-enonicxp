@@ -108,4 +108,9 @@ export interface ToolsPageV2 {
    * Legg til andre språkversjoner
    */
   languages?: Array<string>;
+
+  /**
+   * Velg meta-side
+   */
+  pageMeta: string;
 }
