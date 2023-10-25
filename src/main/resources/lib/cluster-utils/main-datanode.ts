@@ -4,8 +4,10 @@ import { clusterInfo, ClusterInfo, ClusterNodeInfo, requestClusterInfo } from '.
 import { logger } from '../utils/logging';
 import { APP_DESCRIPTOR } from '../constants';
 
-const SHARED_MAP_KEY = 'main-datanode';
+// This is used for picking a single data node for running certain jobs from event handlers
+// or schedules, which we want to run only on a single (data) node
 
+const SHARED_MAP_KEY = 'main-datanode';
 const CURRENT_MAIN_DATANODE_KEY = 'current-node';
 
 const pickDatanode = (clusterInfo: ClusterInfo): ClusterNodeInfo | null => {
