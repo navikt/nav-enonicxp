@@ -142,7 +142,7 @@ const updateSitemapEntry = (contentId: string, locale: string) =>
         }
     });
 
-export let sitemapQueryResponse: SitemapEntry[] = [];
+export let sitemapRawEntries: SitemapEntry[] = [];
 
 const generateSitemapEntries = (): SitemapEntry[] => {
     const repoIdContentBuckets = queryAllLayersToRepoIdBuckets({
@@ -182,8 +182,6 @@ const generateSitemapEntries = (): SitemapEntry[] => {
             sitemapEntries.push(entry);
         });
     });
-
-    sitemapQueryResponse = sitemapEntries;
 
     updateSitemapData(sitemapEntries);
 
@@ -272,6 +270,8 @@ const updateSitemapData = (entries: SitemapEntry[]) => {
         logger.error('Attempted to update sitemap with invalid data');
         return;
     }
+
+    sitemapRawEntries = entries;
 
     const sitemapEntriesMapNew = new Map<string, SitemapEntry>();
 
