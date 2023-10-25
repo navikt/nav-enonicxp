@@ -15,6 +15,7 @@ import { queryAllLayersToRepoIdBuckets } from '../localization/layers-repo-utils
 import { getPublicPath } from '../paths/public-path';
 import { customListenerType } from '../utils/events';
 import { forceArray, iterableToArray } from '../utils/array-utils';
+import { clusterInfo } from '../utils/cluster-utils';
 
 const MAX_COUNT = 50000;
 const EVENT_TYPE_SITEMAP_GENERATED = 'sitemap-generated';
@@ -208,7 +209,8 @@ export const getAllSitemapEntries = () => {
 };
 
 const generateAndBroadcastSitemapData = () => {
-    if (!clusterLib.isMaster() || isGenerating) {
+    if (clusterInfo?.localServerName !== 'a30apvl00087' || isGenerating) {
+        logger.info(`Skipping sitemap generation on ${clusterInfo?.localServerName}`);
         return;
     }
 
@@ -250,6 +252,10 @@ const generateAndBroadcastSitemapData = () => {
 
 export const generateSitemapDataAndActivateSchedule = () => {
     generateAndBroadcastSitemapData();
+
+    if (!clusterLib.isMaster()) {
+        return;
+    }
 
     // Regenerate sitemap from scratch at 06:00 daily
     createOrUpdateSchedule({

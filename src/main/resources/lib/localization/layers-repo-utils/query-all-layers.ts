@@ -8,6 +8,7 @@ import {
     sortMultiRepoNodeHitsToBuckets,
 } from './sort-and-resolve-hits';
 import { getLayersMultiConnection } from './layers-repo-connection';
+import { logger } from '../../utils/logging';
 
 // TODO: support including archived content with an argument?
 // (Not needed atm, but keep in mind it only includes live content!)
@@ -40,6 +41,10 @@ export function queryAllLayersToRepoIdBuckets({
             query: insertArchiveExcludedQueryString(queryParams.query),
         },
     });
+
+    logger.info(
+        `Hits for multirepo layers query: ${multiRepoQueryResult.hits.length} ${multiRepoQueryResult.total}`
+    );
 
     return resolveContent
         ? sortMultiRepoNodeHitsToBuckets({
