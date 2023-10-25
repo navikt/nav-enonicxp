@@ -50,6 +50,7 @@ import { PressLandingPage } from 'site/content-types/press-landing-page/press-la
 import { FormsOverview } from '../../site/content-types/forms-overview/forms-overview';
 import { FragmentCreator } from '../../site/content-types/fragment-creator/fragment-creator';
 import { PageMeta } from 'site/content-types/page-meta/page-meta';
+import { SearchConfigV2 } from '../../site/content-types/search-config-v2/search-config-v2';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
@@ -84,6 +85,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'form-intermediate-step': FormIntermediateStep;
     'form-details': FormDetails;
     'generic-page': GenericPage;
+    'search-config-v2': SearchConfigV2;
     'section-page': SectionPage;
     overview: Overview;
     'redirects-folder': EmptyObject;

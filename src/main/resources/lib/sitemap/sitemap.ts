@@ -3,21 +3,19 @@ import { Content } from '/lib/xp/content';
 import * as taskLib from '/lib/xp/task';
 import * as eventLib from '/lib/xp/event';
 import * as clusterLib from '/lib/xp/cluster';
-import { stringArrayToSet } from '../utils/array-utils';
 import { runInContext } from '../context/run-in-context';
 import { URLS } from '../constants';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { contentTypesInSitemap } from '../contenttype-lists';
 import { logger } from '../utils/logging';
-import {
-    getLanguageVersions,
-    LanguageSelectorData,
-} from '../localization/resolve-language-versions';
 import { getLayersData } from '../localization/layers-data';
 import { runInLocaleContext } from '../localization/locale-context';
-import { isContentLocalized, queryAllLayersToLocaleBuckets } from '../localization/locale-utils';
+import { isContentLocalized } from '../localization/locale-utils';
+import { queryAllLayersToRepoIdBuckets } from '../localization/layers-repo-utils/query-all-layers';
 import { getPublicPath } from '../paths/public-path';
 import { customListenerType } from '../utils/events';
+import { forceArray, iterableToArray } from '../utils/array-utils';
+import { clusterInfo } from '../utils/cluster-utils';
 
 const MAX_COUNT = 50000;
 const EVENT_TYPE_SITEMAP_GENERATED = 'sitemap-generated';
@@ -29,55 +27,34 @@ type LanguageVersion = {
 };
 
 type SitemapEntry = {
-    id: string;
+    _contentId: string;
+    _contentLocale: string;
+    _legacyLanguages: string[];
+    _key: string;
     url: string;
     modifiedTime: string;
-    language?: string;
+    language: string;
     languageVersions?: LanguageVersion[];
-};
-
-type SitemapData = {
-    entries: { [key: string]: SitemapEntry };
-    clear: () => void;
-    get: (key: string) => SitemapEntry;
-    set: (key: string, value: SitemapEntry) => void;
-    remove: (key: string) => void;
-    getEntries: () => SitemapEntry[];
 };
 
 let isGenerating = false;
 
-const sitemapData: SitemapData = {
-    entries: {},
-    clear: function () {
-        this.entries = {};
-    },
-    get: function (key) {
-        return this.entries[key];
-    },
-    set: function (key, value) {
-        this.entries[key] = value;
-    },
-    remove: function (key) {
-        delete this.entries[key];
-    },
-    getEntries: function () {
-        return Object.values(this.entries);
-    },
-};
+let sitemapEntriesMap = new Map<string, SitemapEntry>();
 
-const contentTypesInSitemapSet = stringArrayToSet(contentTypesInSitemap);
+const contentTypesInSitemapSet: ReadonlySet<string> = new Set(contentTypesInSitemap);
 
-const shouldIncludeContent = (content: Content<any> | null): content is Content =>
+const shouldIncludeContent = (content: Content | null): content is Content =>
     !!(
         content &&
-        contentTypesInSitemapSet[content.type] &&
+        contentTypesInSitemapSet.has(content.type) &&
         !content.data?.externalProductUrl &&
         !content.data?.noindex &&
         isContentLocalized(content)
     );
 
-const getUrl = (content: Content<any>, locale: string) => {
+const getKey = (contentId: string, locale: string) => `${contentId}-${locale}`;
+
+const getUrl = (content: Content, locale: string) => {
     if (content.data?.canonicalUrl) {
         return content.data.canonicalUrl;
     }
@@ -86,42 +63,93 @@ const getUrl = (content: Content<any>, locale: string) => {
     return `${URLS.FRONTEND_ORIGIN}${pathname}`;
 };
 
-const transformLanguageVersion = (languageSelectorData: LanguageSelectorData): LanguageVersion => ({
-    language: languageSelectorData.language,
-    url: `${URLS.FRONTEND_ORIGIN}${languageSelectorData._path}`,
-});
-
-const getSitemapEntry = (content: Content, locale: string): SitemapEntry => {
-    const languageVersions = getLanguageVersions({
-        baseContent: content,
-        branch: 'master',
-        baseContentLocale: locale,
-    }).map(transformLanguageVersion);
-
+const transformLanguageVersion = (languageEntry: SitemapEntry): LanguageVersion => {
     return {
-        id: `${content._id}-${locale}`,
+        language: languageEntry.language,
+        url: languageEntry.url,
+    };
+};
+
+const resolveLanguageVersions = (sitemapEntry: SitemapEntry) => {
+    const { _contentId, _contentLocale } = sitemapEntry;
+    const { locales, defaultLocale } = getLayersData();
+
+    const localesToResolve = locales.filter((locale) => locale != _contentLocale);
+
+    const languageVersions = localesToResolve.reduce<SitemapEntry[]>((acc, locale) => {
+        const version = sitemapEntriesMap.get(getKey(_contentId, locale));
+        if (version) {
+            acc.push(version);
+        }
+
+        return acc;
+    }, []);
+
+    const legacyLanguages = sitemapEntriesMap.get(getKey(_contentId, defaultLocale))
+        ?._legacyLanguages;
+    if (legacyLanguages) {
+        legacyLanguages.forEach((languageRefContentId) => {
+            if (languageRefContentId === _contentId) {
+                return;
+            }
+
+            const version = sitemapEntriesMap.get(getKey(languageRefContentId, defaultLocale));
+            if (!version) {
+                return;
+            }
+
+            if (languageVersions.some((_version) => _version.language === version.language)) {
+                return;
+            }
+
+            languageVersions.push(version);
+        }, []);
+    }
+
+    return languageVersions.map(transformLanguageVersion);
+};
+
+const buildSitemapEntry = (
+    content: Content,
+    locale: string,
+    resolveLanguages: boolean
+): SitemapEntry => {
+    const sitemapEntry: SitemapEntry = {
+        _key: getKey(content._id, locale),
+        _contentId: content._id,
+        _contentLocale: locale,
+        _legacyLanguages: forceArray(content.data.languages),
         url: getUrl(content, locale),
         modifiedTime: content.modifiedTime,
         language: content.language,
-        ...(languageVersions && languageVersions.length > 0 && { languageVersions }),
     };
+
+    if (resolveLanguages) {
+        sitemapEntry.languageVersions = resolveLanguageVersions(sitemapEntry);
+    }
+
+    return sitemapEntry;
 };
 
 const updateSitemapEntry = (contentId: string, locale: string) =>
     runInLocaleContext({ branch: 'master', locale }, () => {
         const content = contentLib.get({ key: contentId });
+        const key = getKey(contentId, locale);
 
         if (shouldIncludeContent(content)) {
-            sitemapData.set(contentId, getSitemapEntry(content, locale));
-        } else if (sitemapData.get(contentId)) {
-            sitemapData.remove(contentId);
+            sitemapEntriesMap.set(key, buildSitemapEntry(content, locale, true));
+        } else if (sitemapEntriesMap.get(contentId)) {
+            sitemapEntriesMap.delete(key);
         }
     });
 
+export let sitemapRawEntries: SitemapEntry[] = [];
+
 const generateSitemapEntries = (): SitemapEntry[] => {
-    const localeContentBuckets = queryAllLayersToLocaleBuckets({
+    const repoIdContentBuckets = queryAllLayersToRepoIdBuckets({
         branch: 'master',
         state: 'localized',
+        resolveContent: true,
         queryParams: {
             filters: {
                 boolean: {
@@ -145,17 +173,44 @@ const generateSitemapEntries = (): SitemapEntry[] => {
         },
     });
 
-    return Object.entries(localeContentBuckets)
-        .map(([locale, contents]) => contents.map((content) => getSitemapEntry(content, locale)))
-        .flat();
+    const sitemapEntries: SitemapEntry[] = [];
+
+    Object.entries(repoIdContentBuckets).forEach(([repoId, contents]) => {
+        const locale = getLayersData().repoIdToLocaleMap[repoId];
+
+        contents.forEach((content) => {
+            const entry = buildSitemapEntry(content, locale, false);
+            sitemapEntries.push(entry);
+        });
+    });
+
+    updateSitemapData(sitemapEntries);
+
+    // Iterate over all entries again after to resolve language versions
+    // We need the initial iteration done first to ensure language references
+    // can be resolved from the sitemapData map
+    sitemapEntries.forEach((sitemapEntry) => {
+        sitemapEntry.languageVersions = resolveLanguageVersions(sitemapEntry);
+    });
+
+    return sitemapEntries;
 };
 
 export const getAllSitemapEntries = () => {
-    return sitemapData.getEntries();
+    const array = iterableToArray(sitemapEntriesMap.values());
+
+    if (array.length !== sitemapEntriesMap.size) {
+        logger.error(
+            `Sitemap entries array has unexpected length - expected ${sitemapEntriesMap.size} - got ${array.length}`
+        );
+    }
+
+    return array;
 };
 
 const generateAndBroadcastSitemapData = () => {
-    if (!clusterLib.isMaster() || isGenerating) {
+    if (clusterInfo?.localServerName !== 'a30apvl00087' || isGenerating) {
+        logger.info(`Skipping sitemap generation on ${clusterInfo?.localServerName}`);
         return;
     }
 
@@ -198,6 +253,10 @@ const generateAndBroadcastSitemapData = () => {
 export const generateSitemapDataAndActivateSchedule = () => {
     generateAndBroadcastSitemapData();
 
+    if (!clusterLib.isMaster()) {
+        return;
+    }
+
     // Regenerate sitemap from scratch at 06:00 daily
     createOrUpdateSchedule({
         jobName: 'sitemap-generator-schedule',
@@ -218,13 +277,21 @@ const updateSitemapData = (entries: SitemapEntry[]) => {
         return;
     }
 
-    sitemapData.clear();
+    sitemapRawEntries = entries;
+
+    const sitemapEntriesMapNew = new Map<string, SitemapEntry>();
 
     entries.forEach((entry) => {
-        sitemapData.set(entry.id, entry);
+        if (sitemapEntriesMapNew.has(entry._key)) {
+            logger.info(`Duplicate entry for sitemap data: ${JSON.stringify(entry)}`);
+        } else {
+            sitemapEntriesMapNew.set(entry._key, entry);
+        }
     });
 
-    logger.info(`Updated sitemap data with ${entries.length} entries`);
+    sitemapEntriesMap = sitemapEntriesMapNew;
+
+    logger.info(`Updated sitemap data with ${sitemapEntriesMap.size} / ${entries.length} entries`);
 };
 
 export const requestSitemapUpdate = () => {

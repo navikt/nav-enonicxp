@@ -1,4 +1,8 @@
-import { getAllSitemapEntries, requestSitemapUpdate } from '../../lib/sitemap/sitemap';
+import {
+    getAllSitemapEntries,
+    requestSitemapUpdate,
+    sitemapRawEntries,
+} from '../../lib/sitemap/sitemap';
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 
@@ -9,6 +13,16 @@ export const get = (req: XP.Request) => {
             body: {
                 message: 'Unauthorized',
             },
+            contentType: 'application/json',
+        };
+    }
+
+    const { queryResponse } = req.params;
+
+    if (typeof queryResponse === 'string') {
+        return {
+            status: 200,
+            body: sitemapRawEntries,
             contentType: 'application/json',
         };
     }
