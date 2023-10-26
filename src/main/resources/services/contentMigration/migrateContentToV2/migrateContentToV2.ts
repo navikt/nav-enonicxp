@@ -19,7 +19,7 @@ import { CONTENT_ROOT_REPO_ID } from '../../../lib/constants';
 // OK 4. remove migrated meta data
 // OK 5. Add callback to weave in metadata from PageMeta
 // 6. Remove xml data from content definitions.
-// 7. Add schema creation?
+// OK: 7. Add schema creation
 
 const getConnection = (branch: RepoBranch, repoId?: string) => {
     return getRepoConnection({
@@ -86,7 +86,7 @@ const processSingleContent = ({
         return;
     }
 
-    if (draftContent._id !== 'd40a9b42-a44b-4aa2-9ef0-5b36a2b9a672') {
+    if (draftContent._id !== 'd3af7782-24c6-4336-bb15-07563cb7136d') {
         return null;
     }
 

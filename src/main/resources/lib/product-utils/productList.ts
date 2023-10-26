@@ -23,9 +23,8 @@ type ProductDetailsContent = Content<'no.nav.navno:product-details'>;
 
 const CONTENT_TYPES_IN_ALL_PRODUCTS_LISTS = [
     `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
-    `${APP_DESCRIPTOR}:product-page-v2`,
+    `${APP_DESCRIPTOR}:themed-article-page`,
     `${APP_DESCRIPTOR}:guide-page`,
-    `${APP_DESCRIPTOR}:guide-page-v2`,
 ] as const;
 
 const getProductDetails = (

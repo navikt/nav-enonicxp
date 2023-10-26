@@ -1,6 +1,6 @@
 <mixin>
     <form>
-        <input name="pageMeta" type="ContentSelector">
+        <input name="pageMetaTarget" type="ContentSelector">
             <label>Velg meta-side</label>
             <occurrences minimum="1" maximum="1"/>
             <config>

@@ -3,5 +3,5 @@ export interface PageMetaSelector {
   /**
    * Velg meta-side
    */
-  pageMeta: string;
+  pageMetaTarget: string;
 }
