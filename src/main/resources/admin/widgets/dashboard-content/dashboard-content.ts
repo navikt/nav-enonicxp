@@ -83,6 +83,7 @@ const getModifiedContentFromUser = () => {
                 }
             } else if (draftContent?.publish?.first) {
                 status = 'Avpublisert';
+                modifiedStr = draftContent._ts.substring(0, 16).replace('T', ' ');
             }
 
             const modifiedLocalTime = dayjs(modifiedStr).utc(true).local();
