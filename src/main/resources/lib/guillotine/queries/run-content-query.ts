@@ -67,6 +67,7 @@ import situationPageV2Query from './content-queries/situationPageV2Query.graphql
 import currentTopicPageQuery from './content-queries/currentTopicPageQuery.graphql';
 import currentTopicPageV2Query from './content-queries/currentTopicPageV2Query.graphql';
 import themedArticlePageQuery from './content-queries/themedArticlePageQuery.graphql';
+import themedArticlePageV2Query from './content-queries/themedArticlePageV2Query.graphql';
 import toolsPageQuery from './content-queries/toolsPageQuery.graphql';
 import toolsPageV2Query from './content-queries/toolsPageV2Query.graphql';
 import transportPageQuery from './content-queries/transportPageQuery.graphql';
@@ -128,6 +129,7 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:situation-page': situationPageQuery,
     'no.nav.navno:situation-page-v2': situationPageV2Query,
     'no.nav.navno:themed-article-page': themedArticlePageQuery,
+    'no.nav.navno:themed-article-page-v2': themedArticlePageV2Query,
     'no.nav.navno:tools-page': toolsPageQuery,
     'no.nav.navno:tools-page-v2': toolsPageV2Query,
     'no.nav.navno:transport-page': transportPageQuery,
