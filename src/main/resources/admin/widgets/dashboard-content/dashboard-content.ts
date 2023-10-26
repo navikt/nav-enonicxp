@@ -75,6 +75,7 @@ const getModifiedContentFromUser = () => {
 
             let status = 'Ny';
             if (masterContent?.publish?.first && masterContent?.publish?.from) {
+                // Innholdet ER publisert
                 if (draftContent?._versionKey === masterContent?._versionKey) {
                     status = 'Publisert';
                     modifiedStr = masterContent.publish.from.substring(0, 16).replace('T', ' ');
@@ -82,8 +83,14 @@ const getModifiedContentFromUser = () => {
                     status = 'Endret';
                 }
             } else if (draftContent?.publish?.first) {
-                status = 'Avpublisert';
-                modifiedStr = draftContent._ts.substring(0, 16).replace('T', ' ');
+                // Innholdet er IKKE publisert (er avpublisert)
+                const modifiedTsStr = draftContent._ts.substring(0, 16).replace('T', ' ');
+                if ( dayjs(modifiedStr).isAfter(dayjs(modifiedTsStr))) {
+                    status = 'Endret';
+                } else {
+                    status = 'Avpublisert';
+                    modifiedStr = modifiedTsStr;
+                }
             }
 
             const modifiedLocalTime = dayjs(modifiedStr).utc(true).local();
