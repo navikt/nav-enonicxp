@@ -15,7 +15,7 @@ import {
     isContentPreviewOnly,
 } from '../../lib/utils/content-utils';
 
-export const transformToRedirectResponse = ({
+const transformToRedirectResponse = ({
     content,
     target,
     type,
@@ -61,19 +61,100 @@ export const transformToRedirectResponse = ({
           };
 };
 
-export const getSpecialRedirectIfApplicable = ({
+// The previewOnly x-data flag is used on content which should only be publicly accessible
+// through the /utkast route in the frontend. Calls from this route comes with the "preview"
+// query param. We also want this behaviour for pages with an external redirect url set.
+const getSpecialPreviewResponse = (content: Content, requestedPath: string, isPreview: boolean) => {
+    const isPreviewOnly = isContentPreviewOnly(content);
+    const externalRedirectUrl = content.data?.externalProductUrl;
+
+    if ((isPreviewOnly || !!externalRedirectUrl) === isPreview) {
+        return null;
+    }
+
+    if (externalRedirectUrl) {
+        return {
+            response: transformToRedirectResponse({
+                content,
+                target: externalRedirectUrl,
+                type: 'external',
+            }),
+        };
+    }
+
+    // If the content is flagged for preview only we want a 404 response. Otherwise, redirect to the
+    // actual content url
+    return {
+        response: isPreviewOnly
+            ? null
+            : transformToRedirectResponse({ content, target: requestedPath, type: 'internal' }),
+    };
+};
+
+// Note: There are legacy office pages still in effect that also have the
+// content type office-information. As long as the enhetNr doesn't match up
+// with any office-branch content, the next function will pass by these
+// office pages.
+const getOfficeInfoRedirect = (content: Content) => {
+    if (content.type !== 'no.nav.navno:office-information') {
+        return null;
+    }
+
+    const { enhetNr } = content.data.enhet;
+
+    const foundOfficeContent = contentLib.query({
+        start: 0,
+        count: 1,
+        contentTypes: ['no.nav.navno:office-branch'],
+        filters: {
+            boolean: {
+                must: {
+                    hasValue: {
+                        field: 'data.enhetNr',
+                        values: [enhetNr],
+                    },
+                },
+            },
+        },
+    });
+
+    if (foundOfficeContent.hits.length === 0) {
+        return null;
+    }
+
+    // Try and use the new office branch name, but fall back to the old name if it
+    // will return a 404 after redirect.
+    const office = foundOfficeContent.hits[0];
+
+    return transformToRedirectResponse({
+        content,
+        target: office._path,
+        type: 'internal',
+        isPermanent: true,
+    });
+};
+
+export const getRedirectResponseIfApplicable = ({
     content,
     requestedPath,
     branch,
     locale,
+    isPreview,
 }: {
     content: Content;
     requestedPath: string;
     branch: RepoBranch;
     locale: string;
+    isPreview: boolean;
 }) => {
-    if (isContentPreviewOnly(content)) {
-        return null;
+    const previewOnlyRedirect = getSpecialPreviewResponse(content, requestedPath, isPreview);
+    if (previewOnlyRedirect) {
+        return previewOnlyRedirect;
+    }
+
+    const officeInfoRedirect = getOfficeInfoRedirect(content);
+    if (officeInfoRedirect) {
+        return officeInfoRedirect;
     }
 
     const localeTarget = getContentLocaleRedirectTarget(content);

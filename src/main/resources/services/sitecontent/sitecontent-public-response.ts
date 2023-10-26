@@ -1,47 +1,6 @@
-import { Content } from '/lib/xp/content';
 import { findTargetContent } from './find-target-content';
-import {
-    transformToRedirectResponse,
-    getSpecialRedirectIfApplicable,
-    getRedirectFallback,
-} from './resolve-redirects';
-import { resolveLegacyContentRedirects } from './resolve-legacy-content-redirects';
-import { isContentPreviewOnly } from '../../lib/utils/content-utils';
+import { getRedirectResponseIfApplicable, getRedirectFallback } from './resolve-redirects';
 import { sitecontentResolveContent } from './resolve-content';
-
-// The previewOnly x-data flag is used on content which should only be publicly accessible
-// through the /utkast route in the frontend. Calls from this route comes with the "preview"
-// query param. We also want this behaviour for pages with an external redirect url set.
-const getSpecialPreviewResponseIfApplicable = (
-    content: Content<any>,
-    requestedPath: string,
-    isPreview: boolean
-) => {
-    const isPreviewOnly = isContentPreviewOnly(content);
-    const externalRedirectUrl = content.data?.externalProductUrl;
-
-    if ((isPreviewOnly || !!externalRedirectUrl) === isPreview) {
-        return null;
-    }
-
-    if (externalRedirectUrl) {
-        return {
-            response: transformToRedirectResponse({
-                content,
-                target: externalRedirectUrl,
-                type: 'external',
-            }),
-        };
-    }
-
-    // If the content is flagged for preview only we want a 404 response. Otherwise, redirect to the
-    // actual content url
-    return {
-        response: isPreviewOnly
-            ? null
-            : transformToRedirectResponse({ content, target: requestedPath, type: 'internal' }),
-    };
-};
 
 export const sitecontentPublicResponse = ({
     idOrPath,
@@ -63,27 +22,12 @@ export const sitecontentPublicResponse = ({
 
     const { content, locale } = target;
 
-    const redirectLegacyContent = resolveLegacyContentRedirects(content);
-
-    if (redirectLegacyContent) {
-        return redirectLegacyContent;
-    }
-
-    const specialPreviewResponse = getSpecialPreviewResponseIfApplicable(
-        content,
-        idOrPath,
-        isPreview
-    );
-
-    if (specialPreviewResponse) {
-        return specialPreviewResponse.response;
-    }
-
-    const redirectResponse = getSpecialRedirectIfApplicable({
+    const redirectResponse = getRedirectResponseIfApplicable({
         content,
         locale,
         branch: 'master',
         requestedPath: idOrPath,
+        isPreview,
     });
 
     if (redirectResponse) {
