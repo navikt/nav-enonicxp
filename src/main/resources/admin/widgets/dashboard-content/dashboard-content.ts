@@ -67,7 +67,8 @@ const getModifiedContentFromUser = () => {
                 return null;
             }
 
-            let modifiedStr = draftContent.modifiedTime.substring(0, 16).replace('T', ' ');
+            // modifiedTime med sekunder
+            let modifiedStr = draftContent.modifiedTime.substring(0, 19).replace('T', ' ');
 
             if (!draftContent.displayName) {
                 draftContent.displayName = 'Uten tittel';
@@ -75,16 +76,16 @@ const getModifiedContentFromUser = () => {
 
             let status = 'Ny';
             if (masterContent?.publish?.first && masterContent?.publish?.from) {
-                // Innholdet ER publisert
+                // Innholdet ER publisert, eventuelt endret etterpå
                 if (draftContent?._versionKey === masterContent?._versionKey) {
                     status = 'Publisert';
-                    modifiedStr = masterContent.publish.from.substring(0, 16).replace('T', ' ');
+                    modifiedStr = masterContent.publish.from.substring(0, 19).replace('T', ' ');
                 } else {
                     status = 'Endret';
                 }
             } else if (draftContent?.publish?.first) {
-                // Innholdet er IKKE publisert (er avpublisert)
-                const modifiedTsStr = draftContent._ts.substring(0, 16).replace('T', ' ');
+                // Innholdet er IKKE publisert (er avpublisert), eventuelt endret etterpå
+                const modifiedTsStr = draftContent._ts.substring(0, 19).replace('T', ' ');
                 if ( dayjs(modifiedStr).isAfter(dayjs(modifiedTsStr))) {
                     status = 'Endret';
                 } else {
@@ -92,7 +93,6 @@ const getModifiedContentFromUser = () => {
                     modifiedStr = modifiedTsStr;
                 }
             }
-
             const modifiedLocalTime = dayjs(modifiedStr).utc(true).local();
 
             return {
