@@ -1,6 +1,7 @@
 import { getServiceRequestSubPath } from '../service-utils';
 import { startPageMetaCreation } from './migrateMetaData/migrateMetaData';
 import { migrateContentToV2 } from './migrateContentToV2/migrateContentToV2';
+import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 
 const getServiceFunction = (req: XP.Request): any => {
     const subPath = getServiceRequestSubPath(req);
@@ -20,6 +21,16 @@ const getServiceFunction = (req: XP.Request): any => {
 };
 
 export const get = (req: XP.Request) => {
+    if (!validateServiceSecretHeader(req)) {
+        return {
+            status: 401,
+            body: {
+                message: 'Not authorized',
+            },
+            contentType: 'application/json',
+        };
+    }
+
     const serviceFunction = getServiceFunction(req);
 
     if (!getServiceFunction) {

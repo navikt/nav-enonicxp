@@ -86,10 +86,6 @@ const processSingleContent = ({
         return;
     }
 
-    if (draftContent._id !== 'd3af7782-24c6-4336-bb15-07563cb7136d') {
-        return null;
-    }
-
     // Don't make changes to master content it the draft content is work in progress.
     const isWorkInProgress = draftContent._versionKey !== masterContent?._versionKey;
     const newType = contentTypesToNewVersionMap[draftContent.type];
@@ -152,6 +148,12 @@ const migrateContentInRepo = (repoId: string, typeToMigrate: string) => {
 };
 
 export const migrateContentToV2 = (param: ParamType) => {
+    if (app.config.env === 'p') {
+        log.error('WARNING: Tried to run non-ready content migration in production. Aborting.');
+    }
+
+    return;
+
     const { repoIdToLocaleMap } = getLayersData();
     const repos = Object.keys(repoIdToLocaleMap);
 

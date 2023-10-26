@@ -137,5 +137,5 @@ export interface SituationPageV2 {
   /**
    * Velg meta-side
    */
-  pageMeta: string;
+  pageMetaTarget: string;
 }
