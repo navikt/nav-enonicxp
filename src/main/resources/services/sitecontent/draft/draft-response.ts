@@ -19,7 +19,7 @@ const _findTargetContent = (idOrPath: string, locale?: string) => {
 
     const localeActual = isValidLocale(locale) ? locale : getLayersData().defaultLocale;
 
-    const content = runInLocaleContext({ locale: localeActual }, () =>
+    const content = runInLocaleContext({ locale: localeActual, branch: 'draft' }, () =>
         contentLib.get({ key: idOrPath })
     );
 
