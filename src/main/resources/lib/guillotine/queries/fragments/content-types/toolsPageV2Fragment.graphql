@@ -1,6 +1,6 @@
 #import "../mixins/animatedIconsTargetFragment.graphql"
 
-fragment contentToolsPage on no_nav_navno_ToolsPageV2 {
+fragment contentToolsPageV2 on no_nav_navno_ToolsPageV2 {
     dataAsJson
     data {
         area

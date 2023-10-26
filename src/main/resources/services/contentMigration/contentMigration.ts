@@ -3,7 +3,7 @@ import { startPageMetaCreation } from './migrateMetaData/migrateMetaData';
 import { migrateContentToV2 } from './migrateContentToV2/migrateContentToV2';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 
-const getServiceFunction = (req: XP.Request): any => {
+const getServiceFn = (req: XP.Request): any => {
     const subPath = getServiceRequestSubPath(req);
 
     if (!subPath) {
@@ -31,19 +31,17 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const serviceFunction = getServiceFunction(req);
+    const fn = getServiceFn(req);
 
-    if (!getServiceFunction) {
+    if (!fn) {
         return {
             status: 404,
             contentType: 'application/json',
         };
     }
 
-    const params = req.params;
-
-    serviceFunction(params);
-    // Global values should always use the default layer
+    const { params } = req;
+    fn(params);
 
     return {
         status: 200,
