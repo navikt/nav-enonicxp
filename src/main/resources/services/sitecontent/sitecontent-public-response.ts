@@ -34,5 +34,5 @@ export const sitecontentPublicResponse = ({
         return redirectResponse;
     }
 
-    return sitecontentResolveContent(content, 'master', locale);
+    return sitecontentResolveContent({ baseContent: content, branch: 'master', locale });
 };

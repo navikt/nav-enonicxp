@@ -57,7 +57,7 @@ export const get = (req: XP.Request) => {
     try {
         const content = getResponseFromCache(req.params as SiteContentParams, () =>
             branch === 'draft'
-                ? sitecontentDraftResponse({ idOrPath, locale })
+                ? sitecontentDraftResponse({ idOrPath, requestedLocale: locale })
                 : sitecontentPublicResponse({
                       idOrPath: idOrPath,
                       isPreview: preview === 'true',

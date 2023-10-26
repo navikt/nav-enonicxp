@@ -6,11 +6,15 @@ import { getModifiedTimeIncludingFragments } from '../../lib/utils/fragment-util
 import { getLanguageVersions } from '../../lib/localization/resolve-language-versions';
 
 // Resolve the base content to a fully resolved content via a guillotine query
-export const sitecontentResolveContent = (
-    baseContent: Content,
-    branch: RepoBranch,
-    locale: string
-): Content | null =>
+export const sitecontentResolveContent = ({
+    baseContent,
+    branch,
+    locale,
+}: {
+    baseContent: Content;
+    branch: RepoBranch;
+    locale: string;
+}): Content | null =>
     runInLocaleContext(
         {
             locale: baseContent.language,
