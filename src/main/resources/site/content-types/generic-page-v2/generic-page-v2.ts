@@ -63,5 +63,5 @@ export interface GenericPageV2 {
   /**
    * Velg meta-side
    */
-  pageMeta: string;
+  pageMetaTarget: string;
 }

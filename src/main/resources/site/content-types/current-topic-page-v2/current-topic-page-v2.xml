@@ -1,5 +1,5 @@
 <content-type>
-    <display-name>Aktuelt</display-name>
+    <display-name>Å (Ikke klar til bruk) Aktuelt</display-name>
     <description>Aktuelt-artikler skal kun brukes for nyhetssaker til personbrukere</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>

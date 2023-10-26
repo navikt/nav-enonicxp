@@ -1,5 +1,5 @@
 <content-type>
-    <display-name>Temaartikkel</display-name>
+    <display-name>Å (Ikke klar til bruk) Temaartikkel</display-name>
     <description>En generisk side som kan brukes til generelle artikler, dybdeinfo, støtteinformasjon etc</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>

@@ -162,5 +162,5 @@ export interface ThemedArticlePageV2 {
   /**
    * Velg meta-side
    */
-  pageMeta: string;
+  pageMetaTarget: string;
 }
