@@ -13,14 +13,6 @@ import { RepoBranch } from 'types/common';
 import { getLayersData } from '../../../lib/localization/layers-data';
 import { CONTENT_ROOT_REPO_ID } from '../../../lib/constants';
 
-// OK 1. change content type for draftContent
-// OK 2. if not work in progress, change content type for masterContent.
-// OK 3. repeat for all other layers
-// OK 4. remove migrated meta data
-// OK 5. Add callback to weave in metadata from PageMeta
-// 6. Remove xml data from content definitions.
-// OK: 7. Add schema creation
-
 const getConnection = (branch: RepoBranch, repoId?: string) => {
     return getRepoConnection({
         repoId: repoId || CONTENT_ROOT_REPO_ID,
