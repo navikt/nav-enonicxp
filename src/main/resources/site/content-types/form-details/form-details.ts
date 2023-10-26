@@ -21,6 +21,11 @@ export interface FormDetails {
   ingress?: string;
 
   /**
+   * Informasjon om språk
+   */
+  languageDisclaimer?: string;
+
+  /**
    * Målgruppe
    */
   audience: {

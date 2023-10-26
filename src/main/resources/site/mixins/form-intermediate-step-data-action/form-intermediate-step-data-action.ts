@@ -9,4 +9,9 @@ export interface FormIntermediateStepDataAction {
    * Ekstra forklaring
    */
   explanation?: string;
+
+  /**
+   * Informasjon om språk
+   */
+  languageDisclaimer?: string;
 }

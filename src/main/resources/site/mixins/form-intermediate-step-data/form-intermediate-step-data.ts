@@ -25,6 +25,11 @@ export interface FormIntermediateStepData {
     explanation?: string;
 
     /**
+     * Informasjon om språk
+     */
+    languageDisclaimer?: string;
+
+    /**
      * Dette valget sender brukeren videre til:
      */
     nextStep:
@@ -77,6 +82,11 @@ export interface FormIntermediateStepData {
                * Ekstra forklaring
                */
               explanation?: string;
+
+              /**
+               * Informasjon om språk
+               */
+              languageDisclaimer?: string;
 
               /**
                * Dette valget sender brukeren videre til:

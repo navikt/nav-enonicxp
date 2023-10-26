@@ -344,14 +344,4 @@ export interface OfficeInformation {
       }>;
     }>;
   };
-
-  /**
-   * Fant du det du lette etter?
-   */
-  feedbackToggle: boolean;
-
-  /**
-   * Chatbot Frida
-   */
-  chatbotToggle: boolean;
 }

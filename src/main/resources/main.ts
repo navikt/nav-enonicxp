@@ -20,6 +20,7 @@ import { initSearchRepo } from './lib/search/search-repo';
 import { initLayersData } from './lib/localization/layers-data';
 import { activateLayersEventListeners } from './lib/localization/publish-events';
 import { activateContentUpdateListener } from './lib/contentUpdate/content-update-listener';
+import { activateExternalSearchIndexEventHandlers } from './lib/search/external/event-handlers';
 
 updateClusterInfo();
 initLayersData();
@@ -30,6 +31,7 @@ activateSitemapDataUpdateEventListener();
 activateContentListItemUnpublishedListener();
 activateCustomPathNodeListeners();
 activateSearchIndexEventHandlers();
+activateExternalSearchIndexEventHandlers();
 activateContentUpdateListener();
 
 hookLibsWithTimeTravel();

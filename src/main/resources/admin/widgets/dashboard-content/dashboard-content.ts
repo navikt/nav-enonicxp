@@ -3,7 +3,8 @@ import * as authLib from '/lib/xp/auth';
 import * as nodeLib from '/lib/xp/node';
 import { Source } from '/lib/xp/node';
 import { ADMIN_PRINCIPAL, SUPER_USER } from '../../../lib/constants';
-import { getLayersMultiConnection, NON_LOCALIZED_QUERY_FILTER } from '../../../lib/localization/locale-utils';
+import { getLayersMultiConnection } from '../../../lib/localization/layers-repo-utils/layers-repo-connection';
+import { NON_LOCALIZED_QUERY_FILTER } from '../../../lib/localization/layers-repo-utils/localization-state-filters';
 import dayjs from '/assets/dayjs/1.11.9/dayjs.min.js';
 import utc from '/assets/dayjs/1.11.9/plugin/utc.js';
 
@@ -48,9 +49,9 @@ const getModifiedContentFromUser = () => {
             query: `modifier = "${user}"`,
             filters: {
                 boolean: {
-                    mustNot: NON_LOCALIZED_QUERY_FILTER
-                }
-            }
+                    mustNot: NON_LOCALIZED_QUERY_FILTER,
+                },
+            },
         })
         .hits.map((hit) => {
             const draftContent = getRepoConnection({
@@ -84,9 +85,7 @@ const getModifiedContentFromUser = () => {
                 status = 'Avpublisert';
             }
 
-            const modifiedLocalTime = dayjs(modifiedStr)
-                .utc(true)
-                .local();
+            const modifiedLocalTime = dayjs(modifiedStr).utc(true).local();
 
             return {
                 displayName: draftContent.displayName,
@@ -97,14 +96,15 @@ const getModifiedContentFromUser = () => {
                 url: `/admin/tool/com.enonic.app.contentstudio/main/default/edit/${draftContent._id}`,
             };
         })
-        .sort((a, b) => dayjs(a?.modifiedTime).isAfter(dayjs(b?.modifiedTime)) ? -1 : 1);
+        .sort((a, b) => (dayjs(a?.modifiedTime).isAfter(dayjs(b?.modifiedTime)) ? -1 : 1));
 
     // 2. Get 5 last modified and 5 last published
     const published: ContentInfo[] = [];
-    let numModified = 0, numPublished = 0;
+    let numModified = 0,
+        numPublished = 0;
     const modified = results.map((result) => {
         if (result?.status === 'Publisert') {
-            if( numModified++ < 5) {
+            if (numModified++ < 5) {
                 published.push(result);
             }
         } else {
