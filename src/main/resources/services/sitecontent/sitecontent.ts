@@ -1,10 +1,11 @@
 import { isValidBranch } from '../../lib/context/branches';
 import { getResponseFromCache } from './cache';
-import { generateSitecontentResponse } from './generate-response';
+import { sitecontentPublicResponse } from './sitecontent-public-response';
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { RepoBranch } from '../../types/common';
 import { SITECONTENT_404_MSG_PREFIX } from '../../lib/constants';
+import { sitecontentDraftResponse } from './sitecontent-draft-response';
 
 export type SiteContentParams = {
     id: string;
@@ -55,12 +56,12 @@ export const get = (req: XP.Request) => {
 
     try {
         const content = getResponseFromCache(req.params as SiteContentParams, () =>
-            generateSitecontentResponse({
-                idOrPathRequested: idOrPath,
-                localeRequested: locale,
-                branch,
-                isPreview: preview === 'true',
-            })
+            branch === 'draft'
+                ? sitecontentDraftResponse({ idOrPath, locale })
+                : sitecontentPublicResponse({
+                      idOrPath: idOrPath,
+                      isPreview: preview === 'true',
+                  })
         );
 
         if (!content) {

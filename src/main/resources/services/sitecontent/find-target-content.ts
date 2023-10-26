@@ -161,7 +161,7 @@ const resolveLocalePath = (path: string, branch: RepoBranch): ContentPathTarget 
 
 // A valid path can be an exact match for an internal content _path, or a data.customPath,
 // or a locale-specific variant of either of the two, suffixed with a supported locale
-export const resolvePathToTarget = ({
+export const findTargetContent = ({
     path,
     branch,
 }: {
