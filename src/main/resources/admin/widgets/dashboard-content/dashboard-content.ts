@@ -73,18 +73,14 @@ const getModifiedContentFromUser = () => {
             }
 
             let status = 'Ny';
-
-            if (masterContent?.publish?.first) {
-                if (masterContent?.publish?.from) {
-                    if (draftContent?._versionKey === masterContent?._versionKey) {
-                        status = 'Publisert';
-                        modifiedStr = masterContent.publish.from.substring(0, 16).replace('T', ' ');
-                    } else {
-                        status = 'Endret';
-                    }
+            if (masterContent?.publish?.first && masterContent?.publish?.from) {
+                if (draftContent?._versionKey === masterContent?._versionKey) {
+                    status = 'Publisert';
+                    modifiedStr = masterContent.publish.from.substring(0, 16).replace('T', ' ');
+                } else {
+                    status = 'Endret';
                 }
             } else if (draftContent?.publish?.first) {
-                modifiedStr = JSON.stringify(draftContent._ts.substring(0, 16).replace('T', ' '));
                 status = 'Avpublisert';
             }
 
