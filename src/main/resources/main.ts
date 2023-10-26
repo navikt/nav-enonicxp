@@ -8,7 +8,7 @@ import {
     activateSitemapDataUpdateEventListener,
     generateSitemapDataAndActivateSchedule,
 } from './lib/sitemap/sitemap';
-import { updateClusterInfo } from './lib/utils/cluster-utils';
+import { updateClusterInfo } from './lib/cluster-utils/cluster-api';
 import { startOfficeInfoPeriodicUpdateSchedule } from './lib/officeInformation';
 import { activateContentListItemUnpublishedListener } from './lib/contentlists/remove-unpublished';
 import { startFailsafeSchedule } from './lib/scheduling/scheduler-failsafe';
@@ -20,32 +20,35 @@ import { initSearchRepo } from './lib/search/search-repo';
 import { initLayersData } from './lib/localization/layers-data';
 import { activateLayersEventListeners } from './lib/localization/publish-events';
 import { activateContentUpdateListener } from './lib/contentUpdate/content-update-listener';
+import { activateExternalSearchIndexEventHandlers } from './lib/search/external/event-handlers';
+import { initializeMainDatanodeSelection } from './lib/cluster-utils/main-datanode';
 
 updateClusterInfo();
 initLayersData();
+hookLibsWithTimeTravel();
 
+if (clusterLib.isMaster()) {
+    log.info('Running master only init scripts');
+    initializeMainDatanodeSelection();
+    initSearchRepo();
+}
+
+createOfficeBranchFetchSchedule();
+startOfficeInfoPeriodicUpdateSchedule();
+startFailsafeSchedule();
 activateLayersEventListeners();
 activateCacheEventListeners();
 activateSitemapDataUpdateEventListener();
 activateContentListItemUnpublishedListener();
 activateCustomPathNodeListeners();
 activateSearchIndexEventHandlers();
+activateExternalSearchIndexEventHandlers();
 activateContentUpdateListener();
 
-hookLibsWithTimeTravel();
-
-if (clusterLib.isMaster()) {
-    log.info('Running master only init scripts');
-    initSearchRepo();
-    startFailsafeSchedule();
-    startOfficeInfoPeriodicUpdateSchedule();
-    createOfficeBranchFetchSchedule();
-
-    // This is somewhat annoying for local development, as it will run a fairly heavy task and spam
-    // the logs when generating the sitemap. This happens on every redeploy of the app.
-    if (app.config.env !== 'localhost') {
-        generateSitemapDataAndActivateSchedule();
-    }
+// This is somewhat annoying for local development, as it will run a fairly heavy task and spam
+// the logs when generating the sitemap. This happens on every redeploy of the app.
+if (app.config.env !== 'localhost') {
+    generateSitemapDataAndActivateSchedule();
 }
 
 log.info('Finished running main');

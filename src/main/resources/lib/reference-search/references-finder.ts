@@ -12,7 +12,7 @@ import { getRepoConnection } from '../utils/repo-utils';
 import { APP_DESCRIPTOR } from '../constants';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { getParentPath } from '../paths/path-utils';
-import { NON_LOCALIZED_QUERY_FILTER } from '../localization/locale-utils';
+import { NON_LOCALIZED_QUERY_FILTER } from '../localization/layers-repo-utils/localization-state-filters';
 import { forceArray } from '../utils/array-utils';
 import { isValidBranch } from '../context/branches';
 

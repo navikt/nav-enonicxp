@@ -57,6 +57,7 @@ import { GuidePageV2 } from 'site/content-types/guide-page-v2/guide-page-v2';
 import { ThemedArticlePageV2 } from 'site/content-types/themed-article-page-v2/themed-article-page-v2';
 import { ToolsPageV2 } from 'site/content-types/tools-page-v2/tools-page-v2';
 import { SituationPageV2 } from 'site/content-types/situation-page-v2/situation-page-v2';
+import { SearchConfigV2 } from '../../site/content-types/search-config-v2/search-config-v2';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
@@ -88,6 +89,20 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'megamenu-item': MegamenuItem;
     melding: Melding;
     'office-branch': OfficeBranch;
+    'current-topic-page': CurrentTopicPage;
+    'page-list': PageList;
+    'payout-dates': PayoutDates;
+    'publishing-calendar': PublishingCalendar;
+    'publishing-calendar-entry': PublishingCalendarEntry;
+    'product-details': ProductDetails;
+    'form-intermediate-step': FormIntermediateStep;
+    'form-details': FormDetails;
+    'generic-page': GenericPage;
+    'search-config-v2': SearchConfigV2;
+    'section-page': SectionPage;
+    overview: Overview;
+    'redirects-folder': EmptyObject;
+    'situation-page': SituationPage;
     'office-editorial-page': OfficeEditorialPage;
     'office-information': OfficeInformation;
     overview: Overview;

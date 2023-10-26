@@ -3,7 +3,7 @@ import { Content } from '/lib/xp/content';
 import * as schedulerLib from '/lib/xp/scheduler';
 import httpClient from '/lib/http-client';
 import { URLS } from '../constants';
-import { clusterInfo, ClusterState, requestClusterInfo } from '../utils/cluster-utils';
+import { clusterInfo, ClusterState, requestClusterInfo } from '../cluster-utils/cluster-api';
 import { getPrepublishJobName, getUnpublishJobName } from '../scheduling/scheduled-publish';
 import { RepoBranch } from '../../types/common';
 import { hasValidCustomPath } from '../paths/custom-paths/custom-path-utils';

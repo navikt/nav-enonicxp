@@ -1,4 +1,3 @@
-import * as clusterLib from '/lib/xp/cluster';
 import * as taskLib from '/lib/xp/task';
 import {
     frontendInvalidateAllDeferred,
@@ -9,6 +8,7 @@ import { generateCacheEventId, NodeEventData } from './utils';
 import { findPathsToInvalidate } from './find-paths-to-invalidate';
 import { invalidateLocalCache, sendLocalCacheInvalidationEvent } from './local-cache';
 import { logger } from '../utils/logging';
+import { isMainDatanode } from '../cluster-utils/main-datanode';
 
 export type InvalidateCacheParams = {
     node: NodeEventData;
@@ -61,9 +61,9 @@ const _invalidateCacheForNode = (params: InvalidateCacheParams) => {
         sendLocalCacheInvalidationEvent();
     }
 
-    // If this invalidation is running on every node, we only want the master node to send
-    // invalidation calls to the frontend
-    if (isRunningClusterWide && !clusterLib.isMaster()) {
+    // If this invalidation is running on every node, we only want a single node to perform
+    // the reference search and send calls to the frontend for invalidation
+    if (isRunningClusterWide && !isMainDatanode()) {
         return;
     }
 

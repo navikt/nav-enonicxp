@@ -7,7 +7,7 @@ import { logger } from '../../lib/utils/logging';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
 import { forceArray, parseJsonArray, removeDuplicates } from '../../lib/utils/array-utils';
-import { getNestedValue } from '../../lib/utils/object-utils';
+import { getNestedValues } from '../../lib/utils/object-utils';
 
 type SelectorHit = XP.CustomSelectorServiceResponseHit;
 
@@ -35,7 +35,8 @@ export const buildSelectorQuery = (selectorInput: string) => {
 
     return selectorInput.replace(/{(\w|\.|-)+}/g, (match) => {
         const fieldKey = match.replace(/[{}]/g, '');
-        return getNestedValue(content, fieldKey);
+        const fieldValue = getNestedValues(content, fieldKey);
+        return typeof fieldValue === 'string' ? fieldValue : '';
     });
 };
 

@@ -4,9 +4,10 @@ import { getLayersData } from '../localization/layers-data';
 import { getContentProjectIdFromRepoId } from '../utils/repo-utils';
 import { forceArray } from '../utils/array-utils';
 import { runInLocaleContext } from '../localization/locale-context';
-import { getContentFromAllLayers, isContentLocalized } from '../localization/locale-utils';
+import { isContentLocalized } from '../localization/locale-utils';
 import { RepoBranch } from '../../types/common';
 import { stripPathPrefix } from '../paths/path-utils';
+import { getContentFromAllLayers } from '../localization/layers-repo-utils/get-content-from-all-layers';
 
 type ContentWithLocale = {
     content: Content;

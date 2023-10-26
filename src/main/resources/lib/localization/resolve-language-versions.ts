@@ -1,6 +1,5 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { getContentFromAllLayers } from './locale-utils';
 import { RepoBranch } from '../../types/common';
 import { runInContext } from '../context/run-in-context';
 import { LanguagesLegacy } from '../../site/mixins/languages-legacy/languages-legacy';
@@ -9,6 +8,7 @@ import { CONTENT_LOCALE_DEFAULT } from '../constants';
 import { logger } from '../utils/logging';
 import { forceArray } from '../utils/array-utils';
 import { getContentLocaleRedirectTarget, isContentPreviewOnly } from '../utils/content-utils';
+import { getContentFromAllLayers } from './layers-repo-utils/get-content-from-all-layers';
 
 type ContentWithLegacyLanguages = Content & {
     data: Required<LanguagesLegacy>;
