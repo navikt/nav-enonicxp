@@ -1,13 +1,13 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import * as eventLib from '/lib/xp/event';
-import * as clusterLib from '/lib/xp/cluster';
 import { runInContext } from '../context/run-in-context';
 import { isPrepublished } from '../scheduling/scheduled-publish';
 import { logger } from '../utils/logging';
 import { forceArray } from '../utils/array-utils';
 import { CONTENT_REPO_PREFIX } from '../constants';
 import { NavNoDescriptor } from '../../types/common';
+import { isMainDatanode } from '../cluster-utils/main-datanode';
 
 type ContentTypesWithContentLists = NavNoDescriptor<'content-list'> | NavNoDescriptor<'page-list'>;
 
@@ -132,7 +132,7 @@ export const activateContentListItemUnpublishedListener = () => {
     eventLib.listener({
         type: 'node.deleted',
         callback: (event) => {
-            if (!clusterLib.isMaster()) {
+            if (!isMainDatanode()) {
                 return;
             }
 

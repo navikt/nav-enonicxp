@@ -8,5 +8,8 @@
         <label>Ekstra forklaring</label>
         <occurrences minimum="0" maximum="1"/>
     </input>
+    <input name="languageDisclaimer" type="TextArea">
+        <label>Informasjon om språk</label>
+    </input>
   </form>
 </mixin>

@@ -39,3 +39,13 @@ export const removeDuplicatesFilter = <Type>(isEqualPredicate?: (a: Type, b: Typ
           }
         : (item: Type, index: number, array: Type[] | ReadonlyArray<Type>) =>
               array.indexOf(item) === index;
+
+export const iterableToArray = <Type>(iterable: IterableIterator<Type>): Type[] => {
+    const array: Type[] = [];
+
+    for (const item of iterable) {
+        array.push(item);
+    }
+
+    return array;
+};

@@ -1,12 +1,12 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import * as clusterLib from '/lib/xp/cluster';
 import { RepoConnection } from '/lib/xp/node';
 import { logger } from '../utils/logging';
 import { runInContext } from '../context/run-in-context';
 import { getSearchRepoConnection, SEARCH_REPO_CONFIG_NODE } from './search-utils';
 import { SearchConfigData, SearchConfigDescriptor } from '../../types/content-types/search-config';
 import { forceArray } from '../utils/array-utils';
+import { isMainDatanode } from '../cluster-utils/main-datanode';
 
 type SearchConfig = Content<SearchConfigDescriptor>;
 type PersistedSearchConfig = { config?: SearchConfig };
@@ -173,7 +173,7 @@ export const revalidateSearchConfigCache = () => {
     logger.info('Updated search config');
     searchConfig = newSearchConfig;
 
-    if (clusterLib.isMaster()) {
+    if (isMainDatanode()) {
         persistValidConfig(searchConfig, searchRepoConnection);
     }
 

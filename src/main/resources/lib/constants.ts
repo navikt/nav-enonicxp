@@ -8,51 +8,51 @@ const portalAdminOrigins: EnvRecord = {
     dev: 'https://portal-admin-dev.oera.no',
     q6: 'https://portal-admin-q6.oera.no',
     localhost: 'http://localhost:8080',
-};
+} as const;
 
 const frontendOrigins: EnvRecord = {
     p: 'https://www.nav.no',
     dev: 'https://www.ekstern.dev.nav.no',
     q6: 'https://www-2.ekstern.dev.nav.no',
     localhost: 'http://localhost:3000',
-};
+} as const;
 
 const revalidatorProxyOrigins: EnvRecord = {
     p: 'https://www.nav.no/revalidator-proxy',
     dev: 'https://nav-enonicxp-frontend-revalidator-proxy.intern.dev.nav.no',
     q6: 'https://nav-enonicxp-frontend-revalidator-proxy-2.intern.dev.nav.no',
     localhost: 'http://localhost:3002',
-};
+} as const;
 
 const norgOfficeApiUrls: EnvRecord = {
     p: 'https://norg2.prod-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
     dev: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
     q6: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
     localhost: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
-};
+} as const;
 
 const xpOrigins: EnvRecord = {
     p: 'https://www.nav.no',
     dev: 'https://portal-admin-dev.oera.no',
     q6: 'https://portal-admin-q6.oera.no',
     localhost: 'http://localhost:8080',
-};
+} as const;
 
 const searchApiUrls: EnvRecord = {
     p: '',
     dev: 'https://navno-search-api.intern.dev.nav.no/content/personbruker',
     q6: '',
     localhost: '', // 'https://navno-search-api.intern.dev.nav.no/content/personbruker-local',
-};
+} as const;
 
-export const URLS = Object.freeze({
+export const URLS = {
     FRONTEND_ORIGIN: frontendOrigins[env],
     XP_ORIGIN: xpOrigins[env],
     REVALIDATOR_PROXY_ORIGIN: revalidatorProxyOrigins[env],
     PORTAL_ADMIN_ORIGIN: portalAdminOrigins[env],
     NORG_OFFICE_API_URL: norgOfficeApiUrls[env],
     SEARCH_API_URL: searchApiUrls[env],
-});
+} as const;
 
 export const COMPONENT_APP_KEY = 'no-nav-navno';
 export const APP_DESCRIPTOR = 'no.nav.navno';

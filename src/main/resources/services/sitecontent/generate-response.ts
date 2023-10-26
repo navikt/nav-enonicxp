@@ -7,7 +7,7 @@ import { isUUID } from '../../lib/utils/uuid';
 import { logger } from '../../lib/utils/logging';
 import { getLayersData, isValidLocale } from '../../lib/localization/layers-data';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
-import { resolvePathToTarget } from '../../lib/localization/locale-paths';
+import { resolvePathToTarget } from './resolve-target-path';
 import {
     transformToRedirectResponse,
     getSpecialRedirectIfApplicable,

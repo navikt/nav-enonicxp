@@ -12,11 +12,9 @@ import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
 import { getPublicPath } from '../../lib/paths/public-path';
 import { removeDuplicates } from '../../lib/utils/array-utils';
-import {
-    buildLocalePath,
-    queryAllLayersToLocaleBuckets,
-} from '../../lib/localization/locale-utils';
+import { buildLocalePath } from '../../lib/localization/locale-utils';
 import { hasValidCustomPath } from '../../lib/paths/custom-paths/custom-path-utils';
+import { queryAllLayersToRepoIdBuckets } from '../../lib/localization/layers-repo-utils/query-all-layers';
 
 const cache = cacheLib.newCache({ size: 2, expire: 600 });
 
@@ -63,9 +61,10 @@ const getPathsToRender = (isTest?: boolean) => {
 
     const query = `(${CONTENT_QUERY_SEGMENT}) AND NOT publish.to < instant('${sixHoursFromNow}') AND NOT (modifiedTime < instant('${oneYearAgo}') AND (${EXCLUDED_IF_OLD_QUERY_SEGMENT}))`;
 
-    const localeContentBuckets = queryAllLayersToLocaleBuckets({
+    const localeContentBuckets = queryAllLayersToRepoIdBuckets({
         branch: 'master',
         state: 'localized',
+        resolveContent: true,
         queryParams: {
             start: 0,
             count: 20000,
