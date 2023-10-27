@@ -7,6 +7,8 @@ import { contentTypesRenderedByEditorFrontend } from '../../../lib/contenttype-l
 import { ContentDescriptor } from '../../../types/content-types/content-config';
 import { sitecontentContentResponse, SitecontentResponse } from '../common/content-response';
 import { findTargetContentAndLocale as findTargetContentPublic } from '../common/find-target-content-and-locale';
+import { sitecontentNotFoundRedirect } from '../public/not-found-redirects';
+import { isUUID } from '../../../lib/utils/uuid';
 
 const contentTypesForGuillotineQuery: ReadonlySet<ContentDescriptor> = new Set(
     contentTypesRenderedByEditorFrontend
@@ -30,10 +32,10 @@ const findTargetContent = (idOrPath: string, locale?: string) => {
         };
     }
 
-    // Try to resolve the requested id/path via the public path resolver, which takes custom paths
+    // Try to resolve the requested path via the public path resolver, which takes custom paths
     // and implicit locale paths into account. This ensures the site in the editor preview can be
     // navigated, even with our public URL structure
-    return findTargetContentPublic({ path: idOrPath, branch: 'draft' });
+    return isUUID(idOrPath) ? null : findTargetContentPublic({ path: idOrPath, branch: 'draft' });
 };
 
 export const sitecontentDraftResponse = ({
@@ -45,7 +47,10 @@ export const sitecontentDraftResponse = ({
 }): SitecontentResponse => {
     const target = findTargetContent(idOrPath, requestedLocale);
     if (!target) {
-        return null;
+        // UUID-requests should only return an exact target
+        return isUUID(idOrPath)
+            ? null
+            : sitecontentNotFoundRedirect({ pathRequested: idOrPath, branch: 'draft' });
     }
 
     const { content, locale } = target;
