@@ -1,5 +1,4 @@
 import * as contentLib from '/lib/xp/content';
-import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { runInContext } from '../context/run-in-context';
 import { runInTimeTravelContext } from './run-with-time-travel';
@@ -8,6 +7,7 @@ import { logger } from '../utils/logging';
 import { getRepoConnection } from '../utils/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { getLayerMigrationData } from '../localization/layers-migration/migration-data';
+import { SitecontentResponse } from '../../services/sitecontent/common/content-response';
 
 // If the content contains a reference to another archived/migrated content, and the requested
 // timestamp matches a time prior to the migration, we try to retrieve the pre-migration content
@@ -64,7 +64,7 @@ export const getContentVersionFromDateTime = ({
     liveLocale: string;
     branch: RepoBranch;
     requestedDateTime: string;
-}): Content | null => {
+}): SitecontentResponse => {
     const repoId = getLayersData().localeToRepoIdMap[liveLocale];
     if (!repoId) {
         logger.error(`No layer repo found for locale ${liveLocale}`);
