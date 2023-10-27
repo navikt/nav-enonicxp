@@ -5,6 +5,7 @@ import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { RepoBranch } from '../../types/common';
 import { SITECONTENT_404_MSG_PREFIX } from '../../lib/constants';
 import { sitecontentDraftResponse } from './draft/draft-response';
+import { SitecontentResponse } from './common/content-response';
 
 type SiteContentParams = {
     id: string;
@@ -69,7 +70,7 @@ export const get = (req: XP.Request) => {
     }
 
     try {
-        const content =
+        const responseBody: SitecontentResponse =
             branch === 'draft'
                 ? sitecontentDraftResponse({ idOrPath, requestedLocale: locale })
                 : sitecontentPublicResponse({
@@ -78,7 +79,7 @@ export const get = (req: XP.Request) => {
                       cacheKey: buildReqSpecificCacheKey(req.params as SiteContentParams),
                   });
 
-        if (!content) {
+        if (!responseBody) {
             logger.info(`Content not found: ${idOrPath}`);
             return {
                 status: 404,
@@ -91,7 +92,7 @@ export const get = (req: XP.Request) => {
 
         return {
             status: 200,
-            body: content,
+            body: responseBody,
             contentType: 'application/json',
         };
     } catch (e) {

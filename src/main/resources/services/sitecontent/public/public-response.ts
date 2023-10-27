@@ -1,7 +1,7 @@
 import cacheLib from '/lib/cache';
-import { findTargetContent } from '../common/find-target-content';
-import { sitecontentSpecialRedirect } from './special-redirects';
-import { sitecontentContentResponse } from '../common/content-response';
+import { findTargetContentAndLocale } from '../common/find-target-content-and-locale';
+import { sitecontentSpecialResponse } from './special-redirects';
+import { sitecontentContentResponse, SitecontentResponse } from '../common/content-response';
 import { sitecontentNotFoundRedirect } from './not-found-redirects';
 
 const ONE_DAY = 60 * 60 * 24;
@@ -15,8 +15,8 @@ const _sitecontentPublicResponse = ({
 }: {
     idOrPath: string;
     isPreview: boolean;
-}) => {
-    const target = findTargetContent({
+}): SitecontentResponse => {
+    const target = findTargetContentAndLocale({
         path: idOrPath,
         branch: 'master',
     });
@@ -28,9 +28,8 @@ const _sitecontentPublicResponse = ({
 
     const { content, locale } = target;
 
-    // Check if any special conditions apply which should trigger a redirect, rather than return the
-    // actual content
-    const redirectResponse = sitecontentSpecialRedirect({
+    // Check if any special conditions apply which should trigger a non-standard response
+    const specialResponse = sitecontentSpecialResponse({
         content,
         locale,
         branch: 'master',
@@ -38,10 +37,11 @@ const _sitecontentPublicResponse = ({
         isPreview,
     });
 
-    return (
-        redirectResponse ||
-        sitecontentContentResponse({ baseContent: content, branch: 'master', locale })
-    );
+    if (specialResponse) {
+        return specialResponse.response;
+    }
+
+    return sitecontentContentResponse({ baseContent: content, branch: 'master', locale });
 };
 
 export const sitecontentPublicResponse = ({
@@ -52,7 +52,7 @@ export const sitecontentPublicResponse = ({
     idOrPath: string;
     isPreview: boolean;
     cacheKey?: string;
-}) => {
+}): SitecontentResponse => {
     if (!cacheKey) {
         return _sitecontentPublicResponse({ idOrPath, isPreview });
     }

@@ -5,6 +5,12 @@ import { runSitecontentGuillotineQuery } from '../../../lib/guillotine/queries/r
 import { getModifiedTimeIncludingFragments } from '../../../lib/utils/fragment-utils';
 import { getLanguageVersions } from '../../../lib/localization/resolve-language-versions';
 
+// Ensure something vaguely sane is returned from the service :)
+// TODO: Replace this after we get our Guillotine response better typed
+export type SitecontentResponse =
+    | (Pick<Content, '_id' | '_path' | 'displayName'> & Record<string, any>)
+    | null;
+
 // Resolve the base content to a fully resolved content via a guillotine query
 export const sitecontentContentResponse = ({
     baseContent,
@@ -14,7 +20,7 @@ export const sitecontentContentResponse = ({
     baseContent: Content;
     branch: RepoBranch;
     locale: string;
-}): Content | null =>
+}): SitecontentResponse =>
     runInLocaleContext(
         {
             locale: baseContent.language,

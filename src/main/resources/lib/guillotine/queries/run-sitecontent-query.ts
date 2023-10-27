@@ -1,6 +1,6 @@
 import { Content } from '/lib/xp/content';
 import { BaseQueryParams, RepoBranch } from '../../../types/common';
-import { contentTypesWithComponents as _contentTypesWithComponents } from '../../contenttype-lists';
+import { contentTypesWithComponents } from '../../contenttype-lists';
 import { ComponentType } from '../../../types/components/component-config';
 import {
     buildFragmentComponentTree,
@@ -13,19 +13,26 @@ import componentsQuery from './component-queries/components.graphql';
 import fragmentComponentsQuery from './component-queries/fragmentComponents.graphql';
 import { PortalComponent } from '../../../types/components/component-portal';
 import { guillotineTransformSpecialComponents } from './transform-special-components';
-import { stringArrayToSet } from '../../utils/array-utils';
 import { logger } from '../../utils/logging';
 import { getLocaleFromContext } from '../../localization/locale-context';
 import { isContentPreviewOnly } from '../../utils/content-utils';
+import { SitecontentResponse } from '../../../services/sitecontent/common/content-response';
+import { ContentDescriptor } from '../../../types/content-types/content-config';
 
 export type GuillotineUnresolvedComponentType = { type: ComponentType; path: string };
-export type GuillotineComponentQueryResult = {
+
+type GuillotineComponentQueryResult = {
     components: GuillotineComponent[];
 };
 
-const contentTypesWithComponents = stringArrayToSet(_contentTypesWithComponents);
+const contentTypesWithComponentsSet: ReadonlySet<ContentDescriptor> = new Set(
+    contentTypesWithComponents
+);
 
-export const runSitecontentGuillotineQuery = (baseContent: Content, branch: RepoBranch) => {
+export const runSitecontentGuillotineQuery = (
+    baseContent: Content,
+    branch: RepoBranch
+): SitecontentResponse => {
     const baseQueryParams = {
         branch,
         params: { ref: baseContent._id },
@@ -39,7 +46,7 @@ export const runSitecontentGuillotineQuery = (baseContent: Content, branch: Repo
 
     // Skip the components query and processing for content types which are not intended for use
     // with components
-    if (!contentTypesWithComponents[baseContent.type]) {
+    if (!contentTypesWithComponentsSet.has(baseContent.type)) {
         return contentQueryResult;
     }
 
@@ -124,7 +131,7 @@ export const runGuillotineComponentsQuery = (
     return { components: transformedComponents, fragments };
 };
 
-export const buildOfficeBranchPageWithEditorialContent = (contentQueryResult: any) => {
+const buildOfficeBranchPageWithEditorialContent = (contentQueryResult: any) => {
     const officeEditorialPageContent = contentQueryResult?.editorial;
     if (!officeEditorialPageContent) {
         return {

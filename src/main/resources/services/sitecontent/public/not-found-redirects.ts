@@ -7,6 +7,7 @@ import { REDIRECTS_ROOT_PATH } from '../../../lib/constants';
 import { runInLocaleContext } from '../../../lib/localization/locale-context';
 import { runSitecontentGuillotineQuery } from '../../../lib/guillotine/queries/run-sitecontent-query';
 import { transformToRedirect } from '../common/transform-to-redirect';
+import { SitecontentResponse } from '../common/content-response';
 
 // The old Enonic CMS had urls suffixed with <contentKey>.cms
 // This contentKey was saved as an x-data field after the migration to XP
@@ -87,7 +88,7 @@ export const sitecontentNotFoundRedirect = ({
 }: {
     pathRequested: string;
     branch: RepoBranch;
-}) =>
+}): SitecontentResponse =>
     runInContext({ branch }, () => {
         const redirectFromLegacyPath = getRedirectFromLegacyPath(pathRequested);
         if (redirectFromLegacyPath) {
