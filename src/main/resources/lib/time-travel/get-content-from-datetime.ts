@@ -6,8 +6,27 @@ import { runSitecontentGuillotineQuery } from '../guillotine/queries/run-sitecon
 import { logger } from '../utils/logging';
 import { getRepoConnection } from '../utils/repo-utils';
 import { getLayersData } from '../localization/layers-data';
-import { getLayerMigrationData } from '../localization/layers-migration/migration-data';
 import { SitecontentResponse } from '../../services/sitecontent/common/content-response';
+import { getLayersMigrationArchivedContentRef } from './layers-migration-refs';
+import { getLayerMigrationData } from '../localization/layers-migration/migration-data';
+
+const getArchivedContentRef = (contentId: string, repoId: string, requestedTimestamp: string) => {
+    const archivedContentRef = getLayersMigrationArchivedContentRef({
+        contentId,
+        repoId,
+    });
+    if (!archivedContentRef) {
+        return null;
+    }
+
+    const { archivedContentId, archivedRepoId, migrationTs } = archivedContentRef;
+
+    if (requestedTimestamp > migrationTs) {
+        return null;
+    }
+
+    return { baseContentId: archivedContentId, baseRepoId: archivedRepoId };
+};
 
 // If the content contains a reference to another archived/migrated content, and the requested
 // timestamp matches a time prior to the migration, we try to retrieve the pre-migration content
@@ -16,7 +35,7 @@ const getBaseContentRefForRequestedDateTime = (
     contentId: string,
     repoId: string,
     requestedTimestamp: string
-): { baseContentKey: string; baseRepoId: string } | null => {
+): { baseContentId: string; baseRepoId: string } | null => {
     const content = getRepoConnection({ branch: 'draft', repoId, asAdmin: true }).get({
         key: contentId,
     });
@@ -24,33 +43,12 @@ const getBaseContentRefForRequestedDateTime = (
         return null;
     }
 
-    const layerMigrationData = getLayerMigrationData(content);
-    if (!layerMigrationData) {
-        return { baseContentKey: contentId, baseRepoId: repoId };
-    }
-
-    const { ts: migratedTimestamp, targetReferenceType } = layerMigrationData;
-    if (targetReferenceType !== 'archived' || requestedTimestamp > migratedTimestamp) {
-        return { baseContentKey: contentId, baseRepoId: repoId };
-    }
-
-    const { contentId: targetContentId, repoId: targetRepoId } = layerMigrationData;
-
-    const targetContent = getRepoConnection({
-        branch: 'draft',
-        repoId: targetRepoId,
-        asAdmin: true,
-    }).get({
-        key: targetContentId,
-    });
-    if (!targetContent) {
-        logger.error(
-            `Content not found for ${targetContentId} ${targetRepoId} - Returning live content for ${contentId} ${repoId}`
-        );
-        return { baseContentKey: contentId, baseRepoId: repoId };
-    }
-
-    return { baseContentKey: targetContentId, baseRepoId: targetRepoId };
+    return (
+        getArchivedContentRef(contentId, repoId, requestedTimestamp) || {
+            baseContentId: contentId,
+            baseRepoId: repoId,
+        }
+    );
 };
 
 // Get content from a specific datetime (used for requests from the internal version history selector)
@@ -81,18 +79,23 @@ export const getContentVersionFromDateTime = ({
         return null;
     }
 
-    const { baseContentKey, baseRepoId } = baseContentRef;
+    const { baseContentId, baseRepoId } = baseContentRef;
 
     try {
         return runInTimeTravelContext(
-            { dateTime: requestedDateTime, branch, baseContentKey, repoId: baseRepoId },
+            {
+                dateTime: requestedDateTime,
+                branch,
+                baseContentKey: baseContentId,
+                repoId: baseRepoId,
+            },
             () => {
                 const contentFromDateTime = runInContext({ branch: 'draft' }, () =>
-                    contentLib.get({ key: baseContentKey })
+                    contentLib.get({ key: baseContentId })
                 );
                 if (!contentFromDateTime) {
                     logger.info(
-                        `No content found for requested timestamp - ${baseContentKey} in repo ${baseRepoId} (time: ${requestedDateTime})`
+                        `No content found for requested timestamp - ${baseContentId} in repo ${baseRepoId} (time: ${requestedDateTime})`
                     );
                     return null;
                 }
@@ -100,7 +103,7 @@ export const getContentVersionFromDateTime = ({
                 const content = runSitecontentGuillotineQuery(contentFromDateTime, 'draft');
                 if (!content) {
                     logger.info(
-                        `No content resolved through Guillotine for requested timestamp - ${baseContentKey} in repo ${baseRepoId} (time: ${requestedDateTime})`
+                        `No content resolved through Guillotine for requested timestamp - ${baseContentId} in repo ${baseRepoId} (time: ${requestedDateTime})`
                     );
                     return null;
                 }
