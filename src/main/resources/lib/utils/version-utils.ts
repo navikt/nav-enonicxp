@@ -6,9 +6,9 @@ import { logger } from './logging';
 import { getUnixTimeFromDateTimeString } from './datetime-utils';
 import { contentTypesWithCustomEditor } from '../contenttype-lists';
 import { getLayersData } from '../localization/layers-data';
-import { getLayerMigrationData } from '../localization/layers-migration/migration-data';
+import { getLayersMigrationArchivedContentRef } from '../time-travel/layers-migration-refs';
 
-const MAX_VERSIONS_COUNT_TO_RETRIEVE = 1000;
+const MAX_VERSIONS_COUNT_TO_RETRIEVE = 2000;
 
 export const getNodeKey = (contentRef: string) =>
     contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
@@ -127,31 +127,22 @@ const getLayerMigrationVersionRefs = ({
         return [];
     }
 
-    const layerMigrationData = getLayerMigrationData(contentNode);
-    if (!layerMigrationData) {
+    const archivedContentRef = getLayersMigrationArchivedContentRef({ contentId: nodeKey, repoId });
+    if (!archivedContentRef) {
         return [];
     }
 
-    const {
-        targetReferenceType,
-        repoId: archiveRepoId,
-        contentId: archivedContentId,
-        locale: archivedLocale,
-    } = layerMigrationData;
-
-    if (targetReferenceType !== 'archived') {
-        return [];
-    }
+    const { archivedRepoId, archivedContentId } = archivedContentRef;
 
     const versions = getNodeVersions({
         nodeKey: archivedContentId,
         branch: branch,
-        repoId: archiveRepoId,
+        repoId: archivedRepoId,
     }).filter((version) => version.nodePath.startsWith('/content'));
 
     return versions.map((version) => ({
         ...version,
-        locale: archivedLocale,
+        locale: getLayersData().repoIdToLocaleMap[archivedRepoId],
     }));
 };
 

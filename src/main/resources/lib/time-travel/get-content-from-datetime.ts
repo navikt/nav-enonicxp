@@ -6,71 +6,40 @@ import { runSitecontentGuillotineQuery } from '../guillotine/queries/run-sitecon
 import { logger } from '../utils/logging';
 import { getRepoConnection } from '../utils/repo-utils';
 import { getLayersData } from '../localization/layers-data';
-import { getLayerMigrationData } from '../localization/layers-migration/migration-data';
 import { SitecontentResponse } from '../../services/sitecontent/common/content-response';
-import { CONTENT_ROOT_REPO_ID } from '../constants';
+import { getLayersMigrationArchivedContentRef } from './layers-migration-refs';
+import { getLayerMigrationData } from '../localization/layers-migration/migration-data';
 
-const getArchivedContentRef = (contentId: string, repoId: string, requestedTs: string) => {
-    const rootRepo = getRepoConnection({
-        branch: 'draft',
-        repoId: CONTENT_ROOT_REPO_ID,
-        asAdmin: true,
+const getArchivedContentRef = (contentId: string, repoId: string, requestedTimestamp: string) => {
+    const archivedContentRef = getLayersMigrationArchivedContentRef({
+        contentId,
+        repoId,
     });
-
-    const result = rootRepo.query({
-        count: 2,
-        filters: {
-            boolean: {
-                must: [
-                    {
-                        hasValue: {
-                            field: 'data._layerMigration.contentId',
-                            values: [contentId],
-                        },
-                    },
-                    {
-                        hasValue: {
-                            field: 'data._layerMigration.repoId',
-                            values: [repoId],
-                        },
-                    },
-                    {
-                        hasValue: {
-                            field: 'data._layerMigration.targetReferenceType',
-                            values: ['live'],
-                        },
-                    },
-                ],
-            },
-        },
-    }).hits;
-
-    if (result.length === 0) {
+    if (!archivedContentRef) {
         return null;
     }
 
-    if (result.length > 1) {
-        logger.critical(`Multiple archived content found for ${contentId} / ${repoId}`);
-        return null;
-    }
+    const { archivedContentId, archivedRepoId } = archivedContentRef;
 
-    const content = rootRepo.get(result[0].id);
-    if (!content) {
+    const archivedContent = getRepoConnection({ branch: 'draft', repoId: archivedRepoId }).get(
+        archivedContentId
+    );
+    if (!archivedContent) {
         logger.error(`Content not found for ${contentId} / ${repoId}`);
         return null;
     }
 
-    const layersMigrationData = getLayerMigrationData(content);
+    const layersMigrationData = getLayerMigrationData(archivedContent);
     if (!layersMigrationData) {
         logger.error(`Layers migration data not found for ${contentId} / ${repoId}`);
         return null;
     }
 
-    if (requestedTs > layersMigrationData.ts) {
+    if (requestedTimestamp > layersMigrationData.ts) {
         return null;
     }
 
-    return { archivedContentId: content._id, archivedRepoId: CONTENT_ROOT_REPO_ID };
+    return { baseContentId: archivedContentId, baseRepoId: archivedRepoId };
 };
 
 // If the content contains a reference to another archived/migrated content, and the requested
@@ -88,29 +57,12 @@ const getBaseContentRefForRequestedDateTime = (
         return null;
     }
 
-    const archivedContentRef = getArchivedContentRef(contentId, repoId, requestedTimestamp);
-    if (!archivedContentRef) {
-        return { baseContentId: contentId, baseRepoId: repoId };
-    }
-
-    const { archivedContentId, archivedRepoId } = archivedContentRef;
-
-    const targetContent = getRepoConnection({
-        branch: 'draft',
-        repoId: archivedRepoId,
-        asAdmin: true,
-    }).get({
-        key: archivedContentId,
-    });
-
-    if (!targetContent) {
-        logger.error(
-            `Content not found for ${archivedContentId} ${archivedRepoId} - Returning live content for ${contentId} ${repoId}`
-        );
-        return { baseContentId: contentId, baseRepoId: repoId };
-    }
-
-    return { baseContentId: archivedContentId, baseRepoId: archivedRepoId };
+    return (
+        getArchivedContentRef(contentId, repoId, requestedTimestamp) || {
+            baseContentId: contentId,
+            baseRepoId: repoId,
+        }
+    );
 };
 
 // Get content from a specific datetime (used for requests from the internal version history selector)
