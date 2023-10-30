@@ -1,21 +1,3 @@
-#import "../mixins/animatedIconsTargetFragment.graphql"
-
 fragment contentThemedArticlePageV2 on no_nav_navno_ThemedArticlePageV2 {
     dataAsJson
-    data {
-        area
-        taxonomy
-        audience {
-            _selected
-            provider {
-                provider_audience
-            }
-        }
-        illustration {
-            ...animatedIconsTargetMixin
-        }
-        processing_times
-        payout_dates
-        rates
-    }
 }

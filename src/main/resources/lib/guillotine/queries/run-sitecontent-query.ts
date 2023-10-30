@@ -1,3 +1,4 @@
+import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { BaseQueryParams, RepoBranch } from '../../../types/common';
 import { contentTypesWithComponents } from '../../contenttype-lists';
@@ -18,6 +19,7 @@ import { getLocaleFromContext } from '../../localization/locale-context';
 import { isContentPreviewOnly } from '../../utils/content-utils';
 import { SitecontentResponse } from '../../../services/sitecontent/common/content-response';
 import { ContentDescriptor } from '../../../types/content-types/content-config';
+import { resolveGuillotinePageMeta } from '../utils/page-meta';
 
 export type GuillotineUnresolvedComponentType = { type: ComponentType; path: string };
 
@@ -56,6 +58,11 @@ export const runSitecontentGuillotineQuery = (
     }
 
     const { components, fragments } = runGuillotineComponentsQuery(baseQueryParams, baseContent);
+
+    const metadata = resolveGuillotinePageMeta(baseContent, branch);
+    if (metadata) {
+        contentQueryResult.data = { ...contentQueryResult.data, ...metadata };
+    }
 
     return {
         ...contentQueryResult,

@@ -1,24 +1,3 @@
-#import "../mixins/animatedIconsTargetFragment.graphql"
-#import "./pageMetaFragment.graphql"
-
 fragment productPageV2 on no_nav_navno_ProductPageV2 {
     dataAsJson
-    data {
-        area
-        taxonomy
-        audience {
-            _selected
-            provider {
-                provider_audience
-            }
-        }
-        illustration {
-            ...animatedIconsTargetMixin
-        }
-        processing_times
-        payout_dates
-        pageMetaTarget {
-            ...contentPageMeta
-        }
-    }
 }
