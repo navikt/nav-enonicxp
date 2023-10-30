@@ -8,6 +8,70 @@ import { getRepoConnection } from '../utils/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { getLayerMigrationData } from '../localization/layers-migration/migration-data';
 import { SitecontentResponse } from '../../services/sitecontent/common/content-response';
+import { CONTENT_ROOT_REPO_ID } from '../constants';
+
+const getArchivedContentRef = (contentId: string, repoId: string, requestedTs: string) => {
+    const rootRepo = getRepoConnection({
+        branch: 'draft',
+        repoId: CONTENT_ROOT_REPO_ID,
+        asAdmin: true,
+    });
+
+    const result = rootRepo.query({
+        count: 2,
+        filters: {
+            boolean: {
+                must: [
+                    {
+                        hasValue: {
+                            field: 'data._layerMigration.contentId',
+                            values: [contentId],
+                        },
+                    },
+                    {
+                        hasValue: {
+                            field: 'data._layerMigration.repoId',
+                            values: [repoId],
+                        },
+                    },
+                    {
+                        hasValue: {
+                            field: 'data._layerMigration.targetReferenceType',
+                            values: ['live'],
+                        },
+                    },
+                ],
+            },
+        },
+    }).hits;
+
+    if (result.length === 0) {
+        return null;
+    }
+
+    if (result.length > 1) {
+        logger.critical(`Multiple archived content found for ${contentId} / ${repoId}`);
+        return null;
+    }
+
+    const content = rootRepo.get(result[0].id);
+    if (!content) {
+        logger.error(`Content not found for ${contentId} / ${repoId}`);
+        return null;
+    }
+
+    const layersMigrationData = getLayerMigrationData(content);
+    if (!layersMigrationData) {
+        logger.error(`Layers migration data not found for ${contentId} / ${repoId}`);
+        return null;
+    }
+
+    if (requestedTs > layersMigrationData.ts) {
+        return null;
+    }
+
+    return { archivedContentId: content._id, archivedRepoId: CONTENT_ROOT_REPO_ID };
+};
 
 // If the content contains a reference to another archived/migrated content, and the requested
 // timestamp matches a time prior to the migration, we try to retrieve the pre-migration content
@@ -16,7 +80,7 @@ const getBaseContentRefForRequestedDateTime = (
     contentId: string,
     repoId: string,
     requestedTimestamp: string
-): { baseContentKey: string; baseRepoId: string } | null => {
+): { baseContentId: string; baseRepoId: string } | null => {
     const content = getRepoConnection({ branch: 'draft', repoId, asAdmin: true }).get({
         key: contentId,
     });
@@ -24,33 +88,29 @@ const getBaseContentRefForRequestedDateTime = (
         return null;
     }
 
-    const layerMigrationData = getLayerMigrationData(content);
-    if (!layerMigrationData) {
-        return { baseContentKey: contentId, baseRepoId: repoId };
+    const archivedContentRef = getArchivedContentRef(contentId, repoId, requestedTimestamp);
+    if (!archivedContentRef) {
+        return { baseContentId: contentId, baseRepoId: repoId };
     }
 
-    const { ts: migratedTimestamp, targetReferenceType } = layerMigrationData;
-    if (targetReferenceType !== 'archived' || requestedTimestamp > migratedTimestamp) {
-        return { baseContentKey: contentId, baseRepoId: repoId };
-    }
-
-    const { contentId: targetContentId, repoId: targetRepoId } = layerMigrationData;
+    const { archivedContentId, archivedRepoId } = archivedContentRef;
 
     const targetContent = getRepoConnection({
         branch: 'draft',
-        repoId: targetRepoId,
+        repoId: archivedRepoId,
         asAdmin: true,
     }).get({
-        key: targetContentId,
+        key: archivedContentId,
     });
+
     if (!targetContent) {
         logger.error(
-            `Content not found for ${targetContentId} ${targetRepoId} - Returning live content for ${contentId} ${repoId}`
+            `Content not found for ${archivedContentId} ${archivedRepoId} - Returning live content for ${contentId} ${repoId}`
         );
-        return { baseContentKey: contentId, baseRepoId: repoId };
+        return { baseContentId: contentId, baseRepoId: repoId };
     }
 
-    return { baseContentKey: targetContentId, baseRepoId: targetRepoId };
+    return { baseContentId: archivedContentId, baseRepoId: archivedRepoId };
 };
 
 // Get content from a specific datetime (used for requests from the internal version history selector)
@@ -81,18 +141,23 @@ export const getContentVersionFromDateTime = ({
         return null;
     }
 
-    const { baseContentKey, baseRepoId } = baseContentRef;
+    const { baseContentId, baseRepoId } = baseContentRef;
 
     try {
         return runInTimeTravelContext(
-            { dateTime: requestedDateTime, branch, baseContentKey, repoId: baseRepoId },
+            {
+                dateTime: requestedDateTime,
+                branch,
+                baseContentKey: baseContentId,
+                repoId: baseRepoId,
+            },
             () => {
                 const contentFromDateTime = runInContext({ branch: 'draft' }, () =>
-                    contentLib.get({ key: baseContentKey })
+                    contentLib.get({ key: baseContentId })
                 );
                 if (!contentFromDateTime) {
                     logger.info(
-                        `No content found for requested timestamp - ${baseContentKey} in repo ${baseRepoId} (time: ${requestedDateTime})`
+                        `No content found for requested timestamp - ${baseContentId} in repo ${baseRepoId} (time: ${requestedDateTime})`
                     );
                     return null;
                 }
@@ -100,7 +165,7 @@ export const getContentVersionFromDateTime = ({
                 const content = runSitecontentGuillotineQuery(contentFromDateTime, 'draft');
                 if (!content) {
                     logger.info(
-                        `No content resolved through Guillotine for requested timestamp - ${baseContentKey} in repo ${baseRepoId} (time: ${requestedDateTime})`
+                        `No content resolved through Guillotine for requested timestamp - ${baseContentId} in repo ${baseRepoId} (time: ${requestedDateTime})`
                     );
                     return null;
                 }
