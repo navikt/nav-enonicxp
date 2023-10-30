@@ -1,6 +1,7 @@
 import { getRepoConnection } from '../utils/repo-utils';
 import { CONTENT_ROOT_REPO_ID } from '../constants';
 import { logger } from '../utils/logging';
+import { getLayerMigrationData } from '../localization/layers-migration/migration-data';
 
 export const getLayersMigrationArchivedContentRef = ({
     contentId,
@@ -52,5 +53,21 @@ export const getLayersMigrationArchivedContentRef = ({
         return null;
     }
 
-    return { archivedContentId: result[0].id, archivedRepoId: CONTENT_ROOT_REPO_ID };
+    const contentNode = rootRepo.get(result[0].id);
+    if (!contentNode) {
+        logger.critical(`No archived content node found for ${contentId} / ${repoId}`);
+        return null;
+    }
+
+    const migrationTs = getLayerMigrationData(contentNode)?.ts;
+    if (!migrationTs) {
+        logger.critical(`No migration timestamp found for ${contentId} / ${repoId}`);
+        return null;
+    }
+
+    return {
+        archivedContentId: result[0].id,
+        archivedRepoId: CONTENT_ROOT_REPO_ID,
+        migrationTs,
+    };
 };

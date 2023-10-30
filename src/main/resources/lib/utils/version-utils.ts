@@ -7,6 +7,7 @@ import { getUnixTimeFromDateTimeString } from './datetime-utils';
 import { contentTypesWithCustomEditor } from '../contenttype-lists';
 import { getLayersData } from '../localization/layers-data';
 import { getLayersMigrationArchivedContentRef } from '../time-travel/layers-migration-refs';
+import { getLayerMigrationData } from '../localization/layers-migration/migration-data';
 
 const MAX_VERSIONS_COUNT_TO_RETRIEVE = 2000;
 
@@ -132,15 +133,17 @@ const getLayerMigrationVersionRefs = ({
         return [];
     }
 
-    const { archivedRepoId, archivedContentId } = archivedContentRef;
+    const { archivedRepoId, archivedContentId, migrationTs } = archivedContentRef;
 
-    const versions = getNodeVersions({
+    const preMigrationVersions = getNodeVersions({
         nodeKey: archivedContentId,
         branch: branch,
         repoId: archivedRepoId,
-    }).filter((version) => version.nodePath.startsWith('/content'));
+    }).filter(
+        (version) => version.nodePath.startsWith('/content') && version.timestamp < migrationTs
+    );
 
-    return versions.map((version) => ({
+    return preMigrationVersions.map((version) => ({
         ...version,
         locale: getLayersData().repoIdToLocaleMap[archivedRepoId],
     }));

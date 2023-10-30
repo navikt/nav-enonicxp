@@ -19,23 +19,9 @@ const getArchivedContentRef = (contentId: string, repoId: string, requestedTimes
         return null;
     }
 
-    const { archivedContentId, archivedRepoId } = archivedContentRef;
+    const { archivedContentId, archivedRepoId, migrationTs } = archivedContentRef;
 
-    const archivedContent = getRepoConnection({ branch: 'draft', repoId: archivedRepoId }).get(
-        archivedContentId
-    );
-    if (!archivedContent) {
-        logger.error(`Content not found for ${contentId} / ${repoId}`);
-        return null;
-    }
-
-    const layersMigrationData = getLayerMigrationData(archivedContent);
-    if (!layersMigrationData) {
-        logger.error(`Layers migration data not found for ${contentId} / ${repoId}`);
-        return null;
-    }
-
-    if (requestedTimestamp > layersMigrationData.ts) {
+    if (requestedTimestamp > migrationTs) {
         return null;
     }
 
