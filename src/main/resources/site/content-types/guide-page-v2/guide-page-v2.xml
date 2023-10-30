@@ -1,24 +1,30 @@
 <content-type>
-    <display-name>Å (Ikke klar til bruk) Guide ("Slik gjør du")</display-name>
-    <description>En guide som beskriver hvordan man sender inn melding, frister og med lenker til søknadsskjemaer etc.</description>
+    <display-name>~(Ikke klar til bruk) Guide ("Slik gjør du") v2</display-name>
+    <description>En guide som beskriver hvordan man sender inn melding, frister og med lenker til søknadsskjemaer etc.
+    </description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
         <field-set>
+            <label>Tittel og ingress</label>
             <items>
                 <mixin name="page-header"/>
-                <input type="CheckBox" name="hideFromProductlist">
-                    <label>Ikke vis denne siden på oversiktssider (gjelder ikke skjemaoversikter)</label>
-                    <default>unchecked</default>
-                </input>
-                <mixin name="ingress-required" />
-                <mixin name="external-product-url" />
+                <mixin name="ingress-required"/>
+            </items>
+        </field-set>
+        <field-set>
+            <label>URL</label>
+            <items>
+                <mixin name="external-product-url"/>
                 <mixin name="custom-path-selector-required"/>
             </items>
         </field-set>
-        <mixin name="dynamic-page-common"/>
-        <mixin name="page-meta-selector" />
+        <input type="CheckBox" name="hideFromProductlist">
+            <label>Ikke vis denne siden på oversiktssider (gjelder ikke skjemaoversikter)</label>
+            <default>unchecked</default>
+        </input>
+        <mixin name="page-meta-selector"/>
     </form>
 </content-type>

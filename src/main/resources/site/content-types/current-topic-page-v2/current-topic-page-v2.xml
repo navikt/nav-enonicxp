@@ -1,5 +1,5 @@
 <content-type>
-    <display-name>Å (Ikke klar til bruk) Aktuelt</display-name>
+    <display-name>~(Ikke klar til bruk) Aktuelt</display-name>
     <description>Aktuelt-artikler skal kun brukes for nyhetssaker til personbrukere</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
@@ -16,13 +16,13 @@
             <occurrences minimum="0" maximum="1"/>
             <help-text>Dette er kun ment som hjelp til redaktørene. Vises ikke på nav.no.</help-text>
         </input>
-        <mixin name="audience" />
-        <mixin name="area" />
-        <mixin name="external-product-url" />
-        <mixin name="custom-path-selector-required"/>
-        <mixin name="owner"/>
-        <mixin name="managed-by"/>
-        <mixin name="dynamic-page-common"/>
+        <field-set>
+            <label>URL</label>
+            <items>
+                <mixin name="external-product-url"/>
+                <mixin name="custom-path-selector-required"/>
+            </items>
+        </field-set>
         <mixin name="page-meta-selector" />
     </form>
 </content-type>

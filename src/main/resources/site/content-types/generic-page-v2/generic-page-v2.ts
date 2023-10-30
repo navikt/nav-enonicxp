@@ -26,39 +26,9 @@ export interface GenericPageV2 {
   externalProductUrl?: string;
 
   /**
-   * Legg til andre språkversjoner
+   * Skriv inn ønsket kort-url
    */
-  languages?: Array<string>;
-
-  /**
-   * Fant du det du lette etter?
-   */
-  feedbackToggle: boolean;
-
-  /**
-   * Chatbot Frida
-   */
-  chatbotToggle: boolean;
-
-  /**
-   * Oppsummering
-   */
-  description?: string;
-
-  /**
-   * Sidebeskrivelse for søk og sosiale medier
-   */
-  metaDescription?: string;
-
-  /**
-   * Canonical url - NB! Skal bare legges inn av hovedredaktør/administrator
-   */
-  canonicalUrl?: string;
-
-  /**
-   * Skal ikke vises i søk
-   */
-  noindex: boolean;
+  customPath: string;
 
   /**
    * Velg meta-side

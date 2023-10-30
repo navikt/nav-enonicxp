@@ -1,5 +1,5 @@
 <content-type>
-    <display-name>Å (Ikke klar til bruk) Generisk side</display-name>
+    <display-name>~(Ikke klar til bruk) Generisk side v2</display-name>
     <description>Side med innholdsmeny som brukes til enkelstående sider. Skal brukes unntaksvis.</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
@@ -13,8 +13,13 @@
                 <mixin name="ingress-required" />
             </items>
         </field-set>
-        <mixin name="external-product-url" />
-        <mixin name="dynamic-page-common"/>
+        <field-set>
+            <label>URL</label>
+            <items>
+                <mixin name="external-product-url"/>
+                <mixin name="custom-path-selector-required"/>
+            </items>
+        </field-set>
         <mixin name="page-meta-selector" />
     </form>
 </content-type>

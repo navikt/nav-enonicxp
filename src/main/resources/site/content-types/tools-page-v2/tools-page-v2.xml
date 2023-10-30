@@ -1,5 +1,5 @@
 <content-type>
-    <display-name>Å (Ikke klar til bruk) Verktøy-side</display-name>
+    <display-name>~(Ikke klar til bruk) Verktøy-side v2</display-name>
     <description>Side-type for kalkulatorer, veivisere, osv [ikke implementert]</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
@@ -14,36 +14,12 @@
             </items>
         </field-set>
         <field-set>
-            <label>Kategorier</label>
-            <items>
-                <mixin name="audience"/>
-                <input name="taxonomy" type="ComboBox">
-                    <label>Kategorier</label>
-                    <occurrences minimum="0" maximum="99"/>
-                    <config>
-                        <option value="calculator">Kalkulator</option>
-                        <option value="navigator">Veiviser</option>
-                    </config>
-                </input>
-                <mixin name="area"/>
-            </items>
-        </field-set>
-        <field-set>
-            <label>Piktogram</label>
-            <items>
-                <mixin name="illustration"/>
-            </items>
-        </field-set>
-        <field-set>
             <label>URL</label>
             <items>
                 <mixin name="external-product-url"/>
                 <mixin name="custom-path-selector-required"/>
             </items>
         </field-set>
-        <mixin name="owner"/>
-        <mixin name="managed-by"/>
-        <mixin name="languages-legacy"/>
         <mixin name="page-meta-selector" />
     </form>
 </content-type>

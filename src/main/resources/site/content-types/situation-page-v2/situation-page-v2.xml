@@ -1,21 +1,25 @@
 <content-type>
-    <display-name>Å (Ikke klar til bruk) Situasjonsside</display-name>
+    <display-name>~(Ikke klar til bruk) Situasjonsside</display-name>
     <description>Situasjonsside med oversikt over aktuelle stønader og tjenester</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <mixin name="page-header"/>
-        <mixin name="ingress-required" />
-        <mixin name="audience" />
-        <mixin name="area" />
-        <mixin name="illustration" />
-        <mixin name="external-product-url" />
-        <mixin name="custom-path-selector-required"/>
-        <mixin name="owner"/>
-        <mixin name="managed-by"/>
-        <mixin name="dynamic-page-common"/>
+        <field-set>
+            <label>Tittel og ingress</label>
+            <items>
+                <mixin name="page-header"/>
+                <mixin name="ingress-required" />
+            </items>
+        </field-set>
+        <field-set>
+            <label>URL</label>
+            <items>
+                <mixin name="external-product-url"/>
+                <mixin name="custom-path-selector-required"/>
+            </items>
+        </field-set>
         <mixin name="page-meta-selector" />
     </form>
 </content-type>

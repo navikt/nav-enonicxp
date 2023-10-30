@@ -1,5 +1,5 @@
 <content-type>
-    <display-name>(Ikke klar til bruk) Produktside</display-name>
+    <display-name>~(Ikke klar til bruk) Produktside v2</display-name>
     <description>Produktside med navigasjonsmeny og dynamiske komponenter</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
