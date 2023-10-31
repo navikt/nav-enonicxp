@@ -96,13 +96,15 @@ const getModifiedContentFromUser = () => {
             }
             const modifiedLocalTime = dayjs(modifiedStr).utc(true).local();
 
+            const repo = hit.repoId.replace('com.enonic.cms.', '');
+
             return {
                 displayName: draftContent.displayName,
                 modifiedTime: modifiedLocalTime,
                 modifiedTimeStr: dayjs(modifiedLocalTime).format('DD.MM.YYYY HH.mm'),
                 status,
                 title: draftContent._path.replace('/content/www.nav.no/', ''),
-                url: `/admin/tool/com.enonic.app.contentstudio/main/default/edit/${draftContent._id}`,
+                url: `/admin/tool/com.enonic.app.contentstudio/main/${repo}/edit/${draftContent._id}`,
             };
         })
         .sort((a, b) => (dayjs(a?.modifiedTime).isAfter(dayjs(b?.modifiedTime)) ? -1 : 1));
