@@ -11,7 +11,7 @@ type TypesOriginal = ContextArgOriginal['types'];
 type ContextArg = Omit<ContextArgOriginal, 'types'> & {
     types: Record<string, GraphQLType> & TypesOriginal;
 };
-export type GraphQLParamsArg = Parameters<CreationCallbackOriginal>['1'];
+type GraphQLParamsArg = Parameters<CreationCallbackOriginal>['1'];
 
 // Define a new CreationCallback type which allows custom entries in the types record
 export type CreationCallback = (

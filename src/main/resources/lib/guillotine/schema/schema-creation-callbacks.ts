@@ -42,7 +42,7 @@ import { formsOverviewDataCallback } from './schema-creation-callbacks/forms-ove
 import { audienceCallback } from './schema-creation-callbacks/common/audience-mixin';
 import { pressLandingPageDataCallback } from './schema-creation-callbacks/press-landing-page-data';
 import { macroLinkToLayerCallback } from './schema-creation-callbacks/macro-link-to-layer';
-import { contentWithPageMeta } from './schema-creation-callbacks/common/data-with-pagemeta';
+import { contentWithPageMeta } from './schema-creation-callbacks/common/content-with-pagemeta';
 
 export const schemaCreationCallbacks: Record<string, CreationCallback> = {
     Attachment: attachmentCallback,

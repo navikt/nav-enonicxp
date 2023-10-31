@@ -58,37 +58,35 @@ export const contentWithPageMeta =
             return null;
         }
 
-        const contentDataParams: CreateObjectTypeParamsGuillotine = {
-            name: context.uniqueName(
-                `${createContentTypeName(contentTypeDescriptor)}_DataWithPageMeta`
-            ),
-            description: `Data for ${contentTypeDescriptor} with external page-meta data`,
-            fields: {},
-        };
-
-        const contentDataItems = formLib.getFormItems(contentTypeSchema.form);
         const pageMetaItems = getOptionFormItemsForContentType(contentTypeDescriptor);
-
         if (!pageMetaItems) {
             logger.critical(`No page-meta data found for content type: ${contentTypeDescriptor}`);
             return null;
         }
 
+        const contentTypeName = createContentTypeName(contentTypeDescriptor);
+
+        const contentDataParams: CreateObjectTypeParamsGuillotine = {
+            name: context.uniqueName(`${contentTypeName}_DataWithPageMeta`),
+            description: `Data for ${contentTypeDescriptor} with external page-meta data`,
+            fields: {},
+        };
+
+        const contentDataItems = formLib.getFormItems(contentTypeSchema.form);
+
         [...pageMetaItems, ...contentDataItems].forEach((formItem) => {
             const fieldKey = namingLib.sanitizeText(formItem.name);
             if (contentDataParams.fields[fieldKey]) {
-                logger.info(`Field already exists: ${fieldKey}`);
+                logger.warning(`Field already exists on ${contentTypeDescriptor}: ${fieldKey}`);
                 return;
             }
 
             contentDataParams.fields[fieldKey] = {
-                type: formLib.generateFormItemObjectType(context, fieldKey, formItem),
+                type: formLib.generateFormItemObjectType(context, contentTypeName, formItem),
                 args: formLib.generateFormItemArguments(context, formItem),
                 resolve: formLib.generateFormItemResolveFunction(formItem),
             };
         }, {});
 
-        const contentDataType = graphQlCreateObjectType(context, contentDataParams);
-
-        params.fields.data = { type: contentDataType };
+        params.fields.data = { type: graphQlCreateObjectType(context, contentDataParams) };
     };
