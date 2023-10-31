@@ -44,9 +44,7 @@ const getModifiedContentFromUser = () => {
     // 1. Fetch all localized content modified by current user, find status and sort
     const results = repos
         .query({
-            start: 0,
-            count: 1000,
-            sort: 'modifiedTime DESC',
+            count: 5000,
             query: `modifier = "${user}" AND type LIKE "no.nav.navno:*"`,
             filters: {
                 boolean: {
@@ -87,7 +85,7 @@ const getModifiedContentFromUser = () => {
             } else if (draftContent?.publish?.first) {
                 // Innholdet er IKKE publisert (er avpublisert), eventuelt endret etterpå
                 const modifiedTsStr = draftContent._ts.substring(0, 19).replace('T', ' ');
-                if (draftContent.workflow.state === 'IN_PROGRESS') {
+                if (draftContent?.workflow?.state === 'IN_PROGRESS') {
                     status = 'Avpublisert, men endret';
                 } else {
                     status = 'Avpublisert';
