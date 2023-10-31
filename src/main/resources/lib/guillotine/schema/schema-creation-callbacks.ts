@@ -42,6 +42,7 @@ import { formsOverviewDataCallback } from './schema-creation-callbacks/forms-ove
 import { audienceCallback } from './schema-creation-callbacks/common/audience-mixin';
 import { pressLandingPageDataCallback } from './schema-creation-callbacks/press-landing-page-data';
 import { macroLinkToLayerCallback } from './schema-creation-callbacks/macro-link-to-layer';
+import { contentWithPageMeta } from './schema-creation-callbacks/common/data-with-pagemeta';
 
 export const schemaCreationCallbacks: Record<string, CreationCallback> = {
     Attachment: attachmentCallback,
@@ -99,4 +100,5 @@ export const schemaCreationCallbacks: Record<string, CreationCallback> = {
     no_nav_navno_ThemedArticlePage_Audience: audienceCallback,
     no_nav_navno_ToolsPage_Audience: audienceCallback,
     no_nav_navno_GuidePage_Audience: audienceCallback,
+    no_nav_navno_ProductPageV2: contentWithPageMeta('no.nav.navno:product-page-v2'),
 } as const;

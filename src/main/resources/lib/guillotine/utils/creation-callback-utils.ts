@@ -9,15 +9,15 @@ type TypesOriginal = ContextArgOriginal['types'];
 type ContextArg = Omit<ContextArgOriginal, 'types'> & {
     types: Record<string, GraphQLType> & TypesOriginal;
 };
-type ParamsArg = Parameters<CreationCallbackOriginal>['1'];
+export type GraphQLParamsArg = Parameters<CreationCallbackOriginal>['1'];
 
 // Define a new CreationCallback type which allows custom entries in the types record
 export type CreationCallback = (
     context: ContextArg,
-    params: ParamsArg
+    params: GraphQLParamsArg
 ) => ReturnType<CreationCallbackOriginal>;
 
-type CreateObjectTypeParamsGuillotine<FieldKeys extends string> = Pick<
+export type CreateObjectTypeParamsGuillotine<FieldKeys extends string = string> = Pick<
     CreateObjectTypeParams,
     'name'
 > &

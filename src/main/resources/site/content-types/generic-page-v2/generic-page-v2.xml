@@ -10,7 +10,7 @@
             <label>Tittel og ingress</label>
             <items>
                 <mixin name="page-header"/>
-                <mixin name="ingress-required" />
+                <mixin name="ingress-required"/>
             </items>
         </field-set>
         <field-set>
@@ -20,6 +20,6 @@
                 <mixin name="custom-path-selector-required"/>
             </items>
         </field-set>
-        <mixin name="page-meta-selector" />
+        <mixin name="page-meta-selector"/>
     </form>
 </content-type>
