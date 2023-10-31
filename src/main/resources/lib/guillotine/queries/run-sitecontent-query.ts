@@ -1,4 +1,3 @@
-import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { BaseQueryParams, RepoBranch } from '../../../types/common';
 import { contentTypesWithComponents } from '../../contenttype-lists';

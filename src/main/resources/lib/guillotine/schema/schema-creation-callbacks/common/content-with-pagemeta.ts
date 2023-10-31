@@ -23,7 +23,7 @@ const metaOptionsKeyMap: { [key in CustomContentDescriptor]?: PageMetaOption } =
     'no.nav.navno:guide-page-v2': 'guide_page',
     'no.nav.navno:situation-page-v2': 'situation_page',
     'no.nav.navno:themed-article-page-v2': 'themed_article_page',
-};
+} as const;
 
 const getOptionFormItemsForContentType = (contentDescriptor: ContentTypesWithPageMeta) => {
     const pageMetaSchema = contentLib.getType(PAGE_META_DESCRIPTOR);
@@ -55,19 +55,19 @@ export const contentWithPageMeta =
         const contentTypeSchema = contentLib.getType(contentTypeDescriptor);
         if (!contentTypeSchema) {
             logger.critical(`Invalid content type descriptor: ${contentTypeDescriptor}`);
-            return null;
+            return;
         }
 
         const metaOptionsKey = metaOptionsKeyMap[contentTypeDescriptor];
         if (!metaOptionsKey) {
             logger.critical(`No page-meta key found for content type: ${contentTypeDescriptor}`);
-            return null;
+            return;
         }
 
         const pageMetaItems = getOptionFormItemsForContentType(contentTypeDescriptor);
         if (!pageMetaItems) {
             logger.critical(`No page-meta data found for content type: ${contentTypeDescriptor}`);
-            return null;
+            return;
         }
 
         const contentTypeName = createContentTypeName(contentTypeDescriptor);

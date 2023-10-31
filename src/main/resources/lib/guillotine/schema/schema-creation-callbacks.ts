@@ -105,5 +105,5 @@ export const schemaCreationCallbacks: Record<string, CreationCallback> = {
     no_nav_navno_GenericPageV2: contentWithPageMeta('no.nav.navno:generic-page-v2'),
     no_nav_navno_GuidePageV2: contentWithPageMeta('no.nav.navno:guide-page-v2'),
     no_nav_navno_SituationPageV2: contentWithPageMeta('no.nav.navno:situation-page-v2'),
-    no_nav_navno_ThemedArticlePageeV2: contentWithPageMeta('no.nav.navno:themed-article-page-v2'),
+    no_nav_navno_ThemedArticlePageV2: contentWithPageMeta('no.nav.navno:themed-article-page-v2'),
 } as const;
