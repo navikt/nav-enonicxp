@@ -6,9 +6,10 @@ import { logger } from './logging';
 import { getUnixTimeFromDateTimeString } from './datetime-utils';
 import { contentTypesWithCustomEditor } from '../contenttype-lists';
 import { getLayersData } from '../localization/layers-data';
+import { getLayersMigrationArchivedContentRef } from '../time-travel/layers-migration-refs';
 import { getLayerMigrationData } from '../localization/layers-migration/migration-data';
 
-const MAX_VERSIONS_COUNT_TO_RETRIEVE = 1000;
+const MAX_VERSIONS_COUNT_TO_RETRIEVE = 2000;
 
 export const getNodeKey = (contentRef: string) =>
     contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
@@ -127,31 +128,24 @@ const getLayerMigrationVersionRefs = ({
         return [];
     }
 
-    const layerMigrationData = getLayerMigrationData(contentNode);
-    if (!layerMigrationData) {
+    const archivedContentRef = getLayersMigrationArchivedContentRef({ contentId: nodeKey, repoId });
+    if (!archivedContentRef) {
         return [];
     }
 
-    const {
-        targetReferenceType,
-        repoId: archiveRepoId,
-        contentId: archivedContentId,
-        locale: archivedLocale,
-    } = layerMigrationData;
+    const { archivedRepoId, archivedContentId, migrationTs } = archivedContentRef;
 
-    if (targetReferenceType !== 'archived') {
-        return [];
-    }
-
-    const versions = getNodeVersions({
+    const preMigrationVersions = getNodeVersions({
         nodeKey: archivedContentId,
         branch: branch,
-        repoId: archiveRepoId,
-    }).filter((version) => version.nodePath.startsWith('/content'));
+        repoId: archivedRepoId,
+    }).filter(
+        (version) => version.nodePath.startsWith('/content') && version.timestamp < migrationTs
+    );
 
-    return versions.map((version) => ({
+    return preMigrationVersions.map((version) => ({
         ...version,
-        locale: archivedLocale,
+        locale: getLayersData().repoIdToLocaleMap[archivedRepoId],
     }));
 };
 
