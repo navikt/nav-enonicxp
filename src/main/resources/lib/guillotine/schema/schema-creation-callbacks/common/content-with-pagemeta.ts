@@ -58,6 +58,12 @@ export const contentWithPageMeta =
             return null;
         }
 
+        const metaOptionsKey = metaOptionsKeyMap[contentTypeDescriptor];
+        if (!metaOptionsKey) {
+            logger.critical(`No page-meta key found for content type: ${contentTypeDescriptor}`);
+            return null;
+        }
+
         const pageMetaItems = getOptionFormItemsForContentType(contentTypeDescriptor);
         if (!pageMetaItems) {
             logger.critical(`No page-meta data found for content type: ${contentTypeDescriptor}`);
@@ -88,5 +94,29 @@ export const contentWithPageMeta =
             };
         }, {});
 
-        params.fields.data = { type: graphQlCreateObjectType(context, contentDataParams) };
+        params.fields.data = {
+            type: graphQlCreateObjectType(context, contentDataParams),
+            resolve: (env) => {
+                const contentData = env.source.data;
+
+                const pageMetaId = contentData.pageMetaTarget;
+                if (!pageMetaId) {
+                    return contentData;
+                }
+
+                const pageMetaContent = contentLib.get({ key: pageMetaId });
+                if (!pageMetaContent || pageMetaContent.type !== PAGE_META_DESCRIPTOR) {
+                    logger.info(`No valid page-meta content found ${pageMetaContent?.type}`);
+                    return contentData;
+                }
+
+                const pageMetaData = (pageMetaContent.data.contentType as any)[metaOptionsKey];
+                if (!pageMetaData) {
+                    logger.info(`No valid page-meta data found for ${metaOptionsKey}`);
+                    return contentData;
+                }
+
+                return { ...contentData, ...pageMetaData };
+            },
+        };
     };
