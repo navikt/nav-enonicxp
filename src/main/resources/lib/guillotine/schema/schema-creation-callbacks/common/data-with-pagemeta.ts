@@ -1,20 +1,20 @@
 import * as contentLib from '/lib/xp/content';
-import graphQlLib from '/lib/graphql';
 import formLib from '/lib/guillotine/dynamic/form';
 import namingLib from '/lib/guillotine/util/naming';
 import {
+    createContentTypeName,
     CreateObjectTypeParamsGuillotine,
     CreationCallback,
     graphQlCreateObjectType,
 } from '../../../utils/creation-callback-utils';
 import { logger } from '../../../../utils/logging';
 import { CustomContentDescriptor } from '../../../../../types/content-types/content-config';
-import { GraphQLResolver } from '/lib/graphql';
 import { PageMeta } from '../../../../../site/content-types/page-meta/page-meta';
 
-const PAGE_META_DESCRIPTOR: CustomContentDescriptor = 'no.nav.navno:page-meta';
-
 type PageMetaOption = PageMeta['contentType']['_selected'];
+type ContentTypesWithPageMeta = keyof typeof metaOptionsKeyMap;
+
+const PAGE_META_DESCRIPTOR: CustomContentDescriptor = 'no.nav.navno:page-meta';
 
 const metaOptionsKeyMap: { [key in CustomContentDescriptor]?: PageMetaOption } = {
     'no.nav.navno:product-page-v2': 'product_page',
@@ -25,7 +25,7 @@ const metaOptionsKeyMap: { [key in CustomContentDescriptor]?: PageMetaOption } =
     'no.nav.navno:themed-article-page-v2': 'themed_article_page',
 };
 
-const getOptionFormItemsForContentType = (contentDescriptor: CustomContentDescriptor) => {
+const getOptionFormItemsForContentType = (contentDescriptor: ContentTypesWithPageMeta) => {
     const pageMetaSchema = contentLib.getType(PAGE_META_DESCRIPTOR);
     if (!pageMetaSchema) {
         logger.critical(`Invalid content type descriptor for page-meta: ${PAGE_META_DESCRIPTOR}`);
@@ -50,7 +50,7 @@ const getOptionFormItemsForContentType = (contentDescriptor: CustomContentDescri
 };
 
 export const contentWithPageMeta =
-    (contentTypeDescriptor: CustomContentDescriptor): CreationCallback =>
+    (contentTypeDescriptor: ContentTypesWithPageMeta): CreationCallback =>
     (context, params) => {
         const contentTypeSchema = contentLib.getType(contentTypeDescriptor);
         if (!contentTypeSchema) {
@@ -59,8 +59,10 @@ export const contentWithPageMeta =
         }
 
         const contentDataParams: CreateObjectTypeParamsGuillotine = {
-            name: context.uniqueName('Test'),
-            description: 'Test description',
+            name: context.uniqueName(
+                `${createContentTypeName(contentTypeDescriptor)}_DataWithPageMeta`
+            ),
+            description: `Data for ${contentTypeDescriptor} with external page-meta data`,
             fields: {},
         };
 

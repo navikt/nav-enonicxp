@@ -1,6 +1,8 @@
 import { CreateObjectTypeParams, GraphQLResolver, GraphQLType } from '/lib/graphql';
 import graphQlLib from '/lib/guillotine/graphql';
+import namingLib from '/lib/guillotine/util/naming';
 import { ContextOptions, Context } from '/lib/guillotine';
+import { CustomContentDescriptor } from '../../../types/content-types/content-config';
 
 type CreationCallbackOriginal = ContextOptions['creationCallbacks'][string];
 type ContextArgOriginal = Parameters<CreationCallbackOriginal>['0'];
@@ -28,4 +30,14 @@ export const graphQlCreateObjectType = <FieldKeys extends string = string>(
     { name, fields, description, interfaces }: CreateObjectTypeParamsGuillotine<FieldKeys>
 ) => {
     return graphQlLib.createObjectType(context, { name, fields, description, interfaces });
+};
+
+// Copy/paste from private function in Guillotine
+export const createContentTypeName = (contentDescriptor: CustomContentDescriptor) => {
+    const [applicationName, contentTypeLabel] = contentDescriptor.split(':');
+
+    const appNameSegment = namingLib.sanitizeText(applicationName);
+    const typeNameSegment = namingLib.generateCamelCase(contentTypeLabel, true);
+
+    return `${appNameSegment}_${typeNameSegment}`;
 };
