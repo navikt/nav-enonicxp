@@ -15,22 +15,7 @@
 		}
 	</style>
 	<div id="admin-widget-content" style="background-color: lightgray; padding: 1rem; align-items: center">
-		<h3>Ditt sist redigerte innhold</h3>
-		<table>
-			<tr th:each="result: ${modified}">
-				<td class="first-col">
-					<a th:text="${result.displayName}"
-					   th:href="${result.url}"
-					   th:title="${result.title}"
-					   th:target="_blank"
-					>
-					</a>
-				</td>
-				<td th:text="${result.modifiedTimeStr}"></td>
-				<td th:text="${result.status}"></td>
-			</tr>
-		</table>
-		<h3>Ditt sist publiserte innhold</h3>
+		<h3>Sist publiserte</h3>
 		<table>
 			<tr th:each="result: ${published}">
 				<td class="first-col">
@@ -45,6 +30,22 @@
 				<td th:text="${result.status}"></td>
 			</tr>
 		</table>
+		<h3>Sist redigerte</h3>
+		<table>
+			<tr th:each="result: ${modified}">
+				<td class="first-col">
+					<a th:text="${result.displayName}"
+					   th:href="${result.url}"
+					   th:title="${result.title}"
+					   th:target="_blank"
+					>
+					</a>
+				</td>
+				<td th:text="${result.modifiedTimeStr}"></td>
+				<td th:text="${result.status}"></td>
+			</tr>
+		</table>
+
 	</div>
 </widget>
 

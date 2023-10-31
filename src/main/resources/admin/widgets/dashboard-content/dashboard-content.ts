@@ -46,7 +46,8 @@ const getModifiedContentFromUser = () => {
         .query({
             start: 0,
             count: 1000,
-            query: `modifier = "${user}"`,
+            sort: 'modifiedTime DESC',
+            query: `modifier = "${user}" AND type LIKE "no.nav.navno:*"`,
             filters: {
                 boolean: {
                     mustNot: NON_LOCALIZED_QUERY_FILTER,
@@ -81,13 +82,13 @@ const getModifiedContentFromUser = () => {
                     status = 'Publisert';
                     modifiedStr = masterContent.publish.from.substring(0, 19).replace('T', ' ');
                 } else {
-                    status = 'Endret';
+                    status = 'Publisert, men endret';
                 }
             } else if (draftContent?.publish?.first) {
                 // Innholdet er IKKE publisert (er avpublisert), eventuelt endret etterpå
                 const modifiedTsStr = draftContent._ts.substring(0, 19).replace('T', ' ');
-                if ( dayjs(modifiedStr).isAfter(dayjs(modifiedTsStr))) {
-                    status = 'Endret';
+                if (draftContent.workflow.state === 'IN_PROGRESS') {
+                    status = 'Avpublisert, men endret';
                 } else {
                     status = 'Avpublisert';
                     modifiedStr = modifiedTsStr;
