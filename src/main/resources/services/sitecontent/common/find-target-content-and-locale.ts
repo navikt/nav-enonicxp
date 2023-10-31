@@ -1,12 +1,12 @@
 import * as contentLib from '/lib/xp/content';
-import { RepoBranch } from '../../types/common';
-import { getLayersData, isValidLocale } from '../../lib/localization/layers-data';
-import { logger } from '../../lib/utils/logging';
-import { runInLocaleContext } from '../../lib/localization/locale-context';
-import { CONTENT_ROOT_REPO_ID } from '../../lib/constants';
+import { RepoBranch } from '../../../types/common';
+import { getLayersData, isValidLocale } from '../../../lib/localization/layers-data';
+import { logger } from '../../../lib/utils/logging';
+import { runInLocaleContext } from '../../../lib/localization/locale-context';
+import { CONTENT_ROOT_REPO_ID } from '../../../lib/constants';
 import { Content } from '/lib/xp/content';
-import { stripPathPrefix } from '../../lib/paths/path-utils';
-import { getLayersMultiConnection } from '../../lib/localization/layers-repo-utils/layers-repo-connection';
+import { stripPathPrefix } from '../../../lib/paths/path-utils';
+import { getLayersMultiConnection } from '../../../lib/localization/layers-repo-utils/layers-repo-connection';
 
 // Will return all matches for internal _path names as well as customPaths, for root content and
 // localized content only. Sorted by created time
@@ -48,7 +48,7 @@ const getNodesFromAllLayers = ({ path, branch }: { path: string; branch: RepoBra
     return getLayersMultiConnection(branch).query(getPathQueryParams(path)).hits;
 };
 
-type ContentPathTarget = {
+type ContentAndLocale = {
     content: Content;
     locale: string;
 };
@@ -80,7 +80,7 @@ const handleExactPathFound = ({
 };
 
 // Search all layers for an exact path match
-const resolveExactPath = (path: string, branch: RepoBranch): ContentPathTarget | null => {
+const resolveExactPath = (path: string, branch: RepoBranch): ContentAndLocale | null => {
     const foundNodes = getNodesFromAllLayers({ path, branch });
     if (foundNodes.length === 0) {
         return null;
@@ -125,7 +125,7 @@ const resolveExactPath = (path: string, branch: RepoBranch): ContentPathTarget |
 // Resolve a suffixed path for a specific locale, which does not match any actual _path/customPath
 // fields. Ie a request for "nav.no/mypage/en" should resolve to the content on path "nav.no/mypage"
 // in the layer for "en" locale
-const resolveLocalePath = (path: string, branch: RepoBranch): ContentPathTarget | null => {
+const resolveLocalePath = (path: string, branch: RepoBranch): ContentAndLocale | null => {
     const { defaultLocale } = getLayersData();
 
     const pathSegments = path.split('/');
@@ -161,12 +161,12 @@ const resolveLocalePath = (path: string, branch: RepoBranch): ContentPathTarget 
 
 // A valid path can be an exact match for an internal content _path, or a data.customPath,
 // or a locale-specific variant of either of the two, suffixed with a supported locale
-export const resolvePathToTarget = ({
+export const findTargetContentAndLocale = ({
     path,
     branch,
 }: {
     path: string;
     branch: RepoBranch;
-}): ContentPathTarget | null => {
+}): ContentAndLocale | null => {
     return resolveExactPath(path, branch) || resolveLocalePath(path, branch);
 };

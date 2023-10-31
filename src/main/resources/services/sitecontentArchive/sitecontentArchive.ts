@@ -1,12 +1,9 @@
-import { Content } from '/lib/xp/content';
-import { NodeContent } from '/lib/xp/node';
 import * as contentLib from '/lib/xp/content';
 import { getLayersData } from '../../lib/localization/layers-data';
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { SITECONTENT_404_MSG_PREFIX } from '../../lib/constants';
 import { forceArray } from '../../lib/utils/array-utils';
-import { CustomContentDescriptor } from '../../types/content-types/content-config';
 import { getRepoConnection } from '../../lib/utils/repo-utils';
 import { getNodeVersions, getVersionFromTime } from '../../lib/utils/version-utils';
 import { runInTimeTravelContext } from '../../lib/time-travel/run-with-time-travel';
@@ -15,10 +12,11 @@ import { isUUID } from '../../lib/utils/uuid';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
 import { getUnixTimeFromDateTimeString } from '../../lib/utils/datetime-utils';
 import { runInContext } from '../../lib/context/run-in-context';
+import { SitecontentResponse } from '../sitecontent/common/content-response';
 
 // We need to find page templates ourselves, as the version history hack we use for resolving content
 // from the archive does not work with the Java method Guillotine uses for resolving page templates
-const getPageTemplate = (content: NodeContent<Content<CustomContentDescriptor>>) => {
+const getPageTemplate = (content: NonNullable<SitecontentResponse>) => {
     // If the content has its own customized page component, it should not need a page template
     if (content.page?.customized) {
         return null;

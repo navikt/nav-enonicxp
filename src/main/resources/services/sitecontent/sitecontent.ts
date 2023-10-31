@@ -1,18 +1,34 @@
 import { isValidBranch } from '../../lib/context/branches';
-import { getResponseFromCache } from './cache';
-import { generateSitecontentResponse } from './generate-response';
+import { sitecontentPublicResponse } from './public/public-response';
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { RepoBranch } from '../../types/common';
 import { SITECONTENT_404_MSG_PREFIX } from '../../lib/constants';
+import { sitecontentDraftResponse } from './draft/draft-response';
+import { SitecontentResponse } from './common/content-response';
 
-export type SiteContentParams = {
+type SiteContentParams = {
     id: string;
+    locale?: string;
     branch?: RepoBranch;
     preview?: 'true';
     cacheKey?: string;
-    locale: string;
 };
+
+// We should only generate a cache key for the request if it included the "cacheKey" param
+// Requests without this param should not be cached
+// The cacheKey param (cacheVersionKey) is used for versioning the cache, and is changed every time
+// a content is modified
+const buildReqSpecificCacheKey = ({
+    id,
+    cacheKey: cacheVersionKey,
+    locale,
+    branch,
+    preview,
+}: SiteContentParams) =>
+    cacheVersionKey
+        ? [id, cacheVersionKey, locale, branch, preview].filter(Boolean).join('_')
+        : undefined;
 
 export const get = (req: XP.Request) => {
     if (!validateServiceSecretHeader(req)) {
@@ -28,9 +44,9 @@ export const get = (req: XP.Request) => {
     // id can be a content UUID, or a content path, ie. /www.nav.no/no/person
     const {
         id: idOrPath,
+        locale,
         branch = 'master',
         preview,
-        locale,
     } = req.params as unknown as Partial<SiteContentParams>;
 
     if (!idOrPath) {
@@ -54,16 +70,16 @@ export const get = (req: XP.Request) => {
     }
 
     try {
-        const content = getResponseFromCache(req.params as SiteContentParams, () =>
-            generateSitecontentResponse({
-                idOrPathRequested: idOrPath,
-                localeRequested: locale,
-                branch,
-                isPreview: preview === 'true',
-            })
-        );
+        const responseBody: SitecontentResponse =
+            branch === 'draft'
+                ? sitecontentDraftResponse({ idOrPath, requestedLocale: locale })
+                : sitecontentPublicResponse({
+                      idOrPath,
+                      isPreview: preview === 'true',
+                      cacheKey: buildReqSpecificCacheKey(req.params as SiteContentParams),
+                  });
 
-        if (!content) {
+        if (!responseBody) {
             logger.info(`Content not found: ${idOrPath}`);
             return {
                 status: 404,
@@ -76,7 +92,7 @@ export const get = (req: XP.Request) => {
 
         return {
             status: 200,
-            body: content,
+            body: responseBody,
             contentType: 'application/json',
         };
     } catch (e) {
