@@ -38,7 +38,6 @@ export const keysToMigrate: { [key: string]: string[] } = {
         'feedbackToggle',
         'chatbotToggle',
         'hideFromProductlist',
-        'customPath',
     ],
     [`${APP_DESCRIPTOR}:situation-page`]: [
         'audience',
@@ -48,7 +47,6 @@ export const keysToMigrate: { [key: string]: string[] } = {
         'managed-by',
         'feedbackToggle',
         'chatbotToggle',
-        'customPath',
     ],
     [`${APP_DESCRIPTOR}:guide-page`]: [
         'audience',
@@ -63,7 +61,6 @@ export const keysToMigrate: { [key: string]: string[] } = {
         'hideFromProductlist',
         'feedbackToggle',
         'chatbotToggle',
-        'customPath',
     ],
     [`${APP_DESCRIPTOR}:themed-article-page`]: [
         'audience',
@@ -77,21 +74,18 @@ export const keysToMigrate: { [key: string]: string[] } = {
         'rates',
         'feedbackToggle',
         'chatbotToggle',
-        'customPath',
     ],
     [`${APP_DESCRIPTOR}:tools-page`]: [
         'audience',
         'taxonomy',
         'area',
         'illustration',
-        'customPath',
         'owner',
         'managed-by',
     ],
     [`${APP_DESCRIPTOR}:generic-page`]: [
         'audience',
         'illustration',
-        'customPath',
         'feedbackToggle',
         'chatbotToggle',
     ],
@@ -100,7 +94,6 @@ export const keysToMigrate: { [key: string]: string[] } = {
         'owner',
         'area',
         'managed-by',
-        'customPath',
         'feedbackToggle',
         'chatbotToggle',
     ],

@@ -20,7 +20,6 @@
                         <mixin name="owner" />
                         <mixin name="managed-by" />
                         <mixin name="product-details-selector"/>
-                        <mixin name="custom-path-selector-required"/>
                         <mixin name="form-details-selector"/>
                         <mixin name="decorator-toggles"/>
                     </items>
@@ -31,7 +30,6 @@
                         <mixin name="audience" />
                         <mixin name="area" />
                         <mixin name="illustration" />
-                        <mixin name="custom-path-selector-required"/>
                         <mixin name="owner"/>
                         <mixin name="managed-by"/>
                         <mixin name="decorator-toggles"/>
@@ -51,7 +49,6 @@
                         </input>
                         <mixin name="area"/>
                         <mixin name="illustration"/>
-                        <mixin name="custom-path-selector-required"/>
                         <mixin name="owner"/>
                         <mixin name="managed-by"/>
                     </items>
@@ -61,7 +58,6 @@
                     <items>
                         <mixin name="audience" />
                         <mixin name="illustration" />
-                        <mixin name="custom-path-selector-required"/>
                         <mixin name="decorator-toggles"/>
                     </items>
                 </option>
@@ -86,7 +82,6 @@
                         </input>
                         <mixin name="area" />
                         <mixin name="illustration" />
-                        <mixin name="custom-path-selector-required"/>
                         <mixin name="owner"/>
                         <mixin name="managed-by"/>
                         <mixin name="product-details-selector"/>
@@ -103,7 +98,6 @@
                         <mixin name="audience" />
                         <mixin name="area" />
                         <mixin name="illustration" />
-                        <mixin name="custom-path-selector-required"/>
                         <mixin name="owner" />
                         <mixin name="managed-by" />
                         <mixin name="product-details-selector"/>
@@ -120,7 +114,6 @@
                         </input>
                         <mixin name="audience" />
                         <mixin name="area" />
-                        <mixin name="custom-path-selector-required"/>
                         <mixin name="owner"/>
                         <mixin name="managed-by"/>
                         <mixin name="decorator-toggles"/>
