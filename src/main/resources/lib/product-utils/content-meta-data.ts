@@ -7,7 +7,7 @@ import { ContentWithResolvedData, getPageMetaOptionKey } from './product-content
 
 const PAGE_META_DESCRIPTOR: NavNoDescriptor<'page-meta'> = 'no.nav.navno:page-meta';
 
-export const resolveContentMetaData = <Type extends ContentDescriptor>(
+export const resolveContentData = <Type extends ContentDescriptor>(
     content: Content
 ): ContentWithResolvedData<Type> => {
     const { data: contentData } = content;

@@ -104,11 +104,6 @@ export interface PageMeta {
           rates?: string;
 
           /**
-           * Skriv inn ønsket kort-url
-           */
-          customPath: string;
-
-          /**
            * Velg alle detaljer som skal brukes på denne siden
            */
           formDetailsTargets?: Array<string>;
@@ -192,11 +187,6 @@ export interface PageMeta {
            * Velg piktogram
            */
           illustration: string;
-
-          /**
-           * Skriv inn ønsket kort-url
-           */
-          customPath: string;
 
           /**
            * Velg eier
@@ -294,11 +284,6 @@ export interface PageMeta {
           illustration: string;
 
           /**
-           * Skriv inn ønsket kort-url
-           */
-          customPath: string;
-
-          /**
            * Velg eier
            */
           owner: Array<"ytelsesavdelingen" | "arbeids_og_tjenesteavdelingen" | "arbeid_og_ytelser_styringsenhet" | "familie_og_pensjonsytelser_styringsenhet" | "hr_avdelingen" | "juridisk_avdeling" | "kunnskapsavdelingen" | "kommunikasjonsavdelingen" | "okonomi" | "statistikk" | "hjelpemidler_og_tilrettelegging" | "kontaktsenteret" | "team_personbruker" | "it_avdelingen" | "fylke" | "hjelpemiddelsentralen" | "arbeidslivssenter" | "min_side" | "direktoratet" | "annet">;
@@ -372,11 +357,6 @@ export interface PageMeta {
            * Velg piktogram
            */
           illustration: string;
-
-          /**
-           * Skriv inn ønsket kort-url
-           */
-          customPath: string;
 
           /**
            * Fant du det du lette etter?
@@ -462,11 +442,6 @@ export interface PageMeta {
            * Velg piktogram
            */
           illustration: string;
-
-          /**
-           * Skriv inn ønsket kort-url
-           */
-          customPath: string;
 
           /**
            * Velg eier
@@ -579,11 +554,6 @@ export interface PageMeta {
           illustration: string;
 
           /**
-           * Skriv inn ønsket kort-url
-           */
-          customPath: string;
-
-          /**
            * Velg eier
            */
           owner: Array<"ytelsesavdelingen" | "arbeids_og_tjenesteavdelingen" | "arbeid_og_ytelser_styringsenhet" | "familie_og_pensjonsytelser_styringsenhet" | "hr_avdelingen" | "juridisk_avdeling" | "kunnskapsavdelingen" | "kommunikasjonsavdelingen" | "okonomi" | "statistikk" | "hjelpemidler_og_tilrettelegging" | "kontaktsenteret" | "team_personbruker" | "it_avdelingen" | "fylke" | "hjelpemiddelsentralen" | "arbeidslivssenter" | "min_side" | "direktoratet" | "annet">;
@@ -692,11 +662,6 @@ export interface PageMeta {
            * Områdekategori
            */
           area: Array<"health" | "other" | "work" | "family" | "accessibility" | "pension" | "social_counselling" | "inclusion" | "downsizing" | "recruitment">;
-
-          /**
-           * Skriv inn ønsket kort-url
-           */
-          customPath: string;
 
           /**
            * Velg eier

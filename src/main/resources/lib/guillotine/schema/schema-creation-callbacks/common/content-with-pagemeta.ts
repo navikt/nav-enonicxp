@@ -8,7 +8,7 @@ import {
 } from '../../../utils/creation-callback-utils';
 import { logger } from '../../../../utils/logging';
 import { contentTypesWithPageMeta } from '../../../../contenttype-lists';
-import { resolveContentMetaData } from '../../../../product-utils/content-meta-data';
+import { resolveContentData } from '../../../../product-utils/content-meta-data';
 import { NavNoDescriptor } from '../../../../../types/common';
 import { getPageMetaOptionKey } from '../../../../product-utils/product-content-data-types';
 
@@ -80,6 +80,6 @@ export const contentWithPageMeta =
                 description: `Data for ${contentTypeDescriptor} with external page-meta data`,
                 fields,
             }),
-            resolve: (env) => resolveContentMetaData(env.source),
+            resolve: (env) => resolveContentData(env.source),
         };
     };
