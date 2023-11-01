@@ -80,13 +80,13 @@ const getModifiedContentFromUser = () => {
                     status = 'Publisert';
                     modifiedStr = masterContent.publish.from.substring(0, 19).replace('T', ' ');
                 } else {
-                    status = 'Publisert, men endret';
+                    status = 'Endret';
                 }
             } else if (draftContent?.publish?.first) {
                 // Innholdet er IKKE publisert (er avpublisert), eventuelt endret etterpå
                 const modifiedTsStr = draftContent._ts.substring(0, 19).replace('T', ' ');
                 if (draftContent?.workflow?.state === 'IN_PROGRESS') {
-                    status = 'Avpublisert, men endret';
+                    status = 'Endret';
                 } else {
                     status = 'Avpublisert';
                     modifiedStr = modifiedTsStr;
