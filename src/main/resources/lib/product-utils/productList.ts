@@ -7,7 +7,7 @@ import {
     ContentTypeWithProductDetails,
     DetailedOverviewType,
     OverviewPageProductData,
-} from './types';
+} from './overview-types';
 import { APP_DESCRIPTOR } from '../constants';
 import { Audience as _Audience } from '../../site/mixins/audience/audience';
 import { contentTypesInOverviewPages } from '../contenttype-lists';

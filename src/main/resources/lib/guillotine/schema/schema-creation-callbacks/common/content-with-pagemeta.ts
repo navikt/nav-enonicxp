@@ -3,27 +3,18 @@ import formLib from '/lib/guillotine/dynamic/form';
 import namingLib from '/lib/guillotine/util/naming';
 import {
     createContentTypeName,
-    CreateObjectTypeParamsGuillotine,
     CreationCallback,
     graphQlCreateObjectType,
 } from '../../../utils/creation-callback-utils';
 import { logger } from '../../../../utils/logging';
-import { CustomContentDescriptor } from '../../../../../types/content-types/content-config';
-import { PageMeta } from '../../../../../site/content-types/page-meta/page-meta';
+import { contentTypesWithPageMeta } from '../../../../contenttype-lists';
+import { resolveContentMetaData } from '../../../../product-utils/content-meta-data';
+import { NavNoDescriptor } from '../../../../../types/common';
+import { getPageMetaOptionKey } from '../../../../product-utils/product-content-data-types';
 
-type PageMetaOption = PageMeta['contentType']['_selected'];
-type ContentTypesWithPageMeta = keyof typeof metaOptionsKeyMap;
+type ContentTypesWithPageMeta = (typeof contentTypesWithPageMeta)[number];
 
-const PAGE_META_DESCRIPTOR: CustomContentDescriptor = 'no.nav.navno:page-meta';
-
-const metaOptionsKeyMap: { [key in CustomContentDescriptor]?: PageMetaOption } = {
-    'no.nav.navno:product-page-v2': 'product_page',
-    'no.nav.navno:current-topic-page-v2': 'current_topic_page',
-    'no.nav.navno:generic-page-v2': 'generic_page',
-    'no.nav.navno:guide-page-v2': 'guide_page',
-    'no.nav.navno:situation-page-v2': 'situation_page',
-    'no.nav.navno:themed-article-page-v2': 'themed_article_page',
-} as const;
+const PAGE_META_DESCRIPTOR: NavNoDescriptor<'page-meta'> = 'no.nav.navno:page-meta';
 
 const getOptionFormItemsForContentType = (contentDescriptor: ContentTypesWithPageMeta) => {
     const pageMetaSchema = contentLib.getType(PAGE_META_DESCRIPTOR);
@@ -32,13 +23,13 @@ const getOptionFormItemsForContentType = (contentDescriptor: ContentTypesWithPag
         return null;
     }
 
-    const optionKey = metaOptionsKeyMap[contentDescriptor];
+    const optionKey = getPageMetaOptionKey(contentDescriptor);
     if (!optionKey) {
         logger.critical(`No meta option found for content type ${contentDescriptor}`);
         return null;
     }
 
-    const contentTypeOptionSet = formLib
+    const pageMetaOptionItems = formLib
         .getFormItems(pageMetaSchema.form)
         .find(
             (formItem: any) =>
@@ -46,7 +37,7 @@ const getOptionFormItemsForContentType = (contentDescriptor: ContentTypesWithPag
         )
         ?.options?.find((option: any) => option.name === optionKey)?.items;
 
-    return formLib.getFormItems(contentTypeOptionSet);
+    return pageMetaOptionItems ? formLib.getFormItems(pageMetaOptionItems) : null;
 };
 
 export const contentWithPageMeta =
@@ -58,65 +49,37 @@ export const contentWithPageMeta =
             return;
         }
 
-        const metaOptionsKey = metaOptionsKeyMap[contentTypeDescriptor];
-        if (!metaOptionsKey) {
-            logger.critical(`No page-meta key found for content type: ${contentTypeDescriptor}`);
-            return;
-        }
-
         const pageMetaItems = getOptionFormItemsForContentType(contentTypeDescriptor);
         if (!pageMetaItems) {
             logger.critical(`No page-meta data found for content type: ${contentTypeDescriptor}`);
             return;
         }
 
-        const contentTypeName = createContentTypeName(contentTypeDescriptor);
-
-        const contentDataParams: CreateObjectTypeParamsGuillotine = {
-            name: context.uniqueName(`${contentTypeName}_DataWithPageMeta`),
-            description: `Data for ${contentTypeDescriptor} with external page-meta data`,
-            fields: {},
-        };
-
         const contentDataItems = formLib.getFormItems(contentTypeSchema.form);
 
-        [...pageMetaItems, ...contentDataItems].forEach((formItem) => {
+        const contentTypeName = createContentTypeName(contentTypeDescriptor);
+
+        const fields = [...pageMetaItems, ...contentDataItems].reduce((acc, formItem) => {
             const fieldKey = namingLib.sanitizeText(formItem.name);
-            if (contentDataParams.fields[fieldKey]) {
+            if (acc[fieldKey]) {
                 logger.warning(`Field already exists on ${contentTypeDescriptor}: ${fieldKey}`);
-                return;
+            } else {
+                acc[fieldKey] = {
+                    type: formLib.generateFormItemObjectType(context, contentTypeName, formItem),
+                    args: formLib.generateFormItemArguments(context, formItem),
+                    resolve: formLib.generateFormItemResolveFunction(formItem),
+                };
             }
 
-            contentDataParams.fields[fieldKey] = {
-                type: formLib.generateFormItemObjectType(context, contentTypeName, formItem),
-                args: formLib.generateFormItemArguments(context, formItem),
-                resolve: formLib.generateFormItemResolveFunction(formItem),
-            };
+            return acc;
         }, {});
 
         params.fields.data = {
-            type: graphQlCreateObjectType(context, contentDataParams),
-            resolve: (env) => {
-                const contentData = env.source.data;
-
-                const pageMetaId = contentData.pageMetaTarget;
-                if (!pageMetaId) {
-                    return contentData;
-                }
-
-                const pageMetaContent = contentLib.get({ key: pageMetaId });
-                if (!pageMetaContent || pageMetaContent.type !== PAGE_META_DESCRIPTOR) {
-                    logger.info(`No valid page-meta content found ${pageMetaContent?.type}`);
-                    return contentData;
-                }
-
-                const pageMetaData = (pageMetaContent.data.contentType as any)[metaOptionsKey];
-                if (!pageMetaData) {
-                    logger.info(`No valid page-meta data found for ${metaOptionsKey}`);
-                    return contentData;
-                }
-
-                return { ...contentData, ...pageMetaData };
-            },
+            type: graphQlCreateObjectType(context, {
+                name: context.uniqueName(`${contentTypeName}_DataWithPageMeta`),
+                description: `Data for ${contentTypeDescriptor} with external page-meta data`,
+                fields,
+            }),
+            resolve: (env) => resolveContentMetaData(env.source),
         };
     };

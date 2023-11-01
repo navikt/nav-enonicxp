@@ -3,7 +3,7 @@ import graphQlLib from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 import { getProductDataForOverviewPage } from '../../../product-utils/productList';
 import { logger } from '../../../utils/logging';
-import { OverviewPageProductData } from '../../../product-utils/types';
+import { OverviewPageProductData } from '../../../product-utils/overview-types';
 import { forceArray } from '../../../utils/array-utils';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
 
