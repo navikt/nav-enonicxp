@@ -73,20 +73,15 @@ const findNewItems = (content: FallbackContent, existingItems: Item[]) => {
 const refreshItemsList = (content: FallbackContent) => {
     const { enabledItems, disabledItems } = splitByEnabledStatus(content.data.items);
 
-    const disabledItemsMap = new Map(disabledItems.map((item) => [item.contentId, item]));
+    const currentItemsMap = new Map(disabledItems.map((item) => [item.contentId, item]));
 
     const updatedItems = findNewItems(content, enabledItems).map((newItem) => {
-        const existingItem = disabledItemsMap.get(newItem.contentId);
-        if (!existingItem) {
-            return newItem;
-        }
-
-        return existingItem;
+        return currentItemsMap.get(newItem.contentId) || newItem;
     });
 
     const hasChanges =
         updatedItems.length !== disabledItems.length ||
-        updatedItems.some((item) => !disabledItemsMap.has(item.contentId));
+        updatedItems.some((newItem) => !currentItemsMap.has(newItem.contentId));
 
     if (!hasChanges) {
         return;
