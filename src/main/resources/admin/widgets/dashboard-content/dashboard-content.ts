@@ -67,7 +67,7 @@ const getModifiedContentFromUser = () => {
             }
 
             // modifiedTime med sekunder
-            let modifiedStr = draftContent._ts.substring(0, 19).replace('T', ' ');
+            const modifiedStr = draftContent._ts.substring(0, 19).replace('T', ' ');
 
             if (!draftContent.displayName) {
                 draftContent.displayName = 'Uten tittel';
@@ -78,7 +78,6 @@ const getModifiedContentFromUser = () => {
                 // Innholdet ER publisert, eventuelt endret etterpå
                 if (draftContent?._versionKey === masterContent?._versionKey) {
                     status = 'Publisert';
-                    modifiedStr = masterContent._ts.substring(0, 19).replace('T', ' ');
                 } else {
                     status = 'Endret';
                 }
@@ -95,8 +94,10 @@ const getModifiedContentFromUser = () => {
 
             const repo = hit.repoId.replace('com.enonic.cms.', '');
 
+            const layer = repo !== 'default' ? ` [${repo.replace('navno-', '')}]` : '';
+
             return {
-                displayName: draftContent.displayName,
+                displayName: draftContent.displayName + layer,
                 modifiedTime: modifiedLocalTime,
                 modifiedTimeStr: dayjs(modifiedLocalTime).format('DD.MM.YYYY HH.mm'),
                 status,
