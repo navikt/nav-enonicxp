@@ -9,7 +9,6 @@ import { updateScheduledPublishJobs } from '../lib/scheduling/scheduled-publish-
 import { generateUUID } from '../lib/utils/uuid';
 import { removeUnpublishedFromAllContentLists } from '../lib/contentlists/remove-unpublished';
 import { userIsAdmin } from '../lib/utils/auth-utils';
-import { startPageMetaCreation } from '../lib/migrate-meta-data/migrate-meta-data';
 import {
     revalidateAllSearchNodesAsync,
     SEARCH_NODES_UPDATE_ABORT_EVENT,
@@ -76,10 +75,6 @@ const validActions: ActionsMap = {
             callback: () => pushLayerContentToMaster(false),
         },
     }),
-    migrateMetaToSeparateMetaContent: {
-        description: 'Starter jobb for å opprette meta-objekter.',
-        callback: () => startPageMetaCreation(),
-    },
 };
 
 type Params = {
