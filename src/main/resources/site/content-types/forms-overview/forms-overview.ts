@@ -31,6 +31,36 @@ export interface FormsOverview {
   customPath: string;
 
   /**
+   * Vis område-filter
+   */
+  areasFilterToggle: boolean;
+
+  /**
+   * Vis kategori-filter
+   */
+  taxonomyFilterToggle: boolean;
+
+  /**
+   * Vis fritekst-filter
+   */
+  textFilterToggle: boolean;
+
+  /**
+   * Videresend alle besøk til annen url:
+   */
+  externalProductUrl?: string;
+
+  /**
+   * Velg fallback-data (bruker ikke for norsk bokmål)
+   */
+  localeFallback?: Array<string>;
+
+  /**
+   * Velg innhold som ikke skal vises i denne oversikten
+   */
+  excludedContent?: Array<string>;
+
+  /**
    * Målgruppe
    */
   audience:
@@ -116,34 +146,9 @@ export interface FormsOverview {
       };
 
   /**
-   * Vis område-filter
-   */
-  areasFilterToggle: boolean;
-
-  /**
-   * Vis kategori-filter
-   */
-  taxonomyFilterToggle: boolean;
-
-  /**
-   * Vis fritekst-filter
-   */
-  textFilterToggle: boolean;
-
-  /**
-   * Velg innhold som ikke skal vises i denne oversikten
-   */
-  excludedContent?: Array<string>;
-
-  /**
    * Velg eier
    */
   owner: Array<"ytelsesavdelingen" | "arbeids_og_tjenesteavdelingen" | "arbeid_og_ytelser_styringsenhet" | "familie_og_pensjonsytelser_styringsenhet" | "hr_avdelingen" | "juridisk_avdeling" | "kunnskapsavdelingen" | "kommunikasjonsavdelingen" | "okonomi" | "statistikk" | "hjelpemidler_og_tilrettelegging" | "kontaktsenteret" | "team_personbruker" | "it_avdelingen" | "fylke" | "hjelpemiddelsentralen" | "arbeidslivssenter" | "min_side" | "direktoratet" | "annet">;
-
-  /**
-   * Oppsummering
-   */
-  description?: string;
 
   /**
    * Nøkkelord (internt søk)
@@ -154,14 +159,4 @@ export interface FormsOverview {
    * Skal ikke vises i søk
    */
   noindex: boolean;
-
-  /**
-   * Videresend alle besøk til annen url:
-   */
-  externalProductUrl?: string;
-
-  /**
-   * Legg til andre språkversjoner
-   */
-  languages?: Array<string>;
 }

@@ -36,6 +36,57 @@
                 <mixin name="custom-path-selector-required"/>
             </items>
         </field-set>
+        <field-set>
+            <label>Filtre</label>
+            <items>
+                <input name="areasFilterToggle" type="CheckBox">
+                    <label>Vis område-filter</label>
+                    <default>checked</default>
+                </input>
+                <input name="taxonomyFilterToggle" type="CheckBox">
+                    <label>Vis kategori-filter</label>
+                    <default>checked</default>
+                </input>
+                <input name="textFilterToggle" type="CheckBox">
+                    <label>Vis fritekst-filter</label>
+                    <default>checked</default>
+                </input>
+            </items>
+        </field-set>
+        <mixin name="external-product-url"/>
+        <field-set>
+            <label>Data for ikke-lokaliserte sider (brukes ikke for norsk bokmål)</label>
+            <items>
+                <input name="localeFallback" type="ContentSelector">
+                    <label>Velg fallback data</label>
+                    <help-text>Brukes for å sette inn elementer for sider som ikke er lokalisert</help-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allowContentType>${app}:localized-content-data-fallback</allowContentType>
+                        <showStatus>true</showStatus>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Ekskluderte sider</label>
+            <items>
+                <input name="excludedContent" type="CustomSelector">
+                    <label>Velg innhold som ikke skal vises i denne oversikten</label>
+                    <occurrences minimum="0" maximum="0"/>
+                    <config>
+                        <service>contentSelector</service>
+                        <param value="contentTypes">
+                            ["no.nav.navno:content-page-with-sidemenus","no.nav.navno:guide-page"]
+                        </param>
+                        <param value="selectorQuery">language="{language}" AND
+                            data.audience._selected="{data.audience._selected}" AND data.formDetailsTargets LIKE "*"
+                        </param>
+                        <param value="sort">data.area ASC, displayName ASC</param>
+                    </config>
+                </input>
+            </items>
+        </field-set>
         <option-set name="audience">
             <label>Målgruppe</label>
             <occurrences minimum="1" maximum="1"/>
@@ -89,64 +140,20 @@
                 </option>
             </options>
         </option-set>
-        <field-set>
-            <label>Filtre</label>
-            <items>
-                <input name="areasFilterToggle" type="CheckBox">
-                    <label>Vis område-filter</label>
-                    <default>checked</default>
-                </input>
-                <input name="taxonomyFilterToggle" type="CheckBox">
-                    <label>Vis kategori-filter</label>
-                    <default>checked</default>
-                </input>
-                <input name="textFilterToggle" type="CheckBox">
-                    <label>Vis fritekst-filter</label>
-                    <default>checked</default>
-                </input>
-            </items>
-        </field-set>
-        <field-set>
-            <label>Ekskluderte sider</label>
-            <items>
-                <input name="excludedContent" type="CustomSelector">
-                    <label>Velg innhold som ikke skal vises i denne oversikten</label>
-                    <occurrences minimum="0" maximum="0"/>
-                    <config>
-                        <service>contentSelector</service>
-                        <param value="contentTypes">
-                            ["no.nav.navno:content-page-with-sidemenus","no.nav.navno:guide-page"]
-                        </param>
-                        <param value="selectorQuery">language="{language}" AND
-                            data.audience._selected="{data.audience._selected}" AND data.formDetailsTargets LIKE "*"
-                        </param>
-                        <param value="sort">data.area ASC, displayName ASC</param>
-                    </config>
-                </input>
-            </items>
-        </field-set>
         <mixin name="owner"/>
         <field-set>
             <label>Søkeoptimalisering</label>
             <items>
-                <input type="TextArea" name="description">
-                    <label>Oppsummering</label>
-                    <help-text>Vises når denne siden lenkes til fra enkelte andre sider, og i
-                        søkeresultater. Bør være maks 240 tegn.
-                    </help-text>
-                </input>
                 <mixin name="keywords"/>
                 <input name="noindex" type="CheckBox">
                     <label>
                         Skal ikke vises i søk
                     </label>
                     <help-text>
-                        Gjelder både søket på nav.no og eksternt søk som Google og Bing
+                        Gjelder både søket på nav.no og eksterne søk som Google og Bing
                     </help-text>
                 </input>
             </items>
         </field-set>
-        <mixin name="external-product-url"/>
-        <mixin name="languages-legacy"/>
     </form>
 </content-type>

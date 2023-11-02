@@ -10,16 +10,6 @@ export interface LocalizedContentDataFallback {
    */
   items?: Array<{
     /**
-     * Velg et ikke-lokalisert innhold
-     */
-    contentId: string;
-
-    /**
-     * Aktiver oversettelse
-     */
-    enabled: boolean;
-
-    /**
      * Sidetittel
      */
     title: string;
@@ -38,5 +28,15 @@ export interface LocalizedContentDataFallback {
      * Overstyr URL
      */
     externalProductUrl?: string;
+
+    /**
+     * Velg et ikke-lokalisert innhold
+     */
+    contentId: string;
+
+    /**
+     * Aktiver oversettelse
+     */
+    enabled: boolean;
   }>;
 }

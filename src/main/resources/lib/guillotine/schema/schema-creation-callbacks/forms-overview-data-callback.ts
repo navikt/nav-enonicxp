@@ -51,7 +51,7 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
             }
 
             const { language, data } = content;
-            const { audience, overviewType, excludedContent } = data;
+            const { audience, overviewType, excludedContent, localeFallback } = data;
 
             if (!audience?._selected) {
                 logger.error(`Audience not set for overview page id ${contentId}`);
@@ -70,12 +70,13 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
                 return [];
             }
 
-            return buildFormDetailsList(
+            return buildFormDetailsList({
                 audience,
                 language,
                 overviewType,
-                forceArray(excludedContent)
-            );
+                excludedContentIds: forceArray(excludedContent),
+                localeFallbackIds: localeFallback ? forceArray(localeFallback) : undefined,
+            });
         },
     };
 };

@@ -87,24 +87,15 @@ const splitByLocalizationState = (contents: ContentWithFormDetails[], language: 
     return { localizedContent, nonLocalizedContent };
 };
 
-const transformToContentWithFallbackData = (contents: ContentWithFormDetails[]) => {
-    const nonLocalizedContent = contents.filter((content) => !isContentLocalized(content));
-    const contentIds = nonLocalizedContent.map((content) => content._id);
-
+const transformToContentWithFallbackData = (
+    contents: ContentWithFormDetails[],
+    localeFallbackIds: string[]
+) => {
     const fallbackContents = contentLib.query({
         count: 1000,
         contentTypes: ['no.nav.navno:localized-content-data-fallback'],
         filters: {
-            boolean: {
-                must: [
-                    {
-                        hasValue: {
-                            field: 'data.items.contentId',
-                            values: contentIds,
-                        },
-                    },
-                ],
-            },
+            ids: { values: localeFallbackIds },
         },
     }).hits;
 
@@ -134,7 +125,7 @@ const transformToContentWithFallbackData = (contents: ContentWithFormDetails[]) 
         });
     });
 
-    return nonLocalizedContent.reduce<ContentWithFormDetails[]>((acc, content) => {
+    return contents.reduce<ContentWithFormDetails[]>((acc, content) => {
         const fallbackDataForContent = fallbackData[content._id];
 
         if (fallbackDataForContent) {
@@ -148,17 +139,23 @@ const transformToContentWithFallbackData = (contents: ContentWithFormDetails[]) 
     }, []);
 };
 
-const getContentWithFormDetails = (
-    audience: Audience,
-    language: string,
-    excludedContent: string[]
-) => {
-    const contents = contentWithFormDetailsQuery(audience, excludedContent);
-
+const getContentWithFormDetails = ({
+    audience,
+    language,
+    excludedContentIds,
+    localeFallbackIds,
+}: Args) => {
+    const contents = contentWithFormDetailsQuery(audience, excludedContentIds);
     const { localizedContent, nonLocalizedContent } = splitByLocalizationState(contents, language);
 
-    const nonLocalizedContentWithFallbackData =
-        transformToContentWithFallbackData(nonLocalizedContent);
+    if (!localeFallbackIds) {
+        return localizedContent;
+    }
+
+    const nonLocalizedContentWithFallbackData = transformToContentWithFallbackData(
+        nonLocalizedContent,
+        localeFallbackIds
+    );
 
     return [...localizedContent, ...nonLocalizedContentWithFallbackData];
 };
@@ -198,13 +195,18 @@ const buildFormDetailsMap = (
     }, {});
 };
 
-export const buildFormDetailsList = (
-    audience: Audience,
-    language: string,
-    overviewType: OverviewType,
-    excludedContent: string[]
-) => {
-    const contentWithFormDetails = getContentWithFormDetails(audience, language, excludedContent);
+type Args = {
+    audience: Audience;
+    language: string;
+    overviewType: OverviewType;
+    excludedContentIds: string[];
+    localeFallbackIds?: string[];
+};
+
+export const buildFormDetailsList = (args: Args) => {
+    const { language, overviewType } = args;
+
+    const contentWithFormDetails = getContentWithFormDetails(args);
 
     const formDetailsMap = buildFormDetailsMap(contentWithFormDetails, overviewType);
 

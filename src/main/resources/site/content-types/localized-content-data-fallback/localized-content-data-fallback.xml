@@ -1,5 +1,5 @@
 <content-type xmlns="urn:enonic:xp:model:1.0">
-    <display-name>Fallback-verdier for ikke-lokalisert innhold</display-name>
+    <display-name>~Fallback-verdier for ikke-lokalisert innhold</display-name>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
@@ -21,23 +21,6 @@
             <label>Oversettelser for ikke-lokalisert innhold</label>
             <occurrences minimum="0" maximum="0"/>
             <items>
-                <input name="contentId" type="CustomSelector">
-                    <label>Velg et ikke-lokalisert innhold</label>
-                    <occurrences minimum="1" maximum="1"/>
-                    <config>
-                        <service>contentSelector</service>
-                        <param value="contentTypes">
-                            {data.contentTypes}
-                        </param>
-                        <param value="selectorQuery">inherit="CONTENT"</param>
-                        <param value="sort">displayName ASC</param>
-                    </config>
-                </input>
-                <input type="CheckBox" name="enabled">
-                    <label>Aktiver oversettelse</label>
-                    <help-text>Må aktiveres dersom oversettelsen skal vises for dette innholdet</help-text>
-                    <default>unchecked</default>
-                </input>
                 <input name="title" type="TextLine">
                     <label>Sidetittel</label>
                     <occurrences minimum="1" maximum="1"/>
@@ -55,6 +38,23 @@
                     <label>Overstyr URL</label>
                     <help-text>Dersom dette feltet er tomt vil det lenkes til norsk versjon</help-text>
                     <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input name="contentId" type="CustomSelector">
+                    <label>Velg et ikke-lokalisert innhold</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <service>contentSelector</service>
+                        <param value="contentTypes">
+                            {data.contentTypes}
+                        </param>
+                        <param value="selectorQuery">inherit="CONTENT"</param>
+                        <param value="sort">displayName ASC</param>
+                    </config>
+                </input>
+                <input type="CheckBox" name="enabled">
+                    <label>Aktiver oversettelse</label>
+                    <help-text>Må aktiveres dersom oversettelsen skal vises for dette innholdet</help-text>
+                    <default>unchecked</default>
                 </input>
             </items>
         </item-set>
