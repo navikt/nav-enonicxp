@@ -11,45 +11,22 @@ import { LocalizedContentDataFallback } from '../../site/content-types/localized
 type FallbackContent = Content<'no.nav.navno:localized-content-data-fallback'>;
 type Item = NonNullable<LocalizedContentDataFallback['items']>[number];
 
-const findNewContent = (content: FallbackContent, existingItems: Item[]) => {
-    const { contentTypes, contentQuery } = content.data;
-
-    const existingContentIds = existingItems.map((item) => item.contentId);
-
-    return contentLib.query({
-        count: 500,
-        contentTypes: forceArray(contentTypes as ArrayOrSingle<ContentDescriptor>),
-        query: contentQuery,
-        filters: {
-            boolean: {
-                mustNot: [
-                    {
-                        ids: {
-                            values: existingContentIds,
-                        },
-                    },
-                ],
-            },
-        },
-    }).hits;
-};
+const sortByTitle = (a: Item, b: Item) => (a.title > b.title ? 1 : -1);
 
 const transformToListItem = (content: Content): Item => {
     const { _id, displayName, data } = content;
 
     return {
         title: data.title || displayName,
-        sortTitle: data.sortTitle || '',
+        sortTitle: data.sortTitle,
         ingress: data.ingress || displayName,
         contentId: _id,
         enabled: false,
     };
 };
 
-const sortByTitle = (a: Item, b: Item) => (a.title > b.title ? 1 : -1);
-
-const splitByEnabledStatus = (items: Item[]) =>
-    items.reduce<{
+const splitByEnabledStatus = (items?: ArrayOrSingle<Item>) => {
+    return forceArray(items).reduce<{
         enabledItems: Item[];
         disabledItems: Item[];
     }>(
@@ -64,27 +41,51 @@ const splitByEnabledStatus = (items: Item[]) =>
         },
         { enabledItems: [], disabledItems: [] }
     );
-
-const itemsAreEqual = (itemA: Item, itemB: Item) => {
-    return Object.entries(itemA).every(([key, value]) => itemB[key as keyof Item] === value);
 };
 
-const refreshItemsList = (content: FallbackContent) => {
-    const existingItems = forceArray(content.data.items).sort(sortByTitle);
+const findNewItems = (content: FallbackContent, existingItems: Item[]) => {
+    const { contentTypes, contentQuery } = content.data;
 
-    const { enabledItems, disabledItems } = splitByEnabledStatus(existingItems);
+    const existingContentIds = existingItems.map((item) => item.contentId);
+
+    return contentLib
+        .query({
+            count: 500,
+            contentTypes: forceArray(contentTypes as ArrayOrSingle<ContentDescriptor>),
+            query: contentQuery,
+            filters: {
+                boolean: {
+                    mustNot: [
+                        {
+                            ids: {
+                                values: existingContentIds,
+                            },
+                        },
+                    ],
+                },
+            },
+        })
+        .hits.map(transformToListItem);
+};
+
+// We always keep existing items if they are enabled. Disabled items are removed if they no longer
+// match the restrictions set on the fallback content.
+const refreshItemsList = (content: FallbackContent) => {
+    const { enabledItems, disabledItems } = splitByEnabledStatus(content.data.items);
 
     const disabledItemsMap = new Map(disabledItems.map((item) => [item.contentId, item]));
 
-    const newItems = findNewContent(content, enabledItems)
-        .map(transformToListItem)
-        .filter((item) => {
-            const existingItem = disabledItemsMap.get(item.contentId);
-            return !existingItem || itemsAreEqual(item, existingItem);
-        })
-        .sort(sortByTitle);
+    let hasNewItems = false;
 
-    if (newItems.length === 0) {
+    const updatedItems = findNewItems(content, enabledItems).map((newItem) => {
+        const existingItem = disabledItemsMap.get(newItem.contentId);
+        if (!existingItem) {
+            hasNewItems = true;
+        }
+        return existingItem || newItem;
+    });
+
+    if (!hasNewItems) {
         return;
     }
 
@@ -93,7 +94,7 @@ const refreshItemsList = (content: FallbackContent) => {
         requireValid: false,
         editor: (_content) => {
             _content.data.items = removeDuplicates(
-                [...newItems, ...disabledItems, ...enabledItems],
+                [...updatedItems.sort(sortByTitle), ...enabledItems.sort(sortByTitle)],
                 (a, b) => a.contentId === b.contentId
             );
             return _content;

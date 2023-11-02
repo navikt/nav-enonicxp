@@ -18,7 +18,7 @@
             </items>
         </field-set>
         <field-set>
-            <label>Restriksjoner på innholdsvelger</label>
+            <label>Restriksjoner på innholdsvelgere</label>
             <items>
                 <input name="contentQuery" type="TextLine">
                     <label>Sett en NoQL query string</label>
@@ -26,7 +26,7 @@
                     <occurrences minimum="1" maximum="1"/>
                     <default>inherit="CONTENT"</default>
                     <config>
-                        <regexp>^inherit="CONTENT"</regexp>
+                        <regexp>^inherit="CONTENT".*$</regexp>
                     </config>
                 </input>
             </items>
