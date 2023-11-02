@@ -8,7 +8,7 @@ export interface LocalizedContentDataFallback {
   /**
    * Sett en NoQL query string
    */
-  contentQuery?: string;
+  contentQuery: string;
 
   /**
    * Oversettelser for ikke-lokalisert innhold
@@ -40,7 +40,7 @@ export interface LocalizedContentDataFallback {
     contentId: string;
 
     /**
-     * Aktiver oversettelse
+     * Aktiver oversettelse (husk å kryss av!)
      */
     enabled: boolean;
   }>;

@@ -22,9 +22,12 @@
             <items>
                 <input name="contentQuery" type="TextLine">
                     <label>Sett en NoQL query string</label>
-                    <help-text>Dersom flere restriksjoner enn innholdstype skal gjelde, kan det legges inn her</help-text>
-                    <occurrences minimum="0" maximum="1"/>
+                    <help-text>Dersom flere restriksjoner skal gjelde, kan det legges inn her</help-text>
+                    <occurrences minimum="1" maximum="1"/>
                     <default>inherit="CONTENT"</default>
+                    <config>
+                        <regexp>^inherit="CONTENT"</regexp>
+                    </config>
                 </input>
             </items>
         </field-set>
@@ -63,7 +66,7 @@
                     </config>
                 </input>
                 <input type="CheckBox" name="enabled">
-                    <label>Aktiver oversettelse</label>
+                    <label>Aktiver oversettelse (husk å kryss av!)</label>
                     <help-text>Må aktiveres dersom oversettelsen skal vises for dette innholdet</help-text>
                     <default>unchecked</default>
                 </input>

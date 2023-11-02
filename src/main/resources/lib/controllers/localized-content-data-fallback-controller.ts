@@ -11,13 +11,13 @@ import { LocalizedContentDataFallback } from '../../site/content-types/localized
 type FallbackContent = Content<'no.nav.navno:localized-content-data-fallback'>;
 type Item = NonNullable<LocalizedContentDataFallback['items']>[number];
 
-const getNewContent = (content: FallbackContent) => {
-    const { contentTypes, items, contentQuery } = content.data;
+const findNewContent = (content: FallbackContent, existingItems: Item[]) => {
+    const { contentTypes, contentQuery } = content.data;
 
-    const existingContentIds = forceArray(items).map((item) => item?.contentId);
+    const existingContentIds = existingItems.map((item) => item.contentId);
 
     return contentLib.query({
-        count: 2000,
+        count: 500,
         contentTypes: forceArray(contentTypes as ArrayOrSingle<ContentDescriptor>),
         query: contentQuery,
         filters: {
@@ -48,21 +48,53 @@ const transformToListItem = (content: Content): Item => {
 
 const sortByTitle = (a: Item, b: Item) => (a.title > b.title ? 1 : -1);
 
-const refreshContentList = (content: FallbackContent) => {
-    const newItems = getNewContent(content).map(transformToListItem).sort(sortByTitle);
+const splitByEnabledStatus = (items: Item[]) =>
+    items.reduce<{
+        enabledItems: Item[];
+        disabledItems: Item[];
+    }>(
+        (acc, item) => {
+            if (item?.enabled) {
+                acc.enabledItems.push(item);
+            } else {
+                acc.disabledItems.push(item);
+            }
+
+            return acc;
+        },
+        { enabledItems: [], disabledItems: [] }
+    );
+
+const itemsAreEqual = (itemA: Item, itemB: Item) => {
+    return Object.entries(itemA).every(([key, value]) => itemB[key as keyof Item] === value);
+};
+
+const refreshItemsList = (content: FallbackContent) => {
+    const existingItems = forceArray(content.data.items).sort(sortByTitle);
+
+    const { enabledItems, disabledItems } = splitByEnabledStatus(existingItems);
+
+    const disabledItemsMap = new Map(disabledItems.map((item) => [item.contentId, item]));
+
+    const newItems = findNewContent(content, enabledItems)
+        .map(transformToListItem)
+        .filter((item) => {
+            const existingItem = disabledItemsMap.get(item.contentId);
+            return !existingItem || itemsAreEqual(item, existingItem);
+        })
+        .sort(sortByTitle);
+
     if (newItems.length === 0) {
         return;
     }
-
-    const oldItems = forceArray(content.data.items).sort(sortByTitle);
 
     contentLib.modify({
         key: content._id,
         requireValid: false,
         editor: (_content) => {
             _content.data.items = removeDuplicates(
-                [...newItems, ...oldItems],
-                (a, b) => a?.contentId === b?.contentId
+                [...newItems, ...disabledItems, ...enabledItems],
+                (a, b) => a.contentId === b.contentId
             );
             return _content;
         },
@@ -87,7 +119,7 @@ const validateAndHandleReq = (req: XP.Request) => {
         return;
     }
 
-    refreshContentList(content);
+    refreshItemsList(content);
 };
 
 const formIntermediateStepController = (req: XP.Request) => {
