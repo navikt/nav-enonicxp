@@ -3,7 +3,7 @@ import { forceArray, removeDuplicatesFilter } from '../utils/array-utils';
 import { FormsOverview } from '../../site/content-types/forms-overview/forms-overview';
 import { contentTypesWithFormDetails } from '../contenttype-lists';
 import { ContentWithFormDetails, FormDetailsListItem, FormDetailsMap } from './types';
-import { formsOverviewListItemTransformer } from './transform-to-list-item';
+import { formsOverviewListItemTransformer } from './list-item-transformer';
 import { isContentLocalized } from '../localization/locale-utils';
 import { LocalizedContentDataFallback } from '../../site/content-types/localized-content-data-fallback/localized-content-data-fallback';
 import { logger } from '../utils/logging';
