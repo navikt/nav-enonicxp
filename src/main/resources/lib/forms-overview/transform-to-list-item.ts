@@ -17,53 +17,51 @@ const getUrl = (content: ContentWithFormDetails) => {
     return getPublicPath(content, content.language);
 };
 
-export const formsOverviewListItemTransformer = (
-    content: ContentWithFormDetails,
-    formDetailsMap: FormDetailsMap,
-    language: string
-): FormDetailsListItem | null => {
-    const formDetailsContents = forceArray(content.data.formDetailsTargets).reduce<
-        Content<'no.nav.navno:form-details'>[]
-    >((acc, formDetailsId) => {
-        const formDetails = formDetailsMap[formDetailsId];
-        if (formDetails) {
-            acc.push(formDetails);
+export const formsOverviewListItemTransformer =
+    (formDetailsMap: FormDetailsMap, language: string) =>
+    (content: ContentWithFormDetails): FormDetailsListItem | null => {
+        const formDetailsContents = forceArray(content.data.formDetailsTargets).reduce<
+            Content<'no.nav.navno:form-details'>[]
+        >((acc, formDetailsId) => {
+            const formDetails = formDetailsMap[formDetailsId];
+            if (formDetails) {
+                acc.push(formDetails);
+            }
+
+            return acc;
+        }, []);
+
+        if (formDetailsContents.length === 0) {
+            return null;
         }
 
-        return acc;
-    }, []);
+        const title = content.data.title || content.displayName;
+        const sortTitle = content.data.sortTitle || title;
 
-    if (formDetailsContents.length === 0) {
-        return null;
-    }
-
-    const title = content.data.title || content.displayName;
-    const sortTitle = content.data.sortTitle || title;
-
-    return {
-        title,
-        sortTitle,
-        ingress: content.data.ingress,
-        keywords: forceArray(content.data.keywords),
-        url: getUrl(content),
-        type: content.type,
-        anchorId: sanitize(sortTitle),
-        illustration: content.data.illustration,
-        area: forceArray(content.data.area),
-        taxonomy: forceArray(content.data.taxonomy),
-        formDetailsPaths: formDetailsContents.map((formDetails) =>
-            getPublicPath(formDetails, language)
-        ),
-        formDetailsTitles: formDetailsContents
-            .map((formDetails) => formDetails.data.title)
-            .filter(Boolean),
-        formDetailsIngresses: formDetailsContents
-            .map((formDetails) =>
-                formDetails.data.ingress ? striptags(formDetails.data.ingress) : ''
-            )
-            .filter(Boolean),
-        formNumbers: formDetailsContents
-            .map((formDetails) => forceArray(formDetails.data.formNumbers))
-            .flat(),
+        return {
+            title,
+            sortTitle,
+            ingress: content.data.ingress,
+            keywords: forceArray(content.data.keywords),
+            url: getUrl(content),
+            type: content.type,
+            anchorId: sanitize(sortTitle),
+            illustration: content.data.illustration,
+            area: forceArray(content.data.area),
+            taxonomy: forceArray(content.data.taxonomy),
+            formDetailsPaths: formDetailsContents.map((formDetails) =>
+                getPublicPath(formDetails, language)
+            ),
+            formDetailsTitles: formDetailsContents
+                .map((formDetails) => formDetails.data.title)
+                .filter(Boolean),
+            formDetailsIngresses: formDetailsContents
+                .map((formDetails) =>
+                    formDetails.data.ingress ? striptags(formDetails.data.ingress) : ''
+                )
+                .filter(Boolean),
+            formNumbers: formDetailsContents
+                .map((formDetails) => forceArray(formDetails.data.formNumbers))
+                .flat(),
+        };
     };
-};
