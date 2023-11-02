@@ -51,7 +51,7 @@ export interface FormsOverview {
   externalProductUrl?: string;
 
   /**
-   * Velg fallback-data (bruker ikke for norsk bokmål)
+   * Velg fallback data
    */
   localeFallback?: Array<string>;
 
