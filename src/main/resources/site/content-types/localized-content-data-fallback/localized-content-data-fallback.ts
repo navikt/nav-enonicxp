@@ -6,6 +6,11 @@ export interface LocalizedContentDataFallback {
   contentTypes: Array<string>;
 
   /**
+   * Sett en NoQL query string
+   */
+  contentQuery?: string;
+
+  /**
    * Oversettelser for ikke-lokalisert innhold
    */
   items?: Array<{
@@ -30,7 +35,7 @@ export interface LocalizedContentDataFallback {
     externalProductUrl?: string;
 
     /**
-     * Velg et ikke-lokalisert innhold
+     * Velg et innhold
      */
     contentId: string;
 

@@ -31,6 +31,11 @@ export interface FormsOverview {
   customPath: string;
 
   /**
+   * Videresend alle besøk til annen url:
+   */
+  externalProductUrl?: string;
+
+  /**
    * Vis område-filter
    */
   areasFilterToggle: boolean;
@@ -44,21 +49,6 @@ export interface FormsOverview {
    * Vis fritekst-filter
    */
   textFilterToggle: boolean;
-
-  /**
-   * Videresend alle besøk til annen url:
-   */
-  externalProductUrl?: string;
-
-  /**
-   * Velg fallback data
-   */
-  localeFallback?: Array<string>;
-
-  /**
-   * Velg innhold som ikke skal vises i denne oversikten
-   */
-  excludedContent?: Array<string>;
 
   /**
    * Målgruppe
@@ -144,6 +134,16 @@ export interface FormsOverview {
               };
         };
       };
+
+  /**
+   * Velg fallback data
+   */
+  localeFallback?: Array<string>;
+
+  /**
+   * Velg innhold som ikke skal vises i denne oversikten
+   */
+  excludedContent?: Array<string>;
 
   /**
    * Velg eier

@@ -6,7 +6,7 @@
     <allow-child-content>true</allow-child-content>
     <form>
         <field-set>
-            <label>Innholdstyper som skal kunne velges</label>
+            <label>Relevante innholdstyper</label>
             <items>
                 <input name="contentTypes" type="ContentTypeFilter">
                     <label>Velg innholdstyper</label>
@@ -14,6 +14,17 @@
                     <config>
                         <context>true</context>
                     </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Restriksjoner på innholdsvelger</label>
+            <items>
+                <input name="contentQuery" type="TextLine">
+                    <label>Sett en NoQL query string</label>
+                    <help-text>Dersom flere restriksjoner enn innholdstype skal gjelde, kan det legges inn her</help-text>
+                    <occurrences minimum="0" maximum="1"/>
+                    <default>inherit="CONTENT"</default>
                 </input>
             </items>
         </field-set>
@@ -40,14 +51,14 @@
                     <occurrences minimum="0" maximum="1"/>
                 </input>
                 <input name="contentId" type="CustomSelector">
-                    <label>Velg et ikke-lokalisert innhold</label>
+                    <label>Velg et innhold</label>
                     <occurrences minimum="1" maximum="1"/>
                     <config>
                         <service>contentSelector</service>
                         <param value="contentTypes">
                             {data.contentTypes}
                         </param>
-                        <param value="selectorQuery">inherit="CONTENT"</param>
+                        <param value="selectorQuery">{data.contentQuery}</param>
                         <param value="sort">displayName ASC</param>
                     </config>
                 </input>

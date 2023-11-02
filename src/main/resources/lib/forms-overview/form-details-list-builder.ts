@@ -11,7 +11,9 @@ import { getLocaleFromContext } from '../localization/locale-context';
 
 type Audience = FormsOverview['audience'];
 type OverviewType = FormsOverview['overviewType'];
-type FallbackData = NonNullable<LocalizedContentDataFallback['items']>[number];
+
+type FallbackDataAll = NonNullable<LocalizedContentDataFallback['items']>[number];
+type FallbackData = Omit<FallbackDataAll, 'enabled' | 'contentId' | 'contentQuery'>;
 
 const contentWithFormDetailsQuery = (audience: Audience, excludedContent: string[]) => {
     const { _selected: selectedAudience } = audience;
@@ -104,7 +106,7 @@ const transformToContentWithFallbackData = (
         return [];
     }
 
-    const fallbackData: Record<string, Omit<FallbackData, 'enabled' | 'contentId'>> = {};
+    const fallbackDataMap: Record<string, FallbackData> = {};
 
     fallbackContents.forEach((fallbackContent) => {
         forceArray(fallbackContent.data.items).forEach((item) => {
@@ -114,19 +116,19 @@ const transformToContentWithFallbackData = (
                 return;
             }
 
-            if (fallbackData[contentId]) {
+            if (fallbackDataMap[contentId]) {
                 logger.critical(
                     `Duplicate locale fallback data for ${contentId} in ${getLocaleFromContext()}`
                 );
                 return;
             }
 
-            fallbackData[contentId] = data;
+            fallbackDataMap[contentId] = data;
         });
     });
 
     return contents.reduce<ContentWithFormDetails[]>((acc, content) => {
-        const fallbackDataForContent = fallbackData[content._id];
+        const fallbackDataForContent = fallbackDataMap[content._id];
 
         if (fallbackDataForContent) {
             acc.push({
