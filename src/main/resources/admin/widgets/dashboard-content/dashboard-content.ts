@@ -67,7 +67,7 @@ const getModifiedContentFromUser = () => {
             }
 
             // modifiedTime med sekunder
-            let modifiedStr = draftContent.modifiedTime.substring(0, 19).replace('T', ' ');
+            let modifiedStr = draftContent._ts.substring(0, 19).replace('T', ' ');
 
             if (!draftContent.displayName) {
                 draftContent.displayName = 'Uten tittel';
@@ -78,18 +78,17 @@ const getModifiedContentFromUser = () => {
                 // Innholdet ER publisert, eventuelt endret etterpå
                 if (draftContent?._versionKey === masterContent?._versionKey) {
                     status = 'Publisert';
-                    modifiedStr = masterContent.publish.from.substring(0, 19).replace('T', ' ');
+                    modifiedStr = masterContent._ts.substring(0, 19).replace('T', ' ');
                 } else {
                     status = 'Endret';
                 }
             } else if (draftContent?.publish?.first) {
                 // Innholdet er IKKE publisert (er avpublisert), eventuelt endret etterpå
-                const modifiedTsStr = draftContent._ts.substring(0, 19).replace('T', ' ');
+
                 if (draftContent?.workflow?.state === 'IN_PROGRESS') {
                     status = 'Endret';
                 } else {
                     status = 'Avpublisert';
-                    modifiedStr = modifiedTsStr;
                 }
             }
             const modifiedLocalTime = dayjs(modifiedStr).utc(true).local();
