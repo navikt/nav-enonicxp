@@ -210,7 +210,11 @@ export const buildFormDetailsList = (
 
     return contentWithFormDetails
         .reduce<FormDetailsListItem[]>((acc, content) => {
-            const transformedItem = formsOverviewListItemTransformer(content, formDetailsMap);
+            const transformedItem = formsOverviewListItemTransformer(
+                content,
+                formDetailsMap,
+                language
+            );
             if (transformedItem) {
                 acc.push(transformedItem);
             }

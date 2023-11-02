@@ -19,7 +19,8 @@ const getUrl = (content: ContentWithFormDetails) => {
 
 export const formsOverviewListItemTransformer = (
     content: ContentWithFormDetails,
-    formDetailsMap: FormDetailsMap
+    formDetailsMap: FormDetailsMap,
+    language: string
 ): FormDetailsListItem | null => {
     const formDetailsContents = forceArray(content.data.formDetailsTargets).reduce<
         Content<'no.nav.navno:form-details'>[]
@@ -50,7 +51,9 @@ export const formsOverviewListItemTransformer = (
         illustration: content.data.illustration,
         area: forceArray(content.data.area),
         taxonomy: forceArray(content.data.taxonomy),
-        formDetailsPaths: formDetailsContents.map((formDetails) => formDetails._path),
+        formDetailsPaths: formDetailsContents.map((formDetails) =>
+            getPublicPath(formDetails, language)
+        ),
         formDetailsTitles: formDetailsContents
             .map((formDetails) => formDetails.data.title)
             .filter(Boolean),
