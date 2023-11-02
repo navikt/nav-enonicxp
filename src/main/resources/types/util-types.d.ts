@@ -4,13 +4,6 @@ export type PickByFieldType<ObjectType, FieldType> = {
 
 export type EmptyObject = Record<string, never>;
 
-export type Override<SourceType, OverrideType> = OverrideType &
-    Omit<SourceType, keyof OverrideType>;
-
-export type ArrayItem<ArrayType> = ArrayType extends
-    | readonly (infer ItemType)[]
-    | (infer ItemType)[]
-    ? ItemType
-    : never;
-
 export type ArrayOrSingle<Type> = Type[] | Type;
+
+export type OptionalReadonly<Type> = Readonly<Type> | Type;

@@ -20,9 +20,14 @@ export interface LocalizedContentDataFallback {
     enabled: boolean;
 
     /**
-     * Tittel
+     * Sidetittel
      */
     title: string;
+
+    /**
+     * Tittel for utlisting og sortering
+     */
+    sortTitle?: string;
 
     /**
      * Ingress

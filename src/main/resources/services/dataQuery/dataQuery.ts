@@ -17,6 +17,7 @@ import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { getPublicPath } from '../../lib/paths/public-path';
 import { parseJsonArray } from '../../lib/utils/array-utils';
 import { getLayersMultiConnection } from '../../lib/localization/layers-repo-utils/layers-repo-connection';
+import { OptionalReadonly } from '../../types/util-types';
 
 type Branch = 'published' | 'unpublished' | 'archived';
 
@@ -25,7 +26,7 @@ type RunQueryParams = {
     branch: Branch;
     query?: string;
     batch: number;
-    types?: ContentDescriptor[];
+    types?: OptionalReadonly<ContentDescriptor[]>;
 };
 
 type ContentWithLocaleData = Content & { layerLocale: string; publicPath: string };

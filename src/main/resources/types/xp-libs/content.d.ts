@@ -6,6 +6,7 @@ declare module '*/lib/xp/content' {
         ContentDataMapper,
     } from 'types/content-types/content-config';
     import { RepoBranch } from 'types/common';
+    import { OptionalReadonly } from '../util-types';
 
     // Replacements for enonic-types definitions
     namespace contentLib {
@@ -371,7 +372,7 @@ declare module '*/lib/xp/content' {
         interface HasValueFilter {
             hasValue: {
                 field: string;
-                values: Array<unknown>;
+                values: OptionalReadonly<Array<string>>;
             };
         }
         interface IdsFilter {
