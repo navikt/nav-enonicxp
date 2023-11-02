@@ -3,7 +3,7 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { frontendProxy } from './frontend-proxy';
 import { logger } from '../utils/logging';
-import { forceArray } from '../utils/array-utils';
+import { forceArray, removeDuplicates } from '../utils/array-utils';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { ArrayOrSingle } from '../../types/util-types';
 import { LocalizedContentDataFallback } from '../../site/content-types/localized-content-data-fallback/localized-content-data-fallback';
@@ -60,7 +60,10 @@ const refreshContentList = (content: FallbackContent) => {
         key: content._id,
         requireValid: false,
         editor: (_content) => {
-            _content.data.items = [...newItems, ...oldItems];
+            _content.data.items = removeDuplicates(
+                [...newItems, ...oldItems],
+                (a, b) => a?.contentId === b?.contentId
+            );
             return _content;
         },
     });
@@ -77,6 +80,10 @@ const validateAndHandleReq = (req: XP.Request) => {
         logger.error(
             `Invalid content type for localized-content-data-fallback controller: ${content.type}`
         );
+        return;
+    }
+
+    if (!content.valid) {
         return;
     }
 
