@@ -1,5 +1,4 @@
 import * as contentLib from '/lib/xp/content';
-import { Content } from '/lib/xp/content';
 import { forceArray, removeDuplicatesFilter } from '../utils/array-utils';
 import { FormsOverview } from '../../site/content-types/forms-overview/forms-overview';
 import { contentTypesWithFormDetails } from '../contenttype-lists';
@@ -11,8 +10,10 @@ import { logger } from '../utils/logging';
 import { getLocaleFromContext } from '../localization/locale-context';
 
 type Audience = FormsOverview['audience'];
+type OverviewType = FormsOverview['overviewType'];
+type FallbackData = NonNullable<LocalizedContentDataFallback['items']>[number];
 
-const getContentWithFormDetails = (audience: Audience, excludedContent: string[]) => {
+const contentWithFormDetailsQuery = (audience: Audience, excludedContent: string[]) => {
     const { _selected: selectedAudience } = audience;
 
     const selectedProviderAudiences =
@@ -71,16 +72,24 @@ const getContentWithFormDetails = (audience: Audience, excludedContent: string[]
     }).hits as ContentWithFormDetails[];
 };
 
-const getContentForLanguage = (contents: ContentWithFormDetails[], language: string) => {
-    return contents.filter(
-        (content) => isContentLocalized(content) && content.language === language
-    );
+const splitByLocalizationState = (contents: ContentWithFormDetails[], language: string) => {
+    const localizedContent: ContentWithFormDetails[] = [];
+    const nonLocalizedContent: ContentWithFormDetails[] = [];
+
+    contents.forEach((content) => {
+        if (isContentLocalized(content) && content.language === language) {
+            localizedContent.push(content);
+        } else {
+            nonLocalizedContent.push(content);
+        }
+    });
+
+    return { localizedContent, nonLocalizedContent };
 };
 
-type FallbackData = NonNullable<LocalizedContentDataFallback['items']>[number];
-
-const getFallbackData = (contents: ContentWithFormDetails[]) => {
-    const contentIds = contents.map((content) => content._id);
+const transformToContentWithFallbackData = (contents: ContentWithFormDetails[]) => {
+    const nonLocalizedContent = contents.filter((content) => !isContentLocalized(content));
+    const contentIds = nonLocalizedContent.map((content) => content._id);
 
     const fallbackContents = contentLib.query({
         count: 1000,
@@ -108,7 +117,7 @@ const getFallbackData = (contents: ContentWithFormDetails[]) => {
 
     fallbackContents.forEach((fallbackContent) => {
         forceArray(fallbackContent.data.items).forEach((item) => {
-            const { contentId, enabled, targetUrl, ...data } = item;
+            const { contentId, enabled, ...data } = item;
 
             if (!enabled) {
                 return;
@@ -125,7 +134,7 @@ const getFallbackData = (contents: ContentWithFormDetails[]) => {
         });
     });
 
-    return contents.reduce<ContentWithFormDetails[]>((acc, content) => {
+    return nonLocalizedContent.reduce<ContentWithFormDetails[]>((acc, content) => {
         const fallbackDataForContent = fallbackData[content._id];
 
         if (fallbackDataForContent) {
@@ -139,64 +148,67 @@ const getFallbackData = (contents: ContentWithFormDetails[]) => {
     }, []);
 };
 
-const getNonLocalizedFallback = (contents: ContentWithFormDetails[], language: string) => {
-    const nonLocalizedContent = contents.filter((content) => !isContentLocalized(content));
-    logger.info(
-        `Found nonlocalized contente: ${nonLocalizedContent
-            .map((content) => content._path)
-            .join(', ')}`
-    );
-
-    return getFallbackData(nonLocalizedContent);
-};
-
-export const buildFormDetailsList = (
-    audience: FormsOverview['audience'],
+const getContentWithFormDetails = (
+    audience: Audience,
     language: string,
-    overviewType: FormsOverview['overviewType'],
     excludedContent: string[]
 ) => {
-    const contentWithFormDetails = getContentWithFormDetails(audience, excludedContent);
+    const contents = contentWithFormDetailsQuery(audience, excludedContent);
 
-    const localizedContent = getContentForLanguage(contentWithFormDetails, language);
-    const nonLocalizedContentWithFallback = getNonLocalizedFallback(
-        contentWithFormDetails,
-        language
-    );
+    const { localizedContent, nonLocalizedContent } = splitByLocalizationState(contents, language);
 
-    const allContent = [...localizedContent, ...nonLocalizedContentWithFallback];
+    const nonLocalizedContentWithFallbackData =
+        transformToContentWithFallbackData(nonLocalizedContent);
 
-    const formDetailsIds = allContent
+    return [...localizedContent, ...nonLocalizedContentWithFallbackData];
+};
+
+const buildFormDetailsMap = (
+    contentWithFormDetails: ContentWithFormDetails[],
+    overviewType: OverviewType
+) => {
+    const formDetailsIds = contentWithFormDetails
         .map((content) => content.data.formDetailsTargets)
         .flat()
         .filter(removeDuplicatesFilter());
 
-    const formDetailsMap = contentLib
-        .query({
-            count: formDetailsIds.length,
-            contentTypes: ['no.nav.navno:form-details'],
-            filters: {
-                ids: {
-                    values: formDetailsIds,
-                },
-                boolean: {
-                    must: [
-                        {
-                            hasValue: {
-                                field: 'data.formType._selected',
-                                values: [overviewType],
-                            },
-                        },
-                    ],
-                },
+    const formDetailsContent = contentLib.query({
+        count: formDetailsIds.length,
+        contentTypes: ['no.nav.navno:form-details'],
+        filters: {
+            ids: {
+                values: formDetailsIds,
             },
-        })
-        .hits.reduce<FormDetailsMap>((acc, formDetail) => {
-            acc[formDetail._id] = formDetail;
-            return acc;
-        }, {});
+            boolean: {
+                must: [
+                    {
+                        hasValue: {
+                            field: 'data.formType._selected',
+                            values: [overviewType],
+                        },
+                    },
+                ],
+            },
+        },
+    }).hits;
 
-    return allContent
+    return formDetailsContent.reduce<FormDetailsMap>((acc, formDetail) => {
+        acc[formDetail._id] = formDetail;
+        return acc;
+    }, {});
+};
+
+export const buildFormDetailsList = (
+    audience: Audience,
+    language: string,
+    overviewType: OverviewType,
+    excludedContent: string[]
+) => {
+    const contentWithFormDetails = getContentWithFormDetails(audience, language, excludedContent);
+
+    const formDetailsMap = buildFormDetailsMap(contentWithFormDetails, overviewType);
+
+    return contentWithFormDetails
         .reduce<FormDetailsListItem[]>((acc, content) => {
             const transformedItem = formsOverviewListItemTransformer(content, formDetailsMap);
             if (transformedItem) {

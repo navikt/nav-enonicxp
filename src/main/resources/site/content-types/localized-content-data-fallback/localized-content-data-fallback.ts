@@ -6,16 +6,16 @@ export interface LocalizedContentDataFallback {
   contentTypes: Array<string>;
 
   /**
-   * Verdier
+   * Oversettelser for ikke-lokalisert innhold
    */
   items?: Array<{
     /**
-     * Velg innhold
+     * Velg et ikke-lokalisert innhold
      */
     contentId: string;
 
     /**
-     * Aktivert
+     * Aktiver oversettelse
      */
     enabled: boolean;
 
@@ -32,6 +32,6 @@ export interface LocalizedContentDataFallback {
     /**
      * Overstyr URL
      */
-    targetUrl?: string;
+    externalProductUrl?: string;
   }>;
 }
