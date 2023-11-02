@@ -42,12 +42,14 @@ const getNewContent = (content: FallbackContent) => {
 };
 
 const transformToListItem = (content: Content): Item => {
+    const { _id, displayName, data } = content;
+
     return {
-        contentId: content._id,
+        title: data.title || displayName,
+        sortTitle: data.sortTitle || '',
+        ingress: data.ingress || displayName,
+        contentId: _id,
         enabled: false,
-        title: content.data.title || content.displayName,
-        sortTitle: content.data.sortTitle || '',
-        ingress: content.data.ingress || '',
     };
 };
 
