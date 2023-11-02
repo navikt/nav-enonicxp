@@ -12,23 +12,16 @@ type FallbackContent = Content<'no.nav.navno:localized-content-data-fallback'>;
 type Item = NonNullable<LocalizedContentDataFallback['items']>[number];
 
 const getNewContent = (content: FallbackContent) => {
-    const { contentTypes, items } = content.data;
+    const { contentTypes, items, contentQuery } = content.data;
 
     const existingContentIds = forceArray(items).map((item) => item?.contentId);
 
     return contentLib.query({
         count: 2000,
         contentTypes: forceArray(contentTypes as ArrayOrSingle<ContentDescriptor>),
+        query: contentQuery,
         filters: {
             boolean: {
-                must: [
-                    {
-                        hasValue: {
-                            field: 'inherit',
-                            values: ['CONTENT'],
-                        },
-                    },
-                ],
                 mustNot: [
                     {
                         ids: {
