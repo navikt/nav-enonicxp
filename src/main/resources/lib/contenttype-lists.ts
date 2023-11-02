@@ -134,3 +134,8 @@ export const contentTypesWithCustomEditor: ContentTypeList = [
     `${APP_DESCRIPTOR}:global-value-set`,
     `${APP_DESCRIPTOR}:global-case-time-set`,
 ];
+
+export const contentTypesWithFormDetails = [
+    `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
+    `${APP_DESCRIPTOR}:guide-page`,
+] as const;

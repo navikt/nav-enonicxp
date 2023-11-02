@@ -1,0 +1,55 @@
+<content-type xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Fallback-verdier for ikke-lokalisert innhold</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set>
+            <label>Relevante innholdstyper</label>
+            <items>
+                <input name="contentTypes" type="ContentTypeFilter">
+                    <label>Velg innholdstyper</label>
+                    <occurrences minimum="1" maximum="0"/>
+                    <config>
+                        <context>true</context>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="items">
+            <label>Verdier</label>
+            <occurrences minimum="0" maximum="0"/>
+            <items>
+                <input name="contentId" type="CustomSelector">
+                    <label>Velg innhold</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <service>contentSelector</service>
+                        <param value="contentTypes">
+                            {data.contentTypes}
+                        </param>
+                        <param value="selectorQuery">language="no"</param>
+                        <param value="sort">displayName ASC</param>
+                    </config>
+                </input>
+                <input type="CheckBox" name="enabled">
+                    <label>Aktivert</label>
+                    <default>unchecked</default>
+                </input>
+                <input name="title" type="TextLine">
+                    <label>Tittel</label>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <input name="ingress" type="TextLine">
+                    <label>Ingress</label>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <input name="targetUrl" type="TextLine">
+                    <label>Overstyr URL</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+            </items>
+        </item-set>
+    </form>
+</content-type>
