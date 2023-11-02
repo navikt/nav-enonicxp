@@ -75,17 +75,20 @@ const refreshItemsList = (content: FallbackContent) => {
 
     const disabledItemsMap = new Map(disabledItems.map((item) => [item.contentId, item]));
 
-    let hasNewItems = false;
-
     const updatedItems = findNewItems(content, enabledItems).map((newItem) => {
         const existingItem = disabledItemsMap.get(newItem.contentId);
         if (!existingItem) {
-            hasNewItems = true;
+            return newItem;
         }
-        return existingItem || newItem;
+
+        return existingItem;
     });
 
-    if (!hasNewItems) {
+    const hasChanges =
+        updatedItems.length !== disabledItems.length ||
+        updatedItems.some((item) => !disabledItemsMap.has(item.contentId));
+
+    if (!hasChanges) {
         return;
     }
 
