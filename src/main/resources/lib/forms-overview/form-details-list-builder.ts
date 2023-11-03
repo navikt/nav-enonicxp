@@ -102,7 +102,7 @@ const transformToContentWithFallbackData = (
     }).hits;
 
     if (fallbackContents.length === 0) {
-        logger.info('No fallback data found');
+        logger.warning(`No fallback data found with provided ids: ${localeFallbackIds.join(', ')}`);
         return [];
     }
 
