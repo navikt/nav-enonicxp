@@ -1,0 +1,80 @@
+<content-type xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Oversettelser for ikke-lokalisert innhold</display-name>
+    <description>Benyttes ved behov for oversetting av enkelt-felter på innhold som ikke er lokalisert, f.eks. for
+        utlisting i oversikter
+    </description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <item-set name="items">
+            <label>Oversettelser (listen autogenererer inntil 500 elementer)</label>
+            <occurrences minimum="0" maximum="0"/>
+            <items>
+                <input type="CheckBox" name="enabled">
+                    <label>Aktiver oversettelse (husk å kryss av!)</label>
+                    <help-text>Må aktiveres dersom oversettelsen skal vises for dette innholdet</help-text>
+                    <default>unchecked</default>
+                </input>
+                <input name="title" type="TextLine">
+                    <label>Sidetittel</label>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <input name="sortTitle" type="TextLine">
+                    <label>Tittel for utlisting og sortering</label>
+                    <help-text>Hvis tom benyttes sidetittel</help-text>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input name="ingress" type="TextArea">
+                    <label>Ingress</label>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <input name="externalProductUrl" type="TextLine">
+                    <label>Overstyr URL</label>
+                    <help-text>Dersom dette feltet er tomt vil det lenkes til norsk versjon</help-text>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input name="contentId" type="CustomSelector">
+                    <label>Velg et innhold</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <service>contentSelector</service>
+                        <param value="contentTypes">{data.contentTypes}</param>
+                        <param value="selectorQuery">{data.contentQuery}</param>
+                        <param value="sort">displayName ASC</param>
+                    </config>
+                </input>
+            </items>
+        </item-set>
+        <field-set>
+            <label>Innholdstyper som skal kunne velges</label>
+            <items>
+                <input name="contentTypes" type="ContentTypeFilter">
+                    <label>Velg innholdstyper</label>
+                    <occurrences minimum="1" maximum="0"/>
+                    <config>
+                        <context>true</context>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Andre restriksjoner på innholdsvelger</label>
+            <items>
+                <input name="contentQuery" type="TextLine">
+                    <label>Må være en gyldig NoQL query string</label>
+                    <help-text>Dersom flere restriksjoner skal gjelde for hvilket innhold som kan velges, kan det legges
+                        inn her
+                    </help-text>
+                    <occurrences minimum="1" maximum="1"/>
+                    <!-- We always want to restrict this to non-localized content -->
+                    <default>inherit="CONTENT"</default>
+                    <config>
+                        <regexp>^inherit="CONTENT".*$</regexp>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

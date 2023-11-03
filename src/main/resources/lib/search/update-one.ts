@@ -9,7 +9,7 @@ import { isContentLocalized } from '../localization/locale-utils';
 import { runInLocaleContext } from '../localization/locale-context';
 import { getLayersData } from '../localization/layers-data';
 import { createOrUpdateSearchNode } from './create-or-update-search-node';
-import { forceArray, stringArrayToSet } from '../utils/array-utils';
+import { forceArray } from '../utils/array-utils';
 import { isArchivedContentNode } from '../utils/content-utils';
 
 const isQueryMatchingContent = (query: string, contentId: string, locale: string) =>
@@ -36,7 +36,7 @@ export const updateSearchNode = (contentId: string, repoId: string) => {
         return;
     }
 
-    const contentTypesAllowedSet = stringArrayToSet(forceArray(searchConfig.data.contentTypes));
+    const contentTypesAllowedSet = new Set(forceArray(searchConfig.data.contentTypes));
 
     const contentRepoConnection = getRepoConnection({
         repoId,
@@ -49,7 +49,7 @@ export const updateSearchNode = (contentId: string, repoId: string) => {
 
     if (
         !contentNode ||
-        !contentTypesAllowedSet[contentNode.type] ||
+        !contentTypesAllowedSet.has(contentNode.type) ||
         !isContentLocalized(contentNode) ||
         isArchivedContentNode(contentNode)
     ) {

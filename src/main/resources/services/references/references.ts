@@ -20,7 +20,11 @@ type ReqParams = Partial<{
 }>;
 
 const genericResolver = (contentId: string) => {
-    const referencesFinder = new ReferencesFinder({ contentId, withDeepSearch: false });
+    const referencesFinder = new ReferencesFinder({
+        contentId,
+        withDeepSearch: false,
+        logErrorsOnly: true,
+    });
     return referencesFinder.run();
 };
 

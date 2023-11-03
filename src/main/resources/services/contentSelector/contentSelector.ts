@@ -6,7 +6,7 @@ import { customSelectorHitWithLink } from '../service-utils';
 import { logger } from '../../lib/utils/logging';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
-import { forceArray, parseJsonArray, removeDuplicates } from '../../lib/utils/array-utils';
+import { forceArray, parseJsonToArray, removeDuplicates } from '../../lib/utils/array-utils';
 import { getNestedValues } from '../../lib/utils/object-utils';
 
 type SelectorHit = XP.CustomSelectorServiceResponseHit;
@@ -21,23 +21,25 @@ const parseContentTypes = (contentTypesJson?: string) => {
         return null;
     }
 
-    return parseJsonArray(contentTypesJson) || [contentTypesJson];
+    return parseJsonToArray<ContentDescriptor>(injectValuesFromContent(contentTypesJson));
 };
 
-export const buildSelectorQuery = (selectorInput: string) => {
+const injectValuesFromContent = (str: string) => {
     const content = portalLib.getContent();
     if (!content) {
-        logger.error(
-            `Could not retrieve content from context, failed to build query for selector input ${selectorInput}`
-        );
-        return null;
+        logger.error('Could not retrieve content from context');
+        return str;
     }
 
-    return selectorInput.replace(/{(\w|\.|-)+}/g, (match) => {
+    return str.replace(/{(\w|\.|-)+}/g, (match) => {
         const fieldKey = match.replace(/[{}]/g, '');
         const fieldValue = getNestedValues(content, fieldKey);
-        return typeof fieldValue === 'string' ? fieldValue : '';
+        return typeof fieldValue === 'string' ? fieldValue : JSON.stringify(fieldValue);
     });
+};
+
+const buildSelectorQuery = (selectorInput: string) => {
+    return injectValuesFromContent(selectorInput);
 };
 
 const buildQuery = (userInput?: string, selectorInput?: string) => {
@@ -46,6 +48,7 @@ const buildQuery = (userInput?: string, selectorInput?: string) => {
 
     return [userQuery, selectorQuery].filter(Boolean).join(' AND ');
 };
+
 const transformHit = (content: Content): SelectorHit =>
     customSelectorHitWithLink(
         {

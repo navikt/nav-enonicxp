@@ -1,13 +1,9 @@
 import { logger } from './logging';
 
-export const parseJsonArray = <Type = any>(json: string): Type[] | null => {
+export const parseJsonToArray = <Type = unknown>(json: string): Type[] | null => {
     try {
-        const array = JSON.parse(json);
-        if (Array.isArray(array)) {
-            return array;
-        }
-        logger.info(`Expected JSON string to be array, got ${typeof array} - JSON: ${json}`);
-        return null;
+        const isStringifiedArray = json.startsWith('[') && json.endsWith(']');
+        return isStringifiedArray ? JSON.parse(json) : forceArray(json);
     } catch (e) {
         logger.info(`Failed to parse JSON string ${json} - ${e}`);
         return null;
@@ -21,10 +17,6 @@ export const forceArray = <Type>(arrayOrNot?: Type | Type[]) => {
 
     return Array.isArray(arrayOrNot) ? arrayOrNot : [arrayOrNot];
 };
-
-export const stringArrayToSet = (list: string[] | readonly string[]): Record<string, boolean> =>
-    // @ts-ignore (TS bug? string[] | readonly string[] behaves strangely)
-    list.reduce((acc, contentType) => ({ ...acc, [contentType]: true }), {});
 
 export const removeDuplicates = <Type>(
     array: Type[] | ReadonlyArray<Type>,

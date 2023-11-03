@@ -34,6 +34,19 @@
                 </input>
                 <mixin name="illustration"/>
                 <mixin name="custom-path-selector-required"/>
+                <mixin name="external-product-url"/>
+                <input name="areasFilterToggle" type="CheckBox">
+                    <label>Vis område-filter</label>
+                    <default>checked</default>
+                </input>
+                <input name="taxonomyFilterToggle" type="CheckBox">
+                    <label>Vis kategori-filter</label>
+                    <default>checked</default>
+                </input>
+                <input name="textFilterToggle" type="CheckBox">
+                    <label>Vis fritekst-filter</label>
+                    <default>checked</default>
+                </input>
             </items>
         </field-set>
         <option-set name="audience">
@@ -90,19 +103,16 @@
             </options>
         </option-set>
         <field-set>
-            <label>Filtre</label>
+            <label>Data for ikke-lokaliserte sider</label>
             <items>
-                <input name="areasFilterToggle" type="CheckBox">
-                    <label>Vis område-filter</label>
-                    <default>checked</default>
-                </input>
-                <input name="taxonomyFilterToggle" type="CheckBox">
-                    <label>Vis kategori-filter</label>
-                    <default>checked</default>
-                </input>
-                <input name="textFilterToggle" type="CheckBox">
-                    <label>Vis fritekst-filter</label>
-                    <default>checked</default>
+                <input name="localeFallback" type="ContentSelector">
+                    <label>Velg fallback data</label>
+                    <help-text>Brukes for å sette inn elementer for sider som ikke er lokalisert</help-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allowContentType>${app}:content-data-locale-fallback</allowContentType>
+                        <showStatus>true</showStatus>
+                    </config>
                 </input>
             </items>
         </field-set>
@@ -129,24 +139,16 @@
         <field-set>
             <label>Søkeoptimalisering</label>
             <items>
-                <input type="TextArea" name="description">
-                    <label>Oppsummering</label>
-                    <help-text>Vises når denne siden lenkes til fra enkelte andre sider, og i
-                        søkeresultater. Bør være maks 240 tegn.
-                    </help-text>
-                </input>
                 <mixin name="keywords"/>
                 <input name="noindex" type="CheckBox">
                     <label>
                         Skal ikke vises i søk
                     </label>
                     <help-text>
-                        Gjelder både søket på nav.no og eksternt søk som Google og Bing
+                        Gjelder både søket på nav.no og eksterne søk som Google og Bing
                     </help-text>
                 </input>
             </items>
         </field-set>
-        <mixin name="external-product-url"/>
-        <mixin name="languages-legacy"/>
     </form>
 </content-type>
