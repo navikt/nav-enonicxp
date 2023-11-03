@@ -45,7 +45,7 @@ export const formsOverviewListItemTransformer =
             keywords: forceArray(content.data.keywords),
             url: getUrl(content),
             type: content.type,
-            language: content.language,
+            targetLanguage: content.language,
             anchorId: sanitize(sortTitle),
             illustration: content.data.illustration,
             area: forceArray(content.data.area),

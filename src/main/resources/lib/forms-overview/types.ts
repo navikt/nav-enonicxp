@@ -32,5 +32,5 @@ export type FormDetailsListItem = {
     keywords: string[];
     url: string | null;
     type: ContentTypeWithFormDetails;
-    language: string;
+    targetLanguage: string;
 } & Required<IncludedProductData>;
