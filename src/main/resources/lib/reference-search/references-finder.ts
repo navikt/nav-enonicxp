@@ -2,7 +2,7 @@ import { Content, BooleanFilter } from '/lib/xp/content';
 import { RepoConnection, NodeQueryHit, RepoNode } from '/lib/xp/node';
 import * as contextLib from '/lib/xp/context';
 import { RepoBranch } from '../../types/common';
-import { logger as globalLogger } from '../utils/logging';
+import { logger } from '../utils/logging';
 import {
     contentTypesInFormsOverviewPages,
     contentTypesInOverviewPages,
@@ -22,7 +22,7 @@ type ContentNode = RepoNode<Content<any>>;
 type QueryHit = Pick<NodeQueryHit, 'id'>;
 type QueryResult = ReadonlyArray<QueryHit>;
 
-type Logger = typeof globalLogger;
+type Logger = typeof logger;
 
 const QUERY_COUNT = 1000;
 
@@ -38,15 +38,13 @@ const typesWithFormsOverviewPages: ContentDescriptorSet = new Set([
 
 const createLogger = (msgSuffix: string, errorsOnly?: boolean): Logger => {
     const noop = () => ({});
-    const { info, warning, critical, error } = globalLogger;
-
     const suffixedMsg = (msg: string) => `${msg}${msgSuffix}`;
 
     return {
-        info: errorsOnly ? noop : (msg, ...rest) => info(suffixedMsg(msg), ...rest),
-        warning: errorsOnly ? noop : (msg, ...rest) => warning(suffixedMsg(msg), ...rest),
-        error: (msg, ...rest) => error(suffixedMsg(msg), ...rest),
-        critical: (msg, ...rest) => critical(suffixedMsg(msg), ...rest),
+        info: errorsOnly ? noop : (msg) => logger.info(suffixedMsg(msg)),
+        warning: errorsOnly ? noop : (msg) => logger.warning(suffixedMsg(msg)),
+        error: (msg) => logger.error(suffixedMsg(msg)),
+        critical: (msg) => logger.critical(suffixedMsg(msg)),
     };
 };
 
