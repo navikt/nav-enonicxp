@@ -12,6 +12,11 @@
             <label>Oversettelser (listen autogenererer inntil 500 elementer)</label>
             <occurrences minimum="0" maximum="0"/>
             <items>
+                <input type="CheckBox" name="enabled">
+                    <label>Aktiver oversettelse (husk å kryss av!)</label>
+                    <help-text>Må aktiveres dersom oversettelsen skal vises for dette innholdet</help-text>
+                    <default>unchecked</default>
+                </input>
                 <input name="title" type="TextLine">
                     <label>Sidetittel</label>
                     <occurrences minimum="1" maximum="1"/>
@@ -21,7 +26,7 @@
                     <help-text>Hvis tom benyttes sidetittel</help-text>
                     <occurrences minimum="0" maximum="1"/>
                 </input>
-                <input name="ingress" type="TextLine">
+                <input name="ingress" type="TextArea">
                     <label>Ingress</label>
                     <occurrences minimum="1" maximum="1"/>
                 </input>
@@ -39,11 +44,6 @@
                         <param value="selectorQuery">{data.contentQuery}</param>
                         <param value="sort">displayName ASC</param>
                     </config>
-                </input>
-                <input type="CheckBox" name="enabled">
-                    <label>Aktiver oversettelse (husk å kryss av!)</label>
-                    <help-text>Må aktiveres dersom oversettelsen skal vises for dette innholdet</help-text>
-                    <default>unchecked</default>
                 </input>
             </items>
         </item-set>

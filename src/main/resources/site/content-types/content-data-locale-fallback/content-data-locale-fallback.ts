@@ -5,6 +5,11 @@ export interface ContentDataLocaleFallback {
    */
   items?: Array<{
     /**
+     * Aktiver oversettelse (husk å kryss av!)
+     */
+    enabled: boolean;
+
+    /**
      * Sidetittel
      */
     title: string;
@@ -28,11 +33,6 @@ export interface ContentDataLocaleFallback {
      * Velg et innhold
      */
     contentId: string;
-
-    /**
-     * Aktiver oversettelse (husk å kryss av!)
-     */
-    enabled: boolean;
   }>;
 
   /**

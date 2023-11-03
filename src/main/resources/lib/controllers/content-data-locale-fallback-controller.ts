@@ -128,7 +128,7 @@ const validateAndHandleReq = (req: XP.Request) => {
     refreshItemsList(content);
 };
 
-const formIntermediateStepController = (req: XP.Request) => {
+const contentDataLocaleFallbackController = (req: XP.Request) => {
     if (req.mode === 'edit' && req.method === 'GET') {
         validateAndHandleReq(req);
     }
@@ -136,4 +136,4 @@ const formIntermediateStepController = (req: XP.Request) => {
     return frontendProxy(req);
 };
 
-export const get = formIntermediateStepController;
+export const get = contentDataLocaleFallbackController;
