@@ -8,35 +8,6 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <field-set>
-            <label>Innholdstyper som skal kunne velges</label>
-            <items>
-                <input name="contentTypes" type="ContentTypeFilter">
-                    <label>Velg innholdstyper</label>
-                    <occurrences minimum="1" maximum="0"/>
-                    <config>
-                        <context>true</context>
-                    </config>
-                </input>
-            </items>
-        </field-set>
-        <field-set>
-            <label>Andre restriksjoner på innholdsvelger</label>
-            <items>
-                <input name="contentQuery" type="TextLine">
-                    <label>Må være en gyldig NoQL query string</label>
-                    <help-text>Dersom flere restriksjoner skal gjelde for hvilket innhold som kan velges, kan det legges
-                        inn her
-                    </help-text>
-                    <occurrences minimum="1" maximum="1"/>
-                    <!-- We always want to restrict this to non-localized content -->
-                    <default>inherit="CONTENT"</default>
-                    <config>
-                        <regexp>^inherit="CONTENT".*$</regexp>
-                    </config>
-                </input>
-            </items>
-        </field-set>
         <item-set name="items">
             <label>Oversettelser (listen autogenererer inntil 500 elementer)</label>
             <occurrences minimum="0" maximum="0"/>
@@ -76,5 +47,34 @@
                 </input>
             </items>
         </item-set>
+        <field-set>
+            <label>Innholdstyper som skal kunne velges</label>
+            <items>
+                <input name="contentTypes" type="ContentTypeFilter">
+                    <label>Velg innholdstyper</label>
+                    <occurrences minimum="1" maximum="0"/>
+                    <config>
+                        <context>true</context>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Andre restriksjoner på innholdsvelger</label>
+            <items>
+                <input name="contentQuery" type="TextLine">
+                    <label>Må være en gyldig NoQL query string</label>
+                    <help-text>Dersom flere restriksjoner skal gjelde for hvilket innhold som kan velges, kan det legges
+                        inn her
+                    </help-text>
+                    <occurrences minimum="1" maximum="1"/>
+                    <!-- We always want to restrict this to non-localized content -->
+                    <default>inherit="CONTENT"</default>
+                    <config>
+                        <regexp>^inherit="CONTENT".*$</regexp>
+                    </config>
+                </input>
+            </items>
+        </field-set>
     </form>
 </content-type>
