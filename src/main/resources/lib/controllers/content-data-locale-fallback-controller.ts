@@ -6,10 +6,10 @@ import { logger } from '../utils/logging';
 import { forceArray, removeDuplicates } from '../utils/array-utils';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { ArrayOrSingle } from '../../types/util-types';
-import { LocalizedContentDataFallback } from '../../site/content-types/localized-content-data-fallback/localized-content-data-fallback';
+import { ContentDataLocaleFallback } from '../../site/content-types/content-data-locale-fallback/content-data-locale-fallback';
 
-type FallbackContent = Content<'no.nav.navno:localized-content-data-fallback'>;
-type Item = NonNullable<LocalizedContentDataFallback['items']>[number];
+type FallbackContent = Content<'no.nav.navno:content-data-locale-fallback'>;
+type Item = NonNullable<ContentDataLocaleFallback['items']>[number];
 
 const sortByTitle = (a: Item, b: Item) => (a.title > b.title ? 1 : -1);
 
@@ -107,9 +107,9 @@ const validateAndHandleReq = (req: XP.Request) => {
         return;
     }
 
-    if (content.type !== 'no.nav.navno:localized-content-data-fallback') {
+    if (content.type !== 'no.nav.navno:content-data-locale-fallback') {
         logger.error(
-            `Invalid content type for localized-content-data-fallback controller: ${content.type}`
+            `Invalid content type for content-data-locale-fallback controller: ${content.type}`
         );
         return;
     }

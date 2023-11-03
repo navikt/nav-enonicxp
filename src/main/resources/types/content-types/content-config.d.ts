@@ -51,7 +51,7 @@ import { FormsOverview } from '../../site/content-types/forms-overview/forms-ove
 import { FragmentCreator } from '../../site/content-types/fragment-creator/fragment-creator';
 import { PageMeta } from 'site/content-types/page-meta/page-meta';
 import { SearchConfigV2 } from '../../site/content-types/search-config-v2/search-config-v2';
-import { LocalizedContentDataFallback } from '../../site/content-types/localized-content-data-fallback/localized-content-data-fallback';
+import { ContentDataLocaleFallback } from '../../site/content-types/content-data-locale-fallback/content-data-locale-fallback';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
@@ -70,7 +70,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'guide-page': GuidePage;
     'internal-link': InternalLink;
     'large-table': LargeTable;
-    'localized-content-data-fallback': LocalizedContentDataFallback;
+    'content-data-locale-fallback': ContentDataLocaleFallback;
     'main-article': MainArticle;
     'main-article-chapter': MainArticleChapter;
     'megamenu-item': MegamenuItem;

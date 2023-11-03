@@ -1,12 +1,15 @@
 <content-type xmlns="urn:enonic:xp:model:1.0">
-    <display-name>~Fallback-verdier for ikke-lokalisert innhold</display-name>
+    <display-name>Oversettelser for ikke-lokalisert innhold</display-name>
+    <description>Benyttes ved behov for oversetting av enkelt-felter på innhold som ikke er lokalisert, f.eks. for
+        utlisting i oversikter
+    </description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
         <field-set>
-            <label>Relevante innholdstyper</label>
+            <label>Innholdstyper som skal kunne velges</label>
             <items>
                 <input name="contentTypes" type="ContentTypeFilter">
                     <label>Velg innholdstyper</label>
@@ -18,12 +21,15 @@
             </items>
         </field-set>
         <field-set>
-            <label>Restriksjoner på innholdsvelgere</label>
+            <label>Andre restriksjoner på innholdsvelger</label>
             <items>
                 <input name="contentQuery" type="TextLine">
-                    <label>Sett en NoQL query string</label>
-                    <help-text>Dersom flere restriksjoner skal gjelde, kan det legges inn her</help-text>
+                    <label>Må være en gyldig NoQL query string</label>
+                    <help-text>Dersom flere restriksjoner skal gjelde for hvilket innhold som kan velges, kan det legges
+                        inn her
+                    </help-text>
                     <occurrences minimum="1" maximum="1"/>
+                    <!-- We always want to restrict this to non-localized content -->
                     <default>inherit="CONTENT"</default>
                     <config>
                         <regexp>^inherit="CONTENT".*$</regexp>
@@ -32,7 +38,7 @@
             </items>
         </field-set>
         <item-set name="items">
-            <label>Oversettelser for ikke-lokalisert innhold</label>
+            <label>Oversettelser for ikke-lokalisert innhold (listen autogenererer inntil 500 elementer)</label>
             <occurrences minimum="0" maximum="0"/>
             <items>
                 <input name="title" type="TextLine">
@@ -58,9 +64,7 @@
                     <occurrences minimum="1" maximum="1"/>
                     <config>
                         <service>contentSelector</service>
-                        <param value="contentTypes">
-                            {data.contentTypes}
-                        </param>
+                        <param value="contentTypes">{data.contentTypes}</param>
                         <param value="selectorQuery">{data.contentQuery}</param>
                         <param value="sort">displayName ASC</param>
                     </config>

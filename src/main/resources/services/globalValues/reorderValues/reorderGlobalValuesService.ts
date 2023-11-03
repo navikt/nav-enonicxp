@@ -24,7 +24,7 @@ export const reorderGlobalValuesService = (req: XP.Request) => {
         );
     }
 
-    const keysParsed = parseJsonArray(orderedKeys);
+    const keysParsed = parseJsonArray<string>(orderedKeys);
     if (!keysParsed) {
         return gvServiceInvalidRequestResponse('Required parameter "orderedKeys" is invalid');
     }

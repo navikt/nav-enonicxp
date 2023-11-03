@@ -21,9 +21,7 @@ const parseContentTypes = (contentTypesJson?: string) => {
         return null;
     }
 
-    const stringWithContentValues = injectValuesFromContent(contentTypesJson);
-
-    return parseJsonArray(stringWithContentValues) || [stringWithContentValues];
+    return parseJsonArray<ContentDescriptor>(injectValuesFromContent(contentTypesJson));
 };
 
 const injectValuesFromContent = (str: string) => {

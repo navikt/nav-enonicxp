@@ -110,7 +110,7 @@
                     <help-text>Brukes for å sette inn elementer for sider som ikke er lokalisert</help-text>
                     <occurrences maximum="0" minimum="0"/>
                     <config>
-                        <allowContentType>${app}:localized-content-data-fallback</allowContentType>
+                        <allowContentType>${app}:content-data-locale-fallback</allowContentType>
                         <showStatus>true</showStatus>
                     </config>
                 </input>

@@ -1,13 +1,8 @@
 import { logger } from './logging';
 
-export const parseJsonArray = <Type = any>(json: string): Type[] | null => {
+export const parseJsonArray = <Type = unknown>(json: string): Type[] | null => {
     try {
-        const array = JSON.parse(json);
-        if (Array.isArray(array)) {
-            return array;
-        }
-        logger.info(`Expected JSON string to be array, got ${typeof array} - JSON: ${json}`);
-        return null;
+        return forceArray(JSON.parse(json));
     } catch (e) {
         logger.info(`Failed to parse JSON string ${json} - ${e}`);
         return null;

@@ -5,14 +5,14 @@ import { contentTypesWithFormDetails } from '../contenttype-lists';
 import { ContentWithFormDetails, FormDetailsListItem, FormDetailsMap } from './types';
 import { formsOverviewListItemTransformer } from './list-item-transformer';
 import { isContentLocalized } from '../localization/locale-utils';
-import { LocalizedContentDataFallback } from '../../site/content-types/localized-content-data-fallback/localized-content-data-fallback';
+import { ContentDataLocaleFallback } from '../../site/content-types/content-data-locale-fallback/content-data-locale-fallback';
 import { logger } from '../utils/logging';
 import { getLocaleFromContext } from '../localization/locale-context';
 
 type Audience = FormsOverview['audience'];
 type OverviewType = FormsOverview['overviewType'];
 
-type FallbackDataAll = NonNullable<LocalizedContentDataFallback['items']>[number];
+type FallbackDataAll = NonNullable<ContentDataLocaleFallback['items']>[number];
 type FallbackData = Omit<FallbackDataAll, 'enabled' | 'contentId' | 'contentQuery'>;
 
 const contentWithFormDetailsQuery = (audience: Audience, excludedContent: string[]) => {
@@ -95,7 +95,7 @@ const transformToContentWithFallbackData = (
 ) => {
     const fallbackContents = contentLib.query({
         count: 1000,
-        contentTypes: ['no.nav.navno:localized-content-data-fallback'],
+        contentTypes: ['no.nav.navno:content-data-locale-fallback'],
         filters: {
             ids: { values: localeFallbackIds },
         },

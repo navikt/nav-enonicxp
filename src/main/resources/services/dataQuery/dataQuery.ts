@@ -268,7 +268,7 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const typesParsed = types ? parseJsonArray(types) : contentTypesInDataQuery;
+    const typesParsed = types ? parseJsonArray<ContentDescriptor>(types) : contentTypesInDataQuery;
     if (!typesParsed) {
         return {
             status: 400,

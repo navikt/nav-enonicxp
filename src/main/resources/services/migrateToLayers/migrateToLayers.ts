@@ -123,8 +123,8 @@ export const post = (req: XP.Request) => {
         };
     }
 
-    const contantToMigrateArray = parseJsonArray(req.body);
-    if (!contantToMigrateArray) {
+    const contentToMigrateArray = parseJsonArray<ContentMigrationParams>(req.body);
+    if (!contentToMigrateArray) {
         return {
             status: 400,
             body: {
@@ -134,7 +134,7 @@ export const post = (req: XP.Request) => {
         };
     }
 
-    return runPresetMigrationJob(contantToMigrateArray);
+    return runPresetMigrationJob(contentToMigrateArray);
 };
 
 export const get = (req: XP.Request) => {
