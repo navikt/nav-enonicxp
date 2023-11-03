@@ -25,8 +25,8 @@ const transformToListItem = (content: Content): Item => {
     };
 };
 
-const splitByEnabledStatus = (items?: ArrayOrSingle<Item>) => {
-    return forceArray(items).reduce<{
+const splitByEnabledStatus = (items: ReadonlyArray<Item>) => {
+    return items.reduce<{
         enabledItems: Item[];
         disabledItems: Item[];
     }>(
@@ -71,19 +71,29 @@ const findNewItems = (content: FallbackContent, existingItems: Item[]) => {
 // We always keep existing items if they are enabled. Disabled items are removed if they no longer
 // match the restrictions set on the fallback content.
 const refreshItemsList = (content: FallbackContent) => {
-    const { enabledItems, disabledItems } = splitByEnabledStatus(content.data.items);
+    const currentItemsList: ReadonlyArray<Item> = forceArray(content.data.items);
 
-    const currentItemsMap = new Map(disabledItems.map((item) => [item.contentId, item]));
+    const { enabledItems, disabledItems } = splitByEnabledStatus(currentItemsList);
 
-    const updatedItems = findNewItems(content, enabledItems).map((newItem) => {
-        return currentItemsMap.get(newItem.contentId) || newItem;
+    const currentDisabledItemsMap = new Map(disabledItems.map((item) => [item.contentId, item]));
+
+    const updatedDisabledItems = findNewItems(content, enabledItems).map((newItem) => {
+        return currentDisabledItemsMap.get(newItem.contentId) || newItem;
     });
 
-    const hasChanges =
-        updatedItems.length !== disabledItems.length ||
-        updatedItems.some((newItem) => !currentItemsMap.has(newItem.contentId));
+    const updatedItemsList: ReadonlyArray<Item> = removeDuplicates(
+        [...updatedDisabledItems.sort(sortByTitle), ...enabledItems.sort(sortByTitle)],
+        (a, b) => a.contentId === b.contentId
+    );
 
-    if (!hasChanges) {
+    const isListChanged =
+        currentItemsList.length !== updatedItemsList.length ||
+        currentItemsList.some(
+            (currentItem, currentIndex) =>
+                currentItem.contentId !== updatedItemsList[currentIndex].contentId
+        );
+
+    if (!isListChanged) {
         return;
     }
 
@@ -91,10 +101,7 @@ const refreshItemsList = (content: FallbackContent) => {
         key: content._id,
         requireValid: false,
         editor: (_content) => {
-            _content.data.items = removeDuplicates(
-                [...updatedItems.sort(sortByTitle), ...enabledItems.sort(sortByTitle)],
-                (a, b) => a.contentId === b.contentId
-            );
+            _content.data.items = updatedItemsList;
             return _content;
         },
     });

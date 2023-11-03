@@ -3,7 +3,7 @@ import * as portalLib from '/lib/xp/portal';
 import cacheLib from '/lib/cache';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { logger } from '../../lib/utils/logging';
-import { parseJsonArray } from '../../lib/utils/array-utils';
+import { parseJsonToArray } from '../../lib/utils/array-utils';
 import { generateUUID } from '../../lib/utils/uuid';
 import { URLS } from '../../lib/constants';
 import {
@@ -123,7 +123,7 @@ export const post = (req: XP.Request) => {
         };
     }
 
-    const contentToMigrateArray = parseJsonArray<ContentMigrationParams>(req.body);
+    const contentToMigrateArray = parseJsonToArray<ContentMigrationParams>(req.body);
     if (!contentToMigrateArray) {
         return {
             status: 400,

@@ -3,7 +3,7 @@ import { gvServiceInvalidRequestResponse } from '../utils';
 import { getGlobalValueSet } from '../../../lib/global-values/global-value-utils';
 import { logger } from '../../../lib/utils/logging';
 import { GlobalValueItem } from '../../../lib/global-values/types';
-import { forceArray, parseJsonArray } from '../../../lib/utils/array-utils';
+import { forceArray, parseJsonToArray } from '../../../lib/utils/array-utils';
 import { applyModifiedData } from '../../../lib/utils/content-utils';
 import { CONTENT_ROOT_REPO_ID } from '../../../lib/constants';
 
@@ -24,7 +24,7 @@ export const reorderGlobalValuesService = (req: XP.Request) => {
         );
     }
 
-    const keysParsed = parseJsonArray<string>(orderedKeys);
+    const keysParsed = parseJsonToArray<string>(orderedKeys);
     if (!keysParsed) {
         return gvServiceInvalidRequestResponse('Required parameter "orderedKeys" is invalid');
     }

@@ -6,7 +6,7 @@ import { customSelectorHitWithLink } from '../service-utils';
 import { logger } from '../../lib/utils/logging';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
-import { forceArray, parseJsonArray, removeDuplicates } from '../../lib/utils/array-utils';
+import { forceArray, parseJsonToArray, removeDuplicates } from '../../lib/utils/array-utils';
 import { getNestedValues } from '../../lib/utils/object-utils';
 
 type SelectorHit = XP.CustomSelectorServiceResponseHit;
@@ -21,7 +21,7 @@ const parseContentTypes = (contentTypesJson?: string) => {
         return null;
     }
 
-    return parseJsonArray<ContentDescriptor>(injectValuesFromContent(contentTypesJson));
+    return parseJsonToArray<ContentDescriptor>(injectValuesFromContent(contentTypesJson));
 };
 
 const injectValuesFromContent = (str: string) => {
