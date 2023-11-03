@@ -20,14 +20,16 @@ const contentHasField = (contentSchema: contentLib.ContentType, fieldName: strin
     });
 };
 
+type Params = Partial<{
+    repoId: string;
+    contentId: string;
+    contentType: ContentDescriptor;
+    wipeData: string;
+    wipeComponents: string;
+}>;
+
 export const get = (req: XP.Request) => {
-    const { repoId, contentId, contentType, wipeData, wipeComponents } = req.params as {
-        repoId: string;
-        contentId: string;
-        contentType: ContentDescriptor;
-        wipeData: string;
-        wipeComponents: string;
-    };
+    const { repoId, contentId, contentType, wipeData, wipeComponents } = req.params as Params;
 
     if (!repoId || !contentId || !contentType) {
         logger.warning(
