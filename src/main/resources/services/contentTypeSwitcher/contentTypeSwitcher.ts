@@ -2,14 +2,14 @@ import * as contentLib from '/lib/xp/content';
 import { validateCurrentUserPermissionForContent } from '../../lib/utils/auth-utils';
 import { contentTypesInContentSwitcher } from '../../lib/contenttype-lists';
 import { logger } from '../../lib/utils/logging';
-import { stringArrayToSet } from '../../lib/utils/array-utils';
 import { switchContentType } from '../../lib/content-transformers/content-type-switcher';
 import { applyModifiedData } from '../../lib/utils/content-utils';
 import { hasValidCustomPath } from '../../lib/paths/custom-paths/custom-path-utils';
+import { ContentDescriptor } from '../../types/content-types/content-config';
 
 type FormItem = contentLib.FormItem & { items?: contentLib.FormItem[] };
 
-const contentTypesMap = stringArrayToSet(contentTypesInContentSwitcher);
+const contentTypesSet: ReadonlySet<ContentDescriptor> = new Set(contentTypesInContentSwitcher);
 
 const contentHasField = (contentSchema: contentLib.ContentType, fieldName: string) => {
     return contentSchema.form.some((form: FormItem) => {
@@ -24,7 +24,7 @@ export const get = (req: XP.Request) => {
     const { repoId, contentId, contentType, wipeData, wipeComponents } = req.params as {
         repoId: string;
         contentId: string;
-        contentType: string;
+        contentType: ContentDescriptor;
         wipeData: string;
         wipeComponents: string;
     };
@@ -47,7 +47,7 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    if (!contentTypesMap[contentType]) {
+    if (!contentTypesSet.has(contentType)) {
         logger.warning(
             `Attempted to switch to a content type that is not allowed - repoId: ${repoId} - contentId: ${contentId} - contentType: ${contentType}`
         );

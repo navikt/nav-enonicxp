@@ -8,7 +8,7 @@ import { getSearchRepoConnection, SEARCH_REPO_CONTENT_BASE_NODE } from './search
 import { ContentFacet } from '../../types/search';
 import { ConfigFacet, SearchConfigDescriptor } from '../../types/content-types/search-config';
 import { createOrUpdateSearchNode } from './create-or-update-search-node';
-import { forceArray, stringArrayToSet } from '../utils/array-utils';
+import { forceArray } from '../utils/array-utils';
 import { NON_LOCALIZED_QUERY_FILTER } from '../localization/layers-repo-utils/localization-state-filters';
 import { sortMultiRepoNodeHitsToBuckets } from '../localization/layers-repo-utils/sort-and-resolve-hits';
 import { getLayersData } from '../localization/layers-data';
@@ -72,8 +72,8 @@ const deleteInvalidNodes = (validSearchNodeIds: string[], searchRepoConnection: 
     }
 
     if (nodeIdsToDelete.length !== nodeIdsDeleted.length) {
-        const nodeIdsDeletedSet = stringArrayToSet(nodeIdsDeleted);
-        const diff = nodeIdsToDelete.filter((id) => !nodeIdsDeletedSet[id]);
+        const nodeIdsDeletedSet = new Set(nodeIdsDeleted);
+        const diff = nodeIdsToDelete.filter((id) => !nodeIdsDeletedSet.has(id));
 
         logger.critical(
             `Failed to delete ${diff.length} invalid search nodes: ${diff.slice(0, 50).join(', ')}${

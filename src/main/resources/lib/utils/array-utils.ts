@@ -18,10 +18,6 @@ export const forceArray = <Type>(arrayOrNot?: Type | Type[]) => {
     return Array.isArray(arrayOrNot) ? arrayOrNot : [arrayOrNot];
 };
 
-export const stringArrayToSet = (list: string[] | readonly string[]): Record<string, boolean> =>
-    // @ts-ignore (TS bug? string[] | readonly string[] behaves strangely)
-    list.reduce((acc, contentType) => ({ ...acc, [contentType]: true }), {});
-
 export const removeDuplicates = <Type>(
     array: Type[] | ReadonlyArray<Type>,
     isEqualPredicate?: (a: Type, b: Type) => boolean
