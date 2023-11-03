@@ -95,6 +95,7 @@ const updateContentReferencesInLocaleLayer = (
         repoId: repoToUpdate,
         branch: 'master',
         withDeepSearch: false,
+        logErrorsOnly: true,
     });
 
     const references = contentReferencesFinder.run();

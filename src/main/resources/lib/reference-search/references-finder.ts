@@ -2,7 +2,7 @@ import { Content, BooleanFilter } from '/lib/xp/content';
 import { RepoConnection, NodeQueryHit, RepoNode } from '/lib/xp/node';
 import * as contextLib from '/lib/xp/context';
 import { RepoBranch } from '../../types/common';
-import { logger } from '../utils/logging';
+import { logger as globalLogger } from '../utils/logging';
 import {
     contentTypesInFormsOverviewPages,
     contentTypesInOverviewPages,
@@ -22,6 +22,8 @@ type ContentNode = RepoNode<Content<any>>;
 type QueryHit = Pick<NodeQueryHit, 'id'>;
 type QueryResult = ReadonlyArray<QueryHit>;
 
+type Logger = typeof globalLogger;
+
 const QUERY_COUNT = 1000;
 
 const typesWithDeepReferences: ContentDescriptorSet = new Set(contentTypesWithDeepReferences);
@@ -34,6 +36,20 @@ const typesWithFormsOverviewPages: ContentDescriptorSet = new Set([
     `${APP_DESCRIPTOR}:form-details`,
 ]);
 
+const createLogger = (msgSuffix: string, errorsOnly?: boolean): Logger => {
+    const noop = () => ({});
+    const { info, warning, critical, error } = globalLogger;
+
+    const suffixedMsg = (msg: string) => `${msg}${msgSuffix}`;
+
+    return {
+        info: errorsOnly ? noop : (msg, ...rest) => info(suffixedMsg(msg), ...rest),
+        warning: errorsOnly ? noop : (msg, ...rest) => warning(suffixedMsg(msg), ...rest),
+        error: (msg, ...rest) => error(suffixedMsg(msg), ...rest),
+        critical: (msg, ...rest) => critical(suffixedMsg(msg), ...rest),
+    };
+};
+
 export class ReferencesFinder {
     private readonly baseContentId: string;
     private readonly repoId: string;
@@ -41,8 +57,8 @@ export class ReferencesFinder {
     private readonly withDeepSearch?: boolean;
     private readonly timeout?: number;
 
-    private readonly logSummary: string;
     private readonly repoConnection: RepoConnection;
+    private readonly logger: Logger;
 
     private referencesFound: Record<string, Content>;
     private referencesChecked: Set<string>;
@@ -54,12 +70,14 @@ export class ReferencesFinder {
         branch,
         withDeepSearch,
         timeout,
+        logErrorsOnly,
     }: {
         contentId: string;
         branch?: RepoBranch;
         repoId?: string;
         withDeepSearch?: boolean;
         timeout?: number;
+        logErrorsOnly?: boolean;
     }) {
         const { repository: repoIdFromContext, branch: branchFromContext } = contextLib.get();
 
@@ -69,7 +87,9 @@ export class ReferencesFinder {
         this.withDeepSearch = withDeepSearch;
         this.timeout = timeout;
 
-        this.logSummary = `base contentId: "${this.baseContentId}" - repoId: "${this.repoId}" - branch: ${this.branch}`;
+        const msgSuffix = ` - [base contentId: "${this.baseContentId}" - repoId: "${this.repoId}" - branch: ${this.branch}]`;
+
+        this.logger = createLogger(msgSuffix, logErrorsOnly);
 
         this.referencesFound = {};
         this.referencesChecked = new Set();
@@ -93,22 +113,20 @@ export class ReferencesFinder {
         try {
             this.findReferences(this.baseContentId);
         } catch (e) {
-            logger.error(`Reference search failed with error: ${e} - [${this.logSummary}]`);
+            this.logger.error(`Reference search failed with error: ${e}`);
             return null;
         }
 
         const duration = Date.now() - start;
 
-        logger.info(`Reference search completed in ${duration} ms - [${this.logSummary}]`);
+        this.logger.info(`Reference search completed in ${duration} ms`);
 
         return Object.values(this.referencesFound);
     }
 
     private logResult(msg: string, contentId: string, result: ReadonlyArray<NodeQueryHit>) {
         if (result.length > 0) {
-            logger.info(
-                `Found ${result.length} refs for ${msg} - [contentId: "${contentId}" - ${this.logSummary}]`
-            );
+            this.logger.info(`Found ${result.length} refs for ${msg} - contentId: "${contentId}"`);
         }
     }
 
@@ -146,8 +164,8 @@ export class ReferencesFinder {
         });
 
         if (total > QUERY_COUNT) {
-            logger.error(
-                `References query matched ${total} content nodes, maximum allowed is set to ${QUERY_COUNT} - [${this.logSummary}]`
+            this.logger.error(
+                `References query matched ${total} content nodes, maximum allowed is set to ${QUERY_COUNT}`
             );
         }
 
