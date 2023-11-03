@@ -18,7 +18,7 @@ const getUrl = (content: ContentWithFormDetails) => {
 };
 
 export const formsOverviewListItemTransformer =
-    (formDetailsMap: FormDetailsMap, language: string) =>
+    (formDetailsMap: FormDetailsMap, overviewPageLanguage: string) =>
     (content: ContentWithFormDetails): FormDetailsListItem | null => {
         const formDetailsContents = forceArray(content.data.formDetailsTargets).reduce<
             Content<'no.nav.navno:form-details'>[]
@@ -45,12 +45,13 @@ export const formsOverviewListItemTransformer =
             keywords: forceArray(content.data.keywords),
             url: getUrl(content),
             type: content.type,
+            language: content.language,
             anchorId: sanitize(sortTitle),
             illustration: content.data.illustration,
             area: forceArray(content.data.area),
             taxonomy: forceArray(content.data.taxonomy),
             formDetailsPaths: formDetailsContents.map((formDetails) =>
-                getPublicPath(formDetails, language)
+                getPublicPath(formDetails, overviewPageLanguage)
             ),
             formDetailsTitles: formDetailsContents
                 .map((formDetails) => formDetails.data.title)
