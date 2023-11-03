@@ -38,7 +38,7 @@
             </items>
         </field-set>
         <item-set name="items">
-            <label>Oversettelser for ikke-lokalisert innhold (listen autogenererer inntil 500 elementer)</label>
+            <label>Oversettelser (listen autogenererer inntil 500 elementer)</label>
             <occurrences minimum="0" maximum="0"/>
             <items>
                 <input name="title" type="TextLine">
