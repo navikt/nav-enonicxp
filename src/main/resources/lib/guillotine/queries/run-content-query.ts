@@ -48,7 +48,6 @@ import officeBranchQuery from './content-queries/officeBranchQuery.graphql';
 import officeEditorialPageQuery from './content-queries/officeEditorialPageQuery.graphql';
 import overviewPageQuery from './content-queries/overviewPageQuery.graphql';
 import pageListQuery from './content-queries/pageListQuery.graphql';
-import pageMetaQuery from './content-queries/pageMetaQuery.graphql';
 import payoutDatesQuery from './content-queries/payoutDatesQuery.graphql';
 import portalFragmentQuery from './content-queries/portalFragmentQuery.graphql';
 import portalPageTemplateQuery from './content-queries/portalPageTemplateQuery.graphql';
@@ -111,7 +110,6 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:publishing-calendar': publishingCalendarQuery,
     'no.nav.navno:publishing-calendar-entry': publishingCalendarEntryQuery,
     'no.nav.navno:section-page': sectionPageQuery,
-    'no.nav.navno:page-meta': pageMetaQuery,
     'no.nav.navno:situation-page': situationPageQuery,
     'no.nav.navno:current-topic-page': currentTopicPageQuery,
     'no.nav.navno:overview': overviewPageQuery,

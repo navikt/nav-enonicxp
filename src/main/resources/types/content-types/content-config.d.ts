@@ -49,7 +49,6 @@ import {
 import { PressLandingPage } from 'site/content-types/press-landing-page/press-landing-page';
 import { FormsOverview } from '../../site/content-types/forms-overview/forms-overview';
 import { FragmentCreator } from '../../site/content-types/fragment-creator/fragment-creator';
-import { PageMeta } from 'site/content-types/page-meta/page-meta';
 import { SearchConfigV2 } from '../../site/content-types/search-config-v2/search-config-v2';
 import { ContentDataLocaleFallback } from '../../site/content-types/content-data-locale-fallback/content-data-locale-fallback';
 
@@ -74,7 +73,6 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'main-article': MainArticle;
     'main-article-chapter': MainArticleChapter;
     'megamenu-item': MegamenuItem;
-    'page-meta': PageMeta;
     melding: Melding;
     'office-information': OfficeInformation;
     'office-branch': OfficeBranch;
