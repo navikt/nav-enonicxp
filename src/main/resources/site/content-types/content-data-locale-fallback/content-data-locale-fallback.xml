@@ -8,7 +8,7 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <input type="CheckBox" name="refreshList">
+        <input type="CheckBox" name="forceRefresh">
             <label>Oppdater listen (kryss av og lagre for å oppdatere)</label>
             <help-text>Oppdaterer listen ut fra valgte restriksjoner (maks 500 elementer)</help-text>
             <default>unchecked</default>

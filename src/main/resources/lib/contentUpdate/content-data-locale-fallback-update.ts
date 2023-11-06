@@ -1,6 +1,5 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { logger } from '../utils/logging';
 import { forceArray, removeDuplicates } from '../utils/array-utils';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { ArrayOrSingle } from '../../types/util-types';
@@ -91,11 +90,22 @@ const refreshItemsList = (content: FallbackContent) => {
         (a, b) => a.contentId === b.contentId
     );
 
+    const isListChanged =
+        currentItemsList.length !== updatedItemsList.length ||
+        currentItemsList.some(
+            (currentItem, currentIndex) =>
+                currentItem.contentId !== updatedItemsList[currentIndex].contentId
+        );
+
+    if (!isListChanged && !content.data.forceRefresh) {
+        return;
+    }
+
     contentLib.modify({
         key: content._id,
         requireValid: false,
         editor: (_content) => {
-            _content.data.refreshList = false;
+            _content.data.forceRefresh = false;
             _content.data.items = updatedItemsList;
             return _content;
         },

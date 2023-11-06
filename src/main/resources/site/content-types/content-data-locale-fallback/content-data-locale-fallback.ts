@@ -3,7 +3,7 @@ export interface ContentDataLocaleFallback {
   /**
    * Oppdater listen (kryss av og lagre for å oppdatere)
    */
-  refreshList: boolean;
+  forceRefresh: boolean;
 
   /**
    * Oversettelser
