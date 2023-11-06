@@ -6,6 +6,7 @@ import { ArrayOrSingle } from '../../types/util-types';
 import { ContentDataLocaleFallback } from '../../site/content-types/content-data-locale-fallback/content-data-locale-fallback';
 import { runInContext } from '../context/run-in-context';
 import { logger } from '../utils/logging';
+import { SUPER_USER_FULL } from '../constants';
 
 type FallbackContent = Content<'no.nav.navno:content-data-locale-fallback'>;
 type Item = NonNullable<ContentDataLocaleFallback['items']>[number];
@@ -117,6 +118,12 @@ const refreshItemsList = (content: FallbackContent) => {
 
 export const contentDataLocaleFallbackRefreshItems = (content: FallbackContent) => {
     if (!content.valid) {
+        return;
+    }
+
+    // Check the last modifier to ensure this function never runs in an infinite loop
+    if (content.modifier === SUPER_USER_FULL) {
+        logger.warning(`Possible update loop on update handler for locale fallback data: ${content._id}`);
         return;
     }
 
