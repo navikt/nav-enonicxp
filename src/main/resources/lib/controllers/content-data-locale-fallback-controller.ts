@@ -11,7 +11,13 @@ import { ContentDataLocaleFallback } from '../../site/content-types/content-data
 type FallbackContent = Content<'no.nav.navno:content-data-locale-fallback'>;
 type Item = NonNullable<ContentDataLocaleFallback['items']>[number];
 
-const sortByTitle = (a: Item, b: Item) => (a.title > b.title ? 1 : -1);
+const sortByTitle = (a: Item, b: Item) => {
+    if (a.title === b.title) {
+        return 0;
+    }
+
+    return a.title > b.title ? 1 : -1;
+};
 
 const transformToListItem = (content: Content): Item => {
     const { _id, displayName, data } = content;
