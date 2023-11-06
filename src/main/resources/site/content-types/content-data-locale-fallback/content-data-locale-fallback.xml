@@ -8,8 +8,13 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
+        <input type="CheckBox" name="forceRefresh">
+            <label>Oppdater listen (kryss av og lagre for å oppdatere)</label>
+            <help-text>Oppdaterer listen ut fra valgte restriksjoner (maks 500 elementer)</help-text>
+            <default>unchecked</default>
+        </input>
         <item-set name="items">
-            <label>Oversettelser (listen autogenererer inntil 500 elementer)</label>
+            <label>Oversettelser</label>
             <occurrences minimum="0" maximum="0"/>
             <items>
                 <input type="CheckBox" name="enabled">

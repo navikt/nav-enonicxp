@@ -7,6 +7,7 @@ import { isContentLocalized } from '../localization/locale-utils';
 import { updateQbrickVideoContent } from './video-update';
 import { logger } from '../utils/logging';
 import { isMainDatanode } from '../cluster-utils/main-datanode';
+import { contentDataLocaleFallbackRefreshItems } from './content-data-locale-fallback-update';
 
 let hasContentUpdateListener = false;
 
@@ -40,6 +41,10 @@ const handleEvent = (event: eventLib.EnonicEvent) => {
                         content,
                         repoId: repo,
                     });
+                    break;
+                }
+                case 'no.nav.navno:content-data-locale-fallback': {
+                    contentDataLocaleFallbackRefreshItems(content);
                     break;
                 }
                 // These content types should never be localized

@@ -1,17 +1,23 @@
-import * as portalLib from '/lib/xp/portal';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { frontendProxy } from './frontend-proxy';
-import { logger } from '../utils/logging';
 import { forceArray, removeDuplicates } from '../utils/array-utils';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { ArrayOrSingle } from '../../types/util-types';
 import { ContentDataLocaleFallback } from '../../site/content-types/content-data-locale-fallback/content-data-locale-fallback';
+import { runInContext } from '../context/run-in-context';
+import { logger } from '../utils/logging';
+import { SUPER_USER_FULL } from '../constants';
 
 type FallbackContent = Content<'no.nav.navno:content-data-locale-fallback'>;
 type Item = NonNullable<ContentDataLocaleFallback['items']>[number];
 
-const sortByTitle = (a: Item, b: Item) => (a.title > b.title ? 1 : -1);
+const sortByTitle = (a: Item, b: Item) => {
+    if (a.title === b.title) {
+        return 0;
+    }
+
+    return a.title > b.title ? 1 : -1;
+};
 
 const transformToListItem = (content: Content): Item => {
     const { _id, displayName, data } = content;
@@ -93,47 +99,33 @@ const refreshItemsList = (content: FallbackContent) => {
                 currentItem.contentId !== updatedItemsList[currentIndex].contentId
         );
 
-    if (!isListChanged) {
+    if (!isListChanged && !content.data.forceRefresh) {
         return;
     }
+
+    logger.info(`Regenerating locale fallback content ${content._id}`);
 
     contentLib.modify({
         key: content._id,
         requireValid: false,
         editor: (_content) => {
+            _content.data.forceRefresh = false;
             _content.data.items = updatedItemsList;
             return _content;
         },
     });
 };
 
-const validateAndHandleReq = (req: XP.Request) => {
-    const content = portalLib.getContent();
-    if (!content) {
-        logger.error(`Content not found for path ${req.rawPath}`);
-        return;
-    }
-
-    if (content.type !== 'no.nav.navno:content-data-locale-fallback') {
-        logger.error(
-            `Invalid content type for content-data-locale-fallback controller: ${content.type}`
-        );
-        return;
-    }
-
+export const contentDataLocaleFallbackRefreshItems = (content: FallbackContent) => {
     if (!content.valid) {
         return;
     }
 
-    refreshItemsList(content);
-};
-
-const contentDataLocaleFallbackController = (req: XP.Request) => {
-    if (req.mode === 'edit' && req.method === 'GET') {
-        validateAndHandleReq(req);
+    // Check the last modifier to ensure this function never runs in an infinite loop
+    if (content.modifier === SUPER_USER_FULL) {
+        logger.warning(`Possible update loop on update handler for locale fallback data: ${content._id}`);
+        return;
     }
 
-    return frontendProxy(req);
+    runInContext({ asAdmin: true }, () => refreshItemsList(content));
 };
-
-export const get = contentDataLocaleFallbackController;
