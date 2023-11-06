@@ -5,6 +5,7 @@ import { ContentDescriptor } from '../../types/content-types/content-config';
 import { ArrayOrSingle } from '../../types/util-types';
 import { ContentDataLocaleFallback } from '../../site/content-types/content-data-locale-fallback/content-data-locale-fallback';
 import { runInContext } from '../context/run-in-context';
+import { logger } from '../utils/logging';
 
 type FallbackContent = Content<'no.nav.navno:content-data-locale-fallback'>;
 type Item = NonNullable<ContentDataLocaleFallback['items']>[number];
@@ -100,6 +101,8 @@ const refreshItemsList = (content: FallbackContent) => {
     if (!isListChanged && !content.data.forceRefresh) {
         return;
     }
+
+    logger.info(`Regenerating locale fallback content ${content._id}`);
 
     contentLib.modify({
         key: content._id,
