@@ -1,12 +1,11 @@
-import * as portalLib from '/lib/xp/portal';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { frontendProxy } from './frontend-proxy';
 import { logger } from '../utils/logging';
 import { forceArray, removeDuplicates } from '../utils/array-utils';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { ArrayOrSingle } from '../../types/util-types';
 import { ContentDataLocaleFallback } from '../../site/content-types/content-data-locale-fallback/content-data-locale-fallback';
+import { runInContext } from '../context/run-in-context';
 
 type FallbackContent = Content<'no.nav.navno:content-data-locale-fallback'>;
 type Item = NonNullable<ContentDataLocaleFallback['items']>[number];
@@ -92,54 +91,21 @@ const refreshItemsList = (content: FallbackContent) => {
         (a, b) => a.contentId === b.contentId
     );
 
-    const isListChanged =
-        currentItemsList.length !== updatedItemsList.length ||
-        currentItemsList.some(
-            (currentItem, currentIndex) =>
-                currentItem.contentId !== updatedItemsList[currentIndex].contentId
-        );
-
-    if (!isListChanged) {
-        return;
-    }
-
     contentLib.modify({
         key: content._id,
         requireValid: false,
         editor: (_content) => {
+            _content.data.refreshList = false;
             _content.data.items = updatedItemsList;
             return _content;
         },
     });
 };
 
-const validateAndHandleReq = (req: XP.Request) => {
-    const content = portalLib.getContent();
-    if (!content) {
-        logger.error(`Content not found for path ${req.rawPath}`);
-        return;
-    }
-
-    if (content.type !== 'no.nav.navno:content-data-locale-fallback') {
-        logger.error(
-            `Invalid content type for content-data-locale-fallback controller: ${content.type}`
-        );
-        return;
-    }
-
+export const contentDataLocaleFallbackRefreshItems = (content: FallbackContent) => {
     if (!content.valid) {
         return;
     }
 
-    refreshItemsList(content);
+    runInContext({ asAdmin: true }, () => refreshItemsList(content));
 };
-
-const contentDataLocaleFallbackController = (req: XP.Request) => {
-    if (req.mode === 'edit' && req.method === 'GET') {
-        validateAndHandleReq(req);
-    }
-
-    return frontendProxy(req);
-};
-
-export const get = contentDataLocaleFallbackController;
