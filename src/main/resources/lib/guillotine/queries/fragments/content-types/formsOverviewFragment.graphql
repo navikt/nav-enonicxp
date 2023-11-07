@@ -17,7 +17,7 @@ fragment contentFormsOverviewPage on no_nav_navno_FormsOverview {
                             text
                             link {
                                 _path
-                                ...on no_nav_navno_FormsOverview {
+                                ... on no_nav_navno_FormsOverview {
                                     data {
                                         title
                                     }
@@ -35,6 +35,7 @@ fragment contentFormsOverviewPage on no_nav_navno_FormsOverview {
             title
             sortTitle
             url
+            targetLanguage
             type
             ingress
             keywords
@@ -46,7 +47,7 @@ fragment contentFormsOverviewPage on no_nav_navno_FormsOverview {
             taxonomy
             anchorId
             illustration {
-                ...on no_nav_navno_AnimatedIcons{
+                ... on no_nav_navno_AnimatedIcons {
                     type
                     data {
                         icons {

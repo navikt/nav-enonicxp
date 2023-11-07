@@ -77,5 +77,7 @@ export const SITECONTENT_404_MSG_PREFIX = 'Site path not found';
 export const SYSTEM_ID_PROVIDER = 'system';
 export const SYSTEM_USER = 'system-user';
 export const SUPER_USER = 'su';
+export const SUPER_USER_FULL = `user:system:${SUPER_USER}`;
+
 export const ADMIN_PRINCIPAL = 'role:system.admin';
 export const AUTHENTICATED_PRINCIPAL = 'role:system.authenticated';

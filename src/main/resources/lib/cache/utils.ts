@@ -2,10 +2,10 @@ import { Content } from '/lib/xp/content';
 import { APP_DESCRIPTOR } from '../constants';
 import {
     BuiltinContentDescriptor,
+    ContentDescriptor,
     CustomContentDescriptor,
 } from '../../types/content-types/content-config';
 import { isMedia } from '../utils/content-utils';
-import { stringArrayToSet } from '../utils/array-utils';
 
 export type NodeEventData = {
     id: string;
@@ -34,11 +34,11 @@ const ignoredCustomContentTypes: CustomContentDescriptor[] = [
     `${APP_DESCRIPTOR}:publishing-calendar-entry`,
 ];
 
-const ignoredContentTypeSet = stringArrayToSet([
+const ignoredContentTypeSet: ReadonlySet<ContentDescriptor> = new Set([
     ...ignoredBaseContentTypes,
     ...ignoredCustomContentTypes,
 ]);
 
 // Returns false for content types which are not rendered by the public-facing frontend
 export const isPublicRenderedType = (content: Content | null) =>
-    content && !isMedia(content) && !ignoredContentTypeSet[content.type];
+    content && !isMedia(content) && !ignoredContentTypeSet.has(content.type);
