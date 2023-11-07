@@ -40,9 +40,9 @@ const xpOrigins: EnvRecord = {
 
 const searchApiUrls: EnvRecord = {
     p: '',
-    dev: 'https://navno-search-api.intern.dev.nav.no/content/personbruker',
+    dev: 'https://navno-search-admin-api.intern.dev.nav.no/content/personbruker',
     q6: '',
-    localhost: '', // 'https://navno-search-api.intern.dev.nav.no/content/personbruker-local',
+    localhost: '', // 'https://navno-search-admin-api.intern.dev.nav.no/content/personbruker-local',
 } as const;
 
 export const URLS = {
