@@ -123,7 +123,7 @@ const transformToContentWithFallbackData = (
                 return;
             }
 
-            fallbackDataMap[contentId] = data;
+            fallbackDataMap[contentId] = { ...data, sortTitle: data.sortTitle || data.title };
         });
     });
 
