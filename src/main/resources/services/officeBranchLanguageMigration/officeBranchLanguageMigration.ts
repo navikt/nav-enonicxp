@@ -19,13 +19,13 @@ const getOfficeInfo = () => {
                 language: 'no',
             }),
         });
-    });
 
-    contentLib.publish({
-        keys: officeBranches.map((officeBranch) => officeBranch._id),
-        sourceBranch: 'draft',
-        targetBranch: 'master',
-        includeDependencies: false,
+        contentLib.publish({
+            keys: [officeBranch._id],
+            sourceBranch: 'draft',
+            targetBranch: 'master',
+            includeDependencies: false,
+        });
     });
 };
 
