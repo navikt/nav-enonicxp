@@ -1,4 +1,6 @@
 import * as eventLib from '/lib/xp/event';
+import * as nodeLib from '/lib/xp/node';
+import * as contentLib from '/lib/xp/content';
 import { EnonicEvent } from '/lib/xp/event';
 import { handleScheduledPublish } from '../scheduling/scheduled-publish';
 import { invalidateLocalCache, LOCAL_CACHE_INVALIDATION_EVENT_NAME } from './local-cache';
@@ -15,10 +17,54 @@ import { customListenerType } from '../utils/events';
 import { getRepoConnection } from '../utils/repo-utils';
 import { isContentLocalized } from '../localization/locale-utils';
 import { NAVNO_ROOT_PATH } from '../constants';
+import { ContentDescriptor } from 'types/content-types/content-config';
 
 let hasSetupListeners = false;
 
 const NODE_ROOT_PATH = `/content${NAVNO_ROOT_PATH}/`;
+
+const contentTypesToInvalidate: { [key: string]: ContentDescriptor } = {
+    'no.nav.navno:office-editorial-page': 'no.nav.navno:office-branch',
+};
+
+const invalidateRelevantContentType = ({
+    type,
+    event,
+    node,
+}: {
+    type: string;
+    event: eventLib.EnonicEvent;
+    node: any;
+}) => {
+    if (contentTypesToInvalidate[type]) {
+        const relevantResult = runInContext({ repository: node.repo }, () =>
+            contentLib.query({
+                query: `type = "${contentTypesToInvalidate[type]}"`,
+                count: 1000,
+            })
+        );
+
+        log.info(
+            `Invalidating all ${relevantResult.count} of type "${contentTypesToInvalidate[type]}" because "${type}" was updated.`
+        );
+
+        relevantResult.hits.forEach((hit) => {
+            const resultNode: NodeEventData = {
+                id: hit._id,
+                path: hit._path,
+                branch: node.branch,
+                repo: node.repo,
+            };
+
+            invalidateCacheForNode({
+                node: resultNode,
+                eventType: event.type,
+                timestamp: event.timestamp,
+                isRunningClusterWide: true,
+            });
+        });
+    }
+};
 
 const nodeListenerCallback = (event: EnonicEvent) => {
     if (isDeferringCacheInvalidation()) {
@@ -61,20 +107,20 @@ const nodeListenerCallback = (event: EnonicEvent) => {
             timestamp: event.timestamp,
             isRunningClusterWide: true,
         });
+
+        invalidateRelevantContentType({ type: content.type, event, node });
     });
 };
 
 const manualInvalidationCallback = (event: EnonicEvent<NodeEventData>) => {
     const { id, path } = event.data;
     logger.info(`Received cache-invalidation event for ${path} - ${id}`);
-    runInContext({ asAdmin: true }, () =>
-        invalidateCacheForNode({
-            node: event.data,
-            timestamp: event.timestamp,
-            eventType: event.type,
-            isRunningClusterWide: true,
-        })
-    );
+    runInContext({ asAdmin: true }, () => ({
+        node: event.data,
+        timestamp: event.timestamp,
+        eventType: event.type,
+        isRunningClusterWide: true,
+    }));
 };
 
 export const activateCacheEventListeners = () => {
