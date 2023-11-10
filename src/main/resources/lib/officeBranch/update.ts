@@ -81,6 +81,9 @@ const deleteContent = (contentRef: string) => {
 };
 
 const getOfficeBranchLanguage = (office: OfficeBranchData) => {
+    if (office.brukerkontakt?.skriftspraak?.toLowerCase() === 'nb') {
+        return CONTENT_LOCALE_DEFAULT;
+    }
     return office.brukerkontakt?.skriftspraak?.toLowerCase() || CONTENT_LOCALE_DEFAULT;
 };
 
