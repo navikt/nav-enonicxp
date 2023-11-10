@@ -3,23 +3,31 @@ import graphQlLib from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 import { getProductDataForOverviewPage } from '../../../product-utils/productList';
 import { logger } from '../../../utils/logging';
-import { OverviewPageProductData } from '../../../product-utils/types';
+import { OverviewPageProductItem, OverviewPageProductLink } from '../../../product-utils/types';
 import { forceArray } from '../../../utils/array-utils';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
 
 export const overviewDataCallback: CreationCallback = (context, params) => {
-    const productType = graphQlCreateObjectType<keyof OverviewPageProductData>(context, {
+    const productLinkType = graphQlCreateObjectType<keyof OverviewPageProductLink>(context, {
+        name: context.uniqueName('OverviewProductLink'),
+        description: 'Product link',v
+        fields: {
+            _id: { type: graphQlLib.GraphQLString },
+            path: { type: graphQlLib.GraphQLString },
+            type: { type: graphQlLib.GraphQLString },
+            language: { type: graphQlLib.GraphQLString },
+            title: { type: graphQlLib.GraphQLString },
+        },
+    });
+
+    const productListItem = graphQlCreateObjectType<keyof OverviewPageProductItem>(context, {
         name: context.uniqueName('ProductType'),
         description: 'Produkttype',
         fields: {
-            _id: { type: graphQlLib.GraphQLString },
-            type: { type: graphQlLib.GraphQLString },
+            productLinks: { type: graphQlLib.list(productLinkType) },
             anchorId: { type: graphQlLib.GraphQLString },
             productDetailsPath: { type: graphQlLib.GraphQLString },
-            path: { type: graphQlLib.GraphQLString },
-            language: { type: graphQlLib.GraphQLString },
             sortTitle: { type: graphQlLib.GraphQLString },
-            title: { type: graphQlLib.GraphQLString },
             ingress: { type: graphQlLib.GraphQLString },
             audience: { type: graphQlLib.GraphQLString },
             taxonomy: {
@@ -41,7 +49,7 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
     });
 
     params.fields.productList = {
-        type: graphQlLib.list(productType),
+        type: graphQlLib.list(productListItem),
         resolve: () => {
             const contentId = getGuillotineContentQueryBaseContentId();
             if (!contentId) {

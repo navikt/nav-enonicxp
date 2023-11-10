@@ -6,7 +6,7 @@ import { Overview } from '../../site/content-types/overview/overview';
 import {
     ContentTypeWithProductDetails,
     DetailedOverviewType,
-    OverviewPageProductData,
+    OverviewPageProductItem,
 } from './types';
 import { APP_DESCRIPTOR } from '../constants';
 import { Audience as _Audience } from '../../site/mixins/audience/audience';
@@ -129,7 +129,7 @@ const getTypeSpecificProductsData = (
     // The rule here is that we want every product detail in the requested language included in the
     // final list, at least once. Each detail can be included multiple times, but only if they are
     // used on multiple product pages in the requested language.
-    const productDataMap = productPages.reduce<Record<string, OverviewPageProductData>>(
+    const productDataMap = productPages.reduce<Record<string, OverviewPageProductItem>>(
         (acc, productPageContent) => {
             const productDetailsContent = getProductDetails(productPageContent, overviewType);
             if (!productDetailsContent || productDetailsContent.language !== requestedLanguage) {

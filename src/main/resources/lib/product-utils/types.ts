@@ -8,15 +8,20 @@ const contentTypesWithProductDetailsSet: ReadonlySet<ContentDescriptor> = new Se
     contentTypesInOverviewPages
 );
 
-export type OverviewPageProductData = {
+export type OverviewPageProductLink = {
     _id: string;
+    path: string;
     type: ContentTypeWithProductDetails;
+    language: string;
+    title: string;
+};
+
+export type OverviewPageProductItem = {
     anchorId?: string;
     productDetailsPath?: string;
-    path: string;
-    language: string;
     audience: string;
-} & Required<Pick<ContentPageWithSidemenus, 'title' | 'ingress' | 'sortTitle' | 'illustration'>>;
+    productLinks: OverviewPageProductLink[];
+} & Required<Pick<ContentPageWithSidemenus, 'ingress' | 'sortTitle' | 'illustration'>>;
 
 export type DetailedOverviewType = Exclude<Overview['overviewType'], 'all_products'>;
 
