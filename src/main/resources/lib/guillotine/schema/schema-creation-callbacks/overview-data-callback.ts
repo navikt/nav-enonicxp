@@ -10,7 +10,7 @@ import { getGuillotineContentQueryBaseContentId } from '../../utils/content-quer
 export const overviewDataCallback: CreationCallback = (context, params) => {
     const productLinkType = graphQlCreateObjectType<keyof OverviewPageProductLink>(context, {
         name: context.uniqueName('OverviewProductLink'),
-        description: 'Product link',v
+        description: 'Product link',
         fields: {
             _id: { type: graphQlLib.GraphQLString },
             path: { type: graphQlLib.GraphQLString },
@@ -21,13 +21,13 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
     });
 
     const productListItem = graphQlCreateObjectType<keyof OverviewPageProductItem>(context, {
-        name: context.uniqueName('ProductType'),
-        description: 'Produkttype',
+        name: context.uniqueName('OverviewListItem'),
+        description: 'Product item in overview list',
         fields: {
             productLinks: { type: graphQlLib.list(productLinkType) },
             anchorId: { type: graphQlLib.GraphQLString },
             productDetailsPath: { type: graphQlLib.GraphQLString },
-            sortTitle: { type: graphQlLib.GraphQLString },
+            title: { type: graphQlLib.GraphQLString },
             ingress: { type: graphQlLib.GraphQLString },
             audience: { type: graphQlLib.GraphQLString },
             taxonomy: {

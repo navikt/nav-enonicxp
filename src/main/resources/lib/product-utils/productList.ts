@@ -49,19 +49,26 @@ const getProductDetails = (
     return productDetails;
 };
 
-const buildCommonProductData = (product: ContentWithProductDetails) => {
+const getDataFromProductPage = (product: ContentWithProductDetails): OverviewPageProductItem => {
     const { _id, type, data, language, displayName } = product;
-    const fullTitle = data.title || displayName;
+    const { illustration, title, audience, sortTitle, ingress } = data;
+
+    const fullTitle = title || displayName;
 
     return {
-        ...data,
-        _id,
-        language,
-        type,
-        path: getPublicPath(product, language),
-        audience: product.data.audience._selected,
-        title: fullTitle,
-        sortTitle: data.sortTitle || fullTitle,
+        title: sortTitle || fullTitle,
+        ingress,
+        audience: audience._selected,
+        illustration,
+        productLinks: [
+            {
+                _id,
+                path: getPublicPath(product, language),
+                language,
+                type,
+                title: fullTitle,
+            },
+        ],
     };
 };
 
@@ -113,7 +120,7 @@ const getProductPages = (overviewType: OverviewType, audience: Audience[]) => {
 };
 
 const getAllProductsData = (audience: Audience[]) => {
-    return getProductPages('all_products', audience).map(buildCommonProductData);
+    return getProductPages('all_products', audience).map(getDataFromProductPage);
 };
 
 const getTypeSpecificProductsData = (
@@ -142,25 +149,28 @@ const getTypeSpecificProductsData = (
             const isProductPageInRequestedLanguage =
                 productPageContent.language === requestedLanguage;
 
+            const productPageData = getDataFromProductPage(productPageContent);
+
             // We do not want the possibility of duplicate product details, unless they belong to
             // product pages in the requested language
             if (!isProductPageInRequestedLanguage && productDetailsAdded.has(productDetailsId)) {
+                // Add another product link, to ensure all relevant products are linked from the product details
+                // when the product pages themselves aren't localized
+                acc[productDetailsId].productLinks.push(...productPageData.productLinks);
                 return acc;
             }
 
             productDetailsAdded.add(productDetailsId);
 
-            const commonData = buildCommonProductData(productPageContent);
-
             // If the product is not in the requested language, we use the name of the product details
             // as the displayed/sorted title
             const sortTitle = isProductPageInRequestedLanguage
-                ? commonData.sortTitle
+                ? productPageData.title
                 : productDetailsContent.displayName;
 
-            const productData = {
-                ...commonData,
-                sortTitle,
+            const productData: OverviewPageProductItem = {
+                ...productPageData,
+                title: sortTitle,
                 anchorId: sanitize(sortTitle),
                 productDetailsPath: getPublicPath(productDetailsContent, requestedLanguage),
             };
@@ -192,5 +202,5 @@ export const getProductDataForOverviewPage = (
             : getTypeSpecificProductsData(overviewType, audience, language)
     );
 
-    return productData.sort((a, b) => a.sortTitle.localeCompare(b.sortTitle));
+    return productData.sort((a, b) => a.title.localeCompare(b.title));
 };

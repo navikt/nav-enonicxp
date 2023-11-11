@@ -9,18 +9,20 @@ fragment contentOverviewPage on no_nav_navno_Overview {
             ...animatedIconsTargetMixin
         }
         productList {
-            _id
             anchorId
-            path
-            type
             productDetailsPath
             title
-            sortTitle
             ingress
             taxonomy
-            language
             audience
             area
+            productLinks {
+                _id
+                path
+                language
+                type
+                title
+            }
             illustration {
                 ... on no_nav_navno_AnimatedIcons {
                     type
