@@ -10,17 +10,24 @@ fragment contentOverviewPage on no_nav_navno_Overview {
         }
         productList {
             _id
-            anchorId
             path
             type
+            sortTitle
+            language
+
+            anchorId
             productDetailsPath
             title
-            sortTitle
             ingress
             taxonomy
-            language
             audience
             area
+            productLinks {
+                url
+                language
+                type
+                title
+            }
             illustration {
                 ... on no_nav_navno_AnimatedIcons {
                     type

@@ -11,3 +11,8 @@ const getTimeFromField = (content: Content, fieldKey: string) => {
 
 export const sortByDateTimeField = (key: string) => (a: Content, b: Content) =>
     getTimeFromField(b, key) - getTimeFromField(a, key);
+
+export const sortByLocaleCompareOnField =
+    <Type extends Record<string, any>>(field: keyof Type) =>
+    (a: Type, b: Type) =>
+        a[field].localeCompare(b[field]);
