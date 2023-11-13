@@ -14,6 +14,15 @@ export type OverviewPageProductLink = {
     title: string;
 };
 
+// TODO: remove this once the frontend has been updated for the new type
+type ProductItemTempFields = {
+    path: string;
+    _id: string;
+    type: string;
+    sortTitle: string;
+    language: string;
+};
+
 export type OverviewPageProductItem = {
     anchorId?: string;
     productDetailsPath?: string;
@@ -22,7 +31,7 @@ export type OverviewPageProductItem = {
     ingress: string;
     illustration: string;
     productLinks: OverviewPageProductLink[];
-};
+} & ProductItemTempFields;
 
 export type DetailedOverviewType = Exclude<Overview['overviewType'], 'all_products'>;
 

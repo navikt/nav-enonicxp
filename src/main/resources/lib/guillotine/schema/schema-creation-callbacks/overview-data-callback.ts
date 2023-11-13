@@ -23,6 +23,11 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
         name: context.uniqueName('OverviewListItem'),
         description: 'Product item in overview list',
         fields: {
+            _id: { type: graphQlLib.GraphQLString },
+            path: { type: graphQlLib.GraphQLString },
+            type: { type: graphQlLib.GraphQLString },
+            language: { type: graphQlLib.GraphQLString },
+            sortTitle: { type: graphQlLib.GraphQLString },
             productLinks: { type: graphQlLib.list(productLinkType) },
             anchorId: { type: graphQlLib.GraphQLString },
             productDetailsPath: { type: graphQlLib.GraphQLString },

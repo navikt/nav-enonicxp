@@ -56,7 +56,18 @@ const getDataFromProductPage = (product: ContentWithProductDetails): OverviewPag
     const pageTitle = title || displayName;
     const listItemTitle = sortTitle || pageTitle;
 
+    const path = getPublicPath(product, language);
+
+    const dataForBackwardsCompatibility = {
+        _id: product._id,
+        language: product.language,
+        type: product.type,
+        path,
+        sortTitle: listItemTitle,
+    };
+
     return {
+        ...dataForBackwardsCompatibility,
         title: listItemTitle,
         ingress,
         audience: audience._selected,
@@ -64,7 +75,7 @@ const getDataFromProductPage = (product: ContentWithProductDetails): OverviewPag
         anchorId: sanitize(listItemTitle),
         productLinks: [
             {
-                url: getPublicPath(product, language),
+                url: path,
                 language,
                 type,
                 title: pageTitle,
