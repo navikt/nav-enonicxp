@@ -53,19 +53,21 @@ const getDataFromProductPage = (product: ContentWithProductDetails): OverviewPag
     const { type, data, language, displayName } = product;
     const { illustration, title, audience, sortTitle, ingress } = data;
 
-    const fullTitle = title || displayName;
+    const pageTitle = title || displayName;
+    const listItemTitle = sortTitle || pageTitle;
 
     return {
-        title: sortTitle || fullTitle,
+        title: listItemTitle,
         ingress,
         audience: audience._selected,
         illustration,
+        anchorId: sanitize(listItemTitle),
         productLinks: [
             {
                 url: getPublicPath(product, language),
                 language,
                 type,
-                title: fullTitle,
+                title: pageTitle,
             },
         ],
     };
@@ -163,14 +165,13 @@ const getTypeSpecificProductsData = (
 
             // If the product is not in the requested language, we use the name of the product details
             // as the displayed/sorted title
-            const sortTitle = isProductPageInRequestedLanguage
+            const title = isProductPageInRequestedLanguage
                 ? productPageData.title
                 : productDetailsContent.displayName;
 
             const productData: OverviewPageProductItem = {
                 ...productPageData,
-                title: sortTitle,
-                anchorId: sanitize(sortTitle),
+                title,
                 productDetailsPath: getPublicPath(productDetailsContent, requestedLanguage),
             };
 
