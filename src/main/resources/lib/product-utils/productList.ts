@@ -51,7 +51,7 @@ const getProductDetails = (
 
 const getDataFromProductPage = (product: ContentWithProductDetails): OverviewPageProductItem => {
     const { type, data, language, displayName } = product;
-    const { illustration, title, audience, sortTitle, ingress } = data;
+    const { title, audience, sortTitle } = data;
 
     const pageTitle = title || displayName;
     const listItemTitle = sortTitle || pageTitle;
@@ -67,11 +67,10 @@ const getDataFromProductPage = (product: ContentWithProductDetails): OverviewPag
     };
 
     return {
+        ...data,
         ...dataForBackwardsCompatibility,
         title: listItemTitle,
-        ingress,
         audience: audience._selected,
-        illustration,
         anchorId: sanitize(listItemTitle),
         productLinks: [
             {
