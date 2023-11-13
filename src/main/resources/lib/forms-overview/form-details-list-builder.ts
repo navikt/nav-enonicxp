@@ -8,12 +8,15 @@ import { isContentLocalized } from '../localization/locale-utils';
 import { ContentDataLocaleFallback } from '../../site/content-types/content-data-locale-fallback/content-data-locale-fallback';
 import { logger } from '../utils/logging';
 import { getLocaleFromContext } from '../localization/locale-context';
+import { sortByLocaleCompareOnField } from '../utils/sort-utils';
 
 type Audience = FormsOverview['audience'];
 type OverviewType = FormsOverview['overviewType'];
 
 type FallbackDataAll = NonNullable<ContentDataLocaleFallback['items']>[number];
 type FallbackData = Omit<FallbackDataAll, 'enabled' | 'contentId' | 'contentQuery'>;
+
+const sortBySortTitle = sortByLocaleCompareOnField('sortTitle');
 
 const contentWithFormDetailsQuery = (audience: Audience, excludedContent: string[]) => {
     const { _selected: selectedAudience } = audience;
@@ -223,5 +226,5 @@ export const buildFormDetailsList = (args: Args) => {
 
             return acc;
         }, [])
-        .sort((a, b) => a.sortTitle.localeCompare(b.sortTitle));
+        .sort(sortBySortTitle);
 };

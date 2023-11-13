@@ -13,6 +13,7 @@ import { Audience as _Audience } from '../../site/mixins/audience/audience';
 import { contentTypesInOverviewPages } from '../contenttype-lists';
 import { getPublicPath } from '../paths/public-path';
 import { runInContext } from '../context/run-in-context';
+import { sortByLocaleCompareOnField } from '../utils/sort-utils';
 
 type OverviewType = Overview['overviewType'];
 type Audience = _Audience['audience']['_selected'];
@@ -25,6 +26,8 @@ const CONTENT_TYPES_IN_ALL_PRODUCTS_LISTS = [
     `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
     `${APP_DESCRIPTOR}:guide-page`,
 ] as const;
+
+const sortByTitle = sortByLocaleCompareOnField('title');
 
 const getProductDetails = (
     productPageContent: ContentWithProductDetails,
@@ -168,7 +171,10 @@ const getTypeSpecificProductsData = (
                 // Add another product link, to ensure all relevant products are linked from the product details
                 // when the product pages themselves aren't localized
                 if (acc[productDetailsId]) {
-                    acc[productDetailsId].productLinks.push(...productPageData.productLinks);
+                    acc[productDetailsId].productLinks = [
+                        ...acc[productDetailsId].productLinks,
+                        ...productPageData.productLinks,
+                    ].sort(sortByTitle);
                 }
                 return acc;
             }
@@ -215,5 +221,5 @@ export const buildOverviewPageProductList = (
             : getTypeSpecificProductsData(overviewType, audience, language)
     );
 
-    return productData.sort((a, b) => a.title.localeCompare(b.title));
+    return productData.sort(sortByTitle);
 };
