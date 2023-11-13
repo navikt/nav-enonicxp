@@ -28,7 +28,6 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
             type: { type: graphQlLib.GraphQLString },
             language: { type: graphQlLib.GraphQLString },
             sortTitle: { type: graphQlLib.GraphQLString },
-            productLinks: { type: graphQlLib.list(productLinkType) },
             anchorId: { type: graphQlLib.GraphQLString },
             productDetailsPath: { type: graphQlLib.GraphQLString },
             title: { type: graphQlLib.GraphQLString },
@@ -49,6 +48,7 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
                     return illustration ? contentLib.get({ key: illustration }) : illustration;
                 },
             },
+            productLinks: { type: graphQlLib.list(productLinkType) },
         },
     });
 
@@ -80,7 +80,13 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
                 return [];
             }
 
-            return buildOverviewPageProductList(overviewType, forceArray(audience), language);
+            const productList = buildOverviewPageProductList(
+                overviewType,
+                forceArray(audience),
+                language
+            );
+
+            return productList;
         },
     };
 };

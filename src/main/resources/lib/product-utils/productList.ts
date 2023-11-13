@@ -167,7 +167,9 @@ const getTypeSpecificProductsData = (
             if (!isProductPageInRequestedLanguage && productDetailsAdded.has(productDetailsId)) {
                 // Add another product link, to ensure all relevant products are linked from the product details
                 // when the product pages themselves aren't localized
-                acc[productDetailsId].productLinks.push(...productPageData.productLinks);
+                if (acc[productDetailsId]) {
+                    acc[productDetailsId].productLinks.push(...productPageData.productLinks);
+                }
                 return acc;
             }
 
@@ -181,6 +183,7 @@ const getTypeSpecificProductsData = (
 
             const productData: OverviewPageProductItem = {
                 ...productPageData,
+                sortTitle: title,
                 title,
                 productDetailsPath: getPublicPath(productDetailsContent, requestedLanguage),
             };
