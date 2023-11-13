@@ -8,8 +8,7 @@ const contentTypesWithProductDetailsSet: ReadonlySet<ContentDescriptor> = new Se
 );
 
 export type OverviewPageProductLink = {
-    _id: string;
-    path: string;
+    url: string;
     type: ContentTypeWithProductDetails;
     language: string;
     title: string;

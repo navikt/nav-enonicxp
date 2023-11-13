@@ -1,7 +1,7 @@
 import * as contentLib from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
-import { getProductDataForOverviewPage } from '../../../product-utils/productList';
+import { buildOverviewPageProductList } from '../../../product-utils/productList';
 import { logger } from '../../../utils/logging';
 import { OverviewPageProductItem, OverviewPageProductLink } from '../../../product-utils/types';
 import { forceArray } from '../../../utils/array-utils';
@@ -12,15 +12,14 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
         name: context.uniqueName('OverviewProductLink'),
         description: 'Product link',
         fields: {
-            _id: { type: graphQlLib.GraphQLString },
-            path: { type: graphQlLib.GraphQLString },
+            url: { type: graphQlLib.GraphQLString },
             type: { type: graphQlLib.GraphQLString },
             language: { type: graphQlLib.GraphQLString },
             title: { type: graphQlLib.GraphQLString },
         },
     });
 
-    const productListItem = graphQlCreateObjectType<keyof OverviewPageProductItem>(context, {
+    const productListItemType = graphQlCreateObjectType<keyof OverviewPageProductItem>(context, {
         name: context.uniqueName('OverviewListItem'),
         description: 'Product item in overview list',
         fields: {
@@ -49,7 +48,7 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
     });
 
     params.fields.productList = {
-        type: graphQlLib.list(productListItem),
+        type: graphQlLib.list(productListItemType),
         resolve: () => {
             const contentId = getGuillotineContentQueryBaseContentId();
             if (!contentId) {
@@ -76,7 +75,7 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
                 return [];
             }
 
-            return getProductDataForOverviewPage(overviewType, forceArray(audience), language);
+            return buildOverviewPageProductList(overviewType, forceArray(audience), language);
         },
     };
 };

@@ -50,7 +50,7 @@ const getProductDetails = (
 };
 
 const getDataFromProductPage = (product: ContentWithProductDetails): OverviewPageProductItem => {
-    const { _id, type, data, language, displayName } = product;
+    const { type, data, language, displayName } = product;
     const { illustration, title, audience, sortTitle, ingress } = data;
 
     const fullTitle = title || displayName;
@@ -62,8 +62,7 @@ const getDataFromProductPage = (product: ContentWithProductDetails): OverviewPag
         illustration,
         productLinks: [
             {
-                _id,
-                path: getPublicPath(product, language),
+                url: getPublicPath(product, language),
                 language,
                 type,
                 title: fullTitle,
@@ -191,7 +190,7 @@ const getTypeSpecificProductsData = (
     return Object.values(productDataMap);
 };
 
-export const getProductDataForOverviewPage = (
+export const buildOverviewPageProductList = (
     overviewType: OverviewType,
     audience: Audience[],
     language: string
