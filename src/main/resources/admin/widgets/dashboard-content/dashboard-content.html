@@ -6,15 +6,26 @@
 		}
 		table {
 			font-size: 1rem;
+			width: 100%;
+			border-spacing: 0;
 		}
 		td {
-			padding: 0 0.5rem 0.5rem 0;
+			padding: 0.2rem 0.5rem 0.2rem 0;
+		}
+		td:not(:first-child) {
+			padding-left: 0.5rem;
+		}
+		td:nth-child(2) {
+			width: 20%;
+		}
+		tr:nth-child(odd) td {
+			background-color: whitesmoke;
 		}
 		.first-col {
-			min-width: 15rem;
+			width: 60%;
 		}
 	</style>
-	<div id="admin-widget-content" style="background-color: lightgray; padding: 1rem; align-items: center">
+	<div id="admin-widget-content" style="background-color: white; padding: 1rem; align-items: center">
 		<h3>Sist publiserte</h3>
 		<table>
 			<tr th:each="result: ${published}">
