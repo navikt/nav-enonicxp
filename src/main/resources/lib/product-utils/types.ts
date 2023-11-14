@@ -1,22 +1,44 @@
 import { Content } from '/lib/xp/content';
 import { contentTypesInOverviewPages } from '../contenttype-lists';
 import { Overview } from 'site/content-types/overview/overview';
-import { ContentPageWithSidemenus } from '../../site/content-types/content-page-with-sidemenus/content-page-with-sidemenus';
 import { ContentDescriptor } from '../../types/content-types/content-config';
+import { Taxonomy } from '../../site/mixins/taxonomy/taxonomy';
+import { Area } from '../../site/mixins/area/area';
+import { ThemedArticlePage } from '../../site/content-types/themed-article-page/themed-article-page';
 
 const contentTypesWithProductDetailsSet: ReadonlySet<ContentDescriptor> = new Set(
     contentTypesInOverviewPages
 );
 
-export type OverviewPageProductData = {
-    _id: string;
+type OverviewItemTaxonomy = Taxonomy['taxonomy'] | ThemedArticlePage['taxonomy'];
+
+export type OverviewPageProductLink = {
+    url: string;
     type: ContentTypeWithProductDetails;
+    language: string;
+    title: string;
+};
+
+// TODO: remove this once the frontend has been updated for the new type
+type ProductItemTempFields = {
+    path: string;
+    _id: string;
+    type: string;
+    sortTitle: string;
+    language: string;
+};
+
+export type OverviewPageProductItem = {
     anchorId?: string;
     productDetailsPath?: string;
-    path: string;
-    language: string;
     audience: string;
-} & Required<Pick<ContentPageWithSidemenus, 'title' | 'ingress' | 'sortTitle' | 'illustration'>>;
+    title: string;
+    ingress: string;
+    illustration: string;
+    productLinks: OverviewPageProductLink[];
+    taxonomy?: OverviewItemTaxonomy;
+    area: Area['area'];
+} & ProductItemTempFields;
 
 export type DetailedOverviewType = Exclude<Overview['overviewType'], 'all_products'>;
 

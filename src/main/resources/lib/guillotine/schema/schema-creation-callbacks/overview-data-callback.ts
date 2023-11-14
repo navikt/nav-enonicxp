@@ -1,24 +1,35 @@
 import * as contentLib from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
-import { getProductDataForOverviewPage } from '../../../product-utils/productList';
+import { buildOverviewPageProductList } from '../../../product-utils/productList';
 import { logger } from '../../../utils/logging';
-import { OverviewPageProductData } from '../../../product-utils/types';
+import { OverviewPageProductItem, OverviewPageProductLink } from '../../../product-utils/types';
 import { forceArray } from '../../../utils/array-utils';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
 
 export const overviewDataCallback: CreationCallback = (context, params) => {
-    const productType = graphQlCreateObjectType<keyof OverviewPageProductData>(context, {
-        name: context.uniqueName('ProductType'),
-        description: 'Produkttype',
+    const productLinkType = graphQlCreateObjectType<keyof OverviewPageProductLink>(context, {
+        name: context.uniqueName('OverviewProductLink'),
+        description: 'Product link',
+        fields: {
+            url: { type: graphQlLib.GraphQLString },
+            type: { type: graphQlLib.GraphQLString },
+            language: { type: graphQlLib.GraphQLString },
+            title: { type: graphQlLib.GraphQLString },
+        },
+    });
+
+    const productListItemType = graphQlCreateObjectType<keyof OverviewPageProductItem>(context, {
+        name: context.uniqueName('OverviewListItem'),
+        description: 'Product item in overview list',
         fields: {
             _id: { type: graphQlLib.GraphQLString },
-            type: { type: graphQlLib.GraphQLString },
-            anchorId: { type: graphQlLib.GraphQLString },
-            productDetailsPath: { type: graphQlLib.GraphQLString },
             path: { type: graphQlLib.GraphQLString },
+            type: { type: graphQlLib.GraphQLString },
             language: { type: graphQlLib.GraphQLString },
             sortTitle: { type: graphQlLib.GraphQLString },
+            anchorId: { type: graphQlLib.GraphQLString },
+            productDetailsPath: { type: graphQlLib.GraphQLString },
             title: { type: graphQlLib.GraphQLString },
             ingress: { type: graphQlLib.GraphQLString },
             audience: { type: graphQlLib.GraphQLString },
@@ -37,11 +48,12 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
                     return illustration ? contentLib.get({ key: illustration }) : illustration;
                 },
             },
+            productLinks: { type: graphQlLib.list(productLinkType) },
         },
     });
 
     params.fields.productList = {
-        type: graphQlLib.list(productType),
+        type: graphQlLib.list(productListItemType),
         resolve: () => {
             const contentId = getGuillotineContentQueryBaseContentId();
             if (!contentId) {
@@ -68,7 +80,13 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
                 return [];
             }
 
-            return getProductDataForOverviewPage(overviewType, forceArray(audience), language);
+            const productList = buildOverviewPageProductList(
+                overviewType,
+                forceArray(audience),
+                language
+            );
+
+            return productList;
         },
     };
 };

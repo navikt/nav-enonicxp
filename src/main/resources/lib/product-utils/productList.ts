@@ -6,13 +6,14 @@ import { Overview } from '../../site/content-types/overview/overview';
 import {
     ContentTypeWithProductDetails,
     DetailedOverviewType,
-    OverviewPageProductData,
+    OverviewPageProductItem,
 } from './types';
 import { APP_DESCRIPTOR } from '../constants';
 import { Audience as _Audience } from '../../site/mixins/audience/audience';
 import { contentTypesInOverviewPages } from '../contenttype-lists';
 import { getPublicPath } from '../paths/public-path';
 import { runInContext } from '../context/run-in-context';
+import { sortByLocaleCompareOnField } from '../utils/sort-utils';
 
 type OverviewType = Overview['overviewType'];
 type Audience = _Audience['audience']['_selected'];
@@ -25,6 +26,8 @@ const CONTENT_TYPES_IN_ALL_PRODUCTS_LISTS = [
     `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
     `${APP_DESCRIPTOR}:guide-page`,
 ] as const;
+
+const sortByTitle = sortByLocaleCompareOnField('title');
 
 const getProductDetails = (
     productPageContent: ContentWithProductDetails,
@@ -49,19 +52,37 @@ const getProductDetails = (
     return productDetails;
 };
 
-const buildCommonProductData = (product: ContentWithProductDetails) => {
-    const { _id, type, data, language, displayName } = product;
-    const fullTitle = data.title || displayName;
+const getDataFromProductPage = (product: ContentWithProductDetails): OverviewPageProductItem => {
+    const { type, data, language, displayName } = product;
+    const { title, audience, sortTitle } = data;
+
+    const pageTitle = title || displayName;
+    const listItemTitle = sortTitle || pageTitle;
+
+    const path = getPublicPath(product, language);
+
+    const dataForBackwardsCompatibility = {
+        _id: product._id,
+        language: product.language,
+        type: product.type,
+        path,
+        sortTitle: listItemTitle,
+    };
 
     return {
         ...data,
-        _id,
-        language,
-        type,
-        path: getPublicPath(product, language),
-        audience: product.data.audience._selected,
-        title: fullTitle,
-        sortTitle: data.sortTitle || fullTitle,
+        ...dataForBackwardsCompatibility,
+        title: listItemTitle,
+        audience: audience._selected,
+        anchorId: sanitize(listItemTitle),
+        productLinks: [
+            {
+                url: path,
+                language,
+                type,
+                title: pageTitle,
+            },
+        ],
     };
 };
 
@@ -113,7 +134,7 @@ const getProductPages = (overviewType: OverviewType, audience: Audience[]) => {
 };
 
 const getAllProductsData = (audience: Audience[]) => {
-    return getProductPages('all_products', audience).map(buildCommonProductData);
+    return getProductPages('all_products', audience).map(getDataFromProductPage);
 };
 
 const getTypeSpecificProductsData = (
@@ -129,7 +150,7 @@ const getTypeSpecificProductsData = (
     // The rule here is that we want every product detail in the requested language included in the
     // final list, at least once. Each detail can be included multiple times, but only if they are
     // used on multiple product pages in the requested language.
-    const productDataMap = productPages.reduce<Record<string, OverviewPageProductData>>(
+    const productDataMap = productPages.reduce<Record<string, OverviewPageProductItem>>(
         (acc, productPageContent) => {
             const productDetailsContent = getProductDetails(productPageContent, overviewType);
             if (!productDetailsContent || productDetailsContent.language !== requestedLanguage) {
@@ -142,26 +163,34 @@ const getTypeSpecificProductsData = (
             const isProductPageInRequestedLanguage =
                 productPageContent.language === requestedLanguage;
 
+            const productPageData = getDataFromProductPage(productPageContent);
+
             // We do not want the possibility of duplicate product details, unless they belong to
             // product pages in the requested language
             if (!isProductPageInRequestedLanguage && productDetailsAdded.has(productDetailsId)) {
+                // Add another product link, to ensure all relevant products are linked from the product details
+                // when the product pages themselves aren't localized
+                if (acc[productDetailsId]) {
+                    acc[productDetailsId].productLinks = [
+                        ...acc[productDetailsId].productLinks,
+                        ...productPageData.productLinks,
+                    ].sort(sortByTitle);
+                }
                 return acc;
             }
 
             productDetailsAdded.add(productDetailsId);
 
-            const commonData = buildCommonProductData(productPageContent);
-
             // If the product is not in the requested language, we use the name of the product details
             // as the displayed/sorted title
-            const sortTitle = isProductPageInRequestedLanguage
-                ? commonData.sortTitle
+            const title = isProductPageInRequestedLanguage
+                ? productPageData.title
                 : productDetailsContent.displayName;
 
-            const productData = {
-                ...commonData,
-                sortTitle,
-                anchorId: sanitize(sortTitle),
+            const productData: OverviewPageProductItem = {
+                ...productPageData,
+                sortTitle: title,
+                title,
                 productDetailsPath: getPublicPath(productDetailsContent, requestedLanguage),
             };
 
@@ -181,7 +210,7 @@ const getTypeSpecificProductsData = (
     return Object.values(productDataMap);
 };
 
-export const getProductDataForOverviewPage = (
+export const buildOverviewPageProductList = (
     overviewType: OverviewType,
     audience: Audience[],
     language: string
@@ -192,5 +221,5 @@ export const getProductDataForOverviewPage = (
             : getTypeSpecificProductsData(overviewType, audience, language)
     );
 
-    return productData.sort((a, b) => a.sortTitle.localeCompare(b.sortTitle));
+    return productData.sort(sortByTitle);
 };
