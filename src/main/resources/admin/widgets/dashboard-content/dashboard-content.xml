@@ -3,7 +3,7 @@
 		<interface>admin.dashboard</interface>
 	</interfaces>
 	<allow>
-		<principal>role:system.admin</principal>
+		<principal>role:system.authenticated</principal>
 	</allow>
 	<config>
 		<property name="width" value="medium"/>

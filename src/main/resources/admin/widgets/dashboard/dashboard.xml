@@ -3,11 +3,11 @@
 		<interface>admin.dashboard</interface>
 	</interfaces>
 	<allow>
-		<principal>role:system.admin</principal>
+		<principal>role:system.authenticated</principal>
 	</allow>
 	<config>
 		<property name="width" value="small"/>
 		<property name="style" value="custom"/>
-		<property name="order" value="1"/>
+		<property name="order" value="3"/>
 	</config>
 </widget>
