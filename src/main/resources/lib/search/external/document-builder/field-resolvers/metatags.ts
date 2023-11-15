@@ -8,9 +8,10 @@ export type SearchDocumentMetatag =
     | 'skjema'
     | 'nyhet'
     | 'pressemelding'
-    | 'nav-og-samfunn'
+    | 'nav-og-samfunn' // legg til
     | 'analyse'
-    | 'statistikk';
+    | 'statistikk'
+    | 'presse'; // legg til
 
 const isKontor = (content: ContentNode) => content.type === 'no.nav.navno:office-branch';
 
