@@ -24,23 +24,83 @@ const metaDataToCopy = [
     'hideFromProductlist',
 ];
 
-export const synchronizeMetaDataToLayers = (req: XP.Request) => {
-    // 1. Check if content is on default layer.
-    // 2. If so, propagate meta to all layers
-    // 2. If not, get the content from default layer, then copy to this one.
-    // 5.
+type MetaData = { [key: string]: unknown };
 
+const buildMetaDataObject = (content: DynamicPageContent): MetaData => {
+    const metaData: MetaData = {};
+    metaDataToCopy.forEach((key) => {
+        if (content.data[key]) {
+            metaData[key] = content.data[key];
+        }
+    });
+
+    return metaData;
+};
+
+const syncToAllOtherLayers = (content: DynamicPageContent) => {
     const { repoIdToLocaleMap } = getLayersData();
 
+    Object.keys(repoIdToLocaleMap).forEach((repoId) => {
+        const repo = getRepoConnection({ repoId, branch: 'draft' });
+        const nodeContent = repo.get<DynamicPageContent>({ key: content._id });
+
+        if (!nodeContent) {
+            return;
+        }
+
+        const metaData = buildMetaDataObject(content);
+
+        repo.modify({
+            key: nodeContent._id,
+            editor: (node) => {
+                return { ...node, data: { ...node.data, metaData } };
+            },
+        });
+    });
+};
+
+const copyFromDefaultLayer = (content: DynamicPageContent, repoId: string) => {
+    const defaultRepo = getRepoConnection({ repoId: CONTENT_ROOT_REPO_ID, branch: 'draft' });
+    const targetRepo = getRepoConnection({ repoId, branch: 'draft' });
+    const defaultRepoContent = defaultRepo.get<DynamicPageContent>({ key: content._id });
+
+    if (!defaultRepoContent) {
+        logger.error(
+            `Could not get content from default layer with id ${content._id} when trying to copy meta data`
+        );
+        return;
+    }
+
+    const metaData = buildMetaDataObject(defaultRepoContent);
+
+    targetRepo.modify({
+        key: content._id,
+        editor: (node) => {
+            return { ...node, data: { ...node.data, metaData } };
+        },
+    });
+};
+
+export const synchronizeMetaDataToLayers = (req: XP.Request) => {
+    const { repositoryId } = req;
+
     const content = portalLib.getContent();
+
     if (!content) {
         logger.error(`Could not get contextual content from request path - ${req.rawPath}`);
         return;
     }
 
-    log.info(JSON.stringify(content));
+    const isContentInDefaultRepo = repositoryId === CONTENT_ROOT_REPO_ID;
 
-    const defaultRepo = getRepoConnection({ repoId: CONTENT_ROOT_REPO_ID, branch: 'draft' });
+    if (isContentInDefaultRepo) {
+        syncToAllOtherLayers(content);
+    } else {
+        copyFromDefaultLayer(content, repositoryId);
+    }
 
-    //const defaultLayerContent = defaultRepo.get<DynamicPageContent>({ key: content._id });
+    const repo = getRepoConnection({ repoId: CONTENT_ROOT_REPO_ID, branch: 'draft' });
+    const defaultRepoContent = repo.get<DynamicPageContent>({ key: content._id });
+
+    log.info(JSON.stringify(defaultRepoContent));
 };
