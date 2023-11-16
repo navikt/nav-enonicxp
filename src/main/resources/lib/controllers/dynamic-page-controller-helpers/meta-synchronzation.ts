@@ -38,28 +38,46 @@ const buildMetaDataObject = (content: DynamicPageContent): MetaData => {
 };
 
 const syncToAllOtherLayers = (content: DynamicPageContent) => {
+    log.info('copyToAllOtherLayers');
     const { repoIdToLocaleMap } = getLayersData();
 
     Object.keys(repoIdToLocaleMap).forEach((repoId) => {
-        const repo = getRepoConnection({ repoId, branch: 'draft' });
-        const nodeContent = repo.get<DynamicPageContent>({ key: content._id });
+        if (repoId === CONTENT_ROOT_REPO_ID) {
+            return;
+        }
+        const draftRepo = getRepoConnection({ repoId, branch: 'draft' });
+        const masterRepo = getRepoConnection({ repoId, branch: 'master' });
+        const draftContent = draftRepo.get<DynamicPageContent>({ key: content._id });
+        const masterContent = masterRepo.get<DynamicPageContent>({ key: content._id });
 
-        if (!nodeContent) {
+        const isContentPublished =
+            masterContent && masterContent._versionKey === draftContent?._versionKey;
+
+        if (!draftContent) {
             return;
         }
 
         const metaData = buildMetaDataObject(content);
 
-        repo.modify({
-            key: nodeContent._id,
+        draftRepo.modify({
+            key: draftContent._id,
             editor: (node) => {
                 return { ...node, data: { ...node.data, metaData } };
             },
         });
+
+        if (isContentPublished) {
+            log.info(`Push to ${repoId} in master for ${content._id}`);
+            draftRepo.push({
+                keys: [draftContent._id],
+                target: 'master',
+            });
+        }
     });
 };
 
 const copyFromDefaultLayer = (content: DynamicPageContent, repoId: string) => {
+    log.info('copyFromDefaultLayer');
     const defaultRepo = getRepoConnection({ repoId: CONTENT_ROOT_REPO_ID, branch: 'draft' });
     const targetRepo = getRepoConnection({ repoId, branch: 'draft' });
     const defaultRepoContent = defaultRepo.get<DynamicPageContent>({ key: content._id });
@@ -72,6 +90,8 @@ const copyFromDefaultLayer = (content: DynamicPageContent, repoId: string) => {
     }
 
     const metaData = buildMetaDataObject(defaultRepoContent);
+
+    log.info(`copy to ${repoId}`);
 
     targetRepo.modify({
         key: content._id,
@@ -98,9 +118,4 @@ export const synchronizeMetaDataToLayers = (req: XP.Request) => {
     } else {
         copyFromDefaultLayer(content, repositoryId);
     }
-
-    const repo = getRepoConnection({ repoId: CONTENT_ROOT_REPO_ID, branch: 'draft' });
-    const defaultRepoContent = repo.get<DynamicPageContent>({ key: content._id });
-
-    log.info(JSON.stringify(defaultRepoContent));
 };
