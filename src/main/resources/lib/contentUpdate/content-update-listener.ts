@@ -64,6 +64,15 @@ const handleEvent = (event: eventLib.EnonicEvent) => {
                     }
                     break;
                 }
+                case 'no.nav.navno:content-page-with-sidemenus':
+                case 'no.nav.navno:situation-page':
+                case 'no.nav.navno:guide-page':
+                case 'no.nav.navno:themed-article-page':
+                case 'no.nav.navno:tools-page':
+                case 'no.nav.navno:current-topic-page':
+                case 'no.nav.navno:generic-page': {
+                    log.info('content was updated');
+                }
             }
         });
     });

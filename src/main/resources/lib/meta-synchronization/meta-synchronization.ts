@@ -1,10 +1,10 @@
 import * as portalLib from '/lib/xp/portal';
-import { getRepoConnection } from '../../utils/repo-utils';
-import { CONTENT_ROOT_REPO_ID } from '../../constants';
-import { logger } from '../../utils/logging';
+import { getRepoConnection } from '../utils/repo-utils';
+import { CONTENT_ROOT_REPO_ID } from '../constants';
+import { logger } from '../utils/logging';
 import { Content } from '/lib/xp/content';
 import { NodeContent } from '/lib/xp/node';
-import { getLayersData } from '../../localization/layers-data';
+import { getLayersData } from '../localization/layers-data';
 
 type DynamicPageContent = NodeContent<Content>;
 
@@ -76,7 +76,7 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
     });
 };
 
-const copyFromDefaultLayer = (content: DynamicPageContent, repoId: string) => {
+const updateFromDefaultLayer = (content: DynamicPageContent, repoId: string) => {
     log.info('copyFromDefaultLayer');
     const defaultRepo = getRepoConnection({ repoId: CONTENT_ROOT_REPO_ID, branch: 'draft' });
     const targetRepo = getRepoConnection({ repoId, branch: 'draft' });
@@ -116,6 +116,6 @@ export const synchronizeMetaDataToLayers = (req: XP.Request) => {
     if (isContentInDefaultRepo) {
         syncToAllOtherLayers(content);
     } else {
-        copyFromDefaultLayer(content, repositoryId);
+        updateFromDefaultLayer(content, repositoryId);
     }
 };
