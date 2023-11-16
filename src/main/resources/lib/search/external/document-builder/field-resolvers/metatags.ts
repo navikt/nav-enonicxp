@@ -1,7 +1,11 @@
 import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
+import { forceArray } from '../../../../utils/array-utils';
+import { ContentDescriptor } from '../../../../../types/content-types/content-config';
 
-type ContentNode = RepoNode<Content>;
+type ContentNode<ContentType extends ContentDescriptor = ContentDescriptor> = RepoNode<
+    Content<ContentType>
+>;
 
 export type SearchDocumentMetatag =
     | 'kontor'
@@ -13,9 +17,16 @@ export type SearchDocumentMetatag =
     | 'statistikk'
     | 'presse';
 
-const isKontor = (content: ContentNode) => content.type === 'no.nav.navno:office-branch';
+const isKontor = (content: ContentNode) =>
+    content.type === 'no.nav.navno:office-branch' ||
+    (content.type === 'no.nav.navno:office-information' && content.data.enhet.type !== 'LOKAL');
 
-const isSkjema = (content: ContentNode) => content.type === 'no.nav.navno:form-details';
+const isComplaint = (content: ContentNode<'no.nav.navno:form-details'>) =>
+    forceArray(content.data.formType).some((formType) => formType._selected === 'complaint');
+
+const isSkjema = (content: ContentNode) =>
+    (content.type === 'no.nav.navno:form-details' && !isComplaint(content)) ||
+    content.type === 'no.nav.navno:forms-overview';
 
 const isNyhet = (content: ContentNode) =>
     (content.type === 'no.nav.navno:main-article' && content.data.contentType === 'news') ||
