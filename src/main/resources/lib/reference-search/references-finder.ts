@@ -335,7 +335,7 @@ export class ReferencesFinder {
             return [];
         }
 
-        const selectedAudience = content.data?.audience?._selected;
+        const selectedAudience = content.data.audience?._selected;
         if (!selectedAudience) {
             return [];
         }
