@@ -15,9 +15,12 @@ import { getParentPath } from '../paths/path-utils';
 import { NON_LOCALIZED_QUERY_FILTER } from '../localization/layers-repo-utils/localization-state-filters';
 import { forceArray } from '../utils/array-utils';
 import { isValidBranch } from '../context/branches';
+import { Overview } from '../../site/content-types/overview/overview';
 
+type ContentNode = RepoNode<Content>;
 type ContentDescriptorSet = ReadonlySet<ContentDescriptor>;
-type ContentNode = RepoNode<Content<any>>;
+
+type OverviewType = Overview['overviewType'];
 
 type QueryHit = Pick<NodeQueryHit, 'id'>;
 type QueryResult = ReadonlyArray<QueryHit>;
@@ -250,9 +253,35 @@ export class ReferencesFinder {
         return result;
     }
 
+    private getRelevantOverviewTypes(content: ContentNode): OverviewType[] {
+        const overviewTypes: OverviewType[] = [];
+
+        if (content.data.processing_times) {
+            overviewTypes.push('processing_times');
+        }
+        if (content.data.payout_dates) {
+            overviewTypes.push('payout_dates');
+        }
+        if (content.data.rates) {
+            overviewTypes.push('rates');
+        }
+
+        return overviewTypes;
+    }
+
     // Overview pages are generated from meta-data of certain content types
     private findOverviewRefs(content: ContentNode): QueryResult {
         if (!typesWithOverviewPages.has(content.type)) {
+            return [];
+        }
+
+        const overviewTypes = this.getRelevantOverviewTypes(content);
+        if (overviewTypes.length === 0) {
+            return [];
+        }
+
+        const selectedAudience = content.data.audience?._selected;
+        if (!selectedAudience) {
             return [];
         }
 
@@ -269,29 +298,19 @@ export class ReferencesFinder {
                     values: [content.language],
                 },
             },
-        ];
-
-        const selectedAudience = content.data?.audience?._selected;
-
-        if (selectedAudience) {
-            mustRules.push({
-                hasValue: {
-                    field: 'data.audience',
-                    values: [selectedAudience],
-                },
-            });
-        }
-
-        const overviewType = content.data?.detailType;
-
-        if (overviewType) {
-            mustRules.push({
+            {
                 hasValue: {
                     field: 'data.overviewType',
-                    values: [overviewType],
+                    values: overviewTypes,
                 },
-            });
-        }
+            },
+            {
+                hasValue: {
+                    field: 'data.audience',
+                    values: forceArray(selectedAudience),
+                },
+            },
+        ];
 
         const result = this.contentNodeQuery({
             filters: {
