@@ -307,7 +307,7 @@ export class ReferencesFinder {
             {
                 hasValue: {
                     field: 'data.audience',
-                    values: forceArray(selectedAudience),
+                    values: [selectedAudience],
                 },
             },
         ];
@@ -336,29 +336,45 @@ export class ReferencesFinder {
             return [];
         }
 
+        const selectedProviderAudience =
+            selectedAudience === 'provider'
+                ? forceArray(content.data.audience.provider?._selected)
+                : null;
+
+        const mustRules = [
+            {
+                hasValue: {
+                    field: 'type',
+                    values: ['no.nav.navno:forms-overview'],
+                },
+            },
+            {
+                hasValue: {
+                    field: 'data.audience._selected',
+                    values: [selectedAudience],
+                },
+            },
+            {
+                hasValue: {
+                    field: 'language',
+                    values: [content.language],
+                },
+            },
+        ];
+
+        if (selectedProviderAudience) {
+            mustRules.push({
+                hasValue: {
+                    field: 'data.audience.provider._selected',
+                    values: selectedProviderAudience,
+                },
+            });
+        }
+
         const result = this.contentNodeQuery({
             filters: {
                 boolean: {
-                    must: [
-                        {
-                            hasValue: {
-                                field: 'type',
-                                values: ['no.nav.navno:forms-overview'],
-                            },
-                        },
-                        {
-                            hasValue: {
-                                field: 'data.audience._selected',
-                                values: [selectedAudience],
-                            },
-                        },
-                        {
-                            hasValue: {
-                                field: 'language',
-                                values: [content.language],
-                            },
-                        },
-                    ],
+                    must: mustRules,
                 },
             },
         });
