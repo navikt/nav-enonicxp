@@ -331,6 +331,10 @@ export class ReferencesFinder {
             return [];
         }
 
+        if (!content.data.formDetailsTargets) {
+            return [];
+        }
+
         const selectedAudience = content.data?.audience?._selected;
         if (!selectedAudience) {
             return [];
