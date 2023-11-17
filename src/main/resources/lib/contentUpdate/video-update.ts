@@ -160,11 +160,13 @@ export const updateQbrickVideoContent = (content: Content<'no.nav.navno:video'>)
 
     const qbrickMetadata = fetchMetaData(accountId, mediaId);
     if (!qbrickMetadata) {
+        logger.error(`No metadata found for qbrick video: ${content._id}`);
         return;
     }
 
     const { duration, imageURI, subtitles } = qbrickMetadata;
-    if (!duration || !imageURI) {
+    if (!imageURI) {
+        logger.error(`No thumbnail URI found for qbrick video: ${content._id}`);
         return;
     }
 
@@ -174,6 +176,7 @@ export const updateQbrickVideoContent = (content: Content<'no.nav.navno:video'>)
             content.data.poster || createImageAsset(imageURI, content._path, content._name)?._id;
 
         if (!imageAssetId) {
+            logger.error(`Failed to create image asset for qbrick video: ${content._id}`);
             return;
         }
 
