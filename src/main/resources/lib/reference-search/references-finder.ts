@@ -340,11 +340,6 @@ export class ReferencesFinder {
             return [];
         }
 
-        const selectedProviderAudience =
-            selectedAudience === 'provider'
-                ? forceArray(content.data.audience.provider?._selected)
-                : null;
-
         const mustRules = [
             {
                 hasValue: {
@@ -366,10 +361,19 @@ export class ReferencesFinder {
             },
         ];
 
+        const selectedProviderAudience =
+            selectedAudience === 'provider'
+                ? forceArray(content.data.audience.provider?.provider_audience)
+                : null;
+
         if (selectedProviderAudience) {
+            if (selectedProviderAudience.length === 0) {
+                return [];
+            }
+
             mustRules.push({
                 hasValue: {
-                    field: 'data.audience.provider._selected',
+                    field: 'data.audience.provider.pageType.overview.provider_audience',
                     values: selectedProviderAudience,
                 },
             });
