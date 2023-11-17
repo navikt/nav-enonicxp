@@ -15,9 +15,12 @@ import { getParentPath } from '../paths/path-utils';
 import { NON_LOCALIZED_QUERY_FILTER } from '../localization/layers-repo-utils/localization-state-filters';
 import { forceArray } from '../utils/array-utils';
 import { isValidBranch } from '../context/branches';
+import { Overview } from '../../site/content-types/overview/overview';
 
+type ContentNode = RepoNode<Content>;
 type ContentDescriptorSet = ReadonlySet<ContentDescriptor>;
-type ContentNode = RepoNode<Content<any>>;
+
+type OverviewType = Overview['overviewType'];
 
 type QueryHit = Pick<NodeQueryHit, 'id'>;
 type QueryResult = ReadonlyArray<QueryHit>;
@@ -250,9 +253,35 @@ export class ReferencesFinder {
         return result;
     }
 
+    private getRelevantOverviewTypes(content: ContentNode): OverviewType[] {
+        const overviewTypes: OverviewType[] = [];
+
+        if (content.data.processing_times) {
+            overviewTypes.push('processing_times');
+        }
+        if (content.data.payout_dates) {
+            overviewTypes.push('payout_dates');
+        }
+        if (content.data.rates) {
+            overviewTypes.push('rates');
+        }
+
+        return overviewTypes;
+    }
+
     // Overview pages are generated from meta-data of certain content types
     private findOverviewRefs(content: ContentNode): QueryResult {
         if (!typesWithOverviewPages.has(content.type)) {
+            return [];
+        }
+
+        const overviewTypes = this.getRelevantOverviewTypes(content);
+        if (overviewTypes.length === 0) {
+            return [];
+        }
+
+        const selectedAudience = content.data.audience?._selected;
+        if (!selectedAudience) {
             return [];
         }
 
@@ -269,29 +298,19 @@ export class ReferencesFinder {
                     values: [content.language],
                 },
             },
-        ];
-
-        const selectedAudience = content.data?.audience?._selected;
-
-        if (selectedAudience) {
-            mustRules.push({
+            {
+                hasValue: {
+                    field: 'data.overviewType',
+                    values: overviewTypes,
+                },
+            },
+            {
                 hasValue: {
                     field: 'data.audience',
                     values: [selectedAudience],
                 },
-            });
-        }
-
-        const overviewType = content.data?.detailType;
-
-        if (overviewType) {
-            mustRules.push({
-                hasValue: {
-                    field: 'data.overviewType',
-                    values: [overviewType],
-                },
-            });
-        }
+            },
+        ];
 
         const result = this.contentNodeQuery({
             filters: {
@@ -312,34 +331,58 @@ export class ReferencesFinder {
             return [];
         }
 
-        const selectedAudience = content.data?.audience?._selected;
+        if (!content.data.formDetailsTargets) {
+            return [];
+        }
+
+        const selectedAudience = content.data.audience?._selected;
         if (!selectedAudience) {
             return [];
+        }
+
+        const mustRules = [
+            {
+                hasValue: {
+                    field: 'type',
+                    values: ['no.nav.navno:forms-overview'],
+                },
+            },
+            {
+                hasValue: {
+                    field: 'data.audience._selected',
+                    values: [selectedAudience],
+                },
+            },
+            {
+                hasValue: {
+                    field: 'language',
+                    values: [content.language],
+                },
+            },
+        ];
+
+        const selectedProviderAudience =
+            selectedAudience === 'provider'
+                ? forceArray(content.data.audience.provider?.provider_audience)
+                : null;
+
+        if (selectedProviderAudience) {
+            if (selectedProviderAudience.length === 0) {
+                return [];
+            }
+
+            mustRules.push({
+                hasValue: {
+                    field: 'data.audience.provider.pageType.overview.provider_audience',
+                    values: selectedProviderAudience,
+                },
+            });
         }
 
         const result = this.contentNodeQuery({
             filters: {
                 boolean: {
-                    must: [
-                        {
-                            hasValue: {
-                                field: 'type',
-                                values: ['no.nav.navno:forms-overview'],
-                            },
-                        },
-                        {
-                            hasValue: {
-                                field: 'data.audience._selected',
-                                values: [selectedAudience],
-                            },
-                        },
-                        {
-                            hasValue: {
-                                field: 'language',
-                                values: [content.language],
-                            },
-                        },
-                    ],
+                    must: mustRules,
                 },
             },
         });
