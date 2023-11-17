@@ -86,6 +86,8 @@ const getModifiedContentFromUser = () => {
 
                 if (draftContent?.workflow?.state === 'IN_PROGRESS') {
                     status = 'Endret';
+                } else if (draftContent?.archivedTime) {
+                    status = 'Arkivert';
                 } else {
                     status = 'Avpublisert';
                 }
