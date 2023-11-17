@@ -1,4 +1,4 @@
-import * as portalLib from '/lib/xp/portal';
+import * as contentLib from '/lib/xp/content';
 import { getRepoConnection } from '../utils/repo-utils';
 import { CONTENT_ROOT_REPO_ID } from '../constants';
 import { logger } from '../utils/logging';
@@ -101,21 +101,14 @@ const updateFromDefaultLayer = (content: DynamicPageContent, repoId: string) => 
     });
 };
 
-export const synchronizeMetaDataToLayers = (req: XP.Request) => {
-    const { repositoryId } = req;
+export const synchronizeMetaDataToLayers = (content: contentLib.Content, repo: string) => {
+    const isContentInDefaultRepo = repo === CONTENT_ROOT_REPO_ID;
 
-    const content = portalLib.getContent();
-
-    if (!content) {
-        logger.error(`Could not get contextual content from request path - ${req.rawPath}`);
-        return;
-    }
-
-    const isContentInDefaultRepo = repositoryId === CONTENT_ROOT_REPO_ID;
+    log.info('synchronizeMetaDataToLayers');
 
     if (isContentInDefaultRepo) {
         syncToAllOtherLayers(content);
     } else {
-        updateFromDefaultLayer(content, repositoryId);
+        updateFromDefaultLayer(content, repo);
     }
 };

@@ -8,6 +8,7 @@ import { updateQbrickVideoContent } from './video-update';
 import { logger } from '../utils/logging';
 import { isMainDatanode } from '../cluster-utils/main-datanode';
 import { contentDataLocaleFallbackRefreshItems } from './content-data-locale-fallback-update';
+import { synchronizeMetaDataToLayers } from 'lib/meta-synchronization/meta-synchronization';
 
 let hasContentUpdateListener = false;
 
@@ -71,7 +72,7 @@ const handleEvent = (event: eventLib.EnonicEvent) => {
                 case 'no.nav.navno:tools-page':
                 case 'no.nav.navno:current-topic-page':
                 case 'no.nav.navno:generic-page': {
-                    log.info('content was updated');
+                    synchronizeMetaDataToLayers(content, repo);
                 }
             }
         });
