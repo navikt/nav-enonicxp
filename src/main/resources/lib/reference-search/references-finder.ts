@@ -306,6 +306,7 @@ export class ReferencesFinder {
         ];
 
         const selectedAudience = content.data.audience?._selected;
+
         if (selectedAudience) {
             mustRules.push({
                 hasValue: {
@@ -313,6 +314,10 @@ export class ReferencesFinder {
                     values: [selectedAudience],
                 },
             });
+            // Product details does not have an audience type. For all other relevant types
+            // we require the audience to be set
+        } else if (content.type !== 'no.nav.navno:product-details') {
+            return [];
         }
 
         const result = this.contentNodeQuery({
