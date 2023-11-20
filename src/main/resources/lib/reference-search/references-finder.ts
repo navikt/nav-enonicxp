@@ -208,7 +208,7 @@ export class ReferencesFinder {
     private processReference(nodeQueryHitId: QueryHit) {
         const { id } = nodeQueryHitId;
 
-        if (this.referencesFound[id]) {
+        if (this.referencesFound[id] || id === this.baseContentId) {
             return;
         }
 
@@ -254,6 +254,10 @@ export class ReferencesFinder {
     }
 
     private getRelevantOverviewTypes(content: ContentNode): OverviewType[] {
+        if (content.type === 'no.nav.navno:product-details') {
+            return forceArray(content.data.detailType);
+        }
+
         const overviewTypes: OverviewType[] = [];
 
         if (content.data.processing_times) {
@@ -280,11 +284,6 @@ export class ReferencesFinder {
             return [];
         }
 
-        const selectedAudience = content.data.audience?._selected;
-        if (!selectedAudience) {
-            return [];
-        }
-
         const mustRules = [
             {
                 hasValue: {
@@ -304,13 +303,22 @@ export class ReferencesFinder {
                     values: overviewTypes,
                 },
             },
-            {
+        ];
+
+        const selectedAudience = content.data.audience?._selected;
+
+        if (selectedAudience) {
+            mustRules.push({
                 hasValue: {
                     field: 'data.audience',
                     values: [selectedAudience],
                 },
-            },
-        ];
+            });
+            // Product details does not have an audience type. For all other relevant types
+            // we require the audience to be set
+        } else if (content.type !== 'no.nav.navno:product-details') {
+            return [];
+        }
 
         const result = this.contentNodeQuery({
             filters: {
