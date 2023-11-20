@@ -208,7 +208,7 @@ export class ReferencesFinder {
     private processReference(nodeQueryHitId: QueryHit) {
         const { id } = nodeQueryHitId;
 
-        if (this.referencesFound[id]) {
+        if (this.referencesFound[id] || id === this.baseContentId) {
             return;
         }
 
