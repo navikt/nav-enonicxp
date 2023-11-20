@@ -254,6 +254,10 @@ export class ReferencesFinder {
     }
 
     private getRelevantOverviewTypes(content: ContentNode): OverviewType[] {
+        if (content.type === 'no.nav.navno:product-details') {
+            return forceArray(content.data.detailType);
+        }
+
         const overviewTypes: OverviewType[] = [];
 
         if (content.data.processing_times) {
@@ -280,11 +284,6 @@ export class ReferencesFinder {
             return [];
         }
 
-        const selectedAudience = content.data.audience?._selected;
-        if (!selectedAudience) {
-            return [];
-        }
-
         const mustRules = [
             {
                 hasValue: {
@@ -304,13 +303,17 @@ export class ReferencesFinder {
                     values: overviewTypes,
                 },
             },
-            {
+        ];
+
+        const selectedAudience = content.data.audience?._selected;
+        if (selectedAudience) {
+            mustRules.push({
                 hasValue: {
                     field: 'data.audience',
                     values: [selectedAudience],
                 },
-            },
-        ];
+            });
+        }
 
         const result = this.contentNodeQuery({
             filters: {
