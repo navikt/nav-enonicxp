@@ -2,11 +2,11 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import * as portalLib from '/lib/xp/portal';
 import { generateFulltextQuery } from '../../lib/utils/mixed-bag-of-utils';
-import { customSelectorHitWithLink } from '../service-utils';
+import { customSelectorHitWithLink, customSelectorParseSelectedIdsFromReq } from '../service-utils';
 import { logger } from '../../lib/utils/logging';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
-import { forceArray, parseJsonToArray, removeDuplicates } from '../../lib/utils/array-utils';
+import { parseJsonToArray, removeDuplicates } from '../../lib/utils/array-utils';
 import { getNestedValues } from '../../lib/utils/object-utils';
 
 type SelectorHit = XP.CustomSelectorServiceResponseHit;
@@ -100,7 +100,6 @@ const getHitsFromIds = (ids: string[]) =>
 export const get = (req: XP.Request) => {
     const {
         query: userQuery,
-        ids,
         contentTypes: contentTypesJson,
         selectorQuery,
         sort,
@@ -109,7 +108,7 @@ export const get = (req: XP.Request) => {
     const query = buildQuery(userQuery, selectorQuery);
     const contentTypes = parseContentTypes(contentTypesJson);
 
-    const hitsFromIds = getHitsFromIds(forceArray(ids));
+    const hitsFromIds = getHitsFromIds(customSelectorParseSelectedIdsFromReq(req));
     const hitsFromQuery = getHitsFromQuery(query, contentTypes || undefined, sort);
     const hits = removeDuplicates([...hitsFromIds, ...hitsFromQuery], (a, b) => a.id === b.id);
 
