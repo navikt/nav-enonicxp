@@ -9,12 +9,12 @@ import { runInContext } from '../../lib/context/run-in-context';
 
 type Hit = XP.CustomSelectorServiceResponseHit;
 
-const hitFromFragment = (fragment: Content<'portal:fragment'>): Hit =>
+const hitFromFragment = (fragment: Content<'portal:fragment'>, id?: string): Hit =>
     customSelectorHitWithLink(
         {
             // We include the displayName in the macro id attribute to make it easier
             // to determine the selected fragment at a glance in the editor
-            id: appendMacroDescriptionToKey(fragment._id, fragment.displayName),
+            id: id || appendMacroDescriptionToKey(fragment._id, fragment.displayName),
             displayName: fragment.displayName,
             description: fragment._path,
         },
@@ -27,11 +27,8 @@ const getSelectedHits = (ids: string[]) =>
         const fragment = contentLib.get({ key: fragmentId });
 
         if (fragment?.type === 'portal:fragment') {
-            acc.push({
-                ...hitFromFragment(fragment),
-                // Keep the existing id, in case the displayName has changed on the fragment.
-                id,
-            });
+            // Keep the existing id, in case the displayName has changed on the fragment.
+            acc.push(hitFromFragment(fragment, id));
         }
 
         return acc;
