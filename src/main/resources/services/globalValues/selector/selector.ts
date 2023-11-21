@@ -11,7 +11,10 @@ import { generateFulltextQuery } from '../../../lib/utils/mixed-bag-of-utils';
 import { runInContext } from '../../../lib/context/run-in-context';
 import { GlobalValueItem, GlobalValueContentDescriptor } from '../../../lib/global-values/types';
 import { buildGlobalValuePreviewString } from '../../../lib/global-values/macro-preview';
-import { customSelectorHitWithLink } from '../../service-utils';
+import {
+    customSelectorHitWithLink,
+    customSelectorParseSelectedIdsFromReq,
+} from '../../service-utils';
 import { forceArray } from '../../../lib/utils/array-utils';
 
 type Hit = XP.CustomSelectorServiceResponseHit;
@@ -102,7 +105,8 @@ const getHitsFromSelectedIds = (ids: string | string[], withDescription?: boolea
     }, [] as Hit[]);
 
 export const globalValueSelectorService = (req: XP.Request) => {
-    const { query, ids, contentType } = req.params as ReqParams;
+    const { query, contentType } = req.params as ReqParams;
+    const ids = customSelectorParseSelectedIdsFromReq(req);
 
     const withDescription = req.params.withDescription === 'true';
 

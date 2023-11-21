@@ -4,9 +4,8 @@ import {
     appendMacroDescriptionToKey,
     getKeyWithoutMacroDescription,
 } from '../../lib/utils/component-utils';
-import { customSelectorHitWithLink } from '../service-utils';
+import { customSelectorHitWithLink, customSelectorParseSelectedIdsFromReq } from '../service-utils';
 import { runInContext } from '../../lib/context/run-in-context';
-import { forceArray } from '../../lib/utils/array-utils';
 
 type Hit = XP.CustomSelectorServiceResponseHit;
 
@@ -23,10 +22,11 @@ const hitFromFragment = (fragment: Content<'portal:fragment'>, withDescription?:
     );
 
 const getHitsForSelector = (req: XP.CustomSelectorServiceRequest) => {
-    const { query, withDescription, ids } = req.params;
+    const { query, withDescription } = req.params;
+    const ids = customSelectorParseSelectedIdsFromReq(req);
 
-    if (ids) {
-        return forceArray(ids).reduce<Hit[]>((acc, id) => {
+    if (ids.length > 0) {
+        return ids.reduce<Hit[]>((acc, id) => {
             const fragmentId = getKeyWithoutMacroDescription(id);
             const fragment = contentLib.get({ key: fragmentId });
 
