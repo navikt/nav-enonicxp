@@ -12,6 +12,8 @@ type Hit = XP.CustomSelectorServiceResponseHit;
 const hitFromFragment = (fragment: Content<'portal:fragment'>): Hit =>
     customSelectorHitWithLink(
         {
+            // We include the displayName in the macro id attribute to make it easier
+            // to determine the selected fragment at a glance in the editor
             id: appendMacroDescriptionToKey(fragment._id, fragment.displayName),
             displayName: fragment.displayName,
             description: fragment._path,
@@ -24,17 +26,15 @@ const getSelectedHits = (ids: string[]) =>
         const fragmentId = getKeyWithoutMacroDescription(id);
         const fragment = contentLib.get({ key: fragmentId });
 
-        if (!fragment || fragment.type !== 'portal:fragment') {
-            return acc;
+        if (fragment?.type === 'portal:fragment') {
+            acc.push({
+                ...hitFromFragment(fragment),
+                // Keep the existing id, in case the displayName has changed on the fragment.
+                id,
+            });
         }
 
-        return [
-            ...acc,
-            {
-                ...hitFromFragment(fragment),
-                id,
-            },
-        ];
+        return acc;
     }, []);
 
 const getHitsFromQuery = (query?: string) =>
