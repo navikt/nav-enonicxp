@@ -38,7 +38,6 @@ const buildMetaDataObject = (content: DynamicPageContent): MetaData => {
 };
 
 const syncToAllOtherLayers = (content: DynamicPageContent) => {
-    log.info('copyToAllOtherLayers');
     const { repoIdToLocaleMap } = getLayersData();
 
     Object.keys(repoIdToLocaleMap).forEach((repoId) => {
@@ -62,12 +61,11 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
         draftRepo.modify({
             key: draftContent._id,
             editor: (node) => {
-                return { ...node, data: { ...node.data, metaData } };
+                return { ...node, data: { ...node.data, ...metaData } };
             },
         });
 
         if (isContentPublished) {
-            log.info(`Push to ${repoId} in master for ${content._id}`);
             draftRepo.push({
                 keys: [draftContent._id],
                 target: 'master',
@@ -77,7 +75,6 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
 };
 
 const updateFromDefaultLayer = (content: DynamicPageContent, repoId: string) => {
-    log.info('copyFromDefaultLayer');
     const defaultRepo = getRepoConnection({ repoId: CONTENT_ROOT_REPO_ID, branch: 'draft' });
     const targetRepo = getRepoConnection({ repoId, branch: 'draft' });
     const defaultRepoContent = defaultRepo.get<DynamicPageContent>({ key: content._id });
@@ -91,20 +88,16 @@ const updateFromDefaultLayer = (content: DynamicPageContent, repoId: string) => 
 
     const metaData = buildMetaDataObject(defaultRepoContent);
 
-    log.info(`copy to ${repoId}`);
-
     targetRepo.modify({
         key: content._id,
         editor: (node) => {
-            return { ...node, data: { ...node.data, metaData } };
+            return { ...node, data: { ...node.data, ...metaData } };
         },
     });
 };
 
 export const synchronizeMetaDataToLayers = (content: contentLib.Content, repo: string) => {
     const isContentInDefaultRepo = repo === CONTENT_ROOT_REPO_ID;
-
-    log.info('synchronizeMetaDataToLayers');
 
     if (isContentInDefaultRepo) {
         syncToAllOtherLayers(content);

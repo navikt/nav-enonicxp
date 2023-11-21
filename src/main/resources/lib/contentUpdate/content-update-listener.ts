@@ -8,11 +8,11 @@ import { updateQbrickVideoContent } from './video-update';
 import { logger } from '../utils/logging';
 import { isMainDatanode } from '../cluster-utils/main-datanode';
 import { contentDataLocaleFallbackRefreshItems } from './content-data-locale-fallback-update';
-import { synchronizeMetaDataToLayers } from 'lib/meta-synchronization/meta-synchronization';
+import { synchronizeMetaDataToLayers } from '../meta-synchronization/meta-synchronization';
 
 let hasContentUpdateListener = false;
 
-const handleEvent = (event: eventLib.EnonicEvent) => {
+const handleUpdateEvent = (event: eventLib.EnonicEvent) => {
     if (!isMainDatanode()) {
         return;
     }
@@ -65,6 +65,32 @@ const handleEvent = (event: eventLib.EnonicEvent) => {
                     }
                     break;
                 }
+            }
+        });
+    });
+};
+
+const handlePushedEvent = (event: eventLib.EnonicEvent) => {
+    if (!isMainDatanode()) {
+        return;
+    }
+
+    event.data.nodes.forEach((node) => {
+        const { id, repo } = node;
+
+        if (!repo.startsWith(CONTENT_REPO_PREFIX)) {
+            return;
+        }
+
+        runInContext({ repository: repo }, () => {
+            const content = contentLib.get({ key: id });
+            if (!content || !isContentLocalized(content)) {
+                return;
+            }
+
+            const { type } = content;
+
+            switch (type) {
                 case 'no.nav.navno:content-page-with-sidemenus':
                 case 'no.nav.navno:situation-page':
                 case 'no.nav.navno:guide-page':
@@ -88,6 +114,11 @@ export const activateContentUpdateListener = () => {
 
     eventLib.listener({
         type: 'node.updated',
-        callback: handleEvent,
+        callback: handleUpdateEvent,
+    });
+
+    eventLib.listener({
+        type: 'node.pushed',
+        callback: handlePushedEvent,
     });
 };
