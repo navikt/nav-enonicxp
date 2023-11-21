@@ -62,15 +62,13 @@ const getHitsFromQuery = (query?: string) =>
         })
         .hits.map((fragment) => hitFromFragment(fragment));
 
-const getHitsForSelector = (req: XP.CustomSelectorServiceRequest) => {
+export const get = (req: XP.CustomSelectorServiceRequest) => {
     const { query } = req.params;
     const ids = customSelectorParseSelectedIdsFromReq(req);
 
-    return ids.length > 0 ? getSelectedHits(ids) : getHitsFromQuery(query);
-};
-
-export const get = (req: XP.CustomSelectorServiceRequest) => {
-    const hits = runInContext({ branch: 'master' }, () => getHitsForSelector(req));
+    const hits = runInContext({ branch: 'master' }, () =>
+        ids.length > 0 ? getSelectedHits(ids) : getHitsFromQuery(query)
+    );
 
     return {
         status: 200,
