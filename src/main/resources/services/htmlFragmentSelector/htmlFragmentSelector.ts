@@ -9,64 +9,64 @@ import { runInContext } from '../../lib/context/run-in-context';
 
 type Hit = XP.CustomSelectorServiceResponseHit;
 
-const hitFromFragment = (fragment: Content<'portal:fragment'>, withDescription?: boolean): Hit =>
+const hitFromFragment = (fragment: Content<'portal:fragment'>): Hit =>
     customSelectorHitWithLink(
         {
-            id: withDescription
-                ? appendMacroDescriptionToKey(fragment._id, fragment.displayName)
-                : fragment._id,
+            id: appendMacroDescriptionToKey(fragment._id, fragment.displayName),
             displayName: fragment.displayName,
             description: fragment._path,
         },
         fragment._id
     );
 
-const getHitsForSelector = (req: XP.CustomSelectorServiceRequest) => {
-    const { query, withDescription } = req.params;
-    const ids = customSelectorParseSelectedIdsFromReq(req);
+const getSelectedHits = (ids: string[]) =>
+    ids.reduce<Hit[]>((acc, id) => {
+        const fragmentId = getKeyWithoutMacroDescription(id);
+        const fragment = contentLib.get({ key: fragmentId });
 
-    if (ids.length > 0) {
-        return ids.reduce<Hit[]>((acc, id) => {
-            const fragmentId = getKeyWithoutMacroDescription(id);
-            const fragment = contentLib.get({ key: fragmentId });
+        if (!fragment || fragment.type !== 'portal:fragment') {
+            return acc;
+        }
 
-            if (!fragment || fragment.type !== 'portal:fragment') {
-                return acc;
-            }
+        return [
+            ...acc,
+            {
+                ...hitFromFragment(fragment),
+                id,
+            },
+        ];
+    }, []);
 
-            return [
-                ...acc,
-                {
-                    ...hitFromFragment(fragment),
-                    id,
-                },
-            ];
-        }, []);
-    }
-
-    const htmlFragments = contentLib.query({
-        ...(query && { query: `displayName LIKE "*${query}*"` }),
-        start: 0,
-        count: 1000,
-        contentTypes: ['portal:fragment'],
-        filters: {
-            boolean: {
-                must: {
-                    hasValue: {
-                        field: 'components.part.descriptor',
-                        values: ['no.nav.navno:html-area'],
+const getHitsFromQuery = (query?: string) =>
+    contentLib
+        .query({
+            ...(query && { query: `displayName LIKE "*${query}*"` }),
+            start: 0,
+            count: 1000,
+            contentTypes: ['portal:fragment'],
+            filters: {
+                boolean: {
+                    must: {
+                        hasValue: {
+                            field: 'components.part.descriptor',
+                            values: ['no.nav.navno:html-area'],
+                        },
                     },
-                },
-                mustNot: {
-                    exists: {
-                        field: 'components.layout',
+                    mustNot: {
+                        exists: {
+                            field: 'components.layout',
+                        },
                     },
                 },
             },
-        },
-    }).hits;
+        })
+        .hits.map((fragment) => hitFromFragment(fragment));
 
-    return htmlFragments.map((fragment) => hitFromFragment(fragment, withDescription === 'true'));
+const getHitsForSelector = (req: XP.CustomSelectorServiceRequest) => {
+    const { query } = req.params;
+    const ids = customSelectorParseSelectedIdsFromReq(req);
+
+    return ids.length > 0 ? getSelectedHits(ids) : getHitsFromQuery(query);
 };
 
 export const get = (req: XP.CustomSelectorServiceRequest) => {

@@ -12,7 +12,7 @@ const validCustomPathPattern = new RegExp('^(/[0-9a-z-/]*[^/]|/)$');
 // For custom paths, we need the leading slash on the root path
 const stripPathPrefix = (path: string) => _stripPathPrefix(path) || '/';
 
-export const isValidCustomPath = (path?: string) =>
+export const isValidCustomPath = (path?: string): path is string =>
     typeof path === 'string' && validCustomPathPattern.test(path);
 
 export const hasValidCustomPath = (content: Content): content is ContentWithCustomPath => {

@@ -59,12 +59,11 @@ const findExistingContentsWithCustomPath = (suggestedCustomPath: string, branch:
 
 const getResult = ({
     query,
-    ids,
+    currentSelection,
 }: {
     query?: string;
-    ids: string[];
+    currentSelection?: string;
 }): XP.CustomSelectorServiceResponseHit => {
-    const currentSelection = ids[0];
     const suggestedPath = query || currentSelection;
 
     if (!isValidCustomPath(suggestedPath)) {
@@ -181,9 +180,9 @@ export const get = (req: XP.CustomSelectorServiceRequest): XP.CustomSelectorServ
 
     const { query, type } = req.params;
 
-    const ids = customSelectorParseSelectedIdsFromReq(req);
+    const currentSelection = customSelectorParseSelectedIdsFromReq(req)[0];
 
-    const result = getResult({ query, ids });
+    const result = getResult({ query, currentSelection });
 
     const validatedResult = validateResult(result, type as SpecialUrlType);
 

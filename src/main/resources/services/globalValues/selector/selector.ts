@@ -77,8 +77,8 @@ const getHitsFromQuery = (
         .sort((a, b) => (a.displayName.toLowerCase() > b.displayName.toLowerCase() ? 1 : -1));
 };
 
-const getHitsFromSelectedIds = (ids: string | string[], withDescription?: boolean) =>
-    forceArray(ids).reduce((acc, key) => {
+const getHitsFromSelectedIds = (ids: string[], withDescription?: boolean) =>
+    ids.reduce((acc, key) => {
         const { gvKey, contentId } = getGvKeyAndContentIdFromUniqueKey(key);
 
         if (!gvKey || !contentId) {
@@ -106,12 +106,13 @@ const getHitsFromSelectedIds = (ids: string | string[], withDescription?: boolea
 
 export const globalValueSelectorService = (req: XP.Request) => {
     const { query, contentType } = req.params as ReqParams;
+
     const ids = customSelectorParseSelectedIdsFromReq(req);
 
     const withDescription = req.params.withDescription === 'true';
 
     const hits = runInContext({ branch: 'master' }, () =>
-        ids
+        ids.length > 0
             ? getHitsFromSelectedIds(ids, withDescription)
             : getHitsFromQuery(contentType, query, withDescription)
     );
