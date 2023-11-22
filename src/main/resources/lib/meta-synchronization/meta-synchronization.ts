@@ -5,10 +5,11 @@ import { logger } from '../utils/logging';
 import { Content } from '/lib/xp/content';
 import { NodeContent } from '/lib/xp/node';
 import { getLayersData } from '../localization/layers-data';
+import { getNodeVersions } from '../utils/version-utils';
 
 type DynamicPageContent = NodeContent<Content>;
 
-const metaDataToCopy = [
+const metaDataToSync = [
     'audience',
     'illustration',
     'owner',
@@ -26,13 +27,20 @@ const metaDataToCopy = [
 
 type MetaData = { [key: string]: unknown };
 
-const buildMetaDataObject = (content: DynamicPageContent): MetaData => {
-    const metaData: MetaData = {};
-    metaDataToCopy.forEach((key) => {
-        if (content.data[key]) {
-            metaData[key] = content.data[key];
-        }
+const checkIfMetaIsChanged = (content: DynamicPageContent, previousContent: DynamicPageContent) => {
+    const isMetaChanged = metaDataToSync.some((key) => {
+        // Some meta data is stored as arrays or objects, and we need to compare them as JSON strings.
+        // If the keys or array order has changed, we might get a false positive here.
+        return JSON.stringify(content.data[key]) !== JSON.stringify(previousContent.data[key]);
     });
+
+    return isMetaChanged;
+};
+
+const buildMetaDataObject = (content: DynamicPageContent): MetaData => {
+    const metaData = metaDataToSync.reduce((acc, key) => {
+        return content.data[key] ? { ...acc, [key]: content.data[key] } : acc;
+    }, {} as MetaData);
 
     return metaData;
 };
@@ -105,6 +113,27 @@ const updateFromDefaultLayer = (content: DynamicPageContent, repoId: string) => 
 
 export const synchronizeMetaDataToLayers = (content: contentLib.Content, repo: string) => {
     const isDefaultRepo = repo === CONTENT_ROOT_REPO_ID;
+
+    // Check previous version of content for change.
+    const versions = getNodeVersions({ nodeKey: content._id, repoId: repo, branch: 'master' });
+    const previousVersionId = versions[1]?.versionId;
+    const previousContentVersion =
+        previousVersionId &&
+        contentLib.get({
+            key: content._id,
+            versionId: previousVersionId,
+        });
+
+    const isMetaChanged = !!(
+        previousContentVersion && checkIfMetaIsChanged(content, previousContentVersion)
+    );
+
+    if (!isMetaChanged) {
+        log.info('No meta data changes detected, skipping synchronization');
+        return;
+    }
+
+    log.info('Meta was changed, synchronizing to other layers');
 
     if (isDefaultRepo) {
         syncToAllOtherLayers(content);
