@@ -48,10 +48,40 @@ const buildMetaDataObject = (content: DynamicPageContent): MetaData => {
 const syncToAllOtherLayers = (content: DynamicPageContent) => {
     const { repoIdToLocaleMap } = getLayersData();
 
+    // Check previous version of content for change.
+    const versions = getNodeVersions({
+        nodeKey: content._id,
+        repoId: CONTENT_ROOT_REPO_ID,
+        branch: 'master',
+    });
+    const previousVersionId = versions[1]?.versionId;
+    const previousContentVersion =
+        previousVersionId &&
+        contentLib.get({
+            key: content._id,
+            versionId: previousVersionId,
+        });
+
+    const isMetaChanged = !!(
+        previousContentVersion && checkIfMetaIsChanged(content, previousContentVersion)
+    );
+
+    if (!isMetaChanged) {
+        logger.info(
+            'metasync: No meta data changes detected in this default layer, skipping further synchronization'
+        );
+    }
+
+    const metaData = buildMetaDataObject(content);
+    logger.info(`metasync: new metadata from default layer: ${JSON.stringify(metaData)}`);
+
     Object.keys(repoIdToLocaleMap).forEach((repoId) => {
         if (repoId === CONTENT_ROOT_REPO_ID) {
             return;
         }
+
+        // Get the draft and master repo and content in order to check
+        // for versionKey later.
         const draftRepo = getRepoConnection({ repoId, branch: 'draft' });
         const masterRepo = getRepoConnection({ repoId, branch: 'master' });
         const draftContent = draftRepo.get<DynamicPageContent>({ key: content._id });
@@ -63,8 +93,6 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
 
         const isPublished = masterContent && masterContent._versionKey === draftContent._versionKey;
 
-        const metaData = buildMetaDataObject(content);
-
         draftRepo.modify({
             key: draftContent._id,
             editor: (node) => {
@@ -73,6 +101,7 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
         });
 
         if (isPublished) {
+            logger.info('metasync: content was previously published, pushing to master');
             draftRepo.push({
                 keys: [draftContent._id],
                 target: 'master',
@@ -88,12 +117,23 @@ const updateFromDefaultLayer = (content: DynamicPageContent, repoId: string) => 
 
     if (!defaultRepoContent) {
         logger.error(
-            `Could not get content from default layer with id ${content._id} when trying to copy meta data`
+            `metasync: Could not get content from default layer with id ${content._id} when trying to copy meta data`
+        );
+        return;
+    }
+
+    const hasMetaDataChanged = checkIfMetaIsChanged(content, defaultRepoContent);
+
+    if (!hasMetaDataChanged) {
+        logger.info(
+            `metasync: No meta data changes detected in this layer ${repoId}, skipping further synchronization`
         );
         return;
     }
 
     const metaData = buildMetaDataObject(defaultRepoContent);
+    logger.info(`metasync: new metadata: ${JSON.stringify(metaData)}`);
+    logger.info(`currentRepo: ${JSON.stringify(currentRepo)}`);
 
     currentRepo.modify({
         key: content._id,
@@ -111,33 +151,16 @@ const updateFromDefaultLayer = (content: DynamicPageContent, repoId: string) => 
     });
 };
 
+const checkChangeFromLastVersion = (content: DynamicPageContent, repoId: string) => {};
+
 export const synchronizeMetaDataToLayers = (content: contentLib.Content, repo: string) => {
-    const isDefaultRepo = repo === CONTENT_ROOT_REPO_ID;
+    const isDefaultLayer = repo === CONTENT_ROOT_REPO_ID;
 
-    // Check previous version of content for change.
-    const versions = getNodeVersions({ nodeKey: content._id, repoId: repo, branch: 'master' });
-    const previousVersionId = versions[1]?.versionId;
-    const previousContentVersion =
-        previousVersionId &&
-        contentLib.get({
-            key: content._id,
-            versionId: previousVersionId,
-        });
-
-    const isMetaChanged = !!(
-        previousContentVersion && checkIfMetaIsChanged(content, previousContentVersion)
-    );
-
-    if (!isMetaChanged) {
-        log.info('No meta data changes detected, skipping synchronization');
-        return;
-    }
-
-    log.info('Meta was changed, synchronizing to other layers');
-
-    if (isDefaultRepo) {
+    if (isDefaultLayer) {
+        logger.info('metasync: is default layer, sync to all other layers');
         syncToAllOtherLayers(content);
     } else {
+        logger.info(`metasync: is not default repo ${repo}`);
         updateFromDefaultLayer(content, repo);
     }
 };

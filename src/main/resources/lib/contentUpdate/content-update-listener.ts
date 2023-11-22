@@ -12,6 +12,16 @@ import { synchronizeMetaDataToLayers } from '../meta-synchronization/meta-synchr
 
 let hasContentUpdateListener = false;
 
+const contentTypesToMetaSynchronise = [
+    'no.nav.navno:content-page-with-sidemenus',
+    'no.nav.navno:situation-page',
+    'no.nav.navno:guide-page',
+    'no.nav.navno:themed-article-page',
+    'no.nav.navno:tools-page',
+    'no.nav.navno:current-topic-page',
+    'no.nav.navno:generic-page',
+];
+
 const handleUpdateEvent = (event: eventLib.EnonicEvent) => {
     if (!isMainDatanode()) {
         return;
@@ -84,22 +94,14 @@ const handlePushedEvent = (event: eventLib.EnonicEvent) => {
 
         runInContext({ repository: repo }, () => {
             const content = contentLib.get({ key: id });
-            if (!content || !isContentLocalized(content)) {
+            if (!content) {
                 return;
             }
 
             const { type } = content;
 
-            switch (type) {
-                case 'no.nav.navno:content-page-with-sidemenus':
-                case 'no.nav.navno:situation-page':
-                case 'no.nav.navno:guide-page':
-                case 'no.nav.navno:themed-article-page':
-                case 'no.nav.navno:tools-page':
-                case 'no.nav.navno:current-topic-page':
-                case 'no.nav.navno:generic-page': {
-                    synchronizeMetaDataToLayers(content, repo);
-                }
+            if (contentTypesToMetaSynchronise.includes(type)) {
+                synchronizeMetaDataToLayers(content, repo);
             }
         });
     });
