@@ -9,7 +9,7 @@ import {
 } from '../../lib/contenttype-lists';
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
-import { stripPathPrefix } from '../../lib/paths/path-utils';
+import { stripPathPrefix, stripRedirectsPathPrefix } from '../../lib/paths/path-utils';
 import { getPublicPath } from '../../lib/paths/public-path';
 import { removeDuplicates } from '../../lib/utils/array-utils';
 import { buildLocalePath } from '../../lib/localization/locale-utils';
@@ -115,7 +115,7 @@ const getPathsToRender = (isTest?: boolean) => {
         count: 20000,
         contentTypes: linkContentTypes,
         query: `_path LIKE '${REDIRECTS_NODE_PATH}*'`,
-    }).hits.map((content) => content._path.replace(REDIRECTS_ROOT_PATH, ''));
+    }).hits.map((content) => stripRedirectsPathPrefix(content._path));
 
     return removeDuplicates([...contentPaths, ...redirectPaths]);
 };
