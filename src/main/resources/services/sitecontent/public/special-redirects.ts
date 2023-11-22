@@ -150,7 +150,7 @@ const getCustomPathRedirect = ({ content, requestedPath, branch, locale }: Args)
 };
 
 // Should return null if there is no applicable special response
-// The NullableResponse may contain a null-value, indicating that the special response
+// The NullableResponse may itself contain a null-value, indicating that the special response
 // should be 404
 export const sitecontentSpecialResponse = (args: Args): NullableResponse | null => {
     return (
