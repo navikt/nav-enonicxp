@@ -49,12 +49,11 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
         const draftContent = draftRepo.get<DynamicPageContent>({ key: content._id });
         const masterContent = masterRepo.get<DynamicPageContent>({ key: content._id });
 
-        const isContentPublished =
-            masterContent && masterContent._versionKey === draftContent?._versionKey;
-
         if (!draftContent) {
             return;
         }
+
+        const isPublished = masterContent && masterContent._versionKey === draftContent._versionKey;
 
         const metaData = buildMetaDataObject(content);
 
@@ -65,7 +64,7 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
             },
         });
 
-        if (isContentPublished) {
+        if (isPublished) {
             draftRepo.push({
                 keys: [draftContent._id],
                 target: 'master',
@@ -76,7 +75,7 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
 
 const updateFromDefaultLayer = (content: DynamicPageContent, repoId: string) => {
     const defaultRepo = getRepoConnection({ repoId: CONTENT_ROOT_REPO_ID, branch: 'draft' });
-    const targetRepo = getRepoConnection({ repoId, branch: 'draft' });
+    const currentRepo = getRepoConnection({ repoId, branch: 'draft' });
     const defaultRepoContent = defaultRepo.get<DynamicPageContent>({ key: content._id });
 
     if (!defaultRepoContent) {
@@ -88,18 +87,26 @@ const updateFromDefaultLayer = (content: DynamicPageContent, repoId: string) => 
 
     const metaData = buildMetaDataObject(defaultRepoContent);
 
-    targetRepo.modify({
+    currentRepo.modify({
         key: content._id,
         editor: (node) => {
             return { ...node, data: { ...node.data, ...metaData } };
         },
     });
+
+    // As this function was triggered by a push event on the current repo,
+    // it's safe to assume that the content can be re-pushed without
+    // further checks.
+    currentRepo.push({
+        keys: [content._id],
+        target: 'master',
+    });
 };
 
 export const synchronizeMetaDataToLayers = (content: contentLib.Content, repo: string) => {
-    const isContentInDefaultRepo = repo === CONTENT_ROOT_REPO_ID;
+    const isDefaultRepo = repo === CONTENT_ROOT_REPO_ID;
 
-    if (isContentInDefaultRepo) {
+    if (isDefaultRepo) {
         syncToAllOtherLayers(content);
     } else {
         updateFromDefaultLayer(content, repo);
