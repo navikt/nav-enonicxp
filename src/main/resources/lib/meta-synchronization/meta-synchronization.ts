@@ -160,16 +160,25 @@ const updateFromDefaultLayer = (content: DynamicPageContent, repoId: string) => 
         } and repoId ${currentRepo}: \n ${JSON.stringify(metaData)}`
     );
 
-    const result = currentRepo.modify({
-        key: content._id,
-        editor: (node) => {
-            return { ...node, data: { ...node.data, ...metaData } };
-        },
-    });
+    try {
+        const result = currentRepo.modify({
+            key: content._id,
+            editor: (node) => {
+                return { ...node, data: { ...node.data, ...metaData } };
+            },
+        });
 
-    logger.info(
-        `metasync: updateResult for ${content._id} in repo ${repoId}: \n ${JSON.stringify(result)}`
-    );
+        logger.info(
+            `metasync: updateResult for ${content._id} in repo ${repoId}: \n ${JSON.stringify(
+                result
+            )}`
+        );
+    } catch (e) {
+        logger.error(
+            `metasync: Could not modify content with id ${content._id} in repo ${repoId}: ${e}`
+        );
+        return;
+    }
 
     // As this function was triggered by a push event on the current repo,
     // it's safe to assume that the content can be re-pushed without
