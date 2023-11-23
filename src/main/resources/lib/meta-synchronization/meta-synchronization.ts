@@ -99,12 +99,18 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
             } and repoId ${repoId}: \n ${JSON.stringify(metaData)} \n isPublished: ${isPublished}`
         );
 
-        draftRepo.modify({
+        const result = draftRepo.modify({
             key: draftContent._id,
             editor: (node) => {
                 return { ...node, data: { ...node.data, ...metaData } };
             },
         });
+
+        logger.info(
+            `metasync: updateResult for ${content._id} in repo ${repoId}: \n ${JSON.stringify(
+                result
+            )}`
+        );
 
         if (isPublished) {
             draftRepo.push({
@@ -143,7 +149,7 @@ const updateFromDefaultLayer = (content: DynamicPageContent, repoId: string) => 
         } and repoId ${currentRepo}: \n ${JSON.stringify(metaData)}`
     );
 
-    const updateResult = currentRepo.modify({
+    const result = currentRepo.modify({
         key: content._id,
         editor: (node) => {
             return { ...node, data: { ...node.data, ...metaData } };
@@ -151,9 +157,7 @@ const updateFromDefaultLayer = (content: DynamicPageContent, repoId: string) => 
     });
 
     logger.info(
-        `metasync: updateResult for ${content._id} in repo ${repoId}: \n ${JSON.stringify(
-            updateResult
-        )}`
+        `metasync: updateResult for ${content._id} in repo ${repoId}: \n ${JSON.stringify(result)}`
     );
 
     // As this function was triggered by a push event on the current repo,
