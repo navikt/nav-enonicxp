@@ -99,18 +99,25 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
             } and repoId ${repoId}: \n ${JSON.stringify(metaData)} \n isPublished: ${isPublished}`
         );
 
-        const result = draftRepo.modify({
-            key: draftContent._id,
-            editor: (node) => {
-                return { ...node, data: { ...node.data, ...metaData } };
-            },
-        });
+        try {
+            const result = draftRepo.modify({
+                key: draftContent._id,
+                editor: (node) => {
+                    return { ...node, data: { ...node.data, ...metaData } };
+                },
+            });
 
-        logger.info(
-            `metasync: updateResult for ${content._id} in repo ${repoId}: \n ${JSON.stringify(
-                result
-            )}`
-        );
+            logger.info(
+                `metasync: updateResult for ${content._id} in repo ${repoId}: \n ${JSON.stringify(
+                    result
+                )}`
+            );
+        } catch (e) {
+            logger.error(
+                `metasync: Could not modify content with id ${draftContent._id} in repo ${repoId}: ${e}`
+            );
+            return;
+        }
 
         if (isPublished) {
             draftRepo.push({
