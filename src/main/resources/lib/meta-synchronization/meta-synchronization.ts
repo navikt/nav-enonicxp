@@ -28,7 +28,10 @@ const metaDataToSync = [
 
 type MetaData = { [key: string]: unknown };
 
-const checkIfMetaIsChanged = (content: DynamicPageContent, previousContent: DynamicPageContent) => {
+const checkIfMetaHasBeenEdited = (
+    content: DynamicPageContent,
+    previousContent: DynamicPageContent
+) => {
     const isMetaChanged = metaDataToSync.some((key) => {
         // Some meta data is stored as arrays or objects, and we need to compare them as JSON strings.
         // If the keys or array order has changed, we might get a false positive here.
@@ -63,11 +66,11 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
             versionId: previousVersionId,
         });
 
-    const isMetaChanged = !!(
-        previousContentVersion && checkIfMetaIsChanged(content, previousContentVersion)
+    const hasMetaBeenEdited = !!(
+        previousContentVersion && checkIfMetaHasBeenEdited(content, previousContentVersion)
     );
 
-    if (!isMetaChanged) {
+    if (!hasMetaBeenEdited) {
         return;
     }
 
@@ -107,7 +110,9 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
             });
         } catch (e) {
             logger.error(
-                `Meta synchronization: Could not modify content with id ${draftContent._id} in repo ${repoId}: ${e}`
+                `Meta synchronization: Could not modify content with id ${
+                    draftContent._id
+                } in repo ${repoId}: ${JSON.stringify(e)}`
             );
             return;
         }
@@ -121,40 +126,40 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
     });
 };
 
-const updateFromDefaultLayer = (content: DynamicPageContent, repoId: string) => {
+const updateFromDefaultLayer = (currentContent: DynamicPageContent, repoId: string) => {
     const defaultRepo = getRepoConnection({
         repoId: CONTENT_ROOT_REPO_ID,
         branch: 'draft',
         asAdmin: true,
     });
     const currentRepo = getRepoConnection({ repoId, branch: 'draft', asAdmin: true });
-    const defaultRepoContent = defaultRepo.get<DynamicPageContent>({ key: content._id });
+    const originContent = defaultRepo.get<DynamicPageContent>({ key: currentContent._id });
 
-    if (!defaultRepoContent) {
+    if (!originContent) {
         logger.error(
-            `Meta synchronization: Could not get content from default layer with id ${content._id} when trying to copy meta data`
+            `Meta synchronization: Could not get content from default layer with id ${currentContent._id} when trying to copy meta data`
         );
         return;
     }
 
-    const hasMetaDataChanged = checkIfMetaIsChanged(content, defaultRepoContent);
-
-    if (!hasMetaDataChanged) {
+    if (!checkIfMetaHasBeenEdited(currentContent, originContent)) {
         return;
     }
 
-    const metaData = buildMetaDataObject(defaultRepoContent);
+    const metaData = buildMetaDataObject(originContent);
 
     try {
         currentRepo.modify({
-            key: content._id,
+            key: currentContent._id,
             editor: (node) => {
                 return { ...node, data: { ...node.data, ...metaData } };
             },
         });
     } catch (e) {
         logger.error(
-            `Meta synchronization: Could not modify content with id ${content._id} in repo ${repoId}: ${e}`
+            `Meta synchronization: Could not modify content with id ${
+                currentContent._id
+            } in repo ${repoId}: ${JSON.stringify(e)}`
         );
         return;
     }
@@ -163,7 +168,7 @@ const updateFromDefaultLayer = (content: DynamicPageContent, repoId: string) => 
     // it's safe to assume that the content can be re-pushed without
     // further checks.
     currentRepo.push({
-        keys: [content._id],
+        keys: [currentContent._id],
         target: 'master',
     });
 };
