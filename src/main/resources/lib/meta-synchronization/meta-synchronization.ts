@@ -6,7 +6,7 @@ import { Content } from '/lib/xp/content';
 import { NodeContent } from '/lib/xp/node';
 import { getLayersData } from '../localization/layers-data';
 import { getNodeVersions } from '../utils/version-utils';
-import { isContentLocalized } from 'lib/localization/locale-utils';
+import { isContentLocalized } from '../localization/locale-utils';
 
 type DynamicPageContent = NodeContent<Content>;
 
