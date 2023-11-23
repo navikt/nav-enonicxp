@@ -151,8 +151,6 @@ const updateFromDefaultLayer = (content: DynamicPageContent, repoId: string) => 
     });
 };
 
-const checkChangeFromLastVersion = (content: DynamicPageContent, repoId: string) => {};
-
 export const synchronizeMetaDataToLayers = (content: contentLib.Content, repo: string) => {
     const isDefaultLayer = repo === CONTENT_ROOT_REPO_ID;
 
