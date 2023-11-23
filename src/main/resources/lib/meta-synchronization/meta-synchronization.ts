@@ -6,7 +6,6 @@ import { Content } from '/lib/xp/content';
 import { NodeContent } from '/lib/xp/node';
 import { getLayersData } from '../localization/layers-data';
 import { getNodeVersions } from '../utils/version-utils';
-import repo from '__test/module-mocks/lib/xp/repo';
 
 type DynamicPageContent = NodeContent<Content>;
 
@@ -68,9 +67,7 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
     );
 
     if (!isMetaChanged) {
-        logger.info(
-            'metasync: No meta data changes detected in this default layer, skipping further synchronization'
-        );
+        return;
     }
 
     const metaData = buildMetaDataObject(content);
@@ -88,33 +85,24 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
         const masterContent = masterRepo.get<DynamicPageContent>({ key: content._id });
 
         if (!draftContent) {
+            logger.error(
+                `Meta synchronization: Could not get content from ${repoId} layer with id ${content._id} when trying to copy meta data`
+            );
             return;
         }
 
         const isPublished = masterContent && masterContent._versionKey === draftContent._versionKey;
 
-        logger.info(
-            `metasync: inserting new meta into object ${
-                draftContent._id
-            } and repoId ${repoId}: \n ${JSON.stringify(metaData)} \n isPublished: ${isPublished}`
-        );
-
         try {
-            const result = draftRepo.modify({
+            draftRepo.modify({
                 key: draftContent._id,
                 editor: (node) => {
                     return { ...node, data: { ...node.data, ...metaData } };
                 },
             });
-
-            logger.info(
-                `metasync: updateResult for ${content._id} in repo ${repoId}: \n ${JSON.stringify(
-                    result
-                )}`
-            );
         } catch (e) {
             logger.error(
-                `metasync: Could not modify content with id ${draftContent._id} in repo ${repoId}: ${e}`
+                `Meta synchronization: Could not modify content with id ${draftContent._id} in repo ${repoId}: ${e}`
             );
             return;
         }
@@ -139,7 +127,7 @@ const updateFromDefaultLayer = (content: DynamicPageContent, repoId: string) => 
 
     if (!defaultRepoContent) {
         logger.error(
-            `metasync: Could not get content from default layer with id ${content._id} when trying to copy meta data`
+            `Meta synchronization: Could not get content from default layer with id ${content._id} when trying to copy meta data`
         );
         return;
     }
@@ -147,35 +135,21 @@ const updateFromDefaultLayer = (content: DynamicPageContent, repoId: string) => 
     const hasMetaDataChanged = checkIfMetaIsChanged(content, defaultRepoContent);
 
     if (!hasMetaDataChanged) {
-        logger.info(
-            `metasync: No meta data changes detected in this layer ${repoId}, skipping further synchronization`
-        );
         return;
     }
 
     const metaData = buildMetaDataObject(defaultRepoContent);
-    logger.info(
-        `metasync: inserting new meta into object ${
-            content._id
-        } and repoId ${currentRepo}: \n ${JSON.stringify(metaData)}`
-    );
 
     try {
-        const result = currentRepo.modify({
+        currentRepo.modify({
             key: content._id,
             editor: (node) => {
                 return { ...node, data: { ...node.data, ...metaData } };
             },
         });
-
-        logger.info(
-            `metasync: updateResult for ${content._id} in repo ${repoId}: \n ${JSON.stringify(
-                result
-            )}`
-        );
     } catch (e) {
         logger.error(
-            `metasync: Could not modify content with id ${content._id} in repo ${repoId}: ${e}`
+            `Meta synchronization: Could not modify content with id ${content._id} in repo ${repoId}: ${e}`
         );
         return;
     }
@@ -193,10 +167,8 @@ export const synchronizeMetaDataToLayers = (content: contentLib.Content, repo: s
     const isDefaultLayer = repo === CONTENT_ROOT_REPO_ID;
 
     if (isDefaultLayer) {
-        logger.info('metasync: Push was done on default layer, sync to all other layers');
         syncToAllOtherLayers(content);
     } else {
-        logger.info(`metasync: Push was done on repo ${repo}, so update from default layer`);
         updateFromDefaultLayer(content, repo);
     }
 };
