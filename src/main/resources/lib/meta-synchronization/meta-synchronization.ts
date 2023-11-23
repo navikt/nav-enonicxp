@@ -6,6 +6,7 @@ import { Content } from '/lib/xp/content';
 import { NodeContent } from '/lib/xp/node';
 import { getLayersData } from '../localization/layers-data';
 import { getNodeVersions } from '../utils/version-utils';
+import { isContentLocalized } from 'lib/localization/locale-utils';
 
 type DynamicPageContent = NodeContent<Content>;
 
@@ -88,6 +89,10 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
             logger.error(
                 `Meta synchronization: Could not get content from ${repoId} layer with id ${content._id} when trying to copy meta data`
             );
+            return;
+        }
+
+        if (!isContentLocalized(draftContent)) {
             return;
         }
 
