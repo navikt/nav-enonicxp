@@ -93,6 +93,12 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
 
         const isPublished = masterContent && masterContent._versionKey === draftContent._versionKey;
 
+        logger.info(
+            `metasync: inserting new meta into object ${
+                draftContent._id
+            } and repoId ${repoId}: \n ${JSON.stringify(metaData)} \n isPublished: ${isPublished}`
+        );
+
         draftRepo.modify({
             key: draftContent._id,
             editor: (node) => {
@@ -101,7 +107,6 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
         });
 
         if (isPublished) {
-            logger.info('metasync: content was previously published, pushing to master');
             draftRepo.push({
                 keys: [draftContent._id],
                 target: 'master',
@@ -132,8 +137,11 @@ const updateFromDefaultLayer = (content: DynamicPageContent, repoId: string) => 
     }
 
     const metaData = buildMetaDataObject(defaultRepoContent);
-    logger.info(`metasync: new metadata: ${JSON.stringify(metaData)}`);
-    logger.info(`currentRepo: ${JSON.stringify(currentRepo)}`);
+    logger.info(
+        `metasync: inserting new meta into object ${
+            content._id
+        } and repoId ${currentRepo}: \n ${JSON.stringify(metaData)}`
+    );
 
     currentRepo.modify({
         key: content._id,
@@ -155,10 +163,10 @@ export const synchronizeMetaDataToLayers = (content: contentLib.Content, repo: s
     const isDefaultLayer = repo === CONTENT_ROOT_REPO_ID;
 
     if (isDefaultLayer) {
-        logger.info('metasync: is default layer, sync to all other layers');
+        logger.info('metasync: Push was done on default layer, sync to all other layers');
         syncToAllOtherLayers(content);
     } else {
-        logger.info(`metasync: is not default repo ${repo}`);
+        logger.info(`metasync: Push was done on repo ${repo}, so update from default layer`);
         updateFromDefaultLayer(content, repo);
     }
 };
