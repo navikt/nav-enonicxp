@@ -82,8 +82,8 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
 
         // Get the draft and master repo and content in order to check
         // for versionKey later.
-        const draftRepo = getRepoConnection({ repoId, branch: 'draft' });
-        const masterRepo = getRepoConnection({ repoId, branch: 'master' });
+        const draftRepo = getRepoConnection({ repoId, branch: 'draft', asAdmin: true });
+        const masterRepo = getRepoConnection({ repoId, branch: 'master', asAdmin: true });
         const draftContent = draftRepo.get<DynamicPageContent>({ key: content._id });
         const masterContent = masterRepo.get<DynamicPageContent>({ key: content._id });
 
@@ -129,8 +129,12 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
 };
 
 const updateFromDefaultLayer = (content: DynamicPageContent, repoId: string) => {
-    const defaultRepo = getRepoConnection({ repoId: CONTENT_ROOT_REPO_ID, branch: 'draft' });
-    const currentRepo = getRepoConnection({ repoId, branch: 'draft' });
+    const defaultRepo = getRepoConnection({
+        repoId: CONTENT_ROOT_REPO_ID,
+        branch: 'draft',
+        asAdmin: true,
+    });
+    const currentRepo = getRepoConnection({ repoId, branch: 'draft', asAdmin: true });
     const defaultRepoContent = defaultRepo.get<DynamicPageContent>({ key: content._id });
 
     if (!defaultRepoContent) {
