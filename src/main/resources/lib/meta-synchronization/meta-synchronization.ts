@@ -6,6 +6,7 @@ import { Content } from '/lib/xp/content';
 import { NodeContent } from '/lib/xp/node';
 import { getLayersData } from '../localization/layers-data';
 import { getNodeVersions } from '../utils/version-utils';
+import repo from '__test/module-mocks/lib/xp/repo';
 
 type DynamicPageContent = NodeContent<Content>;
 
@@ -73,7 +74,6 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
     }
 
     const metaData = buildMetaDataObject(content);
-    logger.info(`metasync: new metadata from default layer: ${JSON.stringify(metaData)}`);
 
     Object.keys(repoIdToLocaleMap).forEach((repoId) => {
         if (repoId === CONTENT_ROOT_REPO_ID) {
@@ -143,12 +143,18 @@ const updateFromDefaultLayer = (content: DynamicPageContent, repoId: string) => 
         } and repoId ${currentRepo}: \n ${JSON.stringify(metaData)}`
     );
 
-    currentRepo.modify({
+    const updateResult = currentRepo.modify({
         key: content._id,
         editor: (node) => {
             return { ...node, data: { ...node.data, ...metaData } };
         },
     });
+
+    logger.info(
+        `metasync: updateResult for ${content._id} in repo ${repoId}: \n ${JSON.stringify(
+            updateResult
+        )}`
+    );
 
     // As this function was triggered by a push event on the current repo,
     // it's safe to assume that the content can be re-pushed without
