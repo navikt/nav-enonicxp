@@ -90,14 +90,14 @@ const resolveExactPath = (path: string, branch: RepoBranch): ContentAndLocale | 
         return handleExactPathFound({ id, path, locale: repoIdToLocaleMap[repoId] });
     }
 
-    // If we found multiple content with this path, it should only match in the default project
+    // If we found multiple content with this path, it should only match in the default project.
     // Content in layers without a unique path should only be served with an appropriate locale
-    // suffix, which will be resolved via resolveLocalePath
+    // suffix, which will be resolved via resolveLocalePath.
     const defaultLayerNodes = foundNodes.filter((node) => node.repoId === CONTENT_ROOT_REPO_ID);
 
     // If there are multiple content with the same path in non-default layers, it usually means the
     // content has been deleted from the default layer, or has been moved or had its customPath changed.
-    // In either case, we leave it to be resolved via resolveLocalePath
+    // In either case, the content should only be served from a layer if it can be resolved via resolveLocalePath.
     if (defaultLayerNodes.length === 0) {
         logger.warning(
             `Content with path "${path}" found in multiple layers, but not in the default project: ${nodeHitsToString(
