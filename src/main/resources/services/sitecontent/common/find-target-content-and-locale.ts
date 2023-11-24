@@ -1,4 +1,5 @@
 import * as contentLib from '/lib/xp/content';
+import { MultiRepoNodeQueryHit } from '/lib/xp/node';
 import { RepoBranch } from '../../../types/common';
 import { getLayersData, isValidLocale } from '../../../lib/localization/layers-data';
 import { logger } from '../../../lib/utils/logging';
@@ -7,6 +8,7 @@ import { CONTENT_ROOT_REPO_ID } from '../../../lib/constants';
 import { Content } from '/lib/xp/content';
 import { stripPathPrefix } from '../../../lib/paths/path-utils';
 import { getLayersMultiConnection } from '../../../lib/localization/layers-repo-utils/layers-repo-connection';
+import { NON_LOCALIZED_QUERY_FILTER } from '../../../lib/localization/layers-repo-utils/localization-state-filters';
 
 // Will return all matches for internal _path names as well as customPaths, for root content and
 // localized content only. Sorted by created time
@@ -31,15 +33,7 @@ const getPathQueryParams = (path: string) => ({
                     },
                 },
             ],
-            // Must not inherit content from the parent layer, ie the content must be localized
-            mustNot: [
-                {
-                    hasValue: {
-                        field: 'inherit',
-                        values: ['CONTENT'],
-                    },
-                },
-            ],
+            mustNot: NON_LOCALIZED_QUERY_FILTER,
         },
     },
 });
@@ -79,6 +73,9 @@ const handleExactPathFound = ({
     return content ? { content, locale } : null;
 };
 
+const nodeHitsToString = (nodeHits: readonly MultiRepoNodeQueryHit[]) =>
+    nodeHits.map((node) => `"${node.id}" (${node.repoId})`).join(', ');
+
 // Search all layers for an exact path match
 const resolveExactPath = (path: string, branch: RepoBranch): ContentAndLocale | null => {
     const foundNodes = getNodesFromAllLayers({ path, branch });
@@ -93,27 +90,33 @@ const resolveExactPath = (path: string, branch: RepoBranch): ContentAndLocale | 
         return handleExactPathFound({ id, path, locale: repoIdToLocaleMap[repoId] });
     }
 
-    // If we found multiple nodes with this path, prefer to get the content from default layer
+    // If we found multiple content with this path, it should only match in the default project.
+    // Content in layers without a unique path should only be served with an appropriate locale
+    // suffix, which will be resolved via resolveLocalePath.
     const defaultLayerNodes = foundNodes.filter((node) => node.repoId === CONTENT_ROOT_REPO_ID);
 
-    // If the multiple nodes were found in localized layers only, return the oldest and log an error
-    // We don't want paths to be ambiguous across localizations
+    // If there are multiple content with the same path in non-default layers, it usually means the
+    // content has been deleted from the default layer, or has been moved or had its customPath changed.
+    // In either case, the content should only be served from a layer if it can be resolved via resolveLocalePath.
     if (defaultLayerNodes.length === 0) {
-        logger.critical(
-            `Content ${path} found in multiple layers, but not in the default!`,
+        logger.warning(
+            `Content with path "${path}" found in multiple layers, but not in the default project: ${nodeHitsToString(
+                foundNodes
+            )}`,
             true,
             true
         );
 
-        const { id, repoId } = foundNodes[0];
-        return handleExactPathFound({ id, path, locale: repoIdToLocaleMap[repoId] });
+        return null;
     }
 
     // If multiple content with the same path was found in the default layer, it most likely means
-    // a duplicate customPath. Log error and return oldest
+    // a duplicate customPath. Log error and return the oldest content.
     if (defaultLayerNodes.length > 1) {
         logger.critical(
-            `Multiple contents with path "${path}" found in default layer!`,
+            `Multiple contents with path "${path}" found in default project: ${nodeHitsToString(
+                defaultLayerNodes
+            )}`,
             true,
             true
         );
