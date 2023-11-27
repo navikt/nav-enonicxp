@@ -64,7 +64,7 @@ const getPreArchivedVersions = (contentId: string, repoId: string) => {
     }).filter((version) => version.nodePath.startsWith('/content'));
 };
 
-export const getPreArchiveContent = (idOrArchivedPath: string, repoId: string, time?: string) => {
+const getPreArchiveContent = (idOrArchivedPath: string, repoId: string, time?: string) => {
     const contentRef = getArchivedContentRef(idOrArchivedPath);
 
     const repoConnection = getRepoConnection({ branch: 'draft', repoId });
@@ -93,14 +93,10 @@ export const getPreArchiveContent = (idOrArchivedPath: string, repoId: string, t
         return null;
     }
 
-    const requestedContent = runInContext(
-        { asAdmin: true, branch: 'draft', repository: repoId },
-        () =>
-            contentLib.get({
-                key: requestedVersion.nodeId,
-                versionId: requestedVersion.versionId,
-            })
-    );
+    const requestedContent = contentLib.get({
+        key: requestedVersion.nodeId,
+        versionId: requestedVersion.versionId,
+    });
     if (!requestedContent) {
         logger.info(
             `Could not retrieve version content - ${requestedVersion.nodeId} / ${requestedVersion.versionId} in repo ${repoId}`
@@ -113,6 +109,7 @@ export const getPreArchiveContent = (idOrArchivedPath: string, repoId: string, t
             baseContentKey: requestedVersion.nodeId,
             dateTime: requestedContent.modifiedTime,
             branch: 'draft',
+            repoId,
         },
         () => {
             return runSitecontentGuillotineQuery(requestedContent, 'draft');
@@ -156,7 +153,7 @@ export const get = (req: XP.Request) => {
     const repoId = localeToRepoIdMap[locale || defaultLocale];
 
     try {
-        const content = runInContext({ asAdmin: true }, () =>
+        const content = runInContext({ asAdmin: true, branch: 'draft', repository: repoId }, () =>
             getPreArchiveContent(idOrArchivedPath, repoId, time)
         );
 
