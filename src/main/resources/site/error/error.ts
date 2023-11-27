@@ -25,8 +25,8 @@ export const handleError = (req: XP.ErrorRequest) => {
     // If the requested path originates from a consumer which does not include the site root prefix
     // it should still be resolvable
     // Ie, both of these should resolve to the same content if it exists:
-    // /admin/site/inline/draft/draft/www.nav.no/my-content-path
-    // /admin/site/inline/draft/draft/my-content-path
+    // /admin/site/inline/default/draft/www.nav.no/my-content-path
+    // /admin/site/inline/default/draft/my-content-path
     const possiblePaths = req.request.rawPath.split(NAVNO_ROOT_PATH);
 
     return frontendProxy(req.request, possiblePaths[1] || possiblePaths[0]);
