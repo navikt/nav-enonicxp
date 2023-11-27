@@ -4,73 +4,68 @@ import {
     appendMacroDescriptionToKey,
     getKeyWithoutMacroDescription,
 } from '../../lib/utils/component-utils';
-import { customSelectorHitWithLink } from '../service-utils';
+import { customSelectorHitWithLink, customSelectorParseSelectedIdsFromReq } from '../service-utils';
 import { runInContext } from '../../lib/context/run-in-context';
-import { forceArray } from '../../lib/utils/array-utils';
 
 type Hit = XP.CustomSelectorServiceResponseHit;
 
-const hitFromFragment = (fragment: Content<'portal:fragment'>, withDescription?: boolean): Hit =>
+const hitFromFragment = (fragment: Content<'portal:fragment'>, id?: string): Hit =>
     customSelectorHitWithLink(
         {
-            id: withDescription
-                ? appendMacroDescriptionToKey(fragment._id, fragment.displayName)
-                : fragment._id,
+            // We include the displayName in the macro id attribute to make it easier
+            // to determine the selected fragment at a glance in the editor
+            id: id || appendMacroDescriptionToKey(fragment._id, fragment.displayName),
             displayName: fragment.displayName,
             description: fragment._path,
         },
         fragment._id
     );
 
-const getHitsForSelector = (req: XP.CustomSelectorServiceRequest) => {
-    const { query, withDescription, ids } = req.params;
+const getSelectedHits = (ids: string[]) =>
+    ids.reduce<Hit[]>((acc, id) => {
+        const fragmentId = getKeyWithoutMacroDescription(id);
+        const fragment = contentLib.get({ key: fragmentId });
 
-    if (ids) {
-        return forceArray(ids).reduce<Hit[]>((acc, id) => {
-            const fragmentId = getKeyWithoutMacroDescription(id);
-            const fragment = contentLib.get({ key: fragmentId });
+        if (fragment?.type === 'portal:fragment') {
+            // Keep the existing id, in case the displayName has changed on the fragment.
+            acc.push(hitFromFragment(fragment, id));
+        }
 
-            if (!fragment || fragment.type !== 'portal:fragment') {
-                return acc;
-            }
+        return acc;
+    }, []);
 
-            return [
-                ...acc,
-                {
-                    ...hitFromFragment(fragment),
-                    id,
-                },
-            ];
-        }, []);
-    }
-
-    const htmlFragments = contentLib.query({
-        ...(query && { query: `displayName LIKE "*${query}*"` }),
-        start: 0,
-        count: 1000,
-        contentTypes: ['portal:fragment'],
-        filters: {
-            boolean: {
-                must: {
-                    hasValue: {
-                        field: 'components.part.descriptor',
-                        values: ['no.nav.navno:html-area'],
+const getHitsFromQuery = (query?: string) =>
+    contentLib
+        .query({
+            ...(query && { query: `displayName LIKE "*${query}*"` }),
+            start: 0,
+            count: 1000,
+            contentTypes: ['portal:fragment'],
+            filters: {
+                boolean: {
+                    must: {
+                        hasValue: {
+                            field: 'components.part.descriptor',
+                            values: ['no.nav.navno:html-area'],
+                        },
                     },
-                },
-                mustNot: {
-                    exists: {
-                        field: 'components.layout',
+                    mustNot: {
+                        exists: {
+                            field: 'components.layout',
+                        },
                     },
                 },
             },
-        },
-    }).hits;
-
-    return htmlFragments.map((fragment) => hitFromFragment(fragment, withDescription === 'true'));
-};
+        })
+        .hits.map((fragment) => hitFromFragment(fragment));
 
 export const get = (req: XP.CustomSelectorServiceRequest) => {
-    const hits = runInContext({ branch: 'master' }, () => getHitsForSelector(req));
+    const { query } = req.params;
+    const ids = customSelectorParseSelectedIdsFromReq(req);
+
+    const hits = runInContext({ branch: 'master' }, () =>
+        ids.length > 0 ? getSelectedHits(ids) : getHitsFromQuery(query)
+    );
 
     return {
         status: 200,

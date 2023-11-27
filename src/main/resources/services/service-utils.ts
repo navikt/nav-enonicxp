@@ -1,5 +1,6 @@
 import { customSelectorEditIcon } from './custom-selector-icons';
 import { buildEditorPathFromContext } from '../lib/paths/editor-path';
+import { logger } from '../lib/utils/logging';
 
 const getServiceName = (req: XP.Request) => req.contextPath.split('/').slice(-1)[0];
 
@@ -31,4 +32,13 @@ export const customSelectorHitWithLink = (
             type: hit.icon?.type || customSelectorEditIcon.type,
         },
     };
+};
+
+export const customSelectorParseSelectedIdsFromReq = (req: XP.Request): string[] => {
+    const { ids } = req.params;
+    if (!ids) {
+        return [];
+    }
+
+    return Array.isArray(ids) ? ids : ids.split(',');
 };

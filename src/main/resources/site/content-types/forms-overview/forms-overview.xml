@@ -124,12 +124,9 @@
                     <occurrences minimum="0" maximum="0"/>
                     <config>
                         <service>contentSelector</service>
-                        <param value="contentTypes">
-                            ["no.nav.navno:content-page-with-sidemenus","no.nav.navno:guide-page"]
-                        </param>
-                        <param value="selectorQuery">language="{language}" AND
-                            data.audience._selected="{data.audience._selected}" AND data.formDetailsTargets LIKE "*"
-                        </param>
+                        <!-- Don't add linebreaks/whitespace to the param body values, as these will be included in the service calls -_- -->
+                        <param value="contentTypes">["no.nav.navno:content-page-with-sidemenus","no.nav.navno:guide-page"]</param>
+                        <param value="selectorQuery">data.audience._selected="{data.audience._selected}" AND data.formDetailsTargets LIKE "*"</param>
                         <param value="sort">data.area ASC, displayName ASC</param>
                     </config>
                 </input>

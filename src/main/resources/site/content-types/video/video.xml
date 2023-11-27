@@ -40,6 +40,7 @@
                 </input>
                 <input name="duration" type="TextLine">
                     <label>Spilletid i sekunder</label>
+                    <help-text>For eldre videoer vil ikke denne alltid kunne settes automatisk. Du kan da legge inn spilletiden manuelt.</help-text>
                 </input>
                 <input name="subtitles" type="TextLine">
                     <label>Tilgjengelige språk (undertekster)</label>

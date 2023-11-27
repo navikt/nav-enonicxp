@@ -1,7 +1,7 @@
 import { getNodeVersions } from '../utils/version-utils';
 import { isPublicRenderedType, NodeEventData } from './utils';
 import { getCustomPathFromContent } from '../paths/custom-paths/custom-path-utils';
-import { stripPathPrefix } from '../paths/path-utils';
+import { stripPathPrefix, stripRedirectsPathPrefix } from '../paths/path-utils';
 import { getPublicPath } from '../paths/public-path';
 import { getLayersData } from '../localization/layers-data';
 import { ReferencesFinder } from '../reference-search/references-finder';
@@ -113,7 +113,7 @@ const getNodePaths = (contentId: string, repoId: string, branch: RepoBranch) => 
     const internalPath = stripPathPrefix(baseContent._path);
     const changedPaths = findChangedPaths(contentId, repoId, baseContent._path);
 
-    return [internalPath, ...publicPaths, ...changedPaths];
+    return [internalPath, ...publicPaths, ...changedPaths].map(stripRedirectsPathPrefix);
 };
 
 export const findPathsToInvalidate = (nodeEventData: NodeEventData, eventType: string) => {

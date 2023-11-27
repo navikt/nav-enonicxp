@@ -36,8 +36,10 @@ const isPressemelding = (content: ContentNode) =>
     content.type === 'no.nav.navno:main-article' && content.data.contentType === 'pressRelease';
 
 const isStatistikk = (content: ContentNode) =>
-    content._path.startsWith('/content/www.nav.no/no/nav-og-samfunn/statistikk') &&
-    (content.type !== 'no.nav.navno:main-article' || content.data.contentType === 'lastingContent');
+    content.type === 'no.nav.navno:large-table' ||
+    (content._path.startsWith('/content/www.nav.no/no/nav-og-samfunn/statistikk') &&
+        (content.type !== 'no.nav.navno:main-article' ||
+            content.data.contentType === 'lastingContent'));
 
 const isAnalyse = (content: ContentNode) =>
     content._path.startsWith('/content/www.nav.no/no/nav-og-samfunn/kunnskap');
