@@ -93,10 +93,14 @@ export const getPreArchiveContent = (idOrArchivedPath: string, repoId: string, t
         return null;
     }
 
-    const requestedContent = contentLib.get({
-        key: requestedVersion.nodeId,
-        versionId: requestedVersion.versionId,
-    });
+    const requestedContent = runInContext(
+        { asAdmin: true, branch: 'draft', repository: repoId },
+        () =>
+            contentLib.get({
+                key: requestedVersion.nodeId,
+                versionId: requestedVersion.versionId,
+            })
+    );
     if (!requestedContent) {
         logger.info(
             `Could not retrieve version content - ${requestedVersion.nodeId} / ${requestedVersion.versionId} in repo ${repoId}`

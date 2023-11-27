@@ -22,9 +22,11 @@ export const handleError = (req: XP.ErrorRequest) => {
         return frontendProxy(req.request, '/404');
     }
 
-    // If the requested path is a customPath, or some other custom mapping that the frontend + sitecontent
-    // pipeline can resolve, this should ensure it gets resolved (otherwise, this will also ultimately
-    // return 404)
+    // If the requested path originates from a consumer which does not include the site root prefix
+    // it should still be resolvable
+    // Ie, both of these should resolve to the same content if it exists:
+    // /admin/site/inline/draft/draft/www.nav.no/my-content-path
+    // /admin/site/inline/draft/draft/my-content-path
     const possiblePaths = req.request.rawPath.split(NAVNO_ROOT_PATH);
 
     return frontendProxy(req.request, possiblePaths[1] || possiblePaths[0]);
