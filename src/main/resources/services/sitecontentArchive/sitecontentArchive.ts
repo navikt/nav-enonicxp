@@ -64,7 +64,7 @@ const getPreArchivedVersions = (contentId: string, repoId: string) => {
     }).filter((version) => version.nodePath.startsWith('/content'));
 };
 
-export const getPreArchiveContent = (idOrArchivedPath: string, repoId: string, time?: string) => {
+const getPreArchiveContent = (idOrArchivedPath: string, repoId: string, time?: string) => {
     const contentRef = getArchivedContentRef(idOrArchivedPath);
 
     const repoConnection = getRepoConnection({ branch: 'draft', repoId });
@@ -109,6 +109,7 @@ export const getPreArchiveContent = (idOrArchivedPath: string, repoId: string, t
             baseContentKey: requestedVersion.nodeId,
             dateTime: requestedContent.modifiedTime,
             branch: 'draft',
+            repoId,
         },
         () => {
             return runSitecontentGuillotineQuery(requestedContent, 'draft');
@@ -152,7 +153,7 @@ export const get = (req: XP.Request) => {
     const repoId = localeToRepoIdMap[locale || defaultLocale];
 
     try {
-        const content = runInContext({ asAdmin: true }, () =>
+        const content = runInContext({ asAdmin: true, branch: 'draft', repository: repoId }, () =>
             getPreArchiveContent(idOrArchivedPath, repoId, time)
         );
 
