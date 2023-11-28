@@ -1,5 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { getRepoConnection } from '../utils/repo-utils';
+import { runInContext } from '../context/run-in-context';
 import { CONTENT_ROOT_REPO_ID } from '../constants';
 import { logger } from '../utils/logging';
 import { Content } from '/lib/xp/content';
@@ -46,6 +47,51 @@ const buildMetaDataObject = (content: DynamicPageContent): MetaData => {
     }, {} as MetaData);
 
     return metaData;
+};
+
+const attemptDraftUpdate = (
+    draftContent: DynamicPageContent,
+    repoId: string,
+    metaData: MetaData
+) => {
+    runInContext({ repository: repoId, asAdmin: true }, () => {
+        try {
+            contentLib.modify({
+                key: draftContent._id,
+                requireValid: false,
+                editor: (content) => {
+                    content.data = { ...content.data, ...metaData };
+                    return content;
+                },
+            });
+        } catch (e) {
+            logger.error(
+                `Meta synchronization: Could not modify content with id ${
+                    draftContent._id
+                } on repoId ${repoId}: ${JSON.stringify(e)}`
+            );
+            return;
+        }
+    });
+};
+
+const attemptPublish = (contentId: string, repoId: string) => {
+    runInContext({ repository: repoId, asAdmin: true }, () => {
+        try {
+            contentLib.publish({
+                keys: [contentId],
+                sourceBranch: 'draft',
+                targetBranch: 'master',
+            });
+        } catch (e) {
+            logger.error(
+                `Meta synchronization: Could not publish content with id ${contentId} on repoId ${repoId}: ${JSON.stringify(
+                    e
+                )}`
+            );
+            return;
+        }
+    });
 };
 
 const syncToAllOtherLayers = (content: DynamicPageContent) => {
@@ -100,27 +146,10 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
 
         const isPublished = masterContent && masterContent._versionKey === draftContent._versionKey;
 
-        try {
-            draftRepo.modify({
-                key: draftContent._id,
-                editor: (node) => {
-                    return { ...node, data: { ...node.data, ...metaData } };
-                },
-            });
-        } catch (e) {
-            logger.error(
-                `Meta synchronization: Could not modify content with id ${
-                    draftContent._id
-                } in repo ${repoId}: ${JSON.stringify(e)}`
-            );
-            return;
-        }
+        attemptDraftUpdate(draftContent, repoId, metaData);
 
         if (isPublished) {
-            draftRepo.push({
-                keys: [draftContent._id],
-                target: 'master',
-            });
+            attemptPublish(draftContent._id, repoId);
         }
     });
 };
@@ -131,7 +160,6 @@ const updateFromDefaultLayer = (currentContent: DynamicPageContent, repoId: stri
         branch: 'draft',
         asAdmin: true,
     });
-    const currentRepo = getRepoConnection({ repoId, branch: 'draft', asAdmin: true });
     const originContent = defaultRepo.get<DynamicPageContent>({ key: currentContent._id });
 
     if (!originContent) {
@@ -147,29 +175,12 @@ const updateFromDefaultLayer = (currentContent: DynamicPageContent, repoId: stri
 
     const metaData = buildMetaDataObject(originContent);
 
-    try {
-        currentRepo.modify({
-            key: currentContent._id,
-            editor: (node) => {
-                return { ...node, data: { ...node.data, ...metaData } };
-            },
-        });
-    } catch (e) {
-        logger.error(
-            `Meta synchronization: Could not modify content with id ${
-                currentContent._id
-            } in repo ${repoId}: ${JSON.stringify(e)}`
-        );
-        return;
-    }
+    attemptDraftUpdate(currentContent, repoId, metaData);
 
     // As this function was triggered by a push event on the current repo,
     // it's safe to assume that the content can be re-pushed without
     // further checks.
-    currentRepo.push({
-        keys: [currentContent._id],
-        target: 'master',
-    });
+    attemptPublish(currentContent._id, repoId);
 };
 
 export const synchronizeMetaDataToLayers = (content: contentLib.Content, repo: string) => {
