@@ -1,6 +1,22 @@
 fragment partTestRecruiter on Part_no_nav_navno_test_recruiter {
     tests {
-        dataAsJson
+        ... on no_nav_navno_RandomizedTestRecruiter {
+            data {
+                groupId
+                title
+                ingress
+                startTime
+                endTime
+                variants {
+                    id
+                    title
+                    ingress
+                    percentage
+                    url
+                    linkText
+                }
+            }
+        }
     }
-    selectedTests
+    selectedTestIds
 }

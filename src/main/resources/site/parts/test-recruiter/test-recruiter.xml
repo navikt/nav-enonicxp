@@ -8,7 +8,7 @@
                 <allowContentType>${app}:randomized-test-recruiter</allowContentType>
             </config>
         </input>
-        <input type="TextLine" name="selectedTests">
+        <input type="TextLine" name="selectedTestIds">
             <label>Plukk ut enkelte test(er)</label>
             <occurrences minimum="0" maximum="0"/>
         </input>

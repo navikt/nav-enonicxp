@@ -13,7 +13,7 @@ export interface RandomizedTestRecruiter {
   /**
    * Id for test-grupperingen
    */
-  testGroupId: string;
+  groupId: string;
 
   /**
    * Start tidspunkt
@@ -28,11 +28,11 @@ export interface RandomizedTestRecruiter {
   /**
    * Test-varianter
    */
-  items: Array<{
+  variants: Array<{
     /**
      * Id for denne varianten
      */
-    testName: string;
+    id: string;
 
     /**
      * Andel av brukere som skal få denne varianten
@@ -43,6 +43,11 @@ export interface RandomizedTestRecruiter {
      * Url til denne test-varianten
      */
     url: string;
+
+    /**
+     * Lenketekst
+     */
+    linkText: string;
 
     /**
      * Tilpasset tittel

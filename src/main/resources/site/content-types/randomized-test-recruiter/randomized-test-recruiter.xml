@@ -19,7 +19,7 @@
                     <label>Felles ingress</label>
                     <occurrences minimum="1" maximum="1"/>
                 </input>
-                <input type="TextLine" name="testGroupId">
+                <input type="TextLine" name="groupId">
                     <label>Id for test-grupperingen</label>
                     <help-text>Dersom utvalg for denne gruppen av tester ikke skal kunne overlappe med en annen gruppe, kan du gi dem samme id</help-text>
                     <occurrences minimum="1" maximum="1"/>
@@ -34,19 +34,18 @@
                 </input>
             </items>
         </field-set>
-        <item-set name="items">
+        <item-set name="variants">
             <label>Test-varianter</label>
             <occurrences minimum="1" maximum="0"/>
             <items>
-                <input type="TextLine" name="testName">
+                <input type="TextLine" name="id">
                     <label>Id for denne varianten</label>
                     <help-text>Har ingen effekt på visning av testen</help-text>
                     <occurrences minimum="1" maximum="1"/>
                     <default>Min test-variant</default>
                 </input>
                 <input type="Long" name="percentage">
-                    <label>Andel av brukere som skal få denne varianten</label>
-                    <help-text>Sett prosent-andel av brukere som skal få denne undersøkelsen</help-text>
+                    <label>Prosentandel av brukere som skal få denne varianten</label>
                     <default>0</default>
                     <config>
                         <min>0</min>
@@ -55,6 +54,10 @@
                 </input>
                 <input type="TextLine" name="url">
                     <label>Url til denne test-varianten</label>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <input type="TextLine" name="linkText">
+                    <label>Lenketekst</label>
                     <occurrences minimum="1" maximum="1"/>
                 </input>
                 <input type="TextLine" name="title">

@@ -8,5 +8,5 @@ export interface TestRecruiterPartConfig {
   /**
    * Plukk ut enkelte test(er)
    */
-  selectedTests?: Array<string>;
+  selectedTestIds?: Array<string>;
 }
