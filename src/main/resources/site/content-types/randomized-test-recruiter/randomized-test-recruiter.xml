@@ -1,0 +1,73 @@
+<content-type xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Rekruttering til brukertester</display-name>
+    <description>Brukes for å rekruttere brukere til brukertester, med mulighet for randomisert utvalg blant flere
+        tester
+    </description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set>
+            <label>Oppsett for test-gruppering</label>
+            <items>
+                <input type="TextLine" name="title">
+                    <label>Felles tittel</label>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <input type="TextArea" name="ingress">
+                    <label>Felles ingress</label>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <input type="TextLine" name="testGroupId">
+                    <label>Id for test-grupperingen</label>
+                    <help-text>Dersom utvalg for denne gruppen av tester ikke skal kunne overlappe med en annen gruppe, kan du gi dem samme id</help-text>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <input type="DateTime" name="startTime">
+                    <label>Start tidspunkt</label>
+                    <default>now</default>
+                </input>
+                <input type="DateTime" name="endTime">
+                    <label>Slutt tidspunkt</label>
+                    <default>+1 week</default>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="items">
+            <label>Test-varianter</label>
+            <occurrences minimum="1" maximum="0"/>
+            <items>
+                <input type="TextLine" name="testName">
+                    <label>Id for denne varianten</label>
+                    <help-text>Har ingen effekt på visning av testen</help-text>
+                    <occurrences minimum="1" maximum="1"/>
+                    <default>Min test-variant</default>
+                </input>
+                <input type="Long" name="percentage">
+                    <label>Andel av brukere som skal få denne varianten</label>
+                    <help-text>Sett prosent-andel av brukere som skal få denne undersøkelsen</help-text>
+                    <default>0</default>
+                    <config>
+                        <min>0</min>
+                        <max>100</max>
+                    </config>
+                </input>
+                <input type="TextLine" name="url">
+                    <label>Url til denne test-varianten</label>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <input type="TextLine" name="title">
+                    <label>Tilpasset tittel</label>
+                    <help-text>Hvis tom benyttes felles tittel</help-text>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input type="TextLine" name="ingress">
+                    <label>Tilpasset ingress</label>
+                    <help-text>Hvis tom benyttes felles ingress</help-text>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+            </items>
+        </item-set>
+    </form>
+</content-type>
