@@ -51,6 +51,7 @@ import { FormsOverview } from '../../site/content-types/forms-overview/forms-ove
 import { FragmentCreator } from '../../site/content-types/fragment-creator/fragment-creator';
 import { SearchConfigV2 } from '../../site/content-types/search-config-v2/search-config-v2';
 import { ContentDataLocaleFallback } from '../../site/content-types/content-data-locale-fallback/content-data-locale-fallback';
+import { RandomizedTestRecruiter } from '../../site/content-types/randomized-test-recruiter/randomized-test-recruiter';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
@@ -97,6 +98,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'press-landing-page': PressLandingPage;
     video: Video;
     'forms-overview': FormsOverview;
+    'randomized-test-recruiter': RandomizedTestRecruiter;
 };
 
 // Add the app-specific descriptor prefix to all content types

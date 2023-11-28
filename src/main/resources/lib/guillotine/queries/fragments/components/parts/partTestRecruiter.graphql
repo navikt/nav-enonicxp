@@ -1,0 +1,6 @@
+fragment partTestRecruiter on Part_no_nav_navno_test_recruiter {
+    tests {
+        dataAsJson
+    }
+    selectedTests
+}
