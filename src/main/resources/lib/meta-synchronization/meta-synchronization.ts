@@ -21,7 +21,6 @@ const metaDataToSync = [
     'payout_dates',
     'rates',
     'formDetailsTargets',
-    'feedbackToggle',
     'chatbotToggle',
     'hideFromProductlist',
 ];
