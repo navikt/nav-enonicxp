@@ -12,7 +12,7 @@ import { synchronizeMetaDataToLayers } from '../meta-synchronization/meta-synchr
 
 let hasContentUpdateListener = false;
 
-const contentTypesToMetaSynchronise = [
+const contentTypesToMetaSynchronize = [
     'no.nav.navno:content-page-with-sidemenus',
     'no.nav.navno:situation-page',
     'no.nav.navno:guide-page',
@@ -100,7 +100,7 @@ const handlePushedEvent = (event: eventLib.EnonicEvent) => {
 
             const { type } = content;
 
-            if (contentTypesToMetaSynchronise.includes(type)) {
+            if (contentTypesToMetaSynchronize.includes(type)) {
                 synchronizeMetaDataToLayers(content, repo);
             }
         });
