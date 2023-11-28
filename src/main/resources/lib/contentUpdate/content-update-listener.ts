@@ -94,7 +94,7 @@ const handlePushedEvent = (event: eventLib.EnonicEvent) => {
 
         runInContext({ repository: repo }, () => {
             const content = contentLib.get({ key: id });
-            if (!content) {
+            if (!content || !isContentLocalized(content)) {
                 return;
             }
 
