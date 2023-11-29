@@ -1,6 +1,6 @@
 fragment partUserTest on Part_no_nav_navno_user_test {
     tests {
-        ... on no_nav_navno_UserTests {
+        ... on no_nav_navno_UserTestsConfig {
             data {
                 cookieId
                 title

@@ -5,7 +5,7 @@
             <label>Velg test-gruppering</label>
             <occurrences minimum="1" maximum="1"/>
             <config>
-                <allowContentType>${app}:user-tests</allowContentType>
+                <allowContentType>${app}:user-tests-config</allowContentType>
             </config>
         </input>
         <input type="TextLine" name="selectedTestIds">

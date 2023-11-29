@@ -1,6 +1,6 @@
 <content-type xmlns="urn:enonic:xp:model:1.0">
     <display-name>Brukertester</display-name>
-    <description>Data til brukertester, med mulighet for randomisert utvalg blant flere test-varianter</description>
+    <description>Oppsett for brukertester, med mulighet for randomisert utvalg blant flere test-varianter</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
@@ -45,6 +45,7 @@
                 <input type="Long" name="percentage">
                     <label>Prosentandel av brukere som skal få denne varianten</label>
                     <default>0</default>
+                    <occurrences minimum="1" maximum="1"/>
                     <config>
                         <min>0</min>
                         <max>100</max>
