@@ -67,7 +67,7 @@
                         <input name="alertText" type="TextArea">
                             <label>Avvikstekst</label>
                             <help-text>
-                                Når avvikesfeltet er i bruk, vises ikke Åpent nå/stengt nå-teksten. Brukes feks ved midlertidige tekniske problemer.
+                                Når avviksfeltet er i bruk, vises ikke "Åpent nå/Stengt nå"-teksten. Brukes feks ved midlertidige tekniske problemer.
                             </help-text>
                         </input>
                         <mixin name="opening-hours"/>
