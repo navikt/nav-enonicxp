@@ -1,35 +1,33 @@
 <content-type xmlns="urn:enonic:xp:model:1.0">
-    <display-name>Rekruttering til brukertester</display-name>
-    <description>Brukes for å rekruttere brukere til brukertester, med mulighet for randomisert utvalg blant flere
-        tester
-    </description>
+    <display-name>Brukertester</display-name>
+    <description>Data til brukertester, med mulighet for randomisert utvalg blant flere test-varianter</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
         <field-set>
-            <label>Oppsett for test-gruppering</label>
+            <label>Felles oppsett for tester</label>
             <items>
                 <input type="TextLine" name="title">
-                    <label>Felles tittel</label>
+                    <label>Tittel</label>
                     <occurrences minimum="1" maximum="1"/>
                 </input>
                 <input type="TextArea" name="ingress">
-                    <label>Felles ingress</label>
+                    <label>Ingress</label>
                     <occurrences minimum="1" maximum="1"/>
                 </input>
-                <input type="TextLine" name="groupId">
-                    <label>Id for test-grupperingen</label>
+                <input type="TextLine" name="cookieId">
+                    <label>Cookie-id</label>
                     <help-text>Dersom utvalg for denne gruppen av tester ikke skal kunne overlappe med en annen gruppe, kan du gi dem samme id</help-text>
                     <occurrences minimum="1" maximum="1"/>
                 </input>
                 <input type="DateTime" name="startTime">
-                    <label>Start tidspunkt</label>
+                    <label>Start-tidspunkt</label>
                     <default>now</default>
                 </input>
                 <input type="DateTime" name="endTime">
-                    <label>Slutt tidspunkt</label>
+                    <label>Slutt-tidspunkt</label>
                     <default>+1 week</default>
                 </input>
             </items>
@@ -40,7 +38,7 @@
             <items>
                 <input type="TextLine" name="id">
                     <label>Id for denne varianten</label>
-                    <help-text>Har ingen effekt på visning av testen</help-text>
+                    <help-text>Benyttes for å referere til spesifikke varianter i test-komponenter</help-text>
                     <occurrences minimum="1" maximum="1"/>
                     <default>Min test-variant</default>
                 </input>

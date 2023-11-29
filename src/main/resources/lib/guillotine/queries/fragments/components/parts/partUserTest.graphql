@@ -1,8 +1,8 @@
-fragment partTestRecruiter on Part_no_nav_navno_test_recruiter {
+fragment partUserTest on Part_no_nav_navno_user_test {
     tests {
-        ... on no_nav_navno_RandomizedTestRecruiter {
+        ... on no_nav_navno_UserTests {
             data {
-                groupId
+                cookieId
                 title
                 ingress
                 startTime
