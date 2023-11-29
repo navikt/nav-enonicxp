@@ -125,7 +125,19 @@ class ExternalSearchDocumentBuilder {
     }
 
     private getTitle(): string | null {
-        return this.getFirstMatchingFieldValue('titleKey') || null;
+        const title = this.getFirstMatchingFieldValue('titleKey');
+        if (!title) {
+            return null;
+        }
+
+        if (this.content.type === 'no.nav.navno:form-details') {
+            const formNumbers = forceArray(this.content.data.formNumbers);
+            if (formNumbers.length > 0) {
+                return `${title} (${formNumbers.join(', ')})`;
+            }
+        }
+
+        return title;
     }
 
     private getIngress(): string {
