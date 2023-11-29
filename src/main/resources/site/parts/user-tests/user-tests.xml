@@ -9,7 +9,7 @@
             </config>
         </input>
         <input type="TextLine" name="selectedTestIds">
-            <label>Skriv inn variant-id'er dersom kun spesifikk varianter skal kunne vises</label>
+            <label>Skriv inn variant-id'er dersom kun enkelte varianter skal kunne vises</label>
             <occurrences minimum="0" maximum="0"/>
         </input>
     </form>
