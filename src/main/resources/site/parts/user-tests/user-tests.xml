@@ -1,5 +1,5 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>Brukertest</display-name>
+    <display-name>Brukertester</display-name>
     <form>
         <input type="ContentSelector" name="tests">
             <label>Velg test-gruppering</label>

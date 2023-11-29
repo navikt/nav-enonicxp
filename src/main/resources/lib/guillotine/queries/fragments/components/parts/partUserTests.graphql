@@ -1,4 +1,4 @@
-fragment partUserTest on Part_no_nav_navno_user_test {
+fragment partUserTests on Part_no_nav_navno_user_tests {
     tests {
         ... on no_nav_navno_UserTestsConfig {
             data {

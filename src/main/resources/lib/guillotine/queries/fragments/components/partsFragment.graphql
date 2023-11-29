@@ -25,7 +25,7 @@
 #import "./parts/partProductDetails.graphql"
 #import "./parts/partOfficeEditorialDetail.graphql"
 #import "./parts/partFrontpageSurveyPanel.graphql"
-#import "./parts/partUserTest.graphql"
+#import "./parts/partUserTests.graphql"
 
 fragment partComponents on PartComponentData {
     descriptor
@@ -114,8 +114,8 @@ fragment partComponents on PartComponentData {
                 frontpage_survey_panel {
                     ...partFrontpageSurveyPanel
                 }
-                user_test {
-                    ...partUserTest
+                user_tests {
+                    ...partUserTests
                 }
             }
         }
