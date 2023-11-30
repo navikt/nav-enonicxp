@@ -122,6 +122,7 @@ export const contentTypesRenderedByEditorFrontend = [
     `${APP_DESCRIPTOR}:form-details`,
     `${APP_DESCRIPTOR}:office-branch`,
     `${APP_DESCRIPTOR}:payout-dates`,
+    `${APP_DESCRIPTOR}:video`,
     `${APP_DESCRIPTOR}:office-editorial-page`,
     `${APP_DESCRIPTOR}:publishing-calendar-entry`,
     'portal:page-template',

@@ -62,6 +62,7 @@ import situationPageQuery from './content-queries/situationPageQuery.graphql';
 import currentTopicPageQuery from './content-queries/currentTopicPageQuery.graphql';
 import themedArticlePageQuery from './content-queries/themedArticlePageQuery.graphql';
 import toolsPageQuery from './content-queries/toolsPageQuery.graphql';
+import videoPageQuery from './content-queries/videoPageQuery.graphql';
 import transportPageQuery from './content-queries/transportPageQuery.graphql';
 import urlQuery from './content-queries/urlQuery.graphql';
 import pressLandingPageQuery from './content-queries/pressLandingPageQuery.graphql';
@@ -117,6 +118,7 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:tools-page': toolsPageQuery,
     'no.nav.navno:press-landing-page': pressLandingPageQuery,
     'no.nav.navno:transport-page': transportPageQuery,
+    'no.nav.navno:video': videoPageQuery,
     'no.nav.navno:url': urlQuery,
     'portal:fragment': portalFragmentQuery,
     'portal:site': portalSiteQuery,
