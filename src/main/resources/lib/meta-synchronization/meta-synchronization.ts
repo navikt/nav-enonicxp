@@ -121,6 +121,10 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
 
     const metaData = buildMetaDataObject(content);
 
+    logger.info(
+        `Meta synchronization: Meta data in default repo and content ${content._id} was updated, so synching and publishing to all other layers.`
+    );
+
     Object.keys(repoIdToLocaleMap).forEach((repoId) => {
         if (repoId === CONTENT_ROOT_REPO_ID) {
             return;
@@ -175,6 +179,9 @@ const updateFromDefaultLayer = (currentContent: DynamicPageContent, repoId: stri
 
     const metaData = buildMetaDataObject(originContent);
 
+    logger.info(
+        `Meta synchronization: Meta data in ${repoId} and content ${currentContent._id} was changed, so re-synching meta data from default layer.`
+    );
     attemptDraftUpdate(currentContent, repoId, metaData);
 
     // As this function was triggered by a push event on the current repo,
