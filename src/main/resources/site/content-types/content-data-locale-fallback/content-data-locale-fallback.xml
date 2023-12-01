@@ -1,8 +1,6 @@
 <content-type xmlns="urn:enonic:xp:model:1.0">
     <display-name>Oversettelser for ikke-lokalisert innhold</display-name>
-    <description>Benyttes ved behov for oversetting av enkelt-felter på innhold som ikke er lokalisert, f.eks. for
-        utlisting i oversikter
-    </description>
+    <description>Benyttes ved behov for oversetting av enkelt-felter på innhold som ikke er lokalisert</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
