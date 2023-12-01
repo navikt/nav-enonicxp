@@ -1,0 +1,16 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>menu-list (legacy, ikke bruk!)</display-name>
+    <form></form>
+    <config>
+        <allow-on-content-type>${app}:large-table</allow-on-content-type>
+        <allow-on-content-type>${app}:main-article</allow-on-content-type>
+        <allow-on-content-type>${app}:main-article-chapter</allow-on-content-type>
+        <allow-on-content-type>${app}:melding</allow-on-content-type>
+        <allow-on-content-type>${app}:office-information</allow-on-content-type>
+        <allow-on-content-type>${app}:page-list</allow-on-content-type>
+        <allow-on-content-type>${app}:publishing-calendar</allow-on-content-type>
+        <allow-on-content-type>${app}:section-page</allow-on-content-type>
+        <allow-on-content-type>${app}:transport-page</allow-on-content-type>
+        <allow-on-content-type>portal:page-template</allow-on-content-type>
+    </config>
+</part>
