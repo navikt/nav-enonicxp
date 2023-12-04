@@ -38,7 +38,13 @@ const checkContextAndLog = (
     log[level](formatMsg(msg, customLevel, file, line, content));
 };
 
-const logInfo = (msg: string, file?: never, line?: never) => {
+const logInfo = (
+    msg: string,
+    logAsInfoInDraftContext?: never,
+    content?: never,
+    file?: never,
+    line?: never
+) => {
     log.info(formatMsg(msg, 'info', file as unknown as string, line as unknown as string));
 };
 
