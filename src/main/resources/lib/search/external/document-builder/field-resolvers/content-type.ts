@@ -42,7 +42,7 @@ const xpContentTypeToSearchContentType: {
 } as const;
 
 export const getSearchDocumentContentType = (content: ContentNode): SearchDocumentContentType => {
-    return xpContentTypeToSearchContentType[content.type] || isMedia(content)
-        ? 'fil-andre'
-        : 'andre';
+    return (
+        xpContentTypeToSearchContentType[content.type] || (isMedia(content) ? 'fil-andre' : 'andre')
+    );
 };
