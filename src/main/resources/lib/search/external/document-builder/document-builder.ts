@@ -2,7 +2,11 @@ import { Content } from '/lib/xp/content';
 import { forceArray } from '../../../utils/array-utils';
 import { getSearchNodeHref } from '../../create-or-update-search-node';
 import { generateSearchDocumentId } from '../utils';
-import { isMedia } from '../../../utils/content-utils';
+import {
+    getContentLocaleRedirectTarget,
+    isContentPreviewOnly,
+    isMedia,
+} from '../../../utils/content-utils';
 import { getNestedValues } from '../../../utils/object-utils';
 import { getExternalSearchConfig } from '../config';
 import { logger } from '../../../utils/logging';
@@ -164,12 +168,37 @@ const getContentGroupConfig = (searchConfig: SearchConfig, content: ContentNode)
     );
 };
 
+const isExcludedContent = (content: ContentNode) => {
+    if (!content?.data) {
+        return true;
+    }
+
+    if (isContentPreviewOnly(content) || getContentLocaleRedirectTarget(content)) {
+        return true;
+    }
+
+    switch (content.type) {
+        // 'LOKAL' office type is handled by the new office-branch content type
+        case 'no.nav.navno:office-information': {
+            return content.data.enhet.type === 'LOKAL';
+        }
+        case 'no.nav.navno:form-details': {
+            const isApplication = !!forceArray(content.data?.formType).find(
+                (formType) => formType._selected === 'application'
+            );
+            return !isApplication;
+        }
+        default: {
+            return false;
+        }
+    }
+};
+
 export const buildExternalSearchDocument = (
     content: ContentNode,
     locale: string
 ): SearchDocument | null => {
-    if (!content?.data) {
-        logger.error('No content data found!');
+    if (isExcludedContent(content)) {
         return null;
     }
 
