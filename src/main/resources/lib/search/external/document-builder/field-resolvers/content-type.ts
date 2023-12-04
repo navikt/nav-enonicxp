@@ -41,8 +41,5 @@ const xpContentTypeToSearchContentType: {
     'media:document': 'fil-document',
 } as const;
 
-export const getSearchDocumentContentType = (content: ContentNode): SearchDocumentContentType => {
-    return (
-        xpContentTypeToSearchContentType[content.type] || (isMedia(content) ? 'fil-andre' : 'andre')
-    );
-};
+export const getSearchDocumentContentType = (content: ContentNode): SearchDocumentContentType =>
+    xpContentTypeToSearchContentType[content.type] || (isMedia(content) ? 'fil-andre' : 'andre');
