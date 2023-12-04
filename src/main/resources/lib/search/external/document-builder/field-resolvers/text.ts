@@ -1,9 +1,6 @@
-import { RepoNode } from '/lib/xp/node';
-import { Content } from '/lib/xp/content';
 import { getNestedValues } from '../../../../utils/object-utils';
 import { forceArray } from '../../../../utils/array-utils';
-
-type ContentNode = RepoNode<Content>;
+import { ContentNode } from '../../../../../types/content-types/content-config';
 
 type FieldKeyBuckets = {
     componentsFieldKeys: string[];

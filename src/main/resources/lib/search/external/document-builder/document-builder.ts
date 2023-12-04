@@ -1,5 +1,4 @@
 import { Content } from '/lib/xp/content';
-import { RepoNode } from '/lib/xp/node';
 import { forceArray } from '../../../utils/array-utils';
 import { getSearchNodeHref } from '../../create-or-update-search-node';
 import { generateSearchDocumentId } from '../utils';
@@ -11,12 +10,15 @@ import { SearchDocumentFylke, getSearchDocumentFylke } from './field-resolvers/f
 import { SearchDocumentMetatag, getSearchDocumentMetatags } from './field-resolvers/metatags';
 import { getSearchDocumentAudience, SearchDocumentAudience } from './field-resolvers/audience';
 import { getSearchDocumentTextSegments } from './field-resolvers/text';
+import { ContentNode } from '../../../../types/content-types/content-config';
+import {
+    getSearchDocumentContentType,
+    SearchDocumentContentType,
+} from './field-resolvers/content-type';
 
 type SearchConfig = Content<'no.nav.navno:search-config-v2'>;
 type KeysConfig = Partial<SearchConfig['data']['defaultKeys']>;
 type MetaKey = keyof KeysConfig;
-
-type ContentNode = RepoNode<Content>;
 
 export type SearchDocument = {
     id: string;
@@ -28,6 +30,7 @@ export type SearchDocument = {
         createdAt: string;
         lastUpdated: string;
         language: string;
+        type: SearchDocumentContentType;
         isFile?: boolean;
         audience: SearchDocumentAudience[];
         metatags?: SearchDocumentMetatag[];
@@ -80,6 +83,7 @@ class ExternalSearchDocumentBuilder {
                 language: this.getLanguage(),
                 fylke: getSearchDocumentFylke(content),
                 metatags: getSearchDocumentMetatags(content),
+                type: getSearchDocumentContentType(content),
                 isFile: isMedia(content),
                 createdAt: content.createdTime,
                 lastUpdated: content.modifiedTime,

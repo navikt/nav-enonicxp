@@ -1,15 +1,7 @@
-import { RepoNode } from '/lib/xp/node';
-import { Content } from '/lib/xp/content';
 import { forceArray } from '../../../../utils/array-utils';
-import { ContentDescriptor } from '../../../../../types/content-types/content-config';
-
-type ContentNode<ContentType extends ContentDescriptor = ContentDescriptor> = RepoNode<
-    Content<ContentType>
->;
+import { ContentNode } from '../../../../../types/content-types/content-config';
 
 export type SearchDocumentMetatag =
-    | 'kontor'
-    | 'skjema'
     | 'nyhet'
     | 'pressemelding'
     | 'nav-og-samfunn'
@@ -66,12 +58,6 @@ const isPresse = (content: ContentNode) =>
 export const getSearchDocumentMetatags = (content: ContentNode) => {
     const metaTags: SearchDocumentMetatag[] = [];
 
-    if (isKontor(content)) {
-        metaTags.push('kontor');
-    }
-    if (isSkjema(content)) {
-        metaTags.push('skjema');
-    }
     if (isNyhet(content)) {
         metaTags.push('nyhet');
     }
