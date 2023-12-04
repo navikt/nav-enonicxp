@@ -182,11 +182,11 @@ const isExcludedContent = (content: ContentNode) => {
         case 'no.nav.navno:office-information': {
             return content.data.enhet.type === 'LOKAL';
         }
+        // Only form details which contain an application should be indexed
         case 'no.nav.navno:form-details': {
-            const isApplication = !!forceArray(content.data?.formType).find(
+            return !forceArray(content.data?.formType).some(
                 (formType) => formType._selected === 'application'
             );
-            return !isApplication;
         }
         default: {
             return false;
@@ -210,9 +210,6 @@ export const buildExternalSearchDocument = (
 
     const contentGroupConfig = getContentGroupConfig(searchConfig, content);
     if (!contentGroupConfig) {
-        logger.info(
-            `Search is not configured for content-type ${content.type} - Content: ${content._id} / ${locale}`
-        );
         return null;
     }
 
