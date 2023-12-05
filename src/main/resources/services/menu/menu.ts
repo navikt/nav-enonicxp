@@ -2,8 +2,8 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { logger } from '../../lib/utils/logging';
 import { getPublicPath } from '../../lib/paths/public-path';
-import { CONTENT_LOCALE_DEFAULT } from '../../lib/constants';
 import { getFromLocalCache } from '../../lib/cache/local-cache';
+import { runInLocaleContext } from '../../lib/localization/locale-context';
 
 const CACHE_KEY = 'decorator-menu-cache';
 const MENU_PATH = '/www.nav.no/dekorator-meny/';
@@ -22,13 +22,13 @@ type MenuItem = {
     children: MenuItem[];
 };
 
-const getTargetPath = (menuItem: MenuItemContent) => {
+const getTargetPath = (menuItem: MenuItemContent, locale: string) => {
     const targetId = menuItem.data.target;
     if (!targetId) {
         return '';
     }
 
-    const target = contentLib.get({ key: targetId });
+    const target = runInLocaleContext({ locale }, () => contentLib.get({ key: targetId }));
     if (!target) {
         return '';
     }
@@ -36,16 +36,16 @@ const getTargetPath = (menuItem: MenuItemContent) => {
     if (target.type === 'no.nav.navno:external-link') {
         return target.data.url;
     } else {
-        return getPublicPath(target, CONTENT_LOCALE_DEFAULT);
+        return getPublicPath(target, locale);
     }
 };
 
-const menuItemContentTransformer = (menuItem: MenuItemContent): MenuItem => {
-    const children = getMenuItemChildren(menuItem._id);
+const menuItemContentTransformer = (menuItem: MenuItemContent, locale: string): MenuItem => {
+    const children = getMenuItemChildren(menuItem._id, locale);
 
     return {
         displayName: menuItem.displayName,
-        path: getTargetPath(menuItem),
+        path: getTargetPath(menuItem, locale),
         displayLock: menuItem.data.displayLock,
         flatten: menuItem.data.flatten,
         isMyPageMenu: menuItem._path.includes(MY_PAGE_MENY_PATH_SEGMENT) || undefined,
@@ -55,7 +55,7 @@ const menuItemContentTransformer = (menuItem: MenuItemContent): MenuItem => {
     };
 };
 
-const getMenuItemChildren = (contentId: string) => {
+const getMenuItemChildren = (contentId: string, locale?: string) => {
     return contentLib
         .getChildren({
             key: contentId,
@@ -67,7 +67,12 @@ const getMenuItemChildren = (contentId: string) => {
                 return acc;
             }
 
-            const itemTransformed = menuItemContentTransformer(menuItemContent);
+            const itemTransformed = menuItemContentTransformer(
+                menuItemContent,
+                // The locale argument is only provided for non-root nodes. For the root nodes
+                // we use the language on the node and propagate this down to the child menu items
+                locale || menuItemContent.language
+            );
 
             return itemTransformed ? [...acc, itemTransformed] : acc;
         }, [] as MenuItem[]);

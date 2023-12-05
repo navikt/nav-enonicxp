@@ -94,14 +94,14 @@ const getOfficeInfoRedirect = ({ content }: Args) => {
     // will return a 404 after redirect.
     const office = foundOfficeContent.hits[0];
 
-    return {
-        response: transformToRedirect({
+    return nullableResponse(
+        transformToRedirect({
             content,
             target: office._path,
             type: 'internal',
             isPermanent: true,
-        }),
-    };
+        })
+    );
 };
 
 const getLocaleRedirect = ({ content, locale, branch }: Args) => {
@@ -149,6 +149,9 @@ const getCustomPathRedirect = ({ content, requestedPath, branch, locale }: Args)
     );
 };
 
+// Should return null if there is no applicable special response
+// The NullableResponse may itself contain a null-value, indicating that the special response
+// should be 404
 export const sitecontentSpecialResponse = (args: Args): NullableResponse | null => {
     return (
         getPreviewOnlyResponse(args) ||

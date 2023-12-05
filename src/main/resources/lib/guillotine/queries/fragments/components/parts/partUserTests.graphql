@@ -1,0 +1,22 @@
+fragment partUserTests on Part_no_nav_navno_user_tests {
+    tests {
+        ... on no_nav_navno_UserTestsConfig {
+            data {
+                cookieId
+                title
+                ingress
+                startTime
+                endTime
+                variants {
+                    id
+                    title
+                    ingress
+                    percentage
+                    url
+                    linkText
+                }
+            }
+        }
+    }
+    selectedTestIds
+}

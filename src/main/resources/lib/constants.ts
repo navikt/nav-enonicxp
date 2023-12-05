@@ -65,7 +65,8 @@ export const CONTENT_LOCALE_DEFAULT = 'no';
 
 export const SEARCH_REPO_ID = 'nav.no.search';
 export const NAVNO_ROOT_PATH = '/www.nav.no';
-export const REDIRECTS_ROOT_PATH = `${NAVNO_ROOT_PATH}/redirects`;
+export const REDIRECTS_PATH = '/redirects';
+export const REDIRECTS_ROOT_PATH = `${NAVNO_ROOT_PATH}${REDIRECTS_PATH}`;
 export const FRONTEND_APP_NAME = 'nav-enonicxp-frontend';
 export const CONTENT_STUDIO_PATH_PREFIX = '/admin/tool/com.enonic.app.contentstudio/main';
 

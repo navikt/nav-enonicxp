@@ -9,12 +9,12 @@ import { FRONTEND_APP_NAME, NAVNO_ROOT_PATH, REDIRECTS_ROOT_PATH, URLS } from '.
 import { logger } from '../../lib/utils/logging';
 import { customSelectorErrorIcon, customSelectorWarningIcon } from '../custom-selector-icons';
 import { runInContext } from '../../lib/context/run-in-context';
-import { forceArray } from '../../lib/utils/array-utils';
 import {
     formIntermediateStepGenerateCustomPath,
     formIntermediateStepValidateCustomPath,
 } from '../../lib/paths/custom-paths/custom-path-special-types';
 import { RepoBranch } from '../../types/common';
+import { customSelectorParseSelectedIdsFromReq } from '../service-utils';
 
 type SpecialUrlType = 'formIntermediateStep';
 
@@ -59,12 +59,11 @@ const findExistingContentsWithCustomPath = (suggestedCustomPath: string, branch:
 
 const getResult = ({
     query,
-    ids,
+    currentSelection,
 }: {
     query?: string;
-    ids?: string | string[];
+    currentSelection?: string;
 }): XP.CustomSelectorServiceResponseHit => {
-    const currentSelection = forceArray(ids)[0];
     const suggestedPath = query || currentSelection;
 
     if (!isValidCustomPath(suggestedPath)) {
@@ -179,9 +178,11 @@ export const get = (req: XP.CustomSelectorServiceRequest): XP.CustomSelectorServ
         };
     }
 
-    const { query, ids, type } = req.params;
+    const { query, type } = req.params;
 
-    const result = getResult({ query, ids });
+    const currentSelection = customSelectorParseSelectedIdsFromReq(req)[0];
+
+    const result = getResult({ query, currentSelection });
 
     const validatedResult = validateResult(result, type as SpecialUrlType);
 

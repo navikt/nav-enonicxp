@@ -38,7 +38,11 @@ const _sitecontentPublicResponse = ({
     });
 
     if (specialResponse) {
-        return specialResponse.response;
+        return (
+            specialResponse.response ||
+            // If the special response is null, we also want to check for any applicable redirect
+            sitecontentNotFoundRedirect({ pathRequested: idOrPath, branch: 'master' })
+        );
     }
 
     return sitecontentContentResponse({ baseContent: content, branch: 'master', locale });

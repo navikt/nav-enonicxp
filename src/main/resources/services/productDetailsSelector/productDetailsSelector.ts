@@ -3,7 +3,7 @@ import * as portalLib from '/lib/xp/portal';
 import { Content } from '/lib/xp/content';
 import { ProductDetails } from '../../site/content-types/product-details/product-details';
 import { generateFulltextQuery } from '../../lib/utils/mixed-bag-of-utils';
-import { customSelectorHitWithLink } from '../service-utils';
+import { customSelectorHitWithLink, customSelectorParseSelectedIdsFromReq } from '../service-utils';
 import { customSelectorErrorIcon } from '../custom-selector-icons';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
@@ -107,12 +107,13 @@ const getHitsFromQuery = (
 };
 
 const selectorHandler = (req: XP.Request) => {
-    const { detailType, query, ids } = req.params as SelectorParams;
+    const { detailType, query } = req.params as SelectorParams;
+    const selectedId = customSelectorParseSelectedIdsFromReq(req)[0];
 
     const { language } = portalLib.getContent();
 
-    const hits = ids
-        ? [getSelectedHit(ids, detailType, language)]
+    const hits = selectedId
+        ? [getSelectedHit(selectedId, detailType, language)]
         : getHitsFromQuery(detailType, language, query);
 
     return {

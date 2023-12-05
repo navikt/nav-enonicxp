@@ -7,6 +7,7 @@ import { getLayersData } from '../../localization/layers-data';
 import { searchApiPostDocuments } from './api-handlers/post-document';
 import { searchApiDeleteDocument } from './api-handlers/delete-document';
 import { buildExternalSearchDocument } from './document-builder/document-builder';
+import { isContentLocalized } from '../../localization/locale-utils';
 
 const deleteExternalSearchDocumentForContent = (contentId: string, locale: string) => {
     const id = generateSearchDocumentId(contentId, locale);
@@ -29,6 +30,10 @@ export const updateExternalSearchDocumentForContent = (contentId: string, repoId
     const content = repo.get<Content>(contentId);
     if (!content) {
         deleteExternalSearchDocumentForContent(contentId, locale);
+        return;
+    }
+
+    if (!isContentLocalized(content)) {
         return;
     }
 

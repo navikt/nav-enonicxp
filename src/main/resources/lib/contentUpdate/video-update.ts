@@ -8,7 +8,7 @@ import { QbrickMeta } from '../../types/qbrickMeta';
 
 type UpdateVideoContentParams = {
     videoContentId: string;
-    duration: number | string;
+    duration: number | null;
     posterImageId: string;
     subtitles?: string[];
 };
@@ -33,7 +33,10 @@ const updateVideoContent = ({
         key: videoContentId,
         requireValid: false,
         editor: (content) => {
-            content.data.duration = duration.toString();
+            if (duration) {
+                content.data.duration = duration.toString();
+            }
+
             content.data.poster = posterImageId;
             content.data.subtitles = subtitles;
 
@@ -96,14 +99,14 @@ const findImageUrl = (qbrickMediaData: QbrickMeta) => {
 const findVideoDuration = (qbrickMediaData: QbrickMeta) => {
     const resources = qbrickMediaData?.asset?.resources;
     if (!resources) {
-        return 0;
+        return null;
     }
 
     const firstFoundResource = resources.find((resource) => resource.type === 'video');
     const firstFoundVideo = firstFoundResource && firstFoundResource.renditions[0]?.videos;
     const duration = firstFoundVideo && firstFoundVideo[0]?.duration;
 
-    return duration || 0;
+    return duration || null;
 };
 
 const findSubtitleLanguages = (qbrickMediaData: QbrickMeta) => {
@@ -160,11 +163,13 @@ export const updateQbrickVideoContent = (content: Content<'no.nav.navno:video'>)
 
     const qbrickMetadata = fetchMetaData(accountId, mediaId);
     if (!qbrickMetadata) {
+        logger.error(`No metadata found for qbrick video: ${content._id}`);
         return;
     }
 
     const { duration, imageURI, subtitles } = qbrickMetadata;
-    if (!duration || !imageURI) {
+    if (!imageURI) {
+        logger.error(`No thumbnail URI found for qbrick video: ${content._id}`);
         return;
     }
 
@@ -174,6 +179,7 @@ export const updateQbrickVideoContent = (content: Content<'no.nav.navno:video'>)
             content.data.poster || createImageAsset(imageURI, content._path, content._name)?._id;
 
         if (!imageAssetId) {
+            logger.error(`Failed to create image asset for qbrick video: ${content._id}`);
             return;
         }
 
