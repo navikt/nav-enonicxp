@@ -1,5 +1,5 @@
 import { Content, BooleanFilter } from '/lib/xp/content';
-import { RepoConnection, NodeQueryHit, RepoNode } from '/lib/xp/node';
+import { RepoConnection, NodeQueryHit } from '/lib/xp/node';
 import * as contextLib from '/lib/xp/context';
 import { RepoBranch } from '../../types/common';
 import { logger } from '../utils/logging';
@@ -10,14 +10,13 @@ import {
 } from '../contenttype-lists';
 import { getRepoConnection } from '../utils/repo-utils';
 import { APP_DESCRIPTOR } from '../constants';
-import { ContentDescriptor } from '../../types/content-types/content-config';
+import { ContentDescriptor, ContentNode } from '../../types/content-types/content-config';
 import { getParentPath } from '../paths/path-utils';
 import { NON_LOCALIZED_QUERY_FILTER } from '../localization/layers-repo-utils/localization-state-filters';
 import { forceArray } from '../utils/array-utils';
 import { isValidBranch } from '../context/branches';
 import { Overview } from '../../site/content-types/overview/overview';
 
-type ContentNode = RepoNode<Content>;
 type ContentDescriptorSet = ReadonlySet<ContentDescriptor>;
 
 type OverviewType = Overview['overviewType'];

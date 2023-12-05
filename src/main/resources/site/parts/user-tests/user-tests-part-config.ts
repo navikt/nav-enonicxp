@@ -6,7 +6,7 @@ export interface UserTestsPartConfig {
   tests: string;
 
   /**
-   * Skriv inn variant-id'er dersom kun spesifikk varianter skal kunne vises
+   * Skriv inn variant-id'er dersom kun enkelte varianter skal kunne vises
    */
   selectedTestIds?: Array<string>;
 }

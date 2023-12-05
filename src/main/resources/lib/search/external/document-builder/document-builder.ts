@@ -1,9 +1,12 @@
 import { Content } from '/lib/xp/content';
-import { RepoNode } from '/lib/xp/node';
 import { forceArray } from '../../../utils/array-utils';
 import { getSearchNodeHref } from '../../create-or-update-search-node';
 import { generateSearchDocumentId } from '../utils';
-import { isMedia } from '../../../utils/content-utils';
+import {
+    getContentLocaleRedirectTarget,
+    isContentPreviewOnly,
+    isMedia,
+} from '../../../utils/content-utils';
 import { getNestedValues } from '../../../utils/object-utils';
 import { getExternalSearchConfig } from '../config';
 import { logger } from '../../../utils/logging';
@@ -11,12 +14,15 @@ import { SearchDocumentFylke, getSearchDocumentFylke } from './field-resolvers/f
 import { SearchDocumentMetatag, getSearchDocumentMetatags } from './field-resolvers/metatags';
 import { getSearchDocumentAudience, SearchDocumentAudience } from './field-resolvers/audience';
 import { getSearchDocumentTextSegments } from './field-resolvers/text';
+import { ContentNode } from '../../../../types/content-types/content-config';
+import {
+    getSearchDocumentContentType,
+    SearchDocumentContentType,
+} from './field-resolvers/content-type';
 
 type SearchConfig = Content<'no.nav.navno:search-config-v2'>;
 type KeysConfig = Partial<SearchConfig['data']['defaultKeys']>;
 type MetaKey = keyof KeysConfig;
-
-type ContentNode = RepoNode<Content>;
 
 export type SearchDocument = {
     id: string;
@@ -28,6 +34,7 @@ export type SearchDocument = {
         createdAt: string;
         lastUpdated: string;
         language: string;
+        type: SearchDocumentContentType;
         isFile?: boolean;
         audience: SearchDocumentAudience[];
         metatags?: SearchDocumentMetatag[];
@@ -80,6 +87,7 @@ class ExternalSearchDocumentBuilder {
                 language: this.getLanguage(),
                 fylke: getSearchDocumentFylke(content),
                 metatags: getSearchDocumentMetatags(content),
+                type: getSearchDocumentContentType(content),
                 isFile: isMedia(content),
                 createdAt: content.createdTime,
                 lastUpdated: content.modifiedTime,
@@ -160,12 +168,37 @@ const getContentGroupConfig = (searchConfig: SearchConfig, content: ContentNode)
     );
 };
 
+const isExcludedContent = (content: ContentNode) => {
+    if (!content?.data) {
+        return true;
+    }
+
+    if (isContentPreviewOnly(content) || getContentLocaleRedirectTarget(content)) {
+        return true;
+    }
+
+    switch (content.type) {
+        // 'LOKAL' office type is handled by the new office-branch content type
+        case 'no.nav.navno:office-information': {
+            return content.data.enhet.type === 'LOKAL';
+        }
+        // Only form details which contain an application should be indexed
+        case 'no.nav.navno:form-details': {
+            return !forceArray(content.data?.formType).some(
+                (formType) => formType._selected === 'application'
+            );
+        }
+        default: {
+            return false;
+        }
+    }
+};
+
 export const buildExternalSearchDocument = (
     content: ContentNode,
     locale: string
 ): SearchDocument | null => {
-    if (!content?.data) {
-        logger.error('No content data found!');
+    if (isExcludedContent(content)) {
         return null;
     }
 
@@ -177,9 +210,6 @@ export const buildExternalSearchDocument = (
 
     const contentGroupConfig = getContentGroupConfig(searchConfig, content);
     if (!contentGroupConfig) {
-        logger.info(
-            `Search is not configured for content-type ${content.type} - Content: ${content._id} / ${locale}`
-        );
         return null;
     }
 

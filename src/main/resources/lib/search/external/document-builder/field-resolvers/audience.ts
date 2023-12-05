@@ -1,9 +1,6 @@
-import { RepoNode } from '/lib/xp/node';
-import { Content } from '/lib/xp/content';
 import { forceArray } from '../../../../utils/array-utils';
 import { stripPathPrefix } from '../../../../paths/path-utils';
-
-type ContentNode = RepoNode<Content>;
+import { ContentNode } from '../../../../../types/content-types/content-config';
 
 export type SearchDocumentAudience =
     | 'privatperson'
