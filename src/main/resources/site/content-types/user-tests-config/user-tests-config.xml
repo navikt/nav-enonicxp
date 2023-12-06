@@ -44,7 +44,7 @@
                     <occurrences minimum="1" maximum="1"/>
                     <default>min-test-variant</default>
                 </input>
-                <input type="Long" name="percentage">
+                <input type="Double" name="percentage">
                     <label>Prosentandel av brukere som skal få denne varianten</label>
                     <default>0</default>
                     <occurrences minimum="1" maximum="1"/>
