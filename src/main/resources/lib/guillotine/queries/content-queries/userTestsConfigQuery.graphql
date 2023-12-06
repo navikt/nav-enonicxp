@@ -1,0 +1,11 @@
+#import "../fragments/contentCommonFragment.graphql"
+#import "../fragments/content-types/userTestsConfigFragment.graphql"
+
+query userTestsConfigQuery($ref: ID!) {
+    guillotine {
+        get(key: $ref) {
+            ...contentCommon
+            ...contentUserTestsConfig
+        }
+    }
+}

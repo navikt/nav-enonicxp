@@ -39,10 +39,10 @@
             <occurrences minimum="1" maximum="0"/>
             <items>
                 <input type="TextLine" name="id">
-                    <label>Id for denne varianten</label>
+                    <label>Id for denne varianten (må være unik!)</label>
                     <help-text>Benyttes for å referere til spesifikke varianter i test-komponenter</help-text>
                     <occurrences minimum="1" maximum="1"/>
-                    <default>Min test-variant</default>
+                    <default>min-test-variant</default>
                 </input>
                 <input type="Long" name="percentage">
                     <label>Prosentandel av brukere som skal få denne varianten</label>
@@ -56,6 +56,7 @@
                 <input type="TextLine" name="url">
                     <label>Url til denne test-varianten</label>
                     <occurrences minimum="1" maximum="1"/>
+                    <default>https://</default>
                     <config>
                         <regexp>^https:\/\/.*</regexp>
                     </config>

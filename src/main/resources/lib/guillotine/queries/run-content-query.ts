@@ -66,6 +66,7 @@ import transportPageQuery from './content-queries/transportPageQuery.graphql';
 import urlQuery from './content-queries/urlQuery.graphql';
 import pressLandingPageQuery from './content-queries/pressLandingPageQuery.graphql';
 import formsOverviewQuery from './content-queries/formsOverviewPageQuery.graphql';
+import userTestsConfigQuery from './content-queries/userTestsConfigQuery.graphql';
 
 export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'media:archive': mediaArchiveQuery,
@@ -118,6 +119,7 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:press-landing-page': pressLandingPageQuery,
     'no.nav.navno:transport-page': transportPageQuery,
     'no.nav.navno:url': urlQuery,
+    'no.nav.navno:user-tests-config': userTestsConfigQuery,
     'portal:fragment': portalFragmentQuery,
     'portal:site': portalSiteQuery,
     'portal:page-template': portalPageTemplateQuery,
@@ -139,8 +141,6 @@ export const runGuillotineContentQuery = (
     baseContent: Content,
     baseQueryParams: Omit<GuillotineQueryParams, 'query'>
 ) => {
-    const { _id } = baseContent;
-
     const contentQuery = graphQlContentQueries[baseContent.type];
     if (!contentQuery) {
         return null;
