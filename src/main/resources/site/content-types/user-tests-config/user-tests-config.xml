@@ -42,7 +42,7 @@
                     <label>Id for denne varianten</label>
                     <help-text>Benyttes for å referere til spesifikke varianter i test-komponenter</help-text>
                     <occurrences minimum="1" maximum="1"/>
-                    <default>Min test-variant</default>
+                    <default>min-test-variant</default>
                 </input>
                 <input type="Long" name="percentage">
                     <label>Prosentandel av brukere som skal få denne varianten</label>
