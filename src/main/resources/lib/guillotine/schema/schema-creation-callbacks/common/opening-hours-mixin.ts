@@ -34,7 +34,7 @@ const getValidTimeRangeQuery = (contactType: SupportedContactType) => {
 const getSpecialOpeningHoursObject = (
     specialOpeningHours: RawSpecialOpeningHours,
     contactType: SupportedContactType
-): CustomSpecialOpeningHours | null => {
+): { specialOpeningHours: CustomSpecialOpeningHours; text?: string } | null => {
     if (!specialOpeningHours) {
         return null;
     }
@@ -42,7 +42,7 @@ const getSpecialOpeningHoursObject = (
     // The specialOpeningHours object already contains opening information,
     // rather than being a reference to another content, so just return it.
     if (specialOpeningHours._selected === 'custom') {
-        return specialOpeningHours;
+        return { specialOpeningHours };
     }
 
     const sharedSpecialOpeningIds = forceArray(
@@ -94,8 +94,12 @@ const getSpecialOpeningHoursObject = (
 
     // The query parameters guarantees these types are correct for returned hits
     const selected = hitToReturn.data.contactType._selected as SupportedContactType;
-    return (hitToReturn.data.contactType as any)[selected]
-        .specialOpeningHours as CustomSpecialOpeningHours;
+
+    const contact = (hitToReturn.data.contactType as any)[selected];
+    return {
+        specialOpeningHours: contact.specialOpeningHours as CustomSpecialOpeningHours,
+        text: contact.text as string,
+    };
 };
 
 export const createOpeningHoursFields =
@@ -138,6 +142,7 @@ export const createOpeningHoursFields =
             context.types.specialOpeningHours = graphQlCreateObjectType(context, {
                 name: 'SpecialOpeningHours',
                 fields: {
+                    overrideText: { type: graphQlLib.GraphQLString },
                     validFrom: { type: graphQlLib.GraphQLString },
                     validTo: { type: graphQlLib.GraphQLString },
                     hours: { type: graphQlLib.list(context.types.specialOpeningHour) },
@@ -173,10 +178,9 @@ export const createOpeningHoursFields =
             resolve: (env) => {
                 const rawSpecialOpeningHours: RawSpecialOpeningHours =
                     env.source.specialOpeningHours;
-                const specialOpeningHours = getSpecialOpeningHoursObject(
-                    rawSpecialOpeningHours,
-                    contactType
-                );
+
+                const { specialOpeningHours, text } =
+                    getSpecialOpeningHoursObject(rawSpecialOpeningHours, contactType) || {};
 
                 // No specialOpeningHours are actually set by the editors.
                 if (specialOpeningHours?._selected !== 'custom') {
@@ -203,6 +207,7 @@ export const createOpeningHoursFields =
                     .sort((a, b) => (a.date < b.date ? -1 : 1));
 
                 return {
+                    overrideText: text,
                     hours: normalizedHours,
                     validFrom,
                     validTo,

@@ -62,6 +62,7 @@
                             </config>
                         </input>
                         <input name="text" type="TextArea">
+                        <help-text>Kan også brukes for å overstyre tekst dersom spesielle åpningstider er i bruk.</help-text>
                             <label>Tekst</label>
                         </input>
                         <input name="alertText" type="TextArea">
