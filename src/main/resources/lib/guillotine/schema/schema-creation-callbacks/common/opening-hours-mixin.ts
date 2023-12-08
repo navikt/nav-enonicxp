@@ -98,7 +98,7 @@ const getSpecialOpeningHoursObject = (
     const contact = (hitToReturn.data.contactType as any)[selected];
     return {
         specialOpeningHours: contact.specialOpeningHours as CustomSpecialOpeningHours,
-        text: contact.text as string,
+        text: (contact.text as string) || (contact.ingress as string),
     };
 };
 
