@@ -20,7 +20,7 @@
                 </input>
                 <input type="TextLine" name="chatTitle">
                     <label>Overstyr header</label>
-                    <occurrences minimum="1" maximum="1" />
+                    <occurrences minimum="0" maximum="1" />
                 </input>
                 <input type="TextArea" name="chatAlertText">
                     <label>Overstyr avvikstekst</label>
@@ -28,7 +28,7 @@
                 </input>
                 <input type="TextArea" name="chatIngress">
                     <label>Overstyr ingress</label>
-                    <occurrences minimum="1" maximum="1" />
+                    <occurrences minimum="0" maximum="1" />
                 </input>
                 
             </items>
