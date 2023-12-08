@@ -13,7 +13,7 @@ export interface FrontpageContactPartConfig {
   /**
    * Overstyr header
    */
-  chatTitle: string;
+  chatTitle?: string;
 
   /**
    * Overstyr avvikstekst
@@ -23,7 +23,7 @@ export interface FrontpageContactPartConfig {
   /**
    * Overstyr ingress
    */
-  chatIngress: string;
+  chatIngress?: string;
 
   /**
    * Header
