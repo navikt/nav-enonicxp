@@ -10,18 +10,27 @@
         <field-set>
             <label>Chat</label>
             <items>
+                <input name="sharedContactInformation" type="ContentSelector">
+                    <occurrences minimum="0" maximum="0"/>
+                    <label>Hent tekster fra delte åpningstider</label>
+                    <help-text>Dette vil overstyre eventuelle spesielle åpningstider som du har lagt til nedenfor.</help-text>
+                    <config>
+                        <allowContentType>${app}:contact-information</allowContentType>
+                    </config>
+                </input>
                 <input type="TextLine" name="chatTitle">
-                    <label>Header</label>
+                    <label>Overstyr header</label>
                     <occurrences minimum="1" maximum="1" />
                 </input>
                 <input type="TextArea" name="chatAlertText">
-                    <label>Avvikstekst</label>
+                    <label>Overstyr avvikstekst</label>
                     <occurrences minimum="0" maximum="1" />
                 </input>
                 <input type="TextArea" name="chatIngress">
-                    <label>Ingress</label>
+                    <label>Overstyr ingress</label>
                     <occurrences minimum="1" maximum="1" />
                 </input>
+                
             </items>
         </field-set>
         <field-set>

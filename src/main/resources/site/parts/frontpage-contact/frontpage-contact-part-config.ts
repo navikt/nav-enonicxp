@@ -6,17 +6,22 @@ export interface FrontpageContactPartConfig {
   title: string;
 
   /**
-   * Header
+   * Hent tekster fra delte åpningstider
+   */
+  sharedContactInformation?: Array<string>;
+
+  /**
+   * Overstyr header
    */
   chatTitle: string;
 
   /**
-   * Avvikstekst
+   * Overstyr avvikstekst
    */
   chatAlertText?: string;
 
   /**
-   * Ingress
+   * Overstyr ingress
    */
   chatIngress: string;
 
