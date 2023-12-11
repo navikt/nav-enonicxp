@@ -19,7 +19,7 @@ const getValidTimeRangeQuery = (contactType: SupportedContactType) => {
     const now = Date.now();
 
     // Add an extra days margin to the date range in order to account for caching in the frontend
-    const minValidFrom = new Date(now + MILLISECONDS_IN_A_DAY).toISOString();
+    const minValidFrom = new Date(now).toISOString();
     const maxValidTo = new Date(now - MILLISECONDS_IN_A_DAY).toISOString();
 
     const dateFieldPrefix = `data.contactType.${contactType}.specialOpeningHours.custom`;
@@ -48,6 +48,8 @@ const getSpecialOpeningHoursObject = (
     const sharedSpecialOpeningIds = forceArray(
         specialOpeningHours.shared.sharedSpecialOpeningHours
     );
+
+    log.info(getValidTimeRangeQuery(contactType));
 
     const { hits } = contentLib.query({
         count: sharedSpecialOpeningIds.length,
