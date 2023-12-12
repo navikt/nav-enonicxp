@@ -1,32 +1,12 @@
-import { RepoNode } from '/lib/xp/node';
-import { Content } from '/lib/xp/content';
-import { forceArray } from '../../../../utils/array-utils';
-import { ContentDescriptor } from '../../../../../types/content-types/content-config';
-
-type ContentNode<ContentType extends ContentDescriptor = ContentDescriptor> = RepoNode<
-    Content<ContentType>
->;
+import { ContentNode } from '../../../../../types/content-types/content-config';
 
 export type SearchDocumentMetatag =
-    | 'kontor'
-    | 'skjema'
     | 'nyhet'
     | 'pressemelding'
     | 'nav-og-samfunn'
     | 'analyse'
     | 'statistikk'
     | 'presse';
-
-const isKontor = (content: ContentNode) =>
-    content.type === 'no.nav.navno:office-branch' ||
-    (content.type === 'no.nav.navno:office-information' && content.data.enhet.type !== 'LOKAL');
-
-const isComplaint = (content: ContentNode<'no.nav.navno:form-details'>) =>
-    forceArray(content.data.formType).some((formType) => formType._selected === 'complaint');
-
-const isSkjema = (content: ContentNode) =>
-    (content.type === 'no.nav.navno:form-details' && !isComplaint(content)) ||
-    content.type === 'no.nav.navno:forms-overview';
 
 const isNyhet = (content: ContentNode) =>
     (content.type === 'no.nav.navno:main-article' && content.data.contentType === 'news') ||
@@ -66,12 +46,6 @@ const isPresse = (content: ContentNode) =>
 export const getSearchDocumentMetatags = (content: ContentNode) => {
     const metaTags: SearchDocumentMetatag[] = [];
 
-    if (isKontor(content)) {
-        metaTags.push('kontor');
-    }
-    if (isSkjema(content)) {
-        metaTags.push('skjema');
-    }
     if (isNyhet(content)) {
         metaTags.push('nyhet');
     }

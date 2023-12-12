@@ -30,7 +30,7 @@ export interface UserTestsConfig {
    */
   variants: Array<{
     /**
-     * Id for denne varianten
+     * Id for denne varianten (må være unik!)
      */
     id: string;
 

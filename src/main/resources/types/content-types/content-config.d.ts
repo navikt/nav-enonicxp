@@ -1,5 +1,6 @@
 import { Component } from '/lib/xp/portal';
-import { BaseMedia } from '/lib/xp/content';
+import { BaseMedia, Content } from '/lib/xp/content';
+import { RepoNode } from '/lib/xp/node';
 import { GlobalNumberValueSetData } from './global-value-set';
 import { AnimatedIcons } from '../../site/content-types/animated-icons/animated-icons';
 import { Calculator } from '../../site/content-types/calculator/calculator';
@@ -173,5 +174,9 @@ export type ContentDescriptor =
     | BuiltinContentDescriptor
     | SearchConfigDescriptor
     | SearchExternalResourceDescriptor;
+
+export type ContentNode<ContentType extends ContentDescriptor = ContentDescriptor> = RepoNode<
+    Content<ContentType>
+>;
 
 // TODO: add x-data
