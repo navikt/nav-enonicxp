@@ -52,8 +52,8 @@ fragment contentContactInformation on no_nav_navno_ContactInformation {
                     }
                 }
                 specialOpeningHours {
-                    validFrom
                     overrideText
+                    validFrom
                     validTo
                     hours {
                         date
