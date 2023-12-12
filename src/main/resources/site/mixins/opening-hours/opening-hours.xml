@@ -69,9 +69,15 @@
                     <items>
                         <input name="validFrom" type="DateTime">
                             <label>Synlig fra</label>
+                            <config>
+                                <timezone>true</timezone>  
+                            </config>
                         </input>
                         <input name="validTo" type="DateTime">
                             <label>Synlig til</label>
+                            <config>
+                                <timezone>true</timezone>  
+                            </config>
                         </input>
                         <item-set name="hours">
                             <label>Dag</label>

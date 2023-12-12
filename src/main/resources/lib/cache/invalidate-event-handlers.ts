@@ -14,6 +14,7 @@ import {
 import { customListenerType } from '../utils/events';
 import { getRepoConnection } from '../utils/repo-utils';
 import { isContentLocalized } from '../localization/locale-utils';
+import { scheduleContactInformationInvalidation } from './invalidate-specal-content-types';
 import { NAVNO_ROOT_PATH } from '../constants';
 
 let hasSetupListeners = false;
@@ -26,6 +27,8 @@ const nodeListenerCallback = (event: EnonicEvent) => {
     }
 
     event.data.nodes.forEach((node) => {
+        log.info('nodeListenerCallback');
+        log.info(JSON.stringify(node));
         if (node.branch !== 'master') {
             return;
         }
@@ -53,6 +56,10 @@ const nodeListenerCallback = (event: EnonicEvent) => {
         const isPrepublished = handleScheduledPublish(node, event.type);
         if (isPrepublished) {
             return;
+        }
+
+        if (content.type === 'no.nav.navno:contact-information') {
+            scheduleContactInformationInvalidation(content, node);
         }
 
         invalidateCacheForNode({
