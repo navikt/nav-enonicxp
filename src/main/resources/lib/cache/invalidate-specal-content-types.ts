@@ -1,5 +1,10 @@
 import * as contentLib from '/lib/xp/content';
 import { scheduleCacheInvalidation } from '../scheduling/scheduled-publish';
+import { OpeningHours } from 'site/mixins/opening-hours/opening-hours';
+
+type RawSpecialOpeningHours = OpeningHours['specialOpeningHours'];
+
+type CustomSpecialOpeningHours = Extract<RawSpecialOpeningHours, { _selected: 'custom' }>;
 
 export const scheduleContactInformationInvalidation = (content: contentLib.Content, node: any) => {
     if (content.type !== 'no.nav.navno:contact-information') {
@@ -7,8 +12,10 @@ export const scheduleContactInformationInvalidation = (content: contentLib.Conte
     }
 
     const contactType =
-        (content.data.contactType as any).chat || (content.data.contactType as any).telephone;
-    const customSpecialOpeningHours = (contactType?.specialOpeningHours as any).custom;
+        (content.data.contactType as any)?.chat || (content.data.contactType as any)?.telephone;
+    const customSpecialOpeningHours = (
+        contactType?.specialOpeningHours as CustomSpecialOpeningHours
+    )?.custom as CustomSpecialOpeningHours['custom'];
 
     if (!customSpecialOpeningHours) {
         return;
@@ -20,7 +27,6 @@ export const scheduleContactInformationInvalidation = (content: contentLib.Conte
         return;
     }
 
-    log.info(`validFrom: ${validFrom} - validTo: ${validTo}`);
     scheduleCacheInvalidation({
         id: content._id,
         path: node.path,

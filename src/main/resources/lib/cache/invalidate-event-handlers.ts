@@ -27,8 +27,6 @@ const nodeListenerCallback = (event: EnonicEvent) => {
     }
 
     event.data.nodes.forEach((node) => {
-        log.info('nodeListenerCallback');
-        log.info(JSON.stringify(node));
         if (node.branch !== 'master') {
             return;
         }
