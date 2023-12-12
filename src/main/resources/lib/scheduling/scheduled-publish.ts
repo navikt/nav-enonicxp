@@ -41,14 +41,16 @@ export const scheduleCacheInvalidation = ({
     path,
     repoId,
     publishFrom,
+    nameExtension,
 }: {
     id: string;
     path: string;
     repoId: string;
     publishFrom: string;
+    nameExtension?: string;
 }) => {
     createOrUpdateSchedule<PrepublishCacheWipeConfig>({
-        jobName: getPrepublishJobName(id),
+        jobName: getPrepublishJobName(`${id}${nameExtension || ''}`),
         jobSchedule: {
             type: 'ONE_TIME',
             value: publishFrom,

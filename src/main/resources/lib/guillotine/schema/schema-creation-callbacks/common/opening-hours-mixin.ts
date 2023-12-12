@@ -5,8 +5,6 @@ import { CreationCallback, graphQlCreateObjectType } from '../../../utils/creati
 import { logger } from '../../../../utils/logging';
 import { OpeningHours } from '../../../../../site/mixins/opening-hours/opening-hours';
 
-const MILLISECONDS_IN_A_DAY = 1000 * 60 * 60 * 24;
-
 type SupportedContactType = 'chat' | 'telephone';
 
 type RawSpecialOpeningHours = OpeningHours['specialOpeningHours'];
@@ -19,8 +17,8 @@ const getValidTimeRangeQuery = (contactType: SupportedContactType) => {
     const now = Date.now();
 
     // Add an extra days margin to the date range in order to account for caching in the frontend
-    const minValidFrom = new Date(now + MILLISECONDS_IN_A_DAY).toISOString();
-    const maxValidTo = new Date(now - MILLISECONDS_IN_A_DAY).toISOString();
+    const minValidFrom = new Date(now).toISOString();
+    const maxValidTo = new Date(now).toISOString();
 
     const dateFieldPrefix = `data.contactType.${contactType}.specialOpeningHours.custom`;
 
