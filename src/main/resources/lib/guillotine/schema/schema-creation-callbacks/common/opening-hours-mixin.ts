@@ -17,12 +17,11 @@ const getValidTimeRangeQuery = (contactType: SupportedContactType) => {
     const now = Date.now();
 
     // Add an extra days margin to the date range in order to account for caching in the frontend
-    const minValidFrom = new Date(now).toISOString();
-    const maxValidTo = new Date(now).toISOString();
+    const currentDate = new Date(now).toISOString();
 
     const dateFieldPrefix = `data.contactType.${contactType}.specialOpeningHours.custom`;
 
-    return `${dateFieldPrefix}.validFrom <= instant("${minValidFrom}") AND ${dateFieldPrefix}.validTo > instant("${maxValidTo}")`;
+    return `${dateFieldPrefix}.validFrom <= instant("${currentDate}") AND ${dateFieldPrefix}.validTo > instant("${currentDate}")`;
 };
 
 /* When a shared referance is made, only the id will come in as part of the object.
