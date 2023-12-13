@@ -24,7 +24,6 @@
 #import "./parts/partProductCardMini.graphql"
 #import "./parts/partProductDetails.graphql"
 #import "./parts/partOfficeEditorialDetail.graphql"
-#import "./parts/partFrontpageSurveyPanel.graphql"
 #import "./parts/partUserTests.graphql"
 
 fragment partComponents on PartComponentData {
@@ -110,9 +109,6 @@ fragment partComponents on PartComponentData {
                 }
                 office_editorial_detail {
                     ...partComponentOfficeEditorialDetail
-                }
-                frontpage_survey_panel {
-                    ...partFrontpageSurveyPanel
                 }
                 user_tests {
                     ...partUserTests
