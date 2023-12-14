@@ -9,7 +9,6 @@ export const htmlAreaComponentPaths = [
     'part.config.no-nav-navno.contact-option.contactOptions.navoffice.ingress',
     'part.config.no-nav-navno.contact-option.contactOptions.aidcentral.ingress',
     'part.config.no-nav-navno.contact-option.contactOptions.custom.ingress',
-    'part.config.no-nav-navno.frontpage-survey-panel.description',
 ];
 
 export const htmlAreaDataPaths = [
