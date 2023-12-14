@@ -31,7 +31,7 @@ export const scheduleContactInformationInvalidation = (
         id: content._id,
         path: node.path,
         repoId: node.repo,
-        publishFrom: validFrom,
+        time: validFrom,
     });
 
     scheduleCacheInvalidation({
@@ -39,6 +39,6 @@ export const scheduleContactInformationInvalidation = (
         id: content._id,
         path: node.path,
         repoId: node.repo,
-        publishFrom: validTo,
+        time: validTo,
     });
 };

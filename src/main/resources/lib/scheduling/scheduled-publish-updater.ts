@@ -39,7 +39,7 @@ const schedulePrepublishTasks = () => {
                     id: content._id,
                     path: content._path,
                     repoId: repoId,
-                    publishFrom: content.publish.from,
+                    time: content.publish.from,
                 });
             }
         });
