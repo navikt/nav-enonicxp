@@ -1,5 +1,5 @@
 import * as contentLib from '/lib/xp/content';
-import { scheduleCacheInvalidation } from '../scheduling/scheduled-publish';
+import { getPrepublishJobName, scheduleCacheInvalidation } from '../scheduling/scheduled-publish';
 import { OpeningHours } from 'site/mixins/opening-hours/opening-hours';
 
 type RawSpecialOpeningHours = OpeningHours['specialOpeningHours'];
@@ -27,18 +27,18 @@ export const scheduleContactInformationInvalidation = (
     }
 
     scheduleCacheInvalidation({
+        jobName: getPrepublishJobName(`${content._id}-special-opening-hours-active`),
         id: content._id,
         path: node.path,
         repoId: node.repo,
         publishFrom: validFrom,
-        nameExtension: '-special-opening-hours-active',
     });
 
     scheduleCacheInvalidation({
+        jobName: getPrepublishJobName(`${content._id}-special-opening-hours-inactive`),
         id: content._id,
         path: node.path,
         repoId: node.repo,
         publishFrom: validTo,
-        nameExtension: '-special-opening-hours-inactive',
     });
 };

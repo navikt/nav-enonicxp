@@ -37,20 +37,20 @@ export const getPrepublishJobName = (contentId: string) => `prepublish-invalidat
 export const getUnpublishJobName = (contentId: string) => `unpublish-${contentId}`;
 
 export const scheduleCacheInvalidation = ({
+    jobName,
     id,
     path,
     repoId,
     publishFrom,
-    nameExtension,
 }: {
+    jobName: string;
     id: string;
     path: string;
     repoId: string;
     publishFrom: string;
-    nameExtension?: string;
 }) => {
     createOrUpdateSchedule<PrepublishCacheWipeConfig>({
-        jobName: getPrepublishJobName(`${id}${nameExtension || ''}`),
+        jobName,
         jobSchedule: {
             type: 'ONE_TIME',
             value: publishFrom,
@@ -109,6 +109,7 @@ export const handleScheduledPublish = (nodeData: NodeEventData, eventType: strin
 
     if (isPrepublished(publish.from)) {
         scheduleCacheInvalidation({
+            jobName: getPrepublishJobName(id),
             id,
             path,
             repoId: repo,

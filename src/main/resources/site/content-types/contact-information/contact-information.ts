@@ -126,7 +126,7 @@ export interface ContactInformation {
                   /**
                    * Dag
                    */
-                  hours: Array<{
+                  hours?: Array<{
                     /**
                      * Dato
                      */
@@ -321,7 +321,7 @@ export interface ContactInformation {
                   /**
                    * Dag
                    */
-                  hours: Array<{
+                  hours?: Array<{
                     /**
                      * Dato
                      */
