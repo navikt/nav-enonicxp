@@ -14,7 +14,7 @@ import {
 import { customListenerType } from '../utils/events';
 import { getRepoConnection } from '../utils/repo-utils';
 import { isContentLocalized } from '../localization/locale-utils';
-import { scheduleContactInformationInvalidation } from './invalidate-specal-content-types';
+import { scheduleContactInformationInvalidation } from './invalidate-special-content-types';
 import { NAVNO_ROOT_PATH } from '../constants';
 
 let hasSetupListeners = false;
