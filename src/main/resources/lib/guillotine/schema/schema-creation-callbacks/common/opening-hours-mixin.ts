@@ -16,7 +16,6 @@ const dayNames = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'satur
 const getValidTimeRangeQuery = (contactType: SupportedContactType) => {
     const now = Date.now();
 
-    // Add an extra days margin to the date range in order to account for caching in the frontend
     const currentDate = new Date(now).toISOString();
 
     const dateFieldPrefix = `data.contactType.${contactType}.specialOpeningHours.custom`;
