@@ -5,8 +5,6 @@ import { CreationCallback, graphQlCreateObjectType } from '../../../utils/creati
 import { logger } from '../../../../utils/logging';
 import { OpeningHours } from '../../../../../site/mixins/opening-hours/opening-hours';
 
-const MILLISECONDS_IN_A_DAY = 1000 * 60 * 60 * 24;
-
 type SupportedContactType = 'chat' | 'telephone';
 
 type RawSpecialOpeningHours = OpeningHours['specialOpeningHours'];
@@ -18,13 +16,11 @@ const dayNames = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'satur
 const getValidTimeRangeQuery = (contactType: SupportedContactType) => {
     const now = Date.now();
 
-    // Add an extra days margin to the date range in order to account for caching in the frontend
-    const minValidFrom = new Date(now + MILLISECONDS_IN_A_DAY).toISOString();
-    const maxValidTo = new Date(now - MILLISECONDS_IN_A_DAY).toISOString();
+    const currentDate = new Date(now).toISOString();
 
     const dateFieldPrefix = `data.contactType.${contactType}.specialOpeningHours.custom`;
 
-    return `${dateFieldPrefix}.validFrom <= instant("${minValidFrom}") AND ${dateFieldPrefix}.validTo > instant("${maxValidTo}")`;
+    return `${dateFieldPrefix}.validFrom <= instant("${currentDate}") AND ${dateFieldPrefix}.validTo > instant("${currentDate}")`;
 };
 
 /* When a shared referance is made, only the id will come in as part of the object.
@@ -34,7 +30,7 @@ const getValidTimeRangeQuery = (contactType: SupportedContactType) => {
 const getSpecialOpeningHoursObject = (
     specialOpeningHours: RawSpecialOpeningHours,
     contactType: SupportedContactType
-): CustomSpecialOpeningHours | null => {
+): { specialOpeningHours: CustomSpecialOpeningHours; text?: string } | null => {
     if (!specialOpeningHours) {
         return null;
     }
@@ -42,7 +38,7 @@ const getSpecialOpeningHoursObject = (
     // The specialOpeningHours object already contains opening information,
     // rather than being a reference to another content, so just return it.
     if (specialOpeningHours._selected === 'custom') {
-        return specialOpeningHours;
+        return { specialOpeningHours };
     }
 
     const sharedSpecialOpeningIds = forceArray(
@@ -94,8 +90,12 @@ const getSpecialOpeningHoursObject = (
 
     // The query parameters guarantees these types are correct for returned hits
     const selected = hitToReturn.data.contactType._selected as SupportedContactType;
-    return (hitToReturn.data.contactType as any)[selected]
-        .specialOpeningHours as CustomSpecialOpeningHours;
+
+    const contact = (hitToReturn.data.contactType as any)[selected];
+    return {
+        specialOpeningHours: contact.specialOpeningHours as CustomSpecialOpeningHours,
+        text: (contact.text as string) || (contact.ingress as string),
+    };
 };
 
 export const createOpeningHoursFields =
@@ -138,6 +138,7 @@ export const createOpeningHoursFields =
             context.types.specialOpeningHours = graphQlCreateObjectType(context, {
                 name: 'SpecialOpeningHours',
                 fields: {
+                    overrideText: { type: graphQlLib.GraphQLString },
                     validFrom: { type: graphQlLib.GraphQLString },
                     validTo: { type: graphQlLib.GraphQLString },
                     hours: { type: graphQlLib.list(context.types.specialOpeningHour) },
@@ -173,10 +174,9 @@ export const createOpeningHoursFields =
             resolve: (env) => {
                 const rawSpecialOpeningHours: RawSpecialOpeningHours =
                     env.source.specialOpeningHours;
-                const specialOpeningHours = getSpecialOpeningHoursObject(
-                    rawSpecialOpeningHours,
-                    contactType
-                );
+
+                const { specialOpeningHours, text } =
+                    getSpecialOpeningHoursObject(rawSpecialOpeningHours, contactType) || {};
 
                 // No specialOpeningHours are actually set by the editors.
                 if (specialOpeningHours?._selected !== 'custom') {
@@ -203,6 +203,7 @@ export const createOpeningHoursFields =
                     .sort((a, b) => (a.date < b.date ? -1 : 1));
 
                 return {
+                    overrideText: text,
                     hours: normalizedHours,
                     validFrom,
                     validTo,

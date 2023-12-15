@@ -35,10 +35,11 @@ const schedulePrepublishTasks = () => {
                     `Scheduled job for prepublish was missing for content ${content._path} in repo ${repoId}`
                 );
                 scheduleCacheInvalidation({
+                    jobName: getPrepublishJobName(content._id),
                     id: content._id,
                     path: content._path,
                     repoId: repoId,
-                    publishFrom: content.publish.from,
+                    time: content.publish.from,
                 });
             }
         });

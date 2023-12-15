@@ -69,13 +69,19 @@
                     <items>
                         <input name="validFrom" type="DateTime">
                             <label>Synlig fra</label>
+                            <config>
+                                <timezone>true</timezone>  
+                            </config>
                         </input>
                         <input name="validTo" type="DateTime">
                             <label>Synlig til</label>
+                            <config>
+                                <timezone>true</timezone>  
+                            </config>
                         </input>
                         <item-set name="hours">
                             <label>Dag</label>
-                            <occurrences minimum="1" maximum="0"/>
+                            <occurrences minimum="0" maximum="0"/>
                             <items>
                                 <input name="date" type="Date" >
                                     <label>Dato</label>
@@ -97,6 +103,7 @@
                                     </options>
                                 </option-set>
                             </items>
+                            <occurrences minimum="0" maximum="5"/>
                         </item-set>
                     </items>
                 </option>

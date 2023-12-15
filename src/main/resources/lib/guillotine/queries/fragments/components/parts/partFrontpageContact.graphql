@@ -1,4 +1,9 @@
+#import "../../content-types/contactInformationFragment.graphql"
+
 fragment partComponentFrontpageContact on Part_no_nav_navno_frontpage_contact {
+    sharedContactInformation {
+        ...contentContactInformation
+    }
     chatTitle
     chatAlertText
     chatIngress

@@ -153,7 +153,7 @@ export interface OpeningHours {
           /**
            * Dag
            */
-          hours: Array<{
+          hours?: Array<{
             /**
              * Dato
              */
