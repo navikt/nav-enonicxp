@@ -18,6 +18,7 @@ fragment contentContactInformation on no_nav_navno_ContactInformation {
                     }
                 }
                 specialOpeningHours {
+                    overrideText
                     validFrom
                     validTo
                     hours {
@@ -51,6 +52,7 @@ fragment contentContactInformation on no_nav_navno_ContactInformation {
                     }
                 }
                 specialOpeningHours {
+                    overrideText
                     validFrom
                     validTo
                     hours {

@@ -1,8 +1,9 @@
 import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { logger } from '../../../lib/utils/logging';
 import { getLayersData, isValidLocale } from '../../../lib/localization/layers-data';
 import { runInLocaleContext } from '../../../lib/localization/locale-context';
-import { getContentLocaleRedirectTarget } from '../../../lib/utils/content-utils';
+import { getContentLocaleRedirectTarget, isMedia } from '../../../lib/utils/content-utils';
 import { contentTypesRenderedByEditorFrontend } from '../../../lib/contenttype-lists';
 import { ContentDescriptor } from '../../../types/content-types/content-config';
 import { sitecontentContentResponse, SitecontentResponse } from '../common/content-response';
@@ -13,6 +14,9 @@ import { isUUID } from '../../../lib/utils/uuid';
 const contentTypesForGuillotineQuery: ReadonlySet<ContentDescriptor> = new Set(
     contentTypesRenderedByEditorFrontend
 );
+
+const isGuillotineResolvable = (content: Content) =>
+    contentTypesForGuillotineQuery.has(content.type) || isMedia(content);
 
 const findTargetContent = (idOrPath: string, locale?: string) => {
     if (!locale) {
@@ -55,9 +59,9 @@ export const sitecontentDraftResponse = ({
 
     const { content, locale } = target;
 
-    // If the content type does not support a full frontend preview in the editor, just return
-    // the raw content, which is used to show certain info in place of the preview.
-    const contentResolved = contentTypesForGuillotineQuery.has(content.type)
+    // If the content type can not be resolved through Guillotine, just return the raw content,
+    // which is used to show certain info in place of the normal preview
+    const contentResolved = isGuillotineResolvable(content)
         ? sitecontentContentResponse({ baseContent: content, branch: 'draft', locale })
         : { ...content, contentLayer: locale };
 
