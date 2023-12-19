@@ -1,6 +1,7 @@
 import thymeleafLib from '/lib/thymeleaf';
 import * as authLib from '/lib/xp/auth';
 import * as nodeLib from '/lib/xp/node';
+import * as auditLib from '/lib/xp/auditlog';
 import { Source } from '/lib/xp/node';
 import { ADMIN_PRINCIPAL, SUPER_USER } from '../../../lib/constants';
 import { getLayersMultiConnection } from '../../../lib/localization/layers-repo-utils/layers-repo-connection';
@@ -26,6 +27,19 @@ const getRepoConnection = ({ repoId, branch, asAdmin }: Params) =>
         ...(asAdmin && asAdminParams),
     });
 
+const getPublishedByUser = (user: `user:${string}:${string}`) => {
+    const result = auditLib.find({
+        count: 10,
+        from: '2023-01-01T12:11:45Z',
+        type: 'system.content.publish',
+        users: [user],
+    }) as any;
+
+    const entries = result.hits as auditLib.LogEntry<auditLib.DefaultData>[];
+    log.info(JSON.stringify(entries, null, 4));
+    return entries.map((entry) => auditLib.get({ id: entry._id }));
+};
+
 type ContentInfo = {
     displayName: string;
     modifiedTime: dayjs.Dayjs;
@@ -39,12 +53,16 @@ const view = resolve('./dashboard-content.html');
 
 const getModifiedContentFromUser = () => {
     const user = authLib.getUser()?.key;
+
+    if (!user) return null;
+
+    const publishedByUser = getPublishedByUser(user);
     const repos = getLayersMultiConnection('draft');
 
     // 1. Fetch all localized content modified by current user, find status and sort
     const results = repos
         .query({
-            count: 5000,
+            count: 2,
             query: `modifier = "${user}" AND type LIKE "no.nav.navno:*"`,
             filters: {
                 boolean: {
@@ -74,6 +92,7 @@ const getModifiedContentFromUser = () => {
             }
 
             let status = 'Ny';
+
             if (masterContent?.publish?.first && masterContent?.publish?.from) {
                 // Innholdet ER publisert, eventuelt endret etterpå
                 if (draftContent?._versionKey === masterContent?._versionKey) {
