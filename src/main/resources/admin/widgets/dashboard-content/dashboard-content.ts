@@ -1,7 +1,7 @@
 import thymeleafLib from '/lib/thymeleaf';
 import * as authLib from '/lib/xp/auth';
 import * as nodeLib from '/lib/xp/node';
-import * as auditLib from '/lib/xp/auditlog';
+import * as auditLogLib from '/lib/xp/auditlog';
 import { Source } from '/lib/xp/node';
 import { ADMIN_PRINCIPAL, SUPER_USER } from '../../../lib/constants';
 import { getLayersMultiConnection } from '../../../lib/localization/layers-repo-utils/layers-repo-connection';
@@ -28,16 +28,39 @@ const getRepoConnection = ({ repoId, branch, asAdmin }: Params) =>
     });
 
 const getPublishedByUser = (user: `user:${string}:${string}`) => {
-    const result = auditLib.find({
-        count: 10,
-        from: '2023-01-01T12:11:45Z',
+    const result = auditLogLib.find({
+        count: 1000,
+        from: '2023-12-01T00:00:00Z',
         type: 'system.content.publish',
         users: [user],
     }) as any;
 
-    const entries = result.hits as auditLib.LogEntry<auditLib.DefaultData>[];
-    log.info(JSON.stringify(entries, null, 4));
-    return entries.map((entry) => auditLib.get({ id: entry._id }));
+    const getContent = (logObject: auditLogLib.LogEntry<auditLogLib.DefaultData>) => {
+        if (!logObject) {
+            return null;
+        }
+        const object = logObject?.objects[0];
+        if (!object) {
+            return null;
+        }
+        const repoId = object.split(':')[0];
+        const contentId = logObject.data.params.contentIds as string;
+        return getRepoConnection({
+            branch: 'master',
+            repoId,
+        }).get(contentId);
+    };
+
+    const entries = result.hits as auditLogLib.LogEntry<auditLogLib.DefaultData>[];
+    entries.map((entry) => {
+        const dayjsTime = dayjs(entry.time.substring(0, 19).replace('T', ' ')).utc(true).local();
+        entry.time = dayjsTime.toString();
+    });
+    return entries
+        .sort((a, b) => (dayjs(a?.time).isAfter(dayjs(b?.time)) ? -1 : 1))
+        .slice(0, 10)
+        .map((entry) => auditLogLib.get({ id: entry._id }))
+        .map((entry) => getContent(entry));
 };
 
 type ContentInfo = {
@@ -57,6 +80,8 @@ const getModifiedContentFromUser = () => {
     if (!user) return null;
 
     const publishedByUser = getPublishedByUser(user);
+    publishedByUser.forEach((content) => log.info(JSON.stringify(content._name, null, 4)));
+
     const repos = getLayersMultiConnection('draft');
 
     // 1. Fetch all localized content modified by current user, find status and sort
