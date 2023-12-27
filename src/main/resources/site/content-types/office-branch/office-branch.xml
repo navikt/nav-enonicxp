@@ -2,7 +2,6 @@
     <display-name>Kontordata</display-name>
     <description>Kontordata</description>
     <super-type>base:unstructured</super-type>
-    <is-abstract>true</is-abstract>
     <form>
         <input name="checksum" type="TextLine">
             <label>Checksum</label>
