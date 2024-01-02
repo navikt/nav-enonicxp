@@ -1,5 +1,4 @@
-import { RepoNode } from '/lib/xp/node';
-import { Content } from '/lib/xp/content';
+import { ContentNode } from '../../../../../types/content-types/content-config';
 
 export type SearchDocumentFylke = (typeof FYLKER)[number];
 
@@ -18,16 +17,22 @@ const FYLKER = [
     'ost-viken',
 ] as const;
 
+const localContentPathFilter = new RegExp(/^\/content\/www\.nav\.no\/no\/lokalt\/(([a-z]|-)+)/);
+
 const fylkerSet: ReadonlySet<SearchDocumentFylke> = new Set(FYLKER);
 
-const isFylke = (fylkeOrNot: string): fylkeOrNot is SearchDocumentFylke => {
+const isFylke = (fylkeOrNot?: string): fylkeOrNot is SearchDocumentFylke => {
     return fylkerSet.has(fylkeOrNot as SearchDocumentFylke);
 };
 
-export const getSearchDocumentFylke = (content: RepoNode<Content>) => {
-    const fylkePathSegment = content._path.match(
-        /\/content\/www\.nav\.no\/no\/lokalt\/(([a-z]|-)+)/
-    )?.[1];
+const getFylkeSegment = (content: ContentNode) => content._path.match(localContentPathFilter)?.[1];
 
-    return fylkePathSegment && isFylke(fylkePathSegment) ? fylkePathSegment : undefined;
+export const isExcludedLocalContent = (content: ContentNode) => {
+    const fylkePathSegment = getFylkeSegment(content);
+    return fylkePathSegment && !isFylke(fylkePathSegment);
+};
+
+export const getSearchDocumentFylke = (content: ContentNode) => {
+    const fylkePathSegment = getFylkeSegment(content);
+    return isFylke(fylkePathSegment) ? fylkePathSegment : undefined;
 };

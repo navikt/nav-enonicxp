@@ -10,7 +10,11 @@ import {
 import { getNestedValues } from '../../../utils/object-utils';
 import { getExternalSearchConfig } from '../config';
 import { logger } from '../../../utils/logging';
-import { SearchDocumentFylke, getSearchDocumentFylke } from './field-resolvers/fylke';
+import {
+    SearchDocumentFylke,
+    getSearchDocumentFylke,
+    isExcludedLocalContent,
+} from './field-resolvers/fylke';
 import { SearchDocumentMetatag, getSearchDocumentMetatags } from './field-resolvers/metatags';
 import { getSearchDocumentAudience, SearchDocumentAudience } from './field-resolvers/audience';
 import { getSearchDocumentTextSegments } from './field-resolvers/text';
@@ -173,7 +177,11 @@ const isExcludedContent = (content: ContentNode) => {
         return true;
     }
 
-    if (isContentPreviewOnly(content) || getContentLocaleRedirectTarget(content)) {
+    if (
+        isContentPreviewOnly(content) ||
+        getContentLocaleRedirectTarget(content) ||
+        isExcludedLocalContent(content)
+    ) {
         return true;
     }
 
