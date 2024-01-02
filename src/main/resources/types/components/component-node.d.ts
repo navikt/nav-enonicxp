@@ -20,7 +20,9 @@ type NodeComponentMapper<Type, Name> = Type extends 'fragment'
                           [name in Name]: ComponentConfigs[Type][Name];
                       };
                   };
-              };
+              } & Type extends 'page'
+                  ? { customized: boolean }
+                  : never;
           } & {
               type: Type;
           }
@@ -31,7 +33,7 @@ type NodeComponentMapper<Type, Name> = Type extends 'fragment'
 // through a nodeLib repo connection
 export type NodeComponent<
     Type extends ComponentType = ComponentType,
-    Name extends ComponentName = ComponentName
+    Name extends ComponentName = ComponentName,
 > = NodeComponentMapper<Type, Name> & {
     path: string;
 };
