@@ -46,33 +46,33 @@ const isPresse = (content: ContentNode) =>
 export const getSearchDocumentMetatags = (content: ContentNode) => {
     const metaTags: SearchDocumentMetatag[] = [];
 
-    let isDefaultFacet = true;
+    let shouldSetDefaultTag = true;
 
     if (isNyhet(content)) {
         metaTags.push('nyhet');
-        isDefaultFacet = false;
+        shouldSetDefaultTag = false;
     }
     if (isPressemelding(content)) {
         metaTags.push('pressemelding');
-        isDefaultFacet = false;
+        shouldSetDefaultTag = false;
     }
     if (isStatistikk(content)) {
         metaTags.push('statistikk');
-        isDefaultFacet = false;
+        shouldSetDefaultTag = false;
     }
     if (isAnalyse(content)) {
         metaTags.push('analyse');
-        isDefaultFacet = false;
+        shouldSetDefaultTag = false;
     }
     if (isPresse(content)) {
         metaTags.push('presse');
-        isDefaultFacet = false;
+        shouldSetDefaultTag = false;
     }
     if (isNavOgSamfunn(content)) {
         metaTags.push('nav-og-samfunn');
     }
 
-    if (isDefaultFacet) {
+    if (shouldSetDefaultTag) {
         metaTags.push('informasjon');
     }
 

@@ -29,7 +29,7 @@ const getFylkeSegment = (content: ContentNode) => content._path.match(localConte
 
 export const isExcludedLocalContent = (content: ContentNode) => {
     const fylkePathSegment = getFylkeSegment(content);
-    return fylkePathSegment && !isFylke(fylkePathSegment);
+    return fylkePathSegment ? !isFylke(fylkePathSegment) : true;
 };
 
 export const getSearchDocumentFylke = (content: ContentNode) => {
