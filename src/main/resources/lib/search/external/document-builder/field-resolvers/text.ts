@@ -1,6 +1,7 @@
 import { getNestedValues } from '../../../../utils/object-utils';
 import { forceArray } from '../../../../utils/array-utils';
 import { ContentNode } from '../../../../../types/content-types/content-config';
+import { hasExternalProductUrl } from '../../../../paths/path-utils';
 
 type FieldKeyBuckets = {
     componentsFieldKeys: string[];
@@ -50,6 +51,13 @@ export const getSearchDocumentTextSegments = (content: ContentNode, fieldKeys: s
     const { componentsFieldKeys, otherFieldKeys } = getFieldKeyBuckets(fieldKeys);
 
     const otherFieldValues = getFieldValues(content, otherFieldKeys);
+
+    // Do not include components data if the content redirects to another page
+    // In such cases, the components text will typically be placeholder elements from the page
+    // template, or work in progress, which we do not want to index
+    if (hasExternalProductUrl(content)) {
+        return otherFieldKeys;
+    }
 
     // For component fields, we need to ensure the final order of values are consistent
     // with their original order in the components array

@@ -10,7 +10,11 @@ import {
 import { getNestedValues } from '../../../utils/object-utils';
 import { getExternalSearchConfig } from '../config';
 import { logger } from '../../../utils/logging';
-import { SearchDocumentFylke, getSearchDocumentFylke } from './field-resolvers/fylke';
+import {
+    SearchDocumentFylke,
+    getSearchDocumentFylke,
+    isExcludedLocalContent,
+} from './field-resolvers/fylke';
 import { SearchDocumentMetatag, getSearchDocumentMetatags } from './field-resolvers/metatags';
 import { getSearchDocumentAudience, SearchDocumentAudience } from './field-resolvers/audience';
 import { getSearchDocumentTextSegments } from './field-resolvers/text';
@@ -19,6 +23,10 @@ import {
     getSearchDocumentContentType,
     SearchDocumentContentType,
 } from './field-resolvers/content-type';
+import {
+    getSearchDocumentLanguage,
+    getSearchDocumentLanguageRefs,
+} from './field-resolvers/language';
 
 type SearchConfig = Content<'no.nav.navno:search-config-v2'>;
 type KeysConfig = Partial<SearchConfig['data']['defaultKeys']>;
@@ -40,6 +48,7 @@ export type SearchDocument = {
         metatags?: SearchDocumentMetatag[];
         fylke?: SearchDocumentFylke;
         keywords?: string[];
+        languageRefs?: string[];
     };
 };
 
@@ -84,7 +93,7 @@ class ExternalSearchDocumentBuilder {
             text: this.getText(),
             metadata: {
                 audience: getSearchDocumentAudience(content),
-                language: this.getLanguage(),
+                language: getSearchDocumentLanguage(content.language),
                 fylke: getSearchDocumentFylke(content),
                 metatags: getSearchDocumentMetatags(content),
                 type: getSearchDocumentContentType(content),
@@ -92,6 +101,7 @@ class ExternalSearchDocumentBuilder {
                 createdAt: content.createdTime,
                 lastUpdated: content.modifiedTime,
                 keywords: forceArray(content.data.keywords),
+                languageRefs: getSearchDocumentLanguageRefs(content),
             },
         };
     }
@@ -156,10 +166,6 @@ class ExternalSearchDocumentBuilder {
         const fieldKeys = this.getFieldKeys('textKey');
         return getSearchDocumentTextSegments(this.content, fieldKeys).join('\n');
     }
-
-    private getLanguage(): string {
-        return this.content.language === 'no' ? 'nb' : this.content.language;
-    }
 }
 
 const getContentGroupConfig = (searchConfig: SearchConfig, content: ContentNode) => {
@@ -173,7 +179,11 @@ const isExcludedContent = (content: ContentNode) => {
         return true;
     }
 
-    if (isContentPreviewOnly(content) || getContentLocaleRedirectTarget(content)) {
+    if (
+        isContentPreviewOnly(content) ||
+        getContentLocaleRedirectTarget(content) ||
+        isExcludedLocalContent(content)
+    ) {
         return true;
     }
 
