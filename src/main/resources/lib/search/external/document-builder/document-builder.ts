@@ -23,6 +23,10 @@ import {
     getSearchDocumentContentType,
     SearchDocumentContentType,
 } from './field-resolvers/content-type';
+import {
+    getSearchDocumentLanguage,
+    getSearchDocumentLanguageRefs,
+} from './field-resolvers/language';
 
 type SearchConfig = Content<'no.nav.navno:search-config-v2'>;
 type KeysConfig = Partial<SearchConfig['data']['defaultKeys']>;
@@ -44,6 +48,7 @@ export type SearchDocument = {
         metatags?: SearchDocumentMetatag[];
         fylke?: SearchDocumentFylke;
         keywords?: string[];
+        languageRefs?: string[];
     };
 };
 
@@ -96,6 +101,7 @@ class ExternalSearchDocumentBuilder {
                 createdAt: content.createdTime,
                 lastUpdated: content.modifiedTime,
                 keywords: forceArray(content.data.keywords),
+                languageRefs: getSearchDocumentLanguageRefs(content),
             },
         };
     }
@@ -162,7 +168,7 @@ class ExternalSearchDocumentBuilder {
     }
 
     private getLanguage(): string {
-        return this.content.language === 'no' ? 'nb' : this.content.language;
+        return getSearchDocumentLanguage(this.content.language);
     }
 }
 
