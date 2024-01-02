@@ -93,7 +93,7 @@ class ExternalSearchDocumentBuilder {
             text: this.getText(),
             metadata: {
                 audience: getSearchDocumentAudience(content),
-                language: this.getLanguage(),
+                language: getSearchDocumentLanguage(content.language),
                 fylke: getSearchDocumentFylke(content),
                 metatags: getSearchDocumentMetatags(content),
                 type: getSearchDocumentContentType(content),
@@ -165,10 +165,6 @@ class ExternalSearchDocumentBuilder {
     private getText(): string {
         const fieldKeys = this.getFieldKeys('textKey');
         return getSearchDocumentTextSegments(this.content, fieldKeys).join('\n');
-    }
-
-    private getLanguage(): string {
-        return getSearchDocumentLanguage(this.content.language);
     }
 }
 
