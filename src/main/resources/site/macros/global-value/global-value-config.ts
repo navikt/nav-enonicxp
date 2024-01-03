@@ -6,6 +6,11 @@ export interface GlobalValueConfig {
   key: string;
 
   /**
+   * Desimaler
+   */
+  decimals?: number;
+
+  /**
    * -
    */
   value?: undefined;

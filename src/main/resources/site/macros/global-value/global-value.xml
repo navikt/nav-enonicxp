@@ -11,6 +11,15 @@
                 <param value="withDescription">true</param>
             </config>
         </input>
+        <input name="decimals" type="Long">
+            <label>Desimaler</label>
+            <help-text>Antall desimaler som skal vises</help-text>
+            <occurrences minimum="0" maximum="1"/>
+            <config>
+                <min>0</min>
+                <max>2</max>
+            </config>
+        </input>
         <!-- Dummy value to prevent graphql-errors for undefined field -->
         <input name="value" type="RadioButton">
             <label>-</label>
