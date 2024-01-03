@@ -4,4 +4,9 @@ export interface TallConfig {
    * Tall
    */
   verdi: number;
+
+  /**
+   * Desimaler
+   */
+  decimals?: number;
 }

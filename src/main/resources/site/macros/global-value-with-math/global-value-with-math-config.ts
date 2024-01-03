@@ -13,7 +13,7 @@ export interface GlobalValueWithMathConfig {
   /**
    * Avrunding
    */
-  decimals?: number;
+  decimals: number;
 
   /**
    * -
