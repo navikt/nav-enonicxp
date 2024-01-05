@@ -47,6 +47,7 @@ fragment macros on Macro {
             fotnote
         }
         global_value {
+            decimals
             value
         }
         global_value_with_math {
@@ -109,6 +110,7 @@ fragment macros on Macro {
             }
         }
         tall {
+            decimals
             verdi
         }
         uxsignals_widget {
