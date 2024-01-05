@@ -29,11 +29,12 @@ const getRepoConnection = ({ repoId, branch, asAdmin }: Params) =>
 
 const getPublishedByUser = (user: `user:${string}:${string}`) => {
     const result = auditLogLib.find({
-        count: 1000,
-        from: '2023-12-01T00:00:00Z',
+        count: 100,
+        from: '2024-01-01T00:00:00Z',
         type: 'system.content.publish',
         users: [user],
     }) as any;
+    log.info(JSON.stringify(result, null, 4));
 
     const getContent = (logObject: auditLogLib.LogEntry<auditLogLib.DefaultData>) => {
         if (!logObject) {
