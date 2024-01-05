@@ -56,7 +56,21 @@
 				<td th:text="${result.status}"></td>
 			</tr>
 		</table>
-
+		<h3>Sist avpubliserte</h3>
+		<table>
+			<tr th:each="result: ${unPublished}">
+				<td class="first-col">
+					<a th:text="${result.displayName}"
+					   th:href="${result.url}"
+					   th:title="${result.title}"
+					   th:target="_blank"
+					>
+					</a>
+				</td>
+				<td th:text="${result.modifiedTimeStr}"></td>
+				<td th:text="${result.status}"></td>
+			</tr>
+		</table>
 	</div>
 </widget>
 

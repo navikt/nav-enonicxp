@@ -8,6 +8,7 @@ import { getLayersMultiConnection } from '../../../lib/localization/layers-repo-
 import { NON_LOCALIZED_QUERY_FILTER } from '../../../lib/localization/layers-repo-utils/localization-state-filters';
 import dayjs from '/assets/dayjs/1.11.9/dayjs.min.js';
 import utc from '/assets/dayjs/1.11.9/plugin/utc.js';
+import { RepoBranch } from 'types/common';
 
 dayjs.extend(utc);
 
@@ -19,6 +20,7 @@ const asAdminParams: Pick<Source, 'user' | 'principals'> = {
 };
 
 type Params = Omit<Source, 'user' | 'principals'> & { asAdmin?: boolean };
+type Publications = 'publish' | 'unpublish';
 
 const getRepoConnection = ({ repoId, branch, asAdmin }: Params) =>
     nodeLib.connect({
@@ -27,15 +29,22 @@ const getRepoConnection = ({ repoId, branch, asAdmin }: Params) =>
         ...(asAdmin && asAdminParams),
     });
 
-const getPublishedByUser = (user: `user:${string}:${string}`) => {
+const getUserPublications = (user: `user:${string}:${string}`, type: Publications) => {
+    const branch = {
+        publish: 'master',
+        unpublish: 'draft',
+    } as const;
     const result = auditLogLib.find({
         count: 100,
         from: '2024-01-01T00:00:00Z',
-        type: 'system.content.publish',
+        type: `'system.content.'${type}`,
         users: [user],
     }) as any;
 
-    const getContent = (logObject: auditLogLib.LogEntry<auditLogLib.DefaultData>) => {
+    const getContent = (
+        logObject: auditLogLib.LogEntry<auditLogLib.DefaultData>,
+        branch: RepoBranch
+    ) => {
         if (!logObject) {
             return null;
         }
@@ -46,7 +55,7 @@ const getPublishedByUser = (user: `user:${string}:${string}`) => {
         const repoId = object.split(':')[0];
         const contentId = logObject.data.params.contentIds as string;
         return getRepoConnection({
-            branch: 'master',
+            branch,
             repoId,
         }).get(contentId);
     };
@@ -60,7 +69,7 @@ const getPublishedByUser = (user: `user:${string}:${string}`) => {
         .sort((a, b) => (dayjs(a?.time).isAfter(dayjs(b?.time)) ? -1 : 1))
         .slice(0, 5)
         .map((entry) => auditLogLib.get({ id: entry._id }))
-        .map((entry) => getContent(entry));
+        .map((entry) => getContent(entry, branch[type]));
 };
 
 type ContentInfo = {
@@ -79,12 +88,17 @@ const getModifiedContentFromUser = () => {
 
     if (!user) return null;
 
-    const publishedByUser = getPublishedByUser(user);
-    publishedByUser.forEach((content) => log.info(JSON.stringify(content._name, null, 4)));
+    // 1. Get 5 last published by user
+    const published = getUserPublications(user, 'publish');
 
+    // 2. Get 5 last unpublished by user
+    const unPublished = getUserPublications(user, 'unpublish');
+
+    published.forEach((content) => log.info(JSON.stringify(content._name, null, 4)));
+    unPublished.forEach((content) => log.info(JSON.stringify(content._name, null, 4)));
+
+    // 3a. Fetch all localized content modified by current user, find status and sort
     const repos = getLayersMultiConnection('draft');
-
-    // 1. Fetch all localized content modified by current user, find status and sort
     const results = repos
         .query({
             count: 2,
@@ -153,22 +167,16 @@ const getModifiedContentFromUser = () => {
         })
         .sort((a, b) => (dayjs(a?.modifiedTime).isAfter(dayjs(b?.modifiedTime)) ? -1 : 1));
 
-    // 2. Get 5 last modified and 5 last published
-    const published: ContentInfo[] = [];
-    let numModified = 0,
-        numPublished = 0;
+    // 3b. Get 5 last modified
+    let numPublished = 0;
     const modified = results.map((result) => {
-        if (result?.status === 'Publisert') {
-            if (numModified++ < 5) {
-                published.push(result);
-            }
-        } else {
+        if (result?.status !== 'Publisert' && result?.status !== 'Avpublisert') {
             return numPublished++ < 5 ? result : null;
         }
     });
 
     return {
-        body: thymeleafLib.render(view, { modified, published }),
+        body: thymeleafLib.render(view, { published, modified, unPublished }),
         contentType: 'text/html',
     };
 };
