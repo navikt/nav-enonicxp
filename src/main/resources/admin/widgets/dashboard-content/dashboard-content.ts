@@ -34,7 +34,6 @@ const getPublishedByUser = (user: `user:${string}:${string}`) => {
         type: 'system.content.publish',
         users: [user],
     }) as any;
-    log.info(JSON.stringify(result, null, 4));
 
     const getContent = (logObject: auditLogLib.LogEntry<auditLogLib.DefaultData>) => {
         if (!logObject) {
@@ -59,7 +58,7 @@ const getPublishedByUser = (user: `user:${string}:${string}`) => {
     });
     return entries
         .sort((a, b) => (dayjs(a?.time).isAfter(dayjs(b?.time)) ? -1 : 1))
-        .slice(0, 10)
+        .slice(0, 5)
         .map((entry) => auditLogLib.get({ id: entry._id }))
         .map((entry) => getContent(entry));
 };
