@@ -3,19 +3,14 @@ import { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
 import * as commonLib from '/lib/xp/common';
 import * as taskLib from '/lib/xp/task';
-import * as contextLib from '/lib/xp/context';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { OfficeInformation } from '../../site/content-types/office-information/office-information';
 import { NavNoDescriptor } from '../../types/common';
 import { UpdateOfficeInfoConfig } from '../../tasks/update-office-info/update-office-info-config';
 import { logger } from '../utils/logging';
-import {
-    ADMIN_PRINCIPAL,
-    CONTENT_ROOT_REPO_ID,
-    SUPER_USER,
-    SYSTEM_ID_PROVIDER,
-} from '../constants';
+import { CONTENT_ROOT_REPO_ID } from '../constants';
 import { createObjectChecksum } from '../utils/object-utils';
+import { runInContext } from '../context/run-in-context';
 
 type OfficeInformationDescriptor = NavNoDescriptor<'office-information'>;
 
@@ -24,22 +19,21 @@ const parentPath = '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer';
 const officeInfoUpdateTaskDescriptor = 'no.nav.navno:update-office-info';
 const fiveMinutes = 5 * 60 * 1000;
 
-const selectedEnhetTypes: { [key: string]: boolean } = {
-    ALS: true,
-    ARK: true,
-    FPY: true,
-    FYLKE: true,
-    HMS: true,
-    INTRO: true,
-    KLAGE: true,
-    KONTAKT: true,
-    KONTROLL: true,
-    LOKAL: true,
-    OKONOMI: true,
-    TILTAK: true,
-    YTA: true,
-    OPPFUTLAND: true,
-};
+const enhetTypesToImport: ReadonlySet<string> = new Set([
+    'ALS',
+    'ARK',
+    'FPY',
+    'FYLKE',
+    'HMS',
+    'INTRO',
+    'KLAGE',
+    'KONTROLL',
+    'LOKAL',
+    'OKONOMI',
+    'TILTAK',
+    'YTA',
+    'OPPFUTLAND',
+]);
 
 // If non-office information content already exists on the path for an office, delete it
 // (the main purpose of this is to get rid of redirects in the event of an office changing name
@@ -86,7 +80,7 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
         const { enhet } = updatedOfficeData;
 
         // ignore closed offices and include only selected types
-        if (enhet.status === 'Nedlagt' || !selectedEnhetTypes[enhet.type]) {
+        if (enhet.status === 'Nedlagt' || !enhetTypesToImport.has(enhet.type)) {
             return;
         }
 
@@ -245,14 +239,11 @@ export const fetchAndUpdateOfficeInfo = (retry?: boolean) => {
 
     logger.info('Fetched legacy office info from norg2, updating site data...');
 
-    contextLib.run(
+    runInContext(
         {
+            branch: 'draft',
             repository: CONTENT_ROOT_REPO_ID,
-            user: {
-                login: SUPER_USER,
-                idProvider: SYSTEM_ID_PROVIDER,
-            },
-            principals: [ADMIN_PRINCIPAL],
+            asAdmin: true,
         },
         () => updateOfficeInfo(newOfficeInfo)
     );
