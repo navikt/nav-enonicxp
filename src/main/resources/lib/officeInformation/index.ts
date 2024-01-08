@@ -24,22 +24,21 @@ const parentPath = '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer';
 const officeInfoUpdateTaskDescriptor = 'no.nav.navno:update-office-info';
 const fiveMinutes = 5 * 60 * 1000;
 
-const selectedEnhetTypes: { [key: string]: boolean } = {
-    ALS: true,
-    ARK: true,
-    FPY: true,
-    FYLKE: true,
-    HMS: true,
-    INTRO: true,
-    KLAGE: true,
-    KONTAKT: true,
-    KONTROLL: true,
-    LOKAL: true,
-    OKONOMI: true,
-    TILTAK: true,
-    YTA: true,
-    OPPFUTLAND: true,
-};
+const enhetTypesToImport: ReadonlySet<string> = new Set([
+    'ALS',
+    'ARK',
+    'FPY',
+    'FYLKE',
+    'HMS',
+    'INTRO',
+    'KLAGE',
+    'KONTROLL',
+    'LOKAL',
+    'OKONOMI',
+    'TILTAK',
+    'YTA',
+    'OPPFUTLAND',
+]);
 
 // If non-office information content already exists on the path for an office, delete it
 // (the main purpose of this is to get rid of redirects in the event of an office changing name
@@ -86,7 +85,7 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
         const { enhet } = updatedOfficeData;
 
         // ignore closed offices and include only selected types
-        if (enhet.status === 'Nedlagt' || !selectedEnhetTypes[enhet.type]) {
+        if (enhet.status === 'Nedlagt' || !enhetTypesToImport.has(enhet.type)) {
             return;
         }
 
