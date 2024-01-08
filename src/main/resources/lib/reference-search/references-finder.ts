@@ -338,7 +338,7 @@ export class ReferencesFinder {
             return [];
         }
 
-        if (!content.data.formDetailsTargets) {
+        if (content.type !== 'no.nav.navno:form-details' && !content.data.formDetailsTargets) {
             return [];
         }
 
