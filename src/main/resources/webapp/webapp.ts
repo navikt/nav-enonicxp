@@ -16,15 +16,19 @@ import {
 import { pushLayerContentToMaster } from '../lib/localization/layers-data';
 import { externalSearchUpdateAll } from '../lib/search/external/update-all';
 import { URLS } from '../lib/constants';
+import { fetchAndUpdateOfficeInfo } from '../lib/officeInformation';
 
-type ActionsMap = { [key: string]: { description: string; callback: () => any } };
+type ActionsMap = Record<string, { description: string; callback: () => any }>;
 
 const view = resolve('webapp.html');
 
 const validActions: ActionsMap = {
     norg: {
         description: 'Oppdater kontor-info fra norg',
-        callback: () => runOfficeBranchFetchTask(),
+        callback: () => {
+            runOfficeBranchFetchTask();
+            fetchAndUpdateOfficeInfo();
+        },
     },
     wipeCache: {
         description: 'Slett frontend-cache',
