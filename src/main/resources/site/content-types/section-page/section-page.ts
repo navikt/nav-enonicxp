@@ -116,6 +116,11 @@ export interface SectionPage {
   noindex: boolean;
 
   /**
+   * Ikke vis utdrag (snippets) i Google-søk
+   */
+  nosnippet: boolean;
+
+  /**
    * Nøkkelord (internt søk)
    */
   keywords?: Array<string>;
