@@ -41,7 +41,7 @@ export interface DynamicPageCommon {
   noindex: boolean;
 
   /**
-   * Ikke vis utdrag (snippets)
+   * Ikke vis utdrag (snippets) i Google-søk
    */
-  nosnippets: boolean;
+  nosnippet: boolean;
 }
