@@ -10,6 +10,7 @@ declare const app: {
         xpOrigin: string;
         revalidatorProxyOrigin: string;
         serviceSecret: string;
+        searchApiKey: string;
     };
 };
 
