@@ -118,4 +118,9 @@ export interface CurrentTopicPage {
    * Skal ikke vises i søk
    */
   noindex: boolean;
+
+  /**
+   * Ikke vis utdrag (snippets)
+   */
+  nosnippets: boolean;
 }

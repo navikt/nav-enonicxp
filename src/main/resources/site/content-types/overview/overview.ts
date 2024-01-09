@@ -86,6 +86,11 @@ export interface Overview {
   noindex: boolean;
 
   /**
+   * Ikke vis utdrag (snippets)
+   */
+  nosnippets: boolean;
+
+  /**
    * -
    */
   allProducts?: undefined;

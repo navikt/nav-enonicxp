@@ -86,6 +86,11 @@ export interface PageList {
   noindex: boolean;
 
   /**
+   * Ikke vis utdrag (snippets)
+   */
+  nosnippets: boolean;
+
+  /**
    * Nøkkelord (internt søk)
    */
   keywords?: Array<string>;

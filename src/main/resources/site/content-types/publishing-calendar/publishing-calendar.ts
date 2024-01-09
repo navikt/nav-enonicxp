@@ -21,6 +21,11 @@ export interface PublishingCalendar {
   noindex: boolean;
 
   /**
+   * Ikke vis utdrag (snippets)
+   */
+  nosnippets: boolean;
+
+  /**
    * Nøkkelord (internt søk)
    */
   keywords?: Array<string>;
