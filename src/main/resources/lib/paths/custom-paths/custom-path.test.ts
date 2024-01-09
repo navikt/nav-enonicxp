@@ -29,6 +29,7 @@ const contentWithoutCustomPath: Content = {
         chatbotToggle: true,
         feedbackToggle: false,
         noindex: false,
+        nosnippet: false,
     },
     x: {
         'no-nav-navno': {
