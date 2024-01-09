@@ -1,12 +1,9 @@
-import httpClient from '/lib/http-client';
-import { URLS } from '../../../constants';
 import { logger } from '../../../utils/logging';
-
-const SERVICE_URL = URLS.SEARCH_API_URL;
+import { searchApiRequest } from './search-api-request';
 
 export const searchApiDeleteDocument = (documentId: string) => {
-    const response = httpClient.request({
-        url: `${SERVICE_URL}/${documentId}`,
+    const response = searchApiRequest({
+        servicePath: `/${documentId}`,
         method: 'DELETE',
         connectionTimeout: 10000,
     });
