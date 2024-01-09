@@ -26,6 +26,11 @@ const runSearchDocumentUpdateTask = (contentId: string, repoId: string) => {
 };
 
 export const activateExternalSearchIndexEventHandlers = () => {
+    if (!app.config.searchApiKey) {
+        logger.info('No search api key set for current environment - content will not be indexed');
+        return;
+    }
+
     if (!URLS.SEARCH_API_URL) {
         logger.info('No search api url set for current environment - content will not be indexed');
         return;
