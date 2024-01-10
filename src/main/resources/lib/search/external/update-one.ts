@@ -39,7 +39,6 @@ export const updateExternalSearchDocumentForContent = (contentId: string, repoId
 
     const document = buildExternalSearchDocument(content, locale);
     if (!document) {
-        logger.info(`Could not build external search document for ${contentId} / ${locale}`);
         return;
     }
 
