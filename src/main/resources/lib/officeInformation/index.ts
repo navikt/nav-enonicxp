@@ -21,14 +21,12 @@ const fiveMinutes = 5 * 60 * 1000;
 
 const enhetTypesToImport: ReadonlySet<string> = new Set([
     'ALS',
-    'ARK',
     'FPY',
     'HMS',
     'KLAGE',
     'KONTROLL',
     'LOKAL',
     'OKONOMI',
-    'TILTAK',
     'YTA',
     'OPPFUTLAND',
 ]);
