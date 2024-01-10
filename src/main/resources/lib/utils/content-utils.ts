@@ -39,3 +39,7 @@ export const isContentPreviewOnly = (content: Content) => {
 export const getContentLocaleRedirectTarget = (content: Content) => {
     return content.x?.[COMPONENT_APP_KEY]?.redirectToLayer?.locale as string | undefined;
 };
+
+export const isContentNoIndex = (content: Content) => {
+    return !!content.data?.noindex;
+};
