@@ -6,9 +6,9 @@ import { Source } from '/lib/xp/node';
 import { ADMIN_PRINCIPAL, SUPER_USER } from '../../../lib/constants';
 import { getLayersMultiConnection } from '../../../lib/localization/layers-repo-utils/layers-repo-connection';
 import { NON_LOCALIZED_QUERY_FILTER } from '../../../lib/localization/layers-repo-utils/localization-state-filters';
+import { dynamicPageContentTypes, legacyPageContentTypes } from '../../../lib/contenttype-lists';
 import dayjs from '/assets/dayjs/1.11.9/dayjs.min.js';
 import utc from '/assets/dayjs/1.11.9/plugin/utc.js';
-import { RepoBranch } from 'types/common';
 
 dayjs.extend(utc);
 
@@ -47,30 +47,13 @@ const getUserPublications = (user: `user:${string}:${string}`, type: Publication
         unpublishContent: 'unpublish',
     } as const;
     const result = auditLogLib.find({
-        count: 100,
+        count: 1000,
         from: '2024-01-01T00:00:00Z',
         type: `system.content.${type}`,
         users: [user],
     }) as any;
 
-    const getContent = (
-        logObject: auditLogLib.LogEntry<auditLogLib.DefaultData>,
-        branch: RepoBranch
-    ) => {
-        if (!logObject) {
-            return null;
-        }
-        const object = logObject?.objects[0];
-        if (!object) {
-            return null;
-        }
-        const repoId = object.split(':')[0];
-        const contentId = logObject.data.params.contentIds as string;
-        return getRepoConnection({
-            branch,
-            repoId,
-        }).get(contentId);
-    };
+    log.info(`*** Type: ${type} ***`);
 
     const entries = result.hits as auditLogLib.LogEntry<auditLogLib.DefaultData>[];
     entries.map((entry) => {
@@ -80,32 +63,69 @@ const getUserPublications = (user: `user:${string}:${string}`, type: Publication
 
     return entries
         .sort((a, b) => (dayjs(a?.time).isAfter(dayjs(b?.time)) ? -1 : 1))
+        .filter((entry) => !!entry)
         .slice(0, 5)
         .map((entry) => auditLogLib.get({ id: entry._id }))
-        .map((entry) => getContent(entry, branch[type]))
         .map((entry) => {
-            const modifiedStr = entry._ts.substring(0, 19).replace('T', ' ');
-            const modifiedLocalTime = dayjs(modifiedStr).utc(true).local();
-            const repo = entry.repoId.replace('com.enonic.cms.', '');
+            const object = entry.objects[0];
+            const repoId = object.split(':')[0];
+            const contentId = entry.data.params.contentIds as string;
+            const content = getRepoConnection({
+                branch: branch[type],
+                repoId,
+            })
+                .query({
+                    filters: {
+                        boolean: {
+                            must: {
+                                hasValue: {
+                                    field: 'type',
+                                    values: [...legacyPageContentTypes, ...dynamicPageContentTypes],
+                                },
+                            },
+                        },
+                        ids: {
+                            values: [contentId], // Only first published element in multipublications
+                        },
+                    },
+                })
+                .hits.map((hit) =>
+                    getRepoConnection({
+                        branch: branch[type],
+                        repoId,
+                    }).get(hit.id)
+                )[0];
+            if (!content) {
+                return null;
+            }
+            log.info('------- content start --------');
+            log.info(content._ts);
+            log.info(content.displayName);
+            log.info('------- content slutt --------');
+
+            const modifiedLocalTime = dayjs(content._ts.substring(0, 19).replace('T', ' '))
+                .utc(true)
+                .local();
+            const repo = repoId.replace('com.enonic.cms.', '');
             const layer = repo !== 'default' ? ` [${repo.replace('navno-', '')}]` : '';
 
             return {
-                displayName: entry.displayName + layer,
+                displayName: content.displayName + layer,
                 modifiedTime: modifiedLocalTime,
                 modifiedTimeStr: dayjs(modifiedLocalTime).format('DD.MM.YYYY HH.mm'),
                 status: status[type],
-                title: entry._path.replace('/content/www.nav.no/', ''),
-                url: `/admin/tool/com.enonic.app.contentstudio/main/${repo}/edit/${entry._id}`,
+                title: content._path.replace('/content/www.nav.no/', ''),
+                url: `/admin/tool/com.enonic.app.contentstudio/main/${repo}/edit/${content._id}`,
             };
         });
 };
 
-const view = resolve('./dashboard-content.html');
-
 const getModifiedContentFromUser = () => {
     const user = authLib.getUser()?.key;
-
-    if (!user) return null;
+    if (!user) {
+        return null;
+    }
+    const view = resolve('./dashboard-content.html');
 
     // 1. Get 5 last published by user
     const published = getUserPublications(user, 'publish');
@@ -113,18 +133,11 @@ const getModifiedContentFromUser = () => {
     // 2. Get 5 last unpublished by user
     const unPublished = getUserPublications(user, 'unpublishContent');
 
-    log.info('published');
-    //log.info(JSON.stringify(published, null, 4));
-    //published.forEach((content) => log.info(JSON.stringify(content.displayName, null, 4)));
-    //log.info('unPublished');
-    //log.info(JSON.stringify(unPublished, null, 4));
-    //unPublished.forEach((content) => log.info(JSON.stringify(content._name, null, 4)));
-
     // 3a. Fetch all localized content modified by current user, find status and sort
     const repos = getLayersMultiConnection('draft');
     const modified = repos
         .query({
-            count: 2,
+            count: 1000,
             query: `modifier = "${user}" AND type LIKE "no.nav.navno:*"`,
             filters: {
                 boolean: {
@@ -143,7 +156,7 @@ const getModifiedContentFromUser = () => {
             }).get(hit.id);
 
             if (!draftContent) {
-                return null;
+                return undefined;
             }
 
             // modifiedTime med sekunder
@@ -158,7 +171,7 @@ const getModifiedContentFromUser = () => {
             if (masterContent?.publish?.first && masterContent?.publish?.from) {
                 // Innholdet ER publisert, eventuelt endret etterpå
                 if (draftContent?._versionKey === masterContent?._versionKey) {
-                    return null;
+                    return undefined;
                 } else {
                     status = 'Endret';
                 }
@@ -170,7 +183,7 @@ const getModifiedContentFromUser = () => {
                 } else if (draftContent?.archivedTime) {
                     status = 'Arkivert';
                 } else {
-                    return null;
+                    return undefined;
                 }
             }
             const modifiedLocalTime = dayjs(modifiedStr).utc(true).local();
@@ -186,10 +199,14 @@ const getModifiedContentFromUser = () => {
                 url: `/admin/tool/com.enonic.app.contentstudio/main/${repo}/edit/${draftContent._id}`,
             };
         })
+        .filter((entry) => !!entry)
         .sort((a, b) => (dayjs(a?.modifiedTime).isAfter(dayjs(b?.modifiedTime)) ? -1 : 1))
         .slice(0, 5);
 
-    log.info(JSON.stringify(modified, null, 4));
+    log.info('--- modified ---');
+    modified.forEach((content) => {
+        if (content) log.info(JSON.stringify(content.displayName, null, 4));
+    });
 
     return {
         body: thymeleafLib.render(view, { published, modified, unPublished }),
