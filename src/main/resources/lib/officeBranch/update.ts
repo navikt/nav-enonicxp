@@ -11,34 +11,112 @@ import { createObjectChecksum } from '../utils/object-utils';
 type OfficeBranchDescriptor = NavNoDescriptor<'office-branch'>;
 type InternalLinkDescriptor = NavNoDescriptor<'internal-link'>;
 
+type RequestConfig = {
+    url: string;
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+    body?: string;
+};
+
+type OfficeOverview = {
+    enhetId: string;
+    enhetNr: string;
+    navn: string;
+    type: string;
+};
+
 const OFFICE_BRANCH_CONTENT_TYPE: OfficeBranchDescriptor = `no.nav.navno:office-branch`;
 const INTERNAL_LINK_CONTENT_TYPE: InternalLinkDescriptor = `no.nav.navno:internal-link`;
 const OFFICES_BASE_PATH = '/www.nav.no/kontor';
 
 const getOfficeContentName = (officeData: OfficeBranchData) => commonLib.sanitize(officeData.navn);
 
+const generalOfficeTypes: ReadonlySet<string> = new Set([
+    'ALS',
+    'FPY',
+    'HMS',
+    'KLAGE',
+    'KONTROLL',
+    'OKONOMI',
+    'YTA',
+    'OPPFUTLAND',
+]);
+
+const norgRequest = <T>(requestConfig: RequestConfig): T[] | null => {
+    const response = httpClient.request({
+        url: requestConfig.url,
+        method: requestConfig.method,
+        contentType: 'application/json',
+        headers: {
+            'x-nav-apiKey': app.config.norg2ApiKey,
+            consumerId: app.config.norg2ConsumerId,
+        },
+        body: requestConfig.body,
+    });
+
+    if (response.status === 200 && response.body) {
+        return JSON.parse(response.body);
+    } else {
+        logger.error(
+            `OfficeImporting: Bad response from norg2: ${response.status} - ${response.message}, ${requestConfig.url}`
+        );
+        return null;
+    }
+};
+
+const adaptOfficeData = (officeData: GeneralOfficeData): OfficeBranchData => {
+    return {
+        enhetNr: officeData.enhetNr,
+        navn: officeData.navn,
+        status: 'Aktiv',
+        organisasjonsnummer: '',
+        sosialeTjenester: '',
+        spesielleOpplysninger: officeData.spesielleOpplysninger,
+        underEtableringDato: '',
+        aktiveringsdato: '',
+        nedleggelsesdato: '',
+        beliggenhet: officeData.besoeksadresse,
+        postadresse: officeData.postadresse,
+        brukerkontakt: officeData.brukerkontakt,
+    };
+};
+
 export const fetchAllOfficeBranchDataFromNorg = () => {
     try {
-        const response = httpClient.request({
-            url: URLS.NORG_OFFICE_API_URL,
+        const localOffices = norgRequest<OfficeBranchData>({
+            url: URLS.NORG_LOCAL_OFFICE_API_URL,
             method: 'GET',
-            headers: {
-                'x-nav-apiKey': app.config.norg2ApiKey,
-                consumerId: app.config.norg2ConsumerId,
-            },
         });
 
-        if (response.status === 200 && response.body) {
-            return JSON.parse(response.body);
-        } else {
-            logger.error(
-                `OfficeImporting: Bad response from norg2: ${response.status} - ${response.message}`
-            );
-            return null;
+        const officeOverview = norgRequest<OfficeOverview>({
+            url: `${URLS.NORG_OFFICE_OVERVIEW_API_URL}`,
+            method: 'GET',
+        });
+
+        const relevantOffices = officeOverview
+            ?.filter((office) => generalOfficeTypes.has(office.type))
+            .map((office) => office.enhetNr);
+
+        log.info(JSON.stringify(relevantOffices));
+
+        const generalOffices = norgRequest<GeneralOfficeData>({
+            url: URLS.NORG_OFFICE_INFORMATION_API_URL,
+            method: 'POST',
+            body: JSON.stringify(relevantOffices),
+        });
+
+        if (!localOffices || !relevantOffices || !generalOffices) {
+            logger.error(`OfficeImporting: Bad response from norg2`);
+            return;
         }
+
+        const adaptedGeneralOffices = generalOffices.map(adaptOfficeData);
+
+        log.info(`OfficeImporting: Fetched ${generalOffices?.length} offices from norg2.`);
+
+        return [...localOffices, ...adaptedGeneralOffices];
     } catch (e) {
         logger.error(
-            `OfficeImporting: Exception from norg2 request: ${e}. Fetching from ${URLS.NORG_OFFICE_API_URL}.`
+            `OfficeImporting: Exception from norg2 request: ${e}. Fetching from ${URLS.NORG_LOCAL_OFFICE_API_URL}.`
         );
         return null;
     }

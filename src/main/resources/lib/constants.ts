@@ -24,7 +24,21 @@ const revalidatorProxyOrigins: EnvRecord = {
     localhost: 'http://localhost:3002',
 } as const;
 
-const norgOfficeApiUrls: EnvRecord = {
+const norgOfficeOverviewApiUrl: EnvRecord = {
+    p: 'https://norg2.prod-fss-pub.nais.io/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
+    dev: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
+    q6: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
+    localhost: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
+} as const;
+
+const norgOfficeInformationApiUrl: EnvRecord = {
+    p: 'https://norg2.prod-fss-pub.nais.io/norg2/api/v2/enhet/kontaktinformasjoner',
+    dev: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/enhet/kontaktinformasjoner',
+    q6: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/enhet/kontaktinformasjoner',
+    localhost: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/enhet/kontaktinformasjoner',
+} as const;
+
+const norgLocalOfficeApiUrl: EnvRecord = {
     p: 'https://norg2.prod-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
     dev: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
     q6: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
@@ -50,7 +64,9 @@ export const URLS = {
     XP_ORIGIN: xpOrigins[env],
     REVALIDATOR_PROXY_ORIGIN: revalidatorProxyOrigins[env],
     PORTAL_ADMIN_ORIGIN: portalAdminOrigins[env],
-    NORG_OFFICE_API_URL: norgOfficeApiUrls[env],
+    NORG_OFFICE_OVERVIEW_API_URL: norgOfficeOverviewApiUrl[env],
+    NORG_OFFICE_INFORMATION_API_URL: norgOfficeInformationApiUrl[env],
+    NORG_LOCAL_OFFICE_API_URL: norgLocalOfficeApiUrl[env],
     SEARCH_API_URL: searchApiUrls[env],
 } as const;
 
