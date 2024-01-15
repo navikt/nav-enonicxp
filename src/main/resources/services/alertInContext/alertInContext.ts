@@ -1,6 +1,7 @@
 import * as contentLib from '/lib/xp/content';
 import { ContentDescriptor } from 'types/content-types/content-config';
 import { getFromLocalCache } from '../../lib/cache/local-cache';
+import { forceArray } from '../../lib/utils/array-utils';
 
 const CACHE_KEY = 'alert-in-context-cache';
 import { Content } from '/lib/xp/content';
@@ -29,7 +30,7 @@ const transformAlertData = (alertContent: AlertContent): AlertData => {
     } else {
         scope = {
             scopeType: data.scope._selected,
-            areas: data.scope['area'].area,
+            areas: forceArray(data.scope['area'].area),
         };
     }
 
