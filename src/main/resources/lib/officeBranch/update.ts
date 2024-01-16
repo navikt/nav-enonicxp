@@ -33,9 +33,7 @@ const OFFICES_BASE_PATH = '/www.nav.no/kontor';
 const getOfficeContentName = (officeData: LocalOfficeData) => commonLib.sanitize(officeData.navn);
 
 const generalOfficeTypes: ReadonlySet<string> = new Set([
-    'ALS',
     'FPY',
-    'HMS',
     'KLAGE',
     'KONTROLL',
     'OKONOMI',
