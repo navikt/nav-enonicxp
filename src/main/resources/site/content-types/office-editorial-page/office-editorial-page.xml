@@ -19,7 +19,6 @@
                 <option value="KLAGE">NAV Klageinstans</option>
                 <option value="OKONOMI">NAV Økonomi Stønad</option>
             </config>
-            <default>one</default>  
         </input>
         <mixin name="dynamic-page-common"/>
     </form>
