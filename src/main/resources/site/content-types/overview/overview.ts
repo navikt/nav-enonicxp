@@ -86,6 +86,11 @@ export interface Overview {
   noindex: boolean;
 
   /**
+   * Ikke vis utdrag (snippets) i Google-søk
+   */
+  nosnippet: boolean;
+
+  /**
    * -
    */
   allProducts?: undefined;

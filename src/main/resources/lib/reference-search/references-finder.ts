@@ -338,12 +338,12 @@ export class ReferencesFinder {
             return [];
         }
 
-        if (!content.data.formDetailsTargets) {
+        if (content.type !== 'no.nav.navno:form-details' && !content.data.formDetailsTargets) {
             return [];
         }
 
-        const selectedAudience = content.data.audience?._selected;
-        if (!selectedAudience) {
+        const selectedAudience = forceArray(content.data.audience?._selected);
+        if (selectedAudience.length === 0) {
             return [];
         }
 
@@ -356,40 +356,39 @@ export class ReferencesFinder {
             },
             {
                 hasValue: {
-                    field: 'data.audience._selected',
-                    values: [selectedAudience],
-                },
-            },
-            {
-                hasValue: {
                     field: 'language',
                     values: [content.language],
                 },
             },
         ];
 
-        const selectedProviderAudience =
-            selectedAudience === 'provider'
-                ? forceArray(content.data.audience.provider?.provider_audience)
-                : null;
+        const shouldRules = selectedAudience.map((audience) => {
+            if (audience === 'provider') {
+                const selectedProviderAudience = forceArray(
+                    content.data.audience.provider?.provider_audience
+                );
 
-        if (selectedProviderAudience) {
-            if (selectedProviderAudience.length === 0) {
-                return [];
+                return {
+                    hasValue: {
+                        field: 'data.audience.provider.pageType.overview.provider_audience',
+                        values: selectedProviderAudience,
+                    },
+                };
             }
 
-            mustRules.push({
+            return {
                 hasValue: {
-                    field: 'data.audience.provider.pageType.overview.provider_audience',
-                    values: selectedProviderAudience,
+                    field: 'data.audience._selected',
+                    values: [audience],
                 },
-            });
-        }
+            };
+        });
 
         const result = this.contentNodeQuery({
             filters: {
                 boolean: {
                     must: mustRules,
+                    should: shouldRules,
                 },
             },
         });

@@ -1,4 +1,5 @@
 import { ContentNode } from '../../../../../types/content-types/content-config';
+import { getSearchDocumentContentType, SearchDocumentContentType } from './content-type';
 
 export type SearchDocumentMetatag =
     | 'nyhet'
@@ -8,6 +9,18 @@ export type SearchDocumentMetatag =
     | 'statistikk'
     | 'presse'
     | 'informasjon';
+
+const informationTypes: ReadonlySet<SearchDocumentContentType> = new Set([
+    'legacy',
+    'produktside',
+    'temaside',
+    'guide',
+    'situasjonsside',
+    'oversikt',
+]);
+
+const isInformation = (content: ContentNode) =>
+    informationTypes.has(getSearchDocumentContentType(content));
 
 const isNyhet = (content: ContentNode) =>
     (content.type === 'no.nav.navno:main-article' &&
@@ -46,33 +59,33 @@ const isPresse = (content: ContentNode) =>
 export const getSearchDocumentMetatags = (content: ContentNode) => {
     const metaTags: SearchDocumentMetatag[] = [];
 
-    let shouldSetDefaultTag = true;
+    let canSetInformationTag = true;
 
     if (isNyhet(content)) {
         metaTags.push('nyhet');
-        shouldSetDefaultTag = false;
+        canSetInformationTag = false;
     }
     if (isPressemelding(content)) {
         metaTags.push('pressemelding');
-        shouldSetDefaultTag = false;
+        canSetInformationTag = false;
     }
     if (isStatistikk(content)) {
         metaTags.push('statistikk');
-        shouldSetDefaultTag = false;
+        canSetInformationTag = false;
     }
     if (isAnalyse(content)) {
         metaTags.push('analyse');
-        shouldSetDefaultTag = false;
+        canSetInformationTag = false;
     }
     if (isPresse(content)) {
         metaTags.push('presse');
-        shouldSetDefaultTag = false;
+        canSetInformationTag = false;
     }
     if (isNavOgSamfunn(content)) {
         metaTags.push('nav-og-samfunn');
     }
 
-    if (shouldSetDefaultTag) {
+    if (canSetInformationTag && isInformation(content)) {
         metaTags.push('informasjon');
     }
 

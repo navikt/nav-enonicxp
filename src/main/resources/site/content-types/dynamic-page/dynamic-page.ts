@@ -36,6 +36,11 @@ export interface DynamicPage {
   noindex: boolean;
 
   /**
+   * Ikke vis utdrag (snippets) i Google-søk
+   */
+  nosnippet: boolean;
+
+  /**
    * Skriv inn ønsket kort-url
    */
   customPath?: string;

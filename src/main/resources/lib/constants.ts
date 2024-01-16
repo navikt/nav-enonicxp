@@ -39,7 +39,7 @@ const xpOrigins: EnvRecord = {
 } as const;
 
 const searchApiUrls: EnvRecord = {
-    p: '',
+    p: 'https://navno-search-admin-api.intern.nav.no/content/personbruker',
     dev: 'https://navno-search-admin-api.intern.dev.nav.no/content/personbruker',
     q6: '',
     localhost: '', // 'https://navno-search-admin-api.intern.dev.nav.no/content/personbruker-local',

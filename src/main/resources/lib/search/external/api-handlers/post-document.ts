@@ -1,10 +1,8 @@
 import * as taskLib from '/lib/xp/task';
-import httpClient from '/lib/http-client';
 import { logger } from '../../../utils/logging';
-import { URLS } from '../../../constants';
 import { SearchDocument } from '../document-builder/document-builder';
+import { searchApiRequest } from './search-api-request';
 
-const SERVICE_URL = URLS.SEARCH_API_URL;
 const BATCH_SIZE = 100;
 
 // This won't be thread safe, but problems here should be very unlikely, and in any case the
@@ -38,8 +36,7 @@ export const searchApiPostDocuments = (documents: SearchDocument[]) => {
         const documentsBatch = documents.slice(i, i + BATCH_SIZE);
 
         try {
-            const response = httpClient.request({
-                url: SERVICE_URL,
+            const response = searchApiRequest({
                 method: 'POST',
                 contentType: 'application/json',
                 connectionTimeout: 30000,

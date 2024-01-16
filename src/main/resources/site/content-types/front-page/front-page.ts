@@ -108,4 +108,9 @@ export interface FrontPage {
    * Skal ikke vises i søk
    */
   noindex: boolean;
+
+  /**
+   * Ikke vis utdrag (snippets) i Google-søk
+   */
+  nosnippet: boolean;
 }

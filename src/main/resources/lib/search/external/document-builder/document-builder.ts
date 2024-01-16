@@ -4,6 +4,7 @@ import { getSearchNodeHref } from '../../create-or-update-search-node';
 import { generateSearchDocumentId } from '../utils';
 import {
     getContentLocaleRedirectTarget,
+    isContentNoIndex,
     isContentPreviewOnly,
     isMedia,
 } from '../../../utils/content-utils';
@@ -180,6 +181,7 @@ const isExcludedContent = (content: ContentNode) => {
     }
 
     if (
+        isContentNoIndex(content) ||
         isContentPreviewOnly(content) ||
         getContentLocaleRedirectTarget(content) ||
         isExcludedLocalContent(content)
