@@ -6,6 +6,21 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
+        <input name="type" type="ComboBox">
+            <label>Velg kontortype som denne skal vises på</label>
+            <occurrences minimum="1" maximum="0"/>
+            <config>
+                <option value="LOKAL">Lokalkontor</option>  
+                <option value="HMS">Hjelpemiddelsentral</option>
+                <option value="ALS">Arbeidslivssenter</option>
+                <option value="OPPFUTLAND">NAV Utland og fellestjenester</option>
+                <option value="FPY">Saksbehandlingsenheter og styringsenheter (FPY)</option>
+                <option value="YTA">Saksbehandlingsenheter og styringsenheter (YTA)</option>
+                <option value="KLAGE">NAV Klageinstans</option>
+                <option value="OKONOMI">NAV Økonomi Stønad</option>
+            </config>
+            <default>one</default>  
+        </input>
         <mixin name="dynamic-page-common"/>
     </form>
 </content-type>
