@@ -24,6 +24,8 @@ type OfficeOverview = {
     type: string;
 };
 
+type OfficeTypeDictionary = Map<string, string>;
+
 const OFFICE_BRANCH_CONTENT_TYPE: OfficeBranchDescriptor = `no.nav.navno:office-branch`;
 const INTERNAL_LINK_CONTENT_TYPE: InternalLinkDescriptor = `no.nav.navno:internal-link`;
 const OFFICES_BASE_PATH = '/www.nav.no/kontor';
@@ -63,10 +65,19 @@ const norgRequest = <T>(requestConfig: RequestConfig): T[] | null => {
     }
 };
 
-const adaptOfficeData = (officeData: GeneralOfficeData): LocalOfficeData => {
+const localOfficeAdapter = (localOfficeData: LocalOfficeData): LocalOfficeData => {
+    return { ...localOfficeData, type: 'LOKAL' };
+};
+
+const generalOfficeAdapter = (
+    officeData: GeneralOfficeData,
+    officeTypeDictionary: OfficeTypeDictionary
+): LocalOfficeData => {
+    const type = officeTypeDictionary.get(officeData.enhetNr) || '';
     return {
         enhetNr: officeData.enhetNr,
         navn: officeData.navn,
+        type,
         status: 'Aktiv',
         organisasjonsnummer: '',
         sosialeTjenester: '',
@@ -82,38 +93,59 @@ const adaptOfficeData = (officeData: GeneralOfficeData): LocalOfficeData => {
 
 export const fetchAllOfficeBranchDataFromNorg = () => {
     try {
-        const localOffices = norgRequest<LocalOfficeData>({
-            url: URLS.NORG_LOCAL_OFFICE_API_URL,
-            method: 'GET',
-        });
+        const officeTypeDictionary = new Map<string, string>();
 
         const officeOverview = norgRequest<OfficeOverview>({
             url: `${URLS.NORG_OFFICE_OVERVIEW_API_URL}`,
             method: 'GET',
         });
 
-        const relevantOffices = officeOverview
+        if (!officeOverview) {
+            logger.error(
+                `OfficeImporting: Bad response from norg2 from /enhet-endpoint (officeOverview)`
+            );
+            return null;
+        }
+
+        // The other endpoints will not include office type, so we need to
+        // make a dictionary to look up the type from the office number.
+        officeOverview.forEach((office) => officeTypeDictionary.set(office.enhetNr, office.type));
+
+        // Not all offices in the overview should be fetched,
+        // so make a list of enhetNr to actually fetch.
+        const relevantGeneralOffices = officeOverview
             ?.filter((office) => generalOfficeTypes.has(office.type))
             .map((office) => office.enhetNr);
+
+        const localOffices = norgRequest<LocalOfficeData>({
+            url: URLS.NORG_LOCAL_OFFICE_API_URL,
+            method: 'GET',
+        });
 
         const generalOffices = norgRequest<GeneralOfficeData>({
             url: URLS.NORG_OFFICE_INFORMATION_API_URL,
             method: 'POST',
-            body: JSON.stringify(relevantOffices),
+            body: JSON.stringify(relevantGeneralOffices),
         });
 
-        if (!localOffices || !relevantOffices || !generalOffices) {
-            logger.error(`OfficeImporting: Bad response from norg2`);
+        if (!localOffices || !generalOffices) {
+            logger.error(`OfficeImporting: Could not fetch local offices or enhet from norg2`);
             return;
         }
 
-        const adaptedGeneralOffices = generalOffices.map(adaptOfficeData);
+        const adaptedGeneralOffices = generalOffices.map((generalOffice) =>
+            generalOfficeAdapter(generalOffice, officeTypeDictionary)
+        );
+
+        const adaptedLocalOffices = localOffices.map((localOffice) =>
+            localOfficeAdapter(localOffice)
+        );
 
         log.info(
             `OfficeImporting: Local office: ${localOffices.length}, general office: ${adaptedGeneralOffices.length}.`
         );
 
-        return [...localOffices, ...adaptedGeneralOffices];
+        return [...adaptedGeneralOffices, ...adaptedLocalOffices];
     } catch (e) {
         logger.error(
             `OfficeImporting: Exception from norg2 request: ${e}. Fetching from ${URLS.NORG_LOCAL_OFFICE_API_URL}.`

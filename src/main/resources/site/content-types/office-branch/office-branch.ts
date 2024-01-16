@@ -16,6 +16,11 @@ export interface OfficeBranch {
   enhetNr: string;
 
   /**
+   * Type
+   */
+  type: string;
+
+  /**
    * Status
    */
   status?: string;
