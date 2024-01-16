@@ -12,6 +12,8 @@ import utc from '/assets/dayjs/1.11.9/plugin/utc.js';
 
 dayjs.extend(utc);
 
+const fromDate = dayjs().subtract(1, 'months').toISOString();
+
 const asAdminParams: Pick<Source, 'user' | 'principals'> = {
     user: {
         login: SUPER_USER,
@@ -48,76 +50,84 @@ const getUserPublications = (user: `user:${string}:${string}`, type: Publication
     } as const;
     const result = auditLogLib.find({
         count: 1000,
-        from: '2024-01-01T00:00:00Z',
+        from: fromDate,
         type: `system.content.${type}`,
         users: [user],
     }) as any;
 
     log.info(`*** Type: ${type} ***`);
-
     const entries = result.hits as auditLogLib.LogEntry<auditLogLib.DefaultData>[];
     entries.map((entry) => {
         const dayjsTime = dayjs(entry.time.substring(0, 19).replace('T', ' ')).utc(true).local();
         entry.time = dayjsTime.toString();
     });
+    const lastEntries = entries
+        .sort((a, b) => (dayjs(a.time).isAfter(dayjs(b.time)) ? -1 : 1))
+        .slice(0, 5);
 
-    return entries
-        .sort((a, b) => (dayjs(a?.time).isAfter(dayjs(b?.time)) ? -1 : 1))
-        .filter((entry) => !!entry)
-        .slice(0, 5)
-        .map((entry) => auditLogLib.get({ id: entry._id }))
-        .map((entry) => {
-            const object = entry.objects[0];
-            const repoId = object.split(':')[0];
-            const contentId = entry.data.params.contentIds as string;
-            const content = getRepoConnection({
-                branch: branch[type],
-                repoId,
-            })
-                .query({
-                    filters: {
-                        boolean: {
-                            must: {
-                                hasValue: {
-                                    field: 'type',
-                                    values: [...legacyPageContentTypes, ...dynamicPageContentTypes],
-                                },
+    log.info(JSON.stringify(lastEntries, null, 4));
+
+    return lastEntries.map((entry) => {
+        const object = entry.objects[0];
+        if (!object) {
+            return null;
+        }
+        const repoId = object.split(':')[0];
+        if (!repoId) {
+            return null;
+        }
+        const contentId = entry.data.params.contentIds as string;
+        if (!contentId) {
+            return null;
+        }
+        const content = getRepoConnection({
+            branch: branch[type],
+            repoId,
+        })
+            .query({
+                filters: {
+                    boolean: {
+                        must: {
+                            hasValue: {
+                                field: 'type',
+                                values: [...legacyPageContentTypes, ...dynamicPageContentTypes],
                             },
                         },
-                        ids: {
-                            values: [contentId], // Only first published element in multipublications
-                        },
                     },
-                })
-                .hits.map((hit) =>
-                    getRepoConnection({
-                        branch: branch[type],
-                        repoId,
-                    }).get(hit.id)
-                )[0];
-            if (!content) {
-                return null;
-            }
-            log.info('------- content start --------');
-            log.info(content._ts);
-            log.info(content.displayName);
-            log.info('------- content slutt --------');
+                    ids: {
+                        values: [contentId], // Only first published element in multipublications
+                    },
+                },
+            })
+            .hits.map((hit) =>
+                getRepoConnection({
+                    branch: branch[type], // Ble hardkodet til draft
+                    repoId,
+                }).get(hit.id)
+            )[0];
+        if (!content) {
+            return null;
+        }
+        log.info('------- content start --------');
+        log.info(content._ts);
+        log.info(content.displayName);
+        log.info('------- content slutt --------');
 
-            const modifiedLocalTime = dayjs(content._ts.substring(0, 19).replace('T', ' '))
-                .utc(true)
-                .local();
-            const repo = repoId.replace('com.enonic.cms.', '');
-            const layer = repo !== 'default' ? ` [${repo.replace('navno-', '')}]` : '';
+        const modifiedLocalTime = dayjs(content._ts.substring(0, 19).replace('T', ' '))
+            .utc(true)
+            .local();
+        const repo = repoId.replace('com.enonic.cms.', '');
+        const layer = repo !== 'default' ? ` [${repo.replace('navno-', '')}]` : '';
 
-            return {
-                displayName: content.displayName + layer,
-                modifiedTime: modifiedLocalTime,
-                modifiedTimeStr: dayjs(modifiedLocalTime).format('DD.MM.YYYY HH.mm'),
-                status: status[type],
-                title: content._path.replace('/content/www.nav.no/', ''),
-                url: `/admin/tool/com.enonic.app.contentstudio/main/${repo}/edit/${content._id}`,
-            };
-        });
+        return {
+            displayName: content.displayName + layer,
+            modifiedTime: modifiedLocalTime,
+            modifiedTimeStr: dayjs(modifiedLocalTime).format('DD.MM.YYYY HH.mm.ss'),
+            status: status[type],
+            title: content._path.replace('/content/www.nav.no/', ''),
+            url: `/admin/tool/com.enonic.app.contentstudio/main/${repo}/edit/${content._id}`,
+        };
+    });
 };
 
 const getModifiedContentFromUser = () => {
@@ -142,6 +152,12 @@ const getModifiedContentFromUser = () => {
             filters: {
                 boolean: {
                     mustNot: NON_LOCALIZED_QUERY_FILTER,
+                    must: {
+                        hasValue: {
+                            field: 'type',
+                            values: [...legacyPageContentTypes, ...dynamicPageContentTypes],
+                        },
+                    },
                 },
             },
         })
@@ -193,7 +209,7 @@ const getModifiedContentFromUser = () => {
             return {
                 displayName: draftContent.displayName + layer,
                 modifiedTime: modifiedLocalTime,
-                modifiedTimeStr: dayjs(modifiedLocalTime).format('DD.MM.YYYY HH.mm'),
+                modifiedTimeStr: dayjs(modifiedLocalTime).format('DD.MM.YYYY HH.mm.ss'),
                 status,
                 title: draftContent._path.replace('/content/www.nav.no/', ''),
                 url: `/admin/tool/com.enonic.app.contentstudio/main/${repo}/edit/${draftContent._id}`,
