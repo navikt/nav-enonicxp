@@ -30,10 +30,10 @@ const getRepoConnection = ({ repoId, branch, asAdmin }: Params) =>
     });
 
 const repoStr = (repoId: string) => repoId.replace('com.enonic.cms.', '');
-const layerStr = (repo: string) => repo !== 'default' ? ` [${repo.replace('navno-', '')}]` : '';
+const layerStr = (repo: string) => (repo !== 'default' ? ` [${repo.replace('navno-', '')}]` : '');
 
 const getUserPublications = (user: `user:${string}:${string}`, type: Publications) => {
-    const fromDate = dayjs().subtract(1, 'months').toISOString();
+    const fromDate = dayjs().subtract(6, 'months').toISOString();
     const results = auditLogLib.find({
         count: 5000,
         from: fromDate,
