@@ -1,4 +1,5 @@
 # NAV.no - Enonic XP
+
 NAVs content management system powered by Enonic XP, an open source project.
 
 ![Deploy to prod](https://github.com/navikt/nav-enonicxp/actions/workflows/deploy-to-prod.yml/badge.svg) |
@@ -6,23 +7,38 @@ NAVs content management system powered by Enonic XP, an open source project.
 ![Deploy to dev2/q6](https://github.com/navikt/nav-enonicxp/actions/workflows/deploy-to-q6.yml/badge.svg)
 
 ## How to get started
+
 1. Install Enonic by following the guide at https://developer.enonic.com/start
 2. Create a sandbox (preferably called **navno**)
+
 ```
 enonic sandbox start
 ```
+
 3. Launch admin console
+
 ```
 open http://localhost:8080/admin
 ```
+
 4. Download the NAV.no - XP Application
+
 ```
 git clone https://github.com/navikt/nav-enonicxp.git
 ```
-5. Copy **no.nav.navno.cfg** and **com.enonic.xp.web.vhost.cfg** to your sandbox
+
+5. Copy **com.enonic.xp.content.cfg**, **no.nav.navno.cfg** and **com.enonic.xp.web.vhost.cfg** to your sandbox
+
 ```
+cp com.enonic.xp.content.cfg /YOUR_SANDBOX_PATH/home/config/com.enonic.xp.content.cfg
 cp no.nav.navno.cfg /YOUR_SANDBOX_PATH/home/config/no.nav.navno.cfg
 cp com.enonic.xp.web.vhost.cfg /YOUR_SANDBOX_PATH/home/config/com.enonic.xp.web.vhost.cfg
+```
+
+6. Temporary step. Copy **com.enonic.app.contentstudio.cfg** to your sandbox
+
+```
+cp com.enonic.app.contentstudio.cfg /YOUR_SANDBOX_PATH/home/config/com.enonic.app.contentstudio.cfg
 ```
 
 ## Development
@@ -33,12 +49,13 @@ enonic project deploy
 
 ## Deploy
 
-- **dev/dev2(q6):** Run deploy-to-(dev|dev2/q6) workflow dispatch
-- **P:**  Make a PR between master and your feature branch __*__ and create a release at <br />
-https://github.com/navikt/nav-enonicxp/releases <br />
-**Obs:** Release must be formatted as **vX.X.X** (e.g v1.2.1)
+-   **dev/dev2(q6):** Run deploy-to-(dev|dev2/q6) workflow dispatch
+-   **P:** Make a PR between master and your feature branch **\*** and create a release at <br />
+    https://github.com/navikt/nav-enonicxp/releases <br />
+    **Obs:** Release must be formatted as **vX.X.X** (e.g v1.2.1)
 
 ## Useful Enonic XP tools
+
 Document describing useful tools to query the database and look for changes in the case of user errors.
 [Enonic XP Tools](tools.md)
 
@@ -53,7 +70,7 @@ us a heads up if some specific rules are triggered in kibana.
 We also have 3 triggers which monitor cluster health.
 
 1. Ping warning of a node (if it persists it should be checked out, but we've seen that sometimes
-   during the process of taking a snapshot, this can be triggered**
+   during the process of taking a snapshot, this can be triggered\*\*
 2. Elastic reports an org.elasticsearch.transport error
 3. Elastic reports an org.elasticsearch.common.breaker.CircuitBreakingException
 
@@ -63,6 +80,7 @@ We can't modify there ourselves, but any of these @terje.sannum, @bjorn.carlin, 
 or @steinar.vollebaek can be contacted to make new or modify the rules.
 
 ### Too many errors last hour
+
 ```
 {
   "trigger": {
@@ -157,7 +175,9 @@ or @steinar.vollebaek can be contacted to make new or modify the rules.
   }
 }
 ```
+
 ### Critical errors
+
 ```
 {
   "trigger": {
@@ -278,6 +298,7 @@ or @steinar.vollebaek can be contacted to make new or modify the rules.
   }
 }
 ```
+
 ### XP-ping
 
 ```
@@ -395,6 +416,7 @@ or @steinar.vollebaek can be contacted to make new or modify the rules.
 ```
 
 ### Elastic transport error
+
 ```
 {
   "trigger": {
@@ -518,6 +540,7 @@ or @steinar.vollebaek can be contacted to make new or modify the rules.
 ```
 
 ### Elastic circutbreaker
+
 ```
 {
   "trigger": {
@@ -631,9 +654,13 @@ or @steinar.vollebaek can be contacted to make new or modify the rules.
   }
 }
 ```
+
 ## NAIS-device
+
 We are able to use nais device to reach portal-admin and use ssh to reach our server nodes. To be able to use this with the host names instead of the ip-addresses we need to set this up in our hosts file
+
 ### /etc/hosts
+
 ```
 # Q1
 10.186.160.27 b31apvl00104.oera-q.local
@@ -666,11 +693,13 @@ We are able to use nais device to reach portal-admin and use ssh to reach our se
 10.187.32.47 a30apvl00086.oera.no
 10.187.32.48 a30apvl00087.oera.no
 ```
+
 ## In case of errors in which case we need to restart the app.
+
 go to portal-admin of the environment you wish to restart:
 
 | environment | url                              |
-|-------------|----------------------------------|
+| ----------- | -------------------------------- |
 | production  | https://portal-admin.oera.no     |
 | develop     | https://portal-admin-dev.oera.no |
 | q6          | https://portal-admin-q6.oera.no  |
