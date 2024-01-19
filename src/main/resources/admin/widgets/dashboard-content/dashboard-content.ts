@@ -32,6 +32,8 @@ const getRepoConnection = ({ repoId, branch, asAdmin }: Params) =>
 const repoStr = (repoId: string) => repoId.replace('com.enonic.cms.', '');
 const layerStr = (repo: string) => (repo !== 'default' ? ` [${repo.replace('navno-', '')}]` : '');
 
+const prePublished = [] as auditLogLib.LogEntry<auditLogLib.DefaultData>[];
+
 const getUserPublications = (user: `user:${string}:${string}`, type: Publications) => {
     const fromDate = dayjs().subtract(6, 'months').toISOString();
     const results = auditLogLib.find({
@@ -41,17 +43,49 @@ const getUserPublications = (user: `user:${string}:${string}`, type: Publication
         users: [user],
     }) as any;
 
-    const allEntries = results.hits as auditLogLib.LogEntry<auditLogLib.DefaultData>[];
-
-    // Get time in normalized format for dayjs (elastic has its own datetime format)
-    allEntries.map((entry) => {
+    // Get time in normalized format for dayjs (elastic has its own datetime format) and sort
+    const entries = results.hits as auditLogLib.LogEntry<auditLogLib.DefaultData>[];
+    entries.map((entry) => {
         const dayjsTime = dayjs(entry.time.substring(0, 19).replace('T', ' ')).utc(true).local();
         entry.time = dayjsTime.toString();
     });
-    // Sort and slice to get 5 last entries
+    const allEntries = entries.sort((a, b) => (dayjs(a.time).isAfter(dayjs(b.time)) ? -1 : 1));
+
+    // Remove duplicates and slice
+    let i = 0;
+    const duplicates = [] as auditLogLib.LogEntry<auditLogLib.DefaultData>[];
+    const check4Duplicates = (entry: auditLogLib.LogEntry<auditLogLib.DefaultData>) => {
+        const contentId = entry.data.params.contentIds as string;
+        log.info(`[${++i}]:${contentId}`);
+        return duplicates.find((duplicate) => {
+            const dupCheckId = duplicate.data.params.contentIds as string;
+            log.info(dupCheckId);
+            return contentId === dupCheckId;
+        });
+    };
+    log.info(allEntries.length);
     const lastEntries = allEntries
-        .sort((a, b) => (dayjs(a.time).isAfter(dayjs(b.time)) ? -1 : 1))
+        .filter((entry) => {
+            // Filter duplicates
+            if (check4Duplicates(entry)) {
+                return false;
+            } else {
+                duplicates.push(entry);
+                return true;
+            }
+        })
+        .filter((entry) => {
+            // Filter and push entries for scheduled publish
+            const publishTime = entry.data.params.from as string;
+
+            if (!!entry.data.params.from && dayjs(entry.time).isAfter(publishTime)) {
+                prePublished.push(entry);
+                return false;
+            }
+            return true;
+        })
         .slice(0, 5);
+    log.info(duplicates.length);
 
     // Get content and generate the data model to the view
     return lastEntries.map((entry) => {
@@ -116,7 +150,7 @@ const getLastContentFromUser = () => {
     }
     const view = resolve('./dashboard-content.html');
 
-    // 1. Get 5 last published by user
+    // 1. Get 5 last published by user (and push to prePublish)
     const published = getUserPublications(user, 'publish');
 
     // 2. Get 5 last unpublished by user
@@ -196,7 +230,7 @@ const getLastContentFromUser = () => {
         .slice(0, 5);
 
     return {
-        body: thymeleafLib.render(view, { published, modified, unPublished }),
+        body: thymeleafLib.render(view, { published, prePublished, modified, unPublished }),
         contentType: 'text/html',
     };
 };
