@@ -14,7 +14,6 @@ import { contentTypesInOverviewPages } from '../contenttype-lists';
 import { getPublicPath } from '../paths/public-path';
 import { runInContext } from '../context/run-in-context';
 import { sortByLocaleCompareOnField } from '../utils/sort-utils';
-import { forceArray } from '../utils/array-utils';
 import { ArrayOrSingle } from '../../types/util-types';
 
 type OverviewType = Overview['overviewType'];
@@ -58,7 +57,7 @@ const getProductDetails = (
 
 const getDataFromProductPage = (product: ContentWithProductDetails): OverviewPageProductItem => {
     const { type, data, language, displayName } = product;
-    const { title, audience, sortTitle, keywords } = data;
+    const { title, audience, sortTitle } = data;
 
     const pageTitle = title || displayName;
     const listItemTitle = sortTitle || pageTitle;
@@ -70,7 +69,6 @@ const getDataFromProductPage = (product: ContentWithProductDetails): OverviewPag
         title: listItemTitle,
         audience: audience._selected,
         anchorId: sanitize(listItemTitle),
-        keywords: forceArray(keywords),
         productLinks: [
             {
                 url: path,

@@ -5,6 +5,7 @@ import { ContentDescriptor } from '../../types/content-types/content-config';
 import { Taxonomy } from '../../site/mixins/taxonomy/taxonomy';
 import { Area } from '../../site/mixins/area/area';
 import { ThemedArticlePage } from '../../site/content-types/themed-article-page/themed-article-page';
+import { ArrayOrSingle } from '../../types/util-types';
 
 const contentTypesWithProductDetailsSet: ReadonlySet<ContentDescriptor> = new Set(
     contentTypesInOverviewPages
@@ -29,7 +30,7 @@ export type OverviewPageProductItem = {
     productLinks: OverviewPageProductLink[];
     taxonomy?: OverviewItemTaxonomy;
     area: Area['area'];
-    keywords?: string[];
+    keywords?: ArrayOrSingle<string>;
 };
 
 export type DetailedOverviewType = Exclude<Overview['overviewType'], 'all_products'>;
