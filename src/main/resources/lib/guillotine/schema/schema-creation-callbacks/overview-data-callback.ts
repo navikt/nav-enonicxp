@@ -44,7 +44,10 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
                 type: graphQlLib.list(graphQlLib.GraphQLString),
                 resolve: (env) => forceArray(env.source.area),
             },
-            keywords: { type: graphQlLib.list(graphQlLib.GraphQLString) },
+            keywords: {
+                type: graphQlLib.list(graphQlLib.GraphQLString),
+                resolve: (env) => (env.source.keywords ? forceArray(env.source.keywords) : null),
+            },
         },
     });
 
