@@ -35,7 +35,7 @@ const layerStr = (repo: string) => (repo !== 'default' ? ` [${repo.replace('navn
 const prePublished = [] as auditLogLib.LogEntry<auditLogLib.DefaultData>[];
 
 const getUserPublications = (user: `user:${string}:${string}`, type: Publications) => {
-    const fromDate = dayjs().subtract(6, 'months').toISOString();
+    const fromDate = dayjs().subtract(1, 'months').toISOString();
     const results = auditLogLib.find({
         count: 5000,
         from: fromDate,
@@ -76,13 +76,15 @@ const getUserPublications = (user: `user:${string}:${string}`, type: Publication
         })
         .filter((entry) => {
             // Filter and push entries for scheduled publish
-            const publishTime = entry.data.params.from as string;
+            const publishTime = entry.data.params.contentPublishInfo?.from as string;
 
-            if (!!entry.data.params.from && dayjs(entry.time).isAfter(publishTime)) {
-                prePublished.push(entry);
-                return false;
+            if (publishTime !== undefined) {
+                if (!!entry.data.params.from && dayjs(entry.time).isAfter(publishTime)) {
+                    prePublished.push(entry);
+                    return false;
+                }
+                return true;
             }
-            return true;
         })
         .slice(0, 5);
     log.info(duplicates.length);
