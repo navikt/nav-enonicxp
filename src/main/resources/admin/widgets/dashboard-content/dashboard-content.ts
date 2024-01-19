@@ -52,18 +52,18 @@ const getUserPublications = (user: `user:${string}:${string}`, type: Publication
     const allEntries = entries.sort((a, b) => (dayjs(a.time).isAfter(dayjs(b.time)) ? -1 : 1));
 
     // Remove duplicates and slice
-    let i = 0;
+
     const duplicates = [] as auditLogLib.LogEntry<auditLogLib.DefaultData>[];
     const check4Duplicates = (entry: auditLogLib.LogEntry<auditLogLib.DefaultData>) => {
         const contentId = entry.data.params.contentIds as string;
-        log.info(`[${++i}]:${contentId}`);
+
         return duplicates.find((duplicate) => {
             const dupCheckId = duplicate.data.params.contentIds as string;
-            log.info(dupCheckId);
+            // log.info(dupCheckId);
             return contentId === dupCheckId;
         });
     };
-    log.info(allEntries.length);
+
     const lastEntries = allEntries
         .filter((entry) => {
             // Filter duplicates
@@ -76,18 +76,18 @@ const getUserPublications = (user: `user:${string}:${string}`, type: Publication
         })
         .filter((entry) => {
             // Filter and push entries for scheduled publish
-            const publishTime = entry.data.params.contentPublishInfo?.from as string;
-
+            const contentPublishInfo = entry.data.params.contentPublishInfo as any;
+            const publishTime = contentPublishInfo?.from as string;
             if (publishTime !== undefined) {
-                if (!!entry.data.params.from && dayjs(entry.time).isAfter(publishTime)) {
+                if (entry.time > publishTime) {
                     prePublished.push(entry);
-                    return false;
+                    return prePublished;
                 }
+
                 return true;
             }
         })
         .slice(0, 5);
-    log.info(duplicates.length);
 
     // Get content and generate the data model to the view
     return lastEntries.map((entry) => {
