@@ -2,6 +2,15 @@
     <display-name>Formattert innhold</display-name>
     <description>Komponent for rikt tekstinnhold, bilder, mm</description>
     <form>
+        <input type="TextLine" name="header">
+            <label>Tittel</label>
+            <help-text>Vises som h3-element</help-text>
+            <occurrences minimum="0" maximum="1"/>
+        </input>
+        <input type="TextLine" name="anchorId">
+            <label>Anker-id</label>
+            <occurrences minimum="0" maximum="1"/>
+        </input>
         <input type="HtmlArea" name="html">
             <label>Innhold</label>
             <occurrences minimum="1" maximum="1"/>

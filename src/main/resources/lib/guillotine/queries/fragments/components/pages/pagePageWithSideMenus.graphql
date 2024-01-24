@@ -3,5 +3,10 @@ fragment pagePageWithSideMenus on Page_no_nav_navno_page_with_side_menus {
         anchorId
         linkText
         isDupe
+        subLinks {
+            anchorId
+            linkText
+            isDupe
+        }
     }
 }
