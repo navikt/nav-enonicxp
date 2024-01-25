@@ -57,11 +57,11 @@ const getPartAnchorLink = (part: NodeComponent<'part'>['part']) => {
 
     if (descriptor === 'no.nav.navno:html-area') {
         const htmlArea = config['no-nav-navno']?.['html-area'];
-        if (!htmlArea) {
+        if (!htmlArea || !htmlArea.anchoring?.titleAndAnchor) {
             return null;
         }
 
-        const { anchorId, header, hideFromInternalNavigation } = htmlArea;
+        const { anchorId, header, hideFromInternalNavigation } = htmlArea.anchoring?.titleAndAnchor;
         return getAnchorLink(anchorId, header, hideFromInternalNavigation, 2);
     }
 

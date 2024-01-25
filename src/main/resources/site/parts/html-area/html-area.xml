@@ -2,26 +2,34 @@
     <display-name>Formattert innhold</display-name>
     <description>Komponent for rikt tekstinnhold, bilder, mm</description>
     <form>
-        <field-set>
-            <label>Tittel</label>
-            <items>
-                <input type="TextLine" name="header">
-                    <label>Tittel</label>
-                    <help-text>Vises som h3-element</help-text>
-                    <occurrences minimum="0" maximum="1"/>
-                </input>
-                <input type="TextLine" name="anchorId">
-                    <label>Anker-id</label>
-                    <occurrences minimum="0" maximum="1"/>
-                </input>
-                <input name="hideFromInternalNavigation" type="CheckBox">
-                    <label>Ikke vis under innhold</label>
-                    <config>
-                        <alignment>left</alignment>
-                    </config>
-                </input>
-            </items>
-        </field-set>
+        <option-set name="anchoring">
+            <label>Tittel og ankerlenke</label>
+            <occurrences minimum="0" maximum="1"/>
+            <help-text></help-text>
+            <options minimum="1" maximum="1">
+                <option name="titleAndAnchor">
+                    <label>Bruk tittel og ankerlenke</label>
+                    <help-text>Tittelen blir satt inn som nivå 3 (h3)</help-text>
+                    <items>
+                        <input type="TextLine" name="header">
+                            <label>Tittel</label>
+                            <help-text>Vises som h3-element</help-text>
+                            <occurrences minimum="1" maximum="1"/>
+                        </input>
+                        <input type="TextLine" name="anchorId">
+                            <label>Anker-id</label>
+                            <occurrences minimum="1" maximum="1"/>
+                        </input>
+                        <input name="hideFromInternalNavigation" type="CheckBox">
+                            <label>Ikke vis under innhold</label>
+                            <config>
+                                <alignment>left</alignment>
+                            </config>
+                        </input>
+                    </items>
+                </option>
+            </options>
+        </option-set>
         <input type="HtmlArea" name="html">
             <label>Innhold</label>
             <occurrences minimum="1" maximum="1"/>
