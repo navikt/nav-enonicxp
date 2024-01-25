@@ -35,7 +35,7 @@ const getAnchorLink = (
     hideFromInternalNavigation?: boolean,
     level?: number
 ) => {
-    return anchorId
+    return anchorId && linkText
         ? {
               anchorId,
               linkText,
@@ -61,8 +61,8 @@ const getPartAnchorLink = (part: NodeComponent<'part'>['part']) => {
             return null;
         }
 
-        const { anchorId, header } = htmlArea;
-        return getAnchorLink(anchorId, header, false, 2);
+        const { anchorId, header, hideFromInternalNavigation } = htmlArea;
+        return getAnchorLink(anchorId, header, hideFromInternalNavigation, 2);
     }
 
     if (descriptor === 'no.nav.navno:dynamic-header') {

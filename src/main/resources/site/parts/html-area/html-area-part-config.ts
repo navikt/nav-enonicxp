@@ -11,6 +11,11 @@ export interface HtmlAreaPartConfig {
   anchorId?: string;
 
   /**
+   * Ikke vis under innhold
+   */
+  hideFromInternalNavigation: boolean;
+
+  /**
    * Innhold
    */
   html: string;
