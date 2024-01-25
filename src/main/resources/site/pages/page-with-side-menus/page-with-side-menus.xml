@@ -19,7 +19,7 @@
                 </input>
                 <input type="CheckBox" name="showSubMenu">
                     <label>Vis undermeny</label>
-                    <default>checked</default>
+                    <default>unchecked</default>
                 </input>
                 <input type="TextLine" name="leftMenuHeader">
                     <label>Tittel</label>
