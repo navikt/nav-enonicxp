@@ -1,0 +1,15 @@
+<mixin>
+    <display-name>Andre innstillinger</display-name>
+    <form>
+        <field-set>
+            <label>Andre innstillinger</label>
+            <items>
+                <input name="showSubMenu" type="CheckBox">
+                    <label>
+                        Vis underpunkter (h3-overskrifter) i innholdsmenyen
+                    </label>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</mixin>
