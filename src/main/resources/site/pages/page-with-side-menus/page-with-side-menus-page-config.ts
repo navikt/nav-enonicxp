@@ -16,6 +16,11 @@ export interface PageWithSideMenusPageConfig {
   leftMenuSticky: boolean;
 
   /**
+   * Vis undermeny
+   */
+  showSubMenu: boolean;
+
+  /**
    * Tittel
    */
   leftMenuHeader?: string;

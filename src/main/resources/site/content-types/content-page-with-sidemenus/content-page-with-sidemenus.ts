@@ -125,11 +125,6 @@ export interface ContentPageWithSidemenus {
   formDetailsTargets?: Array<string>;
 
   /**
-   * Vis underpunkter (h3-overskrifter) i innholdsmenyen
-   */
-  showSubMenu: boolean;
-
-  /**
    * Legg til andre språkversjoner
    */
   languages?: Array<string>;

@@ -17,6 +17,10 @@
                     <label>Sticky-meny</label>
                     <default>checked</default>
                 </input>
+                <input type="CheckBox" name="showSubMenu">
+                    <label>Vis undermeny</label>
+                    <default>checked</default>
+                </input>
                 <input type="TextLine" name="leftMenuHeader">
                     <label>Tittel</label>
                     <default>Innhold</default>
