@@ -73,7 +73,7 @@ const getPartAnchorLink = (part: NodeComponent<'part'>['part']) => {
         }
 
         const { anchorId, title, hideFromInternalNavigation, titleTag } = dynamicHeader;
-        const level = titleTag === 'h3' ? 2 : 1;
+        const level = titleTag === 'h2' ? 1 : 2; // Not possible to set h1, and to catch editorial errors, assume all lower h* as level 2.
 
         return getAnchorLink(anchorId, title, hideFromInternalNavigation, level);
     }
