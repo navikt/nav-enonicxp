@@ -18,18 +18,17 @@ const asAdminParams: Pick<Source, 'user' | 'principals'> = {
     },
     principals: [ADMIN_PRINCIPAL],
 };
-
+const removeUndefined = <S>(value: S | undefined): value is S => value !== undefined;
 type Params = Omit<Source, 'user' | 'principals'> & { asAdmin?: boolean };
 type Publications = 'publish' | 'unpublishContent';
 type ContentInfo =
-    | {
+    {
           displayName: string;
           modifiedTimeStr: string;
           status: string;
           title: string;
           url: string;
-      }
-    | undefined;
+      };
 
 const getRepoConnection = ({ repoId, branch, asAdmin }: Params) =>
     nodeLib.connect({
@@ -43,7 +42,8 @@ const layerStr = (repo: string) => (repo !== 'default' ? ` [${repo.replace('navn
 const dayjsDateTime = (datetime: string) =>
     dayjs(datetime.substring(0, 19).replace('T', ' ')).utc(true).local();
 
-const prePublishedLogEntries = [] as auditLogLib.LogEntry<auditLogLib.DefaultData>[];
+// Tabeller for prepublished brukes av flere funksoner og må derfor deklareres globalt.
+let prePublishedLogEntries = [] as auditLogLib.LogEntry<auditLogLib.DefaultData>[];
 let prePublished: ContentInfo[] = [];
 
 const getUserPublications = (user: `user:${string}:${string}`, type: Publications) => {
@@ -108,7 +108,7 @@ const getUserPublications = (user: `user:${string}:${string}`, type: Publication
             };
         });
 
-        return entries.filter((entry) => !!entry);
+        return entries.filter(removeUndefined);
     };
 
     const fromDate = dayjs().subtract(6, 'months').toISOString();
@@ -160,11 +160,13 @@ const getUserPublications = (user: `user:${string}:${string}`, type: Publication
             }
             return true;
         })
+        .filter(removeUndefined)
         .slice(0, 5);
 
     // Get content for prepublish
     if (type === 'publish') {
-        prePublished = getContentFromLogEntries(prePublishedLogEntries, true);
+        prePublished = getContentFromLogEntries(prePublishedLogEntries, true)
+            .sort((a, b) => (dayjs(a.modifiedTimeStr).isAfter(dayjs(b.modifiedTimeStr)) ? -1 : 1));
     }
     // Get content
     return getContentFromLogEntries(lastEntries, false);
@@ -176,6 +178,7 @@ const getLastContentFromUser = () => {
         return null;
     }
     const view = resolve('./dashboard-content.html');
+    prePublishedLogEntries = [];
 
     // 1. Get 5 last published by user + all prepublished (pushed to prePublished[])
     const published = getUserPublications(user, 'publish');
