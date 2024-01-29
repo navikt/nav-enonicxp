@@ -55,16 +55,6 @@ const getPartAnchorLink = (part: NodeComponent<'part'>['part']) => {
         return null;
     }
 
-    if (descriptor === 'no.nav.navno:html-area') {
-        const htmlArea = config['no-nav-navno']?.['html-area'];
-        if (!htmlArea || !htmlArea.anchoring?.titleAndAnchor) {
-            return null;
-        }
-
-        const { anchorId, header, hideFromInternalNavigation } = htmlArea.anchoring?.titleAndAnchor;
-        return getAnchorLink(anchorId, header, hideFromInternalNavigation, 2);
-    }
-
     if (descriptor === 'no.nav.navno:dynamic-header') {
         const dynamicHeader = config['no-nav-navno']?.['dynamic-header'];
 
@@ -73,6 +63,11 @@ const getPartAnchorLink = (part: NodeComponent<'part'>['part']) => {
         }
 
         const { anchorId, title, hideFromInternalNavigation, titleTag } = dynamicHeader;
+
+        // Don't add anchor link for levels lower than h3.
+        if (titleTag !== 'h2' && titleTag !== 'h3') {
+            return null;
+        }
         const level = titleTag === 'h2' ? 1 : 2; // Not possible to set h1, and to catch editorial errors, assume all lower h* as level 2.
 
         return getAnchorLink(anchorId, title, hideFromInternalNavigation, level);
