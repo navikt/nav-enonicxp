@@ -62,15 +62,18 @@ const getPartAnchorLink = (part: NodeComponent<'part'>['part']) => {
             return null;
         }
 
-        const { anchorId, title, hideFromInternalNavigation, titleTag } = dynamicHeader;
+        const { anchorId, title, titleTag } = dynamicHeader;
 
-        // Don't add anchor link for levels lower than h3.
-        if (titleTag !== 'h2' && titleTag !== 'h3') {
+        // As of 2024 options for h2, h5 and h6 has been removed, leaving
+        // only h3 (level2) and h4 (level3).
+
+        const level = titleTag === 'h3' ? 2 : 3;
+
+        if (level === 3) {
             return null;
         }
-        const level = titleTag === 'h2' ? 1 : 2; // Not possible to set h1, and to catch editorial errors, assume all lower h* as level 2.
 
-        return getAnchorLink(anchorId, title, hideFromInternalNavigation, level);
+        return getAnchorLink(anchorId, title, false, level);
     }
 
     return null;

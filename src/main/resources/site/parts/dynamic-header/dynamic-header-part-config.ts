@@ -11,14 +11,9 @@ export interface DynamicHeaderPartConfig {
   anchorId?: string;
 
   /**
-   * Ikke vis under innhold
-   */
-  hideFromInternalNavigation: boolean;
-
-  /**
    * Heading tag
    */
-  titleTag: "h2" | "h3" | "h4" | "h5" | "h6";
+  titleTag: "h3" | "h4";
 
   /**
    * Justering
