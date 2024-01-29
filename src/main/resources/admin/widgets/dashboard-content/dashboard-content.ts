@@ -49,7 +49,7 @@ const layerStr = (repo: string) => (repo !== 'default' ? ` [${repo.replace('navn
 const dayjsDateTime = (datetime: string) =>
     dayjs(datetime.substring(0, 19).replace('T', ' ')).utc(true).local();
 
-// Tabeller for prepublished brukes av flere funksoner og må derfor deklareres globalt.
+// Tabeller for prepublished og unpublished brukes av flere funksjoner og må derfor deklareres globalt.
 let prePublishedLogEntries = [] as auditLogLib.LogEntry<auditLogLib.DefaultData>[];
 let prePublished: ContentInfo[] = [];
 
@@ -184,13 +184,13 @@ const getLastContentFromUser = () => {
     const view = resolve('./dashboard-content.html');
     prePublishedLogEntries = [];
 
-    // 1. Get 5 last published by user + all prepublished (pushed to prePublished[])
+    // 1. Finn brukers 5 siste publiseringer
     const published = getUserPublications(user, 'publish');
 
-    // 2. Get 5 last unpublished by user
+    // 2. Finn brukers 5 siste avpubliseringer
     const unPublished = getUserPublications(user, 'unpublishContent');
 
-    // 3. Fetch all localized content modified by user, find status, sort and slice
+    // 3. Hent alt lokalisert innhold modifisert av bruker, finn status, sorter og avkort til 5
     const repos = getLayersMultiConnection('draft');
     const modified = repos
         .query({
@@ -228,17 +228,15 @@ const getLastContentFromUser = () => {
             let status = 'Ny';
             if (masterContent?.publish?.first && masterContent?.publish?.from) {
                 // Innholdet ER publisert, eventuelt endret etterpå
-                if (draftContent?._versionKey === masterContent?._versionKey) {
-                    return undefined;
-                } else {
+                if (draftContent?._versionKey !== masterContent?._versionKey) {
                     status = 'Endret';
+                } else {
+                    return undefined;
                 }
             } else if (draftContent?.publish?.first) {
                 // Innholdet er IKKE publisert (er avpublisert), eventuelt endret etterpå
                 if (draftContent?.workflow?.state === 'IN_PROGRESS') {
                     status = 'Endret';
-                } else if (draftContent?.archivedTime) {
-                    status = 'Arkivert';
                 } else {
                     return undefined;
                 }
