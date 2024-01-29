@@ -16,43 +16,6 @@ export interface DynamicHeaderPartConfig {
   titleTag: "h3" | "h4";
 
   /**
-   * Justering
-   */
-  justify: "left" | "center" | "right";
-
-  /**
-   * Typografi
-   */
-  typo:
-    | {
-        /**
-         * Selected
-         */
-        _selected: "default";
-
-        /**
-         * Standard
-         */
-        default: Record<string, unknown>;
-      }
-    | {
-        /**
-         * Selected
-         */
-        _selected: "custom";
-
-        /**
-         * Tilpasset
-         */
-        custom: {
-          /**
-           * Velg typografi-stil
-           */
-          typo: "sidetittel" | "innholdstittel" | "systemtittel" | "undertittel" | "element";
-        };
-      };
-
-  /**
    * Velg visning
    */
   renderOnAuthState: "always" | "loggedIn" | "loggedOut";
