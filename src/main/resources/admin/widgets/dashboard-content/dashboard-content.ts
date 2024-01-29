@@ -37,6 +37,13 @@ const getRepoConnection = ({ repoId, branch, asAdmin }: Params) =>
         ...(asAdmin && asAdminParams),
     });
 
+const getRepoId = (entry: auditLogLib.LogEntry<auditLogLib.DefaultData>) => {
+    const object = entry.objects[0];
+    if (!object) {
+        return undefined;
+    }
+    return object.split(':')[0];
+}
 const repoStr = (repoId: string) => repoId.replace('com.enonic.cms.', '');
 const layerStr = (repo: string) => (repo !== 'default' ? ` [${repo.replace('navno-', '')}]` : '');
 const dayjsDateTime = (datetime: string) =>
@@ -53,11 +60,7 @@ const getUserPublications = (user: `user:${string}:${string}`, type: Publication
         prepublish: boolean
     ): ContentInfo[] => {
         const entries = logEntries.map((entry) => {
-            const object = entry.objects[0];
-            if (!object) {
-                return undefined;
-            }
-            const repoId = object.split(':')[0];
+            const repoId = getRepoId(entry);
             if (!repoId) {
                 return undefined;
             }
@@ -129,10 +132,11 @@ const getUserPublications = (user: `user:${string}:${string}`, type: Publication
     const duplicates = [] as auditLogLib.LogEntry<auditLogLib.DefaultData>[];
     const check4Duplicates = (entry: auditLogLib.LogEntry<auditLogLib.DefaultData>) => {
         const contentId = entry.data.params.contentIds as string;
+        const repoId = getRepoId(entry);
 
         return duplicates.find((duplicate) => {
-            const dupCheckId = duplicate.data.params.contentIds as string;
-            return contentId === dupCheckId;
+            const dupCheckContentId = duplicate.data.params.contentIds as string;
+            return contentId === dupCheckContentId && repoId === getRepoId(duplicate);
         });
     };
     const lastEntries = allEntries
