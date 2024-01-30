@@ -9,12 +9,6 @@ fragment contentOverviewPage on no_nav_navno_Overview {
             ...animatedIconsTargetMixin
         }
         productList {
-            _id
-            path
-            type
-            sortTitle
-            language
-
             anchorId
             productDetailsPath
             title
@@ -22,6 +16,7 @@ fragment contentOverviewPage on no_nav_navno_Overview {
             taxonomy
             audience
             area
+            keywords
             productLinks {
                 url
                 language

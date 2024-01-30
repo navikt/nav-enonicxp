@@ -23,24 +23,11 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
         name: context.uniqueName('OverviewListItem'),
         description: 'Product item in overview list',
         fields: {
-            _id: { type: graphQlLib.GraphQLString },
-            path: { type: graphQlLib.GraphQLString },
-            type: { type: graphQlLib.GraphQLString },
-            language: { type: graphQlLib.GraphQLString },
-            sortTitle: { type: graphQlLib.GraphQLString },
             anchorId: { type: graphQlLib.GraphQLString },
             productDetailsPath: { type: graphQlLib.GraphQLString },
+            audience: { type: graphQlLib.GraphQLString },
             title: { type: graphQlLib.GraphQLString },
             ingress: { type: graphQlLib.GraphQLString },
-            audience: { type: graphQlLib.GraphQLString },
-            taxonomy: {
-                type: graphQlLib.list(graphQlLib.GraphQLString),
-                resolve: (env) => forceArray(env.source.taxonomy),
-            },
-            area: {
-                type: graphQlLib.list(graphQlLib.GraphQLString),
-                resolve: (env) => forceArray(env.source.area),
-            },
             illustration: {
                 type: graphQlLib.reference('Content'),
                 resolve: (env) => {
@@ -49,6 +36,18 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
                 },
             },
             productLinks: { type: graphQlLib.list(productLinkType) },
+            taxonomy: {
+                type: graphQlLib.list(graphQlLib.GraphQLString),
+                resolve: (env) => forceArray(env.source.taxonomy),
+            },
+            area: {
+                type: graphQlLib.list(graphQlLib.GraphQLString),
+                resolve: (env) => forceArray(env.source.area),
+            },
+            keywords: {
+                type: graphQlLib.list(graphQlLib.GraphQLString),
+                resolve: (env) => (env.source.keywords ? forceArray(env.source.keywords) : null),
+            },
         },
     });
 

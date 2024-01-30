@@ -14,12 +14,15 @@ import { contentTypesInOverviewPages } from '../contenttype-lists';
 import { getPublicPath } from '../paths/public-path';
 import { runInContext } from '../context/run-in-context';
 import { sortByLocaleCompareOnField } from '../utils/sort-utils';
+import { ArrayOrSingle } from '../../types/util-types';
 
 type OverviewType = Overview['overviewType'];
 type Audience = _Audience['audience']['_selected'];
 
-type ContentWithProductDetails = Content<ContentTypeWithProductDetails>;
-// Generated data type definitions are incorrect due to nested mixins
+// Generated data type definitions are incorrect due to a bug with nested mixins
+type ContentWithProductDetails = Content<ContentTypeWithProductDetails> & {
+    data: { keywords?: ArrayOrSingle<string> };
+};
 type ProductDetailsContent = Content<'no.nav.navno:product-details'>;
 
 const CONTENT_TYPES_IN_ALL_PRODUCTS_LISTS = [
@@ -61,17 +64,8 @@ const getDataFromProductPage = (product: ContentWithProductDetails): OverviewPag
 
     const path = getPublicPath(product, language);
 
-    const dataForBackwardsCompatibility = {
-        _id: product._id,
-        language: product.language,
-        type: product.type,
-        path,
-        sortTitle: listItemTitle,
-    };
-
     return {
         ...data,
-        ...dataForBackwardsCompatibility,
         title: listItemTitle,
         audience: audience._selected,
         anchorId: sanitize(listItemTitle),
@@ -189,7 +183,6 @@ const getTypeSpecificProductsData = (
 
             const productData: OverviewPageProductItem = {
                 ...productPageData,
-                sortTitle: title,
                 title,
                 productDetailsPath: getPublicPath(productDetailsContent, requestedLanguage),
             };
