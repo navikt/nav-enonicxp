@@ -20,7 +20,6 @@ const asAdminParams: Pick<Source, 'user' | 'principals'> = {
 };
 const removeUndefined = <S>(value: S | undefined): value is S => value !== undefined;
 type Params = Omit<Source, 'user' | 'principals'> & { asAdmin?: boolean };
-type Publications = 'publish' | 'unpublishContent';
 type ContentInfo =
     {
           displayName: string;
@@ -49,214 +48,254 @@ const layerStr = (repo: string) => (repo !== 'default' ? ` [${repo.replace('navn
 const dayjsDateTime = (datetime: string) =>
     dayjs(datetime.substring(0, 19).replace('T', ' ')).utc(true).local();
 
-// Tabeller for prepublished og unpublished brukes av flere funksjoner og må derfor deklareres globalt.
-let prePublishedLogEntries = [] as auditLogLib.LogEntry<auditLogLib.DefaultData>[];
-let prePublished: ContentInfo[] = [];
+const sortEntries = (entries: auditLogLib.LogEntry<auditLogLib.DefaultData>[]) => {
+    // Endre datoformat fra "Elastic spesial" og sorter
+    entries.map((entry) => (entry.time = dayjsDateTime(entry.time).toString()));
+    return entries.sort((a, b) => (dayjs(a.time).isAfter(dayjs(b.time)) ? -1 : 1));
+}
 
-const getUserPublications = (user: `user:${string}:${string}`, type: Publications) => {
-    // Function to enerate datamodel for log entries (publish/unpublish/prepublish)
-    const getContentFromLogEntries = (
-        logEntries: auditLogLib.LogEntry<auditLogLib.DefaultData>[],
-        prepublish: boolean
-    ): ContentInfo[] => {
-        const entries = logEntries.map((entry) => {
-            const repoId = getRepoId(entry);
-            if (!repoId) {
-                return undefined;
-            }
-            const contentId = entry.data.params.contentIds as string;
-            if (!contentId) {
-                return undefined;
-            }
-            const content = getRepoConnection({
-                branch: 'draft',
-                repoId,
-            })
-                .query({
-                    filters: {
-                        boolean: {
-                            must: {
-                                hasValue: {
-                                    field: 'type',
-                                    values: [...legacyPageContentTypes, ...dynamicPageContentTypes],
-                                },
+const getContentFromLogEntries = (
+    logEntries: auditLogLib.LogEntry<auditLogLib.DefaultData>[],
+    prepublish: boolean
+): ContentInfo[] => {
+    const entries = logEntries.map((entry) => {
+        const repoId = getRepoId(entry);
+        if (!repoId) {
+            return undefined;
+        }
+        const contentId = entry.data.params.contentIds as string;
+        if (!contentId) {
+            return undefined;
+        }
+        const content = getRepoConnection({
+            branch: 'draft',
+            repoId,
+        })
+            .query({
+                filters: {
+                    boolean: {
+                        must: {
+                            hasValue: {
+                                field: 'type',
+                                values: [...legacyPageContentTypes, ...dynamicPageContentTypes],
                             },
                         },
-                        ids: {
-                            values: [contentId],
-                        },
                     },
-                })
-                .hits.map((hit) =>
-                    getRepoConnection({
-                        branch: 'draft',
-                        repoId,
-                    }).get(hit.id)
-                )[0]; // Only first published element in multi publications
+                    ids: {
+                        values: [contentId],
+                    },
+                },
+            })
+            .hits.map((hit) =>
+                getRepoConnection({
+                    branch: 'draft',
+                    repoId,
+                }).get(hit.id)
+            )[0]; // Only first published element in multi publications
 
-            if (!content) {
-                return undefined;
-            }
+        if (!content) {
+            return undefined;
+        }
 
-            const repo = repoStr(repoId);
-            const layer = layerStr(repo);
-            const contentPublishInfo = entry.data.params?.contentPublishInfo as any;
-            const modifyDate = prepublish ? contentPublishInfo?.from : entry.time;
-            return {
-                displayName: content.displayName + layer,
-                modifiedTimeStr: dayjs(modifyDate).format('DD.MM.YYYY HH.mm.ss'),
-                status: '',
-                title: content._path.replace('/content/www.nav.no/', ''),
-                url: `/admin/tool/com.enonic.app.contentstudio/main/${repo}/edit/${content._id}`,
-            };
-        });
+        const repo = repoStr(repoId);
+        const layer = layerStr(repo);
+        const contentPublishInfo = entry.data.params?.contentPublishInfo as any;
+        const modifyDate = prepublish ? contentPublishInfo?.from : entry.time;
+        return {
+            displayName: content.displayName + layer,
+            modifiedTimeStr: dayjs(modifyDate).format('DD.MM.YYYY HH.mm.ss'),
+            status: '',
+            title: content._path.replace('/content/www.nav.no/', ''),
+            url: `/admin/tool/com.enonic.app.contentstudio/main/${repo}/edit/${content._id}`,
+        };
+    });
 
-        return entries.filter(removeUndefined);
-    };
+    return entries.filter(removeUndefined);
+};
 
-    const fromDate = dayjs().subtract(6, 'months').toISOString();
-    // Get users entries in AuditLog from the last 6 month
-    const results = auditLogLib.find({
-        count: 5000,
-        from: fromDate,
-        type: `system.content.${type}`,
-        users: [user],
-    }) as any;
-
-    // Get time in normalized format for dayjs (elastic has its own datetime format) and sort
-    const entries = results.hits as auditLogLib.LogEntry<auditLogLib.DefaultData>[];
-    entries.map((entry) => (entry.time = dayjsDateTime(entry.time).toString()));
-    const allEntries = entries.sort((a, b) => (dayjs(a.time).isAfter(dayjs(b.time)) ? -1 : 1));
-
-    // Remove duplicates (published or unpublished more than once), check for prepublish and slice
-    const duplicates = [] as auditLogLib.LogEntry<auditLogLib.DefaultData>[];
-    const check4Duplicates = (entry: auditLogLib.LogEntry<auditLogLib.DefaultData>) => {
-        const contentId = entry.data.params.contentIds as string;
-        const repoId = getRepoId(entry);
-
-        return duplicates.find((duplicate) => {
-            const dupCheckContentId = duplicate.data.params.contentIds as string;
-            return contentId === dupCheckContentId && repoId === getRepoId(duplicate);
-        });
-    };
-    const lastEntries = allEntries
-        .filter((entry) => {
-            // Filter duplicates
-            if (check4Duplicates(entry)) {
+const check4Duplicates = (entries: auditLogLib.LogEntry<auditLogLib.DefaultData>[]) => {
+        const duplicates = [] as auditLogLib.LogEntry<auditLogLib.DefaultData>[];
+        return entries.filter((entry) =>
+        {
+            const contentId = entry.data.params.contentIds as string;
+            const repoId = getRepoId(entry);
+            const duplicate = duplicates
+                .find((duplicate) => {
+                    const dupCheckContentId = duplicate.data.params.contentIds as string;
+                    return contentId === dupCheckContentId && repoId === getRepoId(duplicate);
+                });
+            if (duplicate) {
+                // Duplikat, skal ikke være med
                 return false;
             } else {
+                // Ikke duplikat skal være med (og tas vare på for senere sjekk)
                 duplicates.push(entry);
                 return true;
             }
-        })
+        });
+};
+
+const statusIsChanged = (
+    entry: auditLogLib.LogEntry<auditLogLib.DefaultData>,
+    statusEntries: auditLogLib.LogEntry<auditLogLib.DefaultData>[]
+):boolean => {
+    const contentId = entry.data.params.contentIds as string;
+    const repoId = getRepoId(entry);
+    const contentPublishInfo = entry.data.params.contentPublishInfo as any;
+    const prePublishDate = contentPublishInfo?.from;
+
+    return !!statusEntries.find((element) => {
+        const dupCheckContentId = element.data.params.contentIds as string;
+        if (contentId === dupCheckContentId && repoId === getRepoId(element)) {
+            return dayjsDateTime(element.time).isAfter(dayjs(prePublishDate));
+        }
+        return false;
+    });
+}
+
+const getUserPublications = (user: `user:${string}:${string}`) => {
+
+    const fromDate = dayjs().subtract(6, 'months').toISOString(); // Går 6 måneder tilbake i tid
+    const publishedLogEntries = auditLogLib.find({
+        count: 1000,
+        from: fromDate,
+        type: 'system.content.publish',
+        users: [user],
+    }) as any;
+    const unPublishedLogEntries = auditLogLib.find({
+        count: 1000,
+        from: fromDate,
+        type: 'system.content.unpublishContent',
+        users: [user],
+    }) as any;
+
+    // Sorter treff og fjern duplikater (innhold som er publisert/avpublisert flere ganger)
+    let publishedEntries:auditLogLib.LogEntry<auditLogLib.DefaultData>[] =
+        check4Duplicates(sortEntries(publishedLogEntries.hits));
+    let unpublishedEntries:auditLogLib.LogEntry<auditLogLib.DefaultData>[] =
+        check4Duplicates(sortEntries(unPublishedLogEntries.hits));
+    let prePublishedEntries:auditLogLib.LogEntry<auditLogLib.DefaultData>[] = [];
+
+    // Fjern forhåndspubliseringer fra publisert-listen og bygg forhåndspubliserings-listen
+    publishedEntries = publishedEntries
         .filter((entry) => {
-            if (type === 'publish') {
-                // Filter and push entries for scheduled publish (prepublish)
-                const contentPublishInfo = entry.data.params.contentPublishInfo as any;
-                const publishTime = contentPublishInfo?.from;
-                if (publishTime) {
-                    if (dayjsDateTime(publishTime).isAfter(dayjs())) {
-                        // This entry is scheduled, push to prePublished entries
-                        prePublishedLogEntries.push(entry);
-                        return false;
-                    }
+            // Filter and push entries for scheduled publish (prepublish)
+            const contentPublishInfo = entry.data.params.contentPublishInfo as any;
+            const prePublishDate = contentPublishInfo?.from;
+            if ( prePublishDate ) {
+                const publishedLater = statusIsChanged(entry, publishedEntries);
+                const unpublishedLater = statusIsChanged(entry, unpublishedEntries);
+                const prepublishDateNotExceeded = dayjsDateTime(prePublishDate).isAfter(dayjs());
+                if (!publishedLater && !unpublishedLater && prepublishDateNotExceeded) {
+                    // Dette er en framtidig publisering
+                    prePublishedEntries.push(entry);
+                    return false;
                 }
             }
             return true;
         })
-        .filter(removeUndefined)
         .slice(0, 5);
 
-    // Get content for prepublish
-    if (type === 'publish') {
-        prePublished = getContentFromLogEntries(prePublishedLogEntries, true)
-            .sort((a, b) => (dayjs(a.modifiedTimeStr).isAfter(dayjs(b.modifiedTimeStr)) ? -1 : 1));
+    // Må sortere prepublished på from-feltet
+    prePublishedEntries = prePublishedEntries.sort((a, b) => {
+        const aContentPublishInfo = a.data.params.contentPublishInfo as any;
+        const bContentPublishInfo = b.data.params.contentPublishInfo as any;
+        return (dayjs(aContentPublishInfo?.from).isAfter(dayjs(bContentPublishInfo?.from)) ? -1 : 1)
+    });
+
+    unpublishedEntries = unpublishedEntries.slice(0, 5);
+
+    // Returner content for alle tre typer
+    const published = getContentFromLogEntries(publishedEntries, false);
+    const prePublished = getContentFromLogEntries(prePublishedEntries, true);
+    const unPublished = getContentFromLogEntries(unpublishedEntries, false);
+    return {
+        published,
+        prePublished,
+        unPublished
     }
-    // Get content
-    return getContentFromLogEntries(lastEntries, false);
 };
 
+const getUserModifications = (user: `user:${string}:${string}`) => {
+    const repos = getLayersMultiConnection('draft');
+    return repos.query({
+        count: 5000,
+        query: `modifier = "${user}"`,
+        filters: {
+            boolean: {
+                mustNot: NON_LOCALIZED_QUERY_FILTER,
+                must: {
+                    hasValue: {
+                        field: 'type',
+                        values: [...legacyPageContentTypes, ...dynamicPageContentTypes],
+                    },
+                },
+            },
+        },
+    })
+    .hits.map((hit) => {
+        const draftContent = getRepoConnection({
+            branch: 'draft',
+            repoId: hit.repoId,
+        }).get(hit.id);
+        const masterContent = getRepoConnection({
+            branch: 'master',
+            repoId: hit.repoId,
+        }).get(hit.id);
+
+        if (!draftContent) {
+            return undefined;
+        }
+
+        if (!draftContent.displayName) {
+            draftContent.displayName = 'Uten tittel';
+        }
+        let status = 'Ny';
+        if (masterContent?.publish?.first && masterContent?.publish?.from) {
+            // Innholdet ER publisert, eventuelt endret etterpå
+            if (draftContent?._versionKey !== masterContent?._versionKey) {
+                status = 'Endret';
+            } else {
+                return undefined;
+            }
+        } else if (draftContent?.publish?.first) {
+            // Innholdet er IKKE publisert (er avpublisert), eventuelt endret etterpå
+            if (draftContent?.workflow?.state === 'IN_PROGRESS') {
+                status = 'Endret';
+            } else {
+                return undefined;
+            }
+        }
+        const modifiedLocalTime = dayjsDateTime(draftContent._ts);
+        const repo = repoStr(hit.repoId);
+        const layer = layerStr(repo);
+
+        return {
+            displayName: draftContent.displayName + layer,
+            modifiedTime: modifiedLocalTime,
+            modifiedTimeStr: dayjs(modifiedLocalTime).format('DD.MM.YYYY HH.mm.ss'),
+            status,
+            title: draftContent._path.replace('/content/www.nav.no/', ''),
+            url: `/admin/tool/com.enonic.app.contentstudio/main/${repo}/edit/${draftContent._id}`,
+        };
+    })
+    .filter((entry) => !!entry)
+    .sort((a, b) => (dayjs(a?.modifiedTime).isAfter(dayjs(b?.modifiedTime)) ? -1 : 1))
+    .slice(0, 5);
+}
 const getLastContentFromUser = () => {
+    // Hent aktuell bruker (redaktør)
     const user = authLib.getUser()?.key;
     if (!user) {
         return null;
     }
+    // Hent brukers publiseringer, forhåndspubliseringer og avpubliaseringer
+    const { published, prePublished, unPublished } = getUserPublications(user);
+
+    // Hent alt lokalisert innhold modifisert av bruker, finn status, sorter og avkort til 5
+    const modified = getUserModifications(user);
+
     const view = resolve('./dashboard-content.html');
-    prePublishedLogEntries = [];
-
-    // 1. Finn brukers 5 siste publiseringer
-    const published = getUserPublications(user, 'publish');
-
-    // 2. Finn brukers 5 siste avpubliseringer
-    const unPublished = getUserPublications(user, 'unpublishContent');
-
-    // 3. Hent alt lokalisert innhold modifisert av bruker, finn status, sorter og avkort til 5
-    const repos = getLayersMultiConnection('draft');
-    const modified = repos
-        .query({
-            count: 5000,
-            query: `modifier = "${user}" AND type LIKE "no.nav.navno:*"`,
-            filters: {
-                boolean: {
-                    mustNot: NON_LOCALIZED_QUERY_FILTER,
-                    must: {
-                        hasValue: {
-                            field: 'type',
-                            values: [...legacyPageContentTypes, ...dynamicPageContentTypes],
-                        },
-                    },
-                },
-            },
-        })
-        .hits.map((hit) => {
-            const draftContent = getRepoConnection({
-                branch: 'draft',
-                repoId: hit.repoId,
-            }).get(hit.id);
-            const masterContent = getRepoConnection({
-                branch: 'master',
-                repoId: hit.repoId,
-            }).get(hit.id);
-
-            if (!draftContent) {
-                return undefined;
-            }
-
-            if (!draftContent.displayName) {
-                draftContent.displayName = 'Uten tittel';
-            }
-            let status = 'Ny';
-            if (masterContent?.publish?.first && masterContent?.publish?.from) {
-                // Innholdet ER publisert, eventuelt endret etterpå
-                if (draftContent?._versionKey !== masterContent?._versionKey) {
-                    status = 'Endret';
-                } else {
-                    return undefined;
-                }
-            } else if (draftContent?.publish?.first) {
-                // Innholdet er IKKE publisert (er avpublisert), eventuelt endret etterpå
-                if (draftContent?.workflow?.state === 'IN_PROGRESS') {
-                    status = 'Endret';
-                } else {
-                    return undefined;
-                }
-            }
-            const modifiedLocalTime = dayjsDateTime(draftContent._ts);
-            const repo = repoStr(hit.repoId);
-            const layer = layerStr(repo);
-
-            return {
-                displayName: draftContent.displayName + layer,
-                modifiedTime: modifiedLocalTime,
-                modifiedTimeStr: dayjs(modifiedLocalTime).format('DD.MM.YYYY HH.mm.ss'),
-                status,
-                title: draftContent._path.replace('/content/www.nav.no/', ''),
-                url: `/admin/tool/com.enonic.app.contentstudio/main/${repo}/edit/${draftContent._id}`,
-            };
-        })
-        .filter((entry) => !!entry)
-        .sort((a, b) => (dayjs(a?.modifiedTime).isAfter(dayjs(b?.modifiedTime)) ? -1 : 1))
-        .slice(0, 5);
 
     return {
         body: thymeleafLib.render(view, { published, prePublished, modified, unPublished }),
