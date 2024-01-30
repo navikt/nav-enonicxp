@@ -1,6 +1,6 @@
 <part xmlns="urn:enonic:xp:model:1.0">
     <display-name>Header</display-name>
-    <description>H2-H6 header</description>
+    <description>H3 og H4-header</description>
     <form>
         <input name="title" type="TextLine">
             <label>Tittel</label>
