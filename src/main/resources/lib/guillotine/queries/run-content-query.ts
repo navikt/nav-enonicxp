@@ -8,6 +8,7 @@ import { GuillotineQueryParams, runGuillotineQuery } from '../utils/run-guilloti
 import { buildFragmentComponentTree, GuillotineComponent } from '../utils/process-components';
 import { runInContext } from '../../context/run-in-context';
 import { generateBreadcrumbs } from '../utils/breadcrumbs';
+import { generateAlerts } from '../utils/alerts';
 import { GuillotineUnresolvedComponentType } from './run-sitecontent-query';
 import { PortalComponent } from '../../../types/components/component-portal';
 import { NodeComponent } from '../../../types/components/component-node';
@@ -183,8 +184,13 @@ export const runGuillotineContentQuery = (
         generateBreadcrumbs(baseContent)
     );
 
+    const alerts = runInContext({ branch: baseQueryParams.branch }, () =>
+        generateAlerts(baseContent)
+    );
+
     return {
         ...contentQueryResult,
         ...(breadcrumbs && { breadcrumbs }),
+        ...(alerts && { alerts }),
     };
 };

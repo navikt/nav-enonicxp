@@ -12,6 +12,7 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
         name: context.uniqueName('FormDetailsList'),
         description: 'Liste over sider med skjemadetaljer',
         fields: {
+            _id: { type: graphQlLib.GraphQLString },
             url: { type: graphQlLib.GraphQLString },
             type: { type: graphQlLib.GraphQLString },
             targetLanguage: { type: graphQlLib.GraphQLString },
@@ -23,6 +24,7 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
             formNumbers: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             sortTitle: { type: graphQlLib.GraphQLString },
             title: { type: graphQlLib.GraphQLString },
+            alerts: { type: graphQlLib.list(graphQlLib.reference('no_nav_navno_AlertInContext')) },
             anchorId: { type: graphQlLib.GraphQLString },
             taxonomy: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             area: { type: graphQlLib.list(graphQlLib.GraphQLString) },
@@ -35,6 +37,18 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
             },
         },
     });
+
+    params.fields.alerts = {
+        type: graphQlLib.list(graphQlLib.reference('no_nav_navno_AlertInContext')),
+        resolve: () => {
+            const result = contentLib.query({
+                count: 1000,
+                contentTypes: ['no.nav.navno:alert-in-context'],
+            }).hits;
+
+            return result;
+        },
+    };
 
     params.fields.formDetailsList = {
         type: graphQlLib.list(formDetailsList),

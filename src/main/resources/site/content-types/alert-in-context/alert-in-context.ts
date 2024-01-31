@@ -11,44 +11,7 @@ export interface AlertInContext {
   text?: string;
 
   /**
-   * Vis kun på bestemte områder eller url'er
+   * Velg sider og innhold hvor varselet skal vises
    */
-  scope:
-    | {
-        /**
-         * Selected
-         */
-        _selected: "url";
-
-        /**
-         * Vis kun på bestemte URL'er
-         */
-        url: {
-          /**
-           * Vis kun på bestemte URL'er
-           */
-          url: Array<{
-            /**
-             * URL
-             */
-            urls: Array<string>;
-          }>;
-        };
-      }
-    | {
-        /**
-         * Selected
-         */
-        _selected: "area";
-
-        /**
-         * Vis kun på bestemte områder
-         */
-        area: {
-          /**
-           * Velg område
-           */
-          area: Array<"sykepenger" | "dagpenger" | "minside">;
-        };
-      };
+  targetContent: Array<string>;
 }

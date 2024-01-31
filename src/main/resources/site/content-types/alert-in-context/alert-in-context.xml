@@ -9,7 +9,7 @@
                 <input name="type" type="RadioButton">
                     <label>Type</label>
                     <config>
-                        <option value="critical">Kritisk driftsmelding</option>
+                        <option value="critical">Kritisk informasjon</option>
                         <option value="information">Viktig informasjon</option>
                     </config>
                     <default>information</default>
@@ -19,47 +19,23 @@
                     <help-text>Kort og konsis meldingstekst</help-text>
                     <occurrences minimum="0" maximum="1"/>
                 </input>
-                <option-set name="scope">
-                    <label>Vis kun på bestemte områder eller url'er</label> 
-                    <occurrences minimum="1" maximum="1"/>
-                    <options minimum="1" maximum="1"> 
-                        <option name="url">
-                            <label>Vis kun på bestemte URL'er</label>
-                            <items>
-                                <item-set name="url">
-                                    <label>Vis kun på bestemte URL'er</label>
-                                    <help-text>Hvis ingen URL'er er satt, vises meldingen globalt på nav.no</help-text>
-                                    <occurrences minimum="1" maximum="0"/>
-                                    <items>
-                                        <input type="TextLine" name="urls">
-                                            <label>URL</label>
-                                            <help-text>Som standard vises meldingen på alle under-sider av valgt URL - For å kun vise på en spesifikk side, avslutt med $</help-text>
-                                            <occurrences minimum="1" maximum="0"/>
-                                            <default>https://www.nav.no/</default>
-                                            <config>
-                                                <regexp>^((http:\/\/localhost:3000)|(https:\/\/([a-z0-9_\-.]*\.)*nav\.no))($|\/).*</regexp>
-                                            </config>
-                                        </input>
-                                    </items>
-                                </item-set>
-                            </items>
-                        </option>
-                        <option name="area">
-                            <label>Vis kun på bestemte områder</label>
-                            <items>
-                                <input name="area" type="ComboBox">
-                                    <label>Velg område</label>
-                                    <occurrences minimum="1" maximum="0"/>
-                                    <config>
-                                        <option value="sykepenger">Sykepenger</option>  
-                                        <option value="dagpenger">Dagpenger</option>
-                                        <option value="minside">Min side / personopplysninger</option>
-                                    </config>
-                                </input>
-                            </items>
-                        </option>
-                    </options>
-                </option-set>
+                <input type="ContentSelector" name="targetContent">
+                    <label>Velg sider og innhold hvor varselet skal vises</label>
+                    <occurrences minimum="1" maximum="0" />
+                    <config>
+                        <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
+                        <allowContentType>${app}:situation-page</allowContentType>
+                        <allowContentType>${app}:guide-page</allowContentType>
+                        <allowContentType>${app}:tools-page</allowContentType>
+                        <allowContentType>${app}:guide-page</allowContentType>
+                        <allowContentType>${app}:themed-article-page</allowContentType>
+                        <allowContentType>${app}:overview</allowContentType>
+                        <allowContentType>${app}:forms-overview</allowContentType>
+                        <allowContentType>${app}:form-details</allowContentType>
+                        <allowContentType>${app}:product-details</allowContentType>
+                        <hideToggleIcon>true</hideToggleIcon>
+                    </config>
+                </input>
             </items>
         </field-set>
     </form>

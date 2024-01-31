@@ -39,6 +39,7 @@ export const formsOverviewListItemTransformer =
         const sortTitle = content.data.sortTitle || title;
 
         return {
+            _id: content._id,
             title,
             sortTitle,
             ingress: content.data.ingress,

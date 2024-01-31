@@ -24,6 +24,7 @@ export type ContentWithFormDetails = Content<ContentTypeWithFormDetails> & {
 };
 
 export type FormDetailsListItem = {
+    _id: string;
     anchorId: string;
     formDetailsPaths: string[];
     formDetailsTitles: string[];

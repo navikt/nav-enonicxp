@@ -1,5 +1,6 @@
 #import "../mixins/animatedIconsTargetFragment.graphql"
 #import "../mixins/imageInlineFragment.graphql"
+#import "./alertInContextFragment.graphql"
 
 fragment contentFormsOverviewPage on no_nav_navno_FormsOverview {
     dataAsJson
@@ -31,7 +32,11 @@ fragment contentFormsOverviewPage on no_nav_navno_FormsOverview {
         illustration {
             ...animatedIconsTargetMixin
         }
+        alerts {
+            ...alertInContext
+        }
         formDetailsList {
+            _id
             title
             sortTitle
             url
