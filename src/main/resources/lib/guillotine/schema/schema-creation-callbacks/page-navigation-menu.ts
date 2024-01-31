@@ -33,14 +33,14 @@ const getAnchorLink = (
     anchorId?: string,
     linkText?: string,
     hideFromInternalNavigation?: boolean,
-    level?: number
+    menuLevel?: number
 ) => {
     return anchorId && linkText
         ? {
               anchorId,
               linkText,
               hideFromInternalNavigation,
-              level,
+              level: menuLevel,
           }
         : null;
 };
@@ -65,15 +65,14 @@ const getPartAnchorLink = (part: NodeComponent<'part'>['part']) => {
         const { anchorId, title, titleTag } = dynamicHeader;
 
         // As of 2024 options for h2, h5 and h6 has been removed, leaving
-        // only h3 (level2) and h4 (level3).
+        // only h3 (level2 in menu) and h4 (level3 in menu).
+        const menuLevel = titleTag === 'h3' ? 2 : 3;
 
-        const level = titleTag === 'h3' ? 2 : 3;
-
-        if (level === 3) {
+        if (menuLevel === 3) {
             return null;
         }
 
-        return getAnchorLink(anchorId, title, false, level);
+        return getAnchorLink(anchorId, title, false, menuLevel);
     }
 
     return null;
