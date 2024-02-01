@@ -12,7 +12,7 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
         name: context.uniqueName('FormDetailsList'),
         description: 'Liste over sider med skjemadetaljer',
         fields: {
-            _id: { type: graphQlLib.GraphQLString },
+            formDetailsIds: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             url: { type: graphQlLib.GraphQLString },
             type: { type: graphQlLib.GraphQLString },
             targetLanguage: { type: graphQlLib.GraphQLString },

@@ -24,7 +24,6 @@ export type ContentWithFormDetails = Content<ContentTypeWithFormDetails> & {
 };
 
 export type FormDetailsListItem = {
-    _id: string;
     anchorId: string;
     formDetailsPaths: string[];
     formDetailsTitles: string[];
@@ -34,4 +33,5 @@ export type FormDetailsListItem = {
     url: string | null;
     type: ContentTypeWithFormDetails;
     targetLanguage: string;
+    formDetailsIds: string[];
 } & Required<IncludedProductData>;

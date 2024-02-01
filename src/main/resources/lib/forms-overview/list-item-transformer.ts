@@ -39,7 +39,6 @@ export const formsOverviewListItemTransformer =
         const sortTitle = content.data.sortTitle || title;
 
         return {
-            _id: content._id,
             title,
             sortTitle,
             ingress: content.data.ingress,
@@ -65,5 +64,6 @@ export const formsOverviewListItemTransformer =
             formNumbers: formDetailsContents
                 .map((formDetails) => forceArray(formDetails.data.formNumbers))
                 .flat(),
+            formDetailsIds: formDetailsContents.map((formDetails) => formDetails._id),
         };
     };

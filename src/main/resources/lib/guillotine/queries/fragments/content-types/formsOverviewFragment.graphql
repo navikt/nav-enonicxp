@@ -36,7 +36,6 @@ fragment contentFormsOverviewPage on no_nav_navno_FormsOverview {
             ...alertInContext
         }
         formDetailsList {
-            _id
             title
             sortTitle
             url
@@ -51,6 +50,7 @@ fragment contentFormsOverviewPage on no_nav_navno_FormsOverview {
             area
             taxonomy
             anchorId
+            formDetailsIds
             illustration {
                 ... on no_nav_navno_AnimatedIcons {
                     type
