@@ -5,7 +5,7 @@ import { RepoConnection } from '/lib/xp/node';
 import * as contextLib from '/lib/xp/context';
 import graphQlLib from '/lib/graphql';
 import { RepoBranch } from '../../../../types/common';
-import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
+import { CreationCallback } from '../../utils/creation-callback-utils';
 import { NodeComponent } from '../../../../types/components/component-node';
 import { logger } from '../../../utils/logging';
 import { forceArray } from '../../../utils/array-utils';
@@ -14,8 +14,6 @@ type AnchorLink = {
     anchorId: string;
     linkText?: string;
     hideFromInternalNavigation?: boolean;
-    level?: number;
-    subLinks?: AnchorLink[];
 };
 
 const getComponents = (contentId: string, repo: RepoConnection) => {
@@ -158,21 +156,8 @@ const getComponentAnchorLink = (
 };
 
 export const anchorLinksCallback: CreationCallback = (context, params) => {
-    const subLink = graphQlCreateObjectType(context, {
-        name: context.uniqueName('SubAnchorLink'),
-        description: 'Sub anchor link',
-        fields: {
-            anchorId: { type: graphQlLib.GraphQLString },
-            linkText: { type: graphQlLib.GraphQLString },
-            isDupe: { type: graphQlLib.GraphQLString },
-        },
-    });
-
     params.fields.isDupe = {
         type: graphQlLib.GraphQLBoolean,
-    };
-    params.fields.subLinks = {
-        type: graphQlLib.list(subLink),
     };
 };
 
@@ -196,7 +181,7 @@ export const pageNavigationMenuCallback: CreationCallback = (context, params) =>
         const anchorLinkOverrides = forceArray(env.source.anchorLinks);
         const components = getComponents(contentId, repo);
 
-        const flatAnchorLinks = components.reduce((acc: AnchorLink[], component) => {
+        return components.reduce((acc: AnchorLink[], component) => {
             const anchorLink = getComponentAnchorLink(component, repo);
             if (!anchorLink) {
                 return acc;
@@ -227,22 +212,6 @@ export const pageNavigationMenuCallback: CreationCallback = (context, params) =>
                     ...(isDupe && { isDupe }),
                 },
             ];
-        }, []) as AnchorLink[];
-
-        const nestedAnchorLinks: AnchorLink[] = [];
-
-        flatAnchorLinks.forEach((anchorLink) => {
-            if (anchorLink.level === 2 && nestedAnchorLinks.length > 0) {
-                const lastNestedAnchorLink = nestedAnchorLinks[nestedAnchorLinks.length - 1];
-                lastNestedAnchorLink.subLinks = [
-                    ...(lastNestedAnchorLink.subLinks || []),
-                    anchorLink,
-                ];
-                return;
-            }
-            nestedAnchorLinks.push(anchorLink);
-        });
-
-        return nestedAnchorLinks;
+        }, [] as AnchorLink[]);
     };
 };

@@ -16,9 +16,9 @@ export interface PageWithSideMenusPageConfig {
   leftMenuSticky: boolean;
 
   /**
-   * Vis undermeny
+   * Vis intern-navigasjon i innholdsseksjoner
    */
-  showSubMenu: boolean;
+  showSubsectionNavigation: boolean;
 
   /**
    * Tittel
