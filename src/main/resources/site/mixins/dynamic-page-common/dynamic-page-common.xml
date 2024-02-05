@@ -3,18 +3,6 @@
         <mixin name="languages-legacy"/>
         <mixin name="decorator-toggles"/>
         <field-set>
-            <label>Intern navigasjon</label>
-            <items>
-                <input type="CheckBox" name="showSubsectionNavigation">
-                    <label>Vis intern navigasjon i innholdsseksjoner</label>
-                    <default>unchecked</default>
-                    <config>
-                        <alignment>left</alignment>  
-                    </config>
-                </input>
-            </items>
-        </field-set>
-        <field-set>
             <label>For internt søk</label>
             <items>
                 <input type="TextArea" name="description">
