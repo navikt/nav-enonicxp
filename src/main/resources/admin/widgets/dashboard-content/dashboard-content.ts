@@ -46,7 +46,7 @@ const getRepoId = (entry: auditLogLib.LogEntry<auditLogLib.DefaultData>) => {
 const repoStr = (repoId: string) => repoId.replace('com.enonic.cms.', '');
 const layerStr = (repo: string) => (repo !== 'default' ? ` [${repo.replace('navno-', '')}]` : '');
 const dayjsDateTime = (datetime: string) =>
-    dayjs(datetime.substring(0, 19).replace('T', ' ')).utc(true).local();
+    datetime && dayjs(datetime.substring(0, 19).replace('T', ' ')).utc(true).local();
 
 const sortEntries = (entries: auditLogLib.LogEntry<auditLogLib.DefaultData>[]) => {
     // Endre datoformat fra "Elastic spesial" og sorter
@@ -137,28 +137,10 @@ const check4Duplicates = (entries: auditLogLib.LogEntry<auditLogLib.DefaultData>
         });
 };
 
-const statusIsChanged = (
-    entry: auditLogLib.LogEntry<auditLogLib.DefaultData>,
-    published: boolean,
-    statusEntries: auditLogLib.LogEntry<auditLogLib.DefaultData>[]
-):boolean => {
-    const contentId = entry.data.params.contentIds as string;
-    const repoId = getRepoId(entry);
-    const contentPublishInfo = entry.data.params.contentPublishInfo as any;
-    const prePublishDate = published ? contentPublishInfo?.from : contentPublishInfo?.to;
-
-    return !!statusEntries.find((element) => {
-        const dupCheckContentId = element.data.params.contentIds as string;
-        if (contentId === dupCheckContentId && repoId === getRepoId(element)) {
-            return dayjsDateTime(element.time).isAfter(dayjs(prePublishDate));
-        }
-        return false;
-    });
-}
-
+// Hent alle brukers siste publiseringer (også forhåndspubliseringer) og avpubliseringer
 const getUserPublications = (user: `user:${string}:${string}`) => {
 
-    const fromDate = dayjs().subtract(1, 'months').toISOString(); // Går 6 måneder tilbake i tid
+    const fromDate = dayjs().subtract(6, 'months').toISOString(); // Går 6 måneder tilbake i tid
     const publishedLogEntries = auditLogLib.find({
         count: 1000,
         from: fromDate,
@@ -177,38 +159,72 @@ const getUserPublications = (user: `user:${string}:${string}`) => {
         check4Duplicates(sortEntries(publishedLogEntries.hits));
     let unpublishedEntries:auditLogLib.LogEntry<auditLogLib.DefaultData>[] =
         check4Duplicates(sortEntries(unPublishedLogEntries.hits));
+
+    // Listen for forhåndspublisering bygges opp manuelt under
     let prePublishedEntries:auditLogLib.LogEntry<auditLogLib.DefaultData>[] = [];
 
-    // Fjern forhåndspubliseringer fra publisert-listen og bygg forhåndspubliserings-listen
+    // Gjennomgå publiseringerer fra audit-log - kan være en av følgende:
+    // 1. Vanlig publisering (kan være aktiv eller ikke)
+    // 2. Forhåndspublisering som ikke er aktiv ennå (from er ikke nådd OG ikke avpublisert etterpå)
+    // 3. Forhåndspublisering som ikke er aktiv fordi den har passert sin publiseringstid (to har passert)
     publishedEntries = publishedEntries
         .filter((entry) => {
-            // Filter and push entries for scheduled publish (prepublish)
             const contentPublishInfo = entry.data.params.contentPublishInfo as any;
-            const prePublishDate = contentPublishInfo?.from;
-            if ( prePublishDate ) {
-                const isPublished = statusIsChanged(entry, true, publishedEntries);
-                const isUnpublished = statusIsChanged(entry, false, unpublishedEntries);
-                const prepublishDateExceeded = dayjs().isAfter(dayjsDateTime(prePublishDate));
-                if (!isPublished && !isUnpublished && !prepublishDateExceeded) {
-                    // Dette er en framtidig publisering
-                    prePublishedEntries.push(entry);
+            const publishFromDate = dayjsDateTime(contentPublishInfo?.from);
+            const publishToDate = dayjsDateTime(contentPublishInfo?.to);
+            if (publishFromDate) {
+                // Dette er en forhåndspublisering (from)
+                const prepublishDateExceeded = dayjs().isAfter(publishFromDate);
+                if (!prepublishDateExceeded) {
+                    // Innholdet er ikke publisert ennå - må sjekke om det er avpublisert
+                    const contentId = entry.data.params.contentIds as string;
+                    const repoId = getRepoId(entry);
+                    const unpublishedLater = unpublishedEntries
+                        .find((duplicate) => {
+                            const dupCheckContentId = duplicate.data.params.contentIds as string;
+                            if (contentId === dupCheckContentId && repoId === getRepoId(duplicate)) {
+                                return dayjs(duplicate.time).isAfter(entry.time);
+                            }
+                        });
+                    if (!unpublishedLater) {
+                        // 2. Legg til forhåndspublisert-listen
+                        prePublishedEntries.push(entry);
+                    }
                     return false;
                 }
+                if (publishToDate) {
+                    // Dette er en forhåndspublisering med gyldighetstid (to)
+                    const unpublishDateExceeded = dayjs().isAfter(publishToDate)
+                    if (unpublishDateExceeded) {
+                        // 3. Innholdet har vært publisert på tid og er avpublisert nå - legg til avpublisert-listen
+                        unpublishedEntries.push(entry);
+                        return false;
+                    }
+                }
             }
-            return true;
+            // 1. Dette er en publisering - Fjern fra listen hvis den er avpublisert etterpå
+            const contentId = entry.data.params.contentIds as string;
+            const repoId = getRepoId(entry);
+            const unpublishedLater = unpublishedEntries
+                .find((duplicate) => {
+                    const dupCheckContentId = duplicate.data.params.contentIds as string;
+                    if (contentId === dupCheckContentId && repoId === getRepoId(duplicate)) {
+                        return dayjs(duplicate.time).isAfter(publishFromDate || entry.time);
+                    }
+                });
+            return !unpublishedLater;
         });
 
-    // Legg til forhåndspubliseringer som er gått ut på tid til avpublisert
-    publishedEntries.forEach((entry) => {
-        const contentPublishInfo = entry.data.params.contentPublishInfo as any;
-        const publishToDate = contentPublishInfo?.to;
-        if (publishToDate ) {
-            if (dayjs().isAfter(dayjsDateTime(publishToDate))) {
-                unpublishedEntries.push(entry);
-            }
-        }
-    });
-    // Sorter på nytt, fjern eventulle duplikater som har oppstått og kutt av til 5
+    // Sorter publisert på nytt, og kutt av til 5
+    publishedEntries = publishedEntries.sort((a, b) => {
+        const aContentPublishInfo = a.data.params.contentPublishInfo as any;
+        const bContentPublishInfo = b.data.params.contentPublishInfo as any;
+        const aDate = aContentPublishInfo?.from || a.time;
+        const bDate = bContentPublishInfo?.from || b.time;
+        return (dayjs(aDate).isAfter(dayjs(bDate)) ? -1 : 1)
+    }).slice(0, 5);
+
+    // Sorter avpublisert på nytt, fjern eventulle duplikater som har oppstått
     unpublishedEntries.sort((a, b) => {
         const aContentPublishInfo = a.data.params.contentPublishInfo as any;
         const bContentPublishInfo = b.data.params.contentPublishInfo as any;
@@ -216,35 +232,30 @@ const getUserPublications = (user: `user:${string}:${string}`) => {
         const bDate = bContentPublishInfo?.to || b.time;
         return (dayjs(aDate).isAfter(dayjs(bDate)) ? -1 : 1)
     });
-    unpublishedEntries = check4Duplicates(unpublishedEntries).slice(0, 5);
+    unpublishedEntries = check4Duplicates(unpublishedEntries);
 
-    // Fjern publiseringer som allerede er avpublisert og kutt av til 5
-    publishedEntries = publishedEntries.filter((entry) => {
+    // Fjern fra avpublisert hvis publisering eller forhåndspublisering av nyere dato, og kutt av til 5
+    unpublishedEntries = unpublishedEntries.filter((entry) => {
         const contentId = entry.data.params.contentIds as string;
         const repoId = getRepoId(entry);
-        const isUnpublished = unpublishedEntries
+        const publishedLater = publishedEntries
             .find((duplicate) => {
                 const dupCheckContentId = duplicate.data.params.contentIds as string;
                 if (contentId === dupCheckContentId && repoId === getRepoId(duplicate)) {
-                    const dupPublishInfo = duplicate.data.params.contentPublishInfo as any
-                    const dupPublishDate = dupPublishInfo?.to || duplicate.time;
-                    log.info(entry.time + ' === ' + dupPublishDate )
-                    return dayjsDateTime(dupPublishDate).isAfter(entry.time)
+                    return dayjs(duplicate.time).isAfter(entry.time);
                 }
             });
-        return !isUnpublished;
+        const prePublishedLater = prePublishedEntries
+            .find((duplicate) => {
+                const dupCheckContentId = duplicate.data.params.contentIds as string;
+                if (contentId === dupCheckContentId && repoId === getRepoId(duplicate)) {
+                    const contentPublishInfo = entry.data.params.contentPublishInfo as any;
+                    const publishFromDate = dayjsDateTime(contentPublishInfo?.from);
+                    return dayjs(publishFromDate).isAfter(entry.time);
+                }
+            });
+        return !publishedLater && !prePublishedLater;
     }).slice(0, 5);
-
-    // Fjern forhåndspubliseringer som er avpublisert på tid
-    prePublishedEntries = prePublishedEntries
-        .filter((entry) => {
-            const contentPublishInfo = entry.data.params.contentPublishInfo as any;
-            const unpublishDate = contentPublishInfo?.to;
-            if (unpublishDate) {
-                return dayjsDateTime(unpublishDate).isAfter(dayjs());
-            }
-            return true;
-        });
 
     // Må sortere prepublished på from-feltet
     prePublishedEntries = prePublishedEntries.sort((a, b) => {
@@ -252,28 +263,6 @@ const getUserPublications = (user: `user:${string}:${string}`) => {
         const bContentPublishInfo = b.data.params.contentPublishInfo as any;
         return (dayjs(aContentPublishInfo?.from).isAfter(dayjs(bContentPublishInfo?.from)) ? -1 : 1)
     });
-
-    // Publisering eller forhåndspublisering av nyere dato skal ikke vises under avpublisert
-    // unpublishedEntries.filter( published.find() )
-    // unpublishedEntries.filter( prePublished.find() )
-    // Lag funksjon:
-    /*
-        const filterEntries = (entries) => {
-        entries.filter((entry) => {
-        const contentId = entry.data.params.contentIds as string;
-        const repoId = getRepoId(entry);
-        const entryFound = entries
-            .find((duplicate) => {
-                const dupCheckContentId = duplicate.data.params.contentIds as string;
-                if (contentId === dupCheckContentId && repoId === getRepoId(duplicate)) {
-                    const dupPublishInfo = duplicate.data.params.contentPublishInfo as any
-                    const dupPublishDate = dupPublishInfo?.to || duplicate.time;
-                    log.info(entry.time + ' === ' + dupPublishDate )
-                    return dayjsDateTime(dupPublishDate).isAfter(entry.time)
-                }
-            });
-        return !entryFound;
-     */
 
     // Returner content for alle tre typer
     const published = getContentFromLogEntries(publishedEntries, true);
