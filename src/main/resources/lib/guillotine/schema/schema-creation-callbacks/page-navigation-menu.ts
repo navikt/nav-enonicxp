@@ -30,50 +30,15 @@ const getComponents = (contentId: string, repo: RepoConnection) => {
 const getAnchorLink = (
     anchorId?: string,
     linkText?: string,
-    hideFromInternalNavigation?: boolean,
-    menuLevel?: number
+    hideFromInternalNavigation?: boolean
 ) => {
     return anchorId && linkText
         ? {
               anchorId,
               linkText,
               hideFromInternalNavigation,
-              level: menuLevel,
           }
         : null;
-};
-
-const getPartAnchorLink = (part: NodeComponent<'part'>['part']) => {
-    if (!part) {
-        return null;
-    }
-    const { descriptor, config } = part;
-
-    if (!config) {
-        return null;
-    }
-
-    if (descriptor === 'no.nav.navno:dynamic-header') {
-        const dynamicHeader = config['no-nav-navno']?.['dynamic-header'];
-
-        if (!dynamicHeader) {
-            return null;
-        }
-
-        const { anchorId, title, titleTag } = dynamicHeader;
-
-        // As of 2024 options for h2, h5 and h6 has been removed, leaving
-        // only h3 (level2 in menu) and h4 (level3 in menu).
-        const menuLevel = titleTag === 'h3' ? 2 : 3;
-
-        if (menuLevel === 3) {
-            return null;
-        }
-
-        return getAnchorLink(anchorId, title, false, menuLevel);
-    }
-
-    return null;
 };
 
 const getLayoutAnchorLink = (layout: NodeComponent<'layout'>['layout']) => {
@@ -93,7 +58,7 @@ const getLayoutAnchorLink = (layout: NodeComponent<'layout'>['layout']) => {
         }
 
         const { anchorId, title, hideFromInternalNavigation } = situationFlexCols;
-        return getAnchorLink(anchorId, title, hideFromInternalNavigation, 1);
+        return getAnchorLink(anchorId, title, hideFromInternalNavigation);
     }
 
     if (descriptor === 'no.nav.navno:section-with-header') {
@@ -103,7 +68,7 @@ const getLayoutAnchorLink = (layout: NodeComponent<'layout'>['layout']) => {
         }
 
         const { anchorId, title, hideFromInternalNavigation } = sectionWithHeader;
-        return getAnchorLink(anchorId, title, hideFromInternalNavigation, 1);
+        return getAnchorLink(anchorId, title, hideFromInternalNavigation);
     }
 
     return null;
@@ -140,10 +105,6 @@ const getComponentAnchorLink = (
     component: NodeComponent,
     repo: RepoConnection
 ): AnchorLink | null => {
-    if (component.type === 'part') {
-        return getPartAnchorLink(component.part);
-    }
-
     if (component.type === 'layout') {
         return getLayoutAnchorLink(component.layout);
     }
