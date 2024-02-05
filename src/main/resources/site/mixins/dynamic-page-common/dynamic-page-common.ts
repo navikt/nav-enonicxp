@@ -16,6 +16,11 @@ export interface DynamicPageCommon {
   chatbotToggle: boolean;
 
   /**
+   * Vis intern navigasjon i innholdsseksjoner
+   */
+  showSubsectionNavigation: boolean;
+
+  /**
    * Oppsummering
    */
   description?: string;

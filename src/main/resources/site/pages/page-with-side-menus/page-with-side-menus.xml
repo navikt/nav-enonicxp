@@ -17,10 +17,6 @@
                     <label>Sticky-meny</label>
                     <default>checked</default>
                 </input>
-                <input type="CheckBox" name="showSubsectionNavigation">
-                    <label>Vis intern-navigasjon i innholdsseksjoner</label>
-                    <default>unchecked</default>
-                </input>
                 <input type="TextLine" name="leftMenuHeader">
                     <label>Tittel</label>
                     <default>Innhold</default>
