@@ -328,8 +328,6 @@ const getUserModifications = (user: `user:${string}:${string}`) => {
             } else if (draftContent?.archivedTime) {
                 // Arkivert
                 return undefined;
-            } else if (draftContent?.workflow?.state === 'IN_PROGRESS') {
-                status = 'Endret';
             } else if (draftContent?.publish?.first) {
                 // Avpublisert
                 return undefined;
