@@ -329,8 +329,13 @@ const getUserModifications = (user: `user:${string}:${string}`) => {
                 // Arkivert
                 return undefined;
             } else if (draftContent?.publish?.first) {
-                // Avpublisert
-                return undefined;
+                // Avpublisert, eventuelt endret etterpå
+                if (draftContent?.workflow?.state === 'IN_PROGRESS') {
+                    status = 'Endret';
+                } else {
+                    // Avpublisert, men ikke endret
+                    return undefined;
+                }
             }
 
             const modifiedLocalTime = dayjsDateTime(draftContent._ts);
