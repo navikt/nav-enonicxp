@@ -54,6 +54,7 @@ const sortEntries = (entries: auditLogLib.LogEntry<auditLogLib.DefaultData>[]) =
     return entries.sort((a, b) => (dayjs(a.time).isAfter(dayjs(b.time)) ? -1 : 1));
 }
 
+// Henter bare innhold fra våre egne innholdstyper (ikke filer, mapper, osv.)
 const getContentFromLogEntries = (
     logEntries: auditLogLib.LogEntry<auditLogLib.DefaultData>[],
     publish: boolean
@@ -91,7 +92,7 @@ const getContentFromLogEntries = (
                     branch: 'draft',
                     repoId,
                 }).get(hit.id)
-            )[0]; // Only first published element in multi publications
+            )[0]; // Bare første element, hvis massepublisering
 
         if (!content) {
             return undefined;
@@ -115,6 +116,7 @@ const getContentFromLogEntries = (
     return entries.filter(removeUndefined);
 };
 
+// Fjerner duplikater av samme innholdselement i listen
 const check4Duplicates = (entries: auditLogLib.LogEntry<auditLogLib.DefaultData>[]) => {
         const duplicates = [] as auditLogLib.LogEntry<auditLogLib.DefaultData>[];
         return entries.filter((entry) =>
@@ -137,7 +139,7 @@ const check4Duplicates = (entries: auditLogLib.LogEntry<auditLogLib.DefaultData>
         });
 };
 
-// Hent alle brukers siste publiseringer (også forhåndspubliseringer) og avpubliseringer
+// Hent alle brukers siste publiseringer, også forhåndspubliseringer, og avpubliseringer
 const getUserPublications = (user: `user:${string}:${string}`) => {
 
     const fromDate = dayjs().subtract(6, 'months').toISOString(); // Går 6 måneder tilbake i tid
@@ -155,6 +157,7 @@ const getUserPublications = (user: `user:${string}:${string}`) => {
     }) as any;
 
     // Sorter treff og fjern duplikater (innhold som er publisert/avpublisert flere ganger)
+    // Sitter igjen med bare den siste
     let publishedEntries:auditLogLib.LogEntry<auditLogLib.DefaultData>[] =
         check4Duplicates(sortEntries(publishedLogEntries.hits));
     let unpublishedEntries:auditLogLib.LogEntry<auditLogLib.DefaultData>[] =
@@ -163,17 +166,20 @@ const getUserPublications = (user: `user:${string}:${string}`) => {
     // Listen for forhåndspublisering bygges opp manuelt under
     let prePublishedEntries:auditLogLib.LogEntry<auditLogLib.DefaultData>[] = [];
 
-    // Gjennomgå publiseringerer fra audit-log - kan være en av følgende:
-    // 1. Vanlig publisering (kan være aktiv eller ikke)
-    // 2. Forhåndspublisering som ikke er aktiv ennå (from er ikke nådd OG ikke avpublisert etterpå)
-    // 3. Forhåndspublisering som ikke er aktiv fordi den har passert sin publiseringstid (to har passert)
+    // Gjennomgå publiseringerer - kan være en av følgende:
+    // 1a. Vanlig publisering som er aktiv
+    // 1b. Vanlig pubsliering som ikke aktiv lenger (avpublisert)
+    // 2a. Forhåndspublisering som er aktiv (publisert nå)
+    // 2b. Forhåndspublisering som ikke er aktiv ennå - (from) er ikke nådd OG ikke avpublisert etterpå
+    // 2c. Forhåndspublisering som er avpublisert etterpå
+    // 2d. Forhåndspublisering som ikke er aktiv lenger - (to) har passert
     publishedEntries = publishedEntries
         .filter((entry) => {
             const contentPublishInfo = entry.data.params.contentPublishInfo as any;
             const publishFromDate = dayjsDateTime(contentPublishInfo?.from);
             const publishToDate = dayjsDateTime(contentPublishInfo?.to);
             if (publishFromDate) {
-                // Dette er en forhåndspublisering (from)
+                // 2. Dette er en forhåndspublisering (from)
                 const prepublishDateExceeded = dayjs().isAfter(publishFromDate);
                 if (!prepublishDateExceeded) {
                     // Innholdet er ikke publisert ennå - må sjekke om det er avpublisert
@@ -187,22 +193,24 @@ const getUserPublications = (user: `user:${string}:${string}`) => {
                             }
                         });
                     if (!unpublishedLater) {
-                        // 2. Legg til forhåndspublisert-listen
+                        // 2b. Legg til forhåndspublisert-listen
                         prePublishedEntries.push(entry);
                     }
+                    // 2b. eller 2c. - skal ikke være med i publisert-listen
                     return false;
                 }
                 if (publishToDate) {
                     // Dette er en forhåndspublisering med gyldighetstid (to)
                     const unpublishDateExceeded = dayjs().isAfter(publishToDate)
                     if (unpublishDateExceeded) {
-                        // 3. Innholdet har vært publisert på tid og er avpublisert nå - legg til avpublisert-listen
+                        // 2d. Er avpublisert nå - legg til avpublisert-listen og fjern fra publisert
                         unpublishedEntries.push(entry);
                         return false;
                     }
                 }
             }
-            // 1. Dette er en publisering - Fjern fra listen hvis den er avpublisert etterpå
+            // Dette er en publisering - 1a. eller 2a.
+            // Fjern fra listen hvis den er avpublisert etterpå - 1b.
             const contentId = entry.data.params.contentIds as string;
             const repoId = getRepoId(entry);
             const unpublishedLater = unpublishedEntries
@@ -212,7 +220,7 @@ const getUserPublications = (user: `user:${string}:${string}`) => {
                         return dayjs(duplicate.time).isAfter(publishFromDate || entry.time);
                     }
                 });
-            return !unpublishedLater;
+            return !unpublishedLater; // True: 1a./2a.  False: 1b.
         });
 
     // Sorter publisert på nytt, og kutt av til 5
