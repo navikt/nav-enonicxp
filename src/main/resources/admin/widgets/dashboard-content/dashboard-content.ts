@@ -219,7 +219,7 @@ const getUserPublications = (user: `user:${string}:${string}`) => {
             const bDate = bContentPublishInfo?.from || b.time;
             return dayjs(aDate).isAfter(dayjs(bDate)) ? -1 : 1;
         })
-        .slice(0, 5);
+        .slice(0, 15);
 
     // Sorter avpublisert på nytt, fjern eventulle duplikater som har oppstått
     unpublishedEntries.sort((a, b) => {
@@ -252,7 +252,7 @@ const getUserPublications = (user: `user:${string}:${string}`) => {
             });
             return !publishedLater && !prePublishedLater;
         })
-        .slice(0, 5);
+        .slice(0, 15);
 
     // Må sortere prepublished på from-feltet
     prePublishedEntries = prePublishedEntries.sort((a, b) => {
@@ -338,7 +338,7 @@ const getUserModifications = (user: `user:${string}:${string}`) => {
         })
         .filter((entry) => !!entry)
         .sort((a, b) => (dayjs(a?.modifiedTime).isAfter(dayjs(b?.modifiedTime)) ? -1 : 1))
-        .slice(0, 5);
+        .slice(0, 15);
 };
 const getLastContentFromUser = () => {
     // Hent aktuell bruker (redaktør)
