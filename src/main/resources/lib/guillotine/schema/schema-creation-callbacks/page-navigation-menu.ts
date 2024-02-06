@@ -32,36 +32,13 @@ const getAnchorLink = (
     linkText?: string,
     hideFromInternalNavigation?: boolean
 ) => {
-    return anchorId
+    return anchorId && linkText
         ? {
               anchorId,
               linkText,
               hideFromInternalNavigation,
           }
         : null;
-};
-
-const getPartAnchorLink = (part: NodeComponent<'part'>['part']) => {
-    if (!part) {
-        return null;
-    }
-    const { descriptor, config } = part;
-
-    if (!config) {
-        return null;
-    }
-
-    if (descriptor === 'no.nav.navno:dynamic-header') {
-        const dynamicHeader = config['no-nav-navno']?.['dynamic-header'];
-        if (!dynamicHeader) {
-            return null;
-        }
-
-        const { anchorId, title, hideFromInternalNavigation } = dynamicHeader;
-        return getAnchorLink(anchorId, title, hideFromInternalNavigation);
-    }
-
-    return null;
 };
 
 const getLayoutAnchorLink = (layout: NodeComponent<'layout'>['layout']) => {
@@ -128,10 +105,6 @@ const getComponentAnchorLink = (
     component: NodeComponent,
     repo: RepoConnection
 ): AnchorLink | null => {
-    if (component.type === 'part') {
-        return getPartAnchorLink(component.part);
-    }
-
     if (component.type === 'layout') {
         return getLayoutAnchorLink(component.layout);
     }

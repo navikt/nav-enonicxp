@@ -1,0 +1,8 @@
+#import "../../richText/richTextFragment.graphql"
+
+fragment partComponentReadMore on Part_no_nav_navno_read_more {
+    title
+    html(processHtml: { type: server }) {
+        ...richText
+    }
+}

@@ -1,0 +1,15 @@
+<part>
+    <display-name>Les mer</display-name>
+    <description>Brukes for korte forklaringer av begreper eller konsepter</description>
+    <form>
+        <input name="title" type="TextLine">
+            <label>Tittelen på les-mer-knapp</label>
+            <occurrences minimum="1" maximum="1" />
+        </input>
+        <input name="html" type="HtmlArea">
+            <label>Tittel på underforside</label>
+            <occurrences minimum="1" maximum="1" />
+        </input>
+        <mixin name="auth-render-option"/>
+    </form>
+</part>

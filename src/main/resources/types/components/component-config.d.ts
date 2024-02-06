@@ -25,6 +25,7 @@ import { ProviderCardPartConfig } from '../../site/parts/provider-card/provider-
 import { AreapageSituationsConfig } from '../../site/layouts/areapage-situations/areapage-situations-config';
 import { AreapageSituationCardPartConfig } from '../../site/parts/areapage-situation-card/areapage-situation-card-part-config';
 import { EmptyObject } from '../util-types';
+import { ReadMorePartConfig } from 'site/parts/read-more/read-more-part-config';
 
 export type ComponentType = 'page' | 'layout' | 'part' | 'fragment';
 
@@ -61,6 +62,7 @@ export type PartConfigs = {
     'product-card-micro': ProductCardMicroPartConfig;
     'product-card-mini': ProductCardMiniPartConfig;
     'provider-card': ProviderCardPartConfig;
+    'read-more': ReadMorePartConfig;
 };
 
 export type ComponentConfigs = {

@@ -125,6 +125,11 @@ export interface ContentPageWithSidemenus {
   formDetailsTargets?: Array<string>;
 
   /**
+   * Vis intern navigasjon i innholdsseksjoner
+   */
+  showSubsectionNavigation: boolean;
+
+  /**
    * Legg til andre språkversjoner
    */
   languages?: Array<string>;
