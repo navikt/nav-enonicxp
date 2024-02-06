@@ -319,18 +319,22 @@ const getUserModifications = (user: `user:${string}:${string}`) => {
             if (masterContent?.publish?.first && masterContent?.publish?.from) {
                 // Innholdet ER publisert, eventuelt endret etterpå
                 if (draftContent?._versionKey !== masterContent?._versionKey) {
+                    // Publisert, men endret etterpå
                     status = 'Endret';
                 } else {
+                    // Publisert
                     return undefined;
                 }
+            } else if (draftContent?.archivedTime) {
+                // Arkivert
+                return undefined;
+            } else if (draftContent?.workflow?.state === 'IN_PROGRESS') {
+                status = 'Endret';
             } else if (draftContent?.publish?.first) {
-                // Innholdet er IKKE publisert (er avpublisert), eventuelt endret etterpå
-                if (draftContent?.workflow?.state === 'IN_PROGRESS') {
-                    status = 'Endret';
-                } else {
-                    return undefined;
-                }
+                // Avpublisert
+                return undefined;
             }
+
             const modifiedLocalTime = dayjsDateTime(draftContent._ts);
             const repo = repoStr(hit.repoId);
             const layer = layerStr(repo);
