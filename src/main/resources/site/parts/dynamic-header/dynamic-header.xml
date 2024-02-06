@@ -1,6 +1,6 @@
 <part xmlns="urn:enonic:xp:model:1.0">
     <display-name>Header</display-name>
-    <description>H2-H6 header</description>
+    <description>H3 og H4-header</description>
     <form>
         <input name="title" type="TextLine">
             <label>Tittel</label>
@@ -19,25 +19,15 @@
                 <regexp>^[0-9a-zA-Z-_]*$</regexp>
             </config>
         </input>
-        <input name="hideFromInternalNavigation" type="CheckBox">
-            <label>Ikke vis under innhold</label>
-            <config>
-                <alignment>left</alignment>
-            </config>
-        </input>
         <input name="titleTag" type="RadioButton">
             <label>Heading tag</label>
             <occurrences minimum="1" maximum="1" />
             <config>
-                <option value="h2">H2</option>
                 <option value="h3">H3</option>
                 <option value="h4">H4</option>
-                <option value="h5">H5</option>
-                <option value="h6">H6</option>
             </config>
-            <default>h2</default>
+            <default>h3</default>
         </input>
-        <mixin name="header-common"/>
         <mixin name="auth-render-option"/>
     </form>
 </part>
