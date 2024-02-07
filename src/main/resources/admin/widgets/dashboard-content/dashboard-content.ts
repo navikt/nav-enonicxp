@@ -178,13 +178,12 @@ const getUserPublications = (user: `user:${string}:${string}`) => {
             // Må sjekke om det er avpublisert etterpå
             const contentId = entry.data.params.contentIds as string;
             const repoId = getRepoId(entry);
-            const unpublishedLater = unpublishedEntries
-                .find((duplicate) => {
-                    const dupCheckContentId = duplicate.data.params.contentIds as string;
-                    if (contentId === dupCheckContentId && repoId === getRepoId(duplicate)) {
-                        return dayjs(duplicate.time).isAfter(entry.time);
-                    }
-                });
+            const unpublishedLater = unpublishedEntries.find((duplicate) => {
+                const dupCheckContentId = duplicate.data.params.contentIds as string;
+                if (contentId === dupCheckContentId && repoId === getRepoId(duplicate)) {
+                    return dayjs(duplicate.time).isAfter(entry.time);
+                }
+            });
             if (!unpublishedLater) {
                 const prepublishDateExceeded = dayjs().isAfter(publishFromDate);
                 if (!prepublishDateExceeded) {
@@ -212,13 +211,12 @@ const getUserPublications = (user: `user:${string}:${string}`) => {
         // Fjern fra listen hvis den er avpublisert etterpå - 1b.
         const contentId = entry.data.params.contentIds as string;
         const repoId = getRepoId(entry);
-        const unpublishedLater = unpublishedEntries
-            .find((duplicate) => {
-                const dupCheckContentId = duplicate.data.params.contentIds as string;
-                if (contentId === dupCheckContentId && repoId === getRepoId(duplicate)) {
-                    return dayjs(duplicate.time).isAfter(publishFromDate || entry.time);
-                }
-            });
+        const unpublishedLater = unpublishedEntries.find((duplicate) => {
+            const dupCheckContentId = duplicate.data.params.contentIds as string;
+            if (contentId === dupCheckContentId && repoId === getRepoId(duplicate)) {
+                return dayjs(duplicate.time).isAfter(publishFromDate || entry.time);
+            }
+        });
         return !unpublishedLater; // True: 1a. - False: 1b.
     });
 
@@ -231,7 +229,7 @@ const getUserPublications = (user: `user:${string}:${string}`) => {
             const bDate = bContentPublishInfo?.from || b.time;
             return dayjs(aDate).isAfter(dayjs(bDate)) ? -1 : 1;
         })
-        .slice(0, 15);
+        .slice(0, 5);
 
     // Sorter avpublisert på nytt, fjern eventulle duplikater som har oppstått
     unpublishedEntries.sort((a, b) => {
@@ -264,7 +262,7 @@ const getUserPublications = (user: `user:${string}:${string}`) => {
             });
             return !publishedLater && !prePublishedLater;
         })
-        .slice(0, 15);
+        .slice(0, 5);
 
     // Må sortere prepublished på from-feltet
     prePublishedEntries = prePublishedEntries.sort((a, b) => {
@@ -357,7 +355,7 @@ const getUserModifications = (user: `user:${string}:${string}`) => {
         })
         .filter((entry) => !!entry)
         .sort((a, b) => (dayjs(a?.modifiedTime).isAfter(dayjs(b?.modifiedTime)) ? -1 : 1))
-        .slice(0, 15);
+        .slice(0, 5);
 };
 const getLastContentFromUser = () => {
     // Hent aktuell bruker (redaktør)
