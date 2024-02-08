@@ -146,22 +146,22 @@ const getUserPublications = (user: `user:${string}:${string}`) => {
         users: [user],
     });
     // @ts-ignore
-    const publishedLogEntries = logEntries.hits.filter((entry) => entry.type === 'system.content.publishContent') as any;
+    const publishedLogEntries = logEntries.hits.filter((entry) => entry.type === 'system.content.publish');
     // @ts-ignore
-    const unPublishedLogEntries = logEntries.hits.filter((entry) => entry.type === 'system.content.unpublishContent') as any;
+    const unpublishedLogEntries = logEntries.hits.filter((entry) => entry.type === 'system.content.unpublishContent');
     // @ts-ignore
-    const archivedLogEntries = logEntries.hits.filter((entry) => entry.type === 'system.content.archive') as any;
+    const archivedLogEntries = logEntries.hits.filter((entry) => entry.type === 'system.content.archive');
 
     // Sorter treff og fjern duplikater (innhold som er publisert/avpublisert flere ganger)
     // Sitter igjen med bare den siste
     let publishedEntries: auditLogLib.LogEntry<auditLogLib.DefaultData>[] = check4Duplicates(
-        sortEntries(publishedLogEntries.hits)
+        sortEntries(publishedLogEntries)
     );
     let unpublishedEntries: auditLogLib.LogEntry<auditLogLib.DefaultData>[] = check4Duplicates(
-        sortEntries(unPublishedLogEntries.hits)
+        sortEntries(unpublishedLogEntries)
     );
     const archivedEntries: auditLogLib.LogEntry<auditLogLib.DefaultData>[] = check4Duplicates(
-        sortEntries(archivedLogEntries.hits)
+        sortEntries(archivedLogEntries)
     );
     // Listen for forhåndspublisering bygges opp manuelt under
     let prePublishedEntries: auditLogLib.LogEntry<auditLogLib.DefaultData>[] = [];
