@@ -194,13 +194,12 @@ const getUserPublications = (user: `user:${string}:${string}`) => {
         if (publishFromDate) {
             // 2. Dette er en forhåndspublisering (from)
             // Må sjekke om det er avpublisert etterpå
-            const unpublishedLater = unpublishedEntries
-                .find((duplicate) => {
-                    const dupCheckContentId = duplicate.data.params.contentIds as string;
-                    if (contentId === dupCheckContentId && repoId === getRepoId(duplicate)) {
-                        return dayjs(duplicate.time).isAfter(entry.time);
-                    }
-                });
+            const unpublishedLater = unpublishedEntries.find((duplicate) => {
+                const dupCheckContentId = duplicate.data.params.contentIds as string;
+                if (contentId === dupCheckContentId && repoId === getRepoId(duplicate)) {
+                    return dayjs(duplicate.time).isAfter(entry.time);
+                }
+            });
             if (!unpublishedLater) {
                 const prepublishDateExceeded = dayjs().isAfter(publishFromDate);
                 if (!prepublishDateExceeded) {
@@ -226,13 +225,12 @@ const getUserPublications = (user: `user:${string}:${string}`) => {
         }
         // Dette er en publisering - 1.
         // Fjern fra listen hvis den er avpublisert etterpå - 1b.
-        const unpublishedLater = unpublishedEntries
-            .find((duplicate) => {
-                const dupCheckContentId = duplicate.data.params.contentIds as string;
-                if (contentId === dupCheckContentId && repoId === getRepoId(duplicate)) {
-                    return dayjs(duplicate.time).isAfter(publishFromDate || entry.time);
-                }
-            });
+        const unpublishedLater = unpublishedEntries.find((duplicate) => {
+            const dupCheckContentId = duplicate.data.params.contentIds as string;
+            if (contentId === dupCheckContentId && repoId === getRepoId(duplicate)) {
+                return dayjs(duplicate.time).isAfter(publishFromDate || entry.time);
+            }
+        });
         return !unpublishedLater; // True: 1a. - False: 1b.
     });
 
