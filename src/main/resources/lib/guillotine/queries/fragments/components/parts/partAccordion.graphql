@@ -1,0 +1,10 @@
+#import "../../richText/richTextFragment.graphql"
+
+fragment partComponentAccordion on Part_no_nav_navno_accordion {
+    accordion {
+        title
+        html(processHtml: { type: server }) {
+            ...richText
+        }
+    }
+}
