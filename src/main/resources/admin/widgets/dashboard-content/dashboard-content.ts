@@ -104,7 +104,7 @@ const getContentFromLogEntries = (
         let status = '', modifyDate, contentUrl;
         if (content?.archivedTime) {
             status = 'Arkivert';
-            modifyDate = content?.archivedTime;
+            modifyDate = dayjsDateTime(content.archivedTime);
             contentUrl = 'widget/plus/archive'; // Viser til arkivet (kan ikke gå direkte til aktuelt innhold)
         } else {
             const contentPublishInfo = entry.data.params?.contentPublishInfo as any;
