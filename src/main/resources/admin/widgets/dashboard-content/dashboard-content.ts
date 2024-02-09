@@ -101,16 +101,24 @@ const getContentFromLogEntries = (
 
         const repo = repoStr(repoId);
         const layer = layerStr(repo);
-        const contentPublishInfo = entry.data.params?.contentPublishInfo as any;
-        const modifyDate = publish
-            ? contentPublishInfo?.from || entry.time
-            : contentPublishInfo?.to || entry.time;
+        let status = '', modifyDate, contentUrl;
+        if (content?.archivedTime) {
+            status = 'Arkivert';
+            modifyDate = content?.archivedTime;
+            contentUrl = 'widget/plus/archive'; // Viser til arkivet (kan ikke gå direkte til aktuelt innhold)
+        } else {
+            const contentPublishInfo = entry.data.params?.contentPublishInfo as any;
+            modifyDate = publish
+                ? contentPublishInfo?.from || entry.time
+                : contentPublishInfo?.to || entry.time;
+            contentUrl = `edit/${content._id}`;
+        }
         return {
             displayName: content.displayName + layer,
             modifiedTimeStr: dayjs(modifyDate).format('DD.MM.YYYY HH.mm.ss'),
-            status: '',
+            status,
             title: content._path.replace('/content/www.nav.no/', ''),
-            url: `/admin/tool/com.enonic.app.contentstudio/main/${repo}/edit/${content._id}`,
+            url: `/admin/tool/com.enonic.app.contentstudio/main/${repo}/${contentUrl}`,
         };
     });
 
