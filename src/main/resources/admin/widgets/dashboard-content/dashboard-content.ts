@@ -190,8 +190,7 @@ const getUserPublications = (user: `user:${string}:${string}`) => {
 
     // Gjennomgå arkivert-listen for eventuelt å legge til i avpublisert
     archivedEntries.forEach((archivedEntry) => {
-        const unpublishedFound = newerEntryFound(archivedEntry, unpublishedEntries);
-        if (!unpublishedFound) {
+        if (archivedEntry.data.params?.unpublishedContents) {
             // Innholdet er arkivert uten å være avpublisert først
             unpublishedEntries.push(archivedEntry)
         }
