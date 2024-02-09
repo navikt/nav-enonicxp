@@ -28,7 +28,7 @@ const buildAddressElement = (mottakList?: Publikumsmottak) => {
 
     const husNrOgBokstav = husnummer || husbokstav ? ` ${husnummer}${husbokstav}` : '';
 
-    return `<strong>Publikumsmottak: </strong>${gatenavn}${husNrOgBokstav}, ${postnummer} ${poststed.toUpperCase()}`;
+    return `<strong>Publikumsmottak:</strong> ${gatenavn}${husNrOgBokstav}, ${postnummer} ${poststed.toUpperCase()}`;
 };
 
 export const buildOfficeIngress = (content: OfficeContent): string => {
