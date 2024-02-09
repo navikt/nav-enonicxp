@@ -9,11 +9,11 @@ import {
     generateSitemapDataAndActivateSchedule,
 } from './lib/sitemap/sitemap';
 import { updateClusterInfo } from './lib/cluster-utils/cluster-api';
-import { startOfficeInfoPeriodicUpdateSchedule } from './lib/officeInformation';
+import { startOfficeInfoPeriodicUpdateSchedule } from './lib/office-pages/_legacy-office-information/legacy-office-update';
 import { activateContentListItemUnpublishedListener } from './lib/contentlists/remove-unpublished';
 import { startFailsafeSchedule } from './lib/scheduling/scheduler-failsafe';
 import { activateCustomPathNodeListeners } from './lib/paths/custom-paths/custom-path-event-listeners';
-import { createOfficeBranchFetchSchedule } from 'lib/officeBranch';
+import { createOfficeBranchFetchSchedule } from './lib/office-pages/office-branch-tasks';
 import { activateSearchIndexEventHandlers } from './lib/search/search-event-handlers';
 import { hookLibsWithTimeTravel } from './lib/time-travel/time-travel-hooks';
 import { initSearchRepo } from './lib/search/search-repo';
