@@ -180,10 +180,10 @@ const getUserPublications = (user: `user:${string}:${string}`) => {
     // @ts-ignore
     const unpublishedLogEntries = logEntries.hits.filter((entry) => entry.type === 'system.content.unpublishContent');
     // @ts-ignore
-    const archivedEntries = logEntries.hits.filter((entry) => entry.type === 'system.content.archive');
+    const archivedLogEntries = logEntries.hits.filter((entry) => entry.type === 'system.content.archive');
 
     // Gjennomgå arkivert-listen for eventuelt å legge til i avpublisert
-    archivedEntries.forEach((entry:auditLogLib.LogEntry<auditLogLib.DefaultData>) => {
+    archivedLogEntries.forEach((entry:auditLogLib.LogEntry<auditLogLib.DefaultData>) => {
         if (entry.data.result?.unpublishedContents) {
             // Innholdet er arkivert uten å være avpublisert først, legg til i avpublisert før behandling
             unpublishedLogEntries.push(entry)
@@ -211,7 +211,7 @@ const getUserPublications = (user: `user:${string}:${string}`) => {
     // 2d. Forhåndspublisering som ikke er aktiv lenger - (to) har passert
     publishedEntries = publishedEntries.filter((entry) => {
         // Må sjekke om denne er arkivert senere
-        if (newerEntryFound(entry, archivedEntries)) {
+        if (newerEntryFound(entry, archivedLogEntries)) {
             return false; // 0. Er arkivert
         }
         const contentPublishInfo = entry.data.params.contentPublishInfo as any;
