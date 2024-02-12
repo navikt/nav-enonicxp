@@ -1,5 +1,5 @@
 import * as contentLib from '/lib/xp/content';
-import { Content } from '/lib/xp/content';
+import { Content, CONTENT_ROOT_PATH } from '/lib/xp/content';
 import { RepoBranch } from '../../../types/common';
 import { runInContext } from '../../../lib/context/run-in-context';
 import { stripLeadingAndTrailingSlash, stripPathPrefix } from '../../../lib/paths/path-utils';
@@ -54,7 +54,7 @@ const getRedirectFromLegacyPath = (path: string) => {
     });
 };
 
-// Finds the nearest parent with the internal link content type + redirectSubpaths flag
+// Finds the nearest ancestor with the internal link content type + redirectSubpaths flag
 // Use this as a redirect if found
 const getParentRedirectContent = (path: string): null | Content => {
     if (!path) {
@@ -71,7 +71,8 @@ const getParentRedirectContent = (path: string): null | Content => {
     }
 
     const ancestorNodePaths = parentPathSegments.map(
-        (_, index, ancestorPath) => `/content/${ancestorPath.slice(0, index + 1).join('/')}`
+        (_, index, ancestorPath) =>
+            `${CONTENT_ROOT_PATH}/${ancestorPath.slice(0, index + 1).join('/')}`
     );
 
     const parentContent = contentLib.query({
