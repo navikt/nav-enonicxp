@@ -11,6 +11,7 @@ import dayjs from '/assets/dayjs/1.11.9/dayjs.min.js';
 import utc from '/assets/dayjs/1.11.9/plugin/utc.js';
 
 dayjs.extend(utc);
+const fromDate = dayjs().subtract(6, 'months').toISOString(); // Går bare 6 måneder tilbake i tid
 
 const asAdminParams: Pick<Source, 'user' | 'principals'> = {
     user: {
@@ -169,7 +170,6 @@ const newerEntryFound = (
 
 // Hent alle brukers siste publiseringer, også forhåndspubliseringer, og avpubliseringer
 const getUserPublications = (user: `user:${string}:${string}`) => {
-    const fromDate = dayjs().subtract(6, 'months').toISOString(); // Går 6 måneder tilbake i tid
     const logEntries = auditLogLib.find({
         count: 5000,
         from: fromDate,
@@ -312,7 +312,7 @@ const getUserModifications = (user: `user:${string}:${string}`) => {
     return repos
         .query({
             count: 5000,
-            query: `modifier = "${user}"`,
+            query: `modifier = '${user}' AND range('modifiedTime', instant('${fromDate}'), '')`,
             filters: {
                 boolean: {
                     mustNot: NON_LOCALIZED_QUERY_FILTER,
