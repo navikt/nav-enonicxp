@@ -56,7 +56,7 @@ const getRedirectFromLegacyPath = (path: string) => {
 
 // Finds the nearest ancestor with the internal link content type + redirectSubpaths flag
 // Use this as a redirect if found
-const getParentRedirectContent = (path: string): null | Content => {
+const getRedirectFromAncestors = (path: string): null | Content => {
     if (!path) {
         return null;
     }
@@ -75,7 +75,7 @@ const getParentRedirectContent = (path: string): null | Content => {
             `${CONTENT_ROOT_PATH}/${ancestorPath.slice(0, index + 1).join('/')}`
     );
 
-    const parentContent = contentLib.query({
+    const redirectContent = contentLib.query({
         count: 1,
         sort: '_path DESC',
         filters: {
@@ -104,10 +104,10 @@ const getParentRedirectContent = (path: string): null | Content => {
         },
     }).hits[0];
 
-    return parentContent || null;
+    return redirectContent || null;
 };
 
-const getContentFromRedirectsFolder = (path: string) =>
+const getFromRedirectsFolder = (path: string) =>
     contentLib.get({ key: `${REDIRECTS_ROOT_PATH}${path}` });
 
 export const sitecontentNotFoundRedirect = ({
@@ -131,9 +131,9 @@ export const sitecontentNotFoundRedirect = ({
         // 2. A parent match in the regular content structure
         // 3. A parent match in the redirects folder
         const redirectContent =
-            getContentFromRedirectsFolder(strippedPath) ||
-            getParentRedirectContent(pathRequested) ||
-            getParentRedirectContent(`${REDIRECTS_ROOT_PATH}${strippedPath}`);
+            getFromRedirectsFolder(strippedPath) ||
+            getRedirectFromAncestors(pathRequested) ||
+            getRedirectFromAncestors(`${REDIRECTS_ROOT_PATH}${strippedPath}`);
 
         return redirectContent
             ? runInLocaleContext({ locale: redirectContent.language }, () =>
