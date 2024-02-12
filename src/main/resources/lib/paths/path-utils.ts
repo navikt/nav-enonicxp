@@ -1,5 +1,7 @@
 import { NAVNO_ROOT_PATH, REDIRECTS_PATH } from '../constants';
 import { Content, CONTENT_ROOT_PATH } from '/lib/xp/content';
+import { contentLibGetStandard } from '../time-travel/standard-functions';
+import { logger } from '../utils/logging';
 
 type ContentWithExternalProductUrl = Content & { data: { externalProductUrl: string } };
 
@@ -21,3 +23,14 @@ export const hasExternalProductUrl = (
 export const stripRedirectsPathPrefix = (path: string) => path.replace(redirectsPathFilter, '');
 
 export const stripLeadingAndTrailingSlash = (path: string) => path.replace(/(^\/)|(\/$)/, '');
+
+export const isWellFormedContentRef = (contentRef: string) => {
+    try {
+        // This will throw if the key is malformed (invalid characters etc)
+        contentLibGetStandard({ key: contentRef });
+        return true;
+    } catch (e) {
+        logger.info(`Content ref validation error for "${contentRef}" - ${e}`);
+        return false;
+    }
+};
