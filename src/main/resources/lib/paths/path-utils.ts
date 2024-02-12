@@ -19,3 +19,5 @@ export const hasExternalProductUrl = (
     !!(content as ContentWithExternalProductUrl).data?.externalProductUrl;
 
 export const stripRedirectsPathPrefix = (path: string) => path.replace(redirectsPathFilter, '');
+
+export const stripLeadingAndTrailingSlash = (path: string) => path.replace(/(^\/)|(\/$)/, '');
