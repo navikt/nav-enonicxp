@@ -35,7 +35,6 @@ const getRepoConnection = ({ repoId, branch, asAdmin }: Params) =>
         branch,
         ...(asAdmin && asAdminParams),
     });
-
 const getRepoId = (entry: auditLogLib.LogEntry<auditLogLib.DefaultData>) => {
     const object = entry.objects[0];
     if (!object) {
@@ -140,10 +139,8 @@ const check4Duplicates = (entries: auditLogLib.LogEntry<auditLogLib.DefaultData>
             return contentId === dupCheckContentId && repoId === getRepoId(duplicate);
         });
         if (duplicate) {
-            // Duplikat, skal ikke være med
             return false;
         } else {
-            // Ikke duplikat skal være med (og tas vare på for senere sjekk)
             duplicates.push(entry);
             return true;
         }
@@ -168,8 +165,8 @@ const newerEntryFound = (
     });
 };
 
-// Hent alle brukers siste publiseringer, også forhåndspubliseringer, og avpubliseringer
-const getUserPublications = (user: `user:${string}:${string}`) => {
+// Hent alle brukers siste publiseringer, inkludert forhåndspubliseringer og avpubliseringer
+const getUsersPublications = (user: `user:${string}:${string}`) => {
     const logEntries = auditLogLib.find({
         count: 5000,
         from: fromDate,
@@ -224,7 +221,7 @@ const getUserPublications = (user: `user:${string}:${string}`) => {
             if (!unpublishedLater) {
                 const prepublishDateExceeded = dayjs().isAfter(publishFromDate);
                 if (!prepublishDateExceeded) {
-                    // 2b. - skal ikke være med i publisert-listen
+                    // 2b. - skal vises i forhåndspublisert-listen
                     prePublishedEntries.push(entry);
                     return false;
                 }
@@ -232,7 +229,7 @@ const getUserPublications = (user: `user:${string}:${string}`) => {
                     // Dette er en forhåndspublisering med gyldighetstid (to)
                     const unpublishDateExceeded = dayjs().isAfter(publishToDate);
                     if (unpublishDateExceeded) {
-                        // 2d. Er avpublisert nå - legg til avpublisert-listen og fjern fra publisert
+                        // 2d. Har utløpt på tid - skal vises i avpublisert-listen
                         unpublishedEntries.push(entry);
                         return false;
                     }
@@ -307,7 +304,8 @@ const getUserPublications = (user: `user:${string}:${string}`) => {
     };
 };
 
-const getUserModifications = (user: `user:${string}:${string}`) => {
+// Hent brukers endringer av innhold siste 6 måneder (bare lokalisert innhold av "våre" innholdsyper)
+const getUsersModifications = (user: `user:${string}:${string}`) => {
     const repos = getLayersMultiConnection('draft');
     return repos
         .query({
@@ -349,23 +347,23 @@ const getUserModifications = (user: `user:${string}:${string}`) => {
                     // Publisert, men endret etterpå
                     status = 'Endret';
                 } else {
-                    // Publisert
+                    // Publisert, skal ikke vises her
                     return undefined;
                 }
             } else if (draftContent?.archivedTime) {
-                // Arkivert
+                // Arkivert, skal ikke vises her
                 return undefined;
             } else if (draftContent?.publish?.first) {
                 // Avpublisert, eventuelt endret etterpå
                 if (draftContent?.workflow?.state === 'IN_PROGRESS') {
                     status = 'Endret';
                 } else {
-                    // Avpublisert, men ikke endret
+                    // Avpublisert, skal ikke vises her
                     return undefined;
                 }
             }
 
-            const modifiedLocalTime = dayjsDateTime(draftContent._ts);
+            const modifiedLocalTime = dayjsDateTime(draftContent.modifiedTime);
             const repo = repoStr(hit.repoId);
             const layer = layerStr(repo);
 
@@ -382,17 +380,18 @@ const getUserModifications = (user: `user:${string}:${string}`) => {
         .sort((a, b) => (dayjs(a?.modifiedTime).isAfter(dayjs(b?.modifiedTime)) ? -1 : 1))
         .slice(0, 5);
 };
-const getLastContentFromUser = () => {
+const getUsersLastContent = () => {
     // Hent aktuell bruker (redaktør)
     const user = authLib.getUser()?.key;
     if (!user) {
         return null;
     }
-    // Hent brukers publiseringer, forhåndspubliseringer og avpubliaseringer
-    const { published, prePublished, unPublished } = getUserPublications(user);
 
-    // Hent alt lokalisert innhold modifisert av bruker, finn status, sorter og avkort til 5
-    const modified = getUserModifications(user);
+    // Hent brukers publiseringer, forhåndspubliseringer og avpubliaseringer
+    const { published, prePublished, unPublished } = getUsersPublications(user);
+
+    // Hent innhold modifisert av bruker
+    const modified = getUsersModifications(user);
 
     const view = resolve('./dashboard-content.html');
 
@@ -402,4 +401,4 @@ const getLastContentFromUser = () => {
     };
 };
 
-exports.get = getLastContentFromUser;
+exports.get = getUsersLastContent;
