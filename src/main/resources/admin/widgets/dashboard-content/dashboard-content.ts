@@ -11,7 +11,7 @@ import dayjs from '/assets/dayjs/1.11.9/dayjs.min.js';
 import utc from '/assets/dayjs/1.11.9/plugin/utc.js';
 
 dayjs.extend(utc);
-const fromDate = dayjs().subtract(6, 'months').toISOString(); // Går bare 6 måneder tilbake i tid
+const fromDate = dayjs().subtract(1, 'months').toISOString(); // Går bare 6 måneder tilbake i tid
 
 const asAdminParams: Pick<Source, 'user' | 'principals'> = {
     user: {
