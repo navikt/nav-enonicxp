@@ -8,10 +8,26 @@ export interface AlertInContext {
   /**
    * Varselmelding
    */
-  text?: string;
+  text: string;
 
   /**
-   * Velg sider og innhold hvor varselet skal vises
+   * Velg innhold
    */
-  targetContent: Array<string>;
+  target:
+    | {
+        /**
+         * Selected
+         */
+        _selected: "formDetails";
+
+        /**
+         * Skjemadetaljer
+         */
+        formDetails: {
+          /**
+           * Velg hvilke skjemadetaljer som varselet skal vises på
+           */
+          targetContent: Array<string>;
+        };
+      };
 }

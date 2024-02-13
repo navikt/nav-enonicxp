@@ -17,25 +17,32 @@
                 <input type="TextArea" name="text">
                     <label>Varselmelding</label>
                     <help-text>Kort og konsis meldingstekst</help-text>
-                    <occurrences minimum="0" maximum="1"/>
-                </input>
-                <input type="ContentSelector" name="targetContent">
-                    <label>Velg sider og innhold hvor varselet skal vises</label>
-                    <occurrences minimum="1" maximum="0" />
+                    <occurrences minimum="1" maximum="1"/>
                     <config>
-                        <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
-                        <allowContentType>${app}:situation-page</allowContentType>
-                        <allowContentType>${app}:guide-page</allowContentType>
-                        <allowContentType>${app}:tools-page</allowContentType>
-                        <allowContentType>${app}:guide-page</allowContentType>
-                        <allowContentType>${app}:themed-article-page</allowContentType>
-                        <allowContentType>${app}:overview</allowContentType>
-                        <allowContentType>${app}:forms-overview</allowContentType>
-                        <allowContentType>${app}:form-details</allowContentType>
-                        <allowContentType>${app}:product-details</allowContentType>
-                        <hideToggleIcon>true</hideToggleIcon>
+                        <regexp>^[0-9a-zA-Z-_]+$</regexp>
                     </config>
                 </input>
+                <option-set name="target">
+                    <label>Velg innhold</label>
+                    <occurrences minimum="1" maximum="1" />
+                    <options minimum="1" maximum="1">
+                        <option name="formDetails">
+                            <label>Skjemadetaljer</label>
+                            <default>true</default>
+                            <items>
+                                <input type="ContentSelector" name="targetContent">
+                                    <label>Velg hvilke skjemadetaljer som varselet skal vises på</label>
+                                    <help-text>Varselet vises på både skjemaoversikt og på produktsider hvor skjemaet er satt inn.</help-text>
+                                    <occurrences minimum="1" maximum="0" />
+                                    <config>
+                                        <allowContentType>${app}:form-details</allowContentType>
+                                        <hideToggleIcon>true</hideToggleIcon>
+                                    </config>
+                                </input>
+                            </items>
+                        </option>
+                    </options>
+                </option-set>
             </items>
         </field-set>
     </form>
