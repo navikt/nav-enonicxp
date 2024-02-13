@@ -80,6 +80,65 @@ export interface ContentPageWithSidemenus {
   area: Array<"health" | "other" | "work" | "family" | "accessibility" | "pension" | "social_counselling" | "inclusion" | "downsizing" | "recruitment">;
 
   /**
+   * Målgruppe
+   */
+  relatedAudience:
+    | {
+        /**
+         * Selected
+         */
+        _selected: "person";
+
+        /**
+         * Privatperson
+         */
+        person: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "employer";
+
+        /**
+         * Arbeidsgiver
+         */
+        employer: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "provider";
+
+        /**
+         * Samarbeidspartner
+         */
+        provider: {
+          /**
+           * Velg underkategorier
+           */
+          provider_audience: Array<"doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "other">;
+        };
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "other";
+
+        /**
+         * Annet
+         */
+        other: Record<string, unknown>;
+      };
+
+  /**
+   * Situasjoner
+   */
+  relatedSituations?: Array<string>;
+
+  /**
    * Velg piktogram
    */
   illustration: string;

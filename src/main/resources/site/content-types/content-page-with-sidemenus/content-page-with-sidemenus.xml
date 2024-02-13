@@ -22,6 +22,41 @@
             </items>
         </field-set>
         <field-set>
+            <label>Relatert innhold</label>
+            <items>
+                <option-set name="relatedAudience">
+                    <label>Målgruppe</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <options minimum="1" maximum="1">
+                        <option name="person">
+                        <label>Privatperson</label>
+                        </option>
+                        <option name="employer">
+                        <label>Arbeidsgiver</label>
+                        </option>
+                        <option name="provider">
+                        <label>Samarbeidspartner</label>
+                        <items>
+                            <mixin name="provider-audience"/>
+                        </items>
+                        </option>
+                        <option name="other">
+                        <label>Annet</label>
+                        </option>
+                    </options>
+                    </option-set>
+                <input name="relatedSituations" type="ContentSelector">
+                    <label>Situasjoner</label>
+                    <help-text>Velg innhold som det skal henvises til</help-text>
+                    <occurrences minimum="0" maximum="0"/>
+                    <config>
+                        <allowContentType>${app}:situation-page</allowContentType>
+                        <showStatus>true</showStatus>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set>
             <label>Piktogram</label>
             <items>
                 <mixin name="illustration" />
