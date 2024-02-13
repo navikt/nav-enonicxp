@@ -28,6 +28,8 @@ import {
     getSearchDocumentLanguage,
     getSearchDocumentLanguageRefs,
 } from './field-resolvers/language';
+import { isOfficeContent } from '../../../office-pages/types';
+import { buildOfficeIngress } from './field-resolvers/office-ingress';
 
 type SearchConfig = Content<'no.nav.navno:search-config-v2'>;
 type KeysConfig = Partial<SearchConfig['data']['defaultKeys']>;
@@ -160,7 +162,9 @@ class ExternalSearchDocumentBuilder {
     }
 
     private getIngress(): string {
-        return this.getFirstMatchingFieldValue('ingressKey') || '';
+        return isOfficeContent(this.content)
+            ? buildOfficeIngress(this.content)
+            : this.getFirstMatchingFieldValue('ingressKey') || '';
     }
 
     private getText(): string {

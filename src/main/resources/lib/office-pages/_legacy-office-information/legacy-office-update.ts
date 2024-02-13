@@ -3,14 +3,14 @@ import { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
 import * as commonLib from '/lib/xp/common';
 import * as taskLib from '/lib/xp/task';
-import { createOrUpdateSchedule } from '../scheduling/schedule-job';
-import { OfficeInformation } from '../../site/content-types/office-information/office-information';
-import { NavNoDescriptor } from '../../types/common';
-import { UpdateOfficeInfoConfig } from '../../tasks/update-office-info/update-office-info-config';
-import { logger } from '../utils/logging';
-import { CONTENT_ROOT_REPO_ID } from '../constants';
-import { createObjectChecksum } from '../utils/object-utils';
-import { runInContext } from '../context/run-in-context';
+import { createOrUpdateSchedule } from '../../scheduling/schedule-job';
+import { OfficeInformation } from '../../../site/content-types/office-information/office-information';
+import { NavNoDescriptor } from '../../../types/common';
+import { UpdateOfficeInfoConfig } from '../../../tasks/update-office-info/update-office-info-config';
+import { logger } from '../../utils/logging';
+import { CONTENT_ROOT_REPO_ID } from '../../constants';
+import { createObjectChecksum } from '../../utils/object-utils';
+import { runInContext } from '../../context/run-in-context';
 
 type OfficeInformationDescriptor = NavNoDescriptor<'office-information'>;
 
@@ -21,13 +21,11 @@ const fiveMinutes = 5 * 60 * 1000;
 
 const enhetTypesToImport: ReadonlySet<string> = new Set([
     'ALS',
-    'FPY',
     'HMS',
     'KLAGE',
     'KONTROLL',
     'LOKAL',
     'OKONOMI',
-    'YTA',
     'OPPFUTLAND',
 ]);
 
