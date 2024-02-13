@@ -249,7 +249,7 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
         return !unpublishedLater; // True: 1a. - False: 1b.
     });
 
-    // Sorter publisert på nytt
+    // Sorter publisert på nytt på (for å sikre riktig rekkefølge ved forhåndspublisering (from)
     publishedEntries = publishedEntries
         .sort((a, b) => {
             const aContentPublishInfo = a.data.params.contentPublishInfo as any;
