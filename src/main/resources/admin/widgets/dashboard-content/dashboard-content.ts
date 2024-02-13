@@ -286,11 +286,11 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
             return !publishedLater && !prePublishedLater;
         });
 
-    // Må sortere prepublished på from-feltet
+    // Må sortere prepublished på from-feltet (førstkommende øverst)
     prePublishedEntries = prePublishedEntries.sort((a, b) => {
         const aContentPublishInfo = a.data.params.contentPublishInfo as any;
         const bContentPublishInfo = b.data.params.contentPublishInfo as any;
-        return dayjs(aContentPublishInfo?.from).isAfter(dayjs(bContentPublishInfo?.from)) ? -1 : 1;
+        return dayjs(aContentPublishInfo?.from).isAfter(dayjs(bContentPublishInfo?.from)) ? 1 : -1;
     });
 
     // Returner content for alle tre typer
