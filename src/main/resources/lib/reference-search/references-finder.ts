@@ -360,7 +360,7 @@ export class ReferencesFinder {
             },
         ];
 
-        const result = this.contentNodeQuery({
+        const formDetailsResult = this.contentNodeQuery({
             filters: {
                 boolean: {
                     must: mustRules,
@@ -368,9 +368,22 @@ export class ReferencesFinder {
             },
         });
 
-        this.logResult('form-details', content._id, result);
+        const formOverview = this.contentNodeQuery({
+            filters: {
+                boolean: {
+                    must: [
+                        {
+                            hasValue: {
+                                field: 'type',
+                                values: ['no.nav.navno:forms-overview'],
+                            },
+                        },
+                    ],
+                },
+            },
+        });
 
-        return result;
+        return [...formDetailsResult, ...formOverview];
     }
 
     // Forms overview pages are generated from meta-data of certain content types
