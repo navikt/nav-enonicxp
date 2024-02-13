@@ -93,9 +93,10 @@ const getContentFromLogEntries = (
                     branch: 'draft',
                     repoId,
                 }).get(hit.id)
-            )[0]; // Only first published element in multi publications
+            )[0];
 
         if (!content) {
+            // Innhold finnes ikke (er slettet) etter er ikke "våre" innholdtyper
             return undefined;
         }
 
@@ -122,7 +123,8 @@ const getContentFromLogEntries = (
         };
     });
 
-    return entries.filter(removeUndefined);
+    // Fjern tomme elementer (slette/ikke våre innholdstyper), og kutt av til 5
+    return entries.filter(removeUndefined).slice(0, 5);
 };
 
 const check4Duplicates = (entries: auditLogLib.LogEntry<auditLogLib.DefaultData>[]) => {
@@ -247,7 +249,7 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
         return !unpublishedLater; // True: 1a. - False: 1b.
     });
 
-    // Sorter publisert på nytt, og kutt av til 5
+    // Sorter publisert på nytt
     publishedEntries = publishedEntries
         .sort((a, b) => {
             const aContentPublishInfo = a.data.params.contentPublishInfo as any;
@@ -255,8 +257,7 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
             const aDate = aContentPublishInfo?.from || a.time;
             const bDate = bContentPublishInfo?.from || b.time;
             return dayjs(aDate).isAfter(dayjs(bDate)) ? -1 : 1;
-        })
-        .slice(0, 5);
+        });
 
     // Sorter avpublisert på nytt, fjern eventulle duplikater som har oppstått
     unpublishedEntries.sort((a, b) => {
@@ -268,7 +269,7 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
     });
     unpublishedEntries = check4Duplicates(unpublishedEntries);
 
-    // Fjern fra avpublisert hvis publisering eller forhåndspublisering av nyere dato, og kutt av til 5
+    // Fjern fra avpublisert hvis publisering eller forhåndspublisering av nyere dato
     unpublishedEntries = unpublishedEntries
         .filter((entry) => {
             const contentId = entry.data.params.contentIds as string;
@@ -283,8 +284,7 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
                 }
             });
             return !publishedLater && !prePublishedLater;
-        })
-        .slice(0, 5);
+        });
 
     // Må sortere prepublished på from-feltet
     prePublishedEntries = prePublishedEntries.sort((a, b) => {
