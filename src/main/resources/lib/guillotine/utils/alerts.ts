@@ -18,7 +18,7 @@ export const generateAlerts = (content: Content) => {
                 must: [
                     {
                         hasValue: {
-                            field: 'data.targetContent',
+                            field: 'data.target.formDetails.targetContent',
                             values: [content._id],
                         },
                     },
