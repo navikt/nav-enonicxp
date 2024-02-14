@@ -22,32 +22,31 @@
             </items>
         </field-set>
         <field-set>
-            <label>Relatert innhold</label>
-            <items>
-                <option-set name="relatedAudience">
-                    <label>Målgruppe</label>
-                    <occurrences minimum="1" maximum="1"/>
+            <items> 
+                <option-set name="alternativeAudience">
+                    <label>Alternativ målgruppe</label>
+                    <help-text>Velg alternativ målgruppe som heller kan tenkes å være relevant for personen som har kommet til denne produktsiden.</help-text>
+                    <occurrences minimum="0" maximum="1"/>
                     <options minimum="1" maximum="1">
                         <option name="person">
-                        <label>Privatperson</label>
+                            <label>Privatperson</label>
                         </option>
                         <option name="employer">
-                        <label>Arbeidsgiver</label>
+                            <label>Arbeidsgiver</label>
                         </option>
                         <option name="provider">
-                        <label>Samarbeidspartner</label>
-                        <items>
-                            <mixin name="provider-audience"/>
-                        </items>
-                        </option>
-                        <option name="other">
-                        <label>Annet</label>
+                            <label>Samarbeidspartner</label>
                         </option>
                     </options>
-                    </option-set>
+                </option-set>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Relaterte situasjoner</label>
+            <items>
                 <input name="relatedSituations" type="ContentSelector">
                     <label>Situasjoner</label>
-                    <help-text>Velg innhold som det skal henvises til</help-text>
+                    <help-text>Velg situasjoner som kan være relevante for denne produktsiden</help-text>
                     <occurrences minimum="0" maximum="0"/>
                     <config>
                         <allowContentType>${app}:situation-page</allowContentType>

@@ -80,9 +80,9 @@ export interface ContentPageWithSidemenus {
   area: Array<"health" | "other" | "work" | "family" | "accessibility" | "pension" | "social_counselling" | "inclusion" | "downsizing" | "recruitment">;
 
   /**
-   * Målgruppe
+   * Alternativ målgruppe
    */
-  relatedAudience:
+  alternativeAudience?:
     | {
         /**
          * Selected
@@ -114,23 +114,7 @@ export interface ContentPageWithSidemenus {
         /**
          * Samarbeidspartner
          */
-        provider: {
-          /**
-           * Velg underkategorier
-           */
-          provider_audience: Array<"doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "other">;
-        };
-      }
-    | {
-        /**
-         * Selected
-         */
-        _selected: "other";
-
-        /**
-         * Annet
-         */
-        other: Record<string, unknown>;
+        provider: Record<string, unknown>;
       };
 
   /**
