@@ -7,7 +7,6 @@ import { getUnixTimeFromDateTimeString } from './datetime-utils';
 import { contentTypesWithCustomEditor } from '../contenttype-lists';
 import { getLayersData } from '../localization/layers-data';
 import { getLayersMigrationArchivedContentRef } from '../time-travel/layers-migration-refs';
-import { getLayerMigrationData } from '../localization/layers-migration/migration-data';
 
 const MAX_VERSIONS_COUNT_TO_RETRIEVE = 2000;
 

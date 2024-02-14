@@ -1,7 +1,7 @@
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { logger } from '../utils/logging';
 import { CONTENT_ROOT_REPO_ID } from '../constants';
-import { processAllOfficeBranches, fetchAllOfficeBranchDataFromNorg } from './update';
+import { processAllOfficeBranches, fetchAllOfficeBranchDataFromNorg } from './office-branch-update';
 import { runInContext } from '../context/run-in-context';
 
 const OFFICE_BRANCH_FETCH_TASK_NAME = 'no.nav.navno:update-office-branch';

@@ -1,14 +1,11 @@
 import { customSelectorEditIcon } from './custom-selector-icons';
 import { buildEditorPathFromContext } from '../lib/paths/editor-path';
-import { logger } from '../lib/utils/logging';
+import { stripLeadingAndTrailingSlash } from '../lib/paths/path-utils';
 
 const getServiceName = (req: XP.Request) => req.contextPath.split('/').slice(-1)[0];
 
 export const getServiceRequestSubPath = (req: XP.Request) =>
-    req.path
-        .split(getServiceName(req))
-        .slice(-1)[0]
-        .replace(/(^\/)|(\/$)/, ''); // Trim leading/trailing slash
+    stripLeadingAndTrailingSlash(req.path.split(getServiceName(req)).slice(-1)[0]);
 
 // We can't use target or onclick to make the link open in a new tab, as content studio removes
 // these attributes when parsing the dom elements from the customselector icon. We set a classname
