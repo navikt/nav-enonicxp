@@ -89,12 +89,6 @@ export const contentTypesWithBreadcrumbs = [
 ] as const satisfies ContentTypeList;
 
 export const contentTypesWithAlerts = [
-    `${APP_DESCRIPTOR}:situation-page`,
-    `${APP_DESCRIPTOR}:guide-page`,
-    `${APP_DESCRIPTOR}:themed-article-page`,
-    `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
-    `${APP_DESCRIPTOR}:tools-page`,
-    `${APP_DESCRIPTOR}:generic-page`,
     `${APP_DESCRIPTOR}:form-details`,
 ] as const satisfies ContentTypeList;
 

@@ -3,8 +3,4 @@
 fragment alertInContext on no_nav_navno_AlertInContext {
     ...contentCommonWithPage
     dataAsJson
-    data {
-        type
-        text
-    }
 }
