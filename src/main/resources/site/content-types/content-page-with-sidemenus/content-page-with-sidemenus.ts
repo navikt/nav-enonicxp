@@ -80,42 +80,54 @@ export interface ContentPageWithSidemenus {
   area: Array<"health" | "other" | "work" | "family" | "accessibility" | "pension" | "social_counselling" | "inclusion" | "downsizing" | "recruitment">;
 
   /**
-   * Alternativ målgruppe
+   * Aktuelle målgrupper
    */
-  alternativeAudience?:
-    | {
+  alternativeAudience?: {
+    /**
+     * Selected
+     */
+    _selected: Array<"person" | "employer" | "provider">;
+    
+    /**
+     * Privatperson
+     */
+    person: {
+      /**
+       * Innhold
+       */
+      targetPage: string;
+    };
+    
+    /**
+     * Arbeidsgiver
+     */
+    employer: {
+      /**
+       * Innhold
+       */
+      targetPage: string;
+    };
+    
+    /**
+     * Samarbeidspartner
+     */
+    provider: {
+      /**
+       * Enkeltsamarbeid
+       */
+      providerList: Array<{
         /**
-         * Selected
+         * Velg underkategorier
          */
-        _selected: "person";
+        provider_audience: Array<"doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "other">;
 
         /**
-         * Privatperson
+         * Innhold
          */
-        person: Record<string, unknown>;
-      }
-    | {
-        /**
-         * Selected
-         */
-        _selected: "employer";
-
-        /**
-         * Arbeidsgiver
-         */
-        employer: Record<string, unknown>;
-      }
-    | {
-        /**
-         * Selected
-         */
-        _selected: "provider";
-
-        /**
-         * Samarbeidspartner
-         */
-        provider: Record<string, unknown>;
-      };
+        targetPage: string;
+      }>;
+    };
+  };
 
   /**
    * Situasjoner

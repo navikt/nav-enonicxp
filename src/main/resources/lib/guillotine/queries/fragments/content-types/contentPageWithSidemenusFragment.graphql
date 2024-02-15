@@ -1,4 +1,5 @@
 #import "../mixins/animatedIconsTargetFragment.graphql"
+#import "../mixins/productTargetMicroFragment.graphql"
 
 fragment contentContentPageWithSidemenus on no_nav_navno_ContentPageWithSidemenus {
     dataAsJson
@@ -17,5 +18,29 @@ fragment contentContentPageWithSidemenus on no_nav_navno_ContentPageWithSidemenu
         processing_times
         payout_dates
         rates
+        alternativeAudience {
+            _selected
+            person {
+                targetPage {
+                    ...productTargetMicroMixin
+                }
+            }
+            employer {
+                targetPage {
+                    ...productTargetMicroMixin
+                }
+            }
+            provider {
+                providerList {
+                    providerAudience
+                    targetPage {
+                        ...productTargetMicroMixin
+                    }
+                }
+            }
+        }
+        relatedSituations {
+            ...productTargetMicroMixin
+        }
     }
 }
