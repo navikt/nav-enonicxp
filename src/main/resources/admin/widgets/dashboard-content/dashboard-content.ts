@@ -2,16 +2,29 @@ import thymeleafLib from '/lib/thymeleaf';
 import * as authLib from '/lib/xp/auth';
 import * as nodeLib from '/lib/xp/node';
 import * as auditLogLib from '/lib/xp/auditlog';
+import * as contentLib from '/lib/xp/content';
 import { Source } from '/lib/xp/node';
-import { ADMIN_PRINCIPAL, SUPER_USER } from '../../../lib/constants';
+import { ADMIN_PRINCIPAL, APP_DESCRIPTOR, SUPER_USER } from '../../../lib/constants';
 import { getLayersMultiConnection } from '../../../lib/localization/layers-repo-utils/layers-repo-connection';
 import { NON_LOCALIZED_QUERY_FILTER } from '../../../lib/localization/layers-repo-utils/localization-state-filters';
-import { dynamicPageContentTypes, legacyPageContentTypes } from '../../../lib/contenttype-lists';
+import { contentTypesRenderedByEditorFrontend } from '../../../lib/contenttype-lists';
 import dayjs from '/assets/dayjs/1.11.9/dayjs.min.js';
 import utc from '/assets/dayjs/1.11.9/plugin/utc.js';
 
 dayjs.extend(utc);
 const fromDate = dayjs().subtract(6, 'months').toISOString(); // Går bare 6 måneder tilbake i tid
+
+const contentTypes2Show = [
+    ...contentTypesRenderedByEditorFrontend,
+    `${APP_DESCRIPTOR}:content-list`
+];
+const contentInfo = contentTypes2Show.map((contentType) => {
+    const typeInfo = contentLib.getType(contentType);
+    return {
+        type: contentType,
+        name: typeInfo ? typeInfo.displayName : ''
+    }
+});
 
 const asAdminParams: Pick<Source, 'user' | 'principals'> = {
     user: {
@@ -23,6 +36,7 @@ const removeUndefined = <S>(value: S | undefined): value is S => value !== undef
 type Params = Omit<Source, 'user' | 'principals'> & { asAdmin?: boolean };
 type ContentInfo = {
     displayName: string;
+    contentType: string;
     modifiedTimeStr: string;
     status: string;
     title: string;
@@ -79,7 +93,7 @@ const getContentFromLogEntries = (
                         must: {
                             hasValue: {
                                 field: 'type',
-                                values: [...legacyPageContentTypes, ...dynamicPageContentTypes],
+                                values: contentTypes2Show,
                             },
                         },
                     },
@@ -114,8 +128,10 @@ const getContentFromLogEntries = (
                 : contentPublishInfo?.to || entry.time;
             contentUrl = `edit/${content._id}`;
         }
+        const contentTypeInfo = contentInfo.find((el) => el.type === content.type);
         return {
             displayName: content.displayName + layer,
+            contentType: contentTypeInfo ? contentTypeInfo.name : '',
             modifiedTimeStr: dayjs(modifyDate).format('DD.MM.YYYY HH.mm.ss'),
             status,
             title: content._path.replace('/content/www.nav.no/', ''),
@@ -317,7 +333,7 @@ const getUsersModifications = (user: `user:${string}:${string}`) => {
                     must: {
                         hasValue: {
                             field: 'type',
-                            values: [...legacyPageContentTypes, ...dynamicPageContentTypes],
+                            values: contentTypes2Show,
                         },
                     },
                 },
@@ -366,9 +382,11 @@ const getUsersModifications = (user: `user:${string}:${string}`) => {
             const modifiedLocalTime = dayjsDateTime(draftContent.modifiedTime);
             const repo = repoStr(hit.repoId);
             const layer = layerStr(repo);
+            const contentTypeInfo = contentInfo.find((el) => el.type === draftContent.type);
 
             return {
                 displayName: draftContent.displayName + layer,
+                contentType: contentTypeInfo ? contentTypeInfo.name : '',
                 modifiedTime: modifiedLocalTime,
                 modifiedTimeStr: dayjs(modifiedLocalTime).format('DD.MM.YYYY HH.mm.ss'),
                 status,
