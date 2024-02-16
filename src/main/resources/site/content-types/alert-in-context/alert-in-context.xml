@@ -18,9 +18,6 @@
                     <label>Varselmelding</label>
                     <help-text>Kort og konsis meldingstekst</help-text>
                     <occurrences minimum="1" maximum="1"/>
-                    <config>
-                        <regexp>^[0-9a-zA-Z-_]+$</regexp>
-                    </config>
                 </input>
                 <option-set name="target">
                     <label>Velg innhold</label>
