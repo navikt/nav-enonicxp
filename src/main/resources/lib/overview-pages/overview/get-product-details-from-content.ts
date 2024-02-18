@@ -1,11 +1,11 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { ContentWithProductDetails } from './types';
+import { ContentInOverviewPages } from './types';
 import { logger } from '../../utils/logging';
 import { ProductDetails } from '../../../site/content-types/product-details/product-details';
 
 export const getProductDetailsFromContent = (
-    productPageContent: ContentWithProductDetails,
+    productPageContent: ContentInOverviewPages,
     detailsType: ProductDetails['detailType']
 ): Content<'no.nav.navno:product-details'> | null => {
     const productDetailsId = productPageContent.data[detailsType];

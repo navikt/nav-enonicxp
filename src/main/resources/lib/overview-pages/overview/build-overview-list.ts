@@ -5,25 +5,31 @@ import { getOverviewContent } from './get-overview-content';
 import { logger } from '../../utils/logging';
 import { buildOverviewListLegacy } from './build-overview-list-legacy';
 import { transformToOverviewItem } from './transform-to-overview-item';
-import { ContentWithProductDetails } from './types';
+import { ContentInOverviewPages, OverviewPageDetailedType, OverviewPageItem } from './types';
 import { forceArray } from '../../utils/array-utils';
 import { getLocalizedContentWithFallbackData } from '../common/localization';
+import { buildProductDetailsMap } from './build-product-details-map';
 
-const sortByTitle = sortByLocaleCompareOnField('title');
-
-const buildSimpleOverviewList = (productPageContents: ContentWithProductDetails[]) =>
-    productPageContents.map(transformToOverviewItem);
+const buildSimpleOverviewList = (productPageContents: ContentInOverviewPages[]) =>
+    productPageContents.map((content) => transformToOverviewItem(content));
 
 const buildDetailedOverviewList = (
-    productPageContents: ContentWithProductDetails[],
-    localeFallbackIds: string[],
-    language: string
-) =>
-    getLocalizedContentWithFallbackData({
-        contents: productPageContents,
-        localeFallbackIds,
-        language,
-    }).map(transformToOverviewItem);
+    productPageContents: ContentInOverviewPages[],
+    overviewType: OverviewPageDetailedType
+) => {
+    const productDetailsMap = buildProductDetailsMap(productPageContents, overviewType);
+
+    return productPageContents.reduce<OverviewPageItem[]>((acc, content) => {
+        const id = content.data[overviewType] as string;
+        const productDetails = productDetailsMap[id];
+
+        if (productDetails) {
+            acc.push(transformToOverviewItem(content, productDetails));
+        }
+
+        return acc;
+    }, []);
+};
 
 export const buildOverviewList = (overviewContent: Content<'no.nav.navno:overview'>) => {
     const { data, language, _id } = overviewContent;
@@ -45,18 +51,22 @@ export const buildOverviewList = (overviewContent: Content<'no.nav.navno:overvie
         excludedContentIds: forceArray(excludedContent),
     });
 
-    const productList = runInContext({ branch: 'master' }, () => {
-        if (overviewType === 'all_products') {
-            return buildSimpleOverviewList(listContents);
-        }
-
-        // TODO: remove this once all relevant overview pages have been converted to use the locale fallback system
-        if (!localeFallback) {
+    const overviewList = runInContext({ branch: 'master' }, () => {
+        // TODO: remove this once all relevant overview pages have been converted to the locale fallback system
+        if (!localeFallback && overviewType !== 'all_products') {
             return buildOverviewListLegacy(listContents, overviewType, language);
         }
 
-        return buildDetailedOverviewList(listContents, forceArray(localeFallback), language);
+        const localizedContent = getLocalizedContentWithFallbackData({
+            contents: listContents,
+            localeFallbackIds: forceArray(localeFallback),
+            language,
+        });
+
+        return overviewType === 'all_products'
+            ? buildSimpleOverviewList(localizedContent)
+            : buildDetailedOverviewList(localizedContent, overviewType);
     });
 
-    return productList.sort(sortByTitle);
+    return overviewList.sort(sortByLocaleCompareOnField('title'));
 };

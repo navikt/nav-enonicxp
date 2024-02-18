@@ -4,14 +4,14 @@ import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-
 import { buildOverviewList } from '../../../overview-pages/overview/build-overview-list';
 import { logger } from '../../../utils/logging';
 import {
-    OverviewPageProductItem,
-    OverviewPageProductLink,
+    OverviewPageItem,
+    OverviewPageItemProductLink,
 } from '../../../overview-pages/overview/types';
 import { forceArray } from '../../../utils/array-utils';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
 
 export const overviewDataCallback: CreationCallback = (context, params) => {
-    const productLinkType = graphQlCreateObjectType<keyof OverviewPageProductLink>(context, {
+    const productLinkType = graphQlCreateObjectType<keyof OverviewPageItemProductLink>(context, {
         name: context.uniqueName('OverviewProductLink'),
         description: 'Product link',
         fields: {
@@ -22,7 +22,7 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
         },
     });
 
-    const productListItemType = graphQlCreateObjectType<keyof OverviewPageProductItem>(context, {
+    const productListItemType = graphQlCreateObjectType<keyof OverviewPageItem>(context, {
         name: context.uniqueName('OverviewListItem'),
         description: 'Product item in overview list',
         fields: {

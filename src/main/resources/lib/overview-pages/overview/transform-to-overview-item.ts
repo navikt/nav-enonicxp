@@ -1,28 +1,29 @@
+import { Content } from '/lib/xp/content';
 import { sanitize } from '/lib/xp/common';
-import { ContentWithProductDetails, OverviewPageProductItem } from './types';
+import { ContentInOverviewPages, OverviewPageItem } from './types';
 import { getPublicPath } from '../../paths/public-path';
 
 export const transformToOverviewItem = (
-    product: ContentWithProductDetails
-): OverviewPageProductItem => {
-    const { type, data, language, displayName } = product;
+    productPage: ContentInOverviewPages,
+    productDetail?: Content<'no.nav.navno:product-details'>
+): OverviewPageItem => {
+    const { type, data, language, displayName } = productPage;
     const { title, audience, sortTitle } = data;
 
     const pageTitle = title || displayName;
     const listItemTitle = sortTitle || pageTitle;
-
-    const path = getPublicPath(product, language);
 
     return {
         ...data,
         title: listItemTitle,
         audience: audience._selected,
         anchorId: sanitize(listItemTitle),
+        productDetailsPath: productDetail ? getPublicPath(productDetail, language) : undefined,
         productLinks: [
             {
-                url: path,
                 language,
                 type,
+                url: getPublicPath(productPage, language),
                 title: pageTitle,
             },
         ],

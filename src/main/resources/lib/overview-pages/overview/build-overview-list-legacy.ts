@@ -1,8 +1,4 @@
-import {
-    ContentTypeWithProductDetails,
-    DetailedOverviewType,
-    OverviewPageProductItem,
-} from './types';
+import { ContentTypesInOverviewPages, OverviewPageDetailedType, OverviewPageItem } from './types';
 import { getPublicPath } from '../../paths/public-path';
 import { Content } from '/lib/xp/content';
 import { getProductDetailsFromContent } from './get-product-details-from-content';
@@ -10,8 +6,8 @@ import { sortByLocaleCompareOnField } from '../../utils/sort-utils';
 import { transformToOverviewItem } from './transform-to-overview-item';
 
 export const buildOverviewListLegacy = (
-    productPages: Content<ContentTypeWithProductDetails>[],
-    overviewType: DetailedOverviewType,
+    productPages: Content<ContentTypesInOverviewPages>[],
+    overviewType: OverviewPageDetailedType,
     requestedLanguage: string
 ) => {
     // Keep track of which product details have been added, to ensure we do not get unwanted dupes
@@ -20,7 +16,7 @@ export const buildOverviewListLegacy = (
     // The rule here is that we want every product detail in the requested language included in the
     // final list, at least once. Each detail can be included multiple times, but only if they are
     // used on multiple product pages in the requested language.
-    const productDataMap = productPages.reduce<Record<string, OverviewPageProductItem>>(
+    const productDataMap = productPages.reduce<Record<string, OverviewPageItem>>(
         (acc, productPageContent) => {
             const productDetailsContent = getProductDetailsFromContent(
                 productPageContent,
@@ -60,7 +56,7 @@ export const buildOverviewListLegacy = (
                 ? productPageData.title
                 : productDetailsContent.displayName;
 
-            const productData: OverviewPageProductItem = {
+            const productData: OverviewPageItem = {
                 ...productPageData,
                 title,
                 productDetailsPath: getPublicPath(productDetailsContent, requestedLanguage),
