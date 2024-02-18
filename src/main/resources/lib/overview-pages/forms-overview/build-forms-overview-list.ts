@@ -1,5 +1,5 @@
+import { Content } from '/lib/xp/content';
 import { forceArray } from '../../utils/array-utils';
-import { FormsOverview } from '../../../site/content-types/forms-overview/forms-overview';
 import { FormDetailsListItem } from './types';
 import { formsOverviewListItemTransformer } from './transform-to-forms-overview-item';
 import { sortByLocaleCompareOnField } from '../../utils/sort-utils';
@@ -7,32 +7,28 @@ import { getFormsOverviewContent } from './get-forms-overview-content';
 import { getLocalizedContentWithFallbackData } from '../common/localization';
 import { buildFormDetailsMap } from './build-form-details-map';
 
-type Audience = FormsOverview['audience'];
+export const buildFormDetailsList = (
+    formsOverviewContent: Content<'no.nav.navno:forms-overview'>
+) => {
+    const { language, data } = formsOverviewContent;
+    const { overviewType, audience, excludedContent, localeFallback } = data;
 
-const sortBySortTitle = sortByLocaleCompareOnField('sortTitle');
+    const listContent = getFormsOverviewContent({
+        audience,
+        excludedContentIds: forceArray(excludedContent),
+    });
 
-type Args = {
-    audience: Audience;
-    language: string;
-    overviewType: FormsOverview['overviewType'];
-    excludedContentIds: string[];
-    localeFallbackIds?: string[];
-};
-
-export const buildFormDetailsList = (args: Args) => {
-    const { language, overviewType, audience, excludedContentIds, localeFallbackIds } = args;
-
-    const contentWithFormDetails = getLocalizedContentWithFallbackData({
-        contents: getFormsOverviewContent({ audience, excludedContentIds }),
-        localeFallbackIds: forceArray(localeFallbackIds),
+    const localizedContent = getLocalizedContentWithFallbackData({
+        contents: listContent,
+        localeFallbackIds: forceArray(localeFallback),
         language,
     });
 
-    const formDetailsMap = buildFormDetailsMap(contentWithFormDetails, overviewType);
+    const formDetailsMap = buildFormDetailsMap(localizedContent, overviewType);
 
     const listItemTransformer = formsOverviewListItemTransformer(formDetailsMap, language);
 
-    return contentWithFormDetails
+    return localizedContent
         .reduce<FormDetailsListItem[]>((acc, content) => {
             const transformedItem = listItemTransformer(content);
             if (transformedItem) {
@@ -41,5 +37,5 @@ export const buildFormDetailsList = (args: Args) => {
 
             return acc;
         }, [])
-        .sort(sortBySortTitle);
+        .sort(sortByLocaleCompareOnField('sortTitle'));
 };

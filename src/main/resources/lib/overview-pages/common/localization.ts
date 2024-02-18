@@ -6,11 +6,13 @@ import { getLocaleFromContext } from '../../localization/locale-context';
 import { ContentDataLocaleFallback } from '../../../site/content-types/content-data-locale-fallback/content-data-locale-fallback';
 import { splitByLocalizationState } from '../../localization/split-by-localization-state';
 
-type FallbackDataAll = NonNullable<ContentDataLocaleFallback['items']>[number];
-type FallbackData = Omit<FallbackDataAll, 'enabled' | 'contentId' | 'contentQuery'>;
+type FallbackContentData = Omit<
+    NonNullable<ContentDataLocaleFallback['items']>[number],
+    'enabled' | 'contentId' | 'contentQuery'
+>;
 
 type ContentWithFallbackData<ContentType extends Content> = ContentType & {
-    data: Partial<FallbackData>;
+    data: Partial<FallbackContentData>;
 };
 
 type Args<ContentType extends Content> = {
@@ -55,7 +57,7 @@ const injectLocaleFallbackData = <ContentType extends Content>(
         return [];
     }
 
-    const fallbackDataMap: Record<string, FallbackData> = {};
+    const fallbackDataMap: Record<string, FallbackContentData> = {};
 
     fallbackContents.forEach((fallbackContent) => {
         forceArray(fallbackContent.data.items).forEach((item) => {

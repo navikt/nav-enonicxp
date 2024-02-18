@@ -2,7 +2,6 @@ import * as contentLib from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 import { logger } from '../../../utils/logging';
-import { forceArray } from '../../../utils/array-utils';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
 import { buildFormDetailsList } from '../../../overview-pages/forms-overview/build-forms-overview-list';
 import { FormDetailsListItem } from '../../../overview-pages/forms-overview/types';
@@ -51,8 +50,7 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
                 return [];
             }
 
-            const { language, data } = content;
-            const { audience, overviewType, excludedContent, localeFallback } = data;
+            const { audience, overviewType } = content.data;
 
             if (!audience?._selected) {
                 logger.error(`Audience not set for overview page id ${contentId}`);
@@ -71,13 +69,7 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
                 return [];
             }
 
-            return buildFormDetailsList({
-                audience,
-                language,
-                overviewType,
-                excludedContentIds: forceArray(excludedContent),
-                localeFallbackIds: localeFallback ? forceArray(localeFallback) : undefined,
-            });
+            return buildFormDetailsList(content);
         },
     };
 };

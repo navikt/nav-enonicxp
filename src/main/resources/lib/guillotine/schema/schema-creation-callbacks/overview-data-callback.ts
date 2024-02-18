@@ -56,10 +56,10 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
 
     params.fields.productList = {
         type: graphQlLib.list(productListItemType),
-        resolve: () => {
+        resolve: (): OverviewPageItem[] => {
             const contentId = getGuillotineContentQueryBaseContentId();
             if (!contentId) {
-                logger.error('No contentId provided for overview-page resolver');
+                logger.error('No contentId provided for overview page resolver');
                 return [];
             }
 

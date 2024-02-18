@@ -1,9 +1,39 @@
-import { ContentTypesInOverviewPages, OverviewPageDetailedType, OverviewPageItem } from './types';
-import { getPublicPath } from '../../paths/public-path';
+import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { getProductDetailsFromContent } from './get-product-details-from-content';
+import {
+    ContentInOverviewPages,
+    ContentTypesInOverviewPages,
+    OverviewPageDetailedType,
+    OverviewPageItem,
+} from './types';
+import { getPublicPath } from '../../paths/public-path';
 import { sortByLocaleCompareOnField } from '../../utils/sort-utils';
 import { transformToOverviewItem } from './transform-to-overview-item';
+import { ProductDetails } from '../../../site/content-types/product-details/product-details';
+import { logger } from '../../utils/logging';
+
+const getProductDetailsFromContent = (
+    productPageContent: ContentInOverviewPages,
+    detailsType: ProductDetails['detailType']
+): Content<'no.nav.navno:product-details'> | null => {
+    const productDetailsId = productPageContent.data[detailsType];
+    if (!productDetailsId) {
+        return null;
+    }
+
+    const productDetails = contentLib.get({ key: productDetailsId });
+    if (!productDetails || productDetails.type !== 'no.nav.navno:product-details') {
+        logger.error(
+            `Product details with id ${productDetailsId} and type ${detailsType} 
+            not found for content id ${productPageContent._id}`,
+            true,
+            true
+        );
+        return null;
+    }
+
+    return productDetails;
+};
 
 export const buildOverviewListLegacy = (
     productPages: Content<ContentTypesInOverviewPages>[],
