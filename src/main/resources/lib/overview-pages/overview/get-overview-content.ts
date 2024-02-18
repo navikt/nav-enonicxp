@@ -1,6 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import {
-    contentTypesInAllProductsPage,
+    contentTypesInAllProductsOverviewPages,
     contentTypesInOverviewPages,
 } from '../../contenttype-lists';
 import { forceArray } from '../../utils/array-utils';
@@ -19,7 +19,7 @@ export const getOverviewContent = ({ overviewType, audience, excludedContentIds 
         start: 0,
         count: 1000,
         contentTypes: isAllProductsType
-            ? contentTypesInAllProductsPage
+            ? contentTypesInAllProductsOverviewPages
             : contentTypesInOverviewPages,
         filters: {
             boolean: {
