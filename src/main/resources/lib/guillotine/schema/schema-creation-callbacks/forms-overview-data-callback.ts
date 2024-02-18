@@ -4,7 +4,7 @@ import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-
 import { logger } from '../../../utils/logging';
 import { forceArray } from '../../../utils/array-utils';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
-import { buildFormDetailsList } from '../../../overview-pages/forms-overview/form-details-list-builder';
+import { buildFormDetailsList } from '../../../overview-pages/forms-overview/build-forms-overview-list';
 import { FormDetailsListItem } from '../../../overview-pages/forms-overview/types';
 
 export const formsOverviewDataCallback: CreationCallback = (context, params) => {

@@ -1,21 +1,49 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { logger } from '../utils/logging';
-import { forceArray } from '../utils/array-utils';
-import { getLocaleFromContext } from '../localization/locale-context';
-import { ContentDataLocaleFallback } from '../../site/content-types/content-data-locale-fallback/content-data-locale-fallback';
+import { logger } from '../../utils/logging';
+import { forceArray } from '../../utils/array-utils';
+import { getLocaleFromContext } from '../../localization/locale-context';
+import { ContentDataLocaleFallback } from '../../../site/content-types/content-data-locale-fallback/content-data-locale-fallback';
+import { splitByLocalizationState } from '../../localization/split-by-localization-state';
 
 type FallbackDataAll = NonNullable<ContentDataLocaleFallback['items']>[number];
 type FallbackData = Omit<FallbackDataAll, 'enabled' | 'contentId' | 'contentQuery'>;
 
-type ContentWithFallbackData<ContentType extends Content> = ContentType & { data: FallbackData };
+type ContentWithFallbackData<ContentType extends Content> = ContentType & {
+    data: Partial<FallbackData>;
+};
 
-export const injectFallbackLocaleData = <ContentType extends Content>(
-    contents: ContentType[],
+type Args<ContentType extends Content> = {
+    contents: ContentWithFallbackData<ContentType>[];
+    language: string;
+    localeFallbackIds: string[];
+};
+
+export const getLocalizedContentWithFallbackData = <ContentType extends Content>({
+    contents,
+    language,
+    localeFallbackIds,
+}: Args<ContentType>) => {
+    const { localized, nonLocalized } = splitByLocalizationState(contents, language);
+
+    if (localeFallbackIds.length === 0) {
+        return localized;
+    }
+
+    const nonLocalizedContentWithFallbackData = injectLocaleFallbackData(
+        nonLocalized,
+        localeFallbackIds
+    );
+
+    return [...localized, ...nonLocalizedContentWithFallbackData];
+};
+
+const injectLocaleFallbackData = <ContentType extends Content>(
+    contents: ContentWithFallbackData<ContentType>[],
     localeFallbackIds: string[]
 ): ContentWithFallbackData<ContentType>[] => {
     const fallbackContents = contentLib.query({
-        count: 1000,
+        count: localeFallbackIds.length,
         contentTypes: ['no.nav.navno:content-data-locale-fallback'],
         filters: {
             ids: { values: localeFallbackIds },

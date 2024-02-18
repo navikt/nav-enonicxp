@@ -1,7 +1,7 @@
 import * as contentLib from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
-import { buildOverviewPageList } from '../../../overview-pages/overview/build-overview-page-list';
+import { buildOverviewList } from '../../../overview-pages/overview/build-overview-list';
 import { logger } from '../../../utils/logging';
 import {
     OverviewPageProductItem,
@@ -69,7 +69,7 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
                 return [];
             }
 
-            return buildOverviewPageList(content);
+            return buildOverviewList(content);
         },
     };
 };

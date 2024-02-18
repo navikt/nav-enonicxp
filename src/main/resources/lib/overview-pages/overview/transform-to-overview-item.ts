@@ -2,7 +2,7 @@ import { sanitize } from '/lib/xp/common';
 import { ContentWithProductDetails, OverviewPageProductItem } from './types';
 import { getPublicPath } from '../../paths/public-path';
 
-export const transformProductContentToOverviewItem = (
+export const transformToOverviewItem = (
     product: ContentWithProductDetails
 ): OverviewPageProductItem => {
     const { type, data, language, displayName } = product;

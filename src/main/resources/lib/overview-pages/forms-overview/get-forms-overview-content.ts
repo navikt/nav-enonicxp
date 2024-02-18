@@ -8,7 +8,7 @@ type Args = {
     excludedContentIds: string[];
 };
 
-export const getFormsOverviewContentPages = ({ audience, excludedContentIds }: Args) => {
+export const getFormsOverviewContent = ({ audience, excludedContentIds }: Args) => {
     const { _selected: selectedAudience } = audience;
 
     const selectedProviderAudiences =

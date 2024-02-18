@@ -12,11 +12,7 @@ type Args = {
     excludedContentIds: string[];
 };
 
-export const getProductPagesForOverview = ({
-    overviewType,
-    audience,
-    excludedContentIds,
-}: Args) => {
+export const getOverviewContent = ({ overviewType, audience, excludedContentIds }: Args) => {
     const isAllProductsType = overviewType === 'all_products';
 
     return contentLib.query({

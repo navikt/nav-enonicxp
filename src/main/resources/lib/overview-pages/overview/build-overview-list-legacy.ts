@@ -7,10 +7,9 @@ import { getPublicPath } from '../../paths/public-path';
 import { Content } from '/lib/xp/content';
 import { getProductDetailsFromContent } from './get-product-details-from-content';
 import { sortByLocaleCompareOnField } from '../../utils/sort-utils';
-import { transformProductContentToOverviewItem } from './transform-product-content-to-overview-item';
+import { transformToOverviewItem } from './transform-to-overview-item';
 
-// TODO: remove this once all relevant overview pages have been converted to use the fallback locale system
-export const buildDetailedOverviewListLegacy = (
+export const buildOverviewListLegacy = (
     productPages: Content<ContentTypeWithProductDetails>[],
     overviewType: DetailedOverviewType,
     requestedLanguage: string
@@ -37,7 +36,7 @@ export const buildDetailedOverviewListLegacy = (
             const isProductPageInRequestedLanguage =
                 productPageContent.language === requestedLanguage;
 
-            const productPageData = transformProductContentToOverviewItem(productPageContent);
+            const productPageData = transformToOverviewItem(productPageContent);
 
             // We do not want the possibility of duplicate product details, unless they belong to
             // product pages in the requested language

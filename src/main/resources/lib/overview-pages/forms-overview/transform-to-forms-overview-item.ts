@@ -3,21 +3,19 @@ import { sanitize } from '/lib/xp/common';
 import { forceArray } from '../../utils/array-utils';
 import striptags from '/assets/striptags/3.1.1/src/striptags';
 import { getPublicPath } from '../../paths/public-path';
-import { ContentWithFormDetails, FormDetailsListItem, FormDetailsMap } from './types';
+import {
+    ContentWithFormDetails,
+    FormDetailsListItem,
+    FormDetailsMap,
+    ProductDataInFormsOverviewItem,
+} from './types';
 import { FormDetailsSelector } from '../../../site/mixins/form-details-selector/form-details-selector';
 import { ContentPageWithSidemenus } from '../../../site/content-types/content-page-with-sidemenus/content-page-with-sidemenus';
 
-type ProductData = ContentPageWithSidemenus;
-
-type IncludedProductData = Pick<
-    ProductData,
-    'title' | 'sortTitle' | 'illustration' | 'area' | 'taxonomy' | 'ingress'
->;
-
 // Fields from nested mixins are not included in the generated types
 type ContentWithMissingMixins = ContentWithFormDetails & {
-    data: IncludedProductData &
-        Pick<ProductData, 'externalProductUrl'> &
+    data: ProductDataInFormsOverviewItem &
+        Pick<ContentPageWithSidemenus, 'externalProductUrl'> &
         Required<Pick<FormDetailsSelector, 'formDetailsTargets'>> & {
             keywords?: string | string[];
         };
