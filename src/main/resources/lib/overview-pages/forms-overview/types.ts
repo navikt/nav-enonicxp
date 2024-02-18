@@ -14,14 +14,15 @@ type IncludedProductData = Pick<
 
 export type FormDetailsMap = Record<string, Content<'no.nav.navno:form-details'>>;
 
-export type ContentWithFormDetails = Content<ContentTypeWithFormDetails> & {
-    // Fields from nested mixins are not included in the autogenerate types
-    data: IncludedProductData &
-        Pick<ProductData, 'externalProductUrl'> &
-        Required<Pick<FormDetailsSelector, 'formDetailsTargets'>> & {
-            keywords?: string | string[];
-        };
-};
+export type ContentWithFormDetails = Content<ContentTypeWithFormDetails>;
+// & {
+//     // Fields from nested mixins are not included in the autogenerate types
+//     data: IncludedProductData &
+//         Pick<ProductData, 'externalProductUrl'> &
+//         Required<Pick<FormDetailsSelector, 'formDetailsTargets'>> & {
+//             keywords?: string | string[];
+//         };
+// };
 
 export type FormDetailsListItem = {
     anchorId: string;

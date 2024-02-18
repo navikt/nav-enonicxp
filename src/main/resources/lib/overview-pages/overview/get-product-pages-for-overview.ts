@@ -9,9 +9,14 @@ import { Overview } from '../../../site/content-types/overview/overview';
 type Args = {
     overviewType: Overview['overviewType'];
     audience: Overview['audience'];
+    excludedContentIds: string[];
 };
 
-export const getProductPagesForOverview = ({ overviewType, audience }: Args) => {
+export const getProductPagesForOverview = ({
+    overviewType,
+    audience,
+    excludedContentIds,
+}: Args) => {
     const isAllProductsType = overviewType === 'all_products';
 
     return contentLib.query({
@@ -52,6 +57,16 @@ export const getProductPagesForOverview = ({ overviewType, audience }: Args) => 
                             values: [true],
                         },
                     },
+                    ...(excludedContentIds.length > 0
+                        ? [
+                              {
+                                  hasValue: {
+                                      field: '_id',
+                                      values: excludedContentIds,
+                                  },
+                              },
+                          ]
+                        : []),
                 ],
             },
         },

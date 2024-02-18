@@ -4,6 +4,24 @@ import { sanitize } from '/lib/xp/common';
 import striptags from '/assets/striptags/3.1.1/src/striptags';
 import { getPublicPath } from '../../paths/public-path';
 import { ContentWithFormDetails, FormDetailsListItem, FormDetailsMap } from './types';
+import { FormDetailsSelector } from '../../../site/mixins/form-details-selector/form-details-selector';
+import { ContentPageWithSidemenus } from '../../../site/content-types/content-page-with-sidemenus/content-page-with-sidemenus';
+
+type ProductData = ContentPageWithSidemenus;
+
+type IncludedProductData = Pick<
+    ProductData,
+    'title' | 'sortTitle' | 'illustration' | 'area' | 'taxonomy' | 'ingress'
+>;
+
+type WithStuff = ContentWithFormDetails & {
+    // Fields from nested mixins are not included in the autogenerate types
+    data: IncludedProductData &
+        Pick<ProductData, 'externalProductUrl'> &
+        Required<Pick<FormDetailsSelector, 'formDetailsTargets'>> & {
+            keywords?: string | string[];
+        };
+};
 
 const getUrl = (content: ContentWithFormDetails) => {
     const { externalProductUrl } = content.data;
@@ -19,7 +37,7 @@ const getUrl = (content: ContentWithFormDetails) => {
 
 export const formsOverviewListItemTransformer =
     (formDetailsMap: FormDetailsMap, overviewPageLanguage: string) =>
-    (content: ContentWithFormDetails): FormDetailsListItem | null => {
+    (content: WithStuff): FormDetailsListItem | null => {
         const formDetailsContents = forceArray(content.data.formDetailsTargets).reduce<
             Content<'no.nav.navno:form-details'>[]
         >((acc, formDetailsId) => {
