@@ -1,14 +1,15 @@
 import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { forceArray, removeDuplicatesFilter } from '../../utils/array-utils';
 import { FormsOverview } from '../../../site/content-types/forms-overview/forms-overview';
 import { contentTypesWithFormDetails } from '../../contenttype-lists';
 import { ContentWithFormDetails, FormDetailsListItem, FormDetailsMap } from './types';
 import { formsOverviewListItemTransformer } from './list-item-transformer';
-import { isContentLocalized } from '../../localization/locale-utils';
 import { ContentDataLocaleFallback } from '../../../site/content-types/content-data-locale-fallback/content-data-locale-fallback';
 import { logger } from '../../utils/logging';
 import { getLocaleFromContext } from '../../localization/locale-context';
 import { sortByLocaleCompareOnField } from '../../utils/sort-utils';
+import { splitByLocalizationState } from '../../localization/split-by-localization-state';
 
 type Audience = FormsOverview['audience'];
 type OverviewType = FormsOverview['overviewType'];
@@ -77,25 +78,7 @@ const contentWithFormDetailsQuery = (audience: Audience, excludedContent: string
     }).hits as ContentWithFormDetails[];
 };
 
-const splitByLocalizationState = (contents: ContentWithFormDetails[], language: string) => {
-    const localizedContent: ContentWithFormDetails[] = [];
-    const nonLocalizedContent: ContentWithFormDetails[] = [];
-
-    contents.forEach((content) => {
-        if (isContentLocalized(content) && content.language === language) {
-            localizedContent.push(content);
-        } else {
-            nonLocalizedContent.push(content);
-        }
-    });
-
-    return { localizedContent, nonLocalizedContent };
-};
-
-const transformToContentWithFallbackData = (
-    contents: ContentWithFormDetails[],
-    localeFallbackIds: string[]
-) => {
+const transformToContentWithFallbackData = (contents: Content[], localeFallbackIds: string[]) => {
     const fallbackContents = contentLib.query({
         count: 1000,
         contentTypes: ['no.nav.navno:content-data-locale-fallback'],
@@ -151,18 +134,18 @@ const getContentWithFormDetails = ({
     localeFallbackIds,
 }: Args) => {
     const contents = contentWithFormDetailsQuery(audience, excludedContentIds);
-    const { localizedContent, nonLocalizedContent } = splitByLocalizationState(contents, language);
+    const { localized, nonLocalized } = splitByLocalizationState(contents, language);
 
     if (!localeFallbackIds) {
-        return localizedContent;
+        return localized;
     }
 
     const nonLocalizedContentWithFallbackData = transformToContentWithFallbackData(
-        nonLocalizedContent,
+        nonLocalized,
         localeFallbackIds
     );
 
-    return [...localizedContent, ...nonLocalizedContentWithFallbackData];
+    return [...localized, ...nonLocalizedContentWithFallbackData];
 };
 
 const buildFormDetailsMap = (

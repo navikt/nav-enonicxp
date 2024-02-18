@@ -10,7 +10,7 @@ import { sortByLocaleCompareOnField } from '../../utils/sort-utils';
 import { transformProductContentToOverviewItem } from './transform-product-content-to-overview-item';
 
 // TODO: remove this once all relevant overview pages have been converted to use the fallback locale system
-export const buildOverviewListLegacy = (
+export const buildDetailedOverviewListLegacy = (
     productPages: Content<ContentTypeWithProductDetails>[],
     overviewType: DetailedOverviewType,
     requestedLanguage: string
