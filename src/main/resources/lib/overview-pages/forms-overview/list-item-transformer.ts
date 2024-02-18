@@ -1,6 +1,6 @@
-import { forceArray } from '../../utils/array-utils';
 import { Content } from '/lib/xp/content';
 import { sanitize } from '/lib/xp/common';
+import { forceArray } from '../../utils/array-utils';
 import striptags from '/assets/striptags/3.1.1/src/striptags';
 import { getPublicPath } from '../../paths/public-path';
 import { ContentWithFormDetails, FormDetailsListItem, FormDetailsMap } from './types';
@@ -14,8 +14,8 @@ type IncludedProductData = Pick<
     'title' | 'sortTitle' | 'illustration' | 'area' | 'taxonomy' | 'ingress'
 >;
 
-type WithStuff = ContentWithFormDetails & {
-    // Fields from nested mixins are not included in the autogenerate types
+// Fields from nested mixins are not included in the generated types
+type ContentWithMissingMixins = ContentWithFormDetails & {
     data: IncludedProductData &
         Pick<ProductData, 'externalProductUrl'> &
         Required<Pick<FormDetailsSelector, 'formDetailsTargets'>> & {
@@ -37,7 +37,7 @@ const getUrl = (content: ContentWithFormDetails) => {
 
 export const formsOverviewListItemTransformer =
     (formDetailsMap: FormDetailsMap, overviewPageLanguage: string) =>
-    (content: WithStuff): FormDetailsListItem | null => {
+    (content: ContentWithFormDetails): FormDetailsListItem | null => {
         const formDetailsContents = forceArray(content.data.formDetailsTargets).reduce<
             Content<'no.nav.navno:form-details'>[]
         >((acc, formDetailsId) => {
@@ -60,14 +60,14 @@ export const formsOverviewListItemTransformer =
             title,
             sortTitle,
             ingress: content.data.ingress,
-            keywords: forceArray(content.data.keywords),
+            keywords: forceArray((content as ContentWithMissingMixins).data.keywords),
             url: getUrl(content),
             type: content.type,
             targetLanguage: content.language,
             anchorId: sanitize(sortTitle),
             illustration: content.data.illustration,
             area: forceArray(content.data.area),
-            taxonomy: forceArray(content.data.taxonomy),
+            taxonomy: forceArray((content as ContentWithMissingMixins).data.taxonomy),
             formDetailsPaths: formDetailsContents.map((formDetails) =>
                 getPublicPath(formDetails, overviewPageLanguage)
             ),

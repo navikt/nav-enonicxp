@@ -1,11 +1,12 @@
+import { Content } from '/lib/xp/content';
 import { runInContext } from '../../context/run-in-context';
 import { sortByLocaleCompareOnField } from '../../utils/sort-utils';
 import { getProductPagesForOverview } from './get-product-pages-for-overview';
-import { Content } from '/lib/xp/content';
 import { logger } from '../../utils/logging';
 import { buildDetailedOverviewListLegacy } from './build-detailed-overview-list-legacy';
 import { transformProductContentToOverviewItem } from './transform-product-content-to-overview-item';
 import { ContentWithProductDetails } from './types';
+import { forceArray } from '../../utils/array-utils';
 
 const sortByTitle = sortByLocaleCompareOnField('title');
 
@@ -14,7 +15,7 @@ const buildSimpleOverviewList = (productPageContents: ContentWithProductDetails[
 
 export const buildOverviewPageList = (overviewContent: Content<'no.nav.navno:overview'>) => {
     const { data, language, _id } = overviewContent;
-    const { overviewType, audience, localeFallback } = data;
+    const { overviewType, audience, localeFallback, excludedContent } = data;
 
     if (!overviewType) {
         logger.error(`Type not set for overview page id ${_id}`);
@@ -26,7 +27,11 @@ export const buildOverviewPageList = (overviewContent: Content<'no.nav.navno:ove
         return [];
     }
 
-    const productPageContents = getProductPagesForOverview({ overviewType, audience });
+    const productPageContents = getProductPagesForOverview({
+        overviewType,
+        audience,
+        excludedContentIds: forceArray(excludedContent),
+    });
 
     const productList = runInContext({ branch: 'master' }, () => {
         if (overviewType === 'all_products') {

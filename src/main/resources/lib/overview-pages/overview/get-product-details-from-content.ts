@@ -1,5 +1,6 @@
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { ContentWithProductDetails } from './types';
-import contentLib, { Content } from '/lib/xp/content';
 import { logger } from '../../utils/logging';
 import { ProductDetails } from '../../../site/content-types/product-details/product-details';
 
