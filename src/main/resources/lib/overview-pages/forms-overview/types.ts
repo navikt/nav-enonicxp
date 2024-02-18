@@ -1,7 +1,7 @@
-import { ContentPageWithSidemenus } from '../../site/content-types/content-page-with-sidemenus/content-page-with-sidemenus';
+import { ContentPageWithSidemenus } from '../../../site/content-types/content-page-with-sidemenus/content-page-with-sidemenus';
 import { Content } from '/lib/xp/content';
-import { FormDetailsSelector } from '../../site/mixins/form-details-selector/form-details-selector';
-import { contentTypesWithFormDetails } from '../contenttype-lists';
+import { FormDetailsSelector } from '../../../site/mixins/form-details-selector/form-details-selector';
+import { contentTypesWithFormDetails } from '../../contenttype-lists';
 
 type ContentTypeWithFormDetails = (typeof contentTypesWithFormDetails)[number];
 

@@ -101,6 +101,11 @@ export const contentTypesInOverviewPages = [
     `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
 ] as const satisfies ContentTypeList;
 
+export const contentTypesInAllProductsPage = [
+    `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
+    `${APP_DESCRIPTOR}:guide-page`,
+] as const satisfies ContentTypeList;
+
 export const contentTypesInFormsOverviewPages = [
     `${APP_DESCRIPTOR}:guide-page`,
     `${APP_DESCRIPTOR}:content-page-with-sidemenus`,

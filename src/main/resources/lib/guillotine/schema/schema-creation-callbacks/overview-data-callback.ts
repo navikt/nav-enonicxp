@@ -1,9 +1,12 @@
 import * as contentLib from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
-import { buildOverviewPageProductList } from '../../../product-utils/productList';
+import { buildOverviewPageList } from '../../../overview-pages/overview/build-overview-page-list';
 import { logger } from '../../../utils/logging';
-import { OverviewPageProductItem, OverviewPageProductLink } from '../../../product-utils/types';
+import {
+    OverviewPageProductItem,
+    OverviewPageProductLink,
+} from '../../../overview-pages/overview/types';
 import { forceArray } from '../../../utils/array-utils';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
 
@@ -66,26 +69,7 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
                 return [];
             }
 
-            const { data, language } = content;
-            const { overviewType, audience } = data;
-
-            if (!overviewType) {
-                logger.error(`Type not set for overview page id ${contentId}`);
-                return [];
-            }
-
-            if (!audience) {
-                logger.error(`Audience not set for overview page id ${contentId}`);
-                return [];
-            }
-
-            const productList = buildOverviewPageProductList(
-                overviewType,
-                forceArray(audience),
-                language
-            );
-
-            return productList;
+            return buildOverviewPageList(content);
         },
     };
 };

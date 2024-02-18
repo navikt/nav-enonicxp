@@ -5,7 +5,7 @@ import { RepoBranch } from '../../../types/common';
 import { logger } from '../../utils/logging';
 import { ProductDetails } from '../../../site/content-types/product-details/product-details';
 import { runSitecontentGuillotineQuery } from './run-sitecontent-query';
-import { isContentWithProductDetails } from '../../product-utils/types';
+import { isContentWithProductDetails } from '../../overview-pages/overview/types';
 
 type SitecontentQueryFunc = typeof runSitecontentGuillotineQuery;
 

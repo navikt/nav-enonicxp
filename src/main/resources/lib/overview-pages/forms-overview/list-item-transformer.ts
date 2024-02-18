@@ -1,8 +1,8 @@
-import { forceArray } from '../utils/array-utils';
+import { forceArray } from '../../utils/array-utils';
 import { Content } from '/lib/xp/content';
 import { sanitize } from '/lib/xp/common';
 import striptags from '/assets/striptags/3.1.1/src/striptags';
-import { getPublicPath } from '../paths/public-path';
+import { getPublicPath } from '../../paths/public-path';
 import { ContentWithFormDetails, FormDetailsListItem, FormDetailsMap } from './types';
 
 const getUrl = (content: ContentWithFormDetails) => {
