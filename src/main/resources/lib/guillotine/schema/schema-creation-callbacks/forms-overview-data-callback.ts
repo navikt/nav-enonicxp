@@ -50,25 +50,6 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
                 return [];
             }
 
-            const { audience, overviewType } = content.data;
-
-            if (!audience?._selected) {
-                logger.error(`Audience not set for overview page id ${contentId}`);
-                return [];
-            }
-
-            if (!overviewType) {
-                logger.error(`Overview type not set for overview page id ${contentId}`);
-                return [];
-            }
-
-            const isTransportPage =
-                audience._selected === 'provider' &&
-                audience.provider.pageType?._selected === 'links';
-            if (isTransportPage) {
-                return [];
-            }
-
             return buildFormDetailsList(content);
         },
     };

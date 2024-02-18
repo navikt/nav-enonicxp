@@ -33,7 +33,7 @@ const getUrl = (content: ContentWithFormDetails) => {
     return getPublicPath(content, content.language);
 };
 
-export const formsOverviewListItemTransformer =
+export const getFormsOverviewListItemTransformer =
     (formDetailsMap: FormDetailsMap, overviewPageLanguage: string) =>
     (content: ContentWithFormDetails): FormDetailsListItem | null => {
         const formDetailsContents = forceArray(content.data.formDetailsTargets).reduce<
