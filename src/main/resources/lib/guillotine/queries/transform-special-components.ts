@@ -6,12 +6,12 @@ import { logger } from '../../utils/logging';
 import { ProductDetails } from '../../../site/content-types/product-details/product-details';
 import { runSitecontentGuillotineQuery } from './run-sitecontent-query';
 import { ContentDescriptor } from '../../../types/content-types/content-config';
-import { contentTypesInOverviewPages } from '../../contenttype-lists';
+import { contentTypesWithProductDetails } from '../../contenttype-lists';
 
 type SitecontentQueryFunc = typeof runSitecontentGuillotineQuery;
 
 const contentTypesWithProductDetailsSet: ReadonlySet<ContentDescriptor> = new Set(
-    contentTypesInOverviewPages
+    contentTypesWithProductDetails
 );
 
 const filterRelevantComponents = (
