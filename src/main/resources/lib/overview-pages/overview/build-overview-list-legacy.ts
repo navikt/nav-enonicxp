@@ -1,11 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import {
-    ContentInOverviewPages,
-    ContentTypesInOverviewPages,
-    OverviewPageDetailedType,
-    OverviewPageItem,
-} from './types';
+import { ContentInOverviewPages, OverviewPageDetailedType, OverviewPageItem } from './types';
 import { getPublicPath } from '../../paths/public-path';
 import { sortByLocaleCompareOnField } from '../../utils/sort-utils';
 import { transformToOverviewItem } from './transform-to-overview-item';
@@ -36,7 +31,7 @@ const getProductDetailsFromContent = (
 };
 
 export const buildOverviewListLegacy = (
-    productPages: Content<ContentTypesInOverviewPages>[],
+    productPages: ContentInOverviewPages[],
     overviewType: OverviewPageDetailedType,
     requestedLanguage: string
 ) => {

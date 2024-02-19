@@ -8,7 +8,12 @@ import { ArrayOrSingle } from '../../../types/util-types';
 
 type OverviewItemTaxonomy = Taxonomy['taxonomy'] | ThemedArticlePage['taxonomy'];
 
-export type ContentTypesInOverviewPages = (typeof contentTypesInOverviewPages)[number];
+type ContentTypesInOverviewPages = (typeof contentTypesInOverviewPages)[number];
+
+// Generated data type definitions are incorrect due to a bug with nested mixins
+export type ContentInOverviewPages = Content<ContentTypesInOverviewPages> & {
+    data: { keywords?: ArrayOrSingle<string> };
+};
 
 export type OverviewPageItemProductLink = {
     url: string;
@@ -31,8 +36,3 @@ export type OverviewPageItem = {
 };
 
 export type OverviewPageDetailedType = Exclude<Overview['overviewType'], 'all_products'>;
-
-// Generated data type definitions are incorrect due to a bug with nested mixins
-export type ContentInOverviewPages = Content<ContentTypesInOverviewPages> & {
-    data: { keywords?: ArrayOrSingle<string> };
-};
