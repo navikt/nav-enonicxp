@@ -2,7 +2,6 @@ import * as contentLib from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
 
 import { CreationCallback } from '../../utils/creation-callback-utils';
-import { generateAlerts } from '../../utils/alerts';
 
 export const formDetailsCallback: CreationCallback = (context, params) => {
     params.fields.data.resolve = (env) => {
@@ -46,11 +45,9 @@ export const partFormDetailsCallback: CreationCallback = (context, params) => {
             if (!content) {
                 return null;
             }
-            const alerts = generateAlerts(content);
 
             return {
                 ...content,
-                alerts,
             };
         },
     };

@@ -64,6 +64,5 @@ export const formsOverviewListItemTransformer =
             formNumbers: formDetailsContents
                 .map((formDetails) => forceArray(formDetails.data.formNumbers))
                 .flat(),
-            formDetailsIds: formDetailsContents.map((formDetails) => formDetails._id),
         };
     };
