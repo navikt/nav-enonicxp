@@ -88,10 +88,6 @@ export const contentTypesWithBreadcrumbs = [
     `${APP_DESCRIPTOR}:publishing-calendar`,
 ] as const satisfies ContentTypeList;
 
-export const contentTypesWithAlerts = [
-    `${APP_DESCRIPTOR}:form-details`,
-] as const satisfies ContentTypeList;
-
 export const contentTypesWithComponents = [
     ...dynamicPageContentTypes,
     `${APP_DESCRIPTOR}:product-details`,

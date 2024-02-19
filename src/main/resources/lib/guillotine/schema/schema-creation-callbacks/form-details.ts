@@ -41,14 +41,7 @@ export const partFormDetailsCallback: CreationCallback = (context, params) => {
     params.fields.targetFormDetails = {
         type: graphQlLib.reference('no_nav_navno_FormDetails'),
         resolve: (env) => {
-            const content = contentLib.get({ key: env.source.targetFormDetails });
-            if (!content) {
-                return null;
-            }
-
-            return {
-                ...content,
-            };
+            return contentLib.get({ key: env.source.targetFormDetails });
         },
     };
 };

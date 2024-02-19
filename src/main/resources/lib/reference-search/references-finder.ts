@@ -193,7 +193,6 @@ export class ReferencesFinder {
 
         this.findAndProcessReferences(() => this.findOverviewRefs(content));
         this.findAndProcessReferences(() => this.findFormsOverviewRefs(content));
-        this.findAndProcessReferences(() => this.findFormDetailsFromRefs(content));
         this.findAndProcessReferences(() => this.findOfficeBranchRefs(content));
         this.findAndProcessReferences(() => this.findContactInfoRefs(content));
         this.findAndProcessReferences(() => this.findMainArticleChapterRefs(content));
@@ -335,55 +334,6 @@ export class ReferencesFinder {
         this.logResult('overview pages', content._id, result);
 
         return result;
-    }
-
-    private findFormDetailsFromRefs(content: ContentNode): QueryResult {
-        if (!typesWithFormDetailsRefs.has(content.type)) {
-            return [];
-        }
-
-        const target = content.data.target[content.data.target._selected];
-        const referencedIds = forceArray(target.targetContent);
-
-        const mustRules = [
-            {
-                hasValue: {
-                    field: 'type',
-                    values: ['no.nav.navno:form-details'],
-                },
-            },
-            {
-                hasValue: {
-                    field: '_id',
-                    values: referencedIds,
-                },
-            },
-        ];
-
-        const formDetailsResult = this.contentNodeQuery({
-            filters: {
-                boolean: {
-                    must: mustRules,
-                },
-            },
-        });
-
-        const formOverview = this.contentNodeQuery({
-            filters: {
-                boolean: {
-                    must: [
-                        {
-                            hasValue: {
-                                field: 'type',
-                                values: ['no.nav.navno:forms-overview'],
-                            },
-                        },
-                    ],
-                },
-            },
-        });
-
-        return [...formDetailsResult, ...formOverview];
     }
 
     // Forms overview pages are generated from meta-data of certain content types
