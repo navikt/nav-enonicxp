@@ -35,11 +35,14 @@ export const buildFormDetailsList = (
         excludedContentIds: forceArray(excludedContent),
     });
 
+    logger.info(`Found ${listContent.length} content`);
+
     const localizedContent = getLocalizedContentWithFallbackData({
         contents: listContent,
         localeFallbackIds: forceArray(localeFallback),
         language,
     });
+    logger.info(`Found ${localizedContent.length} localized content`);
 
     const formDetailsMap = buildFormDetailsMap(localizedContent, overviewType);
 

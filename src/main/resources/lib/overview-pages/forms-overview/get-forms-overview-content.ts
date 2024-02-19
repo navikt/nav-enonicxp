@@ -25,7 +25,7 @@ export const getFormsOverviewContent = ({ audience, excludedContentIds }: Args) 
                     {
                         hasValue: {
                             field: 'data.audience._selected',
-                            values: audience,
+                            values: [selectedAudience],
                         },
                     },
                     ...(selectedProviderAudiences
@@ -40,7 +40,7 @@ export const getFormsOverviewContent = ({ audience, excludedContentIds }: Args) 
                         : []),
                     {
                         exists: {
-                            field: 'data.formDetailsTarget',
+                            field: 'data.formDetailsTargets',
                         },
                     },
                 ],
