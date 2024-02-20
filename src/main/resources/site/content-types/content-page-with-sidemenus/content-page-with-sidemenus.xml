@@ -62,10 +62,22 @@
                             <label>Samarbeidspartner</label>
                             <items>
                                 <item-set name="providerList">
-                                    <label>Enkeltsamarbeid</label>
+                                    <label>Velg samarbeidspartner</label>
                                     <occurrences minimum="1" maximum="0"/>
                                     <items>
-                                        <mixin name="provider-audience"/>
+                                        <option-set name="subProviders">
+                                            <label>Type samarbeidspartner</label>
+                                            <occurrences minimum="1" maximum="0"/>
+                                            <options minimum="1" maximum="1">
+                                                <option name="doctor"><label>Lege, tannlege eller annen behandler</label></option>
+                                                <option name="municipality_employed"><label>Ansatt i kommunen eller fylkeskommunen</label></option>
+                                                <option name="optician"><label>Optiker eller øyelege</label></option>
+                                                <option name="administrator"><label>Bostyrer</label></option>
+                                                <option name="measures_organizer"><label>Tiltaksarrangør</label></option>
+                                                <option name="aid_supplier"><label>Hjelpemiddelformidler</label></option>
+                                                <option name="other"><label>Andre samarbeidspartnere</label></option>
+                                            </options>
+                                        </option-set>
                                         <input name="targetPage" type="CustomSelector">
                                             <label>Innhold</label>
                                             <help-text>Velg innholdet som brukeren skal sendes til</help-text>
