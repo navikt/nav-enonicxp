@@ -1,6 +1,5 @@
 #import "../richText/richTextFragment.graphql"
 #import "../mixins/formTypeFragment.graphql"
-#import "./alertInContextFragment.graphql"
 
 fragment contentFormDetails on no_nav_navno_FormDetails {
     dataAsJson
@@ -12,7 +11,7 @@ fragment contentFormDetails on no_nav_navno_FormDetails {
         }
         ...formTypeMixin
         alerts {
-            ...alertInContext
+            dataAsJson
         }
     }
 }
