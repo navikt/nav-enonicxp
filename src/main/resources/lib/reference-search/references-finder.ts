@@ -189,6 +189,7 @@ export class ReferencesFinder {
 
         this.findAndProcessReferences(() => this.findOverviewRefs(content));
         this.findAndProcessReferences(() => this.findFormsOverviewRefs(content));
+        this.findAndProcessReferences(() => this.findAlertInContextRefs(content));
         this.findAndProcessReferences(() => this.findOfficeBranchRefs(content));
         this.findAndProcessReferences(() => this.findContactInfoRefs(content));
         this.findAndProcessReferences(() => this.findMainArticleChapterRefs(content));
@@ -331,6 +332,43 @@ export class ReferencesFinder {
 
         return result;
     }
+
+    private findAlertInContextRefs = (content: ContentNode): QueryResult => {
+        if (content.type !== 'no.nav.navno:alert-in-context') {
+            return [];
+        }
+
+        const targetIds = forceArray(
+            content.data.target[content.data.target._selected].targetContent
+        );
+
+        log.info(`targetIds: ${JSON.stringify(targetIds)}`);
+
+        const result = this.contentNodeQuery({
+            filters: {
+                boolean: {
+                    must: [
+                        {
+                            hasValue: {
+                                field: 'type',
+                                values: ['no.nav.navno:form-details'],
+                            },
+                        },
+                        {
+                            hasValue: {
+                                field: '_id',
+                                values: targetIds,
+                            },
+                        },
+                    ],
+                },
+            },
+        });
+
+        this.logResult('alert in context pages', content._id, result);
+
+        return result;
+    };
 
     // Forms overview pages are generated from meta-data of certain content types
     private findFormsOverviewRefs(content: ContentNode): QueryResult {
