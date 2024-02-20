@@ -338,13 +338,13 @@ export class ReferencesFinder {
             return [];
         }
 
-        if (!content.data.target[content.data.target!._selected]!.targetContent) {
+        const targetContent = content.data.target[content.data.target?._selected]?.targetContent;
+
+        if (!targetContent) {
             return [];
         }
 
-        const targetIds = forceArray(
-            content.data.target[content.data.target._selected].targetContent
-        );
+        const targetIds = forceArray(targetContent);
 
         const result = this.contentNodeQuery({
             filters: {
