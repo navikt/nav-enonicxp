@@ -6,7 +6,6 @@ import {
     getContentLocaleRedirectTarget,
     isContentNoIndex,
     isContentPreviewOnly,
-    isMedia,
 } from '../../../utils/content-utils';
 import { getNestedValues } from '../../../utils/object-utils';
 import { getExternalSearchConfig } from '../config';
@@ -100,7 +99,6 @@ class ExternalSearchDocumentBuilder {
                 fylke: getSearchDocumentFylke(content),
                 metatags: getSearchDocumentMetatags(content),
                 type: getSearchDocumentContentType(content),
-                isFile: isMedia(content),
                 createdAt: content.createdTime,
                 lastUpdated: content.modifiedTime,
                 keywords: forceArray(content.data.keywords),

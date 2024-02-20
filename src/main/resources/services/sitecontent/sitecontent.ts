@@ -75,7 +75,7 @@ export const get = (req: XP.Request) => {
         return {
             status: 400,
             body: {
-                message: 'Content id validation error',
+                message: 'URIError: Invalid id parameter',
             },
             contentType: 'application/json',
         };

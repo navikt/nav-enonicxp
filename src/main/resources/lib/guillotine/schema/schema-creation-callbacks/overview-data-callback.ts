@@ -1,14 +1,17 @@
 import * as contentLib from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
-import { buildOverviewPageProductList } from '../../../product-utils/productList';
+import { buildOverviewList } from '../../../overview-pages/overview/build-overview-list';
 import { logger } from '../../../utils/logging';
-import { OverviewPageProductItem, OverviewPageProductLink } from '../../../product-utils/types';
+import {
+    OverviewPageItem,
+    OverviewPageItemProductLink,
+} from '../../../overview-pages/overview/types';
 import { forceArray } from '../../../utils/array-utils';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
 
 export const overviewDataCallback: CreationCallback = (context, params) => {
-    const productLinkType = graphQlCreateObjectType<keyof OverviewPageProductLink>(context, {
+    const productLinkType = graphQlCreateObjectType<keyof OverviewPageItemProductLink>(context, {
         name: context.uniqueName('OverviewProductLink'),
         description: 'Product link',
         fields: {
@@ -19,7 +22,7 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
         },
     });
 
-    const productListItemType = graphQlCreateObjectType<keyof OverviewPageProductItem>(context, {
+    const productListItemType = graphQlCreateObjectType<keyof OverviewPageItem>(context, {
         name: context.uniqueName('OverviewListItem'),
         description: 'Product item in overview list',
         fields: {
@@ -53,10 +56,10 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
 
     params.fields.productList = {
         type: graphQlLib.list(productListItemType),
-        resolve: () => {
+        resolve: (): OverviewPageItem[] => {
             const contentId = getGuillotineContentQueryBaseContentId();
             if (!contentId) {
-                logger.error('No contentId provided for overview-page resolver');
+                logger.error('No contentId provided for overview page resolver');
                 return [];
             }
 
@@ -66,26 +69,7 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
                 return [];
             }
 
-            const { data, language } = content;
-            const { overviewType, audience } = data;
-
-            if (!overviewType) {
-                logger.error(`Type not set for overview page id ${contentId}`);
-                return [];
-            }
-
-            if (!audience) {
-                logger.error(`Audience not set for overview page id ${contentId}`);
-                return [];
-            }
-
-            const productList = buildOverviewPageProductList(
-                overviewType,
-                forceArray(audience),
-                language
-            );
-
-            return productList;
+            return buildOverviewList(content);
         },
     };
 };

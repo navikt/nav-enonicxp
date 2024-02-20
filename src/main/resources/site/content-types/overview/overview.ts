@@ -31,6 +31,16 @@ export interface Overview {
   overviewType: "rates" | "payout_dates" | "processing_times" | "all_products";
 
   /**
+   * Velg fallback data
+   */
+  localeFallback?: Array<string>;
+
+  /**
+   * Velg innhold som ikke skal vises i denne oversikten
+   */
+  excludedContent?: Array<string>;
+
+  /**
    * Velg piktogram
    */
   illustration: string;
