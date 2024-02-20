@@ -1,13 +1,18 @@
-import { GuillotineComponent } from '../utils/process-components';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
+import { GuillotineComponent } from '../utils/process-components';
 import { RepoBranch } from '../../../types/common';
 import { logger } from '../../utils/logging';
 import { ProductDetails } from '../../../site/content-types/product-details/product-details';
 import { runSitecontentGuillotineQuery } from './run-sitecontent-query';
-import { isContentWithProductDetails } from '../../product-utils/types';
+import { ContentDescriptor } from '../../../types/content-types/content-config';
+import { contentTypesWithProductDetails } from '../../contenttype-lists';
 
 type SitecontentQueryFunc = typeof runSitecontentGuillotineQuery;
+
+const contentTypesWithProductDetailsSet: ReadonlySet<ContentDescriptor> = new Set(
+    contentTypesWithProductDetails
+);
 
 const filterRelevantComponents = (
     detailContent: any,
@@ -43,7 +48,7 @@ const transformProductDetailsPart = (
 ): GuillotineComponent => {
     const baseContentId = baseContent._id;
 
-    if (!isContentWithProductDetails(baseContent)) {
+    if (!contentTypesWithProductDetailsSet.has(baseContent.type)) {
         logger.error(
             `Base content is not a valid type for product details - Base content id ${baseContentId}`,
             true,

@@ -1,9 +1,25 @@
-import { forceArray } from '../utils/array-utils';
 import { Content } from '/lib/xp/content';
 import { sanitize } from '/lib/xp/common';
+import { forceArray } from '../../utils/array-utils';
 import striptags from '/assets/striptags/3.1.1/src/striptags';
-import { getPublicPath } from '../paths/public-path';
-import { ContentWithFormDetails, FormDetailsListItem, FormDetailsMap } from './types';
+import { getPublicPath } from '../../paths/public-path';
+import {
+    ContentWithFormDetails,
+    FormDetailsListItem,
+    FormDetailsMap,
+    ProductDataInFormsOverviewItem,
+} from './types';
+import { FormDetailsSelector } from '../../../site/mixins/form-details-selector/form-details-selector';
+import { ContentPageWithSidemenus } from '../../../site/content-types/content-page-with-sidemenus/content-page-with-sidemenus';
+
+// Fields from nested mixins are not included in the generated types
+type ContentWithMissingMixins = ContentWithFormDetails & {
+    data: ProductDataInFormsOverviewItem &
+        Pick<ContentPageWithSidemenus, 'externalProductUrl'> &
+        Required<Pick<FormDetailsSelector, 'formDetailsTargets'>> & {
+            keywords?: string | string[];
+        };
+};
 
 const getUrl = (content: ContentWithFormDetails) => {
     const { externalProductUrl } = content.data;
@@ -17,7 +33,7 @@ const getUrl = (content: ContentWithFormDetails) => {
     return getPublicPath(content, content.language);
 };
 
-export const formsOverviewListItemTransformer =
+export const getFormsOverviewListItemTransformer =
     (formDetailsMap: FormDetailsMap, overviewPageLanguage: string) =>
     (content: ContentWithFormDetails): FormDetailsListItem | null => {
         const formDetailsContents = forceArray(content.data.formDetailsTargets).reduce<
@@ -42,14 +58,14 @@ export const formsOverviewListItemTransformer =
             title,
             sortTitle,
             ingress: content.data.ingress,
-            keywords: forceArray(content.data.keywords),
+            keywords: forceArray((content as ContentWithMissingMixins).data.keywords),
             url: getUrl(content),
             type: content.type,
             targetLanguage: content.language,
             anchorId: sanitize(sortTitle),
             illustration: content.data.illustration,
             area: forceArray(content.data.area),
-            taxonomy: forceArray(content.data.taxonomy),
+            taxonomy: forceArray((content as ContentWithMissingMixins).data.taxonomy),
             formDetailsPaths: formDetailsContents.map((formDetails) =>
                 getPublicPath(formDetails, overviewPageLanguage)
             ),

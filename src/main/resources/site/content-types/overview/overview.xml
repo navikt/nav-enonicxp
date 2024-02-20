@@ -6,27 +6,62 @@
     <is-final>true</is-final>
     <allow-child-content>false</allow-child-content>
     <form>
-        <mixin name="page-header"/>
-        <mixin name="ingress-required"/>
-        <input name="audience" type="ComboBox">
-            <label>Målgruppe</label>
-            <occurrences minimum="1" maximum="0"/>
-            <config>
-                <option value="person">Privatperson</option>
-                <option value="employer">Arbeidsgiver</option>
-                <option value="provider">Samarbeidspartner</option>
-            </config>
-        </input>
-        <input name="overviewType" type="ComboBox">
-            <label>Type oversiktsside</label>
-            <occurrences minimum="1" maximum="1"/>
-            <config>
-                <option value="rates">Satser</option>
-                <option value="payout_dates">Utbetalingdatoer</option>
-                <option value="processing_times">Saksbehandlingstider</option>
-                <option value="all_products">Alle produkter</option>
-            </config>
-        </input>
+        <field-set>
+            <label>Sideoppsett</label>
+            <items>
+                <mixin name="page-header"/>
+                <mixin name="ingress-required"/>
+                <input name="audience" type="ComboBox">
+                    <label>Målgruppe</label>
+                    <occurrences minimum="1" maximum="0"/>
+                    <config>
+                        <option value="person">Privatperson</option>
+                        <option value="employer">Arbeidsgiver</option>
+                        <option value="provider">Samarbeidspartner</option>
+                    </config>
+                </input>
+                <input name="overviewType" type="ComboBox">
+                    <label>Type oversiktsside</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <option value="rates">Satser</option>
+                        <option value="payout_dates">Utbetalingdatoer</option>
+                        <option value="processing_times">Saksbehandlingstider</option>
+                        <option value="all_products">Alle produkter</option>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Data for ikke-lokaliserte sider</label>
+            <items>
+                <input name="localeFallback" type="ContentSelector">
+                    <label>Velg fallback data</label>
+                    <help-text>Brukes for å sette inn elementer for sider som ikke er lokalisert</help-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allowContentType>${app}:content-data-locale-fallback</allowContentType>
+                        <showStatus>true</showStatus>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Ekskluderte sider</label>
+            <items>
+                <input name="excludedContent" type="CustomSelector">
+                    <label>Velg innhold som ikke skal vises i denne oversikten</label>
+                    <occurrences minimum="0" maximum="0"/>
+                    <config>
+                        <service>contentSelector</service>
+                        <!-- Don't add linebreaks/whitespace to the param body values, as these will be included in the service calls -_- -->
+                        <param value="contentTypes">["no.nav.navno:content-page-with-sidemenus","no.nav.navno:guide-page","no.nav.navno:themed-article-page"]</param>
+                        <param value="selectorQuery">data.audience._selected="{data.audience._selected}"</param>
+                        <param value="sort">data.area ASC, displayName ASC</param>
+                    </config>
+                </input>
+            </items>
+        </field-set>
         <mixin name="illustration"/>
         <mixin name="custom-path-selector-required"/>
         <mixin name="owner"/>
