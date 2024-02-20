@@ -38,10 +38,6 @@ const typesWithFormsOverviewPages: ContentDescriptorSet = new Set([
     `${APP_DESCRIPTOR}:form-details`,
 ]);
 
-const typesWithFormDetailsRefs: ContentDescriptorSet = new Set([
-    `${APP_DESCRIPTOR}:alert-in-context`,
-]);
-
 const createLogger = (msgSuffix: string, errorsOnly?: boolean): Logger => {
     const noop = () => ({});
     const suffixedMsg = (msg: string) => `${msg}${msgSuffix}`;

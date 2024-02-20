@@ -30,7 +30,7 @@ import { richTextCallback } from './schema-creation-callbacks/richtext';
 import { overviewDataCallback } from './schema-creation-callbacks/overview-data-callback';
 import { officeBranchCallback } from './schema-creation-callbacks/office-branch-callback';
 import {
-    partFormDetailsCallback,
+    formDetailsPartOrMacroCallback,
     formDetailsDataCallback,
     formDetailsCallback,
 } from './schema-creation-callbacks/form-details';
@@ -87,12 +87,12 @@ export const schemaCreationCallbacks: Record<string, CreationCallback> = {
     Page_no_nav_navno_page_with_side_menus: pageNavigationMenuCallback,
     Page_no_nav_navno_page_with_side_menus_AnchorLinks: anchorLinksCallback,
     Part_no_nav_navno_filters_menu_Filters: filterCallback,
-    Part_no_nav_navno_form_details: partFormDetailsCallback,
+    Part_no_nav_navno_form_details: formDetailsPartOrMacroCallback,
     Macro_no_nav_navno_saksbehandlingstid_DataConfig: saksbehandlingstidMacroCallback,
     Macro_no_nav_navno_global_value_DataConfig: globalValueMacroConfigCallback,
     Macro_no_nav_navno_global_value_with_math_DataConfig: globalValueWithMathMacroConfigCallback,
     Macro_no_nav_navno_html_fragment_DataConfig: macroHtmlFragmentCallback,
-    Macro_no_nav_navno_form_details_DataConfig: partFormDetailsCallback,
+    Macro_no_nav_navno_form_details_DataConfig: formDetailsPartOrMacroCallback,
     Macro_no_nav_navno_alert_box_DataConfig: macroAlertboxCallback,
     Macro_no_nav_navno_link_to_layer_DataConfig: macroLinkToLayerCallback,
     RichText: richTextCallback,

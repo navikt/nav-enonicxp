@@ -37,7 +37,7 @@ export const formDetailsDataCallback: CreationCallback = (context, params) => {
     };
 };
 
-export const partFormDetailsCallback: CreationCallback = (context, params) => {
+export const formDetailsPartOrMacroCallback: CreationCallback = (context, params) => {
     params.fields.targetFormDetails = {
         type: graphQlLib.reference('no_nav_navno_FormDetails'),
         resolve: (env) => {
