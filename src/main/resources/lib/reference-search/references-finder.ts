@@ -338,6 +338,10 @@ export class ReferencesFinder {
             return [];
         }
 
+        if (!content.data.target[content.data.target!._selected]!.targetContent) {
+            return [];
+        }
+
         const targetIds = forceArray(
             content.data.target[content.data.target._selected].targetContent
         );
