@@ -1,5 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
+import { runInContext } from '../../../../lib/context/run-in-context';
 
 import { CreationCallback } from '../../utils/creation-callback-utils';
 
@@ -7,27 +8,28 @@ export const formDetailsCallback: CreationCallback = (context, params) => {
     params.fields.data.resolve = (env) => {
         const contentId = env.source._id;
 
-        const alerts = contentLib.query({
-            count: 10,
-            contentTypes: ['no.nav.navno:alert-in-context'],
-            filters: {
-                boolean: {
-                    must: [
-                        {
-                            hasValue: {
-                                field: 'data.target.formDetails.targetContent',
-                                values: [contentId],
+        return runInContext({ branch: 'master' }, () => {
+            const alerts = contentLib.query({
+                count: 10,
+                contentTypes: ['no.nav.navno:alert-in-context'],
+                filters: {
+                    boolean: {
+                        must: [
+                            {
+                                hasValue: {
+                                    field: 'data.target.formDetails.targetContent',
+                                    values: [contentId],
+                                },
                             },
-                        },
-                    ],
+                        ],
+                    },
                 },
-            },
+            });
+            return {
+                ...env.source.data,
+                alerts: [...alerts.hits],
+            };
         });
-
-        return {
-            ...env.source.data,
-            alerts: [...alerts.hits],
-        };
     };
 };
 
