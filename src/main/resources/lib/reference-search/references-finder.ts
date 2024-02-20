@@ -342,8 +342,6 @@ export class ReferencesFinder {
             content.data.target[content.data.target._selected].targetContent
         );
 
-        log.info(`targetIds: ${JSON.stringify(targetIds)}`);
-
         const result = this.contentNodeQuery({
             filters: {
                 boolean: {
