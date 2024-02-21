@@ -1,0 +1,46 @@
+<content-type>
+    <display-name>Varsel i kontekst</display-name>
+    <description>Varsel til bruker i kontekst</description>
+    <super-type>base:unstructured</super-type>
+    <form>
+        <field-set>
+            <label>Redaksjonelt varsel</label>
+            <items>
+                <input name="type" type="RadioButton">
+                    <label>Type</label>
+                    <config>
+                        <option value="critical">Kritisk informasjon</option>
+                        <option value="information">Viktig informasjon</option>
+                    </config>
+                    <default>information</default>
+                </input>
+                <input type="TextArea" name="text">
+                    <label>Varselmelding</label>
+                    <help-text>Kort og konsis meldingstekst</help-text>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <option-set name="target">
+                    <label>Velg innhold</label>
+                    <occurrences minimum="1" maximum="1" />
+                    <options minimum="1" maximum="1">
+                        <option name="formDetails">
+                            <label>Skjemadetaljer</label>
+                            <default>true</default>
+                            <items>
+                                <input type="ContentSelector" name="targetContent">
+                                    <label>Velg hvilke skjemadetaljer som varselet skal vises på</label>
+                                    <help-text>Varselet vises på både skjemaoversikt og på produktsider hvor skjemaet er satt inn.</help-text>
+                                    <occurrences minimum="1" maximum="0" />
+                                    <config>
+                                        <allowContentType>${app}:form-details</allowContentType>
+                                        <hideToggleIcon>true</hideToggleIcon>
+                                    </config>
+                                </input>
+                            </items>
+                        </option>
+                    </options>
+                </option-set>
+            </items>
+        </field-set>
+    </form>
+</content-type>
