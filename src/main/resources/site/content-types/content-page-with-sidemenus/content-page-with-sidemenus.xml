@@ -25,7 +25,7 @@
             <items> 
                 <option-set name="alternativeAudience">
                     <label>Aktuelle målgrupper</label>
-                    <help-text>Velg aktuelle målgruppe som kan tenkes å være relevant for personen som har kommet til denne produktsiden.</help-text>
+                    <help-text>Hvis det finnes tilsvarende produktside for andre målgrupper, skal de legges inn her.</help-text>
                     <occurrences minimum="0" maximum="1"/>
                     <options minimum="1" maximum="0">
                         <option name="person">
@@ -101,7 +101,7 @@
             <items>
                 <input name="relatedSituations" type="ContentSelector">
                     <label>Situasjoner</label>
-                    <help-text>Velg situasjoner som kan være relevante for denne produktsiden</help-text>
+                    <help-text>Velg aktuelle situasjoner for denne produktsiden</help-text>
                     <occurrences minimum="0" maximum="0"/>
                     <config>
                         <allowContentType>${app}:situation-page</allowContentType>
