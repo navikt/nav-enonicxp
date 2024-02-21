@@ -29,7 +29,11 @@ import { macroAlertboxCallback } from './schema-creation-callbacks/macro-alert-b
 import { richTextCallback } from './schema-creation-callbacks/richtext';
 import { overviewDataCallback } from './schema-creation-callbacks/overview-data-callback';
 import { officeBranchCallback } from './schema-creation-callbacks/office-branch-callback';
-import { formDetailsCallback } from './schema-creation-callbacks/form-details';
+import {
+    formDetailsPartOrMacroCallback,
+    formDetailsDataCallback,
+    formDetailsCallback,
+} from './schema-creation-callbacks/form-details';
 import { fragmentComponentDataCallback } from './schema-creation-callbacks/fragment-component-data';
 import { globalCaseTimeSetCallback } from './schema-creation-callbacks/global-case-time-set';
 import { saksbehandlingstidMacroCallback } from './schema-creation-callbacks/saksbehandlingstid-macro-config';
@@ -68,6 +72,8 @@ export const schemaCreationCallbacks: Record<string, CreationCallback> = {
     no_nav_navno_GlobalCaseTimeSet: globalCaseTimeSetCallback,
     no_nav_navno_Calculator_GlobalValue: globalValueCalculatorConfigCallback,
     no_nav_navno_PressLandingPage_Data: pressLandingPageDataCallback,
+    no_nav_navno_FormDetails_Data: formDetailsDataCallback,
+    no_nav_navno_FormDetails: formDetailsCallback,
     Part_no_nav_navno_areapage_situation_card: areapageSituationCardPartCallback,
     Part_no_nav_navno_dynamic_news_list_ContentList: contentListCallback(
         'target',
@@ -82,12 +88,12 @@ export const schemaCreationCallbacks: Record<string, CreationCallback> = {
     Page_no_nav_navno_page_with_side_menus: pageNavigationMenuCallback,
     Page_no_nav_navno_page_with_side_menus_AnchorLinks: anchorLinksCallback,
     Part_no_nav_navno_filters_menu_Filters: filterCallback,
-    Part_no_nav_navno_form_details: formDetailsCallback,
+    Part_no_nav_navno_form_details: formDetailsPartOrMacroCallback,
     Macro_no_nav_navno_saksbehandlingstid_DataConfig: saksbehandlingstidMacroCallback,
     Macro_no_nav_navno_global_value_DataConfig: globalValueMacroConfigCallback,
     Macro_no_nav_navno_global_value_with_math_DataConfig: globalValueWithMathMacroConfigCallback,
     Macro_no_nav_navno_html_fragment_DataConfig: macroHtmlFragmentCallback,
-    Macro_no_nav_navno_form_details_DataConfig: formDetailsCallback,
+    Macro_no_nav_navno_form_details_DataConfig: formDetailsPartOrMacroCallback,
     Macro_no_nav_navno_alert_box_DataConfig: macroAlertboxCallback,
     Macro_no_nav_navno_link_to_layer_DataConfig: macroLinkToLayerCallback,
     RichText: richTextCallback,
