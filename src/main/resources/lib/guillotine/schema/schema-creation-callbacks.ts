@@ -101,8 +101,8 @@ export const schemaCreationCallbacks: Record<string, CreationCallback> = {
     no_nav_navno_FrontPage_Audience: audienceCallback,
     no_nav_navno_SituationPage_Audience: audienceCallback,
     no_nav_navno_GenericPage_Audience: audienceCallback,
+    no_nav_navno_ContentPageWithSidemenus_Audience: audienceCallback,
     no_nav_navno_ThemedArticlePage_Audience: audienceCallback,
     no_nav_navno_ToolsPage_Audience: audienceCallback,
     no_nav_navno_GuidePage_Audience: audienceCallback,
-    no_nav_navno_ContentPageWithSidemenus_Audience: audienceCallback,
 } as const;
