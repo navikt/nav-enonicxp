@@ -97,7 +97,7 @@
             </items>
         </field-set>
         <field-set>
-            <label>Relaterte situasjoner</label>
+            <label>Aktuelle situasjoner</label>
             <items>
                 <input name="relatedSituations" type="ContentSelector">
                     <label>Situasjoner</label>
