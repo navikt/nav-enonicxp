@@ -45,7 +45,6 @@ export type SearchDocument = {
         lastUpdated: string;
         language: string;
         type: SearchDocumentContentType;
-        isFile?: boolean;
         audience: SearchDocumentAudience[];
         metatags?: SearchDocumentMetatag[];
         fylke?: SearchDocumentFylke;
