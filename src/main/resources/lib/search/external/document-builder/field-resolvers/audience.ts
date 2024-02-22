@@ -28,8 +28,6 @@ const pathSegmentToSearchAudience: Record<string, SearchDocumentAudience> = {
     samarbeid: 'samarbeidspartner',
 } as const;
 
-const DEFAULT_AUDIENCE = [dataAudienceToSearchAudience.person];
-
 const getAudienceFromData = (content: ContentNode) => {
     const audience = content.data?.audience;
 
@@ -71,5 +69,5 @@ export const getSearchDocumentAudience = (content: ContentNode): SearchDocumentA
         return audienceFromData.map((audience) => dataAudienceToSearchAudience[audience]);
     }
 
-    return getAudienceFromPath(content) || DEFAULT_AUDIENCE;
+    return getAudienceFromPath(content) || [];
 };
