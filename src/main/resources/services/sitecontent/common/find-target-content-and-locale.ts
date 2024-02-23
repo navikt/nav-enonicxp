@@ -29,6 +29,7 @@ const getPathQueryParams = (path: string) => ({
                 {
                     hasValue: {
                         field: 'data.customPath',
+                        // Handle root path with a fallback to '/'
                         values: [stripPathPrefix(path) || '/'],
                     },
                 },
