@@ -125,6 +125,39 @@ const resolveExactPath = (path: string, branch: RepoBranch): ContentAndLocale | 
     return handleExactPathFound({ id: defaultLayerNodes[0].id, path, locale: defaultLocale });
 };
 
+const getContentFromLocaleLayer = (path: string, locale: string, branch: RepoBranch) => {
+    const { hits } = runInLocaleContext({ locale: locale, branch }, () =>
+        contentLib.query(getPathQueryParams(path))
+    );
+
+    if (hits.length === 0) {
+        return null;
+    }
+
+    if (hits.length === 1) {
+        return hits[0];
+    }
+
+    const strippedPath = stripPathPrefix(path);
+
+    const hitsWithCustomPath = hits.filter((hit) => hit.data?.customPath === strippedPath);
+
+    if (hitsWithCustomPath.length > 1) {
+        logger.critical(`Multiple content found with customPath ${strippedPath}!`);
+    }
+
+    // We always return the oldest content if there are multiple hits on a path
+    if (hitsWithCustomPath.length > 0) {
+        return hitsWithCustomPath[0];
+    }
+
+    logger.critical(
+        `Multiple content found with internal _path ${path} - This should be impossible! :O`
+    );
+
+    return hits[0];
+};
+
 // Resolve a suffixed path for a specific locale, which does not match any actual _path/customPath
 // fields. Ie a request for "nav.no/mypage/en" should resolve to the content on path "nav.no/mypage"
 // in the layer for "en" locale
@@ -142,24 +175,13 @@ const resolveLocalePath = (path: string, branch: RepoBranch): ContentAndLocale |
 
     const possiblePath = pathSegments.join('/');
 
-    const localeContent = runInLocaleContext({ locale: possibleLocale, branch }, () =>
-        contentLib.query(getPathQueryParams(possiblePath))
-    ).hits;
+    const localeContent = getContentFromLocaleLayer(possiblePath, possibleLocale, branch);
 
-    if (localeContent.length === 0) {
+    if (!localeContent) {
         return null;
     }
 
-    // This should ideally never happen, but could potentially happen if safeguards against
-    // duplicate customPaths are somehow bypassed (ie with a manual database edit)
-    if (localeContent.length > 1) {
-        logger.critical(`Multiple hits for ${possiblePath}!`);
-    }
-
-    // If we somehow find multiple contents with the same path, we return the oldest.
-    const content = localeContent[0];
-
-    return { content, locale: possibleLocale };
+    return { content: localeContent, locale: possibleLocale };
 };
 
 // A valid path can be an exact match for an internal content _path, or a data.customPath,
@@ -171,5 +193,5 @@ export const findTargetContentAndLocale = ({
     path: string;
     branch: RepoBranch;
 }): ContentAndLocale | null => {
-    return resolveExactPath(path, branch) || resolveLocalePath(path, branch);
+    return resolveLocalePath(path, branch) || resolveExactPath(path, branch);
 };
