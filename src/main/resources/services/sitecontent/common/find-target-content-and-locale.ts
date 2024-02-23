@@ -29,7 +29,7 @@ const getPathQueryParams = (path: string) => ({
                 {
                     hasValue: {
                         field: 'data.customPath',
-                        values: [stripPathPrefix(path)],
+                        values: [stripPathPrefix(path) || '/'],
                     },
                 },
             ],
