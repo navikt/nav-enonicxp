@@ -16,12 +16,16 @@ type ReqParams = {
     selectorQuery?: string;
 } & XP.CustomSelectorServiceRequestParams;
 
+const formatString = (str: string, withQuotes: boolean) => (withQuotes ? `"${str}"` : str);
+
+const stripLineBreaks = (str: string) => str.replace(/\r?\n|\r/g, '');
+
 const parseContentTypes = (contentTypesJson?: string) => {
     if (!contentTypesJson) {
         return null;
     }
 
-    return parseJsonToArray<ContentDescriptor>(injectValuesFromContent(contentTypesJson));
+    return parseJsonToArray<ContentDescriptor>(stripLineBreaks(contentTypesJson));
 };
 
 const injectValuesFromContent = (str: string) => {
@@ -31,10 +35,21 @@ const injectValuesFromContent = (str: string) => {
         return str;
     }
 
-    return str.replace(/{(\w|\.|-)+}/g, (match) => {
-        const fieldKey = match.replace(/[{}]/g, '');
+    return str.replace(/{(\w|\.|-|,)+}/g, (match) => {
+        const [fieldKey, withQuotes] = match.replace(/[{}]/g, '').split(',');
+
+        const isWithQuotes = withQuotes?.trim() === 'true';
+
         const fieldValue = getNestedValues(content, fieldKey);
-        return typeof fieldValue === 'string' ? fieldValue : JSON.stringify(fieldValue);
+        if (typeof fieldValue === 'string') {
+            return formatString(fieldValue, isWithQuotes);
+        }
+
+        if (Array.isArray(fieldValue)) {
+            return fieldValue.map((value) => formatString(value, isWithQuotes)).join(',');
+        }
+
+        return JSON.stringify(fieldValue);
     });
 };
 
@@ -43,8 +58,10 @@ const buildSelectorQuery = (selectorInput: string) => {
 };
 
 const buildQuery = (userInput?: string, selectorInput?: string) => {
-    const userQuery = userInput ? generateFulltextQuery(userInput, ['displayName'], 'AND') : null;
-    const selectorQuery = selectorInput ? buildSelectorQuery(selectorInput) : null;
+    const userQuery = userInput
+        ? generateFulltextQuery(stripLineBreaks(userInput), ['displayName'], 'AND')
+        : null;
+    const selectorQuery = selectorInput ? buildSelectorQuery(stripLineBreaks(selectorInput)) : null;
 
     return [userQuery, selectorQuery].filter(Boolean).join(' AND ');
 };
@@ -86,14 +103,19 @@ const getHitsFromIds = (ids: string[]) =>
 
 // This service can be called from a CustomSelector input as a more advanced alternative to
 // the built-in ContentSelector input type. Supports selecting based on custom queries, which
-// may include values from the current content, enclosed in curly braces. Example:
+// may include values from the current content, enclosed in curly braces.
+//
+// If you need the value (or array item values) of a field enclosed in "quotes", pass "true" as a second parameter
+// ie: {data.myKey,true}
+//
+// Example:
 //
 // <input name="myInput" type="CustomSelector">
 //     <label>Choose content</label>
 //     <config>
 //         <service>contentSelector</service>
 //         <param value="contentTypes">["no.nav.navno:my-content-type", "no.nav.navno:my-other-content-type"]</param>
-//         <param value="selectorQuery">language="en" AND data.someReference="{_id}"</param>
+//         <param value="selectorQuery">language="en" AND data.someReference="{_id}" AND data.foo IN ({data.bar,true})</param>
 //     </config>
 // </input>
 //
@@ -107,6 +129,8 @@ export const get = (req: XP.Request) => {
 
     const query = buildQuery(userQuery, selectorQuery);
     const contentTypes = parseContentTypes(contentTypesJson);
+
+    logger.info(query);
 
     const hitsFromIds = getHitsFromIds(customSelectorParseSelectedIdsFromReq(req));
     const hitsFromQuery = getHitsFromQuery(query, contentTypes || undefined, sort);
