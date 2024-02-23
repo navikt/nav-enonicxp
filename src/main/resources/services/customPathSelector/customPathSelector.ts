@@ -92,7 +92,7 @@ const getResult = ({
     const contentWithInternalPath = runInContext({ branch: 'master' }, () =>
         contentLib.get({ key: `${NAVNO_ROOT_PATH}${suggestedPath}` })
     );
-    if (contentWithInternalPath && contentWithInternalPath.type !== 'portal:site') {
+    if (contentWithInternalPath) {
         return {
             id: suggestedPath,
             displayName: suggestedPath,
