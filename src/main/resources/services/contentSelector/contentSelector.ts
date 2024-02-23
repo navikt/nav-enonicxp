@@ -8,6 +8,7 @@ import { ContentDescriptor } from '../../types/content-types/content-config';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
 import { parseJsonToArray, removeDuplicates } from '../../lib/utils/array-utils';
 import { getNestedValues } from '../../lib/utils/object-utils';
+import { stripLineBreaks } from '../../lib/utils/string-utils';
 
 type SelectorHit = XP.CustomSelectorServiceResponseHit;
 
@@ -16,16 +17,17 @@ type ReqParams = {
     selectorQuery?: string;
 } & XP.CustomSelectorServiceRequestParams;
 
-const formatString = (str: string, withQuotes: boolean) => (withQuotes ? `"${str}"` : str);
+const CONTENT_FIELD_REF_PATTERN = /{(\w|\.|-|,|_| )+}/g;
 
-const stripLineBreaks = (str: string) => str.replace(/\r?\n|\r/g, '');
+const formatFieldValue = (value: string, withQuotes: boolean) =>
+    withQuotes ? `"${value}"` : value;
 
 const parseContentTypes = (contentTypesJson?: string) => {
     if (!contentTypesJson) {
         return null;
     }
 
-    return parseJsonToArray<ContentDescriptor>(stripLineBreaks(contentTypesJson));
+    return parseJsonToArray<ContentDescriptor>(stripLineBreaks(contentTypesJson.trim()));
 };
 
 const injectValuesFromContent = (str: string) => {
@@ -35,18 +37,18 @@ const injectValuesFromContent = (str: string) => {
         return str;
     }
 
-    return str.replace(/{(\w|\.|-|,)+}/g, (match) => {
+    return str.replace(CONTENT_FIELD_REF_PATTERN, (match) => {
         const [fieldKey, withQuotes] = match.replace(/[{}]/g, '').split(',');
 
         const isWithQuotes = withQuotes?.trim() === 'true';
 
         const fieldValue = getNestedValues(content, fieldKey);
         if (typeof fieldValue === 'string') {
-            return formatString(fieldValue, isWithQuotes);
+            return formatFieldValue(fieldValue, isWithQuotes);
         }
 
         if (Array.isArray(fieldValue)) {
-            return fieldValue.map((value) => formatString(value, isWithQuotes)).join(',');
+            return fieldValue.map((value) => formatFieldValue(value, isWithQuotes)).join(',');
         }
 
         return JSON.stringify(fieldValue);
@@ -129,8 +131,6 @@ export const get = (req: XP.Request) => {
 
     const query = buildQuery(userQuery, selectorQuery);
     const contentTypes = parseContentTypes(contentTypesJson);
-
-    logger.info(query);
 
     const hitsFromIds = getHitsFromIds(customSelectorParseSelectedIdsFromReq(req));
     const hitsFromQuery = getHitsFromQuery(query, contentTypes || undefined, sort);
