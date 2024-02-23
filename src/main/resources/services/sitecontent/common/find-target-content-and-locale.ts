@@ -42,20 +42,27 @@ const getNodesFromAllLayers = ({ path, branch }: { path: string; branch: RepoBra
     return getLayersMultiConnection(branch).query(getPathQueryParams(path)).hits;
 };
 
+const nodeHitsToString = (nodeHits: readonly MultiRepoNodeQueryHit[]) =>
+    nodeHits.map((node) => `"${node.id}" (${node.repoId})`).join(', ');
+
+const getContentWithCustomPath = (path: string, hits: Content[]) => {
+    const strippedPath = stripPathPrefix(path);
+
+    const hitsWithCustomPath = hits.filter((hit) => hit.data?.customPath === strippedPath);
+
+    if (hitsWithCustomPath.length > 1) {
+        logger.critical(`Multiple content found with customPath ${strippedPath}!`);
+    }
+
+    return hitsWithCustomPath;
+};
+
 type ContentAndLocale = {
     content: Content;
     locale: string;
 };
 
-const handleExactPathFound = ({
-    id,
-    path,
-    locale,
-}: {
-    id: string;
-    path: string;
-    locale: string;
-}) => {
+const handleExactHit = (id: string, path: string, locale: string) => {
     // This should not be possible!
     if (!locale) {
         logger.critical(`No locale found for content with id "${id}" an path "${path}"!`);
@@ -73,8 +80,20 @@ const handleExactPathFound = ({
     return content ? { content, locale } : null;
 };
 
-const nodeHitsToString = (nodeHits: readonly MultiRepoNodeQueryHit[]) =>
-    nodeHits.map((node) => `"${node.id}" (${node.repoId})`).join(', ');
+const getContentFromMultipleHits = (path: string, hits: Content[]) => {
+    const hitsWithCustomPath = getContentWithCustomPath(path, hits);
+
+    // We always return the oldest content if there are multiple hits on a path
+    if (hitsWithCustomPath.length > 0) {
+        return hitsWithCustomPath[0];
+    }
+
+    logger.critical(
+        `Multiple content found with internal _path ${path} - This should be impossible! :O`
+    );
+
+    return hits[0];
+};
 
 // Search all layers for an exact path match
 const resolveExactPath = (path: string, branch: RepoBranch): ContentAndLocale | null => {
@@ -87,7 +106,7 @@ const resolveExactPath = (path: string, branch: RepoBranch): ContentAndLocale | 
 
     if (foundNodes.length === 1) {
         const { id, repoId } = foundNodes[0];
-        return handleExactPathFound({ id, path, locale: repoIdToLocaleMap[repoId] });
+        return handleExactHit(id, path, repoIdToLocaleMap[repoId]);
     }
 
     // If we found multiple content with this path, it should only match in the default project.
@@ -110,19 +129,24 @@ const resolveExactPath = (path: string, branch: RepoBranch): ContentAndLocale | 
         return null;
     }
 
-    // If multiple content with the same path was found in the default layer, it most likely means
-    // a duplicate customPath. Log error and return the oldest content.
-    if (defaultLayerNodes.length > 1) {
-        logger.critical(
-            `Multiple contents with path "${path}" found in default project: ${nodeHitsToString(
-                defaultLayerNodes
-            )}`,
-            true,
-            true
-        );
+    if (defaultLayerNodes.length === 1) {
+        return handleExactHit(defaultLayerNodes[0].id, path, defaultLocale);
     }
 
-    return handleExactPathFound({ id: defaultLayerNodes[0].id, path, locale: defaultLocale });
+    const contentIds = defaultLayerNodes.map((node) => node.id);
+
+    const { hits } = contentLib.query({
+        count: contentIds.length,
+        filters: {
+            ids: {
+                values: contentIds,
+            },
+        },
+    });
+
+    const content = getContentFromMultipleHits(path, hits);
+
+    return content ? { content, locale: defaultLocale } : null;
 };
 
 const getContentFromLocaleLayer = (path: string, locale: string, branch: RepoBranch) => {
@@ -138,24 +162,7 @@ const getContentFromLocaleLayer = (path: string, locale: string, branch: RepoBra
         return hits[0];
     }
 
-    const strippedPath = stripPathPrefix(path);
-
-    const hitsWithCustomPath = hits.filter((hit) => hit.data?.customPath === strippedPath);
-
-    if (hitsWithCustomPath.length > 1) {
-        logger.critical(`Multiple content found with customPath ${strippedPath}!`);
-    }
-
-    // We always return the oldest content if there are multiple hits on a path
-    if (hitsWithCustomPath.length > 0) {
-        return hitsWithCustomPath[0];
-    }
-
-    logger.critical(
-        `Multiple content found with internal _path ${path} - This should be impossible! :O`
-    );
-
-    return hits[0];
+    return getContentFromMultipleHits(path, hits);
 };
 
 // Resolve a suffixed path for a specific locale, which does not match any actual _path/customPath
