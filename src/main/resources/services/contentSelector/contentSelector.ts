@@ -17,7 +17,7 @@ type ReqParams = {
     selectorQuery?: string;
 } & XP.CustomSelectorServiceRequestParams;
 
-const CONTENT_FIELD_REF_PATTERN = /{(\w|\.|-|,|_| )+}/g;
+const CONTENT_INJECTION_PATTERN = /{(\w|\.|-|,|_| )+}/g;
 
 const formatFieldValue = (value: string, withQuotes: boolean) =>
     withQuotes ? `"${value}"` : value;
@@ -37,7 +37,7 @@ const injectValuesFromContent = (str: string) => {
         return str;
     }
 
-    return str.replace(CONTENT_FIELD_REF_PATTERN, (match) => {
+    return str.replace(CONTENT_INJECTION_PATTERN, (match) => {
         const [fieldKey, withQuotes] = match.replace(/[{}]/g, '').split(',');
 
         const isWithQuotes = withQuotes?.trim() === 'true';
