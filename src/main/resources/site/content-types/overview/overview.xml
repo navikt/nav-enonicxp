@@ -54,9 +54,10 @@
                     <occurrences minimum="0" maximum="0"/>
                     <config>
                         <service>contentSelector</service>
-                        <!-- Don't add linebreaks/whitespace to the param body values, as these will be included in the service calls -_- -->
-                        <param value="contentTypes">["no.nav.navno:content-page-with-sidemenus","no.nav.navno:guide-page","no.nav.navno:themed-article-page"]</param>
-                        <param value="selectorQuery">data.audience._selected="{data.audience._selected}"</param>
+                        <param value="contentTypes">
+                            ["no.nav.navno:content-page-with-sidemenus","no.nav.navno:guide-page","no.nav.navno:themed-article-page"]
+                        </param>
+                        <param value="selectorQuery">data.audience._selected IN ({data.audience,true})</param>
                         <param value="sort">data.area ASC, displayName ASC</param>
                     </config>
                 </input>
