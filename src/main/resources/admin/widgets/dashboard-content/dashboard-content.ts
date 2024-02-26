@@ -16,14 +16,14 @@ const fromDate = dayjs().subtract(6, 'months').toISOString(); // Går bare 6 må
 
 const contentTypes2Show = [
     ...contentTypesRenderedByEditorFrontend,
-    `${APP_DESCRIPTOR}:content-list`
+    `${APP_DESCRIPTOR}:content-list`,
 ];
 const contentInfo = contentTypes2Show.map((contentType) => {
     const typeInfo = contentLib.getType(contentType);
     return {
         type: contentType,
-        name: typeInfo ? typeInfo.displayName : ''
-    }
+        name: typeInfo ? typeInfo.displayName : '',
+    };
 });
 
 const asAdminParams: Pick<Source, 'user' | 'principals'> = {
@@ -79,7 +79,8 @@ const getContentFromLogEntries = (
         if (!repoId) {
             return undefined;
         }
-        const contentId = entry.data.params?.contentIds as string || entry.data.params?.contentId as string;
+        const contentId =
+            (entry.data.params?.contentIds as string) || (entry.data.params?.contentId as string);
         if (!contentId) {
             return undefined;
         }
@@ -116,7 +117,9 @@ const getContentFromLogEntries = (
 
         const repo = repoStr(repoId);
         const layer = layerStr(repo);
-        let status = '', modifyDate, contentUrl;
+        let status = '',
+            modifyDate,
+            contentUrl;
         if (content?.archivedTime) {
             status = 'Arkivert';
             modifyDate = dayjsDateTime(content.archivedTime);
@@ -148,13 +151,12 @@ const check4Duplicates = (entries: auditLogLib.LogEntry<auditLogLib.DefaultData>
     const duplicates = [] as auditLogLib.LogEntry<auditLogLib.DefaultData>[];
     return entries.filter((entry) => {
         const contentId =
-            entry.data.params.contentIds as string ||
-            entry.data.params.contentId as string;
+            (entry.data.params.contentIds as string) || (entry.data.params.contentId as string);
         const repoId = getRepoId(entry);
         const duplicate = duplicates.find((duplicate) => {
             const dupCheckContentId =
-                duplicate.data.params.contentIds as string ||
-                duplicate.data.params.contentId as string;
+                (duplicate.data.params.contentIds as string) ||
+                (duplicate.data.params.contentId as string);
             return contentId === dupCheckContentId && repoId === getRepoId(duplicate);
         });
         if (duplicate) {
@@ -171,13 +173,12 @@ const newerEntryFound = (
     list: auditLogLib.LogEntry<auditLogLib.DefaultData>[]
 ) => {
     const contentId =
-        entry.data.params.contentIds as string ||
-        entry.data.params.contentId as string;
+        (entry.data.params.contentIds as string) || (entry.data.params.contentId as string);
     const repoId = getRepoId(entry);
     return list.find((listEntry) => {
         const listEntryContentId =
-            listEntry.data.params.contentIds as string ||
-            listEntry.data.params.contentId as string;
+            (listEntry.data.params.contentIds as string) ||
+            (listEntry.data.params.contentId as string);
         if (contentId === listEntryContentId && repoId === getRepoId(listEntry)) {
             return dayjs(listEntry.time).isAfter(entry.time);
         }
@@ -191,15 +192,24 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
         from: fromDate,
         users: [user],
     }) as any;
-    const publishedLogEntries = logEntries.hits.filter((entry: auditLogLib.LogEntry<auditLogLib.DefaultData>) => entry.type === 'system.content.publish');
-    const unpublishedLogEntries = logEntries.hits.filter((entry: auditLogLib.LogEntry<auditLogLib.DefaultData>) => entry.type === 'system.content.unpublishContent');
-    const archivedLogEntries = logEntries.hits.filter((entry: auditLogLib.LogEntry<auditLogLib.DefaultData>) => entry.type === 'system.content.archive');
+    const publishedLogEntries = logEntries.hits.filter(
+        (entry: auditLogLib.LogEntry<auditLogLib.DefaultData>) =>
+            entry.type === 'system.content.publish'
+    );
+    const unpublishedLogEntries = logEntries.hits.filter(
+        (entry: auditLogLib.LogEntry<auditLogLib.DefaultData>) =>
+            entry.type === 'system.content.unpublishContent'
+    );
+    const archivedLogEntries = logEntries.hits.filter(
+        (entry: auditLogLib.LogEntry<auditLogLib.DefaultData>) =>
+            entry.type === 'system.content.archive'
+    );
 
     // Gjennomgå arkivert-listen for eventuelt å legge til i avpublisert
-    archivedLogEntries.forEach((entry:auditLogLib.LogEntry<auditLogLib.DefaultData>) => {
+    archivedLogEntries.forEach((entry: auditLogLib.LogEntry<auditLogLib.DefaultData>) => {
         if (entry.data.result?.unpublishedContents) {
             // Innholdet er arkivert uten å være avpublisert først, legg til i avpublisert før behandling
-            unpublishedLogEntries.push(entry)
+            unpublishedLogEntries.push(entry);
         }
     });
 
@@ -264,14 +274,13 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
     });
 
     // Sorter publisert på nytt på (for å sikre riktig rekkefølge ved forhåndspublisering (from)
-    publishedEntries = publishedEntries
-        .sort((a, b) => {
-            const aContentPublishInfo = a.data.params.contentPublishInfo as any;
-            const bContentPublishInfo = b.data.params.contentPublishInfo as any;
-            const aDate = aContentPublishInfo?.from || a.time;
-            const bDate = bContentPublishInfo?.from || b.time;
-            return dayjs(aDate).isAfter(dayjs(bDate)) ? -1 : 1;
-        });
+    publishedEntries = publishedEntries.sort((a, b) => {
+        const aContentPublishInfo = a.data.params.contentPublishInfo as any;
+        const bContentPublishInfo = b.data.params.contentPublishInfo as any;
+        const aDate = aContentPublishInfo?.from || a.time;
+        const bDate = bContentPublishInfo?.from || b.time;
+        return dayjs(aDate).isAfter(dayjs(bDate)) ? -1 : 1;
+    });
 
     // Sorter avpublisert på nytt, fjern eventulle duplikater som har oppstått
     unpublishedEntries.sort((a, b) => {
@@ -284,21 +293,20 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
     unpublishedEntries = check4Duplicates(unpublishedEntries);
 
     // Fjern fra avpublisert hvis publisering eller forhåndspublisering av nyere dato
-    unpublishedEntries = unpublishedEntries
-        .filter((entry) => {
-            const contentId = entry.data.params.contentIds as string;
-            const repoId = getRepoId(entry);
-            const publishedLater = newerEntryFound(entry, publishedEntries);
-            const prePublishedLater = prePublishedEntries.find((duplicate) => {
-                const dupCheckContentId = duplicate.data.params.contentIds as string;
-                if (contentId === dupCheckContentId && repoId === getRepoId(duplicate)) {
-                    const contentPublishInfo = entry.data.params.contentPublishInfo as any;
-                    const publishFromDate = dayjsDateTime(contentPublishInfo?.from);
-                    return dayjs(publishFromDate).isAfter(entry.time);
-                }
-            });
-            return !publishedLater && !prePublishedLater;
+    unpublishedEntries = unpublishedEntries.filter((entry) => {
+        const contentId = entry.data.params.contentIds as string;
+        const repoId = getRepoId(entry);
+        const publishedLater = newerEntryFound(entry, publishedEntries);
+        const prePublishedLater = prePublishedEntries.find((duplicate) => {
+            const dupCheckContentId = duplicate.data.params.contentIds as string;
+            if (contentId === dupCheckContentId && repoId === getRepoId(duplicate)) {
+                const contentPublishInfo = entry.data.params.contentPublishInfo as any;
+                const publishFromDate = dayjsDateTime(contentPublishInfo?.from);
+                return dayjs(publishFromDate).isAfter(entry.time);
+            }
         });
+        return !publishedLater && !prePublishedLater;
+    });
 
     // Må sortere prepublished på from-feltet (førstkommende øverst)
     prePublishedEntries = prePublishedEntries.sort((a, b) => {
