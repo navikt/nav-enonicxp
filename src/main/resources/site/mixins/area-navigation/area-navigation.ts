@@ -14,4 +14,9 @@ export interface AreaNavigation {
    * Velg situasjonssider
    */
   situationsRefs?: Array<string>;
+
+  /**
+   * Velg annet innhold
+   */
+  otherRefs?: Array<string>;
 }

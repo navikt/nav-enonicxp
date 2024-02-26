@@ -24,6 +24,16 @@
                         <allowContentType>${app}:situation-page</allowContentType>
                     </config>
                 </input>
+                <input name="otherRefs" type="ContentSelector">
+                    <label>Velg annet innhold</label>
+                    <help-text>Velg innhold som skal vises på forsiden</help-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allowContentType>${app}:overview</allowContentType>
+                        <allowContentType>${app}:forms-overview</allowContentType>
+                        <allowContentType>${app}:external-link</allowContentType>
+                    </config>
+                </input>
             </items>
         </field-set>
     </form>
