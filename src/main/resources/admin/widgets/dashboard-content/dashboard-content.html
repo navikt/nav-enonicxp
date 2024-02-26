@@ -1,46 +1,43 @@
 <widget>
 	<style>
-h3 {
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
-}
-
-table {
-  font-size: 1rem;
-  width: 100%;
-  border-spacing: 0;
-}
-
-td {
-  padding: 0.2rem 0.5rem 0.2rem 0;
-}
-
-td:not(:first-child) {
-  padding-left: 0.5rem;
-}
-
-td:nth-child(2),
-td:nth-child(3) {
-  width: 27.5%;
-}
-
-td:nth-child(4) {
-  width: 10%;
-}
-
-tr:nth-child(odd) td {
-  background-color: whitesmoke;
-}
-
-.first-col {
-  width: 35%;
-}
-
-
+		h3 {
+		  	margin-top: 1rem;
+		  	margin-bottom: 0.5rem;
+		}
+		p {
+			font-size: 1rem;
+			margin: 0.5rem 0 1.5rem 0;
+		}
+		table {
+			font-size: 1rem;
+		  	width: 100%;
+		  	border-spacing: 0;
+		}
+		td {
+		   padding: 0.2rem 0.5rem 0.2rem 0;
+		}
+		td:not(:first-child) {
+		   padding-left: 0.5rem;
+		}
+		.first-col {
+			width: 50%;
+		}
+		td:nth-child(2) {
+			width: 20%;
+		}
+		td:nth-child(3) {
+		  	width: 20%;
+		}
+		td:nth-child(4) {
+		  	width: 10%;
+		}
+		tr:nth-child(odd) td {
+		  	background-color: whitesmoke;
+		}
 	</style>
 	<div id="admin-widget-content" style="background-color: white; padding: 1rem; align-items: center">
 		<h3>Sist publiserte</h3>
-		<table>
+		<table th:if="${published}">
 			<tr th:each="result: ${published}">
 				<td class="first-col">
 					<a th:text="${result.displayName}"
@@ -56,7 +53,8 @@ tr:nth-child(odd) td {
 			</tr>
 		</table>
 		<h3>Forhåndspubliseringer</h3>
-		<table>
+		<p th:unless="${prePublished}">Du har ingen planlagte publiseringer</p>
+		<table th:if="${prePublished}">
 			<tr th:each="result: ${prePublished}">
 				<td class="first-col">
 					<a th:text="${result.displayName}"
@@ -72,7 +70,7 @@ tr:nth-child(odd) td {
 			</tr>
 		</table>
 		<h3>Under arbeid</h3>
-		<table>
+		<table th:if="${modified}">
 			<tr th:each="result: ${modified}">
 				<td class="first-col">
 					<a th:text="${result.displayName}"
@@ -88,7 +86,7 @@ tr:nth-child(odd) td {
 			</tr>
 		</table>
 		<h3>Sist avpubliserte</h3>
-		<table>
+		<table th:if="${unPublished}">
 			<tr th:each="result: ${unPublished}">
 				<td class="first-col">
 					<a th:text="${result.displayName}"

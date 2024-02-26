@@ -73,7 +73,7 @@ const sortEntries = (entries: auditLogLib.LogEntry<auditLogLib.DefaultData>[]) =
 const getContentFromLogEntries = (
     logEntries: auditLogLib.LogEntry<auditLogLib.DefaultData>[],
     publish: boolean
-): ContentInfo[] => {
+): ContentInfo[] | undefined => {
     const entries = logEntries.map((entry) => {
         const repoId = getRepoId(entry);
         if (!repoId) {
@@ -132,7 +132,7 @@ const getContentFromLogEntries = (
         return {
             displayName: content.displayName + layer,
             contentType: contentTypeInfo ? contentTypeInfo.name : '',
-            modifiedTimeStr: dayjs(modifyDate).format('DD.MM.YYYY HH.mm.ss'),
+            modifiedTimeStr: dayjs(modifyDate).format('DD.MM.YYYY - HH:mm:ss'),
             status,
             title: content._path.replace('/content/www.nav.no/', ''),
             url: `/admin/tool/com.enonic.app.contentstudio/main/${repo}/${contentUrl}`,
@@ -140,7 +140,8 @@ const getContentFromLogEntries = (
     });
 
     // Fjern tomme elementer (slette/ikke våre innholdstyper), og kutt av til 5
-    return entries.filter(removeUndefined).slice(0, 5);
+    const returnEntries = entries.filter(removeUndefined).slice(0, 5);
+    return returnEntries.length > 0 ? returnEntries : undefined;
 };
 
 const check4Duplicates = (entries: auditLogLib.LogEntry<auditLogLib.DefaultData>[]) => {
@@ -189,13 +190,10 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
         count: 5000,
         from: fromDate,
         users: [user],
-    });
-    // @ts-ignore
-    const publishedLogEntries = logEntries.hits.filter((entry) => entry.type === 'system.content.publish');
-    // @ts-ignore
-    const unpublishedLogEntries = logEntries.hits.filter((entry) => entry.type === 'system.content.unpublishContent');
-    // @ts-ignore
-    const archivedLogEntries = logEntries.hits.filter((entry) => entry.type === 'system.content.archive');
+    }) as any;
+    const publishedLogEntries = logEntries.hits.filter((entry: auditLogLib.LogEntry<auditLogLib.DefaultData>) => entry.type === 'system.content.publish');
+    const unpublishedLogEntries = logEntries.hits.filter((entry: auditLogLib.LogEntry<auditLogLib.DefaultData>) => entry.type === 'system.content.unpublishContent');
+    const archivedLogEntries = logEntries.hits.filter((entry: auditLogLib.LogEntry<auditLogLib.DefaultData>) => entry.type === 'system.content.archive');
 
     // Gjennomgå arkivert-listen for eventuelt å legge til i avpublisert
     archivedLogEntries.forEach((entry:auditLogLib.LogEntry<auditLogLib.DefaultData>) => {
@@ -388,7 +386,7 @@ const getUsersModifications = (user: `user:${string}:${string}`) => {
                 displayName: draftContent.displayName + layer,
                 contentType: contentTypeInfo ? contentTypeInfo.name : '',
                 modifiedTime: modifiedLocalTime,
-                modifiedTimeStr: dayjs(modifiedLocalTime).format('DD.MM.YYYY HH.mm.ss'),
+                modifiedTimeStr: dayjs(modifiedLocalTime).format('DD.MM.YYYY - HH:mm:ss'),
                 status,
                 title: draftContent._path.replace('/content/www.nav.no/', ''),
                 url: `/admin/tool/com.enonic.app.contentstudio/main/${repo}/edit/${draftContent._id}`,
