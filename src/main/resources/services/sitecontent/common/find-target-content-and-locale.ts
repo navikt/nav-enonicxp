@@ -1,17 +1,22 @@
 import * as contentLib from '/lib/xp/content';
-import { MultiRepoNodeQueryHit } from '/lib/xp/node';
+import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../../types/common';
-import { getLayersData, isValidLocale } from '../../../lib/localization/layers-data';
+import { getLayersData } from '../../../lib/localization/layers-data';
 import { logger } from '../../../lib/utils/logging';
 import { runInLocaleContext } from '../../../lib/localization/locale-context';
 import { CONTENT_ROOT_REPO_ID } from '../../../lib/constants';
-import { Content } from '/lib/xp/content';
 import { stripPathPrefix } from '../../../lib/paths/path-utils';
 import { getLayersMultiConnection } from '../../../lib/localization/layers-repo-utils/layers-repo-connection';
 import { NON_LOCALIZED_QUERY_FILTER } from '../../../lib/localization/layers-repo-utils/localization-state-filters';
+import { resolveLocalePathToBasePath } from '../../../lib/paths/locale-paths';
+
+type ContentAndLocale = {
+    content: Content;
+    locale: string;
+};
 
 // Will return all matches for internal _path names as well as customPaths, for root content and
-// localized content only. Sorted by created time
+// localized content only.
 const getPathQueryParams = (path: string) => ({
     start: 0,
     count: 100,
@@ -43,9 +48,6 @@ const getNodesFromAllLayers = ({ path, branch }: { path: string; branch: RepoBra
     return getLayersMultiConnection(branch).query(getPathQueryParams(path)).hits;
 };
 
-const nodeHitsToString = (nodeHits: readonly MultiRepoNodeQueryHit[]) =>
-    nodeHits.map((node) => `"${node.id}" (${node.repoId})`).join(', ');
-
 const getContentWithCustomPath = (path: string, hits: Content[]) => {
     const strippedPath = stripPathPrefix(path);
 
@@ -56,11 +58,6 @@ const getContentWithCustomPath = (path: string, hits: Content[]) => {
     }
 
     return hitsWithCustomPath;
-};
-
-type ContentAndLocale = {
-    content: Content;
-    locale: string;
 };
 
 const handleExactHit = (id: string, path: string, locale: string) => {
@@ -119,10 +116,10 @@ const resolveExactPath = (path: string, branch: RepoBranch): ContentAndLocale | 
     // content has been deleted from the default layer, or has been moved or had its customPath changed.
     // In either case, the content should only be served from a layer if it can be resolved via resolveLocalePath.
     if (defaultLayerNodes.length === 0) {
+        const nodeHitsString = foundNodes.map((node) => `"${node.id}" (${node.repoId})`).join(', ');
+
         logger.warning(
-            `Content with path "${path}" found in multiple layers, but not in the default project: ${nodeHitsToString(
-                foundNodes
-            )}`,
+            `Content with path "${path}" found in multiple layers, but not in the default project: ${nodeHitsString}`,
             true,
             true
         );
@@ -166,34 +163,37 @@ const getContentFromLocaleLayer = (path: string, locale: string, branch: RepoBra
     return getContentFromMultipleHits(path, hits);
 };
 
-// Resolve a suffixed path for a specific locale, which does not match any actual _path/customPath
-// fields. Ie a request for "nav.no/mypage/en" should resolve to the content on path "nav.no/mypage"
-// in the layer for "en" locale
-const resolveLocalePath = (path: string, branch: RepoBranch): ContentAndLocale | null => {
-    const { defaultLocale } = getLayersData();
-
-    const pathSegments = path.split('/');
-    const possibleLocale = pathSegments.pop();
-
-    // The default locale should not be an allowed suffix. For this locale we only want to resolve
-    // requests for the actual path, with no locale-suffix.
-    if (possibleLocale === defaultLocale || !isValidLocale(possibleLocale)) {
+// Resolve a suffixed path for a specific locale.
+// A request for "/mypage/en" should resolve to the content on path "nav.no/mypage" in the layer for "en" locale
+const resolveLocalePath = (
+    maybeLocalePath: string,
+    branch: RepoBranch
+): ContentAndLocale | null => {
+    const pathAndLocale = resolveLocalePathToBasePath(maybeLocalePath);
+    if (!pathAndLocale) {
         return null;
     }
 
-    const possiblePath = pathSegments.join('/');
+    const { basePath, locale } = pathAndLocale;
 
-    const localeContent = getContentFromLocaleLayer(possiblePath, possibleLocale, branch);
-
+    const localeContent = getContentFromLocaleLayer(basePath, locale, branch);
     if (!localeContent) {
         return null;
     }
 
-    return { content: localeContent, locale: possibleLocale };
+    return { content: localeContent, locale: locale };
 };
 
 // A valid path can be an exact match for an internal content _path, or a data.customPath,
 // or a locale-specific variant of either of the two, suffixed with a supported locale
+//
+// As an example for order of lookups, a request for "/mypage/en" should do lookups in this order:
+// - /mypage as a customPath in the en layer
+// - /mypage as an internal _path in the en layer
+// - /mypage/en as a customPath in the default layer
+// - /mypage/en as a customPath in any other layer
+// - /mypage/en as an internal path in the default layer
+// - /mypage/en as an internal path in any other layer
 export const findTargetContentAndLocale = ({
     path,
     branch,
