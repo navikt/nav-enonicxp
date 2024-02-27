@@ -75,12 +75,18 @@ export const scheduleUnpublish = ({
     repoId: string;
     publishTo: string;
 }) => {
-    scheduleCacheInvalidation({
+    createOrUpdateSchedule<UnpublishExpiredContentConfig>({
         jobName: getUnpublishJobName(id),
-        id,
-        path,
-        repoId,
-        time: publishTo,
+        jobSchedule: {
+            type: 'ONE_TIME',
+            value: publishTo,
+        },
+        taskDescriptor: `${APP_DESCRIPTOR}:unpublish-expired-content`,
+        taskConfig: {
+            path,
+            id,
+            repoId,
+        },
     });
 };
 
