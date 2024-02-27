@@ -16,8 +16,7 @@ fragment contentFrontPage on no_nav_navno_FrontPage {
             ...situationMixin
         }
         otherRefs {
-            ...contentCommon
-            dataAsJson
+            ...frontPageNestedMixin
         }
     }
 }
