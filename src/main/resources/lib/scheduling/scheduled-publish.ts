@@ -42,12 +42,14 @@ export const scheduleCacheInvalidation = ({
     path,
     repoId,
     time,
+    masterOnly = true,
 }: {
     jobName: string;
     id: string;
     path: string;
     repoId: string;
     time: string;
+    masterOnly?: boolean;
 }) => {
     createOrUpdateSchedule<PrepublishCacheWipeConfig>({
         jobName,
@@ -61,6 +63,7 @@ export const scheduleCacheInvalidation = ({
             id,
             repoId,
         },
+        masterOnly,
     });
 };
 
@@ -69,18 +72,27 @@ export const scheduleUnpublish = ({
     path,
     repoId,
     publishTo,
+    masterOnly = true,
 }: {
     id: string;
     path: string;
     repoId: string;
     publishTo: string;
+    masterOnly?: boolean;
 }) => {
-    scheduleCacheInvalidation({
+    createOrUpdateSchedule<UnpublishExpiredContentConfig>({
         jobName: getUnpublishJobName(id),
-        id,
-        path,
-        repoId,
-        time: publishTo,
+        jobSchedule: {
+            type: 'ONE_TIME',
+            value: publishTo,
+        },
+        taskDescriptor: `${APP_DESCRIPTOR}:unpublish-expired-content`,
+        taskConfig: {
+            path,
+            id,
+            repoId,
+        },
+        masterOnly,
     });
 };
 
