@@ -13,25 +13,27 @@
 		  	width: 100%;
 		  	border-spacing: 0;
 		}
-		td {
-		   padding: 0.2rem 0.5rem 0.2rem 0;
+		th {
+		   padding: 0.2rem 0.4rem 0.2rem 0;
+		   text-align: left;
+		   font-weight: normal;
 		}
-		td:not(:first-child) {
+		th:not(:first-child) {
 		   padding-left: 0.5rem;
 		}
 		.first-col {
 			width: 50%;
 		}
-		td:nth-child(2) {
+		th:nth-child(2) {
 			width: 20%;
 		}
-		td:nth-child(3) {
+		th:nth-child(3) {
 		  	width: 20%;
 		}
-		td:nth-child(4) {
+		th:nth-child(4) {
 		  	width: 10%;
 		}
-		tr:nth-child(odd) td {
+		tr:nth-child(odd) th {
 		  	background-color: whitesmoke;
 		}
 	</style>
@@ -39,66 +41,66 @@
 		<h3>Sist publiserte</h3>
 		<table th:if="${published}">
 			<tr th:each="result: ${published}">
-				<td class="first-col">
+				<th scope="first-col">
 					<a th:text="${result.displayName}"
 					   th:href="${result.url}"
 					   th:title="${result.title}"
 					   th:target="_blank"
 					>
 					</a>
-				</td>
-				<td th:text="${result.contentType}"></td>
-				<td th:text="${result.modifiedTimeStr}"></td>
-				<td th:text="${result.status}"></td>
+				</th>
+				<th th:text="${result.contentType}"></th>
+				<th th:text="${result.modifiedTimeStr}"></th>
+				<th th:text="${result.status}"></th>
 			</tr>
 		</table>
 		<h3>Forhåndspubliseringer</h3>
 		<p th:unless="${prePublished}">Du har ingen planlagte publiseringer</p>
 		<table th:if="${prePublished}">
 			<tr th:each="result: ${prePublished}">
-				<td class="first-col">
+				<th scope="first-col">
 					<a th:text="${result.displayName}"
 					   th:href="${result.url}"
 					   th:title="${result.title}"
 					   th:target="_blank"
 					>
 					</a>
-				</td>
-				<td th:text="${result.contentType}"></td>
-				<td th:text="${result.modifiedTimeStr}"></td>
-				<td th:text="${result.status}"></td>
+				</th>
+				<th th:text="${result.contentType}"></th>
+				<th th:text="${result.modifiedTimeStr}"></th>
+				<th th:text="${result.status}"></th>
 			</tr>
 		</table>
 		<h3>Under arbeid</h3>
 		<table th:if="${modified}">
 			<tr th:each="result: ${modified}">
-				<td class="first-col">
+				<th scope="first-col">
 					<a th:text="${result.displayName}"
 					   th:href="${result.url}"
 					   th:title="${result.title}"
 					   th:target="_blank"
 					>
 					</a>
-				</td>
-				<td th:text="${result.contentType}"></td>
-				<td th:text="${result.modifiedTimeStr}"></td>
-				<td th:text="${result.status}"></td>
+				</th>
+				<th th:text="${result.contentType}"></th>
+				<th th:text="${result.modifiedTimeStr}"></th>
+				<th th:text="${result.status}"></th>
 			</tr>
 		</table>
 		<h3>Sist avpubliserte</h3>
 		<table th:if="${unPublished}">
 			<tr th:each="result: ${unPublished}">
-				<td class="first-col">
+				<th scope="first-col">
 					<a th:text="${result.displayName}"
 					   th:href="${result.url}"
 					   th:title="${result.title}"
 					   th:target="_blank"
 					>
 					</a>
-				</td>
-				<td th:text="${result.contentType}"></td>
-				<td th:text="${result.modifiedTimeStr}"></td>
-				<td th:text="${result.status}"></td>
+				</th>
+				<th th:text="${result.contentType}"></th>
+				<th th:text="${result.modifiedTimeStr}"></th>
+				<th th:text="${result.status}"></th>
 			</tr>
 		</table>
 	</div>
