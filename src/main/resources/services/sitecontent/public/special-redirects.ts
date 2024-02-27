@@ -3,7 +3,8 @@ import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../../types/common';
 import { hasValidCustomPath } from '../../../lib/paths/custom-paths/custom-path-utils';
 import { getPublicPath } from '../../../lib/paths/public-path';
-import { buildLocalePath, isContentLocalized } from '../../../lib/localization/locale-utils';
+import { isContentLocalized } from '../../../lib/localization/locale-utils';
+import { buildLocalePath } from '../../../lib/paths/locale-paths';
 import { runInLocaleContext } from '../../../lib/localization/locale-context';
 import { logger } from '../../../lib/utils/logging';
 import {
