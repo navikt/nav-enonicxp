@@ -1,10 +1,17 @@
 #import "../contentCommonFragment.graphql"
 #import "./animatedIconsTargetFragment.graphql"
 
-fragment frontPageNestedMixin on Content {
+fragment frontpageAreaReferences on Content {
     ...contentCommon
     dataAsJson
 
+    ... on no_nav_navno_SituationPage {
+        data {
+            illustration {
+                ...animatedIconsTargetMixin
+            }
+        }
+    }
     ... on no_nav_navno_FrontPageNested {
         data {
             illustration {
