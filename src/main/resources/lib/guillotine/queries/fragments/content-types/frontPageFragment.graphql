@@ -1,5 +1,5 @@
 #import "../contentCommonFragment.graphql"
-#import "../mixins/frontpageAreaReferences.graphql"
+#import "../mixins/frontPageAreaReferences.graphql"
 
 fragment contentFrontPage on no_nav_navno_FrontPage {
     dataAsJson
