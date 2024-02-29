@@ -2,6 +2,10 @@ import { getNestedValues } from '../../../../utils/object-utils';
 import { forceArray } from '../../../../utils/array-utils';
 import { ContentNode } from '../../../../../types/content-types/content-config';
 import { hasExternalProductUrl } from '../../../../paths/path-utils';
+import { NodeComponent } from '../../../../../types/components/component-node';
+import { getRepoConnection } from '../../../../utils/repo-utils';
+import { getLayersData } from '../../../../localization/layers-data';
+import { CONTENT_ROOT_REPO_ID } from '../../../../constants';
 
 type FieldKeyBuckets = {
     componentsFieldKeys: string[];
@@ -47,6 +51,25 @@ const getFieldValues = (
     }, []);
 };
 
+const getComponentFieldValues = (
+    component: NodeComponent,
+    contentLocale: string,
+    fieldKeys: string[]
+) => {
+    if (component.type === 'fragment') {
+        const fragment = getRepoConnection({
+            branch: 'master',
+            repoId: getLayersData().localeToRepoIdMap[contentLocale] || CONTENT_ROOT_REPO_ID,
+        }).get({ key: component.fragment.id });
+
+        return forceArray(fragment?.components)
+            .map((fragmentComponent: NodeComponent) => getFieldValues(fragmentComponent, fieldKeys))
+            .flat();
+    }
+
+    return getFieldValues(component, fieldKeys);
+};
+
 export const getSearchDocumentTextSegments = (content: ContentNode, fieldKeys: string[]) => {
     const { componentsFieldKeys, otherFieldKeys } = getFieldKeyBuckets(fieldKeys);
 
@@ -62,7 +85,9 @@ export const getSearchDocumentTextSegments = (content: ContentNode, fieldKeys: s
     // For component fields, we need to ensure the final order of values are consistent
     // with their original order in the components array
     const componentsFieldValues = forceArray(content.components)
-        .map((component) => getFieldValues(component, componentsFieldKeys))
+        .map((component) =>
+            getComponentFieldValues(component, content.language, componentsFieldKeys)
+        )
         .flat();
 
     return otherFieldValues.concat(componentsFieldValues);

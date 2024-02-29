@@ -12,7 +12,7 @@ import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { stripPathPrefix, stripRedirectsPathPrefix } from '../../lib/paths/path-utils';
 import { getPublicPath } from '../../lib/paths/public-path';
 import { removeDuplicates } from '../../lib/utils/array-utils';
-import { buildLocalePath } from '../../lib/localization/locale-utils';
+import { buildLocalePath } from '../../lib/paths/locale-paths';
 import { hasValidCustomPath } from '../../lib/paths/custom-paths/custom-path-utils';
 import { queryAllLayersToRepoIdBuckets } from '../../lib/localization/layers-repo-utils/query-all-layers';
 

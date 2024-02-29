@@ -92,11 +92,13 @@ const getResult = ({
     const contentWithInternalPath = runInContext({ branch: 'master' }, () =>
         contentLib.get({ key: `${NAVNO_ROOT_PATH}${suggestedPath}` })
     );
-    if (contentWithInternalPath && contentWithInternalPath.type !== 'portal:site') {
-        return generateErrorHit(
-            `Feil: "${suggestedPath}" er allerede i bruk som vanlig url`,
-            `"${contentWithInternalPath.displayName}" har denne url'en`
-        );
+    if (contentWithInternalPath) {
+        return {
+            id: suggestedPath,
+            displayName: suggestedPath,
+            description: `Advarsel: ${suggestedPath} er allerede i bruk som vanlig url for "${contentWithInternalPath.displayName}" - denne vil overstyres av kort-url`,
+            icon: customSelectorWarningIcon,
+        };
     }
 
     const ingressIsOurs = verifyIngressOwner(suggestedPath);

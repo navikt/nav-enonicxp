@@ -34,14 +34,16 @@ const schedulePrepublishTasks = () => {
                 logger.warning(
                     `Scheduled job for prepublish was missing for content ${content._path} in repo ${repoId}`
                 );
-                scheduleCacheInvalidation({
-                    jobName: getPrepublishJobName(content._id),
-                    id: content._id,
-                    path: content._path,
-                    repoId: repoId,
-                    time: content.publish.from,
-                });
             }
+
+            scheduleCacheInvalidation({
+                jobName: getPrepublishJobName(content._id),
+                id: content._id,
+                path: content._path,
+                repoId: repoId,
+                time: content.publish.from,
+                masterOnly: false,
+            });
         });
     });
 };
@@ -72,13 +74,15 @@ const scheduleUnpublishTasks = () => {
                 logger.warning(
                     `Scheduled job for unpublish was missing for content ${content._path} in repo ${repoId}`
                 );
-                scheduleUnpublish({
-                    id: content._id,
-                    path: content._path,
-                    repoId: repoId,
-                    publishTo: content.publish.to,
-                });
             }
+
+            scheduleUnpublish({
+                id: content._id,
+                path: content._path,
+                repoId: repoId,
+                publishTo: content.publish.to,
+                masterOnly: false,
+            });
         });
     });
 };

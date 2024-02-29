@@ -95,10 +95,17 @@ export const contentTypesWithComponents = [
     'portal:page-template',
 ] as const satisfies ContentTypeList;
 
-export const contentTypesInOverviewPages = [
+export const contentTypesWithProductDetails = [
     `${APP_DESCRIPTOR}:guide-page`,
     `${APP_DESCRIPTOR}:themed-article-page`,
     `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
+] as const satisfies ContentTypeList;
+
+export const contentTypesInOverviewPages = contentTypesWithProductDetails;
+
+export const contentTypesInAllProductsOverviewPages = [
+    `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
+    `${APP_DESCRIPTOR}:guide-page`,
 ] as const satisfies ContentTypeList;
 
 export const contentTypesInFormsOverviewPages = [
