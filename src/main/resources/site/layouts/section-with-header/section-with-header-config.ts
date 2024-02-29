@@ -21,14 +21,51 @@ export interface SectionWithHeaderConfig {
   toggleCopyButton: boolean;
 
   /**
-   * Vis aktuelle målgrupper
+   * Visninger
    */
-  showAlternativeAudience: boolean;
+  displays?:
+    | {
+        /**
+         * Selected
+         */
+        _selected: "alternativeAudience";
 
-  /**
-   * Vis aktuelle situasjoner
-   */
-  showRelatedSituations: boolean;
+        /**
+         * Aktuelle målgrupper
+         */
+        alternativeAudience: {
+          /**
+           * Overstyr tittel
+           */
+          title?: string;
+
+          /**
+           * Overstyr introduksjon (1-2 linjer)
+           */
+          description?: string;
+        };
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "relatedSituations";
+
+        /**
+         * Aktuelle situasjoner
+         */
+        relatedSituations: {
+          /**
+           * Overstyr tittel
+           */
+          title?: string;
+
+          /**
+           * Overstyr introduksjon (1-2 linjer)
+           */
+          description?: string;
+        };
+      };
 
   /**
    * Ikon

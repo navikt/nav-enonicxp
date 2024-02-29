@@ -34,25 +34,36 @@
                 </input>
             </items>
         </field-set>
-        <field-set>
+        <option-set name="displays">
             <label>Visninger</label>
-            <items>
-                <input name="showAlternativeAudience" type="CheckBox">
-                    <label>Vis aktuelle målgrupper</label>
-                    <help-text>Du velger hvilke målgrupper som er aktuelle i metadataene til venstre.</help-text>
-                    <config>
-                        <alignment>left</alignment>
-                    </config>
-                </input>
-                <input name="showRelatedSituations" type="CheckBox">
-                    <label>Vis aktuelle situasjoner</label>
-                    <help-text>Du velger hvilke målgrupper som er aktuelle i metadataene til venstre.</help-text>
-                    <config>
-                        <alignment>left</alignment>
-                    </config>
-                </input>
-            </items>
-        </field-set>
+            <occurrences minimum="0" maximum="1"/>
+            <options minimum="1" maximum="1">
+                <option name="alternativeAudience">
+                    <label>Aktuelle målgrupper</label>
+                    <items>
+                        <input name="title" type="TextLine">
+                            <label>Overstyr tittel</label>
+                            <occurrences minimum="0" maximum="1" />
+                        </input>
+                        <input name="description" type="TextArea">
+                            <label>Overstyr introduksjon (1-2 linjer)</label>
+                        </input>
+                    </items>
+                </option>
+                <option name="relatedSituations">
+                    <label>Aktuelle situasjoner</label>
+                    <items>
+                        <input name="title" type="TextLine">
+                            <label>Overstyr tittel</label>
+                            <occurrences minimum="0" maximum="1" />
+                        </input>
+                        <input name="description" type="TextArea">
+                            <label>Overstyr introduksjon (1-2 linjer)</label>
+                        </input>
+                    </items>
+                </option>
+            </options>
+        </option-set>
         <item-set name="icon">
             <label>Ikon</label>
             <occurrences minimum="0" maximum="1"/>
