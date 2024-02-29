@@ -4,6 +4,9 @@
 		  	margin-top: 1rem;
 		  	margin-bottom: 0.5rem;
 		}
+		caption {
+			text-align: left;
+		}
 		p {
 			font-size: 1rem;
 			margin: 0.5rem 0 1.5rem 0;
@@ -40,8 +43,9 @@
 	<div id="admin-widget-content" style="background-color: white; padding: 1rem; align-items: center">
 		<h3>Sist publiserte</h3>
 		<table th:if="${published}">
+			<caption>Dine (inntil) 5 siste publiserte innholdselementer siste 6 måneder</caption>
 			<tr th:each="result: ${published}">
-				<th scope="first-col">
+				<th class="first-col">
 					<a th:text="${result.displayName}"
 					   th:href="${result.url}"
 					   th:title="${result.title}"
@@ -57,8 +61,9 @@
 		<h3>Forhåndspubliseringer</h3>
 		<p th:unless="${prePublished}">Du har ingen planlagte publiseringer</p>
 		<table th:if="${prePublished}">
+			<caption>Dine kommende forhåndspubliserte innholdselementer</caption>
 			<tr th:each="result: ${prePublished}">
-				<th scope="first-col">
+				<th class="first-col">
 					<a th:text="${result.displayName}"
 					   th:href="${result.url}"
 					   th:title="${result.title}"
@@ -73,8 +78,9 @@
 		</table>
 		<h3>Under arbeid</h3>
 		<table th:if="${modified}">
+			<caption>Dine (inntil) 5 siste innholdselementer under arbeid siste 6 måneder</caption>
 			<tr th:each="result: ${modified}">
-				<th scope="first-col">
+				<th class="first-col">
 					<a th:text="${result.displayName}"
 					   th:href="${result.url}"
 					   th:title="${result.title}"
@@ -89,8 +95,9 @@
 		</table>
 		<h3>Sist avpubliserte</h3>
 		<table th:if="${unPublished}">
+			<caption>Dine (inntil) 5 siste avpubliserte innholdselementer siste 6 måneder</caption>
 			<tr th:each="result: ${unPublished}">
-				<th scope="first-col">
+				<th class="first-col">
 					<a th:text="${result.displayName}"
 					   th:href="${result.url}"
 					   th:title="${result.title}"
