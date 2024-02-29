@@ -214,6 +214,9 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
     });
 
     // Sorter treff og fjern duplikater (innhold som er publisert/avpublisert flere ganger)
+    const archivedEntries: auditLogLib.LogEntry<auditLogLib.DefaultData>[] = check4Duplicates(
+        sortEntries(archivedLogEntries)
+    );
     let publishedEntries: auditLogLib.LogEntry<auditLogLib.DefaultData>[] = check4Duplicates(
         sortEntries(publishedLogEntries)
     );
@@ -280,6 +283,16 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
         const aDate = aContentPublishInfo?.from || a.time;
         const bDate = bContentPublishInfo?.from || b.time;
         return dayjs(aDate).isAfter(dayjs(bDate)) ? -1 : 1;
+    });
+
+    // Sjekk om avpublisert innhold er arkivert etterpå
+    unpublishedEntries.map((entry) => {
+       const archivedLater = newerEntryFound(entry, archivedEntries);
+       if (archivedLater) {
+           // Tidspunkt som skal brukes til sortering er arkiveringstidpunktet
+           entry.time = archivedLater.time;
+           log.info(entry.time);
+       }
     });
 
     // Sorter avpublisert på nytt, fjern eventulle duplikater som har oppstått
