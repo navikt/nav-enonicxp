@@ -24,11 +24,14 @@
                         <allowContentType>${app}:situation-page</allowContentType>
                     </config>
                 </input>
-                <input name="otherRefs" type="ContentSelector">
-                    <label>Velg annet innhold</label>
-                    <help-text>Velg innhold som skal vises på forsiden</help-text>
+                <input name="navigationRefs" type="ContentSelector">
+                    <label>Velg utgående navigasjonlenker</label>
+                    <help-text>Kortene blir presentert i henhold til type forside under seksjonen "Hva kan vi hjelpe deg med".</help-text>
                     <occurrences maximum="0" minimum="0"/>
                     <config>
+                        <allowContentType>${app}:area-page</allowContentType>
+                        <allowContentType>${app}:front-page-nested</allowContentType>
+                        <allowContentType>${app}:situation-page</allowContentType>
                         <allowContentType>${app}:overview</allowContentType>
                         <allowContentType>${app}:forms-overview</allowContentType>
                         <allowContentType>${app}:external-link</allowContentType>

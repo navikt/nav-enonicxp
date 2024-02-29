@@ -13,7 +13,7 @@ fragment contentFrontPage on no_nav_navno_FrontPage {
         situationsRefs {
             ...frontpageAreaReferences
         }
-        otherRefs {
+        navigationRefs {
             ...frontpageAreaReferences
         }
     }
