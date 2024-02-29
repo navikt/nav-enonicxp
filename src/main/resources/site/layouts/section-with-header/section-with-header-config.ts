@@ -21,6 +21,16 @@ export interface SectionWithHeaderConfig {
   toggleCopyButton: boolean;
 
   /**
+   * Vis aktuelle målgrupper
+   */
+  showAlternativeAudience: boolean;
+
+  /**
+   * Vis aktuelle situasjoner
+   */
+  showRelatedSituations: boolean;
+
+  /**
    * Ikon
    */
   icon?: {
