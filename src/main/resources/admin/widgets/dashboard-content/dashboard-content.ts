@@ -58,8 +58,14 @@ const getRepoId = (entry: auditLogLib.LogEntry<auditLogLib.DefaultData>) => {
 };
 const repoStr = (repoId: string) => repoId.replace('com.enonic.cms.', '');
 const layerStr = (repo: string) => (repo !== 'default' ? ` [${repo.replace('navno-', '')}]` : '');
-const dayjsDateTime = (datetime: string) =>
-    datetime && dayjs(datetime.substring(0, 19).replace('T', ' ')).utc(true).local();
+
+// Lag dayjs-dato - Kan være på Elastic-format (yyyy-mm-ddThh:mm:ss.mmmmmmZ)
+const dayjsDateTime = (datetime: string) => {
+    const localDate = datetime && datetime.search('Z') !== -1
+        ? datetime.substring(0, 19).replace('T', ' ')   // Er på Elastic-format
+        : datetime;
+    return dayjs(localDate).utc(true).local();
+}
 
 const sortEntries = (entries: auditLogLib.LogEntry<auditLogLib.DefaultData>[]) => {
     // Endre datoformat fra "Elastic spesial" og sorter
@@ -237,7 +243,7 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
     // 2d. Forhåndspublisering som ikke er aktiv lenger - (to) har passert
     publishedEntries = publishedEntries.filter((entry) => {
         // Må sjekke om denne er arkivert senere
-        if (newerEntryFound(entry, archivedLogEntries)) {
+        if (newerEntryFound(entry, archivedEntries)) {
             return false; // 0. Er arkivert
         }
         const contentPublishInfo = entry.data.params.contentPublishInfo as any;
