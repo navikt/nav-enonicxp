@@ -70,6 +70,11 @@ export interface FrontPage {
   situationsRefs?: Array<string>;
 
   /**
+   * Velg annet innhold
+   */
+  otherRefs?: Array<string>;
+
+  /**
    * Skriv inn ønsket kort-url
    */
   customPath: string;
