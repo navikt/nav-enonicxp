@@ -5,6 +5,7 @@ import { getRepoConnection } from '../../../../utils/repo-utils';
 import { getLayersData } from '../../../../localization/layers-data';
 import { CONTENT_ROOT_REPO_ID } from '../../../../constants';
 import { forceArray } from '../../../../utils/array-utils';
+import { logger } from '../../../../utils/logging';
 
 type ResolvedProductDetails = {
     productDetailsComponents: NodeComponent[];
@@ -17,6 +18,7 @@ export const getSearchDocumentProductDetails = (
 ): ResolvedProductDetails | null => {
     const partConfig = component.part.config?.['no-nav-navno']?.['product-details'];
     if (!partConfig) {
+        logger.info(`No part config found on ${content._path}`);
         return null;
     }
 
@@ -24,6 +26,7 @@ export const getSearchDocumentProductDetails = (
 
     const detailId = content.data[detailType];
     if (!detailId) {
+        logger.info(`No detailId found on ${content._path}`);
         return null;
     }
 
@@ -32,6 +35,7 @@ export const getSearchDocumentProductDetails = (
         repoId: getLayersData().localeToRepoIdMap[content.language] || CONTENT_ROOT_REPO_ID,
     }).get<Content>({ key: detailId });
     if (!detailContent || detailContent.type !== 'no.nav.navno:product-details') {
+        logger.info(`No detail content found on ${content._path}`);
         return null;
     }
 

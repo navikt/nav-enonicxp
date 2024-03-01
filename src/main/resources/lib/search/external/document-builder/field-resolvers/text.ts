@@ -58,12 +58,12 @@ const getFieldValues = (
 const isProductDetailsPart = (
     component: NodeComponent
 ): component is NodeComponent<'part', 'product-details'> =>
-    component.type === 'part' && component.part.descriptor === 'no.nav.navno:product-details';
+    component.type === 'part' && component.part?.descriptor === 'no.nav.navno:product-details';
 
 const isFormDetailsPart = (
     component: NodeComponent
 ): component is NodeComponent<'part', 'form-details'> =>
-    component.type === 'part' && component.part.descriptor === 'no.nav.navno:form-details';
+    component.type === 'part' && component.part?.descriptor === 'no.nav.navno:form-details';
 
 const getComponentFieldValues = (
     component: NodeComponent,
