@@ -70,9 +70,9 @@ export interface FrontPage {
   situationsRefs?: Array<string>;
 
   /**
-   * Velg annet innhold
+   * Velg utgående navigasjonlenker
    */
-  otherRefs?: Array<string>;
+  navigationRefs?: Array<string>;
 
   /**
    * Skriv inn ønsket kort-url

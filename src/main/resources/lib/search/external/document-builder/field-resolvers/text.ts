@@ -1,11 +1,11 @@
-import { getNestedValues } from '../../../../../utils/object-utils';
-import { forceArray } from '../../../../../utils/array-utils';
-import { ContentNode } from '../../../../../../types/content-types/content-config';
-import { hasExternalProductUrl } from '../../../../../paths/path-utils';
-import { NodeComponent } from '../../../../../../types/components/component-node';
-import { getRepoConnection } from '../../../../../utils/repo-utils';
-import { getLayersData } from '../../../../../localization/layers-data';
-import { CONTENT_ROOT_REPO_ID } from '../../../../../constants';
+import { getNestedValues } from '../../../../utils/object-utils';
+import { forceArray } from '../../../../utils/array-utils';
+import { ContentNode } from '../../../../../types/content-types/content-config';
+import { hasExternalProductUrl } from '../../../../paths/path-utils';
+import { NodeComponent } from '../../../../../types/components/component-node';
+import { getRepoConnection } from '../../../../utils/repo-utils';
+import { getLayersData } from '../../../../localization/layers-data';
+import { CONTENT_ROOT_REPO_ID } from '../../../../constants';
 import {
     getSearchDocumentFormDetails,
     getSearchDocumentProductDetails,
