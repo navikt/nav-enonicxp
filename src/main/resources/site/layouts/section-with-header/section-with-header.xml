@@ -41,12 +41,10 @@
                 <option name="alternativeAudience">
                     <label>Aktuelle målgrupper</label>
                     <items>
-                        <input name="title" type="TextLine">
-                            <label>Overstyr tittel</label>
+                        <input name="name" type="TextLine">
+                            <label>Alternativt produktnavn</label>
+                            <help-text>Du kan legge inn ordet "dette" dersom det ikke passer å ha et produktnavn i setningen.</help-text>
                             <occurrences minimum="0" maximum="1" />
-                        </input>
-                        <input name="description" type="TextArea">
-                            <label>Introduksjon (1-2 linjer)</label>
                         </input>
                     </items>
                 </option>

@@ -35,14 +35,9 @@ export interface SectionWithHeaderConfig {
          */
         alternativeAudience: {
           /**
-           * Overstyr tittel
+           * Alternativt produktnavn
            */
-          title?: string;
-
-          /**
-           * Introduksjon (1-2 linjer)
-           */
-          description?: string;
+          name?: string;
         };
       }
     | {
