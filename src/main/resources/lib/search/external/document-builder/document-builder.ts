@@ -17,7 +17,7 @@ import {
 } from './field-resolvers/fylke';
 import { SearchDocumentMetatag, getSearchDocumentMetatags } from './field-resolvers/metatags';
 import { getSearchDocumentAudience, SearchDocumentAudience } from './field-resolvers/audience';
-import { getSearchDocumentTextSegments } from './field-resolvers/text';
+import { getSearchDocumentTextSegments } from './field-resolvers/text/text';
 import { ContentNode } from '../../../../types/content-types/content-config';
 import {
     getSearchDocumentContentType,

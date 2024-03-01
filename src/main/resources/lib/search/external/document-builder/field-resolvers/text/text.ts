@@ -1,11 +1,15 @@
-import { getNestedValues } from '../../../../utils/object-utils';
-import { forceArray } from '../../../../utils/array-utils';
-import { ContentNode } from '../../../../../types/content-types/content-config';
-import { hasExternalProductUrl } from '../../../../paths/path-utils';
-import { NodeComponent } from '../../../../../types/components/component-node';
-import { getRepoConnection } from '../../../../utils/repo-utils';
-import { getLayersData } from '../../../../localization/layers-data';
-import { CONTENT_ROOT_REPO_ID } from '../../../../constants';
+import { getNestedValues } from '../../../../../utils/object-utils';
+import { forceArray } from '../../../../../utils/array-utils';
+import { ContentNode } from '../../../../../../types/content-types/content-config';
+import { hasExternalProductUrl } from '../../../../../paths/path-utils';
+import { NodeComponent } from '../../../../../../types/components/component-node';
+import { getRepoConnection } from '../../../../../utils/repo-utils';
+import { getLayersData } from '../../../../../localization/layers-data';
+import { CONTENT_ROOT_REPO_ID } from '../../../../../constants';
+import {
+    getSearchDocumentFormDetails,
+    getSearchDocumentProductDetails,
+} from './component-references';
 
 type FieldKeyBuckets = {
     componentsFieldKeys: string[];
@@ -51,50 +55,15 @@ const getFieldValues = (
     }, []);
 };
 
-const resolveProductDetailsContent = (
-    component: NodeComponent<'part', 'product-details'>,
-    content: ContentNode,
-    fieldKeys: string[]
-) => {
-    const partConfig = component.part.config?.['no-nav-navno']?.['product-details'];
-    if (!partConfig) {
-        return [];
-    }
-
-    const { detailType, processingTimesVisibility } = partConfig;
-
-    const detailId = content.data[detailType];
-    if (!detailId) {
-        return [];
-    }
-
-    const detailContent = getRepoConnection({
-        branch: 'master',
-        repoId: getLayersData().localeToRepoIdMap[content.language] || CONTENT_ROOT_REPO_ID,
-    }).get({ key: detailId });
-    if (!detailContent) {
-        return [];
-    }
-
-    const shouldShowApplications =
-        detailType !== 'processing_times' || processingTimesVisibility !== 'complaint';
-    const shouldShowComplaints =
-        detailType !== 'processing_times' || processingTimesVisibility !== 'application';
-
-    return forceArray(detailContent.components)
-        .filter(
-            (component) =>
-                (component.path.startsWith('/main') && shouldShowApplications) ||
-                (component.path.startsWith('/main_complaint') && shouldShowComplaints)
-        )
-        .map((component) => getComponentFieldValues(component, detailContent, fieldKeys))
-        .flat();
-};
-
 const isProductDetailsPart = (
     component: NodeComponent
 ): component is NodeComponent<'part', 'product-details'> =>
     component.type === 'part' && component.part.descriptor === 'no.nav.navno:product-details';
+
+const isFormDetailsPart = (
+    component: NodeComponent
+): component is NodeComponent<'part', 'form-details'> =>
+    component.type === 'part' && component.part.descriptor === 'no.nav.navno:form-details';
 
 const getComponentFieldValues = (
     component: NodeComponent,
@@ -113,7 +82,23 @@ const getComponentFieldValues = (
     }
 
     if (isProductDetailsPart(component)) {
-        return resolveProductDetailsContent(component, content, fieldKeys);
+        const productDetailsResolved = getSearchDocumentProductDetails(component, content);
+        if (!productDetailsResolved) {
+            return [];
+        }
+
+        const { productDetailsContent, productDetailsComponents } = productDetailsResolved;
+
+        return productDetailsComponents
+            .map((productDetailsComponent) =>
+                getComponentFieldValues(productDetailsComponent, productDetailsContent, fieldKeys)
+            )
+            .flat();
+    }
+
+    if (isFormDetailsPart(component)) {
+        const formDetailsResolved = getSearchDocumentFormDetails(component, content);
+        return formDetailsResolved || [];
     }
 
     return getFieldValues(component, fieldKeys);
