@@ -1,10 +1,10 @@
+import { Content } from '/lib/xp/content';
 import { NodeComponent } from '../../../../../types/components/component-node';
 import { ContentNode } from '../../../../../types/content-types/content-config';
 import { getRepoConnection } from '../../../../utils/repo-utils';
 import { getLayersData } from '../../../../localization/layers-data';
 import { CONTENT_ROOT_REPO_ID } from '../../../../constants';
 import { forceArray } from '../../../../utils/array-utils';
-import { Content } from '/lib/xp/content';
 
 type ResolvedProductDetails = {
     productDetailsComponents: NodeComponent[];
@@ -30,8 +30,8 @@ export const getSearchDocumentProductDetails = (
     const detailContent = getRepoConnection({
         branch: 'master',
         repoId: getLayersData().localeToRepoIdMap[content.language] || CONTENT_ROOT_REPO_ID,
-    }).get({ key: detailId });
-    if (!detailContent) {
+    }).get<Content>({ key: detailId });
+    if (!detailContent || detailContent.type !== 'no.nav.navno:product-details') {
         return null;
     }
 
@@ -66,8 +66,8 @@ export const getSearchDocumentFormDetails = (
     const formContent = getRepoConnection({
         branch: 'master',
         repoId: getLayersData().localeToRepoIdMap[content.language] || CONTENT_ROOT_REPO_ID,
-    }).get<Content<'no.nav.navno:form-details'>>({ key: targetFormDetails });
-    if (!formContent) {
+    }).get<Content>({ key: targetFormDetails });
+    if (!formContent || formContent.type !== 'no.nav.navno:form-details') {
         return [];
     }
 
