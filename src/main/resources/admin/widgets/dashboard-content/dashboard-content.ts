@@ -86,7 +86,8 @@ const sortEntries = (entries: auditLogLib.LogEntry<auditLogLib.DefaultData>[]) =
 
 const getContentFromLogEntries = (
     logEntries: auditLogLib.LogEntry<auditLogLib.DefaultData>[],
-    publish: boolean
+    publish: boolean,
+    desc: boolean           // Sorter synkende (publish/unpublish) eller stigende (prepublish)
 ): ContentInfo[] | undefined => {
     const entries = logEntries.map((entry) => {
         const repoId = getRepoId(entry);
@@ -160,7 +161,7 @@ const getContentFromLogEntries = (
     // Fjern tomme elementer (slette/ikke våre innholdstyper), sorter på korrekt dato og kutt av til 5
     const returnEntries = entries
         .filter(removeUndefined)
-        .sort((a, b) => (dayjs(a.modifyDate).isAfter(dayjs(b.modifyDate)) ? -1 : 1))
+        .sort((a, b) => (dayjs(a.modifyDate).isAfter(dayjs(b.modifyDate)) ? (desc ? -1 : 1) : (desc ? 1 : -1)))
         .slice(0, 5);
     return returnEntries.length > 0 ? returnEntries : undefined;
 };
@@ -330,9 +331,9 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
     });
 
     // Returner content for alle tre typer
-    const published = getContentFromLogEntries(publishedEntries, true);
-    const prePublished = getContentFromLogEntries(prePublishedEntries, true);
-    const unPublished = getContentFromLogEntries(unpublishedEntries, false);
+    const published = getContentFromLogEntries(publishedEntries, true, true);
+    const prePublished = getContentFromLogEntries(prePublishedEntries, true, false);
+    const unPublished = getContentFromLogEntries(unpublishedEntries, false, true);
     return {
         published,
         prePublished,
