@@ -64,6 +64,9 @@ const dayjsDateTime = (datetime: string) => {
     const localDate = datetime && datetime.search('Z') !== -1
         ? datetime.substring(0, 19).replace('T', ' ')   // Er på Elastic-format
         : datetime;
+    if (!localDate) {
+        return undefined;
+    }
     return dayjs(localDate).utc(true).local();
 }
 
@@ -72,7 +75,12 @@ const sortEntries = (entries: auditLogLib.LogEntry<auditLogLib.DefaultData>[]) =
     if (!entries) {
         return [];
     }
-    entries.map((entry) => (entry.time = dayjsDateTime(entry.time).toString()));
+    entries.map((entry) => {
+        const dayjsDT = dayjsDateTime(entry.time);
+        if (dayjsDT) {
+            entry.time = dayjsDT.toString();
+        }
+    });
     return entries.sort((a, b) => (dayjs(a.time).isAfter(dayjs(b.time)) ? -1 : 1));
 };
 
@@ -141,6 +149,7 @@ const getContentFromLogEntries = (
         return {
             displayName: content.displayName + layer,
             contentType: contentTypeInfo ? contentTypeInfo.name : '',
+            modifyDate,
             modifiedTimeStr: dayjs(modifyDate).format('DD.MM.YYYY - HH:mm:ss'),
             status,
             title: content._path.replace('/content/www.nav.no/', ''),
@@ -148,8 +157,11 @@ const getContentFromLogEntries = (
         };
     });
 
-    // Fjern tomme elementer (slette/ikke våre innholdstyper), og kutt av til 5
-    const returnEntries = entries.filter(removeUndefined).slice(0, 5);
+    // Fjern tomme elementer (slette/ikke våre innholdstyper), sorter på korrekt dato og kutt av til 5
+    const returnEntries = entries
+        .filter(removeUndefined)
+        .sort((a, b) => (dayjs(a.modifyDate).isAfter(dayjs(b.modifyDate)) ? -1 : 1))
+        .slice(0, 5);
     return returnEntries.length > 0 ? returnEntries : undefined;
 };
 
@@ -231,7 +243,7 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
     );
 
     // Listen for forhåndspublisering bygges opp under gjennomgang av publiserte
-    let prePublishedEntries: auditLogLib.LogEntry<auditLogLib.DefaultData>[] = [];
+    const prePublishedEntries: auditLogLib.LogEntry<auditLogLib.DefaultData>[] = [];
 
     // Gjennomgå publiseringerer - kan være en av følgende:
     // 0.  Publisering som er arkivert senere
@@ -269,7 +281,8 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
                         return false;
                     }
                 }
-                // 2a. Er publisert
+                // 2a. Er publisert - må justere dato til publiseringstidspunktet
+                entry.time = publishFromDate.toString();
                 return true;
             } else {
                 // 2c. Er avpublisert
@@ -281,23 +294,12 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
         const unpublishedLater = newerEntryFound(entry, unpublishedEntries);
         return !unpublishedLater; // True: 1a. - False: 1b.
     });
-
-    // Sorter publisert på nytt på (for å sikre riktig rekkefølge ved forhåndspublisering (from)
-    publishedEntries = publishedEntries.sort((a, b) => {
-        const aContentPublishInfo = a.data.params.contentPublishInfo as any;
-        const bContentPublishInfo = b.data.params.contentPublishInfo as any;
-        const aDate = aContentPublishInfo?.from || a.time;
-        const bDate = bContentPublishInfo?.from || b.time;
-        return dayjs(aDate).isAfter(dayjs(bDate)) ? -1 : 1;
-    });
-
     // Sjekk om avpublisert innhold er arkivert etterpå
     unpublishedEntries.map((entry) => {
        const archivedLater = newerEntryFound(entry, archivedEntries);
        if (archivedLater) {
            // Tidspunkt som skal brukes til sortering er arkiveringstidpunktet
            entry.time = archivedLater.time;
-           log.info(entry.time);
        }
     });
 
@@ -325,13 +327,6 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
             }
         });
         return !publishedLater && !prePublishedLater;
-    });
-
-    // Må sortere prepublished på from-feltet (førstkommende øverst)
-    prePublishedEntries = prePublishedEntries.sort((a, b) => {
-        const aContentPublishInfo = a.data.params.contentPublishInfo as any;
-        const bContentPublishInfo = b.data.params.contentPublishInfo as any;
-        return dayjs(aContentPublishInfo?.from).isAfter(dayjs(bContentPublishInfo?.from)) ? 1 : -1;
     });
 
     // Returner content for alle tre typer
