@@ -56,7 +56,7 @@
                             <occurrences minimum="0" maximum="1" />
                         </input>
                         <input name="description" type="TextArea">
-                            <label>Introduksjon (1-2 linjer)</label>
+                            <label>Overstyr introduksjon (1-2 linjer)</label>
                         </input>
                     </items>
                 </option>

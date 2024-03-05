@@ -56,7 +56,7 @@ export interface SectionWithHeaderConfig {
           title?: string;
 
           /**
-           * Introduksjon (1-2 linjer)
+           * Overstyr introduksjon (1-2 linjer)
            */
           description?: string;
         };
