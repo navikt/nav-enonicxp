@@ -39,7 +39,8 @@ const isAnalyse = (content: ContentNode) =>
 
 const isNavOgSamfunn = (content: ContentNode) =>
     content._path.startsWith('/content/www.nav.no/no/nav-og-samfunn') &&
-    !content._path.startsWith('/content/www.nav.no/no/nav-og-samfunn/statistikk');
+    !content._path.startsWith('/content/www.nav.no/no/nav-og-samfunn/statistikk') &&
+    !content._path.startsWith('/content/www.nav.no/no/nav-og-samfunn/samarbeid');
 
 const isPresse = (content: ContentNode) =>
     isPressemelding(content) ||
@@ -84,7 +85,6 @@ export const getSearchDocumentMetatags = (content: ContentNode) => {
     if (isNavOgSamfunn(content)) {
         metaTags.push('nav-og-samfunn');
     }
-
     if (canSetInformationTag && isInformation(content)) {
         metaTags.push('informasjon');
     }

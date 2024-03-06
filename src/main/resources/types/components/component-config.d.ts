@@ -26,6 +26,7 @@ import { AreapageSituationsConfig } from '../../site/layouts/areapage-situations
 import { AreapageSituationCardPartConfig } from '../../site/parts/areapage-situation-card/areapage-situation-card-part-config';
 import { EmptyObject } from '../util-types';
 import { ReadMorePartConfig } from 'site/parts/read-more/read-more-part-config';
+import { FormDetailsPartConfig } from '../../site/parts/form-details/form-details-part-config';
 
 export type ComponentType = 'page' | 'layout' | 'part' | 'fragment';
 
@@ -54,6 +55,7 @@ export type PartConfigs = {
     'dynamic-link-panel': DynamicLinkPanelPartConfig;
     'dynamic-news-list': DynamicNewsListPartConfig;
     'filters-menu': FiltersMenuPartConfig;
+    'form-details': FormDetailsPartConfig;
     'html-area': HtmlAreaPartConfig;
     'product-details': ProductDetailsPartConfig;
     'page-header': PageHeaderPartConfig;
