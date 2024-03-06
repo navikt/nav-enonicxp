@@ -7,20 +7,34 @@
     <allow-child-content>true</allow-child-content>
     <form>
         <mixin name="audience"/>
+        <mixin name="illustration"/>
         <field-set>
-            <label>Overskrift for områdenavigasjon</label>
+            <label>Område- eller situasjonsnavigasjon (skal fjernes!)</label>
             <items>
                 <input name="areasHeader" type="TextLine">
-                    <label>Overskrift</label>
-                    <occurrences minimum="1" maximum="1"/>
+                    <label>Overskrift for områdenavigasjon</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input name="navigationRefs" type="ContentSelector">
+                    <label>Velg utgående navigasjonlenker</label>
+                    <help-text>Kortene blir presentert i henhold til type forside under seksjonen "Hva kan vi hjelpe deg med".</help-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allowContentType>${app}:area-page</allowContentType>
+                        <allowContentType>${app}:front-page-nested</allowContentType>
+                        <allowContentType>${app}:situation-page</allowContentType>
+                        <allowContentType>${app}:overview</allowContentType>
+                        <allowContentType>${app}:forms-overview</allowContentType>
+                        <allowContentType>${app}:external-link</allowContentType>
+                    </config>
                 </input>
             </items>
         </field-set>
-        <mixin name="area-navigation"/>
         <field-set>
-            <label>Kort-url</label>
+            <label>URL</label>
             <items>
                 <mixin name="custom-path-selector-required"/>
+                <mixin name="external-product-url"/>
             </items>
         </field-set>
         <mixin name="dynamic-page-common"/>

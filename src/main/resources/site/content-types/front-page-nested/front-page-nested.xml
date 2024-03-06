@@ -1,5 +1,5 @@
 <content-type>
-    <display-name>Underforside</display-name>
+    <display-name>~Underforside (deprecated)</display-name>
     <description>Underforside med utgang til redaksjonelt styrte sider</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
