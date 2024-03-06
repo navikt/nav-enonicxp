@@ -55,21 +55,6 @@ export interface FrontPage {
   areasHeader: string;
 
   /**
-   * Velg områder
-   */
-  areasRefs?: Array<string>;
-
-  /**
-   * Velg underforsider
-   */
-  frontPageNestedRefs?: Array<string>;
-
-  /**
-   * Velg situasjonssider
-   */
-  situationsRefs?: Array<string>;
-
-  /**
    * Velg utgående navigasjonlenker
    */
   navigationRefs?: Array<string>;
