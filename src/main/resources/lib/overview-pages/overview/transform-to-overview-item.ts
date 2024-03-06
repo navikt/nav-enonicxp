@@ -8,7 +8,7 @@ export const transformToOverviewItem = (
     productDetail?: Content<'no.nav.navno:product-details'>
 ): OverviewPageItem => {
     const { type, data, language, displayName } = productPage;
-    const { title, audience, sortTitle } = data;
+    const { title, audience, sortTitle, externalProductUrl } = data;
 
     const pageTitle = title || displayName;
     const listItemTitle = sortTitle || pageTitle;
@@ -23,7 +23,7 @@ export const transformToOverviewItem = (
             {
                 language,
                 type,
-                url: getPublicPath(productPage, language),
+                url: externalProductUrl || getPublicPath(productPage, language),
                 title: pageTitle,
             },
         ],

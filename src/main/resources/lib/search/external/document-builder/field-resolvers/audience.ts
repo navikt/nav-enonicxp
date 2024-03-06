@@ -28,6 +28,8 @@ const pathSegmentToSearchAudience: Record<string, SearchDocumentAudience> = {
     samarbeid: 'samarbeidspartner',
 } as const;
 
+const pathSegmentAudienceExclusions: ReadonlySet<string> = new Set(['presse']);
+
 const getAudienceFromData = (content: ContentNode) => {
     const audience = content.data?.audience;
 
@@ -52,6 +54,12 @@ const getAudienceFromData = (content: ContentNode) => {
 
 const getAudienceFromPath = (content: ContentNode) => {
     const pathSegments = stripPathPrefix(content._path).split('/');
+
+    for (const segment of pathSegments) {
+        if (pathSegmentAudienceExclusions.has(segment)) {
+            return null;
+        }
+    }
 
     for (const segment of pathSegments) {
         const audienceFromPath = pathSegmentToSearchAudience[segment];
