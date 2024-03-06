@@ -57,7 +57,7 @@ export interface FrontPage {
   /**
    * Overskrift for områdenavigasjon
    */
-  areasHeader: string;
+  areasHeader?: string;
 
   /**
    * Velg utgående navigasjonlenker
