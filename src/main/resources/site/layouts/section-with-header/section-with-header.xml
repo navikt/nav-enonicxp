@@ -34,34 +34,6 @@
                 </input>
             </items>
         </field-set>
-        <option-set name="displays">
-            <label>Visninger</label>
-            <occurrences minimum="0" maximum="1"/>
-            <options minimum="1" maximum="1">
-                <option name="alternativeAudience">
-                    <label>Aktuelle målgrupper</label>
-                    <items>
-                        <input name="showProductName" type="CheckBox">
-                            <label>Vis produktnavn</label>
-                            <help-text>Hvis du krysser vekk, blir ordet 'dette' vist istedet for produktnavnet.</help-text>
-                            <default>checked</default>
-                        </input>
-                    </items>
-                </option>
-                <option name="relatedSituations">
-                    <label>Aktuelle situasjoner</label>
-                    <items>
-                        <input name="title" type="TextLine">
-                            <label>Overstyr tittel</label>
-                            <occurrences minimum="0" maximum="1" />
-                        </input>
-                        <input name="description" type="TextArea">
-                            <label>Overstyr introduksjon (1-2 linjer)</label>
-                        </input>
-                    </items>
-                </option>
-            </options>
-        </option-set>
         <item-set name="icon">
             <label>Ikon</label>
             <occurrences minimum="0" maximum="1"/>

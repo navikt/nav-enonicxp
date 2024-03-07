@@ -21,48 +21,6 @@ export interface SectionWithHeaderConfig {
   toggleCopyButton: boolean;
 
   /**
-   * Visninger
-   */
-  displays?:
-    | {
-        /**
-         * Selected
-         */
-        _selected: "alternativeAudience";
-
-        /**
-         * Aktuelle målgrupper
-         */
-        alternativeAudience: {
-          /**
-           * Vis produktnavn
-           */
-          showProductName: boolean;
-        };
-      }
-    | {
-        /**
-         * Selected
-         */
-        _selected: "relatedSituations";
-
-        /**
-         * Aktuelle situasjoner
-         */
-        relatedSituations: {
-          /**
-           * Overstyr tittel
-           */
-          title?: string;
-
-          /**
-           * Overstyr introduksjon (1-2 linjer)
-           */
-          description?: string;
-        };
-      };
-
-  /**
    * Ikon
    */
   icon?: {
