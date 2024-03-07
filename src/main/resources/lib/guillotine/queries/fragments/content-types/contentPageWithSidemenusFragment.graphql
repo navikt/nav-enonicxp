@@ -17,13 +17,11 @@ fragment contentContentPageWithSidemenus on no_nav_navno_ContentPageWithSidemenu
             person {
                 targetPage {
                     ...contentCommon
-                    dataAsJson
                 }
             }
             employer {
                 targetPage {
                     ...contentCommon
-                    dataAsJson
                 }
             }
             provider {
@@ -31,7 +29,6 @@ fragment contentContentPageWithSidemenus on no_nav_navno_ContentPageWithSidemenu
                     providerAudience
                     targetPage {
                         ...contentCommon
-                        dataAsJson
                     }
                 }
             }
