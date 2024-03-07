@@ -35,9 +35,9 @@ export interface SectionWithHeaderConfig {
          */
         alternativeAudience: {
           /**
-           * Alternativt produktnavn
+           * Vis produktnavn
            */
-          name?: string;
+          showProductName: boolean;
         };
       }
     | {

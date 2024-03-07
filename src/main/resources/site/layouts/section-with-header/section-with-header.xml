@@ -41,10 +41,10 @@
                 <option name="alternativeAudience">
                     <label>Aktuelle målgrupper</label>
                     <items>
-                        <input name="name" type="TextLine">
-                            <label>Alternativt produktnavn</label>
-                            <help-text>Du kan legge inn ordet "dette" dersom det ikke passer å ha et produktnavn i setningen.</help-text>
-                            <occurrences minimum="0" maximum="1" />
+                        <input name="showProductName" type="CheckBox">
+                            <label>Vis produktnavn</label>
+                            <help-text>Hvis du krysser vekk, blir ordet 'dette' vist istedet for produktnavnet.</help-text>
+                            <default>checked</default>
                         </input>
                     </items>
                 </option>
