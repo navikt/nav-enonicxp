@@ -12,7 +12,7 @@ import dayjs from '/assets/dayjs/1.11.9/dayjs.min.js';
 import utc from '/assets/dayjs/1.11.9/plugin/utc.js';
 
 dayjs.extend(utc);
-const fromDate = dayjs().subtract(1, 'months').toISOString(); // Går bare 6 måneder tilbake i tid
+const fromDate = dayjs().subtract(6, 'months').toISOString(); // Går bare 6 måneder tilbake i tid
 
 const contentTypes2Show = [
     ...contentTypesRenderedByEditorFrontend,
@@ -226,11 +226,13 @@ const prePublishedEntryFound = (
                 // Skal ikke teste på seg selv
                 return false;
             }
-            // Returner om publish from er fram i tid ELLER er nyere enn publiseringen som oppdaterte innholdet
+            // Returner true om publish from er fram i tid ELLER er nyere enn publiseringen som oppdaterte innholdet
+            // ELLER publish to er passert for forhåndspubliseringen
             const contentPublishInfo = publishedEntry.data.params.contentPublishInfo as any;
             return contentPublishInfo?.from &&
                 (       dayjs(contentPublishInfo.from).isAfter(dayjs())
                     ||  dayjs(contentPublishInfo.from).isAfter(entry.time)
+                    ||  (contentPublishInfo?.to && dayjs().isAfter(dayjs(contentPublishInfo.to)))
                 );
         }
         return false;
