@@ -6,7 +6,6 @@ import {
     getContentLocaleRedirectTarget,
     isContentNoIndex,
     isContentPreviewOnly,
-    isMedia,
 } from '../../../utils/content-utils';
 import { getNestedValues } from '../../../utils/object-utils';
 import { getExternalSearchConfig } from '../config';
@@ -28,6 +27,8 @@ import {
     getSearchDocumentLanguage,
     getSearchDocumentLanguageRefs,
 } from './field-resolvers/language';
+import { isOfficeContent } from '../../../office-pages/types';
+import { buildOfficeIngress } from './field-resolvers/office-ingress';
 
 type SearchConfig = Content<'no.nav.navno:search-config-v2'>;
 type KeysConfig = Partial<SearchConfig['data']['defaultKeys']>;
@@ -44,7 +45,6 @@ export type SearchDocument = {
         lastUpdated: string;
         language: string;
         type: SearchDocumentContentType;
-        isFile?: boolean;
         audience: SearchDocumentAudience[];
         metatags?: SearchDocumentMetatag[];
         fylke?: SearchDocumentFylke;
@@ -98,7 +98,6 @@ class ExternalSearchDocumentBuilder {
                 fylke: getSearchDocumentFylke(content),
                 metatags: getSearchDocumentMetatags(content),
                 type: getSearchDocumentContentType(content),
-                isFile: isMedia(content),
                 createdAt: content.createdTime,
                 lastUpdated: content.modifiedTime,
                 keywords: forceArray(content.data.keywords),
@@ -160,7 +159,9 @@ class ExternalSearchDocumentBuilder {
     }
 
     private getIngress(): string {
-        return this.getFirstMatchingFieldValue('ingressKey') || '';
+        return isOfficeContent(this.content)
+            ? buildOfficeIngress(this.content)
+            : this.getFirstMatchingFieldValue('ingressKey') || '';
     }
 
     private getText(): string {

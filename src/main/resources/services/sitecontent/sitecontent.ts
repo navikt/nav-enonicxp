@@ -6,6 +6,7 @@ import { RepoBranch } from '../../types/common';
 import { SITECONTENT_404_MSG_PREFIX } from '../../lib/constants';
 import { sitecontentDraftResponse } from './draft/draft-response';
 import { SitecontentResponse } from './common/content-response';
+import { isWellFormedContentRef } from '../../lib/paths/path-utils';
 
 type SiteContentParams = {
     id: string;
@@ -64,6 +65,17 @@ export const get = (req: XP.Request) => {
             status: 400,
             body: {
                 message: 'Invalid branch specified',
+            },
+            contentType: 'application/json',
+        };
+    }
+
+    if (!isWellFormedContentRef(idOrPath)) {
+        logger.warning(`Id or path failed to validate: ${idOrPath}`);
+        return {
+            status: 400,
+            body: {
+                message: 'URIError: Invalid id parameter',
             },
             contentType: 'application/json',
         };

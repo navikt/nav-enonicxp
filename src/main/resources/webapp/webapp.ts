@@ -1,7 +1,7 @@
 import * as taskLib from '/lib/xp/task';
 import thymeleafLib from '/lib/thymeleaf';
 import * as eventLib from '/lib/xp/event';
-import { runOfficeBranchFetchTask } from '../lib/officeBranch';
+import { runOfficeBranchFetchTask } from '../lib/office-pages/office-branch-tasks';
 import { runInContext } from '../lib/context/run-in-context';
 import { frontendInvalidateAllAsync } from '../lib/cache/frontend-cache';
 import { requestSitemapUpdate } from '../lib/sitemap/sitemap';
@@ -16,7 +16,7 @@ import {
 import { pushLayerContentToMaster } from '../lib/localization/layers-data';
 import { externalSearchUpdateAll } from '../lib/search/external/update-all';
 import { URLS } from '../lib/constants';
-import { fetchAndUpdateOfficeInfo } from '../lib/officeInformation';
+import { fetchAndUpdateOfficeInfo } from '../lib/office-pages/_legacy-office-information/legacy-office-update';
 
 type ActionsMap = Record<string, { description: string; callback: () => any }>;
 

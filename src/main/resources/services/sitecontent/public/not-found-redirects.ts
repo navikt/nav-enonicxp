@@ -1,13 +1,15 @@
 import * as contentLib from '/lib/xp/content';
-import { Content } from '/lib/xp/content';
+import { Content, CONTENT_ROOT_PATH } from '/lib/xp/content';
 import { RepoBranch } from '../../../types/common';
 import { runInContext } from '../../../lib/context/run-in-context';
-import { getParentPath, stripPathPrefix } from '../../../lib/paths/path-utils';
+import { stripLeadingAndTrailingSlash, stripPathPrefix } from '../../../lib/paths/path-utils';
 import { REDIRECTS_ROOT_PATH } from '../../../lib/constants';
 import { runInLocaleContext } from '../../../lib/localization/locale-context';
 import { runSitecontentGuillotineQuery } from '../../../lib/guillotine/queries/run-sitecontent-query';
 import { transformToRedirect } from '../common/transform-to-redirect';
 import { SitecontentResponse } from '../common/content-response';
+
+const MAX_PARENT_PATH_LENGTH = 10;
 
 // The old Enonic CMS had urls suffixed with <contentKey>.cms
 // This contentKey was saved as an x-data field after the migration to XP
@@ -52,34 +54,60 @@ const getRedirectFromLegacyPath = (path: string) => {
     });
 };
 
-// Find the nearest parent for a not-found content. If it is an internal link with the
-// redirectSubpaths flag, use this as a redirect
-const getParentRedirectContent = (path: string): null | Content => {
+// Finds the nearest ancestor with the internal link content type + redirectSubpaths flag
+// Use this as a redirect if found
+const getRedirectFromAncestors = (path: string): null | Content => {
     if (!path) {
         return null;
     }
 
-    const parentPath = getParentPath(path);
-    if (!parentPath) {
+    const parentPathSegments = stripLeadingAndTrailingSlash(path)
+        .split('/')
+        .slice(0, -1)
+        .slice(0, MAX_PARENT_PATH_LENGTH);
+
+    if (parentPathSegments.length === 0) {
         return null;
     }
 
-    const parentContent = contentLib.get({ key: parentPath });
-    if (!parentContent) {
-        return getParentRedirectContent(parentPath);
-    }
+    const ancestorNodePaths = parentPathSegments.map(
+        (_, index, ancestorPath) =>
+            `${CONTENT_ROOT_PATH}/${ancestorPath.slice(0, index + 1).join('/')}`
+    );
 
-    if (
-        parentContent.type === 'no.nav.navno:internal-link' &&
-        parentContent.data.redirectSubpaths
-    ) {
-        return parentContent;
-    }
+    const redirectContent = contentLib.query({
+        count: 1,
+        sort: '_path DESC',
+        filters: {
+            boolean: {
+                must: [
+                    {
+                        hasValue: {
+                            field: 'data.redirectSubpaths',
+                            values: ['true'],
+                        },
+                    },
+                    {
+                        hasValue: {
+                            field: 'type',
+                            values: ['no.nav.navno:internal-link'],
+                        },
+                    },
+                    {
+                        hasValue: {
+                            field: '_path',
+                            values: ancestorNodePaths,
+                        },
+                    },
+                ],
+            },
+        },
+    }).hits[0];
 
-    return null;
+    return redirectContent || null;
 };
 
-const getContentFromRedirectsFolder = (path: string) =>
+const getFromRedirectsFolder = (path: string) =>
     contentLib.get({ key: `${REDIRECTS_ROOT_PATH}${path}` });
 
 export const sitecontentNotFoundRedirect = ({
@@ -103,9 +131,9 @@ export const sitecontentNotFoundRedirect = ({
         // 2. A parent match in the regular content structure
         // 3. A parent match in the redirects folder
         const redirectContent =
-            getContentFromRedirectsFolder(strippedPath) ||
-            getParentRedirectContent(pathRequested) ||
-            getParentRedirectContent(`${REDIRECTS_ROOT_PATH}${strippedPath}`);
+            getFromRedirectsFolder(strippedPath) ||
+            getRedirectFromAncestors(pathRequested) ||
+            getRedirectFromAncestors(`${REDIRECTS_ROOT_PATH}${strippedPath}`);
 
         return redirectContent
             ? runInLocaleContext({ locale: redirectContent.language }, () =>

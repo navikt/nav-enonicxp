@@ -1,8 +1,22 @@
 #import "../../mixins/contentListShortFragment.graphql"
+#import "../../mixins/internalLinkTargetFragment.graphql"
 
 fragment partFrontpageCurrentTopics on Part_no_nav_navno_frontpage_current_topics {
     title
     contentList {
         ...contentListShortMixin
+    }
+    link {
+        _selected
+        external {
+            text
+            url
+        }
+        internal {
+            text
+            target {
+                ...internalLinkTargetMixin
+            }
+        }
     }
 }

@@ -11,51 +11,9 @@ export interface DynamicHeaderPartConfig {
   anchorId?: string;
 
   /**
-   * Ikke vis under innhold
-   */
-  hideFromInternalNavigation: boolean;
-
-  /**
    * Heading tag
    */
-  titleTag: "h2" | "h3" | "h4" | "h5" | "h6";
-
-  /**
-   * Justering
-   */
-  justify: "left" | "center" | "right";
-
-  /**
-   * Typografi
-   */
-  typo:
-    | {
-        /**
-         * Selected
-         */
-        _selected: "default";
-
-        /**
-         * Standard
-         */
-        default: Record<string, unknown>;
-      }
-    | {
-        /**
-         * Selected
-         */
-        _selected: "custom";
-
-        /**
-         * Tilpasset
-         */
-        custom: {
-          /**
-           * Velg typografi-stil
-           */
-          typo: "sidetittel" | "innholdstittel" | "systemtittel" | "undertittel" | "element";
-        };
-      };
+  titleTag: "h3" | "h4";
 
   /**
    * Velg visning

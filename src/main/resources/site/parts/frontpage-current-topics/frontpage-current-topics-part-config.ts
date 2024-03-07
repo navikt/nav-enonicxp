@@ -19,4 +19,29 @@ export interface FrontpageCurrentTopicsPartConfig {
    * Sorter etter publiseringsdato
    */
   sortByPublishDate: boolean;
+
+
+  link:
+    | {
+        /**
+         * Selected
+         */
+        _selected: "internal";
+
+        /**
+         * Intern lenke
+         */
+        internal: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "external";
+
+        /**
+         * Ekstern lenke
+         */
+        external: Record<string, unknown>;
+      };
 }

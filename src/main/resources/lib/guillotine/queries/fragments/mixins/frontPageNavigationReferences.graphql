@@ -1,0 +1,36 @@
+#import "../contentCommonFragment.graphql"
+#import "./animatedIconsTargetFragment.graphql"
+
+fragment frontPageNavigationReferences on Content {
+    ...contentCommon
+    dataAsJson
+
+    ... on no_nav_navno_SituationPage {
+        data {
+            illustration {
+                ...animatedIconsTargetMixin
+            }
+        }
+    }
+    ... on no_nav_navno_FrontPageNested {
+        data {
+            illustration {
+                ...animatedIconsTargetMixin
+            }
+        }
+    }
+    ... on no_nav_navno_FormsOverview {
+        data {
+            illustration {
+                ...animatedIconsTargetMixin
+            }
+        }
+    }
+    ... on no_nav_navno_Overview {
+        data {
+            illustration {
+                ...animatedIconsTargetMixin
+            }
+        }
+    }
+}

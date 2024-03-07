@@ -3,25 +3,17 @@
         <field-set>
             <label>Område- eller situasjonsnavigasjon</label>
             <items>
-                <input name="areasRefs" type="ContentSelector">
-                    <label>Velg områder</label>
+                <input name="navigationRefs" type="ContentSelector">
+                    <label>Velg utgående navigasjonlenker</label>
+                    <help-text>Kortene blir presentert i henhold til type forside under seksjonen "Hva kan vi hjelpe deg med".</help-text>
                     <occurrences maximum="0" minimum="0"/>
                     <config>
                         <allowContentType>${app}:area-page</allowContentType>
-                    </config>
-                </input>
-                <input name="frontPageNestedRefs" type="ContentSelector">
-                    <label>Velg underforsider</label>
-                    <occurrences maximum="0" minimum="0"/>
-                    <config>
                         <allowContentType>${app}:front-page-nested</allowContentType>
-                    </config>
-                </input>
-                <input name="situationsRefs" type="ContentSelector">
-                    <label>Velg situasjonssider</label>
-                    <occurrences maximum="0" minimum="0"/>
-                    <config>
                         <allowContentType>${app}:situation-page</allowContentType>
+                        <allowContentType>${app}:overview</allowContentType>
+                        <allowContentType>${app}:forms-overview</allowContentType>
+                        <allowContentType>${app}:external-link</allowContentType>
                     </config>
                 </input>
             </items>

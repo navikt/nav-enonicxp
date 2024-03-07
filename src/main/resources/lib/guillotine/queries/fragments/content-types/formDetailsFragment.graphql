@@ -10,5 +10,8 @@ fragment contentFormDetails on no_nav_navno_FormDetails {
             ...richText
         }
         ...formTypeMixin
+        alerts {
+            dataAsJson
+        }
     }
 }

@@ -1,3 +1,4 @@
+#import "./parts/partAccordion.graphql"
 #import "./parts/partAlertPanel.graphql"
 #import "./parts/partAreaCard.graphql"
 #import "./parts/partAreapageSituationCard.graphql"
@@ -24,6 +25,7 @@
 #import "./parts/partProductCardMini.graphql"
 #import "./parts/partProductDetails.graphql"
 #import "./parts/partOfficeEditorialDetail.graphql"
+#import "./parts/partReadMore.graphql"
 #import "./parts/partUserTests.graphql"
 
 fragment partComponents on PartComponentData {
@@ -109,6 +111,12 @@ fragment partComponents on PartComponentData {
                 }
                 office_editorial_detail {
                     ...partComponentOfficeEditorialDetail
+                }
+                read_more {
+                    ...partComponentReadMore
+                }
+                accordion {
+                    ...partComponentAccordion
                 }
                 user_tests {
                     ...partUserTests

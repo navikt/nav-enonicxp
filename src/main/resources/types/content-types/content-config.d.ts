@@ -53,6 +53,7 @@ import { FragmentCreator } from '../../site/content-types/fragment-creator/fragm
 import { SearchConfigV2 } from '../../site/content-types/search-config-v2/search-config-v2';
 import { ContentDataLocaleFallback } from '../../site/content-types/content-data-locale-fallback/content-data-locale-fallback';
 import { UserTestsConfig } from '../../site/content-types/user-tests-config/user-tests-config';
+import { AlertInContext } from 'site/content-types/alert-in-context/alert-in-context';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
@@ -76,6 +77,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'main-article-chapter': MainArticleChapter;
     'megamenu-item': MegamenuItem;
     melding: Melding;
+    'alert-in-context': AlertInContext;
     'office-information': OfficeInformation;
     'office-branch': OfficeBranch;
     'current-topic-page': CurrentTopicPage;
