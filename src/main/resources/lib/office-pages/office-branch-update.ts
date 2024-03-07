@@ -37,6 +37,7 @@ const generalOfficeTypes: ReadonlySet<string> = new Set([
     'KLAGE',
     'KONTROLL',
     'OKONOMI',
+    'HMS',
     'YTA',
     'OPPFUTLAND',
 ]);
