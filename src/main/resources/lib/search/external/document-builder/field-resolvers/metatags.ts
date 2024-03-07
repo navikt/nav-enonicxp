@@ -16,6 +16,7 @@ const informationTypes: ReadonlySet<SearchDocumentContentType> = new Set([
     'guide',
     'situasjonsside',
     'oversikt',
+    'andre',
 ]);
 
 const isInformation = (content: ContentNode) =>
