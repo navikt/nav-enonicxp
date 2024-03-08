@@ -329,15 +329,17 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
         const unpublishedLater = newerEntryFound(entry, unpublishedEntries);
         return !unpublishedLater; // True: 1a. - False: 1b.
     });
-    // Sjekk om avpublisert innhold er arkivert etterpå
+
+    // Gjennomgå avpubliseringer
+    // 1. Avpublisert innhold som er arkivert etterpå må få oppdatert tidspunkt til arkiverinstidspunktet
+    // 2. Entries skal fjernes hvis det finnes en nyere publisering eller forhåndspubliering
     unpublishedEntries.map((entry) => {
        const archivedLater = newerEntryFound(entry, archivedEntries);
        if (archivedLater) {
-           // Tidspunkt som skal brukes til sortering er arkiveringstidpunktet
+           // 0. Arkivert etterpå, tidspunkt som skal brukes til sortering er arkiveringstidpunktet
            entry.time = archivedLater.time;
        }
     });
-
     // Sorter avpublisert på nytt, fjern eventulle duplikater som har oppstått
     unpublishedEntries.sort((a, b) => {
         const aContentPublishInfo = a.data.params.contentPublishInfo as any;
@@ -347,8 +349,7 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
         return dayjs(aDate).isAfter(dayjs(bDate)) ? -1 : 1;
     });
     unpublishedEntries = check4Duplicates(unpublishedEntries);
-
-    // Fjern fra avpublisert hvis publisering eller forhåndspublisering av nyere dato
+    // 2. Fjern fra avpublisert hvis publisering eller forhåndspublisering av nyere dato
     unpublishedEntries = unpublishedEntries.filter((entry) => {
         const contentId = entry.data.params.contentIds as string;
         const repoId = getRepoId(entry);
