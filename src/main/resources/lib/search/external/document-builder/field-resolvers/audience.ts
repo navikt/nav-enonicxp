@@ -1,38 +1,40 @@
 import { forceArray } from '../../../../utils/array-utils';
 import { stripPathPrefix } from '../../../../paths/path-utils';
 import { ContentNode } from '../../../../../types/content-types/content-config';
+import { Audience as AudienceMixin } from '../../../../../site/mixins/audience/audience';
+import { ArrayOrSingle } from '../../../../../types/util-types';
 
-export type SearchDocumentAudience =
-    | 'privatperson'
-    | 'arbeidsgiver'
-    | 'samarbeidspartner'
-    | 'andre';
+type MainAudience = AudienceMixin['audience']['_selected'];
 
-const dataAudienceToSearchAudience: Record<string, SearchDocumentAudience> = {
-    person: 'privatperson',
-    employer: 'arbeidsgiver',
-    provider: 'samarbeidspartner',
-    other: 'andre',
-} as const;
+type SubAudience<Audience extends AudienceMixin['audience'] = AudienceMixin['audience']> =
+    Audience extends {
+        _selected: 'provider';
+    }
+        ? `provider_${Audience['provider']['provider_audience'][number]}`
+        : never;
+
+export type SearchDocumentAudience = MainAudience | SubAudience;
 
 const pathSegmentToSearchAudience: Record<string, SearchDocumentAudience> = {
-    person: 'privatperson',
-    samegiella: 'privatperson',
-    'work-and-stay-in-norway': 'privatperson',
-    'benefits-and-services': 'privatperson',
-    'rules-and-regulations': 'privatperson',
-    bedrift: 'arbeidsgiver',
-    arbeidsgiver: 'arbeidsgiver',
-    employers: 'arbeidsgiver',
-    samarbeidspartner: 'samarbeidspartner',
-    samarbeid: 'samarbeidspartner',
+    person: 'person',
+    samegiella: 'person',
+    'work-and-stay-in-norway': 'person',
+    'benefits-and-services': 'person',
+    'rules-and-regulations': 'person',
+    bedrift: 'employer',
+    arbeidsgiver: 'employer',
+    employers: 'employer',
+    samarbeidspartner: 'provider',
+    samarbeid: 'provider',
 } as const;
 
 const pathSegmentAudienceExclusions: ReadonlySet<string> = new Set(['presse']);
 
-const getAudienceFromData = (content: ContentNode) => {
-    const audience = content.data?.audience;
-
+const getAudienceFromData = (content: ContentNode): SearchDocumentAudience[] | null => {
+    const audience = content.data?.audience as
+        | ArrayOrSingle<MainAudience>
+        | AudienceMixin['audience']
+        | undefined;
     if (!audience) {
         return null;
     }
@@ -46,7 +48,16 @@ const getAudienceFromData = (content: ContentNode) => {
     }
 
     if (audience._selected) {
-        return forceArray(audience._selected);
+        const mainAudience = audience._selected;
+        if (mainAudience !== 'provider') {
+            return forceArray(mainAudience);
+        }
+
+        const subAudience = forceArray(audience.provider?.provider_audience).map<SubAudience>(
+            (providerAudience) => `provider_${providerAudience}`
+        );
+
+        return ['provider', ...subAudience];
     }
 
     return null;
@@ -72,10 +83,5 @@ const getAudienceFromPath = (content: ContentNode) => {
 };
 
 export const getSearchDocumentAudience = (content: ContentNode): SearchDocumentAudience[] => {
-    const audienceFromData = getAudienceFromData(content);
-    if (audienceFromData) {
-        return audienceFromData.map((audience) => dataAudienceToSearchAudience[audience]);
-    }
-
-    return getAudienceFromPath(content) || [];
+    return getAudienceFromData(content) || getAudienceFromPath(content) || [];
 };
