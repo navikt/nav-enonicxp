@@ -226,14 +226,11 @@ const prePublishedEntryFound = (
                 // Skal ikke teste på seg selv
                 return false;
             }
-            // Returner true om publish from er fram i tid ELLER er nyere enn publiseringen som oppdaterte innholdet
-            // ELLER publish to er passert for forhåndspubliseringen
+            // Sjekk om publish from er fram i tid ELLER er nyere enn publiseringen som oppdaterte innholdet
             const contentPublishInfo = publishedEntry.data.params.contentPublishInfo as any;
-            return contentPublishInfo?.from &&
-                (       dayjs(contentPublishInfo.from).isAfter(dayjs())
-                    ||  dayjs(contentPublishInfo.from).isAfter(entry.time)
-                    ||  (contentPublishInfo?.to && dayjs().isAfter(dayjs(contentPublishInfo.to)))
-                );
+            return (contentPublishInfo?.from &&
+                (dayjs(contentPublishInfo.from).isAfter(dayjs()) || dayjs(contentPublishInfo.from).isAfter(entry.time))
+            );
         }
         return false;
     });
