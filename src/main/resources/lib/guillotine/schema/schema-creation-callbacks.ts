@@ -43,7 +43,10 @@ import { contentInterfaceCallback } from './schema-creation-callbacks/content-in
 import { externalLinkCallback } from './schema-creation-callbacks/external-link-callback';
 import { createOpeningHoursFields } from './schema-creation-callbacks/common/opening-hours-mixin';
 import { formsOverviewDataCallback } from './schema-creation-callbacks/forms-overview-data-callback';
-import { audienceCallback } from './schema-creation-callbacks/common/audience-mixin';
+import {
+    audienceCallback,
+    alternativeAudienceCallback,
+} from './schema-creation-callbacks/common/audience-mixin';
 import { pressLandingPageDataCallback } from './schema-creation-callbacks/press-landing-page-data';
 import { macroLinkToLayerCallback } from './schema-creation-callbacks/macro-link-to-layer';
 
@@ -102,6 +105,7 @@ export const schemaCreationCallbacks: Record<string, CreationCallback> = {
     no_nav_navno_SituationPage_Audience: audienceCallback,
     no_nav_navno_GenericPage_Audience: audienceCallback,
     no_nav_navno_ContentPageWithSidemenus_Audience: audienceCallback,
+    no_nav_navno_ContentPageWithSidemenus_AlternativeAudience: alternativeAudienceCallback,
     no_nav_navno_ThemedArticlePage_Audience: audienceCallback,
     no_nav_navno_ToolsPage_Audience: audienceCallback,
     no_nav_navno_GuidePage_Audience: audienceCallback,
