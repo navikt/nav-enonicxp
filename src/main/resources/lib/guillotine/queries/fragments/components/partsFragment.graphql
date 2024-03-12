@@ -1,5 +1,4 @@
 #import "./parts/partAccordion.graphql"
-#import "./parts/partAlertPanel.graphql"
 #import "./parts/partAreaCard.graphql"
 #import "./parts/partAreapageSituationCard.graphql"
 #import "./parts/partButton.graphql"
@@ -34,9 +33,6 @@ fragment partComponents on PartComponentData {
     config {
         ... on PartComponentDataConfig {
             no_nav_navno {
-                alert_panel {
-                    ...partComponentAlertPanel
-                }
                 area_card {
                     ...partComponentAreaCard
                 }
