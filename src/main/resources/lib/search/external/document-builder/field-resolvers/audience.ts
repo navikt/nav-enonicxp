@@ -28,7 +28,12 @@ const pathSegmentToSearchAudience: Record<string, SearchDocumentAudience> = {
     samarbeid: 'provider',
 } as const;
 
-const pathSegmentAudienceExclusions: ReadonlySet<string> = new Set(['presse']);
+const pathStartToSearchAudience = Object.entries({
+    '/no/nav-og-samfunn/kontakt-nav/presse': null,
+    '/no/samarbeidspartner/presse': null,
+    '/no/person/hjelpemidler/nyheter-hele-landet': 'provider',
+    '/no/person/innhold-til-person-forside/nyheter': null,
+} satisfies Record<string, SearchDocumentAudience | null>);
 
 const getAudienceFromData = (content: ContentNode): SearchDocumentAudience[] | null => {
     const audience = content.data?.audience as
@@ -63,14 +68,16 @@ const getAudienceFromData = (content: ContentNode): SearchDocumentAudience[] | n
     return null;
 };
 
-const getAudienceFromPath = (content: ContentNode) => {
-    const pathSegments = stripPathPrefix(content._path).split('/');
+const getAudienceFromPath = (content: ContentNode): SearchDocumentAudience[] | null => {
+    const path = stripPathPrefix(content._path);
 
-    for (const segment of pathSegments) {
-        if (pathSegmentAudienceExclusions.has(segment)) {
-            return null;
+    for (const [pathStart, audience] of pathStartToSearchAudience) {
+        if (path.startsWith(pathStart)) {
+            return audience ? [audience] : null;
         }
     }
+
+    const pathSegments = path.split('/');
 
     for (const segment of pathSegments) {
         const audienceFromPath = pathSegmentToSearchAudience[segment];
