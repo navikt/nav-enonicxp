@@ -210,6 +210,7 @@ const newerEntryFound = (
 const prePublishedEntryFound = (
     entry: auditLogLib.LogEntry<auditLogLib.DefaultData>,
     published: auditLogLib.LogEntry<auditLogLib.DefaultData>[],
+    unPublished: auditLogLib.LogEntry<auditLogLib.DefaultData>[],
 ) => {
     const entryContentPublishInfo = entry.data.params.contentPublishInfo as any;
     if ( entryContentPublishInfo?.from ) {
@@ -228,9 +229,12 @@ const prePublishedEntryFound = (
             }
             // Sjekk om publish from er fram i tid ELLER er nyere enn publiseringen som oppdaterte innholdet
             const contentPublishInfo = publishedEntry.data.params.contentPublishInfo as any;
-            return (contentPublishInfo?.from &&
+            if (contentPublishInfo?.from &&
                 (dayjs(contentPublishInfo.from).isAfter(dayjs()) || dayjs(contentPublishInfo.from).isAfter(entry.time))
-            );
+            ) {
+                // Publiseringen skal ses bort i fra, med mindre forhåndspubliseringen er avbrutt (avpublisert)
+                return newerEntryFound(entry, unPublished)
+            }
         }
         return false;
     });
@@ -288,7 +292,7 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
             return false;
         }
         // Må sjekke om det finnes en forhåndspublisering som overstyrer denne
-        const prepublished = prePublishedEntryFound(entry, publishedEntries);
+        const prepublished = prePublishedEntryFound(entry, publishedEntries, unpublishedEntries);
         if (prepublished) {
             // 1c. Kun en oppdatering av en forhåndspublisering - fjern denne (forhåndspubliseringen behandles senere)
             return false;
