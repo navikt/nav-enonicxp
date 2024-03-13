@@ -233,7 +233,7 @@ const prePublishedEntryFound = (
                 (dayjs(contentPublishInfo.from).isAfter(dayjs()) || dayjs(contentPublishInfo.from).isAfter(entry.time))
             ) {
                 // Publiseringen skal ses bort i fra, med mindre forhåndspubliseringen er avbrutt (avpublisert)
-                return newerEntryFound(entry, unPublished)
+                return newerEntryFound(publishedEntry, unPublished)
             }
         }
         return false;
