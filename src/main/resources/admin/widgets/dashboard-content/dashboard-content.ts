@@ -12,7 +12,7 @@ import dayjs from '/assets/dayjs/1.11.9/dayjs.min.js';
 import utc from '/assets/dayjs/1.11.9/plugin/utc.js';
 
 dayjs.extend(utc);
-const fromDate = dayjs().subtract(6, 'months').toISOString(); // Går bare 6 måneder tilbake i tid
+const fromDate = dayjs().subtract(1, 'months').toISOString(); // Går bare 6 måneder tilbake i tid
 
 const contentTypes2Show = [
     ...contentTypesRenderedByEditorFrontend,
@@ -233,7 +233,7 @@ const prePublishedEntryFound = (
                 (dayjs(contentPublishInfo.from).isAfter(dayjs()) || dayjs(contentPublishInfo.from).isAfter(entry.time))
             ) {
                 // Publiseringen skal ses bort i fra, med mindre forhåndspubliseringen er avbrutt (avpublisert)
-                return newerEntryFound(publishedEntry, unPublished)
+                return !newerEntryFound(publishedEntry, unPublished);
             }
         }
         return false;
