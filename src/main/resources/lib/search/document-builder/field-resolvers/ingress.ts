@@ -31,7 +31,7 @@ const buildAddressElement = (mottakList?: Publikumsmottak) => {
     return `<strong>Publikumsmottak:</strong> ${gatenavn}${husNrOgBokstav}, ${postnummer} ${poststed.toUpperCase()}`;
 };
 
-export const buildOfficeIngress = (content: OfficeContent): string => {
+export const buildSearchDocumentOfficeIngress = (content: OfficeContent): string => {
     const isLegacyType = content.type === 'no.nav.navno:office-information';
 
     const phoneElement = buildPhoneElement(
@@ -49,4 +49,10 @@ export const buildOfficeIngress = (content: OfficeContent): string => {
     }
 
     return `${phoneElement}<br/>${addressElement}`;
+};
+
+const withoutTable = (text: string) => text.split('<table')[0];
+
+export const buildSearchDocumentIngress = (ingressTextRaw?: string) => {
+    return ingressTextRaw ? withoutTable(ingressTextRaw) : '';
 };
