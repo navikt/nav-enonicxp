@@ -1,5 +1,5 @@
 import httpClient, { HttpRequestParams } from '/lib/http-client';
-import { URLS } from '../../../constants';
+import { URLS } from '../../constants';
 
 type Params = Omit<HttpRequestParams, 'url'> & { servicePath?: string };
 

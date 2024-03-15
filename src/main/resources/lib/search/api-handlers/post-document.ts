@@ -1,5 +1,5 @@
 import * as taskLib from '/lib/xp/task';
-import { logger } from '../../../utils/logging';
+import { logger } from '../../utils/logging';
 import { SearchDocument } from '../document-builder/document-builder';
 import { searchApiRequest } from './search-api-request';
 
