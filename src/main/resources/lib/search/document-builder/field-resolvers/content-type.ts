@@ -1,5 +1,5 @@
-import { ContentDescriptor, ContentNode } from '../../../../../types/content-types/content-config';
-import { isMedia } from '../../../../utils/content-utils';
+import { ContentDescriptor, ContentNode } from '../../../../types/content-types/content-config';
+import { isMedia } from '../../../utils/content-utils';
 
 export type SearchDocumentContentType =
     | 'legacy'

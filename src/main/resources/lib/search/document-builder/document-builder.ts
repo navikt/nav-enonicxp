@@ -1,15 +1,15 @@
 import { Content } from '/lib/xp/content';
-import { forceArray } from '../../../utils/array-utils';
-import { getSearchNodeHref } from '../../create-or-update-search-node';
+import { forceArray } from '../../utils/array-utils';
+import { getSearchNodeHref } from '../_legacy/create-or-update-search-node';
 import { generateSearchDocumentId } from '../utils';
 import {
     getContentLocaleRedirectTarget,
     isContentNoIndex,
     isContentPreviewOnly,
-} from '../../../utils/content-utils';
-import { getNestedValues } from '../../../utils/object-utils';
+} from '../../utils/content-utils';
+import { getNestedValues } from '../../utils/object-utils';
 import { getExternalSearchConfig } from '../config';
-import { logger } from '../../../utils/logging';
+import { logger } from '../../utils/logging';
 import {
     SearchDocumentFylke,
     getSearchDocumentFylke,
@@ -18,7 +18,7 @@ import {
 import { SearchDocumentMetatag, getSearchDocumentMetatags } from './field-resolvers/metatags';
 import { getSearchDocumentAudience, SearchDocumentAudience } from './field-resolvers/audience';
 import { getSearchDocumentTextSegments } from './field-resolvers/text';
-import { ContentNode } from '../../../../types/content-types/content-config';
+import { ContentNode } from '../../../types/content-types/content-config';
 import {
     getSearchDocumentContentType,
     SearchDocumentContentType,
@@ -27,8 +27,11 @@ import {
     getSearchDocumentLanguage,
     getSearchDocumentLanguageRefs,
 } from './field-resolvers/language';
-import { isOfficeContent } from '../../../office-pages/types';
-import { buildOfficeIngress } from './field-resolvers/office-ingress';
+import { isOfficeContent } from '../../office-pages/types';
+import {
+    buildSearchDocumentIngress,
+    buildSearchDocumentOfficeIngress,
+} from './field-resolvers/ingress';
 
 type SearchConfig = Content<'no.nav.navno:search-config-v2'>;
 type KeysConfig = Partial<SearchConfig['data']['defaultKeys']>;
@@ -52,6 +55,8 @@ export type SearchDocument = {
         languageRefs?: string[];
     };
 };
+
+const INGRESS_MAX_LENGTH = 500;
 
 class ExternalSearchDocumentBuilder {
     private readonly content: ContentNode;
@@ -90,7 +95,7 @@ class ExternalSearchDocumentBuilder {
             id: generateSearchDocumentId(content._id, locale),
             href,
             title,
-            ingress: this.getIngress(),
+            ingress: this.getIngress().slice(0, INGRESS_MAX_LENGTH),
             text: this.getText(),
             metadata: {
                 audience: getSearchDocumentAudience(content),
@@ -160,8 +165,11 @@ class ExternalSearchDocumentBuilder {
 
     private getIngress(): string {
         return isOfficeContent(this.content)
-            ? buildOfficeIngress(this.content)
-            : this.getFirstMatchingFieldValue('ingressKey') || '';
+            ? buildSearchDocumentOfficeIngress(this.content)
+            : buildSearchDocumentIngress(
+                  this.getFirstMatchingFieldValue('ingressKey') ||
+                      this.getFirstMatchingFieldValue('textKey')
+              );
     }
 
     private getText(): string {
