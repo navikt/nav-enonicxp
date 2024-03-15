@@ -50,9 +50,14 @@ export interface FrontPage {
       };
 
   /**
-   * Overskrift
+   * Velg piktogram
    */
-  areasHeader: string;
+  illustration: string;
+
+  /**
+   * Overskrift for områdenavigasjon
+   */
+  areasHeader?: string;
 
   /**
    * Velg utgående navigasjonlenker
@@ -63,6 +68,11 @@ export interface FrontPage {
    * Skriv inn ønsket kort-url
    */
   customPath: string;
+
+  /**
+   * Videresend alle besøk til annen url:
+   */
+  externalProductUrl?: string;
 
   /**
    * Legg til andre språkversjoner
