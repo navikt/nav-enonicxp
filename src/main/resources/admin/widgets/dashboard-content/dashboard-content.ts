@@ -227,10 +227,14 @@ const prePublishedEntryFound = (
                 // Skal ikke teste på seg selv
                 return false;
             }
-            // Sjekk om publish from er fram i tid ELLER er nyere enn publiseringen som oppdaterte innholdet
+            // Sjekk om publish from er fram i tid ELLER er nyere enn publiseringen som oppdaterte innholdet - 1c.
+            // ELLER publish to har passert - 1d.
             const contentPublishInfo = publishedEntry.data.params.contentPublishInfo as any;
-            if (contentPublishInfo?.from &&
-                (dayjs(contentPublishInfo.from).isAfter(dayjs()) || dayjs(contentPublishInfo.from).isAfter(entry.time))
+            if (contentPublishInfo?.from && (
+                        dayjs(contentPublishInfo.from).isAfter(dayjs())
+                    ||  dayjs(contentPublishInfo.from).isAfter(entry.time)
+                    ||  (contentPublishInfo?.to && dayjs().isAfter(contentPublishInfo.to))
+                )
             ) {
                 // Publiseringen skal ses bort i fra, med mindre forhåndspubliseringen er avbrutt (avpublisert)
                 return !newerEntryFound(publishedEntry, unPublished);
@@ -278,9 +282,10 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
 
     // Gjennomgå publiseringerer - kan være en av følgende:
     // 0.  Publisering som er arkivert senere
-    // 1a. Vanlig publisering som er aktiv
-    // 1b. Vanlig publisering som ikke aktiv lenger (avpublisert)
-    // 1c. Vanlig publisering som bare oppdaterte en kommende forhåndspublisering og derfor skal ses bort ifra
+    // 1a. Publisering som er aktiv
+    // 1b. Publisering som ikke aktiv lenger (avpublisert)
+    // 1c. Publisering som oppdaterte en kommende forhåndspublisering og derfor skal ses bort ifra - (from) ikke nådd
+    // 1d. Publisering som oppdaterte en forhåndspublisering som ikke er aktiv lenger - (to) har passert
     // 2a. Forhåndspublisering som er aktiv (publisert nå)
     // 2b. Forhåndspublisering som ikke er aktiv ennå - (from) er ikke nådd OG ikke avpublisert etterpå
     // 2c. Forhåndspublisering som er avpublisert etterpå
@@ -294,7 +299,7 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
         // Må sjekke om det finnes en forhåndspublisering som overstyrer denne
         const prepublished = prePublishedEntryFound(entry, publishedEntries, unpublishedEntries);
         if (prepublished) {
-            // 1c. Kun en oppdatering av en forhåndspublisering - fjern denne (forhåndspubliseringen behandles senere)
+            // 1c. ELLER 1d. - fjern denne (forhåndspubliseringen behandles senere)
             return false;
         }
         const contentPublishInfo = entry.data.params.contentPublishInfo as any;
