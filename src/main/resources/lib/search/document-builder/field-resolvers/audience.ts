@@ -33,6 +33,9 @@ const pathStartToSearchAudience = Object.entries({
     '/no/samarbeidspartner/presse': null,
     '/no/person/hjelpemidler/nyheter-hele-landet': 'provider',
     '/no/person/innhold-til-person-forside/nyheter': null,
+    '/no/nav-og-samfunn/samarbeid/hjelpemidler/leverandorer-av-hjelpemidler':
+        'provider_aid_supplier',
+    '/no/nav-og-samfunn/samarbeid/for-kommunen': 'provider_municipality_employed',
 } satisfies Record<string, SearchDocumentAudience | null>);
 
 const getAudienceFromData = (content: ContentNode): SearchDocumentAudience[] | null => {
