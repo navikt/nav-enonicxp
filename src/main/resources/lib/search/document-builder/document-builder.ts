@@ -53,6 +53,8 @@ export type SearchDocument = {
     };
 };
 
+const INGRESS_MAX_LENGTH = 500;
+
 class ExternalSearchDocumentBuilder {
     private readonly content: ContentNode;
     private readonly locale: string;
@@ -90,7 +92,7 @@ class ExternalSearchDocumentBuilder {
             id: generateSearchDocumentId(content._id, locale),
             href,
             title,
-            ingress: this.getIngress(),
+            ingress: this.getIngress().slice(0, INGRESS_MAX_LENGTH),
             text: this.getText(),
             metadata: {
                 audience: getSearchDocumentAudience(content),
@@ -162,7 +164,8 @@ class ExternalSearchDocumentBuilder {
         return isOfficeContent(this.content)
             ? buildOfficeIngress(this.content)
             : this.getFirstMatchingFieldValue('ingressKey') ||
-                  this.getFirstMatchingFieldValue('textKey');
+                  this.getFirstMatchingFieldValue('textKey') ||
+                  '';
     }
 
     private getText(): string {
