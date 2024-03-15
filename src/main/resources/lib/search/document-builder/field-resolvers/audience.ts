@@ -1,8 +1,8 @@
-import { forceArray } from '../../../../utils/array-utils';
-import { stripPathPrefix } from '../../../../paths/path-utils';
-import { ContentNode } from '../../../../../types/content-types/content-config';
-import { Audience as AudienceMixin } from '../../../../../site/mixins/audience/audience';
-import { ArrayOrSingle } from '../../../../../types/util-types';
+import { forceArray } from '../../../utils/array-utils';
+import { stripPathPrefix } from '../../../paths/path-utils';
+import { ContentNode } from '../../../../types/content-types/content-config';
+import { Audience as AudienceMixin } from '../../../../site/mixins/audience/audience';
+import { ArrayOrSingle } from '../../../../types/util-types';
 
 type MainAudience = AudienceMixin['audience']['_selected'];
 

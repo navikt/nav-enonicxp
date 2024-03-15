@@ -3,112 +3,57 @@ import { Content } from '/lib/xp/content';
 import { RepoConnection } from '/lib/xp/node';
 import { logger } from '../utils/logging';
 import { runInContext } from '../context/run-in-context';
-import { getSearchRepoConnection, SEARCH_REPO_CONFIG_NODE } from './search-utils';
-import { SearchConfigData, SearchConfigDescriptor } from '../../types/content-types/search-config';
 import { forceArray } from '../utils/array-utils';
+import { getRepoConnection } from '../utils/repo-utils';
+import { CONTENT_ROOT_REPO_ID } from '../constants';
 import { isMainDatanode } from '../cluster-utils/main-datanode';
+import { getSearchRepoConnection, SEARCH_REPO_CONFIG_NODE } from './utils';
 
-type SearchConfig = Content<SearchConfigDescriptor>;
+type SearchConfig = Content<'no.nav.navno:search-config-v2'>;
 type PersistedSearchConfig = { config?: SearchConfig };
+type KeysConfig = Partial<
+    Pick<SearchConfig['data']['defaultKeys'], 'titleKey' | 'ingressKey' | 'textKey'>
+>;
 
 const SEARCH_CONFIG_KEY = `/${SEARCH_REPO_CONFIG_NODE}`;
 
 let searchConfig: SearchConfig | null = null;
 
-const validateQueries = (facets: SearchConfigData['fasetter'], repo: RepoConnection) => {
-    let isValid = true;
+const validateKeysConfig = (keys: KeysConfig, repo: RepoConnection) => {
+    const keysString = [keys.titleKey, keys.ingressKey, keys.textKey]
+        .flat()
+        .filter(Boolean)
+        .join(',');
 
-    forceArray(facets).forEach((facet) => {
-        try {
-            repo.query({
-                start: 0,
-                count: 0,
-                query: facet.ruleQuery,
-            });
-        } catch (e) {
-            logger.error(
-                `Invalid query specified for facet [${facet.facetKey}] ${facet.name} - ${facet.ruleQuery}`
-            );
-            isValid = false;
-        }
-
-        forceArray(facet.underfasetter).forEach((uf) => {
-            try {
-                repo.query({
-                    start: 0,
-                    count: 0,
-                    query: uf.ruleQuery,
-                });
-            } catch (e) {
-                logger.error(
-                    `Invalid query specified for underfacet [${facet.facetKey}/${uf.facetKey}] ${uf.name}: ${uf.ruleQuery} - Error: ${e}`
-                );
-                isValid = false;
-            }
-        });
-    });
-
-    return isValid;
-};
-
-const validateFields = (fields: SearchConfigData['fields'], repo: RepoConnection) => {
     try {
         repo.query({
             start: 0,
             count: 0,
-            query: `fulltext("test", "${fields}", "OR")`,
+            query: `fulltext("test", "${keysString}", "OR")`,
         });
         return true;
     } catch (e) {
-        logger.error(`Invalid fields specified in search config: ${fields} - Error: ${e}`);
+        logger.error(`Invalid fields specified in search config: ${keysString} - Error: ${e}`);
         return false;
     }
 };
 
-const validateKeys = (facets: SearchConfigData['fasetter']) => {
-    let isValid = true;
+const validateConfigs = (config: SearchConfig) => {
+    const repo = getRepoConnection({ branch: 'master', repoId: CONTENT_ROOT_REPO_ID });
 
-    forceArray(facets).forEach((facet, index, array) => {
-        const facetKeyIsDuplicate =
-            array.findIndex((facet2) => facet.facetKey === facet2.facetKey) !== index;
+    const defaultIsValid = validateKeysConfig(config.data.defaultKeys, repo);
 
-        if (facetKeyIsDuplicate) {
-            isValid = false;
-            logger.error(`Facet key is not unique: ${facet.facetKey} (${facet.name})`);
+    const groupsAreValid = forceArray(config.data.contentGroups).reduce((acc, group) => {
+        const groupKeys = group?.groupKeys;
+        if (!groupKeys) {
+            return acc;
         }
 
-        forceArray(facet.underfasetter).forEach((uf, ufIndex, ufArray) => {
-            const ufKeyIsDuplicate =
-                ufArray.findIndex((uf2) => uf.facetKey === uf2.facetKey) !== ufIndex;
+        const groupIsValid = validateKeysConfig(groupKeys, repo);
+        return groupIsValid ? acc : false;
+    }, true);
 
-            if (ufKeyIsDuplicate) {
-                isValid = false;
-                logger.error(
-                    `Underfacet key is not unique: ${facet.facetKey}/${uf.facetKey} (${uf.name})`
-                );
-            }
-        });
-    });
-
-    return isValid;
-};
-
-const validateConfig = (config: SearchConfig, repo: RepoConnection) => {
-    let isValid = true;
-
-    if (!validateFields(config.data.fields, repo)) {
-        isValid = false;
-    }
-
-    if (!validateQueries(config.data.fasetter, repo)) {
-        isValid = false;
-    }
-
-    if (!validateKeys(config.data.fasetter)) {
-        isValid = false;
-    }
-
-    return isValid;
+    return defaultIsValid && groupsAreValid;
 };
 
 const persistValidConfig = (config: SearchConfig, repo: RepoConnection) => {
@@ -127,7 +72,7 @@ const persistValidConfig = (config: SearchConfig, repo: RepoConnection) => {
 
 const getLastValidConfig = (repo: RepoConnection) => {
     const configNode = repo.get<PersistedSearchConfig>(SEARCH_CONFIG_KEY);
-    if (!configNode?.config?.data?.fasetter) {
+    if (!configNode?.config) {
         logger.critical(`No valid search config found in repo!`);
         return null;
     }
@@ -136,7 +81,7 @@ const getLastValidConfig = (repo: RepoConnection) => {
 };
 
 // Returns true if the latest config is valid
-export const revalidateSearchConfigCache = () => {
+export const revalidateExternalSearchConfigCache = () => {
     const searchRepoConnection = getSearchRepoConnection();
 
     const searchConfigHits = runInContext(
@@ -146,7 +91,7 @@ export const revalidateSearchConfigCache = () => {
                 start: 0,
                 count: 2,
                 sort: 'createdTime ASC',
-                contentTypes: ['navno.nav.no.search:search-config2'],
+                contentTypes: ['no.nav.navno:search-config-v2'],
             }).hits
     );
 
@@ -162,7 +107,7 @@ export const revalidateSearchConfigCache = () => {
 
     const newSearchConfig = searchConfigHits[0];
 
-    if (!validateConfig(newSearchConfig, searchRepoConnection)) {
+    if (!validateConfigs(newSearchConfig)) {
         logger.critical(
             'Search config failed to validate! Falling back to last known valid config.'
         );
@@ -170,19 +115,20 @@ export const revalidateSearchConfigCache = () => {
         return false;
     }
 
-    logger.info('Updated search config');
     searchConfig = newSearchConfig;
 
     if (isMainDatanode()) {
         persistValidConfig(searchConfig, searchRepoConnection);
     }
 
+    logger.info('Updated search config for external search');
+
     return true;
 };
 
-export const getSearchConfig = () => {
+export const getExternalSearchConfig = () => {
     if (!searchConfig) {
-        revalidateSearchConfigCache();
+        revalidateExternalSearchConfigCache();
     }
 
     return searchConfig;

@@ -1,30 +1,21 @@
-import { getRepoConnection } from '../utils/repo-utils';
 import { RepoConnection } from '/lib/xp/node';
-import { SEARCH_REPO_ID } from '../constants';
-import { logger } from '../utils/logging';
-import { ContentFacet } from '../../types/search';
-import { ArrayOrSingle } from '../../types/util-types';
-import { generateUUID } from '../utils/uuid';
-import { forceArray } from '../utils/array-utils';
+import { logger } from '../../utils/logging';
+import { ContentFacet } from '../../../types/search';
+import { ArrayOrSingle } from '../../../types/util-types';
+import { generateUUID } from '../../utils/uuid';
+import { forceArray } from '../../utils/array-utils';
+import { getSearchRepoConnection } from '../utils';
 
 export const SEARCH_REPO_DELETION_QUEUE_BASE_NODE = 'deletionQueue';
 export const SEARCH_REPO_CONTENT_BASE_NODE = 'content';
 export const SEARCH_REPO_UPDATE_STATE_NODE = 'updateState';
-export const SEARCH_REPO_CONFIG_NODE = 'config';
-export const SEARCH_REPO_EXTERNAL_CONFIG_NODE = 'externalConfig';
+export const SEARCH_REPO_CONFIG_NODE_LEGACY = 'config';
 
 export const SEARCH_REPO_CONTENT_ID_KEY = 'contentId';
 export const SEARCH_REPO_CONTENT_PATH_KEY = 'contentPath';
 export const SEARCH_REPO_HREF_KEY = 'href';
 export const SEARCH_REPO_FACETS_KEY = 'facets';
 export const SEARCH_REPO_LOCALE_KEY = 'layerLocale';
-
-export const getSearchRepoConnection = () =>
-    getRepoConnection({
-        repoId: SEARCH_REPO_ID,
-        branch: 'master',
-        asAdmin: true,
-    });
 
 export const facetsAreEqual = (
     facets1: ArrayOrSingle<ContentFacet>,
