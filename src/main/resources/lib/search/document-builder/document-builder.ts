@@ -161,7 +161,8 @@ class ExternalSearchDocumentBuilder {
     private getIngress(): string {
         return isOfficeContent(this.content)
             ? buildOfficeIngress(this.content)
-            : this.getFirstMatchingFieldValue('ingressKey') || '';
+            : this.getFirstMatchingFieldValue('ingressKey') ||
+                  this.getFirstMatchingFieldValue('textKey');
     }
 
     private getText(): string {
