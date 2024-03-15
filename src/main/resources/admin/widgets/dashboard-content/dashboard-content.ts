@@ -228,12 +228,15 @@ const prePublishedEntryFound = (
                 return false;
             }
             // Sjekk om publish from er fram i tid ELLER er nyere enn publiseringen som oppdaterte innholdet - 1c.
-            // ELLER publish to har passert - 1d.
+            // ELLER publish to har passert OG publiseringen ikke er nyere enn dette - 1d.
             const contentPublishInfo = publishedEntry.data.params.contentPublishInfo as any;
             if (contentPublishInfo?.from && (
                         dayjs(contentPublishInfo.from).isAfter(dayjs())
                     ||  dayjs(contentPublishInfo.from).isAfter(entry.time)
-                    ||  (contentPublishInfo?.to && dayjs().isAfter(contentPublishInfo.to))
+                    ||  (contentPublishInfo?.to
+                            && dayjs().isAfter(contentPublishInfo.to)
+                            && dayjs(contentPublishInfo.to).isAfter(entry.time)
+                        )
                 )
             ) {
                 // Publiseringen skal ses bort i fra, med mindre forhåndspubliseringen er avbrutt (avpublisert)
