@@ -55,7 +55,7 @@ import {
     TransportPage,
     UserTestsConfig,
     Video,
-} from 'site/content-types';
+} from '@xp-types/site/content-types';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
