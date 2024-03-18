@@ -2,12 +2,12 @@ import { getRepoConnection } from '../utils/repo-utils';
 import { Content } from '/lib/xp/content';
 import { APP_DESCRIPTOR } from '../constants';
 import { createOrUpdateSchedule } from './schedule-job';
-import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe-config';
-import { UnpublishExpiredContentConfig } from '../../tasks/unpublish-expired-content/unpublish-expired-content-config';
 import { NodeEventData } from '../cache/utils';
 import { logger } from '../utils/logging';
 import { getUnixTimeFromDateTimeString } from '../utils/datetime-utils';
 import { isContentLocalized } from '../localization/locale-utils';
+import { PrepublishCacheWipe } from '@xp-types/tasks/prepublish-cache-wipe';
+import { UnpublishExpiredContent } from '@xp-types/tasks/unpublish-expired-content';
 
 const getPublish = (node: NodeEventData) => {
     const repo = getRepoConnection({
@@ -51,9 +51,7 @@ export const scheduleCacheInvalidation = ({
     time: string;
     masterOnly?: boolean;
 }) => {
-    // TODO: reimplement types
-    // createOrUpdateSchedule<PrepublishCacheWipeConfig>({
-    createOrUpdateSchedule({
+    createOrUpdateSchedule<PrepublishCacheWipe>({
         jobName,
         jobSchedule: {
             type: 'ONE_TIME',
@@ -82,9 +80,7 @@ export const scheduleUnpublish = ({
     publishTo: string;
     masterOnly?: boolean;
 }) => {
-    // TODO: reimplement types
-    // createOrUpdateSchedule<UnpublishExpiredContentConfig>({
-    createOrUpdateSchedule({
+    createOrUpdateSchedule<UnpublishExpiredContent>({
         jobName: getUnpublishJobName(id),
         jobSchedule: {
             type: 'ONE_TIME',

@@ -3,7 +3,7 @@ import { Content } from '/lib/xp/content';
 import { logger } from '../../utils/logging';
 import { forceArray } from '../../utils/array-utils';
 import { getLocaleFromContext } from '../../localization/locale-context';
-import { ContentDataLocaleFallback } from '../../../site/content-types/content-data-locale-fallback/content-data-locale-fallback';
+import { ContentDataLocaleFallback } from '@xp-types/site/content-types/content-data-locale-fallback';
 import { splitByLocalizationState } from '../../localization/split-by-localization-state';
 
 type FallbackContentData = Omit<

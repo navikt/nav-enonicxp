@@ -21,7 +21,6 @@ type LayerMigrationBatchJobResult = {
 
 const ONE_DAY = 60 * 60 * 24;
 
-// TODO: cacheLib type def needs an update
 const resultCache = cacheLib.newCache({
     size: 1000,
     expire: ONE_DAY,

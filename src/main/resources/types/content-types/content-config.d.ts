@@ -182,5 +182,3 @@ export type ContentDescriptor =
 export type ContentNode<ContentType extends ContentDescriptor = ContentDescriptor> = RepoNode<
     Content<ContentType>
 >;
-
-// TODO: add x-data

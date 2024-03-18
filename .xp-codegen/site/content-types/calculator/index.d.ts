@@ -92,9 +92,9 @@ export type Calculator = {
           variableName?: string;
 
           /**
-           * -
+           * (tomt felt, skal ikke brukes)
            */
-          value?: ;
+          value?: string;
         };
       }
   >;

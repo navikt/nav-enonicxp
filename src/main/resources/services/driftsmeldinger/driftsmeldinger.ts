@@ -1,6 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { Melding } from '../../site/content-types/melding/melding';
+import { Melding } from '@xp-types/site/content-types/melding';
 import { getFromLocalCache } from '../../lib/cache/local-cache';
 import { forceArray } from '../../lib/utils/array-utils';
 import { getPublicPath } from '../../lib/paths/public-path';

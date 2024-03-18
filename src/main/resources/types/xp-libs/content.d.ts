@@ -15,7 +15,6 @@ declare module '*/lib/xp/content' {
                 params: GetContentParams
             ): Content<ContentType> | null;
 
-            // TODO: add typing for filters
             query<
                 ContentType extends ContentDescriptor = ContentDescriptor,
                 AggregationKeys extends string = never,
@@ -37,7 +36,6 @@ declare module '*/lib/xp/content' {
                 params: MoveParams
             ): Content<ContentType>;
 
-            // TODO: add media content types
             createMedia<Type = any>(params: CreateMediaParams): Type;
 
             CONTENT_ROOT_PATH: string;

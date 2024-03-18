@@ -25,9 +25,9 @@ export type ContactOption = {
           ingress?: string;
 
           /**
-           * -
+           * (tomt felt, skal ikke brukes)
            */
-          title?: ;
+          title?: string;
         };
       }
     | {
@@ -51,14 +51,14 @@ export type ContactOption = {
           ingress?: string;
 
           /**
-           * -
+           * (tomt felt, skal ikke brukes)
            */
-          url?: ;
+          url?: string;
 
           /**
-           * -
+           * (tomt felt, skal ikke brukes)
            */
-          title?: ;
+          title?: string;
         };
       }
     | {
@@ -82,9 +82,9 @@ export type ContactOption = {
           ingress?: string;
 
           /**
-           * -
+           * (tomt felt, skal ikke brukes)
            */
-          phoneNumber?: ;
+          phoneNumber?: string;
         };
       }
     | {

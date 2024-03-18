@@ -106,7 +106,7 @@ export type Overview = {
   nosnippet: boolean;
 
   /**
-   * -
+   * (tomt felt, skal ikke brukes)
    */
-  allProducts?: ;
+  allProducts?: string;
 }

@@ -6,9 +6,9 @@ import { frontendProxy } from './frontend-proxy';
 import { logger } from '../utils/logging';
 import { NodeComponent } from '../../types/components/component-node';
 import { CONTENT_ROOT_REPO_ID } from '../constants';
-import { FiltersMenu } from 'site/parts/filters-menu';
-import { PartComponentName, PartConfigs } from 'types/components/component-config';
+import { FiltersMenu } from '@xp-types/site/parts/filters-menu';
 import { forceArray } from '../utils/array-utils';
+import { PartConfigs, PartComponentName } from '../../types/components/component-config';
 
 type DynamicPageContent = NodeContent<Content>;
 type DynamicContentRepoNode = RepoNode<Content>;

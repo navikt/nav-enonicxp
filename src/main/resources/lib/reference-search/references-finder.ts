@@ -15,7 +15,7 @@ import { getParentPath } from '../paths/path-utils';
 import { NON_LOCALIZED_QUERY_FILTER } from '../localization/layers-repo-utils/localization-state-filters';
 import { forceArray } from '../utils/array-utils';
 import { isValidBranch } from '../context/branches';
-import { Overview } from '../../site/content-types/overview/overview';
+import { Overview } from '@xp-types/site/content-types/overview';
 
 type ContentDescriptorSet = ReadonlySet<ContentDescriptor>;
 

@@ -11,7 +11,7 @@ export type GlobalValue = {
   decimals?: number;
 
   /**
-   * -
+   * (tomt felt, skal ikke brukes)
    */
-  value?: ;
+  value?: string;
 }

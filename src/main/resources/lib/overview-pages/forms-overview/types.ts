@@ -1,4 +1,4 @@
-import { ContentPageWithSidemenus } from '../../../site/content-types/content-page-with-sidemenus/content-page-with-sidemenus';
+import { ContentPageWithSidemenus } from '@xp-types/site/content-types/content-page-with-sidemenus';
 import { Content } from '/lib/xp/content';
 import { contentTypesWithFormDetails } from '../../contenttype-lists';
 

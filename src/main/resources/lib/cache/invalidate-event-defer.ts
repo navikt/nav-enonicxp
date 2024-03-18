@@ -4,12 +4,12 @@ import { invalidateLocalCache } from './local-cache';
 import { frontendInvalidateAllAsync } from './frontend-cache';
 import { generateUUID } from '../utils/uuid';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
-import { CacheInvalidationDeferConfig } from '../../tasks/cache-invalidation-defer/cache-invalidation-defer-config';
 import { APP_DESCRIPTOR } from '../constants';
 import { logger } from '../utils/logging';
 import { customListenerType } from '../utils/events';
+import { CacheInvalidationDefer } from '@xp-types/tasks/cache-invalidation-defer';
 
-type DeferCacheInvalidationEventData = CacheInvalidationDeferConfig;
+type DeferCacheInvalidationEventData = CacheInvalidationDefer;
 
 const DEFERRED_TIME_DEFAULT_MS = 1000 * 60 * 30;
 const DEFER_CACHE_INVALIDATION_EVENT = 'deferCacheInvalidation';
@@ -36,9 +36,7 @@ const deferInvalidationCallback = (eventData: DeferCacheInvalidationEventData) =
         // certain amount of time. This should preferably be handled by whichever action enabled the
         // deferred state, but we have this as a fallback to ensure it does not become stuck in the
         // deferred state.
-        // TODO: reimplement types
-        // createOrUpdateSchedule<CacheInvalidationDeferConfig>({
-        createOrUpdateSchedule({
+        createOrUpdateSchedule<CacheInvalidationDefer>({
             jobName: 'deferred-cache-invalidation',
             jobSchedule: {
                 type: 'ONE_TIME',

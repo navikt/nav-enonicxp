@@ -1,9 +1,9 @@
 import { Content } from '/lib/xp/content';
 import { contentTypesInOverviewPages } from '../../contenttype-lists';
-import { Overview } from '../../../site/content-types/overview/overview';
-import { Taxonomy } from '../../../site/mixins/taxonomy/taxonomy';
-import { Area } from '../../../site/mixins/area/area';
-import { ThemedArticlePage } from '../../../site/content-types/themed-article-page/themed-article-page';
+import { Overview } from '@xp-types/site/content-types/overview';
+import { Taxonomy } from '@xp-types/site/mixins/taxonomy';
+import { Area } from '@xp-types/site/mixins/area';
+import { ThemedArticlePage } from '@xp-types/site/content-types/themed-article-page';
 import { ArrayOrSingle } from '../../../types/util-types';
 
 type OverviewItemTaxonomy = Taxonomy['taxonomy'] | ThemedArticlePage['taxonomy'];

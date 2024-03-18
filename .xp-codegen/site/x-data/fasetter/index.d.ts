@@ -11,7 +11,7 @@ export type Fasetter = {
   underfasett?: string;
 
   /**
-   * -
+   * (tomt felt, skal ikke brukes)
    */
-  className?: ;
+  className?: string;
 }

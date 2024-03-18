@@ -3,7 +3,7 @@ import { Content } from '/lib/xp/content';
 import { forceArray, removeDuplicates } from '../utils/array-utils';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { ArrayOrSingle } from '../../types/util-types';
-import { ContentDataLocaleFallback } from '../../site/content-types/content-data-locale-fallback/content-data-locale-fallback';
+import { ContentDataLocaleFallback } from '@xp-types/site/content-types/content-data-locale-fallback';
 import { runInContext } from '../context/run-in-context';
 import { logger } from '../utils/logging';
 import { SUPER_USER_FULL } from '../constants';
@@ -123,7 +123,9 @@ export const contentDataLocaleFallbackRefreshItems = (content: FallbackContent) 
 
     // Check the last modifier to ensure this function never runs in an infinite loop
     if (content.modifier === SUPER_USER_FULL) {
-        logger.warning(`Possible update loop on update handler for locale fallback data: ${content._id}`);
+        logger.warning(
+            `Possible update loop on update handler for locale fallback data: ${content._id}`
+        );
         return;
     }
 
