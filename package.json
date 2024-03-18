@@ -20,8 +20,8 @@
     "devDependencies": {
         "@anders-nom/babel-plugin-import-graphql-string": "2.8.1-12",
         "@babel/cli": "7.23.9",
-        "@babel/core": "7.23.9",
-        "@babel/preset-env": "7.23.9",
+        "@babel/core": "7.24.0",
+        "@babel/preset-env": "7.24.0",
         "@babel/preset-typescript": "7.23.3",
         "@enonic-types/guillotine": "7.1.0",
         "@enonic-types/lib-auditlog": "7.14.0",
@@ -49,10 +49,10 @@
         "@item-enonic-types/lib-http-client": "3.2.1",
         "@item-enonic-types/lib-thymeleaf": "2.1.0",
         "@types/jest": "29.5.12",
-        "@types/node": "18.19.17",
-        "@typescript-eslint/eslint-plugin": "7.0.2",
-        "@typescript-eslint/parser": "7.0.2",
-        "eslint": "8.56.0",
+        "@types/node": "18.19.24",
+        "@typescript-eslint/eslint-plugin": "7.2.0",
+        "@typescript-eslint/parser": "7.2.0",
+        "eslint": "8.57.0",
         "eslint-config-prettier": "9.1.0",
         "eslint-import-resolver-typescript": "3.6.1",
         "eslint-plugin-import": "2.29.1",
@@ -65,6 +65,6 @@
         "striptags": "3.2.0",
         "ts-jest": "29.1.2",
         "ts-node": "10.9.2",
-        "typescript": "5.3.3"
+        "typescript": "5.4.2"
     }
 }

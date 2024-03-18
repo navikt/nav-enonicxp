@@ -42,7 +42,7 @@ const filterRelevantComponents = (
 // to render in the part.
 const transformProductDetailsPart = (
     component: GuillotineComponent,
-    baseContent: Content,
+    baseContent: Content<any>,
     branch: RepoBranch,
     runSitecontentGuillotineQuery: SitecontentQueryFunc
 ): GuillotineComponent => {

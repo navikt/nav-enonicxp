@@ -63,6 +63,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'area-page': AreaPage;
     calculator: Calculator;
     'contact-information': ContactInformation;
+    'content-data-locale-fallback': ContentDataLocaleFallback;
     'content-list': ContentList;
     'content-page-with-sidemenus': ContentPageWithSidemenus;
     'dynamic-page': DynamicPage;
@@ -75,7 +76,6 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'guide-page': GuidePage;
     'internal-link': InternalLink;
     'large-table': LargeTable;
-    'content-data-locale-fallback': ContentDataLocaleFallback;
     'main-article': MainArticle;
     'main-article-chapter': MainArticleChapter;
     'megamenu-item': MegamenuItem;

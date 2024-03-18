@@ -38,7 +38,7 @@ const pathStartToSearchAudience = Object.entries({
     '/no/nav-og-samfunn/samarbeid/for-kommunen': 'provider_municipality_employed',
 } satisfies Record<string, SearchDocumentAudience | null>);
 
-const getAudienceFromData = (content: ContentNode): SearchDocumentAudience[] | null => {
+const getAudienceFromData = (content: ContentNode<any>): SearchDocumentAudience[] | null => {
     const audience = content.data?.audience as
         | ArrayOrSingle<MainAudience>
         | AudienceMixin['audience']

@@ -59,7 +59,7 @@ export type SearchDocument = {
 const INGRESS_MAX_LENGTH = 500;
 
 class ExternalSearchDocumentBuilder {
-    private readonly content: ContentNode;
+    private readonly content: ContentNode<any>;
     private readonly locale: string;
     private readonly searchConfig: SearchConfig;
     private readonly contentGroupKeys?: KeysConfig;

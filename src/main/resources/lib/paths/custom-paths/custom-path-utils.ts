@@ -3,8 +3,9 @@ import { Content } from '/lib/xp/content';
 import { runInContext } from '../../context/run-in-context';
 import { stripPathPrefix as _stripPathPrefix } from '../path-utils';
 import { RepoBranch } from '../../../types/common';
+import { ContentNode } from '../../../types/content-types/content-config';
 
-type ContentWithCustomPath = Content & { data: { customPath: string } };
+type ContentWithCustomPath = Content<any> & { data: { customPath: string } };
 
 // Valid: (0-9 OR a-z OR - OR / AND NOT trailing /) OR /
 const validCustomPathPattern = new RegExp('^(/[0-9a-z-/]*[^/]|/)$');
@@ -15,7 +16,9 @@ const stripPathPrefix = (path: string) => _stripPathPrefix(path) || '/';
 export const isValidCustomPath = (path?: string): path is string =>
     typeof path === 'string' && validCustomPathPattern.test(path);
 
-export const hasValidCustomPath = (content: Content): content is ContentWithCustomPath => {
+export const hasValidCustomPath = (
+    content: Content | ContentNode
+): content is ContentWithCustomPath => {
     return isValidCustomPath((content as ContentWithCustomPath).data?.customPath);
 };
 
