@@ -80,7 +80,7 @@ export default {
         },
         __FILE__: '',
         'ts-jest': {
-            tsConfig: `tsconfig-test.json`,
+            tsconfig: `tsconfig-test.json`,
         },
     },
 

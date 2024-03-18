@@ -6,7 +6,7 @@ import { frontendProxy } from './frontend-proxy';
 import { logger } from '../utils/logging';
 import { NodeComponent } from '../../types/components/component-node';
 import { CONTENT_ROOT_REPO_ID } from '../constants';
-import { FiltersMenuPartConfig } from 'site/parts/filters-menu/filters-menu-part-config';
+import { FiltersMenu } from 'site/parts/filters-menu';
 import { PartComponentName, PartConfigs } from 'types/components/component-config';
 import { forceArray } from '../utils/array-utils';
 
@@ -16,7 +16,7 @@ type DynamicContentRepoNode = RepoNode<Content>;
 type FilterMenuComponent = NodeComponent<'part', 'filters-menu'>;
 type Component = NodeComponent<'part'>;
 
-type CategoryRaw = Required<FiltersMenuPartConfig>['categories'][number];
+type CategoryRaw = Required<FiltersMenu>['categories'][number];
 type Filter = CategoryRaw['filters'][number] & {
     id: string;
 };

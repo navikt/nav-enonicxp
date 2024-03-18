@@ -1,13 +1,13 @@
-const enonicLibraryImports = [
-    "^/lib/xp",
-    "^/lib/http-client",
-    "^/lib/cache",
-    "^/lib/thymeleaf",
-    "^/lib/guillotine",
-    "^/lib/graphql",
-    "^/lib/graphql-rx",
-    "^/assets"
-]
+// const enonicLibraryImports = [
+//     "^/lib/xp",
+//     "^/lib/http-client",
+//     "^/lib/cache",
+//     "^/lib/thymeleaf",
+//     "^/lib/guillotine",
+//     "^/lib/graphql",
+//     "^/lib/graphql-rx",
+//     "^/assets"
+// ]
 
 module.exports = {
     "extends": [
@@ -20,6 +20,11 @@ module.exports = {
     ],
     "plugins": ["prettier", "@typescript-eslint", "import"],
     "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 2020,
+        "project": "./tsconfig.json",
+        "tsconfigRootDir": "./"
+    },
     "rules": {
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-explicit-any": "off",
@@ -35,18 +40,18 @@ module.exports = {
         "dot-notation": "off",
         "func-names": "off",
         "global-require": "off",
-        "import/no-absolute-path": [
-            "error",
-            {
-                "ignore": enonicLibraryImports
-            }
-        ],
-        "import/no-unresolved": [
-            "error",
-            {
-                "ignore": enonicLibraryImports
-            }
-        ],
+        // "import/no-absolute-path": [
+        //     "error",
+        //     {
+        //         "ignore": enonicLibraryImports
+        //     }
+        // ],
+        // "import/no-unresolved": [
+        //     "error",
+        //     {
+        //         "ignore": enonicLibraryImports
+        //     }
+        // ],
         "no-case-declarations": "off",
         "no-cond-assign": ["error", "except-parens"],
         "no-console": "error",
@@ -87,9 +92,6 @@ module.exports = {
         "Java": true,
         "module": true
     },
-    "parserOptions": {
-        "ecmaVersion": 2020
-    },
     "overrides": [
         {
             "files": ["*.html", "*.ftl", "*.xml"],
@@ -97,27 +99,27 @@ module.exports = {
                 "max-len": "off"
             }
         },
-        {
-            "files": [
-                "src/main/resources/site/layouts/**/*-config.ts",
-                "src/main/resources/site/parts/**/*-config.ts",
-                "src/main/resources/site/content-types/**/*.ts"
-            ],
-            "rules": {
-                "@typescript-eslint/ban-types": "off"
-            }
-        },
+        // {
+        //     "files": [
+        //         "src/main/resources/site/layouts/**/*-config.ts",
+        //         "src/main/resources/site/parts/**/*-config.ts",
+        //         "src/main/resources/site/content-types/**/*.ts"
+        //     ],
+        //     "rules": {
+        //         "@typescript-eslint/ban-types": "off"
+        //     }
+        // },
         {
             "files": ["src/main/resources/types/**/*.d.ts"],
-            "rules": {
-                "import/no-unresolved": [
-                    "off",
-                    {
-                        "ignore": ["/lib/xp"]
-                    }
-                ],
-                "no-restricted-imports": "off"
-            }
+            // "rules": {
+            //     "import/no-unresolved": [
+            //         "off",
+            //         {
+            //             "ignore": ["/lib/xp"]
+            //         }
+            //     ],
+            //     "no-restricted-imports": "off"
+            // }
         }
     ],
     "settings": {
