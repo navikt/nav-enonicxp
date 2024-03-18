@@ -14,11 +14,6 @@ buildscript {
             classpath "gradle.plugin.com.enonic.gradle:xp-gradle-plugin:3.4.0"
         }
     }
-
-//     dependencies {
-//         // Remove this if/when the bug is fixed in the official repo version
-//         classpath files('xp-codegen-plugin-1.1.9-bugfix.jar')
-//     }
 }
 
 // Build plugins
