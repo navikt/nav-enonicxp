@@ -15,6 +15,7 @@ import {
 } from '../../lib/paths/custom-paths/custom-path-special-types';
 import { RepoBranch } from '../../types/common';
 import { customSelectorParseSelectedIdsFromReq } from '../service-utils';
+import CustomSelectorServiceParams = XP.CustomSelectorServiceParams;
 
 type SpecialUrlType = 'formIntermediateStep';
 
@@ -162,7 +163,13 @@ const validateResult = (
     return result;
 };
 
-export const get = (req: XP.CustomSelectorServiceRequest): XP.CustomSelectorServiceResponse => {
+type CustomParams = {
+    type: SpecialUrlType;
+};
+
+export const get = (
+    req: XP.Request<CustomSelectorServiceParams & CustomParams>
+): XP.CustomSelectorServiceResponse => {
     if (!portalLib.getContent()) {
         return {
             status: 200,
@@ -186,7 +193,7 @@ export const get = (req: XP.CustomSelectorServiceRequest): XP.CustomSelectorServ
 
     const result = getResult({ query, currentSelection });
 
-    const validatedResult = validateResult(result, type as SpecialUrlType);
+    const validatedResult = validateResult(result, type);
 
     return {
         status: 200,

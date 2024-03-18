@@ -51,7 +51,9 @@ export const scheduleCacheInvalidation = ({
     time: string;
     masterOnly?: boolean;
 }) => {
-    createOrUpdateSchedule<PrepublishCacheWipeConfig>({
+    // TODO: reimplement types
+    // createOrUpdateSchedule<PrepublishCacheWipeConfig>({
+    createOrUpdateSchedule({
         jobName,
         jobSchedule: {
             type: 'ONE_TIME',
@@ -80,7 +82,9 @@ export const scheduleUnpublish = ({
     publishTo: string;
     masterOnly?: boolean;
 }) => {
-    createOrUpdateSchedule<UnpublishExpiredContentConfig>({
+    // TODO: reimplement types
+    // createOrUpdateSchedule<UnpublishExpiredContentConfig>({
+    createOrUpdateSchedule({
         jobName: getUnpublishJobName(id),
         jobSchedule: {
             type: 'ONE_TIME',

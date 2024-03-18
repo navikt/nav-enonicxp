@@ -245,7 +245,8 @@ export const fetchAndUpdateOfficeInfo = (retry?: boolean) => {
 
 export const runOfficeInfoUpdateTask = (retry: boolean, scheduledTime?: string) => {
     if (scheduledTime) {
-        createOrUpdateSchedule<UpdateOfficeInfoConfig>({
+        // createOrUpdateSchedule<UpdateOfficeInfoConfig>({
+        createOrUpdateSchedule({
             jobName: 'office_info_update',
             jobDescription: 'Updates legacy office info from norg',
             taskDescriptor: officeInfoUpdateTaskDescriptor,
@@ -259,7 +260,8 @@ export const runOfficeInfoUpdateTask = (retry: boolean, scheduledTime?: string) 
             masterOnly: false,
         });
     } else {
-        taskLib.submitTask<UpdateOfficeInfoConfig>({
+        // taskLib.submitTask<UpdateOfficeInfoConfig>({
+        taskLib.submitTask({
             descriptor: officeInfoUpdateTaskDescriptor,
             config: {
                 retry,
@@ -269,7 +271,8 @@ export const runOfficeInfoUpdateTask = (retry: boolean, scheduledTime?: string) 
 };
 
 export const startOfficeInfoPeriodicUpdateSchedule = () => {
-    createOrUpdateSchedule<UpdateOfficeInfoConfig>({
+    // createOrUpdateSchedule<UpdateOfficeInfoConfig>({
+    createOrUpdateSchedule({
         jobName: 'office_info_norg2_hourly',
         jobDescription: 'Updates legacy office information from norg2 every hour',
         jobSchedule: {

@@ -36,7 +36,9 @@ const deferInvalidationCallback = (eventData: DeferCacheInvalidationEventData) =
         // certain amount of time. This should preferably be handled by whichever action enabled the
         // deferred state, but we have this as a fallback to ensure it does not become stuck in the
         // deferred state.
-        createOrUpdateSchedule<CacheInvalidationDeferConfig>({
+        // TODO: reimplement types
+        // createOrUpdateSchedule<CacheInvalidationDeferConfig>({
+        createOrUpdateSchedule({
             jobName: 'deferred-cache-invalidation',
             jobSchedule: {
                 type: 'ONE_TIME',

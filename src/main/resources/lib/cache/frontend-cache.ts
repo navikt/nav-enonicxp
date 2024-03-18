@@ -40,7 +40,9 @@ export const frontendInvalidateAllDeferred = (
         return;
     }
 
-    createOrUpdateSchedule<CacheInvalidateAllConfig>({
+    // TODO: reimplement types
+    // createOrUpdateSchedule<CacheInvalidateAllConfig>({
+    createOrUpdateSchedule({
         jobName: DEFERRED_INVALIDATION_JOB_NAME,
         jobSchedule: {
             type: 'ONE_TIME',

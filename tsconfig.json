@@ -20,6 +20,9 @@
             "/lib/graphql-playground": [
                 "../../../node_modules/@item-enonic-types/lib-graphql-playground"
             ],
+            "/lib/guillotine": [
+                "../../../node_modules/@item-enonic-types/lib-guillotine"
+            ],
             "/lib/http-client": [
                 "../../../node_modules/@item-enonic-types/lib-http-client"
             ],
