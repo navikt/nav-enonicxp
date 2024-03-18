@@ -1,5 +1,5 @@
 import * as contentLib from '/lib/xp/content';
-import { ContentType, Content } from '/lib/xp/content';
+import { ContentType } from '/lib/xp/content';
 import { validateCurrentUserPermissionForContent } from '../../lib/utils/auth-utils';
 import { contentTypesInContentSwitcher } from '../../lib/contenttype-lists';
 import { logger } from '../../lib/utils/logging';
