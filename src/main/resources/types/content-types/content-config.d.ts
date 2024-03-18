@@ -47,6 +47,7 @@ import {
     ProductDetails,
     PublishingCalendar,
     PublishingCalendarEntry,
+    RedirectsFolder,
     SearchConfigV2,
     SectionPage,
     SituationPage,
@@ -94,7 +95,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'search-config-v2': SearchConfigV2;
     'section-page': SectionPage;
     overview: Overview;
-    'redirects-folder': EmptyObject;
+    'redirects-folder': RedirectsFolder;
     'situation-page': SituationPage;
     'office-editorial-page': OfficeEditorialPage;
     'themed-article-page': ThemedArticlePage;
