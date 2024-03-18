@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "./src/**/*.test.ts",
+    "./src/main/resources/__test"
+  ],
+  "compilerOptions": {
+    "types": [
+      "@types/jest"
+    ]
+  }
+}

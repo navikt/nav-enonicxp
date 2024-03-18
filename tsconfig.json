@@ -74,7 +74,7 @@
             "/assets/html-entities/2.3.3/lib": ["../../../node_modules/html-entities"],
             "/assets/striptags/3.1.1/src/striptags": ["../../../node_modules/striptags"]
         },
-        "types": ["@item-enonic-types/global"]
+        "types": ["@item-enonic-types/global", "@types/jest"]
     },
     "include": ["src/main/resources/**/*.ts"],
 }
