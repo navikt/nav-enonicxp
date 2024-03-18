@@ -1,3 +1,4 @@
+#import "../contentCommonFragment.graphql"
 #import "../mixins/animatedIconsTargetFragment.graphql"
 
 fragment contentContentPageWithSidemenus on no_nav_navno_ContentPageWithSidemenus {
@@ -11,6 +12,32 @@ fragment contentContentPageWithSidemenus on no_nav_navno_ContentPageWithSidemenu
                 provider_audience
             }
         }
+        alternativeAudience {
+            _selected
+            person {
+                targetPage {
+                    ...contentCommon
+                }
+            }
+            employer {
+                targetPage {
+                    ...contentCommon
+                }
+            }
+            provider {
+                providerList {
+                    providerAudience
+                    targetPage {
+                        ...contentCommon
+                    }
+                }
+            }
+        }
+        relatedSituations {
+            ...contentCommon
+            dataAsJson
+        }
+
         illustration {
             ...animatedIconsTargetMixin
         }

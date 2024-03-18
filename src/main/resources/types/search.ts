@@ -6,7 +6,7 @@ import {
     SEARCH_REPO_FACETS_KEY,
     SEARCH_REPO_HREF_KEY,
     SEARCH_REPO_LOCALE_KEY,
-} from '../lib/search/search-utils';
+} from '../lib/search/_legacy/search-utils';
 import { ArrayOrSingle } from './util-types';
 
 export type ContentFacet = {

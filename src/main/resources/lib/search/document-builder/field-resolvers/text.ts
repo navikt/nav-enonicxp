@@ -1,11 +1,15 @@
-import { getNestedValues } from '../../../../utils/object-utils';
-import { forceArray } from '../../../../utils/array-utils';
-import { ContentNode } from '../../../../../types/content-types/content-config';
-import { hasExternalProductUrl } from '../../../../paths/path-utils';
-import { NodeComponent } from '../../../../../types/components/component-node';
-import { getRepoConnection } from '../../../../utils/repo-utils';
-import { getLayersData } from '../../../../localization/layers-data';
-import { CONTENT_ROOT_REPO_ID } from '../../../../constants';
+import { getNestedValues } from '../../../utils/object-utils';
+import { forceArray } from '../../../utils/array-utils';
+import { ContentNode } from '../../../../types/content-types/content-config';
+import { hasExternalProductUrl } from '../../../paths/path-utils';
+import { NodeComponent } from '../../../../types/components/component-node';
+import { getRepoConnection } from '../../../utils/repo-utils';
+import { getLayersData } from '../../../localization/layers-data';
+import { CONTENT_ROOT_REPO_ID } from '../../../constants';
+import {
+    getSearchDocumentFormDetails,
+    getSearchDocumentProductDetails,
+} from './component-references';
 
 type FieldKeyBuckets = {
     componentsFieldKeys: string[];
@@ -38,7 +42,7 @@ const getFieldKeyBuckets = (fieldKeys: string[]) => {
 const getFieldValues = (
     contentOrComponent: ContentNode | NonNullable<ContentNode['components']>,
     fieldKeys: string[]
-) => {
+): string[] => {
     return fieldKeys.reduce<string[]>((acc, key) => {
         const value = getNestedValues(contentOrComponent, key);
         if (typeof value === 'string') {
@@ -51,20 +55,50 @@ const getFieldValues = (
     }, []);
 };
 
+const isProductDetailsPart = (
+    component: NodeComponent
+): component is NodeComponent<'part', 'product-details'> =>
+    component.type === 'part' && component.part?.descriptor === 'no.nav.navno:product-details';
+
+const isFormDetailsPart = (
+    component: NodeComponent
+): component is NodeComponent<'part', 'form-details'> =>
+    component.type === 'part' && component.part?.descriptor === 'no.nav.navno:form-details';
+
 const getComponentFieldValues = (
     component: NodeComponent,
-    contentLocale: string,
+    content: ContentNode,
     fieldKeys: string[]
-) => {
+): string[] => {
     if (component.type === 'fragment') {
         const fragment = getRepoConnection({
             branch: 'master',
-            repoId: getLayersData().localeToRepoIdMap[contentLocale] || CONTENT_ROOT_REPO_ID,
+            repoId: getLayersData().localeToRepoIdMap[content.language] || CONTENT_ROOT_REPO_ID,
         }).get({ key: component.fragment.id });
 
         return forceArray(fragment?.components)
             .map((fragmentComponent: NodeComponent) => getFieldValues(fragmentComponent, fieldKeys))
             .flat();
+    }
+
+    if (isProductDetailsPart(component)) {
+        const productDetailsResolved = getSearchDocumentProductDetails(component, content);
+        if (!productDetailsResolved) {
+            return [];
+        }
+
+        const { productDetailsContent, productDetailsComponents } = productDetailsResolved;
+
+        return productDetailsComponents
+            .map((productDetailsComponent) =>
+                getComponentFieldValues(productDetailsComponent, productDetailsContent, fieldKeys)
+            )
+            .flat();
+    }
+
+    if (isFormDetailsPart(component)) {
+        const formDetailsResolved = getSearchDocumentFormDetails(component, content);
+        return formDetailsResolved || [];
     }
 
     return getFieldValues(component, fieldKeys);
@@ -85,9 +119,7 @@ export const getSearchDocumentTextSegments = (content: ContentNode, fieldKeys: s
     // For component fields, we need to ensure the final order of values are consistent
     // with their original order in the components array
     const componentsFieldValues = forceArray(content.components)
-        .map((component) =>
-            getComponentFieldValues(component, content.language, componentsFieldKeys)
-        )
+        .map((component) => getComponentFieldValues(component, content, componentsFieldKeys))
         .flat();
 
     return otherFieldValues.concat(componentsFieldValues);

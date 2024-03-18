@@ -1,90 +1,49 @@
-import * as contentLib from '/lib/xp/content';
+import * as taskLib from '/lib/xp/task';
 import { Content } from '/lib/xp/content';
-import { getRepoConnection } from '../utils/repo-utils';
 import { logger } from '../utils/logging';
-import { getSearchConfig } from './config';
-import { deleteSearchNodesForContent } from './search-utils';
-import { ContentFacet } from '../../types/search';
-import { isContentLocalized } from '../localization/locale-utils';
-import { runInLocaleContext } from '../localization/locale-context';
+import { generateSearchDocumentId } from './utils';
+import { getRepoConnection } from '../utils/repo-utils';
 import { getLayersData } from '../localization/layers-data';
-import { createOrUpdateSearchNode } from './create-or-update-search-node';
-import { forceArray } from '../utils/array-utils';
-import { isArchivedContentNode } from '../utils/content-utils';
+import { searchApiPostDocuments } from './api-handlers/post-document';
+import { searchApiDeleteDocument } from './api-handlers/delete-document';
+import { buildExternalSearchDocument } from './document-builder/document-builder';
+import { isContentLocalized } from '../localization/locale-utils';
 
-const isQueryMatchingContent = (query: string, contentId: string, locale: string) =>
-    runInLocaleContext(
-        { locale },
-        () =>
-            contentLib.query({
-                start: 0,
-                count: 0,
-                query,
-                filters: {
-                    ids: {
-                        values: [contentId],
-                    },
-                },
-            }).total > 0
-    );
+const deleteExternalSearchDocumentForContent = (contentId: string, locale: string) => {
+    const id = generateSearchDocumentId(contentId, locale);
 
-export const updateSearchNode = (contentId: string, repoId: string) => {
-    logger.info(`Updating search node for content id ${contentId} in ${repoId}`);
-
-    const searchConfig = getSearchConfig();
-    if (!searchConfig) {
-        return;
-    }
-
-    const contentTypesAllowedSet = new Set(forceArray(searchConfig.data.contentTypes));
-
-    const contentRepoConnection = getRepoConnection({
-        repoId,
-        branch: 'master',
-        asAdmin: true,
+    taskLib.executeFunction({
+        description: `Deleting document from external search index for ${id}`,
+        func: () => searchApiDeleteDocument(id),
     });
+};
 
-    const contentLocale = getLayersData().repoIdToLocaleMap[repoId];
-    const contentNode = contentRepoConnection.get<Content>(contentId);
-
-    if (
-        !contentNode ||
-        !contentTypesAllowedSet.has(contentNode.type) ||
-        !isContentLocalized(contentNode) ||
-        isArchivedContentNode(contentNode)
-    ) {
-        logger.info(`No valid content found for id ${contentId} in ${repoId}`);
-        deleteSearchNodesForContent(contentId, contentLocale);
+export const updateExternalSearchDocumentForContent = (contentId: string, repoId: string) => {
+    const locale = getLayersData().repoIdToLocaleMap[repoId];
+    if (!locale) {
+        logger.error(`${repoId} is not a valid content repo!`);
         return;
     }
 
-    const matchedFacets = forceArray(searchConfig.data.fasetter).reduce((acc, facet) => {
-        const { facetKey, ruleQuery, underfasetter } = facet;
+    const repo = getRepoConnection({ repoId, branch: 'master', asAdmin: true });
 
-        if (!isQueryMatchingContent(ruleQuery, contentId, contentLocale)) {
-            return acc;
-        }
+    const content = repo.get<Content>(contentId);
+    if (!content) {
+        deleteExternalSearchDocumentForContent(contentId, locale);
+        return;
+    }
 
-        const ufArray = forceArray(underfasetter);
-        if (ufArray.length === 0) {
-            return [...acc, { facet: facetKey, underfacets: [] }];
-        }
+    if (!isContentLocalized(content)) {
+        return;
+    }
 
-        const ufsMatched = ufArray.filter((uf) =>
-            isQueryMatchingContent(uf.ruleQuery, contentId, contentLocale)
-        );
+    const document = buildExternalSearchDocument(content, locale);
+    if (!document) {
+        return;
+    }
 
-        // If the facet has underfacets, at least one underfacet must match along with the main facet
-        if (ufsMatched.length === 0) {
-            return acc;
-        }
-
-        return [...acc, { facet: facetKey, underfacets: ufsMatched.map((uf) => uf.facetKey) }];
-    }, [] as ContentFacet[]);
-
-    createOrUpdateSearchNode({
-        contentNode,
-        facets: matchedFacets,
-        locale: contentLocale,
+    taskLib.executeFunction({
+        description: `Updating external search document for ${document.id}`,
+        func: () => searchApiPostDocuments([document]),
     });
 };

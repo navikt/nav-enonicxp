@@ -147,14 +147,17 @@ const colorsByName = {
     NavdsSemanticColorText: rgba(38, 38, 38, 1),
 };
 
-const colorsByCode = Object.entries(colorsByName).reduce((acc, [colorName, colorCode]) => {
-    const existingNames = acc[colorCode];
+const colorsByCode = Object.entries(colorsByName).reduce(
+    (acc, [colorName, colorCode]) => {
+        const existingNames = acc[colorCode];
 
-    return {
-        ...acc,
-        [colorCode]: existingNames ? `${existingNames}/${colorName}` : colorName,
-    };
-}, {} as Record<string, string>);
+        return {
+            ...acc,
+            [colorCode]: existingNames ? `${existingNames}/${colorName}` : colorName,
+        };
+    },
+    {} as Record<string, string>
+);
 
 const generateIcon = (color: string) => `\
 <svg width='32' height='32'>\

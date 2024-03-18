@@ -1,6 +1,6 @@
 <macro>
-    <display-name>Tall med formattering</display-name>
-    <description>Med språktilpasset formattering, uten tekstbryting</description>
+    <display-name>Tall med formatering</display-name>
+    <description>Med språktilpasset formatering, uten tekstbryting</description>
     <form>
         <input name="verdi" type="Double">
             <label>Tall</label>

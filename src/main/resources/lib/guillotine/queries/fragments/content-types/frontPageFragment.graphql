@@ -1,20 +1,11 @@
 #import "../contentCommonFragment.graphql"
-#import "../mixins/frontPageAreaReferences.graphql"
+#import "../mixins/frontPageNavigationReferences.graphql"
 
 fragment contentFrontPage on no_nav_navno_FrontPage {
     dataAsJson
     data {
-        areasRefs {
-            ...frontpageAreaReferences
-        }
-        frontPageNestedRefs {
-            ...frontpageAreaReferences
-        }
-        situationsRefs {
-            ...frontpageAreaReferences
-        }
         navigationRefs {
-            ...frontpageAreaReferences
+            ...frontPageNavigationReferences
         }
     }
 }

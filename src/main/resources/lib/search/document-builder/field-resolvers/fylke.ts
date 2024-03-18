@@ -1,4 +1,4 @@
-import { ContentNode } from '../../../../../types/content-types/content-config';
+import { ContentNode } from '../../../../types/content-types/content-config';
 
 export type SearchDocumentFylke = (typeof FYLKER)[number];
 

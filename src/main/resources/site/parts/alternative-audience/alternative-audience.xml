@@ -1,0 +1,14 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Aktuelle målgrupper</display-name>
+    <description>Viser aktuelle målgruppe basert på va som er valgt i metadata til venstre.</description>
+    <form>
+        <input name="showProductName" type="CheckBox">
+            <label>Vis produktnavn</label>
+            <help-text>Hvis du krysser vekk, blir ordet 'dette' vist istedet for produktnavnet.</help-text>
+            <default>checked</default>
+        </input>
+    </form>
+    <config>
+        <allow-on-content-type>${app}:content-page-with-sidemenus</allow-on-content-type>
+    </config>
+</part>

@@ -1,5 +1,5 @@
-import { ContentNode } from '../../../../../types/content-types/content-config';
-import { getLanguageVersions } from '../../../../localization/resolve-language-versions';
+import { ContentNode } from '../../../../types/content-types/content-config';
+import { getLanguageVersions } from '../../../localization/resolve-language-versions';
 
 export const getSearchDocumentLanguage = (language: string) =>
     language === 'no' ? 'nb' : language;

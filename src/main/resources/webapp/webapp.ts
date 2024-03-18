@@ -12,9 +12,9 @@ import { userIsAdmin } from '../lib/utils/auth-utils';
 import {
     revalidateAllSearchNodesAsync,
     SEARCH_NODES_UPDATE_ABORT_EVENT,
-} from '../lib/search/search-event-handlers';
+} from '../lib/search/_legacy/search-event-handlers';
 import { pushLayerContentToMaster } from '../lib/localization/layers-data';
-import { externalSearchUpdateAll } from '../lib/search/external/update-all';
+import { externalSearchUpdateAll } from '../lib/search/update-all';
 import { URLS } from '../lib/constants';
 import { fetchAndUpdateOfficeInfo } from '../lib/office-pages/_legacy-office-information/legacy-office-update';
 

@@ -28,6 +28,12 @@
                 <alignment>right</alignment>
             </config>
         </input>
+        <field-set>
+            <label>Lenke til flere saker</label>
+            <items>
+                <mixin name="link"/>
+            </items>
+        </field-set>
     </form>
     <config>
         <allow-on-content-type>${app}:front-page</allow-on-content-type>

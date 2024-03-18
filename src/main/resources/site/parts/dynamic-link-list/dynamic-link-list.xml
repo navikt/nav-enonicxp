@@ -9,9 +9,15 @@
             <label>Skjul tittel</label>
             <default>unchecked</default>
         </input>
-        <input name="chevron" type="CheckBox">
-            <label>Lenker med chevron</label>
-            <default>unchecked</default>
+        <input name="listType" type="ComboBox">
+            <label>Vis listen som</label>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <option value="default">Vanlige lenker</option>
+                <option value="chevron">Lenker med chevron</option>
+                <option value="bulletlist">Lenker som punktliste</option>
+            </config>
+            <default>default</default>  
         </input>
         <option-set name="list">
             <label>Lenker</label>

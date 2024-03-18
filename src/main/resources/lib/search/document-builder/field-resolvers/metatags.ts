@@ -1,10 +1,9 @@
-import { ContentNode } from '../../../../../types/content-types/content-config';
+import { ContentNode } from '../../../../types/content-types/content-config';
 import { getSearchDocumentContentType, SearchDocumentContentType } from './content-type';
 
 export type SearchDocumentMetatag =
     | 'nyhet'
     | 'pressemelding'
-    | 'nav-og-samfunn'
     | 'analyse'
     | 'statistikk'
     | 'presse'
@@ -17,6 +16,7 @@ const informationTypes: ReadonlySet<SearchDocumentContentType> = new Set([
     'guide',
     'situasjonsside',
     'oversikt',
+    'andre',
 ]);
 
 const isInformation = (content: ContentNode) =>
@@ -37,19 +37,12 @@ const isStatistikk = (content: ContentNode) =>
 const isAnalyse = (content: ContentNode) =>
     content._path.startsWith('/content/www.nav.no/no/nav-og-samfunn/kunnskap');
 
-const isNavOgSamfunn = (content: ContentNode) =>
-    content._path.startsWith('/content/www.nav.no/no/nav-og-samfunn') &&
-    !content._path.startsWith('/content/www.nav.no/no/nav-og-samfunn/statistikk');
-
 const isPresse = (content: ContentNode) =>
     isPressemelding(content) ||
     (isNyhet(content) &&
         (content._path.startsWith(
             '/content/www.nav.no/no/person/innhold-til-person-forside/nyheter'
         ) ||
-            content._path.startsWith(
-                '/content/www.nav.no/no/nav-og-samfunn/kunnskap/analyser-fra-nav'
-            ) ||
             !(
                 content._path.startsWith('/content/www.nav.no/no/person') ||
                 content._path.startsWith('/content/www.nav.no/no/bedrift') ||
@@ -81,10 +74,6 @@ export const getSearchDocumentMetatags = (content: ContentNode) => {
         metaTags.push('presse');
         canSetInformationTag = false;
     }
-    if (isNavOgSamfunn(content)) {
-        metaTags.push('nav-og-samfunn');
-    }
-
     if (canSetInformationTag && isInformation(content)) {
         metaTags.push('informasjon');
     }
