@@ -7,7 +7,6 @@ import { customSelectorErrorIcon } from '../custom-selector-icons';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { ProductDetails } from '@xp-types/site/content-types';
-import CustomSelectorServiceParams = XP.CustomSelectorServiceParams;
 
 type ProductDetailsType = ProductDetails['detailType'];
 type ProductDetailsContentType = Content<'no.nav.navno:product-details'>;
@@ -107,7 +106,7 @@ const getHitsFromQuery = (
     return hits.map(transformHit);
 };
 
-const selectorHandler = (req: XP.Request<CustomSelectorServiceParams & SelectorParams>) => {
+const selectorHandler = (req: XP.Request<XP.CustomSelectorServiceParams & SelectorParams>) => {
     const { detailType, query } = req.params;
     if (!detailType) {
         return {

@@ -15,7 +15,6 @@ import {
 } from '../../lib/paths/custom-paths/custom-path-special-types';
 import { RepoBranch } from '../../types/common';
 import { customSelectorParseSelectedIdsFromReq } from '../service-utils';
-import CustomSelectorServiceParams = XP.CustomSelectorServiceParams;
 
 type SpecialUrlType = 'formIntermediateStep';
 
@@ -168,7 +167,7 @@ type CustomParams = {
 };
 
 export const get = (
-    req: XP.Request<CustomSelectorServiceParams & CustomParams>
+    req: XP.Request<XP.CustomSelectorServiceParams & CustomParams>
 ): XP.CustomSelectorServiceResponse => {
     if (!portalLib.getContent()) {
         return {
