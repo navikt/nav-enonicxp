@@ -1,6 +1,7 @@
 import * as contentLib from '/lib/xp/content';
 import { Attachment } from '/lib/xp/content';
 import * as ioLib from '/lib/xp/io';
+import { ByteSource } from '/lib/xp/io';
 import { logger } from '../../../../utils/logging';
 
 type GuillotineAttachment = Attachment & { __nodeId: string };
@@ -35,7 +36,7 @@ export const getAttachmentText = (attachment: GuillotineAttachment, maxSize = ma
         return null;
     }
 
-    const attachmentText = ioLib.readText(attachmentStream);
+    const attachmentText = ioLib.readText(attachmentStream as unknown as ByteSource);
     if (!attachmentText) {
         logger.warning(`No attachment text found for ${id} ${name}`, false, true);
         return null;

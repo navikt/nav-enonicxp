@@ -1,4 +1,5 @@
 import * as contentLib from '/lib/xp/content';
+import { ContentType } from '/lib/xp/content';
 import { validateCurrentUserPermissionForContent } from '../../lib/utils/auth-utils';
 import { contentTypesInContentSwitcher } from '../../lib/contenttype-lists';
 import { logger } from '../../lib/utils/logging';
@@ -11,7 +12,7 @@ type FormItem = contentLib.FormItem & { items?: contentLib.FormItem[] };
 
 const contentTypesSet: ReadonlySet<ContentDescriptor> = new Set(contentTypesInContentSwitcher);
 
-const contentHasField = (contentSchema: contentLib.ContentType, fieldName: string) => {
+const contentHasField = (contentSchema: ContentType, fieldName: string) => {
     return contentSchema.form.some((form: FormItem) => {
         if (form.items) {
             return !!form.items?.find((item: FormItem) => item.name === fieldName);

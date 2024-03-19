@@ -1,7 +1,7 @@
 import * as contentLib from '/lib/xp/content';
 import * as eventLib from '/lib/xp/event';
 import { getPrepublishJobName, scheduleCacheInvalidation } from '../scheduling/scheduled-publish';
-import { OpeningHours } from 'site/mixins/opening-hours/opening-hours';
+import { OpeningHours } from '@xp-types/site/mixins/opening-hours';
 
 type RawSpecialOpeningHours = OpeningHours['specialOpeningHours'];
 

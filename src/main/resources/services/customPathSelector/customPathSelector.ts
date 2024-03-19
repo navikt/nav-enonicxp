@@ -162,7 +162,13 @@ const validateResult = (
     return result;
 };
 
-export const get = (req: XP.CustomSelectorServiceRequest): XP.CustomSelectorServiceResponse => {
+type CustomParams = {
+    type: SpecialUrlType;
+};
+
+export const get = (
+    req: XP.Request<XP.CustomSelectorServiceParams & CustomParams>
+): XP.CustomSelectorServiceResponse => {
     if (!portalLib.getContent()) {
         return {
             status: 200,
@@ -186,7 +192,7 @@ export const get = (req: XP.CustomSelectorServiceRequest): XP.CustomSelectorServ
 
     const result = getResult({ query, currentSelection });
 
-    const validatedResult = validateResult(result, type as SpecialUrlType);
+    const validatedResult = validateResult(result, type);
 
     return {
         status: 200,

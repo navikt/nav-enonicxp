@@ -3,9 +3,11 @@
     <description>Sett inn lang tankestrek – i brødteksten</description>
     <form>
         <!-- Dummy value to prevent graphql-errors for empty form item -->
-        <input name="dummy" type="RadioButton">
-            <label>-</label>
-            <occurrences minimum="0" maximum="1"/>
+        <input name="dummy" type="TextLine">
+            <label>(tomt felt, skal ikke brukes)</label>
+            <config>
+                <regexp>^$</regexp>
+            </config>
         </input>
     </form>
 </macro>

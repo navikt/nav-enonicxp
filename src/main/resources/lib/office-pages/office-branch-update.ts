@@ -2,7 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
 import * as commonLib from '/lib/xp/common';
-import { OfficeBranch as OfficeBranchData } from '../../site/content-types/office-branch/office-branch';
+import { OfficeBranch as OfficeBranchData } from '@xp-types/site/content-types/office-branch';
 import { NavNoDescriptor } from '../../types/common';
 import { logger } from '../utils/logging';
 import { CONTENT_LOCALE_DEFAULT, URLS } from '../constants';

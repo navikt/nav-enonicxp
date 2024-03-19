@@ -40,6 +40,6 @@ export const getContentLocaleRedirectTarget = (content: Content) => {
     return content.x?.[COMPONENT_APP_KEY]?.redirectToLayer?.locale as string | undefined;
 };
 
-export const isContentNoIndex = (content: Content) => {
+export const isContentNoIndex = (content: Content<any>) => {
     return !!content.data?.noindex;
 };

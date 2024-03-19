@@ -1,5 +1,5 @@
 import * as contentLib from '/lib/xp/content';
-import graphQlLib, { GraphQLResolverCallback } from '/lib/graphql';
+import graphQlLib, { GraphQLResolver } from '/lib/graphql';
 import { sanitizeText } from '/lib/guillotine/util/naming';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 import { forceArray } from '../../../utils/array-utils';
@@ -46,7 +46,7 @@ export const menuListDataCallback: CreationCallback = (context, params) => {
 };
 
 const resolve =
-    (menuListKey: string): GraphQLResolverCallback<any, any> =>
+    (menuListKey: string): GraphQLResolver['resolve'] =>
     (env) => {
         // Fix mismatch between source key and graphQL key
         const realKey = Object.keys(env.source).find((el) => sanitizeText(el) === menuListKey);

@@ -35,4 +35,4 @@ export const runInLocaleContext = <ReturnType>(
 };
 
 export const getLocaleFromContext = () =>
-    contextLib.get<{ locale?: string }>()?.attributes?.locale || CONTENT_LOCALE_DEFAULT;
+    (contextLib.get()?.attributes as { locale?: string })?.locale || CONTENT_LOCALE_DEFAULT;

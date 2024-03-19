@@ -9,6 +9,8 @@ import { ComponentConfigAll } from '../../types/components/component-config';
 import { COMPONENT_APP_KEY } from '../constants';
 import { forceArray } from './array-utils';
 
+// TODO: clean up this mess :D
+
 // Used to separate keys/ids from descriptive helper text in values returned from macro custom-selectors
 const macroDescriptionSeparator = ' ';
 
@@ -100,7 +102,7 @@ export const generateAnchorIdField = <Config extends ComponentConfigAll & { anch
         branch: req.branch,
     });
 
-    const content = repo.get(contentId);
+    const content = repo.get<Content>(contentId);
 
     if (!componentHasUniqueAnchorId(content, component)) {
         repo.modify<Content>({
@@ -130,7 +132,7 @@ export const generateAnchorIdField = <Config extends ComponentConfigAll & { anch
                         }
                     });
 
-                    config.anchorId = idExists ? undefined : newId;
+                    (config as ConfigWithAnchorId).anchorId = idExists ? undefined : newId;
                 }
 
                 return content;

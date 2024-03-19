@@ -1,12 +1,12 @@
 import * as contentLib from '/lib/xp/content';
 import * as portalLib from '/lib/xp/portal';
 import { Content } from '/lib/xp/content';
-import { ProductDetails } from '../../site/content-types/product-details/product-details';
 import { generateFulltextQuery } from '../../lib/utils/mixed-bag-of-utils';
 import { customSelectorHitWithLink, customSelectorParseSelectedIdsFromReq } from '../service-utils';
 import { customSelectorErrorIcon } from '../custom-selector-icons';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
+import { ProductDetails } from '@xp-types/site/content-types';
 
 type ProductDetailsType = ProductDetails['detailType'];
 type ProductDetailsContentType = Content<'no.nav.navno:product-details'>;
@@ -14,7 +14,7 @@ type SelectorHit = XP.CustomSelectorServiceResponseHit;
 
 type SelectorParams = {
     detailType: ProductDetailsType;
-} & XP.CustomSelectorServiceRequestParams;
+};
 
 const makeDescription = (content: Content) =>
     `[${content.language}] ${stripPathPrefix(content._path)}`;
@@ -106,8 +106,14 @@ const getHitsFromQuery = (
     return hits.map(transformHit);
 };
 
-const selectorHandler = (req: XP.Request) => {
-    const { detailType, query } = req.params as SelectorParams;
+const selectorHandler = (req: XP.Request<XP.CustomSelectorServiceParams & SelectorParams>) => {
+    const { detailType, query } = req.params;
+    if (!detailType) {
+        return {
+            status: 400,
+        };
+    }
+
     const selectedId = customSelectorParseSelectedIdsFromReq(req)[0];
 
     const { language } = portalLib.getContent();

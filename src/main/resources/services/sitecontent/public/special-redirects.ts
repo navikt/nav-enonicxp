@@ -15,7 +15,7 @@ import { transformToRedirect } from '../common/transform-to-redirect';
 import { SitecontentResponse } from '../common/content-response';
 
 type Args = {
-    content: Content;
+    content: Content<any>;
     requestedPath: string;
     branch: RepoBranch;
     locale: string;

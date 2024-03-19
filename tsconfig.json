@@ -10,16 +10,34 @@
         "moduleResolution": "node",
         "noEmit": true,
         "baseUrl": "./src/main/resources",
+        "types": ["@item-enonic-types/global", "@types/jest"],
         "paths": {
+            "@xp-types/*": ["../../../.xp-codegen/*"],
+            "/lib/cache": ["../../../node_modules/@item-enonic-types/lib-cache"],
+            "/lib/graphql": ["../../../node_modules/@item-enonic-types/lib-graphql"],
+            "/lib/graphql-playground": [
+                "../../../node_modules/@item-enonic-types/lib-graphql-playground"
+            ],
+            "/lib/guillotine": ["../../../node_modules/@item-enonic-types/lib-guillotine"],
+            "/lib/http-client": ["../../../node_modules/@item-enonic-types/lib-http-client"],
+            "/lib/thymeleaf": ["../../../node_modules/@item-enonic-types/lib-thymeleaf"],
+            "/lib/xp/auditlog": ["../../../node_modules/@enonic-types/lib-auditlog"],
+            "/lib/xp/auth": ["../../../node_modules/@enonic-types/lib-auth"],
+            "/lib/xp/cluster": ["../../../node_modules/@enonic-types/lib-cluster"],
+            "/lib/xp/common": ["../../../node_modules/@enonic-types/lib-common"],
+            "/lib/xp/context": ["../../../node_modules/@enonic-types/lib-context"],
+            "/lib/xp/event": ["../../../node_modules/@enonic-types/lib-event"],
+            "/lib/xp/grid": ["../../../node_modules/@enonic-types/lib-grid"],
+            "/lib/xp/io": ["../../../node_modules/@enonic-types/lib-io"],
+            "/lib/xp/project": ["../../../node_modules/@enonic-types/lib-project"],
+            "/lib/xp/repo": ["../../../node_modules/@enonic-types/lib-repo"],
+            "/lib/xp/scheduler": ["../../../node_modules/@enonic-types/lib-scheduler"],
+            "/lib/xp/task": ["../../../node_modules/@enonic-types/lib-task"],
+            "/lib/xp/value": ["../../../node_modules/@enonic-types/lib-value"],
+            "/lib/xp/websocket": ["../../../node_modules/@enonic-types/lib-websocket"],
             "/assets/html-entities/2.3.3/lib": ["../../../node_modules/html-entities"],
             "/assets/striptags/3.1.1/src/striptags": ["../../../node_modules/striptags"]
         }
     },
-    "include": ["src/main/resources/**/*.ts", "node_modules/enonic-types/*.d.ts"],
-    "exclude": [
-        "node_modules/enonic-types/index.d.ts",
-        "node_modules/enonic-types/content.d.ts",
-        "node_modules/enonic-types/portal.d.ts",
-        "node_modules/enonic-types/node.d.ts"
-    ]
+    "include": ["src/main/resources/**/*.ts", ".xp-codegen/**/*.ts"]
 }

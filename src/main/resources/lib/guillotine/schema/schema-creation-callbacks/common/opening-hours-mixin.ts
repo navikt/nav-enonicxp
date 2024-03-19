@@ -3,7 +3,7 @@ import graphQlLib from '/lib/graphql';
 import { forceArray } from '../../../../utils/array-utils';
 import { CreationCallback, graphQlCreateObjectType } from '../../../utils/creation-callback-utils';
 import { logger } from '../../../../utils/logging';
-import { OpeningHours } from '../../../../../site/mixins/opening-hours/opening-hours';
+import { OpeningHours } from '@xp-types/site/mixins/opening-hours';
 
 type SupportedContactType = 'chat' | 'telephone';
 

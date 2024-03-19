@@ -3,7 +3,7 @@ import graphQlLib from '/lib/graphql';
 import macroLib from '/lib/guillotine/macro';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import { getKeyWithoutMacroDescription } from '../../../utils/component-utils';
-import { HtmlAreaPartConfig } from '../../../../site/parts/html-area/html-area-part-config';
+import { HtmlArea } from '@xp-types/site/parts/html-area';
 import { logger } from '../../../utils/logging';
 import { runInContext } from '../../../context/run-in-context';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
@@ -59,7 +59,7 @@ export const macroHtmlFragmentCallback: CreationCallback = (context, params) => 
                 return null;
             }
 
-            const html = (fragmentContent.fragment?.config as HtmlAreaPartConfig)?.html;
+            const html = (fragmentContent.fragment?.config as Partial<HtmlArea>)?.html;
             if (!html) {
                 logger.error(
                     `Fragment in html-fragment macro did not contain html: ${fragmentId}`,

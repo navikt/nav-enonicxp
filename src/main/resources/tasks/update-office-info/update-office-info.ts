@@ -1,6 +1,6 @@
 import { fetchAndUpdateOfficeInfo } from '../../lib/office-pages/_legacy-office-information/legacy-office-update';
-import { UpdateOfficeInfoConfig } from './update-office-info-config';
+import { UpdateOfficeInfo } from '@xp-types/tasks/update-office-info';
 
-export const run = (config: UpdateOfficeInfoConfig) => {
+export const run = (config: UpdateOfficeInfo) => {
     fetchAndUpdateOfficeInfo(config.retry);
 };

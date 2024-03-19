@@ -19,18 +19,12 @@ type LayerMigrationBatchJobResult = {
     result: any;
 };
 
-type LayersMigrationResultCache = cacheLib.Cache & {
-    getIfPresent: (key: string) => LayerMigrationBatchJobResult;
-    put: (key: string, value: LayerMigrationBatchJobResult) => void;
-};
-
 const ONE_DAY = 60 * 60 * 24;
 
-// TODO: cacheLib type def needs an update
 const resultCache = cacheLib.newCache({
     size: 1000,
     expire: ONE_DAY,
-}) as LayersMigrationResultCache;
+});
 
 const runPresetMigrationJob = (migrationParams: ContentMigrationParams[]) => {
     const jobId = generateUUID();
@@ -94,7 +88,7 @@ const runPresetMigrationJob = (migrationParams: ContentMigrationParams[]) => {
 };
 
 const getJobStatus = (jobId: string) => {
-    const jobStatus = resultCache.getIfPresent(jobId);
+    const jobStatus = resultCache.getIfPresent<LayerMigrationBatchJobResult>(jobId);
     if (!jobStatus) {
         return {
             status: 404,

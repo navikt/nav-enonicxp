@@ -1,5 +1,5 @@
 import * as contextLib from '/lib/xp/context';
-import { ContextAttributes, RunContext } from '/lib/xp/context';
+import { ContextParams } from '/lib/xp/context';
 import { RepoBranch } from '../../types/common';
 import { ADMIN_PRINCIPAL, SUPER_USER, SYSTEM_ID_PROVIDER, SYSTEM_USER } from '../constants';
 
@@ -7,9 +7,9 @@ export type RunInContextOptions = {
     branch?: RepoBranch;
     asAdmin?: boolean;
     asCurrentUser?: boolean;
-} & Omit<RunContext<ContextAttributes>, 'branch' | 'user' | 'principals'>;
+} & Omit<ContextParams, 'branch' | 'user' | 'principals'>;
 
-type ContextAuthInfo = Pick<RunContext<ContextAttributes>, 'user' | 'principals'>;
+type ContextAuthInfo = Pick<ContextParams, 'user' | 'principals'>;
 
 const superUserOptions: ContextAuthInfo = {
     user: {
@@ -34,7 +34,7 @@ export const runInContext = <ReturnType>(
 
     const userOptions = asAdmin ? superUserOptions : !asCurrentUser ? systemUserOptions : {};
 
-    return contextLib.run<ReturnType, ContextAttributes>(
+    return contextLib.run<ReturnType>(
         {
             ...currentContext,
             ...(attributes && { attributes: { ...currentContext.attributes, ...attributes } }),

@@ -4,13 +4,13 @@ import httpClient from '/lib/http-client';
 import * as commonLib from '/lib/xp/common';
 import * as taskLib from '/lib/xp/task';
 import { createOrUpdateSchedule } from '../../scheduling/schedule-job';
-import { OfficeInformation } from '../../../site/content-types/office-information/office-information';
+import { OfficeInformation } from '@xp-types/site/content-types/office-information';
 import { NavNoDescriptor } from '../../../types/common';
-import { UpdateOfficeInfoConfig } from '../../../tasks/update-office-info/update-office-info-config';
 import { logger } from '../../utils/logging';
 import { CONTENT_ROOT_REPO_ID } from '../../constants';
 import { createObjectChecksum } from '../../utils/object-utils';
 import { runInContext } from '../../context/run-in-context';
+import { UpdateOfficeInfo } from '@xp-types/tasks/update-office-info';
 
 type OfficeInformationDescriptor = NavNoDescriptor<'office-information'>;
 
@@ -245,7 +245,7 @@ export const fetchAndUpdateOfficeInfo = (retry?: boolean) => {
 
 export const runOfficeInfoUpdateTask = (retry: boolean, scheduledTime?: string) => {
     if (scheduledTime) {
-        createOrUpdateSchedule<UpdateOfficeInfoConfig>({
+        createOrUpdateSchedule<UpdateOfficeInfo>({
             jobName: 'office_info_update',
             jobDescription: 'Updates legacy office info from norg',
             taskDescriptor: officeInfoUpdateTaskDescriptor,
@@ -259,7 +259,7 @@ export const runOfficeInfoUpdateTask = (retry: boolean, scheduledTime?: string) 
             masterOnly: false,
         });
     } else {
-        taskLib.submitTask<UpdateOfficeInfoConfig>({
+        taskLib.submitTask<UpdateOfficeInfo>({
             descriptor: officeInfoUpdateTaskDescriptor,
             config: {
                 retry,
@@ -269,7 +269,7 @@ export const runOfficeInfoUpdateTask = (retry: boolean, scheduledTime?: string) 
 };
 
 export const startOfficeInfoPeriodicUpdateSchedule = () => {
-    createOrUpdateSchedule<UpdateOfficeInfoConfig>({
+    createOrUpdateSchedule<UpdateOfficeInfo>({
         jobName: 'office_info_norg2_hourly',
         jobDescription: 'Updates legacy office information from norg2 every hour',
         jobSchedule: {
