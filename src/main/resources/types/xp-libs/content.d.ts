@@ -1,7 +1,6 @@
 declare module '*/lib/xp/content' {
     import {
         ContentDescriptor,
-        CustomContentDataConfigs,
         CustomContentDescriptor,
         ContentDataMapper,
     } from 'types/content-types/content-config';
@@ -101,7 +100,7 @@ declare module '*/lib/xp/content' {
             ContentType extends CustomContentDescriptor = CustomContentDescriptor,
         > = {
             contentType: ContentType;
-            data: CustomContentDataConfigs[ContentType];
+            data: XP.ContentTypes[ContentType];
             name?: string;
             parentPath: string;
             displayName?: string;

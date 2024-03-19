@@ -2,7 +2,6 @@ import { Component } from '/lib/xp/portal';
 import { BaseMedia, Content } from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
 import { GlobalNumberValueSetData } from './global-value-set';
-import { NavNoDescriptor } from '../common';
 import { EmptyObject } from '../util-types';
 import { GlobalCaseTimeSetData } from './global-case-time-set';
 import {
@@ -11,111 +10,21 @@ import {
     SearchExternalResourceData,
     SearchExternalResourceDescriptor,
 } from './search-config';
-import {
-    AlertInContext,
-    AnimatedIcons,
-    AreaPage,
-    Calculator,
-    ContactInformation,
-    ContentDataLocaleFallback,
-    ContentList,
-    ContentPageWithSidemenus,
-    CurrentTopicPage,
-    DynamicPage,
-    ExternalLink,
-    FormDetails,
-    FormIntermediateStep,
-    FormsOverview,
-    FragmentCreator,
-    FrontPage,
-    FrontPageNested,
-    GenericPage,
-    GuidePage,
-    InternalLink,
-    LargeTable,
-    MainArticle,
-    MainArticleChapter,
-    MegamenuItem,
-    Melding,
-    OfficeBranch,
-    OfficeEditorialPage,
-    OfficeInformation,
-    Overview,
-    PageList,
-    PayoutDates,
-    PressLandingPage,
-    ProductDetails,
-    PublishingCalendar,
-    PublishingCalendarEntry,
-    RedirectsFolder,
-    SearchConfigV2,
-    SectionPage,
-    SituationPage,
-    ThemedArticlePage,
-    ToolsPage,
-    TransportPage,
-    UserTestsConfig,
-    Video,
-} from '@xp-types/site/content-types';
 
-type CustomContentDataConfigsWithoutDescriptor = {
-    'animated-icons': AnimatedIcons;
-    'area-page': AreaPage;
-    calculator: Calculator;
-    'contact-information': ContactInformation;
-    'content-data-locale-fallback': ContentDataLocaleFallback;
-    'content-list': ContentList;
-    'content-page-with-sidemenus': ContentPageWithSidemenus;
-    'dynamic-page': DynamicPage;
-    'external-link': ExternalLink;
-    'fragment-creator': FragmentCreator;
-    'front-page': FrontPage;
-    'front-page-nested': FrontPageNested;
-    'global-case-time-set': GlobalCaseTimeSetData;
-    'global-value-set': GlobalNumberValueSetData;
-    'guide-page': GuidePage;
-    'internal-link': InternalLink;
-    'large-table': LargeTable;
-    'main-article': MainArticle;
-    'main-article-chapter': MainArticleChapter;
-    'megamenu-item': MegamenuItem;
-    melding: Melding;
-    'alert-in-context': AlertInContext;
-    'office-information': OfficeInformation;
-    'office-branch': OfficeBranch;
-    'current-topic-page': CurrentTopicPage;
-    'page-list': PageList;
-    'payout-dates': PayoutDates;
-    'publishing-calendar': PublishingCalendar;
-    'publishing-calendar-entry': PublishingCalendarEntry;
-    'product-details': ProductDetails;
-    'form-intermediate-step': FormIntermediateStep;
-    'form-details': FormDetails;
-    'generic-page': GenericPage;
-    'search-config-v2': SearchConfigV2;
-    'section-page': SectionPage;
-    overview: Overview;
-    'redirects-folder': RedirectsFolder;
-    'situation-page': SituationPage;
-    'office-editorial-page': OfficeEditorialPage;
-    'themed-article-page': ThemedArticlePage;
-    'tools-page': ToolsPage;
-    'transport-page': TransportPage;
-    'press-landing-page': PressLandingPage;
-    video: Video;
-    'forms-overview': FormsOverview;
-    'user-tests-config': UserTestsConfig;
-};
-
-// Add the app-specific descriptor prefix to all content types
-export type CustomContentDataConfigs = {
-    [Type in keyof CustomContentDataConfigsWithoutDescriptor as NavNoDescriptor<Type>]: CustomContentDataConfigsWithoutDescriptor[Type];
-};
+// Override types for content-types with a custom editor
+declare global {
+    namespace XP {
+        interface ContentTypes {
+            'no.nav.navno:global-case-time-set': GlobalCaseTimeSetData;
+            'no.nav.navno:global-value-set': GlobalNumberValueSetData;
+        }
+    }
+}
 
 export type ContentDataMapper<Type extends ContentDescriptor> = Type extends CustomContentDescriptor
     ? {
           type: Type;
-          data: CustomContentDataConfigs[Type];
+          data: XP.ContentTypes[Type];
           page: Component<'page'> | EmptyObject;
       }
     : Type extends 'portal:fragment'
@@ -169,9 +78,7 @@ export type MediaDescriptor =
     | 'media:vector'
     | 'media:video';
 
-export type CustomContentName = keyof CustomContentDataConfigsWithoutDescriptor;
-
-export type CustomContentDescriptor = keyof CustomContentDataConfigs;
+export type CustomContentDescriptor = keyof XP.ContentTypes;
 
 export type ContentDescriptor =
     | MediaDescriptor
