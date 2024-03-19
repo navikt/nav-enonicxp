@@ -1,24 +1,26 @@
 import * as schedulerLib from '/lib/xp/scheduler';
-import { ScheduleTypeCron, ScheduleTypeOneTime, PrincipalKeyUser } from '/lib/xp/scheduler';
+import { CronSchedule, OneTimeSchedule, UserKey } from '/lib/xp/scheduler';
 import * as clusterLib from '/lib/xp/cluster';
 import { NavNoDescriptor } from '../../types/common';
 import { logger } from '../utils/logging';
 import { runInContext } from '../context/run-in-context';
 import { SUPER_USER_FULL } from '../constants';
 
-type Props<TaskConfig> = {
+type Props<TaskConfig extends Record<string, unknown>> = {
     jobName: string;
     jobDescription?: string;
-    jobSchedule: ScheduleTypeCron | ScheduleTypeOneTime;
+    jobSchedule: CronSchedule | OneTimeSchedule;
     taskDescriptor: NavNoDescriptor;
     taskConfig: TaskConfig;
     enabled?: boolean;
     masterOnly?: boolean;
-    user?: PrincipalKeyUser;
+    user?: UserKey;
     onScheduleExistsAction?: 'modify' | 'overwrite' | 'abort';
 };
 
-export const createOrUpdateSchedule = <TaskConfig = Record<string, any>>({
+export const createOrUpdateSchedule = <
+    TaskConfig extends Record<string, unknown> = Record<string, unknown>,
+>({
     jobName,
     jobDescription,
     jobSchedule,

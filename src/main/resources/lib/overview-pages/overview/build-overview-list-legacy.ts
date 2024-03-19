@@ -4,7 +4,7 @@ import { ContentInOverviewPages, OverviewPageDetailedType, OverviewPageItem } fr
 import { getPublicPath } from '../../paths/public-path';
 import { sortByLocaleCompareOnField } from '../../utils/sort-utils';
 import { transformToOverviewItem } from './transform-to-overview-item';
-import { ProductDetails } from '../../../site/content-types/product-details/product-details';
+import { ProductDetails } from '@xp-types/site/content-types/product-details';
 import { logger } from '../../utils/logging';
 
 const getProductDetailsFromContent = (

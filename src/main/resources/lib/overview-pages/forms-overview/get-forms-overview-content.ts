@@ -1,7 +1,7 @@
 import * as contentLib from '/lib/xp/content';
 import { forceArray } from '../../utils/array-utils';
 import { contentTypesInFormsOverviewPages } from '../../contenttype-lists';
-import { FormsOverview } from '../../../site/content-types/forms-overview/forms-overview';
+import { FormsOverview } from '@xp-types/site/content-types/forms-overview';
 
 type Args = {
     audience: FormsOverview['audience'];

@@ -1,7 +1,7 @@
 import * as contentLib from '/lib/xp/content';
 import { ContentWithFormDetails, FormDetailsMap } from './types';
 import { forceArray } from '../../utils/array-utils';
-import { FormsOverview } from '../../../site/content-types/forms-overview/forms-overview';
+import { FormsOverview } from '@xp-types/site/content-types/forms-overview';
 
 export const buildFormDetailsMap = (
     contentWithFormDetails: ContentWithFormDetails[],

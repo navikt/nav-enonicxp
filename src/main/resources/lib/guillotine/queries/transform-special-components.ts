@@ -3,7 +3,7 @@ import { Content } from '/lib/xp/content';
 import { GuillotineComponent } from '../utils/process-components';
 import { RepoBranch } from '../../../types/common';
 import { logger } from '../../utils/logging';
-import { ProductDetails } from '../../../site/content-types/product-details/product-details';
+import { ProductDetails } from '@xp-types/site/content-types/product-details';
 import { runSitecontentGuillotineQuery } from './run-sitecontent-query';
 import { ContentDescriptor } from '../../../types/content-types/content-config';
 import { contentTypesWithProductDetails } from '../../contenttype-lists';
@@ -42,7 +42,7 @@ const filterRelevantComponents = (
 // to render in the part.
 const transformProductDetailsPart = (
     component: GuillotineComponent,
-    baseContent: Content,
+    baseContent: Content<any>,
     branch: RepoBranch,
     runSitecontentGuillotineQuery: SitecontentQueryFunc
 ): GuillotineComponent => {

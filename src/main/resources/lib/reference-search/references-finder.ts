@@ -15,7 +15,7 @@ import { getParentPath } from '../paths/path-utils';
 import { NON_LOCALIZED_QUERY_FILTER } from '../localization/layers-repo-utils/localization-state-filters';
 import { forceArray } from '../utils/array-utils';
 import { isValidBranch } from '../context/branches';
-import { Overview } from '../../site/content-types/overview/overview';
+import { Overview } from '@xp-types/site/content-types/overview';
 
 type ContentDescriptorSet = ReadonlySet<ContentDescriptor>;
 
@@ -253,7 +253,7 @@ export class ReferencesFinder {
         return result;
     }
 
-    private getRelevantOverviewTypes(content: ContentNode): OverviewType[] {
+    private getRelevantOverviewTypes(content: ContentNode<any>): OverviewType[] {
         if (content.type === 'no.nav.navno:product-details') {
             return forceArray(content.data.detailType);
         }
@@ -274,7 +274,7 @@ export class ReferencesFinder {
     }
 
     // Overview pages are generated from meta-data of certain content types
-    private findOverviewRefs(content: ContentNode): QueryResult {
+    private findOverviewRefs(content: ContentNode<any>): QueryResult {
         if (!typesWithOverviewPages.has(content.type)) {
             return [];
         }
@@ -373,7 +373,7 @@ export class ReferencesFinder {
     };
 
     // Forms overview pages are generated from meta-data of certain content types
-    private findFormsOverviewRefs(content: ContentNode): QueryResult {
+    private findFormsOverviewRefs(content: ContentNode<any>): QueryResult {
         if (!typesWithFormsOverviewPages.has(content.type)) {
             return [];
         }

@@ -1,7 +1,7 @@
 import { forceArray } from '../../../utils/array-utils';
 import { stripPathPrefix } from '../../../paths/path-utils';
 import { ContentNode } from '../../../../types/content-types/content-config';
-import { Audience as AudienceMixin } from '../../../../site/mixins/audience/audience';
+import { Audience as AudienceMixin } from '@xp-types/site/mixins/audience';
 import { ArrayOrSingle } from '../../../../types/util-types';
 
 type MainAudience = AudienceMixin['audience']['_selected'];
@@ -38,7 +38,7 @@ const pathStartToSearchAudience = Object.entries({
     '/no/nav-og-samfunn/samarbeid/for-kommunen': 'provider_municipality_employed',
 } satisfies Record<string, SearchDocumentAudience | null>);
 
-const getAudienceFromData = (content: ContentNode): SearchDocumentAudience[] | null => {
+const getAudienceFromData = (content: ContentNode<any>): SearchDocumentAudience[] | null => {
     const audience = content.data?.audience as
         | ArrayOrSingle<MainAudience>
         | AudienceMixin['audience']

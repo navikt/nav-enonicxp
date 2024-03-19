@@ -48,7 +48,7 @@ const getNodesFromAllLayers = ({ path, branch }: { path: string; branch: RepoBra
     return getLayersMultiConnection(branch).query(getPathQueryParams(path)).hits;
 };
 
-const getContentWithCustomPath = (path: string, hits: Content[]) => {
+const getContentWithCustomPath = (path: string, hits: Content<any>[]) => {
     const strippedPath = stripPathPrefix(path);
 
     const hitsWithCustomPath = hits.filter((hit) => hit.data?.customPath === strippedPath);

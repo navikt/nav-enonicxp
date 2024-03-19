@@ -2,7 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { runInContext } from '../context/run-in-context';
-import { LanguagesLegacy } from '../../site/mixins/languages-legacy/languages-legacy';
+import { LanguagesLegacy } from '@xp-types/site/mixins/languages-legacy';
 import { getPublicPath } from '../paths/public-path';
 import { CONTENT_LOCALE_DEFAULT } from '../constants';
 import { logger } from '../utils/logging';

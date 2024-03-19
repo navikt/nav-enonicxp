@@ -4,7 +4,7 @@ import {
     contentTypesInOverviewPages,
 } from '../../contenttype-lists';
 import { forceArray } from '../../utils/array-utils';
-import { Overview } from '../../../site/content-types/overview/overview';
+import { Overview } from '@xp-types/site/content-types/overview';
 
 type Args = {
     overviewType: Overview['overviewType'];

@@ -1,4 +1,4 @@
-export const getUnixTimeFromDateTimeString = (datetime?: string): number => {
+export const getUnixTimeFromDateTimeString = (datetime?: string | null): number => {
     if (!datetime) {
         return 0;
     }

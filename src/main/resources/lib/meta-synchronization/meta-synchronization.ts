@@ -1,15 +1,15 @@
 import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { getRepoConnection } from '../utils/repo-utils';
 import { runInContext } from '../context/run-in-context';
 import { CONTENT_ROOT_REPO_ID } from '../constants';
 import { logger } from '../utils/logging';
-import { Content } from '/lib/xp/content';
-import { NodeContent } from '/lib/xp/node';
 import { getLayersData } from '../localization/layers-data';
 import { getNodeVersions } from '../utils/version-utils';
 import { isContentLocalized } from '../localization/locale-utils';
+import { ContentNode } from '../../types/content-types/content-config';
 
-type DynamicPageContent = NodeContent<Content>;
+type DynamicPageContent = ContentNode<any> | Content<any>;
 
 const metaDataToSync = [
     'audience',

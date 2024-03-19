@@ -4,7 +4,7 @@ import * as schedulerLib from '/lib/xp/scheduler';
 import { APP_DESCRIPTOR, URLS } from '../constants';
 import { logger } from '../utils/logging';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
-import { CacheInvalidateAllConfig } from '../../tasks/cache-invalidate-all/cache-invalidate-all-config';
+import { CacheInvalidateAll } from '@xp-types/tasks/cache-invalidate-all';
 
 const NUM_RETRIES = 3;
 const TIMEOUT_MS = 10000;
@@ -40,7 +40,7 @@ export const frontendInvalidateAllDeferred = (
         return;
     }
 
-    createOrUpdateSchedule<CacheInvalidateAllConfig>({
+    createOrUpdateSchedule<CacheInvalidateAll>({
         jobName: DEFERRED_INVALIDATION_JOB_NAME,
         jobSchedule: {
             type: 'ONE_TIME',

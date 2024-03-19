@@ -19,10 +19,12 @@
                         <input name="ingress" type="HtmlArea">
                             <label>Overstyr ingress</label>
                         </input>
-                        <!-- Dummy value for backwards compatibility (prevents graphql schema error) -->
-                        <input name="title" type="RadioButton">
-                            <label>-</label>
-                            <occurrences minimum="0" maximum="1"/>
+                        <!-- Dummy value to prevent graphql-errors for undefined field -->
+                        <input name="title" type="TextLine">
+                            <label>(tomt felt, skal ikke brukes)</label>
+                            <config>
+                                <regexp>^$</regexp>
+                            </config>
                         </input>
                     </items>
                 </option>
@@ -38,15 +40,19 @@
                         <input name="ingress" type="HtmlArea">
                             <label>Overstyr ingress</label>
                         </input>
-                        <!-- Dummy value for backwards compatibility (prevents graphql schema error) -->
-                        <input name="url" type="RadioButton">
-                            <label>-</label>
-                            <occurrences minimum="0" maximum="1"/>
+                        <!-- Dummy value to prevent graphql-errors for undefined field -->
+                        <input name="url" type="TextLine">
+                            <label>(tomt felt, skal ikke brukes)</label>
+                            <config>
+                                <regexp>^$</regexp>
+                            </config>
                         </input>
-                        <!-- Dummy value for backwards compatibility (prevents graphql schema error) -->
-                        <input name="title" type="RadioButton">
-                            <label>-</label>
-                            <occurrences minimum="0" maximum="1"/>
+                        <!-- Dummy value to prevent graphql-errors for undefined field -->
+                        <input name="title" type="TextLine">
+                            <label>(tomt felt, skal ikke brukes)</label>
+                            <config>
+                                <regexp>^$</regexp>
+                            </config>
                         </input>
                     </items>
                 </option>
@@ -62,10 +68,12 @@
                         <input name="ingress" type="HtmlArea">
                             <label>Overstyr ingress</label>
                         </input>
-                        <!-- Dummy value for backwards compatibility (prevents graphql schema error) -->
-                        <input name="phoneNumber" type="RadioButton">
-                            <label>-</label>
-                            <occurrences minimum="0" maximum="1"/>
+                        <!-- Dummy value to prevent graphql-errors for undefined field -->
+                        <input name="phoneNumber" type="TextLine">
+                            <label>(tomt felt, skal ikke brukes)</label>
+                            <config>
+                                <regexp>^$</regexp>
+                            </config>
                         </input>
                     </items>
                 </option>

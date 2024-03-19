@@ -1,14 +1,14 @@
 import * as contentLib from '/lib/xp/content';
 import { getRepoConnection } from '../../lib/utils/repo-utils';
-import { UnpublishExpiredContentConfig } from './unpublish-expired-content-config';
 import { scheduleUnpublish } from '../../lib/scheduling/scheduled-publish';
 import { logger } from '../../lib/utils/logging';
 import { getLayersData } from '../../lib/localization/layers-data';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { CONTENT_ROOT_REPO_ID } from '../../lib/constants';
 import { getUnixTimeFromDateTimeString } from '../../lib/utils/datetime-utils';
+import { UnpublishExpiredContent } from '@xp-types/tasks/unpublish-expired-content';
 
-export const run = (params: UnpublishExpiredContentConfig) => {
+export const run = (params: UnpublishExpiredContent) => {
     const { id, path, repoId = CONTENT_ROOT_REPO_ID } = params;
 
     logger.info(`Running task for unpublishing expired content - ${id} - ${path}`);

@@ -45,7 +45,6 @@ declare module '*/lib/xp/node' {
             editor: (node: RepoNode<NodeData>) => RepoNode<NodeData>;
         };
 
-        // TODO: add more function overrides as needed
         interface RepoConnection {
             get<NodeData = any>(
                 keys: string | string[] | NodeGetParams | NodeGetParams[]
