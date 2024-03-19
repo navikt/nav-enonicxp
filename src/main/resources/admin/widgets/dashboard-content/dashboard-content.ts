@@ -11,6 +11,9 @@ import { NON_LOCALIZED_QUERY_FILTER } from '../../../lib/localization/layers-rep
 import { contentTypesRenderedByEditorFrontend } from '../../../lib/contenttype-lists';
 import dayjs from '/assets/dayjs/1.11.9/dayjs.min.js';
 import utc from '/assets/dayjs/1.11.9/plugin/utc.js';
+import { getContentProjectIdFromRepoId, getRepoConnection } from '../../../lib/utils/repo-utils';
+import { notNullOrUndefined } from '../../../lib/utils/mixed-bag-of-utils';
+import { removeDuplicates as _removeDuplicates } from '../../../lib/utils/array-utils';
 
 dayjs.extend(utc);
 
@@ -32,11 +35,12 @@ type AuditLogEntry = AuditLog<AuditLogData>;
 
 const fromDate = dayjs().subtract(6, 'months').toISOString(); // Går bare 6 måneder tilbake i tid
 
-const contentTypes2Show = [
+const contentTypesToShow = [
     ...contentTypesRenderedByEditorFrontend,
     `${APP_DESCRIPTOR}:content-list`,
-];
-const contentInfo = contentTypes2Show.map((contentType) => {
+] as const;
+
+const contentInfo = contentTypesToShow.map((contentType) => {
     const typeInfo = contentLib.getType(contentType);
     return {
         type: contentType,
@@ -44,14 +48,6 @@ const contentInfo = contentTypes2Show.map((contentType) => {
     };
 });
 
-const asAdminParams: Pick<Source, 'user' | 'principals'> = {
-    user: {
-        login: SUPER_USER,
-    },
-    principals: [ADMIN_PRINCIPAL],
-};
-const removeUndefined = <S>(value: S | undefined): value is S => value !== undefined;
-type Params = Omit<Source, 'user' | 'principals'> & { asAdmin?: boolean };
 type ContentInfo = {
     displayName: string;
     contentType: string;
@@ -61,12 +57,6 @@ type ContentInfo = {
     url: string;
 };
 
-const getRepoConnection = ({ repoId, branch, asAdmin }: Params) =>
-    nodeLib.connect({
-        repoId,
-        branch,
-        ...(asAdmin && asAdminParams),
-    });
 const getRepoId = (entry: AuditLogEntry) => {
     const object = entry.objects[0];
     if (!object) {
@@ -74,7 +64,7 @@ const getRepoId = (entry: AuditLogEntry) => {
     }
     return object.split(':')[0];
 };
-const repoStr = (repoId: string) => repoId.replace('com.enonic.cms.', '');
+
 const layerStr = (repo: string) => (repo !== 'default' ? ` [${repo.replace('navno-', '')}]` : '');
 
 // Lag dayjs-dato - Kan være på Elastic-format (yyyy-mm-ddThh:mm:ss.mmmmmmZ)
@@ -103,18 +93,21 @@ const sortEntries = (entries: AuditLogEntry[]) => {
     return entries.sort((a, b) => (dayjs(a.time).isAfter(dayjs(b.time)) ? -1 : 1));
 };
 
+const getContentId = (entry: AuditLogEntry) =>
+    entry.data.params?.contentIds || entry.data.params?.contentId;
+
 const getContentFromLogEntries = (
     logEntries: AuditLogEntry[],
     publish: boolean,
     desc: boolean // Sorter synkende (publish/unpublish) eller stigende (prepublish)
 ): ContentInfo[] | undefined => {
     // Fjern duplikater og bygg datamodell for visning
-    const entries = check4Duplicates(logEntries).map((entry) => {
+    const entries = removeDuplicates(logEntries).map((entry) => {
         const repoId = getRepoId(entry);
         if (!repoId) {
             return undefined;
         }
-        const contentId = entry.data.params?.contentIds || entry.data.params?.contentId;
+        const contentId = getContentId(entry);
         if (!contentId) {
             return undefined;
         }
@@ -128,7 +121,7 @@ const getContentFromLogEntries = (
                         must: {
                             hasValue: {
                                 field: 'type',
-                                values: contentTypes2Show,
+                                values: contentTypesToShow,
                             },
                         },
                     },
@@ -149,8 +142,8 @@ const getContentFromLogEntries = (
             return undefined;
         }
 
-        const repo = repoStr(repoId);
-        const layer = layerStr(repo);
+        const projectId = getContentProjectIdFromRepoId(repoId);
+        const layer = layerStr(projectId);
         let status = '',
             modifyDate,
             contentUrl;
@@ -173,13 +166,13 @@ const getContentFromLogEntries = (
             modifiedTimeStr: dayjs(modifyDate).format('DD.MM.YYYY - HH:mm:ss'),
             status,
             title: content._path.replace('/content/www.nav.no/', ''),
-            url: `/admin/tool/com.enonic.app.contentstudio/main/${repo}/${contentUrl}`,
+            url: `/admin/tool/com.enonic.app.contentstudio/main/${projectId}/${contentUrl}`,
         };
     });
 
     // Fjern tomme elementer (slette/ikke våre innholdstyper), sorter på korrekt dato og kutt av til 5
     const returnEntries = entries
-        .filter(removeUndefined)
+        .filter(notNullOrUndefined)
         .sort((a, b) =>
             dayjs(a.modifyDate).isAfter(dayjs(b.modifyDate)) ? (desc ? -1 : 1) : desc ? 1 : -1
         )
@@ -187,31 +180,17 @@ const getContentFromLogEntries = (
     return returnEntries.length > 0 ? returnEntries : undefined;
 };
 
-const check4Duplicates = (entries: AuditLogEntry[]) => {
-    const duplicates: AuditLogEntry[] = [];
-    return entries.filter((entry) => {
-        const contentId = entry.data.params?.contentIds || entry.data.params?.contentId;
-        const repoId = getRepoId(entry);
-        const duplicate = duplicates.find((duplicate) => {
-            const dupCheckContentId =
-                duplicate.data.params?.contentIds || duplicate.data.params?.contentId;
-            return contentId === dupCheckContentId && repoId === getRepoId(duplicate);
-        });
-        if (duplicate) {
-            return false;
-        } else {
-            duplicates.push(entry);
-            return true;
-        }
-    });
-};
+const removeDuplicates = (entries: AuditLogEntry[]) =>
+    _removeDuplicates(
+        entries,
+        (a, b) => getContentId(a) === getContentId(b) && getRepoId(a) === getRepoId(b)
+    );
 
 const newerEntryFound = (entry: AuditLogEntry, list: AuditLogEntry[]) => {
-    const contentId = entry.data.params?.contentIds || entry.data.params?.contentId;
+    const contentId = getContentId(entry);
     const repoId = getRepoId(entry);
     return list.find((listEntry) => {
-        const listEntryContentId =
-            listEntry.data.params?.contentIds || listEntry.data.params?.contentId;
+        const listEntryContentId = getContentId(listEntry);
         if (contentId === listEntryContentId && repoId === getRepoId(listEntry)) {
             return dayjs(listEntry.time).isAfter(entry.time);
         }
@@ -230,11 +209,11 @@ const prePublishedEntryFound = (
         // Skal ikke teste på forhåndsubliseringer
         return false;
     }
-    const entryContentId = entry.data.params?.contentIds;
+    const entryContentId = getContentId(entry);
     const entryRepoId = getRepoId(entry);
 
     return published.find((publishedEntry) => {
-        const publishedEntryContentId = publishedEntry.data.params?.contentIds;
+        const publishedEntryContentId = getContentId(publishedEntry);
         if (
             entryContentId === publishedEntryContentId &&
             entryRepoId === getRepoId(publishedEntry)
@@ -372,14 +351,14 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
         const bDate = bContentPublishInfo?.to || b.time;
         return dayjs(aDate).isAfter(dayjs(bDate)) ? -1 : 1;
     });
-    unpublishedEntries = check4Duplicates(unpublishedEntries);
+    unpublishedEntries = removeDuplicates(unpublishedEntries);
     // 2. Fjern fra avpublisert hvis publisering eller forhåndspublisering av nyere dato
     unpublishedEntries = unpublishedEntries.filter((entry) => {
-        const contentId = entry.data.params?.contentIds;
+        const contentId = getContentId(entry);
         const repoId = getRepoId(entry);
         const publishedLater = newerEntryFound(entry, publishedEntries);
         const prePublishedLater = prePublishedEntries.find((duplicate) => {
-            const dupCheckContentId = duplicate.data.params?.contentIds;
+            const dupCheckContentId = getContentId(duplicate);
             if (contentId === dupCheckContentId && repoId === getRepoId(duplicate)) {
                 const contentPublishInfo = entry.data.params?.contentPublishInfo;
                 const publishFromDate =
@@ -414,7 +393,7 @@ const getUsersModifications = (user: `user:${string}:${string}`) => {
                     must: {
                         hasValue: {
                             field: 'type',
-                            values: contentTypes2Show,
+                            values: contentTypesToShow,
                         },
                     },
                 },
@@ -461,8 +440,8 @@ const getUsersModifications = (user: `user:${string}:${string}`) => {
             }
 
             const modifiedLocalTime = dayjsDateTime(draftContent.modifiedTime);
-            const repo = repoStr(hit.repoId);
-            const layer = layerStr(repo);
+            const projectId = getContentProjectIdFromRepoId(hit.repoId);
+            const layer = layerStr(projectId);
             const contentTypeInfo = contentInfo.find((el) => el.type === draftContent.type);
 
             return {
@@ -472,7 +451,7 @@ const getUsersModifications = (user: `user:${string}:${string}`) => {
                 modifiedTimeStr: dayjs(modifiedLocalTime).format('DD.MM.YYYY - HH:mm:ss'),
                 status,
                 title: draftContent._path.replace('/content/www.nav.no/', ''),
-                url: `/admin/tool/com.enonic.app.contentstudio/main/${repo}/edit/${draftContent._id}`,
+                url: `/admin/tool/com.enonic.app.contentstudio/main/${projectId}/edit/${draftContent._id}`,
             };
         })
         .filter((entry) => !!entry)
