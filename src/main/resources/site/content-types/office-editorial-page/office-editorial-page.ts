@@ -3,7 +3,100 @@ export interface OfficeEditorialPage {
   /**
    * Velg kontortype som denne skal vises på
    */
-  type: Array<"LOKAL" | "HMS" | "ALS" | "OPPFUTLAND" | "FPY" | "YTA" | "KLAGE" | "OKONOMI">;
+  type:
+    | {
+        /**
+         * Selected
+         */
+        _selected: "LOKAL";
+
+        /**
+         * Lokalkontor
+         */
+        LOKAL: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "HMS";
+
+        /**
+         * Hjelpemiddelsentral
+         */
+        HMS: {
+          /**
+           * Velg hjelpemiddelsentral
+           */
+          hmsOffice: string;
+        };
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "ALS";
+
+        /**
+         * Arbeidslivssenter
+         */
+        ALS: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "OPPFUTLAND";
+
+        /**
+         * NAV Utland og fellestjenester
+         */
+        OPPFUTLAND: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "FPY";
+
+        /**
+         * Saksbehandlingsenheter og styringsenheter (FPY)
+         */
+        FPY: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "YTA";
+
+        /**
+         * Saksbehandlingsenheter og styringsenheter (YTA)
+         */
+        YTA: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "KLAGE";
+
+        /**
+         * NAV Klageinstans
+         */
+        KLAGE: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "OKONOMI";
+
+        /**
+         * NAV Økonomi Stønad
+         */
+        OKONOMI: Record<string, unknown>;
+      };
 
   /**
    * Legg til andre språkversjoner

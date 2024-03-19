@@ -6,20 +6,36 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <input name="type" type="ComboBox">
+        <option-set name="type">
             <label>Velg kontortype som denne skal vises på</label>
-            <occurrences minimum="1" maximum="0"/>
-            <config>
-                <option value="LOKAL">Lokalkontor</option>  
-                <option value="HMS">Hjelpemiddelsentral</option>
-                <option value="ALS">Arbeidslivssenter</option>
-                <option value="OPPFUTLAND">NAV Utland og fellestjenester</option>
-                <option value="FPY">Saksbehandlingsenheter og styringsenheter (FPY)</option>
-                <option value="YTA">Saksbehandlingsenheter og styringsenheter (YTA)</option>
-                <option value="KLAGE">NAV Klageinstans</option>
-                <option value="OKONOMI">NAV Økonomi Stønad</option>
-            </config>
-        </input>
+            <occurrences minimum="1" maximum="1"/>
+            <options minimum="1" maximum="1">
+                <option name="LOKAL"><label>Lokalkontor</label></option>  
+                <option name="HMS">
+                    <label>Hjelpemiddelsentral</label>
+                    <items>
+                        <input type="CustomSelector" name="hmsOffice">
+                            <label>Velg hjelpemiddelsentral</label>
+                            <occurrences minimum="1" maximum="1"/>
+                            <config>
+                                <service>contentSelector</service>
+                                <param value="contentTypes">
+                                    ["no.nav.navno:office-branch"]
+                                </param>
+                                <param value="selectorQuery">data.type="HMS"</param>
+                                <param value="sort">data.area ASC, displayName ASC</param>
+                            </config>
+                        </input>
+                    </items>
+                </option>
+                <option name="ALS"><label>Arbeidslivssenter</label></option>
+                <option name="OPPFUTLAND"><label>NAV Utland og fellestjenester</label></option>
+                <option name="FPY"><label>Saksbehandlingsenheter og styringsenheter (FPY)</label></option>
+                <option name="YTA"><label>Saksbehandlingsenheter og styringsenheter (YTA)</label></option>
+                <option name="KLAGE"><label>NAV Klageinstans</label></option>
+                <option name="OKONOMI"><label>NAV Økonomi Stønad</label></option>
+            </options>
+        </option-set>
         <mixin name="dynamic-page-common"/>
     </form>
 </content-type>
