@@ -1,7 +1,6 @@
 import thymeleafLib from '/lib/thymeleaf';
 import * as authLib from '/lib/xp/auth';
-import * as auditLogLib from '/lib/xp/auditlog';
-import { AuditLog } from '/lib/xp/auditlog';
+import { AuditLog, UserKey } from '/lib/xp/auditlog';
 import * as contentLib from '/lib/xp/content';
 import { APP_DESCRIPTOR } from '../../../lib/constants';
 import { getLayersMultiConnection } from '../../../lib/localization/layers-repo-utils/layers-repo-connection';
@@ -12,6 +11,7 @@ import utc from '/assets/dayjs/1.11.9/plugin/utc.js';
 import { getContentProjectIdFromRepoId, getRepoConnection } from '../../../lib/utils/repo-utils';
 import { notNullOrUndefined } from '../../../lib/utils/mixed-bag-of-utils';
 import { removeDuplicates as _removeDuplicates } from '../../../lib/utils/array-utils';
+import { getAuditLogEntries } from './utils/auditLogQuery';
 
 dayjs.extend(utc);
 
@@ -29,7 +29,7 @@ type AuditLogData = {
     };
 };
 
-type AuditLogEntry = AuditLog<AuditLogData>;
+export type AuditLogEntry = AuditLog<AuditLogData>;
 
 const getFromDate = () => dayjs().subtract(6, 'months').toISOString(); // Går bare 6 måneder tilbake i tid
 
@@ -228,21 +228,29 @@ const prePublishedEntryFound = (
 };
 
 // Hent alle brukers siste publiseringer, inkludert forhåndspubliseringer og avpubliseringer
-const getUsersPublications = (user: `user:${string}:${string}`) => {
-    const logEntries = auditLogLib.find({
-        count: 5000,
-        from: getFromDate(),
-        users: [user],
-    }) as any;
-    const publishedLogEntries = logEntries.hits.filter(
-        (entry: AuditLogEntry) => entry.type === 'system.content.publish'
-    );
-    const unpublishedLogEntries = logEntries.hits.filter(
-        (entry: AuditLogEntry) => entry.type === 'system.content.unpublishContent'
-    );
-    const archivedLogEntries = logEntries.hits.filter(
-        (entry: AuditLogEntry) => entry.type === 'system.content.archive'
-    );
+const getUsersPublications = (user: UserKey) => {
+    const from = getFromDate();
+
+    const publishedLogEntries = getAuditLogEntries({
+        type: 'system.content.publish',
+        user,
+        from,
+        count: 100,
+    });
+
+    const unpublishedLogEntries = getAuditLogEntries({
+        type: 'system.content.unpublishContent',
+        user,
+        from,
+        count: 100,
+    });
+
+    const archivedLogEntries = getAuditLogEntries({
+        type: 'system.content.archive',
+        user,
+        from,
+        count: 100,
+    });
 
     // Gjennomgå arkivert-listen for eventuelt å legge til i avpublisert
     archivedLogEntries.forEach((entry: AuditLogEntry) => {
@@ -367,7 +375,7 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
 };
 
 // Hent brukers endringer av innhold siste 6 måneder (bare lokalisert innhold av "våre" innholdsyper)
-const getUsersModifications = (user: `user:${string}:${string}`) => {
+const getUsersModifications = (user: UserKey) => {
     const repos = getLayersMultiConnection('draft');
     return repos
         .query({

@@ -25,4 +25,4 @@ const dashboardInfo = () => {
     };
 };
 
-exports.get = dashboardInfo;
+export const get = dashboardInfo;
