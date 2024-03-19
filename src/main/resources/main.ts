@@ -14,13 +14,13 @@ import { activateContentListItemUnpublishedListener } from './lib/contentlists/r
 import { startFailsafeSchedule } from './lib/scheduling/scheduler-failsafe';
 import { activateCustomPathNodeListeners } from './lib/paths/custom-paths/custom-path-event-listeners';
 import { createOfficeBranchFetchSchedule } from './lib/office-pages/office-branch-tasks';
-import { activateSearchIndexEventHandlers } from './lib/search/search-event-handlers';
+import { activateSearchIndexEventHandlers } from './lib/search/_legacy/search-event-handlers';
 import { hookLibsWithTimeTravel } from './lib/time-travel/time-travel-hooks';
-import { initSearchRepo } from './lib/search/search-repo';
+import { initSearchRepo } from './lib/search/_legacy/search-repo';
 import { initLayersData } from './lib/localization/layers-data';
 import { activateLayersEventListeners } from './lib/localization/publish-events';
 import { activateContentUpdateListener } from './lib/contentUpdate/content-update-listener';
-import { activateExternalSearchIndexEventHandlers } from './lib/search/external/event-handlers';
+import { activateExternalSearchIndexEventHandlers } from './lib/search/event-handlers';
 import { initializeMainDatanodeSelection } from './lib/cluster-utils/main-datanode';
 
 updateClusterInfo();

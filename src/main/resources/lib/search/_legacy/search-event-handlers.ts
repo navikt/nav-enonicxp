@@ -1,8 +1,8 @@
 import * as eventLib from '/lib/xp/event';
 import * as taskLib from '/lib/xp/task';
 import { getSearchConfig, revalidateSearchConfigCache } from './config';
-import { logger } from '../utils/logging';
-import { CONTENT_ROOT_REPO_ID } from '../constants';
+import { logger } from '../../utils/logging';
+import { CONTENT_ROOT_REPO_ID } from '../../constants';
 import { updateSearchNode } from './update-one';
 import { revalidateAllSearchNodesSync, revalidateAllSearchNodesAbort } from './update-all';
 import {
@@ -11,10 +11,10 @@ import {
     queueUpdateAll,
     queueUpdateForContent,
 } from './search-repo';
-import { getLayersData } from '../localization/layers-data';
-import { forceArray } from '../utils/array-utils';
-import { customListenerType } from '../utils/events';
-import { isMainDatanode } from '../cluster-utils/main-datanode';
+import { getLayersData } from '../../localization/layers-data';
+import { forceArray } from '../../utils/array-utils';
+import { customListenerType } from '../../utils/events';
+import { isMainDatanode } from '../../cluster-utils/main-datanode';
 
 let isActive = false;
 let isRunningConfigUpdate = false;

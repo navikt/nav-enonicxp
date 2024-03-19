@@ -1,0 +1,16 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Aktuelle situasjoner</display-name>
+    <description>Viser aktuelle situasjoner basert på va som er valgt i metadata til venstre.</description>
+    <form>
+        <input name="title" type="TextLine">
+            <label>Overstyr tittel</label>
+            <occurrences minimum="0" maximum="1" />
+        </input>
+        <input name="description" type="TextArea">
+            <label>Overstyr introduksjon (1-2 linjer)</label>
+        </input>
+    </form>
+    <config>
+        <allow-on-content-type>${app}:content-page-with-sidemenus</allow-on-content-type>
+    </config>
+</part>

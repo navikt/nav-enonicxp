@@ -53,6 +53,7 @@ export const get = (req: XP.Request) => {
         return {
             status: 400,
             body: {
+                result: 'error',
                 message: `Parameter "contentId" is required`,
             },
         };
@@ -62,6 +63,7 @@ export const get = (req: XP.Request) => {
         return {
             status: 400,
             body: {
+                result: 'error',
                 message: `Parameter "locale" is required and must be a valid locale (got ${locale})`,
             },
         };
@@ -76,6 +78,7 @@ export const get = (req: XP.Request) => {
             status: 404,
             contentType: 'application/json',
             body: {
+                result: 'error',
                 message: `Content not found for "${contentId}" in locale "${locale}"`,
             },
         };

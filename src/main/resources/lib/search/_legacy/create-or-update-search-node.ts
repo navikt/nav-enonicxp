@@ -1,21 +1,21 @@
 import { RepoConnection, RepoNode } from '/lib/xp/node';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { ContentFacet, SearchNode, SearchNodeCreateParams } from '../../types/search';
-import { logger } from '../utils/logging';
+import { ContentFacet, SearchNode, SearchNodeCreateParams } from '../../../types/search';
+import { logger } from '../../utils/logging';
 import {
     deleteSearchNode,
     facetsAreEqual,
-    getSearchRepoConnection,
     querySearchNodesForContent,
     SEARCH_REPO_CONTENT_BASE_NODE,
 } from './search-utils';
-import { generateUUID } from '../utils/uuid';
-import { getPublicPath } from '../paths/public-path';
-import { URLS } from '../constants';
-import { dateTimesAreEqual, fixDateFormat } from '../utils/datetime-utils';
-import { forceArray } from '../utils/array-utils';
-import { hasExternalProductUrl } from '../paths/path-utils';
+import { generateUUID } from '../../utils/uuid';
+import { getPublicPath } from '../../paths/public-path';
+import { URLS } from '../../constants';
+import { dateTimesAreEqual, fixDateFormat } from '../../utils/datetime-utils';
+import { forceArray } from '../../utils/array-utils';
+import { hasExternalProductUrl } from '../../paths/path-utils';
+import { getSearchRepoConnection } from '../utils';
 
 const SEARCH_REPO_CONTENT_PARENT_PATH = `/${SEARCH_REPO_CONTENT_BASE_NODE}`;
 

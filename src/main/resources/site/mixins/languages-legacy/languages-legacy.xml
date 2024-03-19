@@ -1,12 +1,10 @@
 <mixin>
     <form>
         <field-set>
-            <label>Legg til andre språkversjoner</label>
+            <label>Legacy språkversjoner (dersom layers ikke kan benyttes)</label>
             <items>
                 <input name="languages" type="ContentSelector">
                     <label>Legg til andre språkversjoner</label>
-                    <help-text>Kun relevant hvis det eksisterer flere språkversjoner av innholdet.
-                    </help-text>
                     <occurrences maximum="0" minimum="0"/>
                     <config>
                         <allowContentType>${app}:main-article</allowContentType>

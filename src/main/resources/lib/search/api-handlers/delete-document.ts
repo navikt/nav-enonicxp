@@ -1,4 +1,4 @@
-import { logger } from '../../../utils/logging';
+import { logger } from '../../utils/logging';
 import { searchApiRequest } from './search-api-request';
 
 export const searchApiDeleteDocument = (documentId: string) => {
@@ -8,9 +8,9 @@ export const searchApiDeleteDocument = (documentId: string) => {
         connectionTimeout: 10000,
     });
 
-    // const logLevel = response.status < 300 ? 'info' : 'error';
+    const logLevel = response.status < 400 ? 'info' : 'error';
 
-    logger.info(
+    logger[logLevel](
         `Response from search/delete api for ${documentId}: ${response.status} - ${JSON.stringify(
             response.body
         )}`

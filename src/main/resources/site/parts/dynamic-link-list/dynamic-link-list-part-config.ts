@@ -11,9 +11,9 @@ export interface DynamicLinkListPartConfig {
   hideTitle: boolean;
 
   /**
-   * Lenker med chevron
+   * Vis listen som
    */
-  chevron: boolean;
+  listType: "default" | "chevron" | "bulletlist";
 
   /**
    * Lenker
