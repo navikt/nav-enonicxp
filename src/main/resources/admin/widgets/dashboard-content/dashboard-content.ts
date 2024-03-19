@@ -1,11 +1,9 @@
 import thymeleafLib from '/lib/thymeleaf';
 import * as authLib from '/lib/xp/auth';
-import * as nodeLib from '/lib/xp/node';
 import * as auditLogLib from '/lib/xp/auditlog';
 import { AuditLog } from '/lib/xp/auditlog';
 import * as contentLib from '/lib/xp/content';
-import { Source } from '/lib/xp/node';
-import { ADMIN_PRINCIPAL, APP_DESCRIPTOR, SUPER_USER } from '../../../lib/constants';
+import { APP_DESCRIPTOR } from '../../../lib/constants';
 import { getLayersMultiConnection } from '../../../lib/localization/layers-repo-utils/layers-repo-connection';
 import { NON_LOCALIZED_QUERY_FILTER } from '../../../lib/localization/layers-repo-utils/localization-state-filters';
 import { contentTypesRenderedByEditorFrontend } from '../../../lib/contenttype-lists';
@@ -33,7 +31,7 @@ type AuditLogData = {
 
 type AuditLogEntry = AuditLog<AuditLogData>;
 
-const fromDate = dayjs().subtract(6, 'months').toISOString(); // Går bare 6 måneder tilbake i tid
+const getFromDate = () => dayjs().subtract(6, 'months').toISOString(); // Går bare 6 måneder tilbake i tid
 
 const contentTypesToShow = [
     ...contentTypesRenderedByEditorFrontend,
@@ -79,19 +77,7 @@ const dayjsDateTime = (datetime: string) => {
     return dayjs(localDate).utc(true).local();
 };
 
-const sortEntries = (entries: AuditLogEntry[]) => {
-    // Endre datoformat fra "Elastic spesial" og sorter
-    if (!entries) {
-        return [];
-    }
-    entries.map((entry) => {
-        const dayjsDT = dayjsDateTime(entry.time);
-        if (dayjsDT) {
-            entry.time = dayjsDT.toString();
-        }
-    });
-    return entries.sort((a, b) => (dayjs(a.time).isAfter(dayjs(b.time)) ? -1 : 1));
-};
+const sortEntries = (a: AuditLogEntry, b: AuditLogEntry) => (a.time > b.time ? -1 : 1);
 
 const getContentId = (entry: AuditLogEntry) =>
     entry.data.params?.contentIds || entry.data.params?.contentId;
@@ -245,7 +231,7 @@ const prePublishedEntryFound = (
 const getUsersPublications = (user: `user:${string}:${string}`) => {
     const logEntries = auditLogLib.find({
         count: 5000,
-        from: fromDate,
+        from: getFromDate(),
         users: [user],
     }) as any;
     const publishedLogEntries = logEntries.hits.filter(
@@ -267,9 +253,9 @@ const getUsersPublications = (user: `user:${string}:${string}`) => {
     });
 
     // Sorter treff
-    const archivedEntries: AuditLogEntry[] = sortEntries(archivedLogEntries);
-    let publishedEntries: AuditLogEntry[] = sortEntries(publishedLogEntries);
-    let unpublishedEntries: AuditLogEntry[] = sortEntries(unpublishedLogEntries);
+    const archivedEntries: AuditLogEntry[] = archivedLogEntries.sort(sortEntries);
+    let publishedEntries: AuditLogEntry[] = publishedLogEntries.sort(sortEntries);
+    let unpublishedEntries: AuditLogEntry[] = unpublishedLogEntries.sort(sortEntries);
 
     // Listen for forhåndspublisering bygges opp under gjennomgang av publiserte
     const prePublishedEntries: AuditLogEntry[] = [];
@@ -386,7 +372,7 @@ const getUsersModifications = (user: `user:${string}:${string}`) => {
     return repos
         .query({
             count: 5000,
-            query: `modifier = '${user}' AND range('modifiedTime', instant('${fromDate}'), '')`,
+            query: `modifier = '${user}' AND range('modifiedTime', instant('${getFromDate()}'), '')`,
             filters: {
                 boolean: {
                     mustNot: NON_LOCALIZED_QUERY_FILTER,
