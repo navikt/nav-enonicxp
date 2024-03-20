@@ -6,7 +6,7 @@ import { APP_DESCRIPTOR } from '../../../lib/constants';
 import { getLayersMultiConnection } from '../../../lib/localization/layers-repo-utils/layers-repo-connection';
 import { NON_LOCALIZED_QUERY_FILTER } from '../../../lib/localization/layers-repo-utils/localization-state-filters';
 import { contentTypesRenderedByEditorFrontend } from '../../../lib/contenttype-lists';
-import dayjs from '/assets/dayjs/1.11.9/dayjs.min.js';
+import dayjs, { Dayjs } from '/assets/dayjs/1.11.9/dayjs.min.js';
 import utc from '/assets/dayjs/1.11.9/plugin/utc.js';
 import { getContentProjectIdFromRepoId, getRepoConnection } from '../../../lib/utils/repo-utils';
 import { notNullOrUndefined } from '../../../lib/utils/mixed-bag-of-utils';
@@ -19,6 +19,7 @@ import {
     AuditLogUnpublished,
     DashboardContentInfo,
 } from './utils/types';
+import { logger } from '../../../lib/utils/logging';
 
 dayjs.extend(utc);
 
@@ -115,9 +116,10 @@ const getContentFromLogEntries = (
 
         const projectId = getContentProjectIdFromRepoId(repoId);
         const layer = layerStr(projectId);
-        let status = '',
-            modifyDate,
-            contentUrl;
+        let status = '';
+        let modifyDate: Dayjs | string | undefined;
+        let contentUrl = '';
+
         if (content?.archivedTime) {
             status = 'Arkivert';
             modifyDate = dayjsDateTime(content.archivedTime);
@@ -131,11 +133,14 @@ const getContentFromLogEntries = (
             contentUrl = `edit/${content._id}`;
         }
         const contentTypeInfo = contentInfo.find((el) => el.type === content.type);
+
         return {
             displayName: content.displayName + layer,
             contentType: contentTypeInfo ? contentTypeInfo.name : '',
             modifyDate,
-            modifiedTimeStr: dayjs(modifyDate).format('DD.MM.YYYY - HH:mm:ss'),
+            modifiedTimeStr: dayjs(
+                typeof modifyDate === 'string' ? dayjsDateTime(modifyDate) : modifyDate
+            ).format('DD.MM.YYYY - HH:mm:ss'),
             status,
             title: content._path.replace('/content/www.nav.no/', ''),
             url: `/admin/tool/com.enonic.app.contentstudio/main/${projectId}/${contentUrl}`,
@@ -420,12 +425,13 @@ const getUsersModifications = (user: UserKey) => {
             const projectId = getContentProjectIdFromRepoId(hit.repoId);
             const layer = layerStr(projectId);
             const contentTypeInfo = contentInfo.find((el) => el.type === draftContent.type);
+            const dateFinal = dayjs(modifiedLocalTime).format('DD.MM.YYYY - HH:mm:ss');
 
             return {
                 displayName: draftContent.displayName + layer,
                 contentType: contentTypeInfo ? contentTypeInfo.name : '',
                 modifiedTime: modifiedLocalTime,
-                modifiedTimeStr: dayjs(modifiedLocalTime).format('DD.MM.YYYY - HH:mm:ss'),
+                modifiedTimeStr: dateFinal,
                 status,
                 title: draftContent._path.replace('/content/www.nav.no/', ''),
                 url: `/admin/tool/com.enonic.app.contentstudio/main/${projectId}/edit/${draftContent._id}`,
