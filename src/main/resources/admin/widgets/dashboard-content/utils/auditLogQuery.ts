@@ -1,17 +1,17 @@
 import { getRepoConnection } from '../../../../lib/utils/repo-utils';
 import { UserKey } from '/lib/xp/auditlog';
-import { AuditLogEntry } from '../dashboard-content';
+import { AuditLogEntry } from './types';
 
 const AUDITLOG_REPO_ID = 'system.auditlog';
 
-type Args = {
+type Props = {
     type: string;
     count: number;
-    from: string;
+    query: string;
     user: UserKey;
 };
 
-export const getAuditLogEntries = ({ type, count, user, from }: Args): AuditLogEntry[] => {
+export const getAuditLogEntries = ({ type, count, user, query }: Props): AuditLogEntry[] => {
     const repoConnection = getRepoConnection({
         repoId: AUDITLOG_REPO_ID,
         branch: 'master',
@@ -21,8 +21,8 @@ export const getAuditLogEntries = ({ type, count, user, from }: Args): AuditLogE
     const hitIds = repoConnection
         .query({
             count,
-            query: `range('time', instant('${from}'), '')`,
-            sort: 'DESC time',
+            query,
+            sort: 'time DESC',
             filters: {
                 boolean: {
                     must: [

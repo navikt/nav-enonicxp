@@ -1,6 +1,6 @@
 import thymeleafLib from '/lib/thymeleaf';
 import * as authLib from '/lib/xp/auth';
-import { AuditLog, UserKey } from '/lib/xp/auditlog';
+import { UserKey } from '/lib/xp/auditlog';
 import * as contentLib from '/lib/xp/content';
 import { APP_DESCRIPTOR } from '../../../lib/constants';
 import { getLayersMultiConnection } from '../../../lib/localization/layers-repo-utils/layers-repo-connection';
@@ -10,26 +10,17 @@ import dayjs from '/assets/dayjs/1.11.9/dayjs.min.js';
 import utc from '/assets/dayjs/1.11.9/plugin/utc.js';
 import { getContentProjectIdFromRepoId, getRepoConnection } from '../../../lib/utils/repo-utils';
 import { notNullOrUndefined } from '../../../lib/utils/mixed-bag-of-utils';
-import { removeDuplicates as _removeDuplicates } from '../../../lib/utils/array-utils';
+import { forceArray, removeDuplicates as _removeDuplicates } from '../../../lib/utils/array-utils';
 import { getAuditLogEntries } from './utils/auditLogQuery';
+import {
+    AuditLogArchived,
+    AuditLogEntry,
+    AuditLogPublished,
+    AuditLogUnpublished,
+    DashboardContentInfo,
+} from './utils/types';
 
 dayjs.extend(utc);
-
-type AuditLogData = {
-    params?: {
-        contentPublishInfo?: {
-            from?: string;
-            to?: string;
-        };
-        contentId: string;
-        contentIds: string; // eller array?
-    };
-    result?: {
-        unpublishedContents: unknown;
-    };
-};
-
-export type AuditLogEntry = AuditLog<AuditLogData>;
 
 const getFromDate = () => dayjs().subtract(6, 'months').toISOString(); // Går bare 6 måneder tilbake i tid
 
@@ -46,17 +37,8 @@ const contentInfo = contentTypesToShow.map((contentType) => {
     };
 });
 
-type ContentInfo = {
-    displayName: string;
-    contentType: string;
-    modifiedTimeStr: string;
-    status: string;
-    title: string;
-    url: string;
-};
-
 const getRepoId = (entry: AuditLogEntry) => {
-    const object = entry.objects[0];
+    const object = forceArray(entry.objects)[0];
     if (!object) {
         return undefined;
     }
@@ -77,16 +59,19 @@ const dayjsDateTime = (datetime: string) => {
     return dayjs(localDate).utc(true).local();
 };
 
-const sortEntries = (a: AuditLogEntry, b: AuditLogEntry) => (a.time > b.time ? -1 : 1);
+const getContentId = (entry: AuditLogEntry): string =>
+    entry.type === 'system.content.archive'
+        ? entry.data.params.contentId
+        : forceArray(entry.data.params.contentIds)[0];
 
-const getContentId = (entry: AuditLogEntry) =>
-    entry.data.params?.contentIds || entry.data.params?.contentId;
+const getContentPublishInfo = (entry: AuditLogEntry) =>
+    entry.type === 'system.content.publish' ? entry.data.params.contentPublishInfo : undefined;
 
 const getContentFromLogEntries = (
     logEntries: AuditLogEntry[],
     publish: boolean,
     desc: boolean // Sorter synkende (publish/unpublish) eller stigende (prepublish)
-): ContentInfo[] | undefined => {
+): DashboardContentInfo[] | undefined => {
     // Fjern duplikater og bygg datamodell for visning
     const entries = removeDuplicates(logEntries).map((entry) => {
         const repoId = getRepoId(entry);
@@ -138,10 +123,11 @@ const getContentFromLogEntries = (
             modifyDate = dayjsDateTime(content.archivedTime);
             contentUrl = 'widget/plus/archive'; // Viser til arkivet (kan ikke gå direkte til aktuelt innhold)
         } else {
-            const contentPublishInfo = entry.data.params?.contentPublishInfo;
+            const contentPublishInfo = getContentPublishInfo(entry);
             modifyDate = publish
                 ? contentPublishInfo?.from || entry.time
                 : contentPublishInfo?.to || entry.time;
+
             contentUrl = `edit/${content._id}`;
         }
         const contentTypeInfo = contentInfo.find((el) => el.type === content.type);
@@ -166,7 +152,7 @@ const getContentFromLogEntries = (
     return returnEntries.length > 0 ? returnEntries : undefined;
 };
 
-const removeDuplicates = (entries: AuditLogEntry[]) =>
+const removeDuplicates = <Type extends AuditLogEntry>(entries: Type[]) =>
     _removeDuplicates(
         entries,
         (a, b) => getContentId(a) === getContentId(b) && getRepoId(a) === getRepoId(b)
@@ -186,11 +172,11 @@ const newerEntryFound = (entry: AuditLogEntry, list: AuditLogEntry[]) => {
 // Sjekker om entry peker til innholdelement som også ligger til forhåndspublisering
 // Hvis entry bare er en oppdatering av en kommende publisering, skal den ses bort i fra (true)
 const prePublishedEntryFound = (
-    entry: AuditLogEntry,
-    published: AuditLogEntry[],
-    unPublished: AuditLogEntry[]
+    entry: AuditLogPublished,
+    published: AuditLogPublished[],
+    unPublished: AuditLogUnpublished[]
 ) => {
-    const entryContentPublishInfo = entry.data.params?.contentPublishInfo;
+    const entryContentPublishInfo = getContentPublishInfo(entry);
     if (entryContentPublishInfo?.from) {
         // Skal ikke teste på forhåndsubliseringer
         return false;
@@ -210,7 +196,7 @@ const prePublishedEntryFound = (
             }
             // Sjekk om publish from er fram i tid ELLER er nyere enn publiseringen som oppdaterte innholdet - 1c.
             // ELLER publish to har passert OG publiseringen ikke er nyere enn dette - 1d.
-            const contentPublishInfo = publishedEntry.data.params?.contentPublishInfo;
+            const contentPublishInfo = getContentPublishInfo(publishedEntry);
             if (
                 contentPublishInfo?.from &&
                 (dayjs(contentPublishInfo.from).isAfter(dayjs()) ||
@@ -229,41 +215,34 @@ const prePublishedEntryFound = (
 
 // Hent alle brukers siste publiseringer, inkludert forhåndspubliseringer og avpubliseringer
 const getUsersPublications = (user: UserKey) => {
-    const from = getFromDate();
-
-    const publishedLogEntries = getAuditLogEntries({
+    let publishedLogEntries = getAuditLogEntries({
         type: 'system.content.publish',
         user,
-        from,
+        query: '',
         count: 100,
-    });
+    }) as AuditLogPublished[];
 
-    const unpublishedLogEntries = getAuditLogEntries({
+    let unpublishedLogEntries = getAuditLogEntries({
         type: 'system.content.unpublishContent',
         user,
-        from,
+        query: '',
         count: 100,
-    });
+    }) as AuditLogUnpublished[];
 
     const archivedLogEntries = getAuditLogEntries({
         type: 'system.content.archive',
         user,
-        from,
+        query: '',
         count: 100,
-    });
+    }) as AuditLogArchived[];
 
     // Gjennomgå arkivert-listen for eventuelt å legge til i avpublisert
-    archivedLogEntries.forEach((entry: AuditLogEntry) => {
+    archivedLogEntries.forEach((entry) => {
         if (entry.data.result?.unpublishedContents) {
             // Innholdet er arkivert uten å være avpublisert først, legg til i avpublisert før behandling
-            unpublishedLogEntries.push(entry);
+            unpublishedLogEntries.push(entry as unknown as AuditLogUnpublished);
         }
     });
-
-    // Sorter treff
-    const archivedEntries: AuditLogEntry[] = archivedLogEntries.sort(sortEntries);
-    let publishedEntries: AuditLogEntry[] = publishedLogEntries.sort(sortEntries);
-    let unpublishedEntries: AuditLogEntry[] = unpublishedLogEntries.sort(sortEntries);
 
     // Listen for forhåndspublisering bygges opp under gjennomgang av publiserte
     const prePublishedEntries: AuditLogEntry[] = [];
@@ -278,14 +257,18 @@ const getUsersPublications = (user: UserKey) => {
     // 2b. Forhåndspublisering som ikke er aktiv ennå - (from) er ikke nådd OG ikke avpublisert etterpå
     // 2c. Forhåndspublisering som er avpublisert etterpå
     // 2d. Forhåndspublisering som ikke er aktiv lenger - (to) har passert
-    publishedEntries = publishedEntries.filter((entry) => {
+    publishedLogEntries = publishedLogEntries.filter((entry) => {
         // Må sjekke om denne er arkivert senere
-        if (newerEntryFound(entry, archivedEntries)) {
+        if (newerEntryFound(entry, archivedLogEntries)) {
             // 0. Er arkivert, skal ikke vises under publisert
             return false;
         }
         // Må sjekke om det finnes en forhåndspublisering som overstyrer denne
-        const prepublished = prePublishedEntryFound(entry, publishedEntries, unpublishedEntries);
+        const prepublished = prePublishedEntryFound(
+            entry,
+            publishedLogEntries,
+            unpublishedLogEntries
+        );
         if (prepublished) {
             // 1c. ELLER 1d. - fjern denne (forhåndspubliseringen behandles senere)
             return false;
@@ -296,7 +279,7 @@ const getUsersPublications = (user: UserKey) => {
         if (publishFromDate) {
             // 2. Dette er en forhåndspublisering (from)
             // Må sjekke om det er avpublisert etterpå
-            const unpublishedLater = newerEntryFound(entry, unpublishedEntries);
+            const unpublishedLater = newerEntryFound(entry, unpublishedLogEntries);
             if (!unpublishedLater) {
                 const prepublishDateExceeded = dayjs().isAfter(publishFromDate);
                 if (!prepublishDateExceeded) {
@@ -309,7 +292,7 @@ const getUsersPublications = (user: UserKey) => {
                     const unpublishDateExceeded = dayjs().isAfter(publishToDate);
                     if (unpublishDateExceeded) {
                         // 2d. Har utløpt på tid - skal vises i avpublisert-listen og ikke i publisert
-                        unpublishedEntries.push(entry);
+                        unpublishedLogEntries.push(entry as unknown as AuditLogUnpublished);
                         return false;
                     }
                 }
@@ -323,38 +306,38 @@ const getUsersPublications = (user: UserKey) => {
         }
         // Dette er en publisering - 1.
         // Fjern fra listen hvis den er avpublisert etterpå - 1b.
-        const unpublishedLater = newerEntryFound(entry, unpublishedEntries);
+        const unpublishedLater = newerEntryFound(entry, unpublishedLogEntries);
         return !unpublishedLater; // True: 1a. - False: 1b.
     });
 
     // Gjennomgå avpubliseringer
     // 1. Avpublisert innhold som er arkivert etterpå må få oppdatert tidspunkt til arkiverinstidspunktet
     // 2. Entries skal fjernes hvis det finnes en nyere publisering eller forhåndspubliering
-    unpublishedEntries.map((entry) => {
-        const archivedLater = newerEntryFound(entry, archivedEntries);
+    unpublishedLogEntries.map((entry) => {
+        const archivedLater = newerEntryFound(entry, archivedLogEntries);
         if (archivedLater) {
             // 0. Arkivert etterpå, tidspunkt som skal brukes til sortering er arkiveringstidpunktet
             entry.time = archivedLater.time;
         }
     });
     // Sorter avpublisert på nytt, fjern eventulle duplikater som har oppstått
-    unpublishedEntries.sort((a, b) => {
-        const aContentPublishInfo = a.data.params?.contentPublishInfo;
-        const bContentPublishInfo = b.data.params?.contentPublishInfo;
+    unpublishedLogEntries.sort((a, b) => {
+        const aContentPublishInfo = getContentPublishInfo(a);
+        const bContentPublishInfo = getContentPublishInfo(b);
         const aDate = aContentPublishInfo?.to || a.time;
         const bDate = bContentPublishInfo?.to || b.time;
         return dayjs(aDate).isAfter(dayjs(bDate)) ? -1 : 1;
     });
-    unpublishedEntries = removeDuplicates(unpublishedEntries);
+    unpublishedLogEntries = removeDuplicates(unpublishedLogEntries);
     // 2. Fjern fra avpublisert hvis publisering eller forhåndspublisering av nyere dato
-    unpublishedEntries = unpublishedEntries.filter((entry) => {
+    unpublishedLogEntries = unpublishedLogEntries.filter((entry) => {
         const contentId = getContentId(entry);
         const repoId = getRepoId(entry);
-        const publishedLater = newerEntryFound(entry, publishedEntries);
+        const publishedLater = newerEntryFound(entry, publishedLogEntries);
         const prePublishedLater = prePublishedEntries.find((duplicate) => {
             const dupCheckContentId = getContentId(duplicate);
             if (contentId === dupCheckContentId && repoId === getRepoId(duplicate)) {
-                const contentPublishInfo = entry.data.params?.contentPublishInfo;
+                const contentPublishInfo = getContentPublishInfo(entry);
                 const publishFromDate =
                     contentPublishInfo?.from && dayjsDateTime(contentPublishInfo.from);
                 return dayjs(publishFromDate).isAfter(entry.time);
@@ -364,9 +347,9 @@ const getUsersPublications = (user: UserKey) => {
     });
 
     // Returner content for alle tre typer
-    const published = getContentFromLogEntries(publishedEntries, true, true);
+    const published = getContentFromLogEntries(publishedLogEntries, true, true);
     const prePublished = getContentFromLogEntries(prePublishedEntries, true, false);
-    const unPublished = getContentFromLogEntries(unpublishedEntries, false, true);
+    const unPublished = getContentFromLogEntries(unpublishedLogEntries, false, true);
     return {
         published,
         prePublished,
