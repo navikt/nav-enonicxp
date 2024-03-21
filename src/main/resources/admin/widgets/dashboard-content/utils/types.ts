@@ -8,8 +8,6 @@ type AuditLog<Data extends _AudigLog['data']> = Omit<_AudigLog<Data>, 'objects'>
 type AuditLogDataPublished = {
     params: {
         contentIds: ArrayOrSingle<string>;
-        excludeChildrenIds?: ArrayOrSingle<string>;
-        includeDependencies: boolean;
         contentPublishInfo?: {
             from?: string;
             to?: string;
