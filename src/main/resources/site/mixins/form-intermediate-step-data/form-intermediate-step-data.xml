@@ -22,7 +22,7 @@
                             <options minimum="1" maximum="1">
                                 <option name="internal">
                                     <label>Intern lenke til skjema, søknad eller klage</label>
-                                    <help-text>Brukeren skal sendes til en app eller tjeneste utenfor Enonic XP</help-text>
+                                    <help-text>Brukeren skal sendes til dokument som ligger på Enonic XP</help-text>
                                     <default>true</default>
                                     <items>
                                         <input name="internalContent" type="MediaSelector">
@@ -73,7 +73,7 @@
                                                             <options minimum="1" maximum="1">
                                                                 <option name="internal">
                                                                     <label>Intern lenke til skjema, søknad eller klage</label>
-                                                                    <help-text>Brukeren skal sendes til en app eller tjeneste utenfor Enonic XP</help-text>
+                                                                    <help-text>Brukeren skal sendes til dokument som ligger på Enonic XP</help-text>
                                                                     <default>true</default>
                                                                     <items>
                                                                         <input name="internalContent" type="MediaSelector">
