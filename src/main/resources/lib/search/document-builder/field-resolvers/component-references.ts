@@ -13,7 +13,7 @@ type ResolvedProductDetails = {
 
 export const getSearchDocumentProductDetails = (
     component: NodeComponent<'part', 'product-details'>,
-    content: ContentNode
+    content: ContentNode<any>
 ): ResolvedProductDetails | null => {
     const partConfig = component.part.config?.['no-nav-navno']?.['product-details'];
     if (!partConfig) {

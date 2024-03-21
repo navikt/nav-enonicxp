@@ -1,14 +1,14 @@
 import * as portalLib from '/lib/xp/portal';
 import { getRepoConnection } from '../../lib/utils/repo-utils';
 import { getComponentConfig } from '../../lib/utils/component-utils';
-import { FiltersMenuPartConfig } from '../../site/parts/filters-menu/filters-menu-part-config';
+import { FiltersMenu } from '@xp-types/site/parts/filters-menu';
 import { logger } from '../../lib/utils/logging';
 import { customSelectorErrorIcon } from '../custom-selector-icons';
 import { forceArray } from '../../lib/utils/array-utils';
 
 type Hit = XP.CustomSelectorServiceResponseHit;
 
-type CategoryRaw = Required<FiltersMenuPartConfig>['categories'][number];
+type CategoryRaw = Required<FiltersMenu>['categories'][number];
 
 // Filters have a unique id that is set programmatically and is not part of the schema from which
 // the type is generated

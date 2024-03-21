@@ -19,7 +19,7 @@ type newsItem = {
     description?: string;
 };
 
-const handleGet = () => {
+export const get = () => {
     // Get the IDs to relevant content from given content-lists
     const listIDs = contentLists
         .map((key) => getContentList(key, 3, 'publish.from'))
@@ -45,5 +45,3 @@ const handleGet = () => {
         contentType: 'application/json',
     };
 };
-
-exports.get = handleGet;

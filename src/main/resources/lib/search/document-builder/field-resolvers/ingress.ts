@@ -1,6 +1,6 @@
 import { OfficeContent } from '../../../office-pages/types';
 import { forceArray } from '../../../utils/array-utils';
-import { OfficeBranch } from '../../../../site/content-types/office-branch/office-branch';
+import { OfficeBranch } from '@xp-types/site/content-types/office-branch';
 
 type Publikumsmottak = NonNullable<NonNullable<OfficeBranch['brukerkontakt']>['publikumsmottak']>;
 

@@ -22,7 +22,7 @@ type TimeTravelContextAttribs = {
 };
 
 export const getTimeTravelContext = (): TimeTravelContextAttribs | null => {
-    const attribs = contextLib.get<Partial<TimeTravelContextAttribs>>()?.attributes;
+    const attribs = contextLib.get()?.attributes as Partial<TimeTravelContextAttribs>;
     if (!attribs) {
         return null;
     }

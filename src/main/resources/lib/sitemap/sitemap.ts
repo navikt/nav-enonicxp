@@ -42,7 +42,7 @@ let sitemapEntriesMap = new Map<string, SitemapEntry>();
 
 const contentTypesInSitemapSet: ReadonlySet<string> = new Set(contentTypesInSitemap);
 
-const shouldIncludeContent = (content: Content | null): content is Content =>
+const shouldIncludeContent = (content: Content<any> | null): content is Content =>
     !!(
         content &&
         contentTypesInSitemapSet.has(content.type) &&
@@ -53,7 +53,7 @@ const shouldIncludeContent = (content: Content | null): content is Content =>
 
 const getKey = (contentId: string, locale: string) => `${contentId}-${locale}`;
 
-const getUrl = (content: Content, locale: string) => {
+const getUrl = (content: Content<any>, locale: string) => {
     if (content.data?.canonicalUrl) {
         return content.data.canonicalUrl;
     }
@@ -84,8 +84,9 @@ const resolveLanguageVersions = (sitemapEntry: SitemapEntry) => {
         return acc;
     }, []);
 
-    const legacyLanguages = sitemapEntriesMap.get(getKey(_contentId, defaultLocale))
-        ?._legacyLanguages;
+    const legacyLanguages = sitemapEntriesMap.get(
+        getKey(_contentId, defaultLocale)
+    )?._legacyLanguages;
     if (legacyLanguages) {
         legacyLanguages.forEach((languageRefContentId) => {
             if (languageRefContentId === _contentId) {
@@ -109,7 +110,7 @@ const resolveLanguageVersions = (sitemapEntry: SitemapEntry) => {
 };
 
 const buildSitemapEntry = (
-    content: Content,
+    content: Content<any>,
     locale: string,
     resolveLanguages: boolean
 ): SitemapEntry => {

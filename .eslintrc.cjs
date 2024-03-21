@@ -6,7 +6,8 @@ const enonicLibraryImports = [
     "^/lib/guillotine",
     "^/lib/graphql",
     "^/lib/graphql-rx",
-    "^/assets"
+    "^/assets",
+    "^@xp-types"
 ]
 
 module.exports = {
@@ -20,6 +21,11 @@ module.exports = {
     ],
     "plugins": ["prettier", "@typescript-eslint", "import"],
     "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 2020,
+        "project": "./tsconfig.json",
+        "tsconfigRootDir": "./"
+    },
     "rules": {
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-explicit-any": "off",
@@ -87,24 +93,11 @@ module.exports = {
         "Java": true,
         "module": true
     },
-    "parserOptions": {
-        "ecmaVersion": 2020
-    },
     "overrides": [
         {
             "files": ["*.html", "*.ftl", "*.xml"],
             "rules": {
                 "max-len": "off"
-            }
-        },
-        {
-            "files": [
-                "src/main/resources/site/layouts/**/*-config.ts",
-                "src/main/resources/site/parts/**/*-config.ts",
-                "src/main/resources/site/content-types/**/*.ts"
-            ],
-            "rules": {
-                "@typescript-eslint/ban-types": "off"
             }
         },
         {

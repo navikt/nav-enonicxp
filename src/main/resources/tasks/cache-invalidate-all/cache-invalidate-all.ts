@@ -1,8 +1,8 @@
 import { logger } from '../../lib/utils/logging';
-import { CacheInvalidateAllConfig } from './cache-invalidate-all-config';
 import { frontendInvalidateAllSync } from '../../lib/cache/frontend-cache';
+import { CacheInvalidateAll } from '@xp-types/tasks/cache-invalidate-all';
 
-export const run = ({ retryIfFail, eventId }: CacheInvalidateAllConfig) => {
+export const run = ({ retryIfFail, eventId }: CacheInvalidateAll) => {
     logger.info(`Running task for full cache invalidation - eventId ${eventId}`);
 
     frontendInvalidateAllSync(eventId, retryIfFail);

@@ -21,9 +21,11 @@
             </config>
         </input>
         <!-- Dummy value to prevent graphql-errors for undefined field -->
-        <input name="value" type="RadioButton">
-            <label>-</label>
-            <occurrences minimum="0" maximum="1"/>
+        <input name="value" type="TextLine">
+            <label>(tomt felt, skal ikke brukes)</label>
+            <config>
+                <regexp>^$</regexp>
+            </config>
         </input>
     </form>
 </macro>

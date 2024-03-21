@@ -56,7 +56,7 @@ export const run = () => {
             );
             taskLib.submitTask({
                 descriptor: job.descriptor,
-                config: job.config,
+                config: job.config || undefined,
             });
         }
     });

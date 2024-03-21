@@ -2,7 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
 import * as commonLib from '/lib/xp/common';
-import { OfficeBranch as LocalOfficeData } from '../../site/content-types/office-branch/office-branch';
+import { OfficeBranch as OfficeBranchData } from '@xp-types/site/content-types/office-branch';
 import { NavNoDescriptor } from '../../types/common';
 import { logger } from '../utils/logging';
 import { CONTENT_LOCALE_DEFAULT, URLS } from '../constants';
@@ -30,7 +30,7 @@ const OFFICE_BRANCH_CONTENT_TYPE: OfficeBranchDescriptor = `no.nav.navno:office-
 const INTERNAL_LINK_CONTENT_TYPE: InternalLinkDescriptor = `no.nav.navno:internal-link`;
 const OFFICES_BASE_PATH = '/www.nav.no/kontor';
 
-const getOfficeContentName = (officeData: LocalOfficeData) => commonLib.sanitize(officeData.navn);
+const getOfficeContentName = (officeData: OfficeBranchData) => commonLib.sanitize(officeData.navn);
 
 const generalOfficeTypes: ReadonlySet<string> = new Set([
     'FPY',
@@ -64,14 +64,14 @@ const norgRequest = <T>(requestConfig: RequestConfig): T[] | null => {
     }
 };
 
-const localOfficeAdapter = (localOfficeData: LocalOfficeData): LocalOfficeData => {
+const localOfficeAdapter = (localOfficeData: OfficeBranchData): OfficeBranchData => {
     return { ...localOfficeData, type: 'LOKAL' };
 };
 
 const generalOfficeAdapter = (
     officeData: GeneralOfficeData,
     officeTypeDictionary: OfficeTypeDictionary
-): LocalOfficeData => {
+): OfficeBranchData => {
     const type = officeTypeDictionary.get(officeData.enhetNr) || '';
     return {
         enhetNr: officeData.enhetNr,
@@ -116,7 +116,7 @@ export const fetchAllOfficeBranchDataFromNorg = () => {
             ?.filter((office) => generalOfficeTypes.has(office.type))
             .map((office) => office.enhetNr);
 
-        const localOffices = norgRequest<LocalOfficeData>({
+        const localOffices = norgRequest<OfficeBranchData>({
             url: URLS.NORG_LOCAL_OFFICE_API_URL,
             method: 'GET',
         });
@@ -189,7 +189,7 @@ const deleteContent = (contentRef: string) => {
     return officeId;
 };
 
-const getOfficeBranchLanguage = (office: LocalOfficeData) => {
+const getOfficeBranchLanguage = (office: OfficeBranchData) => {
     if (office.brukerkontakt?.skriftspraak?.toLowerCase() === 'nb') {
         return CONTENT_LOCALE_DEFAULT;
     }
@@ -209,7 +209,7 @@ const getExistingOfficePages = () => {
 
 const moveAndRedirectOnNameChange = (
     prevOfficePage: Content<OfficeBranchDescriptor>,
-    newOfficeData: LocalOfficeData
+    newOfficeData: OfficeBranchData
 ) => {
     const prevContentName = prevOfficePage._name;
     const newContentName = getOfficeContentName(newOfficeData);
@@ -253,7 +253,7 @@ const moveAndRedirectOnNameChange = (
 };
 
 const updateOfficePageIfChanged = (
-    newOfficeData: LocalOfficeData,
+    newOfficeData: OfficeBranchData,
     existingOfficePage: Content<OfficeBranchDescriptor>
 ) => {
     const newChecksum = createObjectChecksum(newOfficeData);
@@ -286,7 +286,7 @@ const updateOfficePageIfChanged = (
     }
 };
 
-const createOfficeBranchPage = (officeData: LocalOfficeData) => {
+const createOfficeBranchPage = (officeData: OfficeBranchData) => {
     try {
         logger.info('Trying to create office branch page');
         const content = contentLib.create({
@@ -330,7 +330,7 @@ const deleteStaleOfficePages = (
     return deletedIds;
 };
 
-export const processAllOfficeBranches = (incomingOfficeBranches: LocalOfficeData[]) => {
+export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranchData[]) => {
     const existingOfficePages = getExistingOfficePages();
     const processedOfficeEnhetsNr: string[] = [];
 

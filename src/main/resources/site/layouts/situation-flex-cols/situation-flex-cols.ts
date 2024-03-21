@@ -1,10 +1,10 @@
 import { generateAnchorIdField } from '../../../lib/utils/component-utils';
-import { SituationFlexColsConfig } from './situation-flex-cols-config';
 import { componentPreviewController } from '../../../lib/controllers/component-preview-controller';
+import { SituationFlexCols } from '@xp-types/site/layouts';
 
 export const get = (req: XP.Request) => {
     if (req.mode === 'edit') {
-        generateAnchorIdField<SituationFlexColsConfig>(req, 'title');
+        generateAnchorIdField<SituationFlexCols>(req, 'title');
     }
 
     return componentPreviewController(req);

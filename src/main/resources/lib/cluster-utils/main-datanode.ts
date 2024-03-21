@@ -11,6 +11,10 @@ import { APP_DESCRIPTOR } from '../constants';
 const SHARED_MAP_KEY = 'main-datanode';
 const CURRENT_MAIN_DATANODE_KEY = 'current-node';
 
+type SharedMap = {
+    [CURRENT_MAIN_DATANODE_KEY]: ClusterNodeInfo;
+};
+
 const pickDatanode = (clusterInfo: ClusterInfo): ClusterNodeInfo | null => {
     const datanode = clusterInfo.members.find((member) => member.isDataNode);
     if (!datanode) {
@@ -29,7 +33,7 @@ const isNodeInCluster = (clusterInfo: ClusterInfo, node: ClusterNodeInfo | null)
 };
 
 const getSharedMap = () => {
-    const sharedMap = gridLib.getMap(SHARED_MAP_KEY);
+    const sharedMap = gridLib.getMap<SharedMap>(SHARED_MAP_KEY);
     if (!sharedMap) {
         logger.critical(`Shared map with key ${SHARED_MAP_KEY} is not available!`);
         return null;
@@ -43,7 +47,7 @@ const getCurrentMainDatanode = (sharedMap = getSharedMap()) => {
         return null;
     }
 
-    return sharedMap.get<ClusterNodeInfo>(CURRENT_MAIN_DATANODE_KEY);
+    return sharedMap.get(CURRENT_MAIN_DATANODE_KEY);
 };
 
 export const refreshMainDatanode = () => {

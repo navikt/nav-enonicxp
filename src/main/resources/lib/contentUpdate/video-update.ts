@@ -1,5 +1,5 @@
 import * as contentLib from '/lib/xp/content';
-import { Content } from '/lib/xp/content';
+import { Content, ByteSource } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
 import { logger } from '../utils/logging';
 import { runInContext } from '../context/run-in-context';
@@ -66,7 +66,7 @@ const createImageAsset = (imageUrl: string, targetPath: string, targetName: stri
         name: `${targetName}.jpg`,
         parentPath: `${targetPath}`,
         mimeType: 'image/jpeg',
-        data: response.bodyStream,
+        data: response.bodyStream as unknown as ByteSource,
     });
 };
 

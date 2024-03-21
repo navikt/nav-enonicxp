@@ -9,8 +9,8 @@ import {
     FormDetailsMap,
     ProductDataInFormsOverviewItem,
 } from './types';
-import { FormDetailsSelector } from '../../../site/mixins/form-details-selector/form-details-selector';
-import { ContentPageWithSidemenus } from '../../../site/content-types/content-page-with-sidemenus/content-page-with-sidemenus';
+import { FormDetailsSelector } from '@xp-types/site/mixins/form-details-selector';
+import { ContentPageWithSidemenus } from '@xp-types/site/content-types/content-page-with-sidemenus';
 
 // Fields from nested mixins are not included in the generated types
 type ContentWithMissingMixins = ContentWithFormDetails & {
