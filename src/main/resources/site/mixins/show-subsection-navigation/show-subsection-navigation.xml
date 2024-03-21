@@ -1,0 +1,16 @@
+<mixin>
+    <form>
+        <field-set>
+            <label>Intern navigasjon</label>
+            <items>
+                <input type="CheckBox" name="showSubsectionNavigation">
+                    <label>Vis intern navigasjon i innholdsseksjoner</label>
+                    <default>unchecked</default>
+                    <config>
+                        <alignment>left</alignment>  
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</mixin>

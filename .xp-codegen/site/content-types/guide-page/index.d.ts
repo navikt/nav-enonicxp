@@ -130,6 +130,11 @@ export type GuidePage = {
   formDetailsTargets?: Array<string> | string;
 
   /**
+   * Vis intern navigasjon i innholdsseksjoner
+   */
+  showSubsectionNavigation: boolean;
+
+  /**
    * Legg til andre språkversjoner
    */
   languages?: Array<string> | string;
