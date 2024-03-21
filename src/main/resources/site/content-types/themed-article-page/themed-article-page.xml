@@ -45,6 +45,8 @@
                 <mixin name="custom-path-selector-required"/>
             </items>
         </field-set>
+        <mixin name="alternative-audience" />
+        <mixin name="related-situations" />
         <mixin name="owner"/>
         <mixin name="managed-by"/>
         <mixin name="product-details-selector"/>
