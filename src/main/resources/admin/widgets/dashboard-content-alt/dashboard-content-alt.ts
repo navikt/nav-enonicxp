@@ -19,7 +19,8 @@ const view = resolve('./dashboard-content-alt.html');
 
 dayjs.extend(utc);
 
-const getFromDate = () => dayjs().subtract(6, 'months'); // Går bare 6 måneder tilbake i tid
+// Går bare 6 måneder tilbake i tid
+const getFromDate = () => dayjs().subtract(6, 'months').toISOString();
 
 const contentTypesToShow = [
     ...contentTypesRenderedByEditorFrontend,
@@ -54,7 +55,7 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
     return repos
         .query({
             count: 5000,
-            query: `modifier = '${user}' AND range('modifiedTime', instant('${getFromDate().toISOString()}'), '')`,
+            query: `modifier = '${user}' AND range('modifiedTime', instant('${getFromDate()}'), '')`,
             filters: {
                 boolean: {
                     mustNot: NON_LOCALIZED_QUERY_FILTER,
@@ -67,7 +68,7 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
                 },
             },
         })
-        .hits.map((hit) => {
+        .hits.map((hit): DashboardContentInfo | undefined => {
             const draftContent = getRepoConnection({
                 branch: 'draft',
                 repoId: hit.repoId,
@@ -124,7 +125,7 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
             };
         })
         .filter(notNullOrUndefined)
-        .sort((a, b) => (dayjs(a?.modifiedTime).isAfter(dayjs(b?.modifiedTime)) ? -1 : 1))
+        .sort((a, b) => (a.modifiedTimeRaw > b.modifiedTimeRaw ? -1 : 1))
         .slice(0, 5);
 };
 
@@ -137,12 +138,15 @@ const getUsersLastContent = () => {
 
     const { published, prePublished, unPublished } = dashboardContentBuildPublishLists(user);
 
-    logger.info(JSON.stringify(published));
-
     const modified = getUsersModifications(user);
 
     return {
-        body: thymeleafLib.render(view, { published, prePublished, modified, unPublished }),
+        body: thymeleafLib.render(view, {
+            published: published.length > 0 ? published : null,
+            prePublished: prePublished.length > 0 ? prePublished : null,
+            unPublished: unPublished.length > 0 ? unPublished : null,
+            modified,
+        }),
         contentType: 'text/html',
     };
 };

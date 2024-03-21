@@ -379,7 +379,7 @@ const getUsersModifications = (user: UserKey) => {
                 },
             },
         })
-        .hits.map((hit) => {
+        .hits.map((hit): DashboardContentInfo | undefined => {
             const draftContent = getRepoConnection({
                 branch: 'draft',
                 repoId: hit.repoId,
@@ -428,15 +428,15 @@ const getUsersModifications = (user: UserKey) => {
             return {
                 displayName: draftContent.displayName + layer,
                 contentType: contentTypeInfo ? contentTypeInfo.name : '',
-                modifiedTime: modifiedLocalTime,
+                modifyDate: modifiedLocalTime,
                 modifiedTimeStr: dateFinal,
                 status,
                 title: draftContent._path.replace('/content/www.nav.no/', ''),
                 url: `/admin/tool/com.enonic.app.contentstudio/main/${projectId}/edit/${draftContent._id}`,
             };
         })
-        .filter((entry) => !!entry)
-        .sort((a, b) => (dayjs(a?.modifiedTime).isAfter(dayjs(b?.modifiedTime)) ? -1 : 1))
+        .filter(notNullOrUndefined)
+        .sort((a, b) => (dayjs(a.modifyDate).isAfter(dayjs(b.modifyDate)) ? -1 : 1))
         .slice(0, 5);
 };
 

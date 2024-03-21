@@ -1,5 +1,6 @@
 import { AuditLog as _AudigLog } from '/lib/xp/auditlog';
 import { ArrayOrSingle } from '../../../../types/util-types';
+import { Dayjs } from '/assets/dayjs/1.11.9/dayjs.min.js';
 
 type AuditLog<Data extends _AudigLog['data']> = Omit<_AudigLog<Data>, 'objects'> & {
     objects: ArrayOrSingle<_AudigLog['objects'][number]>;
@@ -51,6 +52,7 @@ export type DashboardContentInfo = {
     displayName: string;
     contentType: string;
     modifiedTimeStr: string;
+    modifyDate: Dayjs | string | undefined;
     status: string;
     title: string;
     url: string;
