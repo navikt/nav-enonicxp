@@ -13,13 +13,11 @@ import { notNullOrUndefined } from '../../../lib/utils/mixed-bag-of-utils';
 import { forceArray, removeDuplicates as _removeDuplicates } from '../../../lib/utils/array-utils';
 import { getAuditLogEntries } from './utils/auditLogQuery';
 import {
-    AuditLogArchived,
     AuditLogEntry,
     AuditLogPublished,
     AuditLogUnpublished,
     DashboardContentInfo,
 } from './utils/types';
-import { logger } from '../../../lib/utils/logging';
 
 dayjs.extend(utc);
 
@@ -221,25 +219,25 @@ const prePublishedEntryFound = (
 // Hent alle brukers siste publiseringer, inkludert forhåndspubliseringer og avpubliseringer
 const getUsersPublications = (user: UserKey) => {
     let publishedLogEntries = getAuditLogEntries({
-        type: 'system.content.publish',
+        type: 'publish',
         user,
         query: '',
         count: 100,
-    }) as AuditLogPublished[];
+    });
 
     let unpublishedLogEntries = getAuditLogEntries({
-        type: 'system.content.unpublishContent',
+        type: 'unpublish',
         user,
         query: '',
         count: 100,
-    }) as AuditLogUnpublished[];
+    });
 
     const archivedLogEntries = getAuditLogEntries({
-        type: 'system.content.archive',
+        type: 'archive',
         user,
         query: '',
         count: 100,
-    }) as AuditLogArchived[];
+    });
 
     // Gjennomgå arkivert-listen for eventuelt å legge til i avpublisert
     archivedLogEntries.forEach((entry) => {
