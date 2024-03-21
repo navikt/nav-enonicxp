@@ -43,14 +43,25 @@ export class DashboardContentAuditLogEntries {
             ...this.queryProps,
             type: 'archive',
         });
+
+        return {
+            published: this.getPublishedContent(),
+            unpublished: this.getUnpublishedContent(),
+            prepublished: this.getPrepublishedContent(),
+        };
     }
 
     private getPublishedContent() {
+        // Skal være publisert
         // Skal ikke være arkivert
         // Skal ikke være forhåndspublisert
     }
 
-    private getUnpublishedEntries() {}
+    private getUnpublishedContent() {
+        // Skal ikke være publisert
+    }
 
-    private getArchivedEntries() {}
+    private getPrepublishedContent() {
+        // Skal være avventende forhåndspublisering
+    }
 }
