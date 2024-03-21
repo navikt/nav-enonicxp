@@ -101,16 +101,16 @@ export type FormIntermediateStep = {
           /**
            * Selected
            */
-          _selected: "external";
+          _selected: "internal";
 
           /**
-           * Lenke til skjema, søknad eller klage
+           * Intern lenke til skjema, søknad eller klage
            */
-          external: {
+          internal: {
             /**
-             * Ekstern URL
+             * Internt innhold
              */
-            externalUrl?: string;
+            internalContent: string;
           };
         }
       | {
@@ -124,9 +124,9 @@ export type FormIntermediateStep = {
            */
           external: {
             /**
-             * Internt innhold
+             * Ekstern URL
              */
-            internalUrl: string;
+            externalUrl?: string;
           };
         }
       | {
@@ -183,9 +183,9 @@ export type FormIntermediateStep = {
                      */
                     internal: {
                       /**
-                       * Ekstern URL
+                       * Internt innhold
                        */
-                      externalUrl?: string;
+                      internalContent: string;
                     };
                   }
                 | {
@@ -199,9 +199,9 @@ export type FormIntermediateStep = {
                      */
                     external: {
                       /**
-                       * Internt innhold
+                       * Ekstern URL
                        */
-                      internalUrl: string;
+                      externalUrl: string;
                     };
                   };
             }>;
