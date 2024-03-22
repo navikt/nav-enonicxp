@@ -17,8 +17,10 @@ type Props<Type extends AuditLogQueryType> = {
     type: Type;
     user: UserKey;
     count: number;
-    from?: Dayjs;
-    to?: Dayjs;
+    logTsFrom?: Dayjs;
+    logTsTo?: Dayjs;
+    publishFrom?: Dayjs;
+    publishTo?: Dayjs;
     query?: string;
 };
 
@@ -26,8 +28,10 @@ export const getAuditLogEntries = <Type extends AuditLogQueryType>({
     type,
     count,
     user,
-    from,
-    to,
+    logTsFrom,
+    logTsTo,
+    publishFrom,
+    publishTo,
     query,
 }: Props<Type>): Array<ReturnTypeMap[Type]> => {
     const repoConnection = getRepoConnection({
@@ -39,7 +43,7 @@ export const getAuditLogEntries = <Type extends AuditLogQueryType>({
     const hitIds = repoConnection
         .query({
             count,
-            query: buildQueryString(from, to, query),
+            query: buildQueryString(logTsFrom, logTsTo, query),
             sort: 'time DESC',
             filters: {
                 boolean: {
