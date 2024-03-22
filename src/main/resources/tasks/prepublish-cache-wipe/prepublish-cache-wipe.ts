@@ -5,7 +5,9 @@ import { PrepublishCacheWipe } from '@xp-types/tasks/prepublish-cache-wipe';
 
 export const run = (params: PrepublishCacheWipe) => {
     const { id, path, repoId = CONTENT_ROOT_REPO_ID } = params;
-    logger.info(`Running task for cache invalidation of prepublished content - ${id} - ${path}`);
+    logger.info(
+        `Running task for cache invalidation of prepublished content - ${id} - ${repoId} - ${path}`
+    );
 
     invalidateCacheForNode({
         node: { id, path, branch: 'master', repo: repoId },
