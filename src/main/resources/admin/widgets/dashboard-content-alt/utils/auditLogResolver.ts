@@ -226,7 +226,7 @@ const getRepoIdForContentId = (objects: string[], contentId: string): string => 
         }
     }
 
-    logger.error(`No repoId found for ${contentId} in objects: ${objects.join(', ')}`);
+    logger.warning(`No repoId found for ${contentId} in objects: ${objects.join(', ')}`);
 
     return CONTENT_ROOT_REPO_ID;
 };
