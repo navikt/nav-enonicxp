@@ -18,6 +18,7 @@ import {
     AuditLogUnpublished,
     DashboardContentInfo,
 } from './utils/types';
+import { userIsAdmin } from '../../../lib/utils/auth-utils';
 
 dayjs.extend(utc);
 
@@ -441,6 +442,10 @@ const getUsersModifications = (user: UserKey) => {
 };
 
 const getUsersLastContent = () => {
+    if (!userIsAdmin()) {
+        return null;
+    }
+
     // Hent aktuell bruker (redaktør)
     const user = authLib.getUser()?.key;
     if (!user) {

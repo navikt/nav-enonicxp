@@ -6,10 +6,10 @@
 		<principal>role:system.authenticated</principal>
 	</allow>
 	<config>
-		<property name="width" value="full"/>
+		<property name="width" value="medium"/>
 		<property name="height" value="full"/>
 		<property name="style" value="custom"/>
-		<property name="order" value="1"/>
+		<property name="order" value="-1"/>
 	</config>
 </widget>
 

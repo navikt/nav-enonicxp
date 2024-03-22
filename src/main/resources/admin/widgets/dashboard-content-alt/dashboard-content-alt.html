@@ -4,47 +4,61 @@
             margin-top: 1rem;
             margin-bottom: 0.5rem;
         }
+
         caption {
             text-align: left;
         }
+
         p {
             font-size: 1rem;
             margin: 0.5rem 0 1.5rem 0;
         }
+
         table {
             font-size: 1rem;
             width: 100%;
             border-spacing: 0;
         }
+
         th {
             padding: 0.2rem 0.4rem 0.2rem 0;
             text-align: left;
             font-weight: normal;
         }
+
         th:not(:first-child) {
             padding-left: 0.5rem;
         }
+
         .first-col {
             width: 50%;
         }
+
         th:nth-child(2) {
             width: 20%;
         }
+
         th:nth-child(3) {
             width: 20%;
         }
+
         th:nth-child(4) {
             width: 10%;
         }
+
         tr:nth-child(odd) th {
             background-color: whitesmoke;
         }
+
+        #admin-widget-content {
+            background-color: white;
+            padding: 1rem;
+            align-items: center;
+            max-width: 1024px;
+        }
     </style>
-    <div
-        id="admin-widget-content"
-        style="background-color: white; padding: 1rem; align-items: center"
-    >
-        <h3>Versjon 2</h3>
+    <div id="admin-widget-content">
+        <strong>(Versjon 2)</strong>
         <h3>Sist publiserte</h3>
         <table th:if="${published}">
             <caption>

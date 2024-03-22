@@ -12,8 +12,8 @@ import { getContentProjectIdFromRepoId, getRepoConnection } from '../../../lib/u
 import { notNullOrUndefined } from '../../../lib/utils/mixed-bag-of-utils';
 import { DashboardContentInfo } from './utils/types';
 import { ContentDescriptor } from '../../../types/content-types/content-config';
-import { logger } from '../../../lib/utils/logging';
 import { dashboardContentBuildPublishLists } from './utils/buildPublishLists';
+import { userIsAdmin } from '../../../lib/utils/auth-utils';
 
 const view = resolve('./dashboard-content-alt.html');
 
@@ -130,6 +130,10 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
 };
 
 const getUsersLastContent = () => {
+    if (!userIsAdmin()) {
+        return null;
+    }
+
     // Hent aktuell bruker (redaktør)
     const user = authLib.getUser()?.key;
     if (!user) {
