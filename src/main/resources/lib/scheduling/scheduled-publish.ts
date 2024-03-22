@@ -32,9 +32,11 @@ export const isPrepublished = (publishFrom?: string): publishFrom is string => {
     return publishFrom ? getUnixTimeFromDateTimeString(publishFrom) > Date.now() : false;
 };
 
-export const getPrepublishJobName = (contentId: string) => `prepublish-invalidate-${contentId}`;
+export const getPrepublishJobName = (contentId: string, repoId: string, suffix?: string) =>
+    `prepublish-invalidate-${contentId}-${repoId}${suffix ? `-${suffix}` : ''}`;
 
-export const getUnpublishJobName = (contentId: string) => `unpublish-${contentId}`;
+export const getUnpublishJobName = (contentId: string, repoId: string, suffix?: string) =>
+    `unpublish-${contentId}-${repoId}${suffix ? `-${suffix}` : ''}`;
 
 export const scheduleCacheInvalidation = ({
     jobName,
@@ -81,7 +83,7 @@ export const scheduleUnpublish = ({
     masterOnly?: boolean;
 }) => {
     createOrUpdateSchedule<UnpublishExpiredContent>({
-        jobName: getUnpublishJobName(id),
+        jobName: getUnpublishJobName(id, repoId),
         jobSchedule: {
             type: 'ONE_TIME',
             value: publishTo,
@@ -115,7 +117,7 @@ export const handleScheduledPublish = (nodeData: NodeEventData, eventType: strin
 
     if (isPrepublished(publish.from)) {
         scheduleCacheInvalidation({
-            jobName: getPrepublishJobName(id),
+            jobName: getPrepublishJobName(id, repo),
             id,
             path,
             repoId: repo,
