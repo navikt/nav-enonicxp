@@ -14,7 +14,7 @@ export const scheduleContactInformationInvalidation = (
     }
 
     const contactData = (content.data.contactType as any)[selected];
-    const customSpecialOpeningHours = contactData.specialOpeningHours?.custom;
+    const customSpecialOpeningHours = contactData?.specialOpeningHours?.custom;
     if (!customSpecialOpeningHours) {
         return;
     }
