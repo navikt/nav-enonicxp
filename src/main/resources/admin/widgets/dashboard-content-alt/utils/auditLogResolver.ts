@@ -62,14 +62,10 @@ export class DashboardContentAuditLogResolver {
                 .sort((a, b) => (a.time > b.time ? -1 : 1))
         );
 
-        this.cleanPublishedData();
-        this.cleanUnpublishedData();
-        this.cleanPrepublishedData();
-
         return {
-            publishedData: Object.values(this.publishedData),
-            prepublishedData: Object.values(this.prepublishedData),
-            unpublishedData: Object.values(this.unpublishedData),
+            publishedData: this.cleanPublishedData(),
+            prepublishedData: this.cleanPrepublishedData(),
+            unpublishedData: this.cleanUnpublishedData(),
         };
     }
 
@@ -77,7 +73,7 @@ export class DashboardContentAuditLogResolver {
         const { result, params } = entry.data;
 
         const publish = params.contentPublishInfo || {};
-        const now = new Date(Date.now()).toString();
+        const now = new Date().toISOString();
 
         if (publish.from && publish.from > now) {
             return [];
@@ -102,7 +98,7 @@ export class DashboardContentAuditLogResolver {
             return [];
         }
 
-        const now = new Date(Date.now()).toISOString();
+        const now = new Date().toISOString();
 
         if (publish.from < now) {
             return [];
@@ -139,59 +135,76 @@ export class DashboardContentAuditLogResolver {
         // Skal ikke være avpublisert igjen senere av user (men kan være avpublisert av andre)
         // Skal ikke avvente forhåndspublisering
 
+        const cleanedList: ContentLogData[] = [];
+
         Object.entries(this.publishedData).forEach(([key, publishedEntry]) => {
             const unpublishedEntry = this.unpublishedData[key];
             if (unpublishedEntry && unpublishedEntry.time > publishedEntry.time) {
-                delete this.publishedData[key];
                 return;
             }
 
             const prepublishedEntry = this.prepublishedData[key];
             if (!prepublishedEntry) {
+                cleanedList.push(publishedEntry);
                 return;
             }
 
             if (publishedEntry.time < prepublishedEntry.time) {
-                delete this.publishedData[key];
+                return;
             }
+
+            cleanedList.push(publishedEntry);
         });
+
+        return cleanedList;
     }
 
     private cleanUnpublishedData() {
         // Skal være avpublisert av user
         // Skal ikke være publisert igjen senere av user (men kan være publisert av andre)
 
+        const cleanedList: ContentLogData[] = [];
+
         Object.entries(this.unpublishedData).forEach(([key, unPublishedEntry]) => {
             const publishedEntry = this.publishedData[key];
             if (publishedEntry && publishedEntry.time > unPublishedEntry.time) {
-                delete this.unpublishedData[key];
                 return;
             }
 
             const prepublishedEntry = this.prepublishedData[key];
             if (!prepublishedEntry) {
+                cleanedList.push(unPublishedEntry);
                 return;
             }
 
             if (unPublishedEntry.time < prepublishedEntry.time) {
-                delete this.unpublishedData[key];
+                return;
             }
+
+            cleanedList.push(unPublishedEntry);
         });
+
+        return cleanedList;
     }
 
     private cleanPrepublishedData() {
+        const cleanedList: ContentLogData[] = [];
+
         Object.entries(this.prepublishedData).forEach(([key, prePublishedEntry]) => {
             const publishedEntry = this.publishedData[key];
             if (publishedEntry && publishedEntry.time > prePublishedEntry.time) {
-                delete this.prepublishedData[key];
                 return;
             }
 
             const unpublishedEntry = this.unpublishedData[key];
             if (unpublishedEntry) {
-                delete this.prepublishedData[key];
+                return;
             }
+
+            cleanedList.push(prePublishedEntry);
         });
+
+        return cleanedList;
     }
 }
 
