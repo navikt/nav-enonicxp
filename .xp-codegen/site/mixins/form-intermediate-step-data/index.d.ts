@@ -37,10 +37,26 @@ export type FormIntermediateStepData = {
           /**
            * Selected
            */
+          _selected: "internal";
+
+          /**
+           * Intern lenke til skjema, søknad eller klage
+           */
+          internal: {
+            /**
+             * Internt innhold
+             */
+            internalContent: string;
+          };
+        }
+      | {
+          /**
+           * Selected
+           */
           _selected: "external";
 
           /**
-           * Lenke til skjema, søknad eller klage
+           * Ekstern lenke til skjema, søknad eller klage
            */
           external: {
             /**
@@ -96,16 +112,32 @@ export type FormIntermediateStepData = {
                     /**
                      * Selected
                      */
+                    _selected: "internal";
+
+                    /**
+                     * Intern lenke til skjema, søknad eller klage
+                     */
+                    internal: {
+                      /**
+                       * Internt innhold
+                       */
+                      internalContent: string;
+                    };
+                  }
+                | {
+                    /**
+                     * Selected
+                     */
                     _selected: "external";
 
                     /**
-                     * Lenke til skjema, søknad eller klage
+                     * Ekstern lenke til skjema, søknad eller klage
                      */
                     external: {
                       /**
                        * Ekstern URL
                        */
-                      externalUrl?: string;
+                      externalUrl: string;
                     };
                   };
             }>;

@@ -2,7 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import * as schedulerLib from '/lib/xp/scheduler';
 import httpClient from '/lib/http-client';
-import { URLS } from '../constants';
+import { CONTENT_ROOT_REPO_ID, URLS } from '../constants';
 import { clusterInfo, ClusterState, requestClusterInfo } from '../cluster-utils/cluster-api';
 import { getPrepublishJobName, getUnpublishJobName } from '../scheduling/scheduled-publish';
 import { RepoBranch } from '../../types/common';
@@ -44,20 +44,25 @@ type SiteInfo = {
 
 const isFuture = (dateTime?: string) => dateTime && Date.now() < new Date(dateTime).getTime();
 
+// TODO: support for content from layers
 const getPublishInfo = (content: Content): PublishInfo => {
     const publish: PublishInfo = {
         ...content.publish,
     };
 
     if (isFuture(publish.from)) {
-        const scheduledJob = schedulerLib.get({ name: getPrepublishJobName(content._id) });
+        const scheduledJob = schedulerLib.get({
+            name: getPrepublishJobName(content._id, CONTENT_ROOT_REPO_ID),
+        });
         if (scheduledJob) {
             publish.scheduledFrom = scheduledJob.schedule.value;
         }
     }
 
     if (isFuture(publish.to)) {
-        const scheduledJob = schedulerLib.get({ name: getUnpublishJobName(content._id) });
+        const scheduledJob = schedulerLib.get({
+            name: getUnpublishJobName(content._id, CONTENT_ROOT_REPO_ID),
+        });
         if (scheduledJob) {
             publish.scheduledTo = scheduledJob.schedule.value;
         }

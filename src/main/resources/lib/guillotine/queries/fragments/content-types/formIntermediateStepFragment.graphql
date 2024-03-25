@@ -1,3 +1,4 @@
+#import "../contentCommonFragment.graphql"
 #import "../richText/richTextFragment.graphql"
 #import "../mixins/animatedIconsTargetFragment.graphql"
 
@@ -30,11 +31,21 @@ fragment contentIntermediateStep on no_nav_navno_FormIntermediateStep {
                             external {
                                 externalUrl
                             }
+                            internal {
+                                internalContent {
+                                    ...contentCommon
+                                }
+                            }
                         }
                     }
                 }
                 external {
                     externalUrl
+                }
+                internal {
+                    internalContent {
+                        ...contentCommon
+                    }
                 }
             }
         }
