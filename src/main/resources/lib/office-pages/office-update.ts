@@ -9,33 +9,144 @@ import { CONTENT_LOCALE_DEFAULT, URLS } from '../constants';
 import { createObjectChecksum } from '../utils/object-utils';
 
 type OfficeBranchDescriptor = NavNoDescriptor<'office-branch'>;
+type OfficePageDescriptor = NavNoDescriptor<'office-page'>;
 type InternalLinkDescriptor = NavNoDescriptor<'internal-link'>;
 
+type RequestConfig = {
+    url: string;
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+    body?: string;
+};
+
+type OfficeOverview = {
+    enhetId: string;
+    enhetNr: string;
+    navn: string;
+    type: string;
+};
+
+type OfficeTypeDictionary = Map<string, string>;
+
 const OFFICE_BRANCH_CONTENT_TYPE: OfficeBranchDescriptor = `no.nav.navno:office-branch`;
+const OFFICE_PAGE_CONTENT_TYPE: OfficePageDescriptor = `no.nav.navno:office-page`;
 const INTERNAL_LINK_CONTENT_TYPE: InternalLinkDescriptor = `no.nav.navno:internal-link`;
 const OFFICES_BASE_PATH = '/www.nav.no/kontor';
 
 const getOfficeContentName = (officeData: OfficeBranchData) => commonLib.sanitize(officeData.navn);
 
-export const fetchAllOfficeBranchDataFromNorg = () => {
+const generalOfficeTypes: ReadonlySet<string> = new Set([
+    'FPY',
+    'KLAGE',
+    'KONTROLL',
+    'OKONOMI',
+    'HMS',
+    'YTA',
+    'OPPFUTLAND',
+]);
+
+const norgRequest = <T>(requestConfig: RequestConfig): T[] | null => {
+    const response = request({
+        url: requestConfig.url,
+        method: requestConfig.method,
+        contentType: 'application/json',
+        headers: {
+            'x-nav-apiKey': app.config.norg2ApiKey,
+            consumerId: app.config.norg2ConsumerId,
+        },
+        body: requestConfig.body,
+    });
+
+    if (response.status === 200 && response.body) {
+        return JSON.parse(response.body);
+    } else {
+        logger.error(
+            `OfficeImporting: Bad response from norg2: ${response.status} - ${response.message}, ${requestConfig.url}`
+        );
+        return null;
+    }
+};
+
+const localOfficeAdapter = (localOfficeData: OfficeBranchData): OfficeBranchData => {
+    return { ...localOfficeData, type: 'LOKAL' };
+};
+
+const generalOfficeAdapter = (
+    officeData: GeneralOfficeData,
+    officeTypeDictionary: OfficeTypeDictionary
+): OfficeBranchData => {
+    const type = officeTypeDictionary.get(officeData.enhetNr) || '';
+    return {
+        enhetNr: officeData.enhetNr,
+        navn: officeData.navn,
+        type,
+        status: 'Aktiv',
+        organisasjonsnummer: '',
+        sosialeTjenester: '',
+        spesielleOpplysninger: officeData.spesielleOpplysninger,
+        underEtableringDato: '',
+        aktiveringsdato: '',
+        nedleggelsesdato: '',
+        beliggenhet: officeData.besoeksadresse,
+        postadresse: officeData.postadresse,
+        brukerkontakt: officeData.brukerkontakt,
+    };
+};
+
+export const fetchAllOfficeDataFromNorg = () => {
     try {
-        const response = request({
-            url: URLS.NORG_LOCAL_OFFICE_API_URL,
+        const officeTypeDictionary = new Map<string, string>();
+
+        const officeOverview = norgRequest<OfficeOverview>({
+            url: `${URLS.NORG_OFFICE_OVERVIEW_API_URL}`,
             method: 'GET',
-            headers: {
-                'x-nav-apiKey': app.config.norg2ApiKey,
-                consumerId: app.config.norg2ConsumerId,
-            },
         });
 
-        if (response.status === 200 && response.body) {
-            return JSON.parse(response.body);
-        } else {
+        if (!officeOverview) {
             logger.error(
-                `OfficeImporting: Bad response from norg2: ${response.status} - ${response.message}`
+                `OfficeImporting: Bad response from norg2 from /enhet-endpoint (officeOverview)`
             );
             return null;
         }
+
+        // The other endpoints will not include office type, so we need to
+        // make a dictionary to look up the type from the office number.
+        officeOverview.forEach((office) => officeTypeDictionary.set(office.enhetNr, office.type));
+
+        // Not all offices in the overview should be fetched,
+        // so make a list of enhetNr to actually fetch.
+        const relevantGeneralOffices = officeOverview
+            ?.filter((office) => generalOfficeTypes.has(office.type))
+            .map((office) => office.enhetNr);
+
+        const localOffices = norgRequest<OfficeBranchData>({
+            url: URLS.NORG_LOCAL_OFFICE_API_URL,
+            method: 'GET',
+        });
+
+        const generalOffices = norgRequest<GeneralOfficeData>({
+            url: URLS.NORG_OFFICE_INFORMATION_API_URL,
+            method: 'POST',
+            body: JSON.stringify(relevantGeneralOffices),
+        });
+
+        if (!localOffices || !generalOffices) {
+            logger.error(`OfficeImporting: Could not fetch local offices or enhet from norg2`);
+            return;
+        }
+
+        const adaptedGeneralOffices = generalOffices.map((generalOffice) =>
+            generalOfficeAdapter(generalOffice, officeTypeDictionary)
+        );
+
+        const adaptedLocalOffices = localOffices.map((localOffice) =>
+            localOfficeAdapter(localOffice)
+        );
+
+        log.info(
+            `OfficeImporting: Local office: ${localOffices.length}, general office: ${adaptedGeneralOffices.length}.`
+        );
+
+        return adaptedGeneralOffices; //[...adaptedGeneralOffices, ...adaptedLocalOffices];
     } catch (e) {
         logger.error(
             `OfficeImporting: Exception from norg2 request: ${e}. Fetching from ${URLS.NORG_LOCAL_OFFICE_API_URL}.`
@@ -180,12 +291,15 @@ const updateOfficePageIfChanged = (
 const createOfficeBranchPage = (officeData: OfficeBranchData) => {
     try {
         logger.info('Trying to create office branch page');
+        const contentType =
+            officeData.type === 'LOKAL' ? OFFICE_BRANCH_CONTENT_TYPE : OFFICE_PAGE_CONTENT_TYPE;
+
         const content = contentLib.create({
             name: getOfficeContentName(officeData),
             parentPath: OFFICES_BASE_PATH,
             displayName: officeData.navn,
             language: getOfficeBranchLanguage(officeData),
-            contentType: OFFICE_BRANCH_CONTENT_TYPE,
+            contentType,
             data: {
                 ...officeData,
                 checksum: createObjectChecksum(officeData),
@@ -221,7 +335,7 @@ const deleteStaleOfficePages = (
     return deletedIds;
 };
 
-export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranchData[]) => {
+export const processAllOffices = (offices: OfficeBranchData[]) => {
     const existingOfficePages = getExistingOfficePages();
     const processedOfficeEnhetsNr: string[] = [];
 
@@ -231,7 +345,7 @@ export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranchDat
         deleted: [],
     };
 
-    incomingOfficeBranches.forEach((officeBranchData) => {
+    offices.forEach((officeBranchData) => {
         const contentName = getOfficeContentName(officeBranchData);
         const pathName = `${OFFICES_BASE_PATH}/${contentName}`;
 

@@ -14,6 +14,7 @@ import { activateContentListItemUnpublishedListener } from './lib/contentlists/r
 import { startFailsafeSchedule } from './lib/scheduling/scheduler-failsafe';
 import { activateCustomPathNodeListeners } from './lib/paths/custom-paths/custom-path-event-listeners';
 import { createOfficeBranchFetchSchedule } from './lib/office-pages/office-branch-tasks';
+import { createOfficeFetchSchedule } from './lib/office-pages/office-tasks';
 import { activateSearchIndexEventHandlers } from './lib/search/_legacy/search-event-handlers';
 import { hookLibsWithTimeTravel } from './lib/time-travel/time-travel-hooks';
 import { initSearchRepo } from './lib/search/_legacy/search-repo';
@@ -34,6 +35,7 @@ if (clusterLib.isMaster()) {
 }
 
 createOfficeBranchFetchSchedule();
+createOfficeFetchSchedule();
 startOfficeInfoPeriodicUpdateSchedule();
 startFailsafeSchedule();
 activateLayersEventListeners();
