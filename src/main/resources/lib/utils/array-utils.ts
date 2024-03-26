@@ -10,7 +10,7 @@ export const parseJsonToArray = <Type = unknown>(json: string): Type[] | null =>
     }
 };
 
-export const forceArray = <Type>(arrayOrNot?: Type | Type[]) => {
+export const forceArray = <Type>(arrayOrNot?: Type | Type[] | null) => {
     if (arrayOrNot === undefined || arrayOrNot === null) {
         return [];
     }
