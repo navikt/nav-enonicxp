@@ -35,6 +35,7 @@ export type Notification = import("./notification").Notification;
 export type OfficeBranch = import("./office-branch").OfficeBranch;
 export type OfficeEditorialPage = import("./office-editorial-page").OfficeEditorialPage;
 export type OfficeInformation = import("./office-information").OfficeInformation;
+export type OfficePage = import("./office-page").OfficePage;
 export type Overview = import("./overview").Overview;
 export type PageList = import("./page-list").PageList;
 export type PayoutDates = import("./payout-dates").PayoutDates;
@@ -92,6 +93,7 @@ declare global {
       "no.nav.navno:office-branch": OfficeBranch;
       "no.nav.navno:office-editorial-page": OfficeEditorialPage;
       "no.nav.navno:office-information": OfficeInformation;
+      "no.nav.navno:office-page": OfficePage;
       "no.nav.navno:overview": Overview;
       "no.nav.navno:page-list": PageList;
       "no.nav.navno:payout-dates": PayoutDates;
