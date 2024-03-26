@@ -1,0 +1,18 @@
+<mixin>
+    <form>
+        <field-set>
+            <label>Aktuelle situasjoner</label>
+            <items>
+                <input name="relatedSituations" type="ContentSelector">
+                    <label>Situasjoner</label>
+                    <help-text>Velg aktuelle situasjoner for denne produktsiden</help-text>
+                    <occurrences minimum="0" maximum="0"/>
+                    <config>
+                        <allowContentType>${app}:situation-page</allowContentType>
+                        <showStatus>true</showStatus>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</mixin>
