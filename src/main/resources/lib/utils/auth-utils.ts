@@ -1,7 +1,6 @@
 import * as authLib from '/lib/xp/auth';
-import { PrincipalKey } from '/lib/xp/auth';
 import * as contentLib from '/lib/xp/content';
-import { Permission, PermissionsParams } from '/lib/xp/content';
+import { Permission, AccessControlEntry } from '/lib/xp/content';
 import * as contextLib from '/lib/xp/context';
 import { logger } from './logging';
 import { ADMIN_PRINCIPAL, AUTHENTICATED_PRINCIPAL } from '../constants';
@@ -22,7 +21,7 @@ export const userIsAdmin = () => authLib.hasRole(ADMIN_PRINCIPAL);
 export const validateCurrentUserPermissionForContent = (
     contentId: string | undefined = undefined,
     requiredPermission: Permission,
-    permissions?: PermissionsParams[]
+    permissions?: AccessControlEntry[]
 ): boolean => {
     if (!contentId && !permissions) {
         logger.error('contentId or permissions must be provided');
@@ -44,13 +43,13 @@ export const validateCurrentUserPermissionForContent = (
         return false;
     }
 
-    const allowedPrincipals = contentPermissions.reduce((acc, principal) => {
-        const hasPermission = principal.allow.some(
+    const allowedPrincipals = contentPermissions.reduce<string[]>((acc, principal) => {
+        const hasPermission = principal.allow?.some(
             (permission) => permission === requiredPermission
         );
 
         return hasPermission ? [...acc, principal.principal] : acc;
-    }, [] as PrincipalKey[]);
+    }, []);
 
     const currentUserHasAccess = allowedPrincipals.some((allowedPrincipal) =>
         currentUserPrincipals.some((currentPrincipal) => currentPrincipal === allowedPrincipal)

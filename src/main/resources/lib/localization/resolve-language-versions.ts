@@ -27,7 +27,7 @@ type GetLanguageVersionsParams = {
 
 const transformContent = (content: Content, layerLocale: string): LanguageSelectorData => {
     return {
-        language: content.language,
+        language: content.language || layerLocale,
         _path: getPublicPath(content, layerLocale),
     };
 };
@@ -126,7 +126,9 @@ export const getLanguageVersions = ({
     );
 
     return mergeLayersWithLegacy(
-        contentFromLayers.map((content) => transformContent(content, content.language)),
+        contentFromLayers.map((content) =>
+            transformContent(content, content.language || CONTENT_LOCALE_DEFAULT)
+        ),
         contentFromLegacyLanguages.map((content) =>
             transformContent(content, CONTENT_LOCALE_DEFAULT)
         )

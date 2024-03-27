@@ -116,7 +116,12 @@ const selectorHandler = (req: XP.Request<XP.CustomSelectorServiceParams & Select
 
     const selectedId = customSelectorParseSelectedIdsFromReq(req)[0];
 
-    const { language } = portalLib.getContent();
+    const language = portalLib.getContent()?.language;
+    if (!language) {
+        return {
+            status: 500,
+        };
+    }
 
     const hits = selectedId
         ? [getSelectedHit(selectedId, detailType, language)]

@@ -95,10 +95,10 @@ const transformContentToSearchNodeParams = (
         _name: name,
         _parentPath: SEARCH_REPO_CONTENT_PARENT_PATH,
         ...(createdTime && {
-            createdTime: new Date(fixDateFormat(contentNode.createdTime)),
+            createdTime: new Date(fixDateFormat(createdTime)),
         }),
         ...(modifiedTime && {
-            modifiedTime: new Date(fixDateFormat(contentNode.modifiedTime)),
+            modifiedTime: new Date(fixDateFormat(modifiedTime)),
         }),
         publish: {
             ...(publish?.first && {
@@ -121,7 +121,10 @@ const searchNodeIsFresh = (
     locale: string
 ) =>
     facetsAreEqual(facets, searchNode.facets) &&
-    dateTimesAreEqual(contentNode.modifiedTime, searchNode.modifiedTime) &&
+    dateTimesAreEqual(
+        contentNode.modifiedTime || contentNode.createdTime,
+        searchNode.modifiedTime || searchNode.createdTime
+    ) &&
     searchNode.contentId === contentNode._id &&
     searchNode.contentPath === contentNode._path &&
     searchNode.layerLocale === locale &&

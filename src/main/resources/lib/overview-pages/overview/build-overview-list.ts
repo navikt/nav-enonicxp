@@ -9,6 +9,7 @@ import { ContentInOverviewPages, OverviewPageDetailedType, OverviewPageItem } fr
 import { forceArray } from '../../utils/array-utils';
 import { getLocalizedContentWithFallbackData } from '../common/localization';
 import { buildProductDetailsMap } from './build-product-details-map';
+import { getLayersData } from '../../localization/layers-data';
 
 const buildSimpleOverviewList = (productPageContents: ContentInOverviewPages[]) =>
     productPageContents.map((content) => transformToOverviewItem(content));
@@ -51,16 +52,18 @@ export const buildOverviewList = (overviewContent: Content<'no.nav.navno:overvie
         excludedContentIds: forceArray(excludedContent),
     });
 
+    const locale = language || getLayersData().defaultLocale;
+
     const overviewList = runInContext({ branch: 'master' }, () => {
         // TODO: remove this once all relevant overview pages have been converted to the locale fallback system
         if (!localeFallback && overviewType !== 'all_products') {
-            return buildOverviewListLegacy(listContents, overviewType, language);
+            return buildOverviewListLegacy(listContents, overviewType, locale);
         }
 
         const localizedContent = getLocalizedContentWithFallbackData({
             contents: listContents,
             localeFallbackIds: forceArray(localeFallback),
-            language,
+            language: locale,
         });
 
         return overviewType === 'all_products'

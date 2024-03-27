@@ -10,7 +10,7 @@ export const responseProcessor = (req: XP.Request, res: XP.Response) => {
     // We do NOT map the portal:page-template type to the adminFrontendProxy controller in our site mappings. Instead,
     // we let it through the regular XP request pipeline and only send it through the frontend-proxy if the template
     // is not empty. For empty templates, we only want to show the default response.
-    if (content.type === 'portal:page-template' && content.page?.descriptor) {
+    if (content?.type === 'portal:page-template' && content.page?.descriptor) {
         return frontendProxy(req);
     }
 

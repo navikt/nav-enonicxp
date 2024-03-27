@@ -6,6 +6,7 @@ import { GlobalValueItem } from '../../../lib/global-values/types';
 import { forceArray, parseJsonToArray } from '../../../lib/utils/array-utils';
 import { applyModifiedData } from '../../../lib/utils/content-utils';
 import { CONTENT_ROOT_REPO_ID } from '../../../lib/constants';
+import { Content } from '/lib/xp/content';
 
 // Verify that the keys-array from the request matches the keys in the global values set
 const validateKeys = (keysFromParam: string[], valueItems: GlobalValueItem[]) => {
@@ -49,7 +50,7 @@ export const reorderGlobalValuesService = (req: XP.Request) => {
             branch: 'draft',
         });
 
-        repo.modify({
+        repo.modify<Content>({
             key: contentId,
             editor: (_content) => {
                 _content.data.valueItems = reorderedItems;

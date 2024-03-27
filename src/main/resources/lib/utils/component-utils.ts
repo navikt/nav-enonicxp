@@ -94,8 +94,15 @@ export const generateAnchorIdField = <Config extends ComponentConfigAll & { anch
     idSourceField: StringFieldsExcludingAnchorId<Config>,
     idSourceDefaultValue?: string
 ) => {
-    const contentId = portalLib.getContent()._id;
+    const contentId = portalLib.getContent()?._id;
+    if (!contentId) {
+        return;
+    }
+
     const component = portalLib.getComponent();
+    if (!component) {
+        return;
+    }
 
     const repo = getRepoConnection({
         repoId: req.repositoryId,
@@ -104,39 +111,41 @@ export const generateAnchorIdField = <Config extends ComponentConfigAll & { anch
 
     const content = repo.get<Content>(contentId);
 
-    if (!componentHasUniqueAnchorId(content, component)) {
-        repo.modify<Content>({
-            key: contentId,
-            editor: (content) => {
-                const components = forceArray(content.components);
-
-                const config = getComponentConfigByPath(component.path, components) as Config;
-
-                if (!config) {
-                    return content;
-                }
-
-                if (!config[idSourceField] && idSourceDefaultValue !== undefined) {
-                    (config as any)[idSourceField] = idSourceDefaultValue;
-                }
-
-                const fieldValue = config[idSourceField] as unknown as string;
-
-                if (fieldValue && fieldValue !== idSourceDefaultValue) {
-                    const newId = commonLib.sanitize(fieldValue);
-
-                    const idExists = components.some((component) => {
-                        const _config = getComponentConfig(component);
-                        if (configHasAnchorId(_config)) {
-                            return _config.anchorId === newId;
-                        }
-                    });
-
-                    (config as ConfigWithAnchorId).anchorId = idExists ? undefined : newId;
-                }
-
-                return content;
-            },
-        });
+    if (componentHasUniqueAnchorId(content, component)) {
+        return;
     }
+
+    repo.modify<Content>({
+        key: contentId,
+        editor: (content) => {
+            const components = forceArray(content.components);
+
+            const config = getComponentConfigByPath(component.path, components) as Config;
+
+            if (!config) {
+                return content;
+            }
+
+            if (!config[idSourceField] && idSourceDefaultValue !== undefined) {
+                (config as any)[idSourceField] = idSourceDefaultValue;
+            }
+
+            const fieldValue = config[idSourceField] as unknown as string;
+
+            if (fieldValue && fieldValue !== idSourceDefaultValue) {
+                const newId = commonLib.sanitize(fieldValue);
+
+                const idExists = components.some((component) => {
+                    const _config = getComponentConfig(component);
+                    if (configHasAnchorId(_config)) {
+                        return _config.anchorId === newId;
+                    }
+                });
+
+                (config as ConfigWithAnchorId).anchorId = idExists ? undefined : newId;
+            }
+
+            return content;
+        },
+    });
 };

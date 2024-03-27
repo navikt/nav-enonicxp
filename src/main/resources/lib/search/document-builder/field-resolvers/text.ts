@@ -71,9 +71,11 @@ const getComponentFieldValues = (
     fieldKeys: string[]
 ): string[] => {
     if (component.type === 'fragment') {
+        const locale = content.language || getLayersData().defaultLocale;
+
         const fragment = getRepoConnection({
             branch: 'master',
-            repoId: getLayersData().localeToRepoIdMap[content.language] || CONTENT_ROOT_REPO_ID,
+            repoId: getLayersData().localeToRepoIdMap[locale] || CONTENT_ROOT_REPO_ID,
         }).get({ key: component.fragment.id });
 
         return forceArray(fragment?.components)

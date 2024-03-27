@@ -175,8 +175,6 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
     // Publish updates
     contentLib.publish({
         keys: [parentPath],
-        sourceBranch: 'draft',
-        targetBranch: 'master',
         includeDependencies: true,
     });
 

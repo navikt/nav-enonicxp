@@ -96,7 +96,10 @@ export const widgetResponse = (req: XP.Request) => {
         };
     }
 
-    if (content.language === defaultLocale && content.type !== 'portal:fragment') {
+    if (
+        !content.language ||
+        (content.language === defaultLocale && content.type !== 'portal:fragment')
+    ) {
         return {
             body: `<widget>Denne widgeten kan ikke benyttes for innhold på default-språket (${defaultLocale})</widget>`,
             contentType: 'text/html; charset=UTF-8',
