@@ -1,4 +1,5 @@
 import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { getLayersData } from '../../lib/localization/layers-data';
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
@@ -27,13 +28,15 @@ const getPageTemplate = (content: NonNullable<SitecontentResponse>) => {
         count: 1000,
     }).hits;
 
-    const supportedTemplate = pageTemplates.find((template) => {
-        if (template.type !== 'portal:page-template') {
-            return false;
-        }
+    const supportedTemplate = pageTemplates.find(
+        (template): template is Content<'portal:page-template'> => {
+            if (template.type !== 'portal:page-template') {
+                return false;
+            }
 
-        return forceArray(template.data.supports).includes(content.type);
-    });
+            return forceArray(template.data.supports).includes(content.type);
+        }
+    );
     if (!supportedTemplate) {
         logger.info(`No supported template found for ${content.type}`);
         return null;
@@ -107,7 +110,7 @@ const getPreArchiveContent = (idOrArchivedPath: string, repoId: string, time?: s
     const content = runInTimeTravelContext(
         {
             baseContentKey: requestedVersion.nodeId,
-            dateTime: requestedContent.modifiedTime,
+            dateTime: requestedContent.modifiedTime || requestedContent.createdTime,
             branch: 'draft',
             repoId,
         },

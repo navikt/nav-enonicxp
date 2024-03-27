@@ -4,6 +4,7 @@ import { logger } from '../../lib/utils/logging';
 import { getPublicPath } from '../../lib/paths/public-path';
 import { getFromLocalCache } from '../../lib/cache/local-cache';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
+import { getLayersData } from '../../lib/localization/layers-data';
 
 const CACHE_KEY = 'decorator-menu-cache';
 const MENU_PATH = '/www.nav.no/dekorator-meny/';
@@ -71,7 +72,7 @@ const getMenuItemChildren = (contentId: string, locale?: string) => {
                 menuItemContent,
                 // The locale argument is only provided for non-root nodes. For the root nodes
                 // we use the language on the node and propagate this down to the child menu items
-                locale || menuItemContent.language
+                locale || menuItemContent.language || getLayersData().defaultLocale
             );
 
             return itemTransformed ? [...acc, itemTransformed] : acc;
