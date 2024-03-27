@@ -1,8 +1,8 @@
 declare module '*/lib/xp/node' {
-    import { RepoBranch } from 'types/common';
-    import { NodeComponent } from 'types/components/component-node';
+    import { RepoBranch } from './src/main/resources/types/common';
+    import { NodeComponent } from './src/main/resources/types/components/component-node';
     import { Content } from '*/lib/xp/content';
-    import { ArrayOrSingle } from 'types/util-types';
+    import { ArrayOrSingle } from './src/main/resources/types/util-types';
 
     // Replacements for enonic-types definitions
     namespace nodeLib {
@@ -35,7 +35,7 @@ declare module '*/lib/xp/node' {
             readonly _childOrder: string;
             readonly _indexConfig: IndexConfig;
             readonly _inheritsPermissions: boolean;
-            readonly _permissions: Array<import('/lib/xp/content').PermissionsParams>;
+            readonly _permissions: Array<import('/types/xp-libs/lib-content').PermissionsParams>;
             readonly _state: string;
             readonly _nodeType: string;
         } & (NodeData extends Content ? NodeContent<NodeData> : NodeData);
@@ -109,7 +109,7 @@ declare module '*/lib/xp/node' {
             readonly total: number;
             readonly count: number;
             readonly hits: ReadonlyArray<NodeQueryHit>;
-            readonly aggregations: import('/lib/xp/content').AggregationsResponse<AggregationKeys>;
+            readonly aggregations: import('/types/xp-libs/lib-content').AggregationsResponse<AggregationKeys>;
         }
 
         type MultiRepoNodeQueryResponse<AggregationKeys extends string = never> = Omit<
@@ -147,8 +147,8 @@ declare module '*/lib/xp/node' {
              * Query filters
              */
             filters?:
-                | import('/lib/xp/content').BasicFilters
-                | import('/lib/xp/content').BooleanFilter;
+                | import('/types/xp-libs/lib-content').BasicFilters
+                | import('/types/xp-libs/lib-content').BooleanFilter;
             /**
              * Sorting expression.
              */
@@ -156,11 +156,14 @@ declare module '*/lib/xp/node' {
             /**
              * Aggregations expression.
              */
-            aggregations?: Record<AggregationKeys, import('/lib/xp/content').Aggregation>;
+            aggregations?: Record<
+                AggregationKeys,
+                import('/types/xp-libs/lib-content').Aggregation
+            >;
             /**
              * Highlighting config
              */
-            highlight?: import('/lib/xp/content').Highlight;
+            highlight?: import('/types/xp-libs/lib-content').Highlight;
             /**
              * Return score calculation explanation.
              */
@@ -223,7 +226,7 @@ declare module '*/lib/xp/node' {
             /**
              * The access control list for the node. By default the creator will have full access
              */
-            _permissions?: ReadonlyArray<import('/lib/xp/content').PermissionsParams>;
+            _permissions?: ReadonlyArray<import('/types/xp-libs/lib-content').PermissionsParams>;
             /**
              * true if the permissions should be inherited from the node parent. Default is false.
              */
@@ -371,7 +374,7 @@ declare module '*/lib/xp/node' {
             /**
              * This function returns a binary stream.
              */
-            getBinary(params: GetBinaryParams): import('/lib/xp/content').ByteSource;
+            getBinary(params: GetBinaryParams): import('/types/xp-libs/lib-content').ByteSource;
 
             /**
              * This command queries nodes.
@@ -458,7 +461,7 @@ declare module '*/lib/xp/node' {
         }
 
         interface SetRootPermissionParams {
-            _permissions: ReadonlyArray<import('/lib/xp/content').PermissionsParams>;
+            _permissions: ReadonlyArray<import('/types/xp-libs/lib-content').PermissionsParams>;
             _inheritsPermissions: boolean;
         }
 
