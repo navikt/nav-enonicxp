@@ -16,7 +16,11 @@ import { AggregationsToAggregationResults, Content as ContentOriginal } from '@e
 import { ContentDataMapper, ContentDescriptor } from '../../content-types/content-config';
 
 export type Content<ContentType extends ContentDescriptor = ContentDescriptor> =
-    ContentDataMapper<ContentType> & Omit<ContentOriginal, 'data' | 'type' | 'page' | 'fragment'>;
+    ContentDataMapper<ContentType> &
+        Omit<ContentOriginal, 'data' | 'type' | 'page' | 'fragment'> & {
+            _versionKey?: string; // Not actually included in content results, including it here until node-lib definitions are updated
+            inherit?: Array<'CONTENT' | 'PARENT' | 'NAME' | 'SORT'>; // This field is incorrectly defined in the original type
+        };
 
 export declare function get<ContentType extends ContentDescriptor = ContentDescriptor>(
     params: GetContentParams
@@ -91,6 +95,14 @@ export declare function modify<ContentType extends ContentDescriptor = ContentDe
 export declare function move<ContentType extends ContentDescriptor = ContentDescriptor>(
     params: MoveContentParams
 ): Content<ContentType>;
+
+export interface ResetInheritanceParams {
+    key: string;
+    projectName: string;
+    inherit: Content['inherit'];
+}
+
+export declare function resetInheritance(params: ResetInheritanceParams): void;
 
 export {
     Aggregation,
@@ -205,9 +217,7 @@ export {
     getTypes,
     GetOutboundDependenciesParams,
     getOutboundDependencies,
-    ResetInheritanceParams,
     ResetInheritanceHandler,
-    resetInheritance,
     ModifyMediaParams,
     modifyMedia,
     DuplicateContentParams,

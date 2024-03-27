@@ -132,8 +132,6 @@ const moveAndRedirectOnNameChange = (
 
         contentLib.publish({
             keys: [internalLink._id],
-            sourceBranch: 'draft',
-            targetBranch: 'master',
             includeDependencies: false,
         });
     } catch (e) {
@@ -275,8 +273,6 @@ export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranchDat
 
     const publishResponse = contentLib.publish({
         keys: contentToPublish,
-        sourceBranch: 'draft',
-        targetBranch: 'master',
         includeDependencies: false,
     });
 

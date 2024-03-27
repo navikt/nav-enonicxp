@@ -120,8 +120,8 @@ const buildSitemapEntry = (
         _contentLocale: locale,
         _legacyLanguages: forceArray(content.data.languages),
         url: getUrl(content, locale),
-        modifiedTime: content.modifiedTime,
-        language: content.language,
+        modifiedTime: content.modifiedTime || content.createdTime,
+        language: content.language || getLayersData().defaultLocale,
     };
 
     if (resolveLanguages) {

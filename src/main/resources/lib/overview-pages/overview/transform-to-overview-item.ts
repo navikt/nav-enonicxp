@@ -2,6 +2,7 @@ import { Content } from '/lib/xp/content';
 import { sanitize } from '/lib/xp/common';
 import { ContentInOverviewPages, OverviewPageItem } from './types';
 import { getPublicPath } from '../../paths/public-path';
+import { getLayersData } from '../../localization/layers-data';
 
 export const transformToOverviewItem = (
     productPage: ContentInOverviewPages,
@@ -13,17 +14,19 @@ export const transformToOverviewItem = (
     const pageTitle = title || displayName;
     const listItemTitle = sortTitle || pageTitle;
 
+    const locale = language || getLayersData().defaultLocale;
+
     return {
         ...data,
         title: listItemTitle,
         audience: audience._selected,
         anchorId: sanitize(listItemTitle),
-        productDetailsPath: productDetail ? getPublicPath(productDetail, language) : undefined,
+        productDetailsPath: productDetail ? getPublicPath(productDetail, locale) : undefined,
         productLinks: [
             {
-                language,
+                language: locale,
                 type,
-                url: externalProductUrl || getPublicPath(productPage, language),
+                url: externalProductUrl || getPublicPath(productPage, locale),
                 title: pageTitle,
             },
         ],
