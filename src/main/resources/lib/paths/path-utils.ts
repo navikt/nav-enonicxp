@@ -27,8 +27,7 @@ export const stripLeadingAndTrailingSlash = (path: string) => path.replace(/(^\/
 export const isWellFormedContentRef = (contentRef: string) => {
     try {
         // This will throw if the key is malformed (invalid characters etc)
-        const content = contentLibGetStandard({ key: contentRef });
-        logger.info(JSON.stringify(content));
+        contentLibGetStandard({ key: contentRef });
         return true;
     } catch (e) {
         logger.info(`Content ref validation error for "${contentRef}" - ${e}`);
