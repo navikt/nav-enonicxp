@@ -47,6 +47,7 @@ module.exports = {
                 'ignore': enonicLibraryImports,
             },
         ],
+        'import/no-named-as-default-member': 'off',
         'import/no-unresolved': [
             'error',
             {
