@@ -25,6 +25,7 @@
             "/lib/xp/auth": ["../../../node_modules/@enonic-types/lib-auth"],
             "/lib/xp/cluster": ["../../../node_modules/@enonic-types/lib-cluster"],
             "/lib/xp/common": ["../../../node_modules/@enonic-types/lib-common"],
+            "/lib/xp/content": ["types/xp-libs/lib-content"],
             "/lib/xp/context": ["../../../node_modules/@enonic-types/lib-context"],
             "/lib/xp/event": ["../../../node_modules/@enonic-types/lib-event"],
             "/lib/xp/grid": ["../../../node_modules/@enonic-types/lib-grid"],

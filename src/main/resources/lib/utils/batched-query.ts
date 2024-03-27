@@ -1,5 +1,5 @@
 import * as contentLib from '/lib/xp/content';
-import { QueryParams, QueryResponse, ContentLibrary } from '/lib/xp/content';
+import { QueryContentParams, ContentsResult } from '/lib/xp/content';
 import * as nodeLib from '/lib/xp/node';
 import {
     NodeQueryParams,
@@ -12,11 +12,11 @@ import {
 } from '/lib/xp/node';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 
-type ContentQueryFunc = ContentLibrary['query'];
+type ContentQueryFunc = typeof contentLib.query;
 type NodeQueryFunc = RepoConnection['query'];
 
 type ContentQueryProps<ContentType extends ContentDescriptor> = {
-    queryParams: QueryParams<ContentType>;
+    queryParams: QueryContentParams<ContentType>;
     queryFunc: ContentQueryFunc;
 };
 
@@ -94,19 +94,18 @@ const batchedQuery = <ContentType extends ContentDescriptor>({
     };
 };
 
-type BatchedNodeQueryParams =
+type BatchedNodeQueryParams = {
+    queryParams: NodeQueryParams;
+} & (
     | {
-          queryParams: NodeQueryParams;
-      } & (
-          | {
-                repoParams: Source;
-                repo?: never;
-            }
-          | {
-                repo: RepoConnection;
-                repoParams?: never;
-            }
-      );
+          repoParams: Source;
+          repo?: never;
+      }
+    | {
+          repo: RepoConnection;
+          repoParams?: never;
+      }
+);
 
 export const batchedNodeQuery = ({
     queryParams,
@@ -129,7 +128,7 @@ export const batchedMultiRepoNodeQuery = ({
 };
 
 export const batchedContentQuery = <ContentType extends ContentDescriptor>(
-    queryParams: QueryParams<ContentType>
-): QueryResponse<ContentType> => {
+    queryParams: QueryContentParams<ContentType>
+): ContentsResult<ContentType> => {
     return batchedQuery<ContentType>({ queryFunc: contentLib.query, queryParams });
 };

@@ -13,7 +13,6 @@ const contentWithoutCustomPath: Content = {
     _id: 'bfb67caa-c149-4302-bdb6-09f2ee0c3649',
     _name: 'test-side',
     _path: '/www.nav.no/test-side',
-    _versionKey: 'asdf',
     creator: 'user:system:su',
     modifier: 'user:system:su',
     createdTime: '2022-05-09T10:44:58.676477300Z',
