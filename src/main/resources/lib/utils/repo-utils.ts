@@ -1,15 +1,15 @@
 import * as nodeLib from '/lib/xp/node';
-import { Source } from '/lib/xp/node';
+import { ConnectParams } from '/lib/xp/node';
 import { ADMIN_PRINCIPAL, CONTENT_REPO_PREFIX, SUPER_USER } from '../constants';
 
-const asAdminParams: Pick<Source, 'user' | 'principals'> = {
+const asAdminParams: Pick<ConnectParams, 'user' | 'principals'> = {
     user: {
         login: SUPER_USER,
     },
     principals: [ADMIN_PRINCIPAL],
 };
 
-type Params = Omit<Source, 'user' | 'principals'> & { asAdmin?: boolean };
+type Params = Omit<ConnectParams, 'user' | 'principals'> & { asAdmin?: boolean };
 
 export const getRepoConnection = ({ repoId, branch, asAdmin }: Params) =>
     nodeLib.connect({

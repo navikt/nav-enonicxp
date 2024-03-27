@@ -3,7 +3,8 @@ import { logger } from '../utils/logging';
 import { getLayersData } from '../localization/layers-data';
 import { getRepoConnection } from '../utils/repo-utils';
 import { isContentLocalized } from '../localization/locale-utils';
-import { NodeModifyParams } from '/lib/xp/node';
+import { ModifyNodeParams } from '/lib/xp/node';
+import { ContentDescriptor } from '../../types/content-types/content-config';
 
 const setContentTypeOnInheritedContent = (
     contentId: string,
@@ -48,8 +49,8 @@ const setContentTypeOnInheritedContent = (
 type Params = {
     repoId: string;
     contentId: string;
-    contentType: string;
-    editor?: NodeModifyParams['editor'];
+    contentType: ContentDescriptor;
+    editor?: ModifyNodeParams<Content>['editor'];
 };
 
 export const switchContentType = ({ repoId, contentId, contentType, editor }: Params) => {
@@ -62,7 +63,7 @@ export const switchContentType = ({ repoId, contentId, contentType, editor }: Pa
             asAdmin: true,
         });
 
-        const result = repo.modify({
+        const result = repo.modify<Content>({
             key: contentId,
             editor: (content) => {
                 if (editor) {

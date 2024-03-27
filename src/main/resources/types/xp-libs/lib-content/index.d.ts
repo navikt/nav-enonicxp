@@ -20,7 +20,6 @@ import { ContentDataMapper, ContentDescriptor } from '../../content-types/conten
 export type Content<ContentType extends ContentDescriptor = ContentDescriptor> =
     ContentDataMapper<ContentType> &
         Omit<ContentOriginal, 'data' | 'type' | 'page' | 'fragment' | 'inherit'> & {
-            _versionKey?: string; // Not actually included in content results, including it here until node-lib definitions are updated
             inherit?: Array<'CONTENT' | 'PARENT' | 'NAME' | 'SORT'>; // This field is incorrectly defined in the original type
         };
 

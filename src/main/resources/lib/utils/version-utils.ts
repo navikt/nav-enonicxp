@@ -1,5 +1,5 @@
 import { getRepoConnection } from './repo-utils';
-import { NodeVersionMetadata } from '/lib/xp/node';
+import { NodeVersion } from '/lib/xp/node';
 import { RepoBranch } from '../../types/common';
 import { nodeLibConnectStandard } from '../time-travel/standard-functions';
 import { logger } from './logging';
@@ -7,13 +7,14 @@ import { getUnixTimeFromDateTimeString } from './datetime-utils';
 import { contentTypesWithCustomEditor } from '../contenttype-lists';
 import { getLayersData } from '../localization/layers-data';
 import { getLayersMigrationArchivedContentRef } from '../time-travel/layers-migration-refs';
+import { Content } from '/lib/xp/content';
 
 const MAX_VERSIONS_COUNT_TO_RETRIEVE = 2000;
 
 export const getNodeKey = (contentRef: string) =>
     contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
 
-type VersionHistoryReference = NodeVersionMetadata & { locale: string };
+type VersionHistoryReference = NodeVersion & { locale: string };
 
 type GetNodeVersionsParams = {
     nodeKey: string;
@@ -27,7 +28,7 @@ export const getNodeVersions = ({
     repoId,
     branch,
     modifiedOnly = false,
-}: GetNodeVersionsParams) => {
+}: GetNodeVersionsParams): NodeVersion[] => {
     const repo = getRepoConnection({ repoId, branch });
 
     const result = repo.findVersions({
@@ -42,14 +43,12 @@ export const getNodeVersions = ({
         );
     }
 
-    const versions = result.hits;
-
     if (branch !== 'master') {
-        return versions;
+        return result.hits;
     }
 
     // Get only versions that have been committed to master
-    const commitedVersions = versions.filter((version) => !!version.commitId);
+    const commitedVersions = result.hits.filter((version) => !!version.commitId);
 
     if (!modifiedOnly) {
         return commitedVersions;
@@ -62,9 +61,10 @@ export const getNodeVersions = ({
     // Reverse the versions array to process oldest versions first
     // This ensures the initial committed version is kept, and subsequent (unmodified)
     // commits are discarded
-    const modifiedVersions = commitedVersions.reverse().reduce(
-        (acc, version) => {
-            const content = repoConnectionStandard.get({
+    const modifiedVersions = commitedVersions
+        .reverse()
+        .reduce<Array<NodeVersion & { modifiedTime?: string }>>((acc, version) => {
+            const content = repoConnectionStandard.get<Content>({
                 key: version.nodeId,
                 versionId: version.versionId,
             });
@@ -74,9 +74,7 @@ export const getNodeVersions = ({
             }
 
             return [{ ...version, modifiedTime: content.modifiedTime }, ...acc];
-        },
-        [] as (NodeVersionMetadata & { modifiedTime?: string })[]
-    );
+        }, []);
 
     return modifiedVersions;
 };
@@ -155,7 +153,7 @@ const shouldGetModifiedTimestampsOnly = (contentRef: string, repoId: string) => 
     const content = getRepoConnection({
         repoId,
         branch: 'master',
-    }).get(contentRef);
+    }).get<Content>(contentRef);
 
     return content ? !contentTypesWithCustomEditor.includes(content.type) : true;
 };

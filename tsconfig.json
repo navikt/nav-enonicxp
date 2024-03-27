@@ -30,7 +30,7 @@
             "/lib/xp/event": ["../../../node_modules/@enonic-types/lib-event"],
             "/lib/xp/grid": ["../../../node_modules/@enonic-types/lib-grid"],
             "/lib/xp/io": ["../../../node_modules/@enonic-types/lib-io"],
-            "/lib/xp/node": ["../../../node_modules/@enonic-types/lib-node"],
+            "/lib/xp/node": ["types/xp-libs/lib-node"],
             "/lib/xp/portal": ["types/xp-libs/lib-portal"],
             "/lib/xp/project": ["../../../node_modules/@enonic-types/lib-project"],
             "/lib/xp/repo": ["../../../node_modules/@enonic-types/lib-repo"],

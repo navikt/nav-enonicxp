@@ -10,6 +10,8 @@ import {
     getSearchDocumentFormDetails,
     getSearchDocumentProductDetails,
 } from './component-references';
+import { Content } from '/lib/xp/content';
+import { NodeCommit } from '@enonic-types/lib-node';
 
 type FieldKeyBuckets = {
     componentsFieldKeys: string[];
@@ -40,7 +42,7 @@ const getFieldKeyBuckets = (fieldKeys: string[]) => {
 };
 
 const getFieldValues = (
-    contentOrComponent: ContentNode | NonNullable<ContentNode['components']>,
+    contentOrComponent: ContentNode | NodeComponent,
     fieldKeys: string[]
 ): string[] => {
     return fieldKeys.reduce<string[]>((acc, key) => {
@@ -76,10 +78,10 @@ const getComponentFieldValues = (
         const fragment = getRepoConnection({
             branch: 'master',
             repoId: getLayersData().localeToRepoIdMap[locale] || CONTENT_ROOT_REPO_ID,
-        }).get({ key: component.fragment.id });
+        }).get<Content>({ key: component.fragment.id });
 
         return forceArray(fragment?.components)
-            .map((fragmentComponent: NodeComponent) => getFieldValues(fragmentComponent, fieldKeys))
+            .map((fragmentComponent) => getFieldValues(fragmentComponent, fieldKeys))
             .flat();
     }
 

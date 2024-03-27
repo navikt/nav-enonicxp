@@ -1,4 +1,4 @@
-import { Node } from '/lib/xp/node';
+import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import {
     SEARCH_REPO_CONTENT_ID_KEY,
@@ -34,8 +34,8 @@ type SearchNodeCreateParamsFields = {
     };
 };
 
-export type SearchNodeCreateParams = Omit<Node<Content>, keyof SearchNodeCreateParamsFields> &
+export type SearchNodeCreateParams = Omit<RepoNode<Content>, keyof SearchNodeCreateParamsFields> &
     SearchNodeCreateParamsFields &
     SearchNodeDataFields;
 
-export type SearchNode = Node<Content> & SearchNodeDataFields;
+export type SearchNode = RepoNode<Content> & SearchNodeDataFields;

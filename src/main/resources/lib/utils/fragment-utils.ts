@@ -22,7 +22,7 @@ const getContentNode = (contentRef: string, branch: RepoBranch) => {
         branch: branch || context.branch,
     });
 
-    return repo.get(getNodeKey(contentRef));
+    return repo.get<Content>(getNodeKey(contentRef));
 };
 
 const getFragmentIdsFromHtmlArea = (htmlAreaString: string): string[] => {
@@ -118,11 +118,8 @@ export const getModifiedTimeIncludingFragments = (content: Content, branch: Repo
                 return latestModifiedTime;
             }
 
-            const modifiedTime = fragment.modifiedTime;
+            const modifiedTime = fragment.modifiedTime || fragment.createdTime;
 
-            return getUnixTimeFromDateTimeString(modifiedTime) >
-                getUnixTimeFromDateTimeString(latestModifiedTime)
-                ? modifiedTime
-                : latestModifiedTime;
+            return modifiedTime > latestModifiedTime ? modifiedTime : latestModifiedTime;
         }, contentModifiedTime);
     });

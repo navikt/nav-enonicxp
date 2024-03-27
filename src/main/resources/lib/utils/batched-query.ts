@@ -2,13 +2,13 @@ import * as contentLib from '/lib/xp/content';
 import { QueryContentParams, ContentsResult } from '/lib/xp/content';
 import * as nodeLib from '/lib/xp/node';
 import {
-    NodeQueryParams,
-    NodeQueryResponse,
-    Source,
-    NodeQueryHit,
     RepoConnection,
     MultiRepoConnection,
-    MultiRepoNodeQueryResponse,
+    QueryNodeParams,
+    NodeQueryResult,
+    NodeQueryResultHit,
+    AccessControlEntry,
+    NodeMultiRepoQueryResult,
 } from '/lib/xp/node';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 
@@ -21,7 +21,7 @@ type ContentQueryProps<ContentType extends ContentDescriptor> = {
 };
 
 type NodeQueryProps = {
-    queryParams: NodeQueryParams;
+    queryParams: QueryNodeParams;
     queryFunc: NodeQueryFunc;
 };
 
@@ -46,7 +46,7 @@ const batchedQuery = <ContentType extends ContentDescriptor>({
         return Math.min(BATCH_SIZE, countParam - start);
     };
 
-    const getBatchHits = (start: number): ReadonlyArray<NodeQueryHit> => {
+    const getBatchHits = (start: number): ReadonlyArray<NodeQueryResultHit> => {
         const count = getRemainingCount(start);
 
         // (TS can't infer that queryParams type will always match the queryFunc signature...)
@@ -95,10 +95,10 @@ const batchedQuery = <ContentType extends ContentDescriptor>({
 };
 
 type BatchedNodeQueryParams = {
-    queryParams: NodeQueryParams;
+    queryParams: QueryNodeParams;
 } & (
     | {
-          repoParams: Source;
+          repoParams: AccessControlEntry;
           repo?: never;
       }
     | {
@@ -111,8 +111,8 @@ export const batchedNodeQuery = ({
     queryParams,
     repoParams,
     repo,
-}: BatchedNodeQueryParams): NodeQueryResponse => {
-    const _repo = repo || nodeLib.connect(repoParams as Source);
+}: BatchedNodeQueryParams): NodeQueryResult => {
+    const _repo = repo || nodeLib.connect(repoParams);
 
     return batchedQuery({ queryFunc: _repo.query.bind(_repo), queryParams });
 };
@@ -122,8 +122,8 @@ export const batchedMultiRepoNodeQuery = ({
     queryParams,
 }: {
     repo: MultiRepoConnection;
-    queryParams: NodeQueryParams;
-}): MultiRepoNodeQueryResponse => {
+    queryParams: QueryNodeParams;
+}): NodeMultiRepoQueryResult => {
     return batchedQuery({ queryFunc: repo.query.bind(repo), queryParams });
 };
 

@@ -1,7 +1,7 @@
 import { APP_DESCRIPTOR } from './constants';
 import { ContentDescriptor } from '../types/content-types/content-config';
 
-type ContentTypeList = ReadonlyArray<ContentDescriptor>;
+type ContentTypeList = ContentDescriptor[];
 
 export const legacyPageContentTypes = [
     `${APP_DESCRIPTOR}:main-article`,
@@ -45,13 +45,13 @@ export const contentTypesInSitemap = [
     `${APP_DESCRIPTOR}:office-branch`,
 ] as const satisfies ContentTypeList;
 
-export const contentTypesInDataQuery = [
+export const contentTypesInDataQuery: ContentTypeList = [
     ...contentTypesInSitemap,
     'media:text',
     'media:document',
     'media:spreadsheet',
     'media:presentation',
-] as const satisfies ContentTypeList;
+] as const;
 
 export const contentTypesInContentSwitcher = [
     ...dynamicPageContentTypes,
@@ -138,10 +138,10 @@ export const contentTypesRenderedByEditorFrontend = [
     'portal:site',
 ] as const satisfies ContentTypeList;
 
-export const contentTypesWithCustomEditor = [
+export const contentTypesWithCustomEditor: ContentTypeList = [
     `${APP_DESCRIPTOR}:global-value-set`,
     `${APP_DESCRIPTOR}:global-case-time-set`,
-] as const satisfies ContentTypeList;
+] as const;
 
 export const contentTypesWithFormDetails = [
     `${APP_DESCRIPTOR}:content-page-with-sidemenus`,

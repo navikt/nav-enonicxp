@@ -1,4 +1,5 @@
 import * as portalLib from '/lib/xp/portal';
+import { Content } from '/lib/xp/content';
 import { getRepoConnection } from '../../lib/utils/repo-utils';
 import { getComponentConfig } from '../../lib/utils/component-utils';
 import { FiltersMenu } from '@xp-types/site/parts/filters-menu';
@@ -28,10 +29,11 @@ const getFilterMenus = (req: XP.Request) => {
         branch: req.branch,
     });
 
-    const components = forceArray(repo.get(content._id)?.components);
+    const components = forceArray(repo.get<Content>(content._id)?.components);
 
     return components.filter(
-        (component) => component.part?.descriptor === `${app.name}:filters-menu`
+        (component) =>
+            component.type === 'part' && component.part?.descriptor === `${app.name}:filters-menu`
     );
 };
 
