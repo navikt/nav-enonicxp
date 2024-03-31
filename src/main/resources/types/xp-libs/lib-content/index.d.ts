@@ -109,6 +109,7 @@ export declare function resetInheritance(params: ResetInheritanceParams): void;
 // override one by one :|
 export {
     Aggregation,
+    getAttachments,
     Aggregations,
     AggregationsResult,
     Attachment,
@@ -191,7 +192,7 @@ export {
     GetSiteConfigParams,
     getSiteConfig,
     DeleteContentParams,
-    _delete as delete,
+    delete as delete,
     GetChildContentParams,
     IdGeneratorSupplier,
     PublishContentParams,

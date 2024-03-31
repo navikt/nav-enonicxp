@@ -11,7 +11,6 @@ import {
     getSearchDocumentProductDetails,
 } from './component-references';
 import { Content } from '/lib/xp/content';
-import { NodeCommit } from '@enonic-types/lib-node';
 
 type FieldKeyBuckets = {
     componentsFieldKeys: string[];
