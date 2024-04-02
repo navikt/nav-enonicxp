@@ -202,7 +202,7 @@ export type ContentPageWithSidemenus = {
                */
               other: {
                 /**
-                 * Egen benevnelse
+                 * Alternativ målgruppe
                  */
                 overrideLabel?: string;
               };

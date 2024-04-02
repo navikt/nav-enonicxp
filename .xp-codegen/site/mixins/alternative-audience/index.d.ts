@@ -118,7 +118,7 @@ export type AlternativeAudience = {
                */
               other: {
                 /**
-                 * Alternativt navn
+                 * Alternativ målgruppe
                  */
                 overrideLabel?: string;
               };

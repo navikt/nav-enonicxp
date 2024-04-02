@@ -222,7 +222,7 @@ export type ThemedArticlePage = {
                */
               other: {
                 /**
-                 * Egen benevnelse
+                 * Alternativ målgruppe
                  */
                 overrideLabel?: string;
               };

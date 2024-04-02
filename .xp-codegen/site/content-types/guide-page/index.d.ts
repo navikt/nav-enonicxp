@@ -217,7 +217,7 @@ export type GuidePage = {
                */
               other: {
                 /**
-                 * Egen benevnelse
+                 * Alternativ målgruppe
                  */
                 overrideLabel?: string;
               };

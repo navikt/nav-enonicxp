@@ -58,7 +58,8 @@
                                                     <label>Andre samarbeidspartnere</label>
                                                     <items>
                                                         <input name="overrideLabel" type="TextLine">
-                                                            <label>Alternativt navn</label>
+                                                            <label>Alternativ målgruppe</label>
+                                                            <help-text>For eksempel lese- og sekretærhjelp eller frilandstolk.</help-text>
                                                             <occurrences minimum="0" maximum="1"/>
                                                         </input>
                                                     </items>
