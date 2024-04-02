@@ -17,6 +17,8 @@ import { getRepoConnection } from '../utils/repo-utils';
 import { isContentLocalized } from '../localization/locale-utils';
 import { scheduleContactInformationInvalidation } from './invalidate-special-content-types';
 import { NAVNO_ROOT_PATH } from '../constants';
+import { isMainDatanode } from '../cluster-utils/main-datanode';
+import { updateExternalSearchDocumentForContent } from '../search/update-one';
 
 let hasSetupListeners = false;
 
@@ -71,16 +73,20 @@ const nodeListenerCallback = (event: EnonicEvent) => {
 };
 
 const manualInvalidationCallback = (event: EnonicEvent<NodeEventData>) => {
-    const { id, path } = event.data;
-    logger.info(`Received cache-invalidation event for ${path} - ${id}`);
-    runInContext({ asAdmin: true }, () =>
+    const { id, path, repo } = event.data;
+    logger.info(`Received cache-invalidation event for ${path} - ${id} [${repo}]`);
+    runInContext({ asAdmin: true }, () => {
         invalidateCacheForNode({
             node: event.data,
             timestamp: event.timestamp,
             eventType: event.type,
             isRunningClusterWide: true,
-        })
-    );
+        });
+
+        if (isMainDatanode()) {
+            updateExternalSearchDocumentForContent(id, repo);
+        }
+    });
 };
 
 export const activateCacheEventListeners = () => {
