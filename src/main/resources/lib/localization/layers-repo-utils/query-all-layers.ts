@@ -1,4 +1,4 @@
-import { NodeQueryParams } from '/lib/xp/node';
+import { QueryNodeParams } from '/lib/xp/node';
 import { batchedMultiRepoNodeQuery } from '../../utils/batched-query';
 import { RepoBranch } from '../../../types/common';
 import { insertLocalizationStateFilter, LocalizationState } from './localization-state-filters';
@@ -8,14 +8,13 @@ import {
     sortMultiRepoNodeHitsToBuckets,
 } from './sort-and-resolve-hits';
 import { getLayersMultiConnection } from './layers-repo-connection';
-import { logger } from '../../utils/logging';
 
 // TODO: support including archived content with an argument?
 // (Not needed atm, but keep in mind it only includes live content!)
 type Args<ResolveContent = boolean> = {
     branch: RepoBranch;
     state: LocalizationState;
-    queryParams: NodeQueryParams;
+    queryParams: QueryNodeParams & { query?: string };
     resolveContent: ResolveContent;
 };
 

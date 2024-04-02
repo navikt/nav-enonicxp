@@ -26,7 +26,10 @@ fragment contentContentPageWithSidemenus on no_nav_navno_ContentPageWithSidemenu
             }
             provider {
                 providerList {
-                    providerAudience
+                    providerAudience {
+                        name
+                        overrideLabel
+                    }
                     targetPage {
                         ...contentCommon
                     }

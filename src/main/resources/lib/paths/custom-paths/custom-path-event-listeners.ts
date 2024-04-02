@@ -1,6 +1,7 @@
 import * as eventLib from '/lib/xp/event';
 import { EnonicEvent } from '/lib/xp/event';
 import { RepoConnection } from '/lib/xp/node';
+import { Content } from '/lib/xp/content';
 import { hasInvalidCustomPath, hasValidCustomPath } from './custom-path-utils';
 import { logger } from '../../utils/logging';
 import { getLayersData } from '../../localization/layers-data';
@@ -40,7 +41,7 @@ const removeCustomPathOnDuplicate = (event: EnonicEvent) => {
 
         const repoConnection = getRepoConnection({ branch: 'draft', repoId: repo, asAdmin: true });
 
-        const content = repoConnection.get(id);
+        const content = repoConnection.get<Content>(id);
         if (!content || !isContentLocalized(content) || !hasValidCustomPath(content)) {
             return;
         }
@@ -70,7 +71,7 @@ const removeInvalidCustomPathOnPublish = (event: EnonicEvent) => {
 
         const repoConnection = getRepoConnection({ branch: 'draft', repoId: repo, asAdmin: true });
 
-        const content = repoConnection.get(id);
+        const content = repoConnection.get<Content>(id);
         if (!content || !isContentLocalized(content) || !hasInvalidCustomPath(content)) {
             return;
         }

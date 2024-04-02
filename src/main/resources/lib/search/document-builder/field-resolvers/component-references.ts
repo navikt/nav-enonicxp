@@ -27,9 +27,11 @@ export const getSearchDocumentProductDetails = (
         return null;
     }
 
+    const locale = content.language || getLayersData().defaultLocale;
+
     const detailContent = getRepoConnection({
         branch: 'master',
-        repoId: getLayersData().localeToRepoIdMap[content.language] || CONTENT_ROOT_REPO_ID,
+        repoId: getLayersData().localeToRepoIdMap[locale] || CONTENT_ROOT_REPO_ID,
     }).get<Content>({ key: detailId });
     if (!detailContent || detailContent.type !== 'no.nav.navno:product-details') {
         return null;
@@ -63,9 +65,11 @@ export const getSearchDocumentFormDetails = (
         return [];
     }
 
+    const locale = content.language || getLayersData().defaultLocale;
+
     const formContent = getRepoConnection({
         branch: 'master',
-        repoId: getLayersData().localeToRepoIdMap[content.language] || CONTENT_ROOT_REPO_ID,
+        repoId: getLayersData().localeToRepoIdMap[locale] || CONTENT_ROOT_REPO_ID,
     }).get<Content>({ key: targetFormDetails });
     if (!formContent || formContent.type !== 'no.nav.navno:form-details') {
         return [];

@@ -14,6 +14,7 @@ import { DashboardContentInfo } from './utils/types';
 import { ContentDescriptor } from '../../../types/content-types/content-config';
 import { dashboardContentBuildPublishLists } from './utils/buildPublishLists';
 import { userIsAdmin } from '../../../lib/utils/auth-utils';
+import { Content } from '/lib/xp/content';
 
 const view = resolve('./dashboard-content-alt.html');
 
@@ -38,7 +39,7 @@ const contentInfo = contentTypesToShow.map((contentType) => {
 const layerStr = (repo: string) => (repo !== 'default' ? ` [${repo.replace('navno-', '')}]` : '');
 
 // Lag dayjs-dato - Kan være på Elastic-format (yyyy-mm-ddThh:mm:ss.mmmmmmZ)
-const dayjsDateTime = (datetime: string) => {
+const dayjsDateTime = (datetime?: string) => {
     const localDate =
         datetime && datetime.search('Z') !== -1
             ? datetime.substring(0, 19).replace('T', ' ') // Er på Elastic-format
@@ -72,11 +73,11 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
             const draftContent = getRepoConnection({
                 branch: 'draft',
                 repoId: hit.repoId,
-            }).get(hit.id);
+            }).get<Content>(hit.id);
             const masterContent = getRepoConnection({
                 branch: 'master',
                 repoId: hit.repoId,
-            }).get(hit.id);
+            }).get<Content>(hit.id);
 
             if (!draftContent) {
                 return undefined;

@@ -1,4 +1,5 @@
 import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { ContentLogData, DashboardContentInfo } from './types';
 import { getContentProjectIdFromRepoId, getRepoConnection } from '../../../../lib/utils/repo-utils';
 import { getLayersData } from '../../../../lib/localization/layers-data';
@@ -62,7 +63,7 @@ const getContentFromLogs = (logs: ContentLogData[]): ContentWithLog[] => {
         const { contentId, repoId } = logEntry;
         const repoConnection = getRepoConnection({ branch: 'draft', repoId, asAdmin: true });
 
-        const content = repoConnection.get(contentId);
+        const content = repoConnection.get<Content>(contentId);
         if (!content || !contentTypesToShowSet.has(content.type)) {
             continue;
         }

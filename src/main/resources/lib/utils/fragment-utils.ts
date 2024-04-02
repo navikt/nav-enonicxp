@@ -7,7 +7,6 @@ import { getNodeKey } from './version-utils';
 import { htmlAreaComponentPaths, htmlAreaDataPaths } from './htmlarea-utils';
 import { runInContext } from '../context/run-in-context';
 import { logger } from './logging';
-import { getUnixTimeFromDateTimeString } from './datetime-utils';
 import { forceArray, removeDuplicates } from './array-utils';
 import { getNestedValues } from './object-utils';
 
@@ -22,7 +21,7 @@ const getContentNode = (contentRef: string, branch: RepoBranch) => {
         branch: branch || context.branch,
     });
 
-    return repo.get(getNodeKey(contentRef));
+    return repo.get<Content>(getNodeKey(contentRef));
 };
 
 const getFragmentIdsFromHtmlArea = (htmlAreaString: string): string[] => {
@@ -118,11 +117,8 @@ export const getModifiedTimeIncludingFragments = (content: Content, branch: Repo
                 return latestModifiedTime;
             }
 
-            const modifiedTime = fragment.modifiedTime;
+            const modifiedTime = fragment.modifiedTime || fragment.createdTime;
 
-            return getUnixTimeFromDateTimeString(modifiedTime) >
-                getUnixTimeFromDateTimeString(latestModifiedTime)
-                ? modifiedTime
-                : latestModifiedTime;
+            return modifiedTime > latestModifiedTime ? modifiedTime : latestModifiedTime;
         }, contentModifiedTime);
     });

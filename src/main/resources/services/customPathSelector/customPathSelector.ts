@@ -43,7 +43,10 @@ const verifyIngressOwner = (path: string) => {
 };
 
 const findExistingContentsWithCustomPath = (suggestedCustomPath: string, branch: RepoBranch) => {
-    const currentId = portalLib.getContent()._id;
+    const currentId = portalLib.getContent()?._id;
+    if (!currentId) {
+        return null;
+    }
 
     const otherContentsWithCustomPath = getContentFromCustomPath(
         suggestedCustomPath,
@@ -132,9 +135,10 @@ const getResult = ({
 
 const validateFormIntermediateStepResult = (result: XP.CustomSelectorServiceResponseHit) => {
     const content = portalLib.getContent();
-    if (content.type !== 'no.nav.navno:form-intermediate-step') {
+
+    if (content?.type !== 'no.nav.navno:form-intermediate-step') {
         logger.error(
-            `Selector was called with formIntermediateStep-parameter for a different content type ${content._path}`
+            `Selector was called with formIntermediateStep-parameter for a different content type on ${content?._path}`
         );
         return result;
     }

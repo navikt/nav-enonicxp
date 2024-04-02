@@ -1,6 +1,6 @@
 import * as portalLib from '/lib/xp/portal';
 import { getRepoConnection } from '../utils/repo-utils';
-import { NodeContent, RepoNode } from '/lib/xp/node';
+import { RepoNode } from '/lib/xp/node';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { frontendProxy } from './frontend-proxy';
@@ -10,7 +10,7 @@ import { runInContext } from '../context/run-in-context';
 import { forceArray } from '../utils/array-utils';
 import { applyModifiedData } from '../utils/content-utils';
 
-type AreaPageNodeContent = NodeContent<Content<'no.nav.navno:area-page'>>;
+type AreaPageContent = Content<'no.nav.navno:area-page'>;
 type AreaPageRepoNode = RepoNode<Content<'no.nav.navno:area-page'>>;
 type SituationPageContent = Content<'no.nav.navno:situation-page'>;
 type SituationsLayoutComponent = NodeComponent<'layout', 'areapage-situations'>;
@@ -37,7 +37,7 @@ const getSituationsLayout = (
     return situationsLayouts[0];
 };
 
-const getRelevantSituationPages = (areaPageNodeContent: AreaPageNodeContent) =>
+const getRelevantSituationPages = (areaPageNodeContent: AreaPageContent) =>
     runInContext({ branch: 'master' }, () => {
         const { area, audience } = areaPageNodeContent.data;
 
@@ -185,7 +185,7 @@ const populateSituationsLayout = (req: XP.Request) => {
 
     const repo = getRepoConnection({ repoId: req.repositoryId, branch: 'draft' });
 
-    const nodeContent = repo.get<AreaPageNodeContent>({ key: content._id });
+    const nodeContent = repo.get<AreaPageContent>({ key: content._id });
     if (!nodeContent?.components) {
         return;
     }

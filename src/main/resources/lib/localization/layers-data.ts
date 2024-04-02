@@ -3,7 +3,7 @@ import { Project } from '/lib/xp/project';
 import * as eventLib from '/lib/xp/event';
 import { EnonicEvent } from '/lib/xp/event';
 import { getRepoConnection } from '../utils/repo-utils';
-import { SourceWithPrincipals, PrincipalKey } from '/lib/xp/node';
+import { ConnectParams } from '/lib/xp/node';
 import { runInContext } from '../context/run-in-context';
 import { logger } from '../utils/logging';
 import {
@@ -18,13 +18,15 @@ import { toggleCacheInvalidationOnNodeEvents } from '../cache/invalidate-event-d
 type LocaleToRepoIdMap = Record<string, string>;
 type RepoIdToLocaleMap = Record<string, string>;
 
+type Source = Required<Pick<ConnectParams, 'repoId' | 'branch' | 'principals'>>;
+
 type LayersRepoData = {
     defaultLocale: string;
     localeToRepoIdMap: LocaleToRepoIdMap;
     repoIdToLocaleMap: RepoIdToLocaleMap;
     sources: {
-        master: SourceWithPrincipals[];
-        draft: SourceWithPrincipals[];
+        master: Source[];
+        draft: Source[];
     };
     locales: string[];
 };
@@ -180,10 +182,10 @@ const refreshLayersData = () => {
         return { ...acc, [repoId]: locale };
     }, {} as RepoIdToLocaleMap);
     data.sources.master = localeToRepoIdMapEntries.map(([_, repoId]) => {
-        return { repoId, branch: 'master', principals: ['role:system.admin'] as PrincipalKey[] };
+        return { repoId, branch: 'master', principals: ['role:system.admin'] };
     });
     data.sources.draft = localeToRepoIdMapEntries.map(([_, repoId]) => {
-        return { repoId, branch: 'draft', principals: ['role:system.admin'] as PrincipalKey[] };
+        return { repoId, branch: 'draft', principals: ['role:system.admin'] };
     });
     data.locales = Object.keys(localeToRepoIdMap);
 

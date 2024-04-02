@@ -2,6 +2,7 @@ import thymeleafLib from '/lib/thymeleaf';
 import * as authLib from '/lib/xp/auth';
 import { UserKey } from '/lib/xp/auditlog';
 import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { APP_DESCRIPTOR } from '../../../lib/constants';
 import { getLayersMultiConnection } from '../../../lib/localization/layers-repo-utils/layers-repo-connection';
 import { NON_LOCALIZED_QUERY_FILTER } from '../../../lib/localization/layers-repo-utils/localization-state-filters';
@@ -19,6 +20,7 @@ import {
     DashboardContentInfo,
 } from './utils/types';
 import { userIsAdmin } from '../../../lib/utils/auth-utils';
+import { ContentDescriptor } from '../../../types/content-types/content-config';
 
 dayjs.extend(utc);
 
@@ -27,7 +29,7 @@ const getFromDate = () => dayjs().subtract(6, 'months').toISOString(); // Går b
 const contentTypesToShow = [
     ...contentTypesRenderedByEditorFrontend,
     `${APP_DESCRIPTOR}:content-list`,
-] as const;
+] as const satisfies ContentDescriptor[];
 
 const contentInfo = contentTypesToShow.map((contentType) => {
     const typeInfo = contentLib.getType(contentType);
@@ -48,7 +50,7 @@ const getRepoId = (entry: AuditLogEntry) => {
 const layerStr = (repo: string) => (repo !== 'default' ? ` [${repo.replace('navno-', '')}]` : '');
 
 // Lag dayjs-dato - Kan være på Elastic-format (yyyy-mm-ddThh:mm:ss.mmmmmmZ)
-const dayjsDateTime = (datetime: string) => {
+const dayjsDateTime = (datetime?: string) => {
     const localDate =
         datetime && datetime.search('Z') !== -1
             ? datetime.substring(0, 19).replace('T', ' ') // Er på Elastic-format
@@ -105,7 +107,7 @@ const getContentFromLogEntries = (
                 getRepoConnection({
                     branch: 'draft',
                     repoId,
-                }).get(hit.id)
+                }).get<Content>(hit.id)
             )[0];
 
         if (!content) {
@@ -384,11 +386,11 @@ const getUsersModifications = (user: UserKey) => {
             const draftContent = getRepoConnection({
                 branch: 'draft',
                 repoId: hit.repoId,
-            }).get(hit.id);
+            }).get<Content>(hit.id);
             const masterContent = getRepoConnection({
                 branch: 'master',
                 repoId: hit.repoId,
-            }).get(hit.id);
+            }).get<Content>(hit.id);
 
             if (!draftContent) {
                 return undefined;

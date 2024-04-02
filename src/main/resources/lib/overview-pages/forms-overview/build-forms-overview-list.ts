@@ -7,6 +7,7 @@ import { getFormsOverviewContent } from './get-forms-overview-content';
 import { getLocalizedContentWithFallbackData } from '../common/localization';
 import { buildFormDetailsMap } from './build-form-details-map';
 import { logger } from '../../utils/logging';
+import { getLayersData } from '../../localization/layers-data';
 
 export const buildFormDetailsList = (
     formsOverviewContent: Content<'no.nav.navno:forms-overview'>
@@ -35,15 +36,17 @@ export const buildFormDetailsList = (
         excludedContentIds: forceArray(excludedContent),
     });
 
+    const locale = language || getLayersData().defaultLocale;
+
     const localizedContent = getLocalizedContentWithFallbackData({
         contents: listContent,
         localeFallbackIds: forceArray(localeFallback),
-        language,
+        language: locale,
     });
 
     const formDetailsMap = buildFormDetailsMap(localizedContent, overviewType);
 
-    const listItemTransformer = getFormsOverviewListItemTransformer(formDetailsMap, language);
+    const listItemTransformer = getFormsOverviewListItemTransformer(formDetailsMap, locale);
 
     return localizedContent
         .reduce<FormDetailsListItem[]>((acc, content) => {

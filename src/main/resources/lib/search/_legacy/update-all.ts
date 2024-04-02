@@ -310,7 +310,6 @@ export const revalidateAllSearchNodesSync = () => {
         const { didUpdate, searchNodeId } = createOrUpdateSearchNode({
             contentNode,
             facets,
-            searchRepoConnection,
             locale,
         });
 

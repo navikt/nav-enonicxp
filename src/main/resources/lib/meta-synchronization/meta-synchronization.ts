@@ -80,8 +80,6 @@ const attemptPublish = (contentId: string, repoId: string) => {
         try {
             contentLib.publish({
                 keys: [contentId],
-                sourceBranch: 'draft',
-                targetBranch: 'master',
             });
         } catch (e) {
             logger.error(

@@ -25,7 +25,10 @@ fragment contentGuidePage on no_nav_navno_GuidePage {
             }
             provider {
                 providerList {
-                    providerAudience
+                    providerAudience {
+                        name
+                        overrideLabel
+                    }
                     targetPage {
                         ...contentCommon
                     }

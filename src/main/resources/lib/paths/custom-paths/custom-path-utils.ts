@@ -5,7 +5,7 @@ import { stripPathPrefix as _stripPathPrefix } from '../path-utils';
 import { RepoBranch } from '../../../types/common';
 import { ContentNode } from '../../../types/content-types/content-config';
 
-type ContentWithCustomPath = Content<any> & { data: { customPath: string } };
+type ContentWithCustomPath = Extract<Content, { data: { customPath: string } }>;
 
 // Valid: (0-9 OR a-z OR - OR / AND NOT trailing /) OR /
 const validCustomPathPattern = new RegExp('^(/[0-9a-z-/]*[^/]|/)$');

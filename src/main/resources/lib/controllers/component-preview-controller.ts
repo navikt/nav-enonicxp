@@ -18,6 +18,16 @@ const getComponentProps = () => {
     const content = portalLib.getContent();
     const portalComponent = portalLib.getComponent();
 
+    if (!content) {
+        logger.warning('Could not get content from context!');
+        return null;
+    }
+
+    if (!portalComponent) {
+        logger.warning('Could not get component from context!');
+        return null;
+    }
+
     const { components, fragments } = runInLocaleContext({ locale: content.language }, () =>
         runGuillotineComponentsQuery(
             {

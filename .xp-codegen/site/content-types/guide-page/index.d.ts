@@ -215,7 +215,12 @@ export type GuidePage = {
               /**
                * Andre samarbeidspartnere
                */
-              other: Record<string, unknown>;
+              other: {
+                /**
+                 * Alternativ målgruppe
+                 */
+                overrideLabel?: string;
+              };
             }
         >;
 
