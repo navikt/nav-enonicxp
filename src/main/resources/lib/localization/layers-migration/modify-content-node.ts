@@ -3,13 +3,13 @@ import { Content } from '/lib/xp/content';
 import { getRepoConnection } from '../../utils/repo-utils';
 import { logger } from '../../utils/logging';
 import { runInLocaleContext } from '../locale-context';
-import { NodeModifyParams } from '/lib/xp/node';
+import { ModifyNodeParams } from '/lib/xp/node';
 import { getLayersData } from '../layers-data';
 
 type Params = {
     repoId: string;
     requireValid?: boolean;
-} & NodeModifyParams;
+} & ModifyNodeParams;
 
 // Ensure a mutation of the content occurs, in order to force the content api
 // to always trigger a database update

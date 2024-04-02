@@ -126,14 +126,14 @@ const updateContentReferencesInLocaleLayer = (
             branch: 'master',
             repoId: repoToUpdate,
             asAdmin: true,
-        }).get(refContentId);
+        }).get<Content>(refContentId);
 
         // Get the content node from draft before updating master, as it may be overwritten
         const contentNodeDraft = getRepoConnection({
             branch: 'draft',
             repoId: repoToUpdate,
             asAdmin: true,
-        }).get(refContentId);
+        }).get<Content>(refContentId);
 
         if (contentNodeMaster) {
             updateReferenceFromNode({

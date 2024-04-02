@@ -10,6 +10,7 @@ import { GlobalValueItem } from '../../../lib/global-values/types';
 import { forceArray } from '../../../lib/utils/array-utils';
 import { applyModifiedData } from '../../../lib/utils/content-utils';
 import { CONTENT_ROOT_REPO_ID } from '../../../lib/constants';
+import { Content } from '/lib/xp/content';
 
 const itemNameExists = (valueItems: GlobalValueItem[], itemName: string, key: string) =>
     itemName && valueItems.find((item) => item.itemName === itemName && item.key !== key);
@@ -60,7 +61,7 @@ export const modifyGlobalValueItemService = (req: XP.Request) => {
                 : { numberValue: Number(req.params.numberValue) }),
         };
 
-        repo.modify({
+        repo.modify<Content>({
             key: content._id,
             editor: (_content) => {
                 _content.data.valueItems = forceArray(content.data.valueItems).map((item) =>

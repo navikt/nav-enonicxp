@@ -29,13 +29,13 @@ export type ContentDataMapper<Type extends ContentDescriptor> = Type extends Cus
       }
     : Type extends 'portal:fragment'
       ? {
-            type: 'portal:fragment';
+            type: Type;
             fragment: Component<'part' | 'layout'>;
             data: undefined;
         }
       : Type extends 'portal:page-template'
         ? {
-              type: 'portal:page-template';
+              type: Type;
               data: { supports?: CustomContentDescriptor | CustomContentDescriptor[] };
               page: Component<'page'> | EmptyObject;
           }
@@ -53,7 +53,7 @@ export type ContentDataMapper<Type extends ContentDescriptor> = Type extends Cus
                       type: Type;
                       data: BaseMedia;
                   }
-                : never;
+                : { type: Type; data: unknown };
 
 export type BuiltinContentDescriptor =
     | 'portal:fragment'

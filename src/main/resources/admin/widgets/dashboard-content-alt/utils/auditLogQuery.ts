@@ -3,10 +3,11 @@ import { UserKey } from '/lib/xp/auditlog';
 import { AuditLogArchived, AuditLogPublished, AuditLogUnpublished } from './types';
 import { Dayjs } from '/assets/dayjs/1.11.9/dayjs.min.js';
 import { forceArray } from '../../../../lib/utils/array-utils';
+import { Filter } from '/lib/xp/content';
 
 const AUDITLOG_REPO_ID = 'system.auditlog';
 
-export type AuditLogQueryType = 'publish' | 'unpublish' | 'archive';
+type AuditLogQueryType = 'publish' | 'unpublish' | 'archive';
 
 type ReturnTypeMap = {
     publish: AuditLogPublished;
@@ -14,7 +15,7 @@ type ReturnTypeMap = {
     archive: AuditLogArchived;
 };
 
-type Props<Type extends AuditLogQueryType> = {
+export type AuditLogQueryProps<Type extends AuditLogQueryType = AuditLogQueryType> = {
     type: Type;
     user: UserKey;
     count: number;
@@ -34,12 +35,32 @@ export const getAuditLogEntries = <Type extends AuditLogQueryType>({
     publishFrom,
     publishTo,
     query,
-}: Props<Type>): Array<ReturnTypeMap[Type]> => {
+}: AuditLogQueryProps<Type>): Array<ReturnTypeMap[Type]> => {
     const repoConnection = getRepoConnection({
         repoId: AUDITLOG_REPO_ID,
         branch: 'master',
         asAdmin: true,
     });
+
+    const mustTerms: Filter[] = [];
+
+    if (user) {
+        mustTerms.push({
+            hasValue: {
+                field: 'user',
+                values: [user],
+            },
+        });
+    }
+
+    if (type) {
+        mustTerms.push({
+            hasValue: {
+                field: 'type',
+                values: [queryTypeToLogType[type]],
+            },
+        });
+    }
 
     const hitIds = repoConnection
         .query({
@@ -48,26 +69,13 @@ export const getAuditLogEntries = <Type extends AuditLogQueryType>({
             sort: 'time DESC',
             filters: {
                 boolean: {
-                    must: [
-                        {
-                            hasValue: {
-                                field: 'user',
-                                values: [user],
-                            },
-                        },
-                        {
-                            hasValue: {
-                                field: 'type',
-                                values: [queryTypeToLogType[type]],
-                            },
-                        },
-                    ],
+                    must: mustTerms,
                 },
             },
         })
         .hits.map((hit) => hit.id);
 
-    return forceArray(repoConnection.get(hitIds));
+    return forceArray(repoConnection.get(hitIds) as ReturnTypeMap[Type]);
 };
 
 const queryTypeToLogType: Record<AuditLogQueryType, string> = {

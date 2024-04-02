@@ -58,7 +58,7 @@ export const deleteSearchNode = (nodeId: string, repo: RepoConnection) => {
 export const querySearchNodesForContent = (
     contentId: string,
     locale: string,
-    searchRepoConnection = getSearchRepoConnection()
+    searchRepoConnection: RepoConnection
 ) =>
     searchRepoConnection.query({
         start: 0,
@@ -83,12 +83,10 @@ export const querySearchNodesForContent = (
         },
     });
 
-export const deleteSearchNodesForContent = (
-    contentId: string,
-    locale: string,
-    searchRepoConnection = getSearchRepoConnection()
-) => {
-    querySearchNodesForContent(contentId, locale, searchRepoConnection).hits.forEach((node) => {
-        deleteSearchNode(node.id, searchRepoConnection);
+export const deleteSearchNodesForContent = (contentId: string, locale: string) => {
+    const repoConnection = getSearchRepoConnection();
+
+    querySearchNodesForContent(contentId, locale, repoConnection).hits.forEach((node) => {
+        deleteSearchNode(node.id, repoConnection);
     });
 };

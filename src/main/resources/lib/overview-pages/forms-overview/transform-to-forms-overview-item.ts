@@ -11,6 +11,7 @@ import {
 } from './types';
 import { FormDetailsSelector } from '@xp-types/site/mixins/form-details-selector';
 import { ContentPageWithSidemenus } from '@xp-types/site/content-types/content-page-with-sidemenus';
+import { getLayersData } from '../../localization/layers-data';
 
 // Fields from nested mixins are not included in the generated types
 type ContentWithMissingMixins = ContentWithFormDetails & {
@@ -30,7 +31,7 @@ const getUrl = (content: ContentWithFormDetails) => {
         return externalProductUrl === 'https://www.nav.no' ? null : externalProductUrl;
     }
 
-    return getPublicPath(content, content.language);
+    return getPublicPath(content, content.language || getLayersData().defaultLocale);
 };
 
 export const getFormsOverviewListItemTransformer =
@@ -61,7 +62,7 @@ export const getFormsOverviewListItemTransformer =
             keywords: forceArray((content as ContentWithMissingMixins).data.keywords),
             url: getUrl(content),
             type: content.type,
-            targetLanguage: content.language,
+            targetLanguage: content.language || getLayersData().defaultLocale,
             anchorId: sanitize(sortTitle),
             illustration: content.data.illustration,
             area: forceArray(content.data.area),

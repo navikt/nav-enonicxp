@@ -1,7 +1,7 @@
 import { APP_DESCRIPTOR } from './constants';
 import { ContentDescriptor } from '../types/content-types/content-config';
 
-type ContentTypeList = ReadonlyArray<ContentDescriptor>;
+type ContentTypeList = ContentDescriptor[];
 
 export const legacyPageContentTypes = [
     `${APP_DESCRIPTOR}:main-article`,

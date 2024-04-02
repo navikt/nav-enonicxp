@@ -76,7 +76,7 @@ export const get = (req: XP.Request) => {
 
             if (wipeData === 'true') {
                 if (hasValidCustomPath(content) && contentHasField(contentSchema, 'customPath')) {
-                    (content.data as any) = { customPath: content.data.customPath };
+                    content.data = { customPath: content.data.customPath };
                 } else {
                     content.data = {};
                 }

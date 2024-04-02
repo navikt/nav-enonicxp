@@ -3,6 +3,8 @@ import { PortalComponent } from '../../../types/components/component-portal';
 import { GuillotineUnresolvedComponentType } from '../queries/run-sitecontent-query';
 import { ComponentType } from '../../../types/components/component-config';
 
+// TODO: consider refactoring this mess :D
+
 // These functions are used for processing component-objects from Guillotine queries into a consistent structure
 // before serving to the frontend.
 //
@@ -21,6 +23,7 @@ import { ComponentType } from '../../../types/components/component-config';
 // inserted into their matching regions.
 
 type Regions = Record<string, Region>;
+
 export type GuillotineComponent = {
     type: ComponentType;
     path: string;
@@ -98,57 +101,60 @@ export const insertComponentsIntoRegions = (
     // Strip trailing slash (only applicable to the page root component)
     const parentPath = path.replace(/\/$/, '');
 
-    const regionsWithComponents = Object.entries(regions).reduce((acc, [regionName, region]) => {
-        // This is the component path for the current region. We use this to filter out components
-        // belonging to this region
-        const targetRegionPath = `${parentPath}/${regionName}`;
+    const regionsWithComponents = Object.entries(regions).reduce<Regions>(
+        (acc, [regionName, region]) => {
+            // This is the component path for the current region. We use this to filter out components
+            // belonging to this region
+            const targetRegionPath = `${parentPath}/${regionName}`;
 
-        const regionComponents = components.reduce((acc, component) => {
-            const { path, type } = component;
+            const regionComponents = components.reduce<PortalComponent[]>((acc, component) => {
+                const { path, type } = component;
 
-            const componentRegionPath = path.split('/').slice(0, -1).join('/');
+                const componentRegionPath = path.split('/').slice(0, -1).join('/');
 
-            if (componentRegionPath !== targetRegionPath) {
-                return acc;
-            }
-
-            // Fragments should already have their regions populated correctly, and require no further processing
-            if (type === 'fragment') {
-                const fragment = fragments.find((fragment) => fragment.path === path);
-
-                if (!fragment) {
+                if (componentRegionPath !== targetRegionPath) {
                     return acc;
                 }
 
-                return [...acc, fragment];
-            }
+                // Fragments should already have their regions populated correctly, and require no further processing
+                if (type === 'fragment') {
+                    const fragment = fragments.find((fragment) => fragment.path === path);
 
-            const regionComponent = region.components.find(
-                (regionComponent) => regionComponent.path === path
-            );
+                    if (!fragment) {
+                        return acc;
+                    }
 
-            if (!regionComponent) {
-                return acc;
-            }
+                    return [...acc, fragment];
+                }
 
-            return [
+                const regionComponent = region.components.find(
+                    (regionComponent) => regionComponent.path === path
+                );
+
+                if (!regionComponent) {
+                    return acc;
+                }
+
+                return [
+                    ...acc,
+                    insertComponentsIntoRegions(
+                        { ...regionComponent, ...destructureComponent(component) },
+                        components,
+                        fragments
+                    ),
+                ];
+            }, []);
+
+            return {
                 ...acc,
-                insertComponentsIntoRegions(
-                    { ...regionComponent, ...destructureComponent(component) },
-                    components,
-                    fragments
-                ),
-            ];
-        }, [] as PortalComponent[]);
-
-        return {
-            ...acc,
-            [regionName]: {
-                name: regionName,
-                components: regionComponents,
-            },
-        };
-    }, {} as Regions);
+                [regionName]: {
+                    name: regionName,
+                    components: regionComponents,
+                },
+            };
+        },
+        {}
+    );
 
     return { ...parentComponent, regions: regionsWithComponents };
 };

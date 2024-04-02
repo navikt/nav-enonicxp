@@ -1,16 +1,12 @@
 import { UserKey } from '/lib/xp/auditlog';
-import dayjs, { Dayjs } from '/assets/dayjs/1.11.9/dayjs.min.js';
+import dayjs from '/assets/dayjs/1.11.9/dayjs.min.js';
 import { AuditLogArchived, AuditLogPublished, AuditLogUnpublished, ContentLogData } from './types';
-import { getAuditLogEntries } from './auditLogQuery';
+import { AuditLogQueryProps, getAuditLogEntries } from './auditLogQuery';
 import { forceArray } from '../../../../lib/utils/array-utils';
 import { logger } from '../../../../lib/utils/logging';
 import { CONTENT_ROOT_REPO_ID } from '../../../../lib/constants';
 
-type QueryProps = {
-    user: UserKey;
-    count: number;
-    from?: Dayjs;
-};
+type QueryProps = Required<Pick<AuditLogQueryProps, 'logTsFrom' | 'user' | 'count'>>;
 
 type ContentLogsMap = Record<string, ContentLogData>;
 
@@ -31,7 +27,7 @@ export class DashboardContentAuditLogResolver {
         this.queryProps = {
             user,
             count: COUNT,
-            from: getFromDate(),
+            logTsFrom: getFromDate(),
         };
     }
 

@@ -1,31 +1,33 @@
 import * as contentLib from '/lib/xp/content';
-import { QueryParams, QueryResponse, ContentLibrary } from '/lib/xp/content';
+import { QueryContentParams, ContentsResult } from '/lib/xp/content';
 import * as nodeLib from '/lib/xp/node';
 import {
-    NodeQueryParams,
-    NodeQueryResponse,
-    Source,
-    NodeQueryHit,
     RepoConnection,
     MultiRepoConnection,
-    MultiRepoNodeQueryResponse,
+    QueryNodeParams,
+    NodeQueryResult,
+    NodeQueryResultHit,
+    NodeMultiRepoQueryResult,
+    ConnectParams,
 } from '/lib/xp/node';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 
-type ContentQueryFunc = ContentLibrary['query'];
+type ContentQueryFunc = typeof contentLib.query;
 type NodeQueryFunc = RepoConnection['query'];
 
 type ContentQueryProps<ContentType extends ContentDescriptor> = {
-    queryParams: QueryParams<ContentType>;
+    queryParams: QueryContentParams<ContentType>;
     queryFunc: ContentQueryFunc;
 };
 
 type NodeQueryProps = {
-    queryParams: NodeQueryParams;
+    queryParams: QueryNodeParams;
     queryFunc: NodeQueryFunc;
 };
 
 const BATCH_SIZE = 3000;
+
+// TODO: consider refactoring, bit hard to read
 
 // NOTE: if a filter value array with a length greater than the batch size is passed to a query
 // the batches may not be consistent when the queries are performed in a clustered setup!
@@ -46,7 +48,7 @@ const batchedQuery = <ContentType extends ContentDescriptor>({
         return Math.min(BATCH_SIZE, countParam - start);
     };
 
-    const getBatchHits = (start: number): ReadonlyArray<NodeQueryHit> => {
+    const getBatchHits = (start: number): ReadonlyArray<NodeQueryResultHit> => {
         const count = getRemainingCount(start);
 
         // (TS can't infer that queryParams type will always match the queryFunc signature...)
@@ -94,26 +96,25 @@ const batchedQuery = <ContentType extends ContentDescriptor>({
     };
 };
 
-type BatchedNodeQueryParams =
+type BatchedNodeQueryParams = {
+    queryParams: QueryNodeParams;
+} & (
     | {
-          queryParams: NodeQueryParams;
-      } & (
-          | {
-                repoParams: Source;
-                repo?: never;
-            }
-          | {
-                repo: RepoConnection;
-                repoParams?: never;
-            }
-      );
+          repoParams: ConnectParams;
+          repo?: never;
+      }
+    | {
+          repo: RepoConnection;
+          repoParams?: never;
+      }
+);
 
 export const batchedNodeQuery = ({
     queryParams,
     repoParams,
     repo,
-}: BatchedNodeQueryParams): NodeQueryResponse => {
-    const _repo = repo || nodeLib.connect(repoParams as Source);
+}: BatchedNodeQueryParams): NodeQueryResult => {
+    const _repo = repo || nodeLib.connect(repoParams);
 
     return batchedQuery({ queryFunc: _repo.query.bind(_repo), queryParams });
 };
@@ -123,13 +124,13 @@ export const batchedMultiRepoNodeQuery = ({
     queryParams,
 }: {
     repo: MultiRepoConnection;
-    queryParams: NodeQueryParams;
-}): MultiRepoNodeQueryResponse => {
+    queryParams: QueryNodeParams;
+}): NodeMultiRepoQueryResult => {
     return batchedQuery({ queryFunc: repo.query.bind(repo), queryParams });
 };
 
 export const batchedContentQuery = <ContentType extends ContentDescriptor>(
-    queryParams: QueryParams<ContentType>
-): QueryResponse<ContentType> => {
+    queryParams: QueryContentParams<ContentType>
+): ContentsResult<ContentType> => {
     return batchedQuery<ContentType>({ queryFunc: contentLib.query, queryParams });
 };

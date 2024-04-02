@@ -22,7 +22,7 @@ const getComponents = (contentId: string, repo: RepoConnection) => {
         return [];
     }
 
-    const node = repo.get(content._id);
+    const node = repo.get<Content>(content._id);
 
     return forceArray(node?.components);
 };

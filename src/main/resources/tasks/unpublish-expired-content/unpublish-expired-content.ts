@@ -1,5 +1,4 @@
 import * as contentLib from '/lib/xp/content';
-import { getRepoConnection } from '../../lib/utils/repo-utils';
 import { scheduleUnpublish } from '../../lib/scheduling/scheduled-publish';
 import { logger } from '../../lib/utils/logging';
 import { getLayersData } from '../../lib/localization/layers-data';
@@ -7,14 +6,17 @@ import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { CONTENT_ROOT_REPO_ID } from '../../lib/constants';
 import { getUnixTimeFromDateTimeString } from '../../lib/utils/datetime-utils';
 import { UnpublishExpiredContent } from '@xp-types/tasks/unpublish-expired-content';
+import { runInContext } from '../../lib/context/run-in-context';
 
 export const run = (params: UnpublishExpiredContent) => {
     const { id, path, repoId = CONTENT_ROOT_REPO_ID } = params;
 
     logger.info(`Running task for unpublishing expired content - ${id} - ${path}`);
 
-    const repo = getRepoConnection({ repoId, branch: 'master' });
-    const content = repo.get({ key: id });
+    const getContent = () =>
+        runInContext({ branch: 'master', repository: repoId }, () => contentLib.get({ key: id }));
+
+    const content = getContent();
     if (!content) {
         logger.error(`Content ${id} not found in master - aborting unpublish task`);
         return;
@@ -47,7 +49,7 @@ export const run = (params: UnpublishExpiredContent) => {
                 logger.error(`Unexpectedly unpublished multiple contents with id ${id}`);
             }
         } else {
-            const contentNow = repo.get({ key: id });
+            const contentNow = getContent();
             if (contentNow) {
                 logger.critical(`Could not unpublish ${id} - unknown error`);
             } else {
