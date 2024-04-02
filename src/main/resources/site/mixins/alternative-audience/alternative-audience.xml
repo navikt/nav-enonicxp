@@ -54,7 +54,16 @@
                                                 <option name="administrator"><label>Bostyrer</label></option>
                                                 <option name="measures_organizer"><label>Tiltaksarrangør</label></option>
                                                 <option name="aid_supplier"><label>Hjelpemiddelformidler</label></option>
-                                                <option name="other"><label>Andre samarbeidspartnere</label></option>
+                                                <option name="other">
+                                                    <label>Andre samarbeidspartnere</label>
+                                                    <items>
+                                                        <input name="overrideLabel" type="TextLine">
+                                                            <label>Alternativ målgruppe</label>
+                                                            <help-text>For eksempel lese- og sekretærhjelp eller frilandstolk.</help-text>
+                                                            <occurrences minimum="0" maximum="1"/>
+                                                        </input>
+                                                    </items>
+                                                </option>
                                             </options>
                                         </option-set>
                                         <input name="targetPage" type="CustomSelector">

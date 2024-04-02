@@ -26,7 +26,10 @@ fragment contentThemedArticlePage on no_nav_navno_ThemedArticlePage {
             }
             provider {
                 providerList {
-                    providerAudience
+                    providerAudience {
+                        name
+                        overrideLabel
+                    }
                     targetPage {
                         ...contentCommon
                     }

@@ -6,10 +6,17 @@ import { forceArray } from '../../../../utils/array-utils';
 export const alternativeAudienceCallback =
     (contentTypePrefix: string): CreationCallback =>
     (context, params) => {
+        const providerAudience = graphQlCreateObjectType(context, {
+            name: `${contentTypePrefix}ProviderAudience`,
+            fields: {
+                name: { type: graphQlLib.GraphQLString },
+                overrideLabel: { type: graphQlLib.GraphQLString },
+            },
+        });
         const audienceSelection = graphQlCreateObjectType(context, {
             name: `${contentTypePrefix}PersonType`,
             fields: {
-                providerAudience: { type: graphQlLib.list(graphQlLib.GraphQLString) },
+                providerAudience: { type: graphQlLib.list(providerAudience) },
                 targetPage: { type: graphQlLib.reference('Content') },
             },
         });
@@ -26,7 +33,16 @@ export const alternativeAudienceCallback =
 
                 const resolvedList = providerList.map((provider) => {
                     const providerAudience = forceArray(provider.subProviders).map(
-                        (subProvider) => subProvider._selected
+                        (subProvider) => {
+                            const overrideLabel =
+                                subProvider._selected === 'other'
+                                    ? subProvider.other.overrideLabel
+                                    : null;
+                            return {
+                                name: subProvider._selected,
+                                overrideLabel,
+                            };
+                        }
                     );
                     return {
                         providerAudience,
