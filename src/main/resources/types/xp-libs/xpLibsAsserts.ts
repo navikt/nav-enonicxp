@@ -4,8 +4,9 @@
 // This should cause type checks to fail if our patches for these libraries do not export
 // the same fields as the base type declarations. If there are errors here, update the
 // exports from the relevant patch files and ensure all exports from the base @enonic-types
-// file is re-exported from the patch file.
-// This won't work for pure type exports, only for function declarations/variables/etc
+// file are re-exported from the patch file.
+//
+// This won't account for pure type exports, only for function declarations/variables/etc
 
 type AssertKeysAreEqual<
     TypeA extends Record<string, unknown>,

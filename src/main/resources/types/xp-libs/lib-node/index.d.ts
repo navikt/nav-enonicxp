@@ -1,3 +1,5 @@
+// We override certain types from this library in order to enable type narrowing of content-type specific fields
+
 import {
     Aggregations,
     AggregationsToAggregationResults,
@@ -78,6 +80,8 @@ export interface RepoConnection extends RepoConnectionOriginal {
 
 export declare function connect(params: ConnectParams): RepoConnection;
 
+// There no "rest" type operator for imports/exports, so we have to export everything we don't
+// override one by one :|
 export {
     ValueType,
     ValueCountAggregation,

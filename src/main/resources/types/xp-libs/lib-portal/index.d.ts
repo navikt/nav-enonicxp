@@ -1,3 +1,5 @@
+// We override certain types from this library in order to enable type narrowing of content-type specific fields
+
 import { ComponentName, ComponentType } from '../../components/component-config';
 import { PortalComponent } from '../../components/component-portal';
 import { Content } from '/lib/xp/content';
@@ -36,7 +38,8 @@ export interface Region {
     components: Array<Component>;
     name: string;
 }
-
+// There no "rest" type operator for imports/exports, so we have to export everything we don't
+// override one by one :|
 export {
     AssetUrlParams,
     url,
