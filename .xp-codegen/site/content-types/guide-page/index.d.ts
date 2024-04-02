@@ -100,6 +100,139 @@ export type GuidePage = {
   customPath: string;
 
   /**
+   * Aktuelle målgrupper
+   */
+  alternativeAudience?: {
+    /**
+     * Selected
+     */
+    _selected: Array<"person" | "employer" | "provider">;
+    
+    /**
+     * Privatperson
+     */
+    person: {
+      /**
+       * Innhold
+       */
+      targetPage: string;
+    };
+    
+    /**
+     * Arbeidsgiver
+     */
+    employer: {
+      /**
+       * Innhold
+       */
+      targetPage: string;
+    };
+    
+    /**
+     * Samarbeidspartner
+     */
+    provider: {
+      /**
+       * Velg samarbeidspartner
+       */
+      providerList: Array<{
+        /**
+         * Type samarbeidspartner
+         */
+        subProviders: Array<
+          | {
+              /**
+               * Selected
+               */
+              _selected: "doctor";
+
+              /**
+               * Lege, tannlege eller annen behandler
+               */
+              doctor: Record<string, unknown>;
+            }
+          | {
+              /**
+               * Selected
+               */
+              _selected: "municipality_employed";
+
+              /**
+               * Ansatt i kommunen eller fylkeskommunen
+               */
+              municipality_employed: Record<string, unknown>;
+            }
+          | {
+              /**
+               * Selected
+               */
+              _selected: "optician";
+
+              /**
+               * Optiker eller øyelege
+               */
+              optician: Record<string, unknown>;
+            }
+          | {
+              /**
+               * Selected
+               */
+              _selected: "administrator";
+
+              /**
+               * Bostyrer
+               */
+              administrator: Record<string, unknown>;
+            }
+          | {
+              /**
+               * Selected
+               */
+              _selected: "measures_organizer";
+
+              /**
+               * Tiltaksarrangør
+               */
+              measures_organizer: Record<string, unknown>;
+            }
+          | {
+              /**
+               * Selected
+               */
+              _selected: "aid_supplier";
+
+              /**
+               * Hjelpemiddelformidler
+               */
+              aid_supplier: Record<string, unknown>;
+            }
+          | {
+              /**
+               * Selected
+               */
+              _selected: "other";
+
+              /**
+               * Andre samarbeidspartnere
+               */
+              other: Record<string, unknown>;
+            }
+        >;
+
+        /**
+         * Innhold
+         */
+        targetPage: string;
+      }>;
+    };
+  };
+
+  /**
+   * Situasjoner
+   */
+  relatedSituations?: Array<string> | string;
+
+  /**
    * Velg eier
    */
   owner: Array<"ytelsesavdelingen" | "arbeids_og_tjenesteavdelingen" | "arbeid_og_ytelser_styringsenhet" | "familie_og_pensjonsytelser_styringsenhet" | "hr_avdelingen" | "juridisk_avdeling" | "kunnskapsavdelingen" | "kommunikasjonsavdelingen" | "okonomi" | "statistikk" | "hjelpemidler_og_tilrettelegging" | "kontaktsenteret" | "team_personbruker" | "it_avdelingen" | "fylke" | "hjelpemiddelsentralen" | "arbeidslivssenter" | "min_side" | "direktoratet" | "annet"> | "ytelsesavdelingen" | "arbeids_og_tjenesteavdelingen" | "arbeid_og_ytelser_styringsenhet" | "familie_og_pensjonsytelser_styringsenhet" | "hr_avdelingen" | "juridisk_avdeling" | "kunnskapsavdelingen" | "kommunikasjonsavdelingen" | "okonomi" | "statistikk" | "hjelpemidler_og_tilrettelegging" | "kontaktsenteret" | "team_personbruker" | "it_avdelingen" | "fylke" | "hjelpemiddelsentralen" | "arbeidslivssenter" | "min_side" | "direktoratet" | "annet";
@@ -128,6 +261,11 @@ export type GuidePage = {
    * Velg alle detaljer som skal brukes på denne siden
    */
   formDetailsTargets?: Array<string> | string;
+
+  /**
+   * Vis intern navigasjon i innholdsseksjoner
+   */
+  showSubsectionNavigation: boolean;
 
   /**
    * Legg til andre språkversjoner
