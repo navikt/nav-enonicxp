@@ -69,39 +69,9 @@ export interface RepoConnection extends RepoConnectionOriginal {
         ...keys: (string | GetNodeParams | (string | GetNodeParams)[])[]
     ): RepoNode<Data> | RepoNode<Data>[] | null;
 
-    // delete(...keys: (string | string[])[]): string[];
-    //
-    // push(params: PushNodeParams): PushNodesResult;
-    //
-    // diff(params: DiffBranchesParams): DiffBranchesResult;
-    //
-    // getBinary(params: GetBinaryParams): ByteSource;
-    //
-    // move(params: MoveNodeParams): boolean;
-
     setChildOrder<Data = UnknownData>(params: SetChildOrderParams): RepoNode<Data>;
 
-    // query<AggregationInput extends Aggregations = Aggregations>(
-    //     params: QueryNodeParams<AggregationInput>
-    // ): NodeQueryResult<AggregationsToAggregationResults<AggregationInput>>;
-    //
-    // exists(key: string): boolean;
-    //
-    // findVersions(params: FindVersionsParams): NodeVersionsQueryResult;
-    //
-    // getActiveVersion(params: GetActiveVersionParams): NodeVersion | null;
-    //
-    // setActiveVersion(params: SetActiveVersionParams): boolean;
-    //
-    // findChildren(params: FindChildrenParams): FindNodesByParentResult;
-    //
-    // refresh(mode?: RefreshMode): void;
-    //
     setRootPermissions<Data = UnknownData>(params: SetRootPermissionsParams): RepoNode<Data>;
-
-    // commit(params: CommitParams): NodeCommit;
-    //
-    // getCommit(params: GetCommitParams): NodeCommit | null;
 
     duplicate<Data = UnknownData>(params: DuplicateParams<Data>): RepoNode<Data>;
 }

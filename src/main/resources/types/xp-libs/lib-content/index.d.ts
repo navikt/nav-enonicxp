@@ -3,15 +3,13 @@
 import {
     Aggregations,
     AggregationsResult,
-    Filter,
-    Highlight,
-    HighlightResult,
-    QueryDsl,
-    SortDsl,
     GetContentParams,
     GetChildContentParams,
-    IdGeneratorSupplier,
     MoveContentParams,
+    ContentsResult as ContentsResultOriginal,
+    CreateContentParams as CreateContentParamsOriginal,
+    QueryContentParams as QueryContentParamsOrignal,
+    ModifyContentParams as ModifyContentParamsOriginal,
 } from '@enonic-types/lib-content';
 
 import { AggregationsToAggregationResults, Content as ContentOriginal } from '@enonic-types/core';
@@ -31,12 +29,8 @@ export declare function get<ContentType extends ContentDescriptor = ContentDescr
 export interface ContentsResult<
     ContentType extends ContentDescriptor = ContentDescriptor,
     AggregationOutput extends Record<string, AggregationsResult> | undefined = undefined,
-> {
-    total: number;
-    count: number;
+> extends ContentsResultOriginal<unknown, AggregationOutput> {
     hits: Content<ContentType>[];
-    aggregations: AggregationOutput;
-    highlight?: Record<string, HighlightResult>;
 }
 
 export declare function getChildren<
@@ -44,19 +38,10 @@ export declare function getChildren<
     AggregationOutput extends Record<string, AggregationsResult> = never,
 >(params: GetChildContentParams): ContentsResult<ContentType, AggregationOutput>;
 
-export interface CreateContentParams<ContentType extends ContentDescriptor> {
-    name?: string;
-    parentPath: string;
-    displayName?: string;
-    requireValid?: boolean;
-    refresh?: boolean;
+export interface CreateContentParams<ContentType extends ContentDescriptor>
+    extends CreateContentParamsOriginal<unknown, ContentType> {
     contentType: ContentType;
-    language?: string;
-    childOrder?: string;
     data: XP.ContentTypes[ContentType];
-    x?: XpXData;
-    idGenerator?: IdGeneratorSupplier;
-    workflow?: Workflow;
 }
 
 export declare function create<ContentType extends ContentDescriptor>(
@@ -66,15 +51,8 @@ export declare function create<ContentType extends ContentDescriptor>(
 export interface QueryContentParams<
     ContentType extends ContentDescriptor = ContentDescriptor,
     AggregationInput extends Aggregations = never,
-> {
-    start?: number;
-    count?: number;
-    query?: QueryDsl | string;
-    sort?: string | SortDsl | SortDsl[];
-    filters?: Filter | Filter[];
-    aggregations?: AggregationInput;
+> extends QueryContentParamsOrignal<AggregationInput> {
     contentTypes?: ContentType[] | ReadonlyArray<ContentType>;
-    highlight?: Highlight;
 }
 
 export declare function query<
@@ -84,10 +62,9 @@ export declare function query<
     params: QueryContentParams<ContentType, AggregationInput>
 ): ContentsResult<ContentType, AggregationsToAggregationResults<AggregationInput>>;
 
-export interface ModifyContentParams<ContentType extends ContentDescriptor = ContentDescriptor> {
-    key: string;
+export interface ModifyContentParams<ContentType extends ContentDescriptor = ContentDescriptor>
+    extends ModifyContentParamsOriginal<unknown, ContentType> {
     editor: (v: Content<ContentType>) => Content<ContentType>;
-    requireValid?: boolean;
 }
 
 export declare function modify<ContentType extends ContentDescriptor = ContentDescriptor>(
