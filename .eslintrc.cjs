@@ -7,7 +7,6 @@ const enonicLibraryImports = [
     '^/lib/graphql',
     '^/lib/graphql-rx',
     '^/assets',
-    '^@xp-types',
 ];
 
 module.exports = {
