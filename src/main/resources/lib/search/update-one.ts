@@ -28,17 +28,14 @@ export const updateExternalSearchDocumentForContent = (contentId: string, repoId
     const repo = getRepoConnection({ repoId, branch: 'master', asAdmin: true });
 
     const content = repo.get<Content>(contentId);
-    if (!content) {
+    if (!content || !isContentLocalized(content)) {
         deleteExternalSearchDocumentForContent(contentId, locale);
-        return;
-    }
-
-    if (!isContentLocalized(content)) {
         return;
     }
 
     const document = buildExternalSearchDocument(content, locale);
     if (!document) {
+        deleteExternalSearchDocumentForContent(contentId, locale);
         return;
     }
 
