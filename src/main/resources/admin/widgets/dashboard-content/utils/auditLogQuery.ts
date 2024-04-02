@@ -1,6 +1,6 @@
 import { getRepoConnection } from '../../../../lib/utils/repo-utils';
 import { UserKey } from '/lib/xp/auditlog';
-import { AuditLogArchived, AuditLogPublished, AuditLogUnpublished } from './types';
+import { AuditLogArchived, AuditLogEntry, AuditLogPublished, AuditLogUnpublished } from './types';
 import { Dayjs } from '/assets/dayjs/1.11.9/dayjs.min.js';
 import { forceArray } from '../../../../lib/utils/array-utils';
 
@@ -63,7 +63,7 @@ export const getAuditLogEntries = <Type extends AuditLogQueryType>({
         })
         .hits.map((hit) => hit.id);
 
-    return forceArray(repoConnection.get(hitIds));
+    return forceArray(repoConnection.get(hitIds) as ReturnTypeMap[Type]);
 };
 
 const queryTypeToLogType: Record<AuditLogQueryType, string> = {

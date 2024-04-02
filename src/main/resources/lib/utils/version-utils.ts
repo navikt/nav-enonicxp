@@ -8,6 +8,7 @@ import { contentTypesWithCustomEditor } from '../contenttype-lists';
 import { getLayersData } from '../localization/layers-data';
 import { getLayersMigrationArchivedContentRef } from '../time-travel/layers-migration-refs';
 import { Content } from '/lib/xp/content';
+import { ContentDescriptor } from '../../types/content-types/content-config';
 
 const MAX_VERSIONS_COUNT_TO_RETRIEVE = 2000;
 
@@ -155,7 +156,9 @@ const shouldGetModifiedTimestampsOnly = (contentRef: string, repoId: string) => 
         branch: 'master',
     }).get<Content>(contentRef);
 
-    return content ? !contentTypesWithCustomEditor.includes(content.type) : true;
+    return content
+        ? !(contentTypesWithCustomEditor as ContentDescriptor[]).includes(content.type)
+        : true;
 };
 
 // Used by the version history selector in the frontend

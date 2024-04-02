@@ -1,4 +1,5 @@
 import * as portalLib from '/lib/xp/portal';
+import { Content } from '/lib/xp/portal';
 import { frontendProxy } from './frontend-proxy';
 import { logger } from '../utils/logging';
 import { getRepoConnection } from '../utils/repo-utils';
@@ -32,7 +33,7 @@ const insertCustomPath = (req: XP.Request) => {
 
     const repo = getRepoConnection({ repoId: req.repositoryId, branch: 'draft' });
 
-    repo.modify({
+    repo.modify<Content<'no.nav.navno:form-intermediate-step'>>({
         key: content._id,
         editor: (content) => {
             content.data.customPath = formIntermediateStepGenerateCustomPath(content);

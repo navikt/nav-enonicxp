@@ -1,6 +1,6 @@
 import * as portalLib from '/lib/xp/portal';
 import { getRepoConnection } from '../utils/repo-utils';
-import { NodeContent, RepoNode } from '/lib/xp/node';
+import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { frontendProxy } from './frontend-proxy';
 import { logger } from '../utils/logging';
@@ -10,7 +10,6 @@ import { FiltersMenu } from '@xp-types/site/parts/filters-menu';
 import { forceArray } from '../utils/array-utils';
 import { PartConfigs, PartComponentName } from '../../types/components/component-config';
 
-type DynamicPageContent = NodeContent<Content>;
 type DynamicContentRepoNode = RepoNode<Content>;
 
 type FilterMenuComponent = NodeComponent<'part', 'filters-menu'>;
@@ -109,7 +108,7 @@ const removeInvalidFilterIds = (req: XP.Request) => {
 
     const repo = getRepoConnection({ repoId: CONTENT_ROOT_REPO_ID, branch: 'draft' });
 
-    const nodeContent = repo.get<DynamicPageContent>({ key: content._id });
+    const nodeContent = repo.get<Content>({ key: content._id });
 
     if (!nodeContent?.components) {
         return;

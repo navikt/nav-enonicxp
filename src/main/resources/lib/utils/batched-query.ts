@@ -7,8 +7,8 @@ import {
     QueryNodeParams,
     NodeQueryResult,
     NodeQueryResultHit,
-    AccessControlEntry,
     NodeMultiRepoQueryResult,
+    ConnectParams,
 } from '/lib/xp/node';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 
@@ -98,7 +98,7 @@ type BatchedNodeQueryParams = {
     queryParams: QueryNodeParams;
 } & (
     | {
-          repoParams: AccessControlEntry;
+          repoParams: ConnectParams;
           repo?: never;
       }
     | {

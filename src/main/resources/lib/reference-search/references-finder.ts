@@ -1,5 +1,5 @@
 import { Content, BooleanFilter } from '/lib/xp/content';
-import { RepoConnection, NodeQueryHit } from '/lib/xp/node';
+import { RepoConnection, NodeQueryResultHit } from '/lib/xp/node';
 import * as contextLib from '/lib/xp/context';
 import { RepoBranch } from '../../types/common';
 import { logger } from '../utils/logging';
@@ -21,7 +21,7 @@ type ContentDescriptorSet = ReadonlySet<ContentDescriptor>;
 
 type OverviewType = Overview['overviewType'];
 
-type QueryHit = Pick<NodeQueryHit, 'id'>;
+type QueryHit = Pick<NodeQueryResultHit, 'id'>;
 type QueryResult = ReadonlyArray<QueryHit>;
 
 type Logger = typeof logger;
@@ -124,7 +124,7 @@ export class ReferencesFinder {
         return Object.values(this.referencesFound);
     }
 
-    private logResult(msg: string, contentId: string, result: ReadonlyArray<NodeQueryHit>) {
+    private logResult(msg: string, contentId: string, result: ReadonlyArray<NodeQueryResultHit>) {
         if (result.length > 0) {
             this.logger.info(`Found ${result.length} refs for ${msg} - contentId: "${contentId}"`);
         }

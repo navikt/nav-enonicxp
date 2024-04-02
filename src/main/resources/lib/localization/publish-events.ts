@@ -1,5 +1,6 @@
 import * as eventLib from '/lib/xp/event';
 import { EnonicEvent, EnonicEventData } from '/lib/xp/event';
+import { Content } from '/lib/xp/content';
 import { getRepoConnection } from '../utils/repo-utils';
 import { logger } from '../utils/logging';
 import { isContentLocalized } from './locale-utils';
@@ -37,7 +38,7 @@ const pushToMasterIfContentIsPublishedInRootRepo = ({ id, repo, branch }: NodeDa
         repoId: repo,
         branch: 'draft',
         asAdmin: true,
-    }).get(id);
+    }).get<Content>(id);
 
     // For content which is localized, no action is needed
     if (!layerContentDraft || isContentLocalized(layerContentDraft)) {

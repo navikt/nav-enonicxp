@@ -75,7 +75,7 @@ export const getAuditLogEntries = <Type extends AuditLogQueryType>({
         })
         .hits.map((hit) => hit.id);
 
-    return forceArray(repoConnection.get(hitIds));
+    return forceArray(repoConnection.get(hitIds) as ReturnTypeMap[Type]);
 };
 
 const queryTypeToLogType: Record<AuditLogQueryType, string> = {

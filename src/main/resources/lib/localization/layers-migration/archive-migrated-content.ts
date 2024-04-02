@@ -65,7 +65,7 @@ export const archiveMigratedContent = (params: ArchiveMigratedContentParams): bo
         branch: 'draft',
         repoId: sourceRepoId,
         asAdmin: true,
-    }).modify({
+    }).modify<Content>({
         key: preMigrationContentId,
         editor: (content) => {
             return transformToArchivedContent(content, postMigrationLocale, postMigrationContentId);

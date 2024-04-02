@@ -45,13 +45,13 @@ export const contentTypesInSitemap = [
     `${APP_DESCRIPTOR}:office-branch`,
 ] as const satisfies ContentTypeList;
 
-export const contentTypesInDataQuery: ContentTypeList = [
+export const contentTypesInDataQuery = [
     ...contentTypesInSitemap,
     'media:text',
     'media:document',
     'media:spreadsheet',
     'media:presentation',
-] as const;
+] as const satisfies ContentTypeList;
 
 export const contentTypesInContentSwitcher = [
     ...dynamicPageContentTypes,
@@ -138,10 +138,10 @@ export const contentTypesRenderedByEditorFrontend = [
     'portal:site',
 ] as const satisfies ContentTypeList;
 
-export const contentTypesWithCustomEditor: ContentTypeList = [
+export const contentTypesWithCustomEditor = [
     `${APP_DESCRIPTOR}:global-value-set`,
     `${APP_DESCRIPTOR}:global-case-time-set`,
-] as const;
+] as const satisfies ContentTypeList;
 
 export const contentTypesWithFormDetails = [
     `${APP_DESCRIPTOR}:content-page-with-sidemenus`,

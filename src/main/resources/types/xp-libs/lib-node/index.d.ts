@@ -1,11 +1,30 @@
-import { Aggregations, AggregationsToAggregationResults, ByteSource } from '@enonic-types/core';
 import {
+    Aggregations,
+    AggregationsToAggregationResults,
+    ByteSource,
+    CommitParams,
+    ConnectParams,
+    DiffBranchesParams,
+    DiffBranchesResult,
+    DuplicateParams,
+    FindVersionsParams,
+    GetActiveVersionParams,
+    GetCommitParams,
     GetNodeParams,
+    MoveNodeParams,
+    NodeCommit,
     NodePropertiesOnCreate,
     NodePropertiesOnModify,
     NodePropertiesOnRead,
+    NodeQueryResult,
     NodeVersionsQueryResult,
     PushNodeParams,
+    PushNodesResult,
+    RefreshMode,
+    RepoConnection as RepoConnectionOriginal,
+    QueryNodeParams,
+    SetChildOrderParams,
+    SetRootPermissionsParams,
 } from '@enonic-types/lib-node';
 
 import { Content } from '/lib/xp/content';
@@ -18,72 +37,73 @@ type ContentNodeData<ContentData extends Content> = Omit<
     components?: NodeComponent[];
 };
 
+type UnknownData = Record<string, unknown>;
+
 type NodeData<Data> = Data extends Content ? ContentNodeData<Data> : Data;
 
-export declare type ModifiedNode<Data = Record<string, unknown>> = NodePropertiesOnModify &
-    NodeData<Data>;
+export declare type CreatedNode<Data> = NodePropertiesOnCreate & NodeData<Data>;
+
+export declare type ModifiedNode<Data> = NodePropertiesOnModify & NodeData<Data>;
 
 export declare type RepoNode<Data> = NodePropertiesOnRead & NodeData<Data>;
 
-export declare type CreateNodeParams<NodeData = unknown> = NodePropertiesOnCreate & NodeData;
+export declare type CreateNodeParams<NodeData = UnknownData> = NodePropertiesOnCreate & NodeData;
 
-export interface ModifyNodeParams<NodeData = unknown> {
+export interface ModifyNodeParams<NodeData = UnknownData> {
     key: string;
     editor: (node: RepoNode<NodeData>) => ModifiedNode<NodeData>;
 }
 
-export interface RepoConnection {
-    create<Data = Record<string, unknown>>(params: CreateNodeParams<Data>): RepoNode<Data>;
+export interface RepoConnection extends RepoConnectionOriginal {
+    create<Data = UnknownData>(params: CreateNodeParams<Data>): RepoNode<Data>;
 
-    modify<Data = Record<string, unknown>>(params: ModifyNodeParams<Data>): RepoNode<Data>;
+    modify<Data = UnknownData>(params: ModifyNodeParams<Data>): RepoNode<Data>;
 
     get<Data>(key: string | GetNodeParams): RepoNode<Data> | null;
 
-    get<Data = Record<string, unknown>>(
+    get<Data = UnknownData>(
         keys: (string | GetNodeParams)[]
     ): RepoNode<Data> | RepoNode<Data>[] | null;
 
-    get<Data = Record<string, unknown>>(
+    get<Data = UnknownData>(
         ...keys: (string | GetNodeParams | (string | GetNodeParams)[])[]
     ): RepoNode<Data> | RepoNode<Data>[] | null;
 
-    delete(...keys: (string | string[])[]): string[];
+    // delete(...keys: (string | string[])[]): string[];
+    //
+    // push(params: PushNodeParams): PushNodesResult;
+    //
+    // diff(params: DiffBranchesParams): DiffBranchesResult;
+    //
+    // getBinary(params: GetBinaryParams): ByteSource;
+    //
+    // move(params: MoveNodeParams): boolean;
 
-    push(params: PushNodeParams): PushNodesResult;
+    setChildOrder<Data = UnknownData>(params: SetChildOrderParams): RepoNode<Data>;
 
-    diff(params: DiffBranchesParams): DiffBranchesResult;
+    // query<AggregationInput extends Aggregations = Aggregations>(
+    //     params: QueryNodeParams<AggregationInput>
+    // ): NodeQueryResult<AggregationsToAggregationResults<AggregationInput>>;
+    //
+    // exists(key: string): boolean;
+    //
+    // findVersions(params: FindVersionsParams): NodeVersionsQueryResult;
+    //
+    // getActiveVersion(params: GetActiveVersionParams): NodeVersion | null;
+    //
+    // setActiveVersion(params: SetActiveVersionParams): boolean;
+    //
+    // findChildren(params: FindChildrenParams): FindNodesByParentResult;
+    //
+    // refresh(mode?: RefreshMode): void;
+    //
+    setRootPermissions<Data = UnknownData>(params: SetRootPermissionsParams): RepoNode<Data>;
 
-    getBinary(params: GetBinaryParams): ByteSource;
+    // commit(params: CommitParams): NodeCommit;
+    //
+    // getCommit(params: GetCommitParams): NodeCommit | null;
 
-    move(params: MoveNodeParams): boolean;
-
-    setChildOrder<Data = Record<string, unknown>>(params: SetChildOrderParams): RepoNode<Data>;
-
-    query<AggregationInput extends Aggregations = never>(
-        params: QueryNodeParams<AggregationInput>
-    ): NodeQueryResult<AggregationsToAggregationResults<AggregationInput>>;
-
-    exists(key: string): boolean;
-
-    findVersions(params: FindVersionsParams): NodeVersionsQueryResult;
-
-    getActiveVersion(params: GetActiveVersionParams): NodeVersion | null;
-
-    setActiveVersion(params: SetActiveVersionParams): boolean;
-
-    findChildren(params: FindChildrenParams): FindNodesByParentResult;
-
-    refresh(mode?: RefreshMode): void;
-
-    setRootPermissions<Data = Record<string, unknown>>(
-        params: SetRootPermissionsParams
-    ): RepoNode<Data>;
-
-    commit(params: CommitParams): NodeCommit;
-
-    getCommit(params: GetCommitParams): NodeCommit | null;
-
-    duplicate<Data = Record<string, unknown>>(params: DuplicateParams<Data>): RepoNode<Data>;
+    duplicate<Data = UnknownData>(params: DuplicateParams<Data>): RepoNode<Data>;
 }
 
 export declare function connect(params: ConnectParams): RepoConnection;

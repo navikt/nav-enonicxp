@@ -1,7 +1,7 @@
 import { getRepoConnection } from '../../../../lib/utils/repo-utils';
-import { RepoNode } from '/lib/xp/node';
 import thymeleafLib from '/lib/thymeleaf';
 import { sanitize } from '/lib/xp/common';
+import { Content } from '/lib/xp/content';
 import { forceArray } from '../../../../lib/utils/array-utils';
 import { validateCurrentUserPermissionForContent } from '../../../../lib/utils/auth-utils';
 import { batchedNodeQuery } from '../../../../lib/utils/batched-query';
@@ -11,6 +11,7 @@ import { getParentPath } from '../../../../lib/paths/path-utils';
 type ArchiveEntry = {
     name: string;
     id: string;
+    path: string;
 };
 
 const view = resolve('./archive-query-response.html');
@@ -40,10 +41,10 @@ const queryArchive = ({ query, repoId }: { query?: string; repoId: string }): Ar
         },
     }).hits.map((node) => node.id);
 
-    const archivedContents = repo.get(archivedContentIds);
+    const archivedContents = repo.get<Content>(archivedContentIds);
 
     return forceArray(archivedContents)
-        .reduce((acc, content) => {
+        .reduce<ArchiveEntry[]>((acc, content) => {
             if (
                 !validateCurrentUserPermissionForContent(undefined, 'PUBLISH', content._permissions)
             ) {
@@ -61,7 +62,7 @@ const queryArchive = ({ query, repoId }: { query?: string; repoId: string }): Ar
                 },
             ];
         }, [])
-        .sort((a: RepoNode<any>, b: RepoNode<any>) =>
+        .sort((a, b) =>
             (getParentPath(a.path) || a.path).toLowerCase() <
             (getParentPath(b.path) || b.path).toLowerCase()
                 ? -1

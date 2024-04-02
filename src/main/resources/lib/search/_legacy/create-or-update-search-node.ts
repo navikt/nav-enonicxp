@@ -135,9 +135,11 @@ const getExistingSearchNodes = (
     locale: string,
     searchRepoConnection: RepoConnection
 ) => {
-    const existingSearchNodeIds = querySearchNodesForContent(contentId, locale).hits.map(
-        (hit) => hit.id
-    );
+    const existingSearchNodeIds = querySearchNodesForContent(
+        contentId,
+        locale,
+        searchRepoConnection
+    ).hits.map((hit) => hit.id);
 
     if (existingSearchNodeIds.length === 0) {
         return [];
@@ -157,13 +159,13 @@ export const createOrUpdateSearchNode = ({
     contentNode,
     facets = [],
     locale,
-    searchRepoConnection = getSearchRepoConnection(),
 }: {
     contentNode: RepoNode<Content>;
     facets: ContentFacet[];
     locale: string;
-    searchRepoConnection?: RepoConnection;
 }): UpdateResult => {
+    const searchRepoConnection = getSearchRepoConnection();
+
     const existingSearchNodes = getExistingSearchNodes(
         contentNode._id,
         locale,
@@ -199,7 +201,7 @@ export const createOrUpdateSearchNode = ({
 
         searchRepoConnection.modify({
             key: searchNode._id,
-            editor: () => searchNodeParams,
+            editor: () => searchNodeParams as any,
         });
         return { didUpdate: true, searchNodeId: searchNode._id };
     } else if (existingSearchNodes.length > 1) {

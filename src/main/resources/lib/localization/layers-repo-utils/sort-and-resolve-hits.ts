@@ -1,10 +1,10 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { MultiRepoNodeQueryHit } from '/lib/xp/node';
+import { NodeMultiRepoQueryResult } from '/lib/xp/node';
 import { RepoBranch } from '../../../types/common';
 import { runInContext } from '../../context/run-in-context';
 
-type Hits = readonly MultiRepoNodeQueryHit[];
+type Hits = NodeMultiRepoQueryResult['hits'];
 
 export type RepoIdContentBuckets = Record<string, Content[]>;
 

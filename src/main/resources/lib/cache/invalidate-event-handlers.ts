@@ -1,5 +1,6 @@
 import * as eventLib from '/lib/xp/event';
 import { EnonicEvent } from '/lib/xp/event';
+import { Content } from '/lib/xp/content';
 import { handleScheduledPublish } from '../scheduling/scheduled-publish';
 import { invalidateLocalCache, LOCAL_CACHE_INVALIDATION_EVENT_NAME } from './local-cache';
 import { NodeEventData } from './utils';
@@ -45,7 +46,7 @@ const nodeListenerCallback = (event: EnonicEvent) => {
             branch: 'draft',
             asAdmin: true,
             repoId: node.repo,
-        }).get(node.id);
+        }).get<Content>(node.id);
 
         if (!content || !isContentLocalized(content)) {
             return;
