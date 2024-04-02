@@ -1,5 +1,5 @@
-import { runOfficeBranchFetchTask } from '../../lib/office-pages/office-branch-tasks';
+import { runOfficeFetchTask } from '../../lib/office-pages/office-tasks';
 
 export const run = () => {
-    runOfficeBranchFetchTask();
+    runOfficeFetchTask();
 };

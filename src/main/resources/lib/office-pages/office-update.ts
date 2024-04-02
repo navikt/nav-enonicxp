@@ -288,7 +288,7 @@ const updateOfficePageIfChanged = (
     }
 };
 
-const createOfficeBranchPage = (officeData: OfficeBranchData) => {
+const createOfficePage = (officeData: OfficeBranchData) => {
     try {
         logger.info('Trying to create office branch page');
         const contentType =
@@ -365,7 +365,7 @@ export const processAllOffices = (offices: OfficeBranchData[]) => {
                 summary.updated.push(existingPage._id);
             }
         } else {
-            const createdId = createOfficeBranchPage(officeBranchData);
+            const createdId = createOfficePage(officeBranchData);
             if (createdId) {
                 summary.created.push(createdId);
             }
@@ -374,7 +374,7 @@ export const processAllOffices = (offices: OfficeBranchData[]) => {
         processedOfficeEnhetsNr.push(officeBranchData.enhetNr);
     });
 
-    summary.deleted = deleteStaleOfficePages(existingOfficePages, processedOfficeEnhetsNr);
+    summary.deleted = []; // deleteStaleOfficePages(existingOfficePages, processedOfficeEnhetsNr);
 
     if (summary.deleted.length > 0) {
         logger.info(`Office pages deleted: ${summary.deleted.length}`);
