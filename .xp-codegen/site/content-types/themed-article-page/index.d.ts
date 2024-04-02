@@ -220,7 +220,12 @@ export type ThemedArticlePage = {
               /**
                * Andre samarbeidspartnere
                */
-              other: Record<string, unknown>;
+              other: {
+                /**
+                 * Egen benevnelse
+                 */
+                overrideLabel?: string;
+              };
             }
         >;
 

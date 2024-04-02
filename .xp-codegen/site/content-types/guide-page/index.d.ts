@@ -215,7 +215,12 @@ export type GuidePage = {
               /**
                * Andre samarbeidspartnere
                */
-              other: Record<string, unknown>;
+              other: {
+                /**
+                 * Egen benevnelse
+                 */
+                overrideLabel?: string;
+              };
             }
         >;
 

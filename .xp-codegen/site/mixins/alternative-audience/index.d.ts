@@ -116,7 +116,12 @@ export type AlternativeAudience = {
               /**
                * Andre samarbeidspartnere
                */
-              other: Record<string, unknown>;
+              other: {
+                /**
+                 * Alternativt navn
+                 */
+                overrideLabel?: string;
+              };
             }
         >;
 

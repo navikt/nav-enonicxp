@@ -200,7 +200,12 @@ export type ContentPageWithSidemenus = {
               /**
                * Andre samarbeidspartnere
                */
-              other: Record<string, unknown>;
+              other: {
+                /**
+                 * Egen benevnelse
+                 */
+                overrideLabel?: string;
+              };
             }
         >;
 
