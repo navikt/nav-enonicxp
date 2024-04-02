@@ -3,6 +3,8 @@ import { PortalComponent } from '../../../types/components/component-portal';
 import { GuillotineUnresolvedComponentType } from '../queries/run-sitecontent-query';
 import { ComponentType } from '../../../types/components/component-config';
 
+// TODO: consider refactoring this mess :D
+
 // These functions are used for processing component-objects from Guillotine queries into a consistent structure
 // before serving to the frontend.
 //

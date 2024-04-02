@@ -27,6 +27,8 @@ type NodeQueryProps = {
 
 const BATCH_SIZE = 3000;
 
+// TODO: consider refactoring, bit hard to read
+
 // NOTE: if a filter value array with a length greater than the batch size is passed to a query
 // the batches may not be consistent when the queries are performed in a clustered setup!
 const batchedQuery = <ContentType extends ContentDescriptor>({

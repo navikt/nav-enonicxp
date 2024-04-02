@@ -7,7 +7,6 @@ import { getNodeKey } from './version-utils';
 import { htmlAreaComponentPaths, htmlAreaDataPaths } from './htmlarea-utils';
 import { runInContext } from '../context/run-in-context';
 import { logger } from './logging';
-import { getUnixTimeFromDateTimeString } from './datetime-utils';
 import { forceArray, removeDuplicates } from './array-utils';
 import { getNestedValues } from './object-utils';
 
