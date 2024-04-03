@@ -59,7 +59,7 @@
                                                     <items>
                                                         <input name="overrideLabel" type="TextLine">
                                                             <label>Alternativ målgruppe</label>
-                                                            <help-text>For eksempel lese- og sekretærhjelp eller frilandstolk.</help-text>
+                                                            <help-text>For eksempel lese- og sekretærhjelp eller frilanstolk.</help-text>
                                                             <occurrences minimum="0" maximum="1"/>
                                                         </input>
                                                     </items>
