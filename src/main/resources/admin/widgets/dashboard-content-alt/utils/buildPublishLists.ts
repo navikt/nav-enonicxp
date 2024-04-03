@@ -1,5 +1,5 @@
 import { UserKey } from '/lib/xp/auditlog';
-import { DashboardContentAuditLogResolver } from './auditLogResolver';
+import { DashboardContentAuditLogListsBuilder } from './audit-log/auditlog-lists-builder';
 import { dashboardContentResolveLogs } from './contentResolver';
 import { DashboardContentInfo } from './types';
 
@@ -10,11 +10,11 @@ const sortAscending = (a: DashboardContentInfo, b: DashboardContentInfo) =>
     a.modifiedTimeRaw < b.modifiedTimeRaw ? -1 : 1;
 
 export const dashboardContentBuildPublishLists = (user: UserKey) => {
-    const auditLogResolver = new DashboardContentAuditLogResolver({
+    const auditLogResolver = new DashboardContentAuditLogListsBuilder({
         user,
     });
 
-    const { publishedData, prepublishedData, unpublishedData } = auditLogResolver.resolve();
+    const { publishedData, prepublishedData, unpublishedData } = auditLogResolver.build();
 
     const published = dashboardContentResolveLogs(publishedData, true);
     const prePublished = dashboardContentResolveLogs(prepublishedData, true);

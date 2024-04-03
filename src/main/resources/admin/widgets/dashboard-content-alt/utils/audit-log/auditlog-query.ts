@@ -1,9 +1,9 @@
 import { QueryDsl, RangeDslExpression } from '/lib/xp/node';
 import { UserKey } from '/lib/xp/auditlog';
-import { getRepoConnection } from '../../../../lib/utils/repo-utils';
-import { AuditLogArchived, AuditLogPublished, AuditLogUnpublished } from './types';
+import { getRepoConnection } from '../../../../../lib/utils/repo-utils';
+import { AuditLogArchived, AuditLogPublished, AuditLogUnpublished } from '../types';
 import { Dayjs } from '/assets/dayjs/1.11.9/dayjs.min.js';
-import { forceArray } from '../../../../lib/utils/array-utils';
+import { forceArray } from '../../../../../lib/utils/array-utils';
 
 const AUDITLOG_REPO_ID = 'system.auditlog';
 
@@ -16,7 +16,7 @@ type ReturnTypeMap = {
 };
 
 export type AuditLogQueryProps<Type extends AuditLogQueryType = AuditLogQueryType> = {
-    type: Type;
+    type: Type | Type[];
     user: UserKey;
     count: number;
     from?: Dayjs;
@@ -47,9 +47,9 @@ export const getAuditLogEntries = <Type extends AuditLogQueryType>({
             },
         },
         {
-            term: {
+            in: {
                 field: 'type',
-                value: queryTypeToLogType[type],
+                values: forceArray(type).map((_type) => queryTypeToLogType[_type]),
             },
         },
     ];
