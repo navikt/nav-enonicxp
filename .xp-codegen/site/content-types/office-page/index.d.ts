@@ -16,88 +16,6 @@ export type OfficePage = {
   norwegianTitle?: string;
 
   /**
-   * Velg kontortype
-   */
-  type?:
-    | {
-        /**
-         * Selected
-         */
-        _selected: "LOKAL";
-
-        /**
-         * Lokalkontor
-         */
-        LOKAL: Record<string, unknown>;
-      }
-    | {
-        /**
-         * Selected
-         */
-        _selected: "HMS";
-
-        /**
-         * Hjelpemiddelsentral
-         */
-        HMS: Record<string, unknown>;
-      }
-    | {
-        /**
-         * Selected
-         */
-        _selected: "ALS";
-
-        /**
-         * Arbeidslivssenter
-         */
-        ALS: Record<string, unknown>;
-      }
-    | {
-        /**
-         * Selected
-         */
-        _selected: "OPPFUTLAND";
-
-        /**
-         * NAV Utland og fellestjenester
-         */
-        OPPFUTLAND: Record<string, unknown>;
-      }
-    | {
-        /**
-         * Selected
-         */
-        _selected: "KONTROLL";
-
-        /**
-         * NAV Kontroll
-         */
-        KONTROLL: Record<string, unknown>;
-      }
-    | {
-        /**
-         * Selected
-         */
-        _selected: "KLAGE";
-
-        /**
-         * NAV Klageinstans
-         */
-        KLAGE: Record<string, unknown>;
-      }
-    | {
-        /**
-         * Selected
-         */
-        _selected: "OKONOMI";
-
-        /**
-         * NAV Økonomi Stønad
-         */
-        OKONOMI: Record<string, unknown>;
-      };
-
-  /**
    * Kontordata (OBS! Overskrives fra NORG)
    */
   officeNorgData:
@@ -120,6 +38,11 @@ export type OfficePage = {
            * Navn
            */
           navn: string;
+
+          /**
+           * Telefonnummer
+           */
+          telefonnummer: string;
 
           /**
            * EnhetNr

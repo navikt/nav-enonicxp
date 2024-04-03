@@ -72,6 +72,7 @@ const generalOfficeAdapter = (
         enhetNr: officeData.enhetNr,
         navn: officeData.navn,
         type,
+        telefonnummer: officeData.telefonnummer,
         status: 'Aktiv',
         organisasjonsnummer: '',
         sosialeTjenester: '',

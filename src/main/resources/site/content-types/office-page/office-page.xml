@@ -7,19 +7,6 @@
     <allow-child-content>true</allow-child-content>
     <form>
         <mixin name="page-header"/>
-        <option-set name="type">
-            <label>Velg kontortype</label>
-            <occurrences minimum="0" maximum="1"/>
-            <options minimum="1" maximum="1">
-                <option name="LOKAL"><label>Lokalkontor</label></option>  
-                <option name="HMS"><label>Hjelpemiddelsentral</label></option>
-                <option name="ALS"><label>Arbeidslivssenter</label></option>
-                <option name="OPPFUTLAND"><label>NAV Utland og fellestjenester</label></option>
-                <option name="KONTROLL"><label>NAV Kontroll</label></option>
-                <option name="KLAGE"><label>NAV Klageinstans</label></option>
-                <option name="OKONOMI"><label>NAV Økonomi Stønad</label></option>
-            </options>
-        </option-set>
         <option-set name="officeNorgData">
             <label>Kontordata (OBS! Overskrives fra NORG)</label>
             <occurrences minimum="1" maximum="1"/>
@@ -32,6 +19,10 @@
                         </input>
                         <input type="TextLine" name="navn">
                             <label>Navn</label>
+                            <occurrences minimum="1" maximum="1"/>
+                        </input>
+                        <input type="TextLine" name="telefonnummer">
+                            <label>Telefonnummer</label>
                             <occurrences minimum="1" maximum="1"/>
                         </input>
                         <input type="TextLine" name="enhetNr">
