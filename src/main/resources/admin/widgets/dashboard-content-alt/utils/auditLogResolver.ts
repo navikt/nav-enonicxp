@@ -6,7 +6,7 @@ import { forceArray } from '../../../../lib/utils/array-utils';
 import { logger } from '../../../../lib/utils/logging';
 import { CONTENT_ROOT_REPO_ID } from '../../../../lib/constants';
 
-type QueryProps = Required<Pick<AuditLogQueryProps, 'logTsFrom' | 'user' | 'count'>>;
+type QueryProps = Required<Pick<AuditLogQueryProps, 'from' | 'user' | 'count'>>;
 
 type ContentLogsMap = Record<string, ContentLogData>;
 
@@ -27,7 +27,7 @@ export class DashboardContentAuditLogResolver {
         this.queryProps = {
             user,
             count: COUNT,
-            logTsFrom: getFromDate(),
+            from: getFromDate(),
         };
     }
 
@@ -36,6 +36,7 @@ export class DashboardContentAuditLogResolver {
             ...this.queryProps,
             type: 'publish',
         });
+
         const unPublishedLogEntries = getAuditLogEntries({
             ...this.queryProps,
             type: 'unpublish',
@@ -59,9 +60,9 @@ export class DashboardContentAuditLogResolver {
         );
 
         return {
-            publishedData: this.cleanPublishedData(),
-            prepublishedData: this.cleanPrepublishedData(),
-            unpublishedData: this.cleanUnpublishedData(),
+            publishedData: this.filterPublishedData(),
+            prepublishedData: this.filterPrepublishedData(),
+            unpublishedData: this.filterUnpublishedData(),
         };
     }
 
@@ -126,81 +127,57 @@ export class DashboardContentAuditLogResolver {
         }));
     }
 
-    private cleanPublishedData() {
+    private filterPublishedData() {
         // Skal være publisert av user
         // Skal ikke være avpublisert igjen senere av user (men kan være avpublisert av andre)
         // Skal ikke avvente forhåndspublisering
 
-        const cleanedList: ContentLogData[] = [];
-
-        Object.entries(this.publishedData).forEach(([key, publishedEntry]) => {
-            const unpublishedEntry = this.unpublishedData[key];
-            if (unpublishedEntry && unpublishedEntry.time > publishedEntry.time) {
-                return;
-            }
-
-            const prepublishedEntry = this.prepublishedData[key];
-            if (!prepublishedEntry) {
-                cleanedList.push(publishedEntry);
-                return;
-            }
-
-            if (publishedEntry.time < prepublishedEntry.time) {
-                return;
-            }
-
-            cleanedList.push(publishedEntry);
-        });
-
-        return cleanedList;
+        return Object.values(this.publishedData).filter(
+            (publishedEntry) =>
+                !this.isUnpublished(publishedEntry) && !this.isPrepublished(publishedEntry)
+        );
     }
 
-    private cleanUnpublishedData() {
+    private filterUnpublishedData() {
         // Skal være avpublisert av user
         // Skal ikke være publisert igjen senere av user (men kan være publisert av andre)
 
-        const cleanedList: ContentLogData[] = [];
-
-        Object.entries(this.unpublishedData).forEach(([key, unPublishedEntry]) => {
-            const publishedEntry = this.publishedData[key];
-            if (publishedEntry && publishedEntry.time > unPublishedEntry.time) {
-                return;
-            }
-
-            const prepublishedEntry = this.prepublishedData[key];
-            if (!prepublishedEntry) {
-                cleanedList.push(unPublishedEntry);
-                return;
-            }
-
-            if (unPublishedEntry.time < prepublishedEntry.time) {
-                return;
-            }
-
-            cleanedList.push(unPublishedEntry);
-        });
-
-        return cleanedList;
+        return Object.values(this.unpublishedData).filter(
+            (unPublishedEntry) =>
+                !this.isPublished(unPublishedEntry) && !this.isPrepublished(unPublishedEntry)
+        );
     }
 
-    private cleanPrepublishedData() {
-        const cleanedList: ContentLogData[] = [];
+    private filterPrepublishedData() {
+        return Object.values(this.prepublishedData).filter(
+            (prePublishedEntry) =>
+                !this.isPublished(prePublishedEntry) && !this.isUnpublished(prePublishedEntry)
+        );
+    }
 
-        Object.entries(this.prepublishedData).forEach(([key, prePublishedEntry]) => {
-            const publishedEntry = this.publishedData[key];
-            if (publishedEntry && publishedEntry.time > prePublishedEntry.time) {
-                return;
-            }
+    private isPublished(entry: ContentLogData) {
+        const key = getKey(entry);
+        const publishedEntry = this.publishedData[key];
+        return publishedEntry && publishedEntry.time > entry.time;
+    }
 
-            const unpublishedEntry = this.unpublishedData[key];
-            if (unpublishedEntry) {
-                return;
-            }
+    private isUnpublished(entry: ContentLogData) {
+        const key = getKey(entry);
+        const unpublishedEntry = this.unpublishedData[key];
+        return unpublishedEntry && unpublishedEntry.time > entry.time;
+    }
 
-            cleanedList.push(prePublishedEntry);
-        });
+    private isPrepublished(entry: ContentLogData) {
+        const key = getKey(entry);
+        const prepublishedEntry = this.prepublishedData[key];
+        if (!prepublishedEntry) {
+            return false;
+        }
 
-        return cleanedList;
+        const now = new Date().toISOString();
+        const { from, to } = prepublishedEntry.publish;
+
+        return (!from || from > now) && (!to || to < now);
     }
 }
 

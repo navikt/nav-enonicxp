@@ -1,9 +1,9 @@
-import { getRepoConnection } from '../../../../lib/utils/repo-utils';
+import { QueryDsl, RangeDslExpression } from '/lib/xp/node';
 import { UserKey } from '/lib/xp/auditlog';
+import { getRepoConnection } from '../../../../lib/utils/repo-utils';
 import { AuditLogArchived, AuditLogPublished, AuditLogUnpublished } from './types';
 import { Dayjs } from '/assets/dayjs/1.11.9/dayjs.min.js';
 import { forceArray } from '../../../../lib/utils/array-utils';
-import { Filter } from '/lib/xp/content';
 
 const AUDITLOG_REPO_ID = 'system.auditlog';
 
@@ -19,22 +19,18 @@ export type AuditLogQueryProps<Type extends AuditLogQueryType = AuditLogQueryTyp
     type: Type;
     user: UserKey;
     count: number;
-    logTsFrom?: Dayjs;
-    logTsTo?: Dayjs;
-    publishFrom?: Dayjs;
-    publishTo?: Dayjs;
-    query?: string;
+    from?: Dayjs;
+    to?: Dayjs;
+    queries?: QueryDsl[];
 };
 
 export const getAuditLogEntries = <Type extends AuditLogQueryType>({
     type,
     count,
     user,
-    logTsFrom,
-    logTsTo,
-    publishFrom,
-    publishTo,
-    query,
+    from,
+    to,
+    queries,
 }: AuditLogQueryProps<Type>): Array<ReturnTypeMap[Type]> => {
     const repoConnection = getRepoConnection({
         repoId: AUDITLOG_REPO_ID,
@@ -42,36 +38,32 @@ export const getAuditLogEntries = <Type extends AuditLogQueryType>({
         asAdmin: true,
     });
 
-    const mustTerms: Filter[] = [];
-
-    if (user) {
-        mustTerms.push({
-            hasValue: {
+    const filter: QueryDsl[] = [
+        ...(queries || []),
+        {
+            term: {
                 field: 'user',
-                values: [user],
+                value: user,
             },
-        });
-    }
-
-    if (type) {
-        mustTerms.push({
-            hasValue: {
+        },
+        {
+            term: {
                 field: 'type',
-                values: [queryTypeToLogType[type]],
+                value: queryTypeToLogType[type],
             },
-        });
+        },
+    ];
+
+    const rangeQuery = buildRangeQuery(from, to);
+    if (rangeQuery) {
+        filter.push({ range: rangeQuery });
     }
 
     const hitIds = repoConnection
         .query({
             count,
-            query: buildQueryString(logTsFrom, logTsTo, query),
             sort: 'time DESC',
-            filters: {
-                boolean: {
-                    must: mustTerms,
-                },
-            },
+            query: { boolean: { filter } },
         })
         .hits.map((hit) => hit.id);
 
@@ -84,29 +76,14 @@ const queryTypeToLogType: Record<AuditLogQueryType, string> = {
     archive: 'system.content.archive',
 };
 
-const buildRangeQuery = (from?: Dayjs, to?: Dayjs) => {
+const buildRangeQuery = (from?: Dayjs, to?: Dayjs): RangeDslExpression | null => {
     if (!from && !to) {
         return null;
     }
 
-    const fromStr = from ? `instant("${from.toISOString()}")` : "''";
-    const toStr = to ? `instant("${to.toISOString()}")` : "''";
-
-    return `range('time', ${fromStr}, ${toStr})`;
-};
-
-const buildQueryString = (from?: Dayjs, to?: Dayjs, query?: string) => {
-    const queryArray: string[] = [];
-
-    const rangeQuery = buildRangeQuery(from, to);
-
-    if (rangeQuery) {
-        queryArray.push(rangeQuery);
-    }
-
-    if (query) {
-        queryArray.push(query);
-    }
-
-    return queryArray.length > 0 ? queryArray.join(' AND ') : undefined;
+    return {
+        field: 'time',
+        ...(from && { gte: from.toISOString() }),
+        ...(to && { lt: to.toISOString() }),
+    };
 };
