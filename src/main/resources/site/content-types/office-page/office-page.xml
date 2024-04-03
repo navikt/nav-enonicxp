@@ -6,6 +6,7 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
+        <mixin name="page-header"/>
         <option-set name="type">
             <label>Velg kontortype</label>
             <occurrences minimum="0" maximum="1"/>
@@ -20,7 +21,7 @@
             </options>
         </option-set>
         <option-set name="officeNorgData">
-            <label>Kontordata</label>
+            <label>Kontordata (OBS! Overskrives fra NORG)</label>
             <occurrences minimum="1" maximum="1"/>
             <options minimum="1" maximum="1">
                 <option name="data">

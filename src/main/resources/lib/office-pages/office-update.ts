@@ -34,15 +34,8 @@ const OFFICES_BASE_PATH = '/www.nav.no/kontor';
 
 const getOfficeContentName = (officeData: OfficeNorgData) => commonLib.sanitize(officeData.navn);
 
-const generalOfficeTypes: ReadonlySet<string> = new Set([
-    'FPY',
-    'KLAGE',
-    'KONTROLL',
-    'OKONOMI',
-    'HMS',
-    'YTA',
-    'OPPFUTLAND',
-]);
+// Possible office types are FPY, KLAGE, KONTROLL, OKONOMI, HMS, YTA, OPPFUTLAND
+const generalOfficeTypes: ReadonlySet<string> = new Set(['HMS']);
 
 const norgRequest = <T>(requestConfig: RequestConfig): T[] | null => {
     const response = request({
@@ -261,6 +254,7 @@ const mergeOfficeDataWithPageData = ({
 }): OfficePageData => {
     return {
         ...pageData,
+        title: officeData.navn,
         officeNorgData: {
             _selected: 'data',
             data: {
