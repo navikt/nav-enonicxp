@@ -2,15 +2,16 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { request } from '/lib/http-client';
 import * as commonLib from '/lib/xp/common';
-import { OfficeBranch as OfficeBranchData } from '@xp-types/site/content-types/office-branch';
+import { OfficePage as OfficePageData } from '@xp-types/site/content-types/office-page';
 import { NavNoDescriptor } from '../../types/common';
 import { logger } from '../utils/logging';
 import { CONTENT_LOCALE_DEFAULT, URLS } from '../constants';
 import { createObjectChecksum } from '../utils/object-utils';
 
-type OfficeBranchDescriptor = NavNoDescriptor<'office-branch'>;
 type OfficePageDescriptor = NavNoDescriptor<'office-page'>;
 type InternalLinkDescriptor = NavNoDescriptor<'internal-link'>;
+
+type OfficeNorgData = OfficePageData['officeNorgData']['data'];
 
 type RequestConfig = {
     url: string;
@@ -27,12 +28,11 @@ type OfficeOverview = {
 
 type OfficeTypeDictionary = Map<string, string>;
 
-const OFFICE_BRANCH_CONTENT_TYPE: OfficeBranchDescriptor = `no.nav.navno:office-branch`;
 const OFFICE_PAGE_CONTENT_TYPE: OfficePageDescriptor = `no.nav.navno:office-page`;
 const INTERNAL_LINK_CONTENT_TYPE: InternalLinkDescriptor = `no.nav.navno:internal-link`;
 const OFFICES_BASE_PATH = '/www.nav.no/kontor';
 
-const getOfficeContentName = (officeData: OfficeBranchData) => commonLib.sanitize(officeData.navn);
+const getOfficeContentName = (officeData: OfficeNorgData) => commonLib.sanitize(officeData.navn);
 
 const generalOfficeTypes: ReadonlySet<string> = new Set([
     'FPY',
@@ -66,14 +66,14 @@ const norgRequest = <T>(requestConfig: RequestConfig): T[] | null => {
     }
 };
 
-const localOfficeAdapter = (localOfficeData: OfficeBranchData): OfficeBranchData => {
+const localOfficeAdapter = (localOfficeData: OfficeNorgData): OfficeNorgData => {
     return { ...localOfficeData, type: 'LOKAL' };
 };
 
 const generalOfficeAdapter = (
     officeData: GeneralOfficeData,
     officeTypeDictionary: OfficeTypeDictionary
-): OfficeBranchData => {
+): OfficeNorgData => {
     const type = officeTypeDictionary.get(officeData.enhetNr) || '';
     return {
         enhetNr: officeData.enhetNr,
@@ -118,7 +118,7 @@ export const fetchAllOfficeDataFromNorg = () => {
             ?.filter((office) => generalOfficeTypes.has(office.type))
             .map((office) => office.enhetNr);
 
-        const localOffices = norgRequest<OfficeBranchData>({
+        const localOffices = norgRequest<OfficeNorgData>({
             url: URLS.NORG_LOCAL_OFFICE_API_URL,
             method: 'GET',
         });
@@ -148,21 +148,19 @@ export const fetchAllOfficeDataFromNorg = () => {
 
         return adaptedGeneralOffices; //[...adaptedGeneralOffices, ...adaptedLocalOffices];
     } catch (e) {
-        logger.error(
-            `OfficeImporting: Exception from norg2 request: ${e}. Fetching from ${URLS.NORG_LOCAL_OFFICE_API_URL}.`
-        );
+        logger.error(`OfficeImporting: Exception from norg2 request: ${e}.`);
         return null;
     }
 };
 
 // Check if a path is taken by content with an invalid type
-// (only office-branch pages and internal redirects should be allowed)
+// (only office pages and internal redirects should be allowed)
 const pathHasInvalidContent = (pathName: string) => {
     const existingContent = contentLib.get({ key: pathName });
 
     return (
         existingContent &&
-        existingContent.type !== OFFICE_BRANCH_CONTENT_TYPE &&
+        existingContent.type !== OFFICE_PAGE_CONTENT_TYPE &&
         existingContent.type !== INTERNAL_LINK_CONTENT_TYPE
     );
 };
@@ -191,7 +189,7 @@ const deleteContent = (contentRef: string) => {
     return officeId;
 };
 
-const getOfficeBranchLanguage = (office: OfficeBranchData) => {
+const getOfficeBranchLanguage = (office: OfficeNorgData) => {
     if (office.brukerkontakt?.skriftspraak?.toLowerCase() === 'nb') {
         return CONTENT_LOCALE_DEFAULT;
     }
@@ -205,13 +203,13 @@ const getExistingOfficePages = () => {
             count: 2000,
         })
         .hits.filter(
-            (office) => office.type === OFFICE_BRANCH_CONTENT_TYPE
-        ) as Content<OfficeBranchDescriptor>[];
+            (office) => office.type === OFFICE_PAGE_CONTENT_TYPE
+        ) as Content<OfficePageDescriptor>[];
 };
 
 const moveAndRedirectOnNameChange = (
-    prevOfficePage: Content<OfficeBranchDescriptor>,
-    newOfficeData: OfficeBranchData
+    prevOfficePage: Content<OfficePageDescriptor>,
+    newOfficeData: OfficeNorgData
 ) => {
     const prevContentName = prevOfficePage._name;
     const newContentName = getOfficeContentName(newOfficeData);
@@ -243,24 +241,44 @@ const moveAndRedirectOnNameChange = (
 
         contentLib.publish({
             keys: [internalLink._id],
-            sourceBranch: 'draft',
-            targetBranch: 'master',
             includeDependencies: false,
         });
     } catch (e) {
         logger.critical(
-            `OfficeImporting: Failed to update office branch name for ${prevOfficePage._path} - ${e}`
+            `OfficeImporting: Failed to update office page name for ${prevOfficePage._path} - ${e}`
         );
     }
 };
 
+const mergeOfficeDataWithPageData = ({
+    pageData,
+    officeData,
+    checksum,
+}: {
+    pageData: OfficePageData;
+    officeData: OfficeNorgData;
+    checksum: string;
+}): OfficePageData => {
+    return {
+        ...pageData,
+        officeNorgData: {
+            _selected: 'data',
+            data: {
+                ...officeData,
+                checksum,
+            },
+        },
+    };
+};
+
 const updateOfficePageIfChanged = (
-    newOfficeData: OfficeBranchData,
-    existingOfficePage: Content<OfficeBranchDescriptor>
+    newOfficeData: OfficeNorgData,
+    existingOfficePage: Content<OfficePageDescriptor>
 ) => {
     const newChecksum = createObjectChecksum(newOfficeData);
+
     if (
-        newChecksum === existingOfficePage.data.checksum &&
+        newChecksum === existingOfficePage.data.officeNorgData.data.checksum &&
         newOfficeData.navn === existingOfficePage.displayName
     ) {
         return false;
@@ -269,45 +287,53 @@ const updateOfficePageIfChanged = (
     try {
         moveAndRedirectOnNameChange(existingOfficePage, newOfficeData);
 
-        contentLib.modify<OfficeBranchDescriptor>({
+        contentLib.modify<OfficePageDescriptor>({
             key: existingOfficePage._id,
             editor: (content) => ({
                 ...content,
                 language: getOfficeBranchLanguage(newOfficeData),
                 displayName: newOfficeData.navn,
-                data: { ...newOfficeData, checksum: newChecksum },
+                data: mergeOfficeDataWithPageData({
+                    pageData: content.data,
+                    officeData: newOfficeData,
+                    checksum: newChecksum,
+                }),
             }),
         });
 
         return true;
     } catch (e) {
         logger.critical(
-            `OfficeImporting: Failed to modify office branch content ${existingOfficePage._path} - ${e}`
+            `OfficeImporting: Failed to modify office page content ${existingOfficePage._path} - ${e}`
         );
         return false;
     }
 };
 
-const createOfficePage = (officeData: OfficeBranchData) => {
+const createOfficePage = (officeData: OfficeNorgData) => {
+    const data = mergeOfficeDataWithPageData({
+        pageData: {} as OfficePageData,
+        officeData,
+        checksum: createObjectChecksum(officeData),
+    });
+
     try {
-        logger.info('Trying to create office branch page');
-        const contentType =
-            officeData.type === 'LOKAL' ? OFFICE_BRANCH_CONTENT_TYPE : OFFICE_PAGE_CONTENT_TYPE;
+        logger.info('Trying to create office page');
 
         const content = contentLib.create({
             name: getOfficeContentName(officeData),
             parentPath: OFFICES_BASE_PATH,
             displayName: officeData.navn,
             language: getOfficeBranchLanguage(officeData),
-            contentType,
-            data: {
-                ...officeData,
-                checksum: createObjectChecksum(officeData),
-            },
+            contentType: OFFICE_PAGE_CONTENT_TYPE,
+            data,
         });
 
         return content._id;
     } catch (e) {
+        if (officeData.navn.includes('hjelpemiddelsentral')) {
+            logger.info(JSON.stringify(data, null, 2));
+        }
         logger.critical(
             `OfficeImporting: Failed to create new office page for ${officeData.navn} - ${e}`
         );
@@ -316,13 +342,13 @@ const createOfficePage = (officeData: OfficeBranchData) => {
 };
 
 const deleteStaleOfficePages = (
-    existingOfficePages: Content<OfficeBranchDescriptor>[],
+    existingOfficePages: Content<OfficePageDescriptor>[],
     validOfficeEnhetsNr: string[]
 ) => {
     const deletedIds: string[] = [];
 
     existingOfficePages.forEach((existingOffice) => {
-        const { enhetNr } = existingOffice.data;
+        const { enhetNr } = existingOffice.data.officeNorgData.data;
 
         if (!validOfficeEnhetsNr.includes(enhetNr)) {
             const deletedId = deleteContent(existingOffice._id);
@@ -335,7 +361,7 @@ const deleteStaleOfficePages = (
     return deletedIds;
 };
 
-export const processAllOffices = (offices: OfficeBranchData[]) => {
+export const processAllOffices = (offices: OfficeNorgData[]) => {
     const existingOfficePages = getExistingOfficePages();
     const processedOfficeEnhetsNr: string[] = [];
 
@@ -345,8 +371,8 @@ export const processAllOffices = (offices: OfficeBranchData[]) => {
         deleted: [],
     };
 
-    offices.forEach((officeBranchData) => {
-        const contentName = getOfficeContentName(officeBranchData);
+    offices.forEach((officePageData) => {
+        const contentName = getOfficeContentName(officePageData);
         const pathName = `${OFFICES_BASE_PATH}/${contentName}`;
 
         if (pathHasInvalidContent(pathName)) {
@@ -356,22 +382,23 @@ export const processAllOffices = (offices: OfficeBranchData[]) => {
 
         const existingPage = existingOfficePages.find(
             (content) =>
-                !!content.data?.enhetNr && content.data.enhetNr === officeBranchData.enhetNr
+                !!content.data?.officeNorgData?.data &&
+                content.data.officeNorgData.data.enhetNr === officePageData.enhetNr
         );
 
         if (existingPage) {
-            const wasUpdated = updateOfficePageIfChanged(officeBranchData, existingPage);
+            const wasUpdated = updateOfficePageIfChanged(officePageData, existingPage);
             if (wasUpdated) {
                 summary.updated.push(existingPage._id);
             }
         } else {
-            const createdId = createOfficePage(officeBranchData);
+            const createdId = createOfficePage(officePageData);
             if (createdId) {
                 summary.created.push(createdId);
             }
         }
 
-        processedOfficeEnhetsNr.push(officeBranchData.enhetNr);
+        processedOfficeEnhetsNr.push(officePageData.enhetNr);
     });
 
     summary.deleted = []; // deleteStaleOfficePages(existingOfficePages, processedOfficeEnhetsNr);
@@ -389,8 +416,6 @@ export const processAllOffices = (offices: OfficeBranchData[]) => {
 
     const publishResponse = contentLib.publish({
         keys: contentToPublish,
-        sourceBranch: 'draft',
-        targetBranch: 'master',
         includeDependencies: false,
     });
 

@@ -24,7 +24,6 @@ export const officeBranchCallback: CreationCallback = (context, params) => {
             }
 
             const skriftspraak = officeDataContent.data.brukerkontakt?.skriftspraak;
-            const type = officeDataContent.data.type;
 
             // The field skriftspraak in NORG is an open text field, so uppercase
             // before checking.
@@ -40,12 +39,6 @@ export const officeBranchCallback: CreationCallback = (context, params) => {
                                 hasValue: {
                                     field: 'language',
                                     values: [language],
-                                },
-                            },
-                            {
-                                hasValue: {
-                                    field: 'data.type',
-                                    values: [type],
                                 },
                             },
                         ],

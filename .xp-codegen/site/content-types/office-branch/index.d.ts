@@ -16,11 +16,6 @@ export type OfficeBranch = {
   enhetNr: string;
 
   /**
-   * Type
-   */
-  type: string;
-
-  /**
    * Status
    */
   status?: string;

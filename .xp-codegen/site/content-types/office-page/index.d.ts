@@ -3,7 +3,7 @@ export type OfficePage = {
   /**
    * Velg kontortype
    */
-  type:
+  type?:
     | {
         /**
          * Selected
@@ -83,54 +83,9 @@ export type OfficePage = {
       };
 
   /**
-   * Legg til andre språkversjoner
-   */
-  languages?: Array<string> | string;
-
-  /**
-   * Fant du det du lette etter?
-   */
-  feedbackToggle: boolean;
-
-  /**
-   * Chatbot Frida
-   */
-  chatbotToggle: boolean;
-
-  /**
-   * Oppsummering
-   */
-  description?: string;
-
-  /**
-   * Nøkkelord (internt søk)
-   */
-  keywords?: Array<string> | string;
-
-  /**
-   * Sidebeskrivelse for søk og sosiale medier
-   */
-  metaDescription?: string;
-
-  /**
-   * Canonical url - NB! Skal bare legges inn av hovedredaktør/administrator
-   */
-  canonicalUrl?: string;
-
-  /**
-   * Skal ikke vises i søk
-   */
-  noindex: boolean;
-
-  /**
-   * Ikke vis utdrag (snippets) i Google-søk
-   */
-  nosnippet: boolean;
-
-  /**
    * Kontordata
    */
-  officeData:
+  officeNorgData:
     | {
         /**
          * Selected
