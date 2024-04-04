@@ -1,6 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { request } from '/lib/http-client';
+import httpClient from '/lib/http-client';
 import * as commonLib from '/lib/xp/common';
 import { OfficeBranch as OfficeBranchData } from '@xp-types/site/content-types/office-branch';
 import { NavNoDescriptor } from '../../types/common';
@@ -19,7 +19,7 @@ const getOfficeContentName = (officeData: OfficeBranchData) => commonLib.sanitiz
 
 export const fetchAllOfficeBranchDataFromNorg = () => {
     try {
-        const response = request({
+        const response = httpClient.request({
             url: URLS.NORG_LOCAL_OFFICE_API_URL,
             method: 'GET',
             headers: {
