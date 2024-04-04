@@ -101,7 +101,7 @@ export const auditLogGetArchiveEntries = ({ from, user, count }: Props) => {
         count,
         user,
         from,
-        type: ['archive'],
+        type: 'archive',
         queries: [
             {
                 exists: {

@@ -111,7 +111,7 @@ export class DashboardContentLogListsBuilder {
     }
 
     // Transform the auditlog entries to a map, keeping only the newest entry for each content
-    private transformToLogsMap(auditLogEntries: AuditLogEntry[]): ContentLogsMap {
+    private transformToLogsMap = (auditLogEntries: AuditLogEntry[]): ContentLogsMap => {
         const logsTransformed = auditLogEntries.map(this.transformAuditLog).flat();
 
         return logsTransformed.reduce<ContentLogsMap>((acc, contentLog) => {
@@ -121,10 +121,10 @@ export class DashboardContentLogListsBuilder {
             }
             return acc;
         }, {});
-    }
+    };
 
     // Transform data from the audit log to a common structure for all entry types
-    private transformAuditLog(entry: AuditLogEntry): ContentLogData[] {
+    private transformAuditLog = (entry: AuditLogEntry): ContentLogData[] => {
         const { type, data, time } = entry;
 
         const isPublishLog = type === 'system.content.publish';
@@ -144,13 +144,11 @@ export class DashboardContentLogListsBuilder {
                 repoId: getRepoIdForContentId(objects, contentId),
             };
 
-            if (this.isArchived(contentLogData)) {
-                contentLogData.isArchived = true;
-            }
+            contentLogData.isArchived = this.isArchived(contentLogData);
 
             return contentLogData;
         });
-    }
+    };
 }
 
 // The "objects" array contains references formatted like this:
