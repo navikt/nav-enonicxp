@@ -39,7 +39,6 @@ export const getAuditLogEntries = <Type extends AuditLogQueryType>({
     });
 
     const filter: QueryDsl[] = [
-        ...(queries || []),
         {
             term: {
                 field: 'user',
@@ -52,6 +51,7 @@ export const getAuditLogEntries = <Type extends AuditLogQueryType>({
                 values: forceArray(type).map((_type) => queryTypeToLogType[_type]),
             },
         },
+        ...(queries || []),
     ];
 
     const rangeQuery = buildRangeQuery(from, to);
