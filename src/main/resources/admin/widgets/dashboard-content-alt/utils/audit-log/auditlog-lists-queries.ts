@@ -95,3 +95,19 @@ export const auditLogGetUnpublishEntries = ({ from, user, count }: Props) => {
         ],
     });
 };
+
+export const auditLogGetArchiveEntries = ({ from, user, count }: Props) => {
+    return getAuditLogEntries({
+        count,
+        user,
+        from,
+        type: ['archive'],
+        queries: [
+            {
+                exists: {
+                    field: 'data.result.archivedContents',
+                },
+            },
+        ],
+    });
+};

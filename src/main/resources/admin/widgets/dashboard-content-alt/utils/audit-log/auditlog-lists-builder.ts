@@ -6,6 +6,7 @@ import { forceArray } from '../../../../../lib/utils/array-utils';
 import { logger } from '../../../../../lib/utils/logging';
 import { CONTENT_ROOT_REPO_ID } from '../../../../../lib/constants';
 import {
+    auditLogGetArchiveEntries,
     auditLogGetPrepublishEntries,
     auditLogGetPublishEntries,
     auditLogGetUnpublishEntries,
@@ -27,6 +28,7 @@ export class DashboardContentLogListsBuilder {
     private publishLogs: ContentLogsMap = {};
     private prepublishLogs: ContentLogsMap = {};
     private unpublishLogs: ContentLogsMap = {};
+    private archiveLogs: ContentLogsMap = {};
 
     constructor({ user }: ConstructorProps) {
         this.queryProps = {
@@ -37,17 +39,23 @@ export class DashboardContentLogListsBuilder {
     }
 
     public build() {
-        const publishedAuditlogs = auditLogGetPublishEntries(this.queryProps);
-        const prepublishAuditlog = auditLogGetPrepublishEntries(this.queryProps);
-        const unpublishAuditlog = auditLogGetUnpublishEntries(this.queryProps);
+        const publishedAuditLogs = auditLogGetPublishEntries(this.queryProps);
+        const prepublishAuditLogs = auditLogGetPrepublishEntries(this.queryProps);
+        const unpublishAuditLogs = auditLogGetUnpublishEntries(this.queryProps);
+        const archiveAuditLogs = auditLogGetArchiveEntries(this.queryProps);
 
-        logger.info(`Found ${publishedAuditlogs.length} publish entries`);
-        logger.info(`Found ${prepublishAuditlog.length} prepublish entries`);
-        logger.info(`Found ${unpublishAuditlog.length} unpublish entries`);
+        logger.info(`Found ${publishedAuditLogs.length} publish entries`);
+        logger.info(`Found ${prepublishAuditLogs.length} prepublish entries`);
+        logger.info(`Found ${unpublishAuditLogs.length} unpublish entries`);
+        logger.info(`Found ${archiveAuditLogs.length} archive entries`);
 
-        this.publishLogs = transformToLogsMap(publishedAuditlogs);
-        this.prepublishLogs = transformToLogsMap(prepublishAuditlog);
-        this.unpublishLogs = transformToLogsMap(unpublishAuditlog);
+        // Always populate the archive map first, as it is needed to build correct entries
+        // for the other maps
+        this.archiveLogs = this.transformToLogsMap(archiveAuditLogs);
+
+        this.publishLogs = this.transformToLogsMap(publishedAuditLogs);
+        this.prepublishLogs = this.transformToLogsMap(prepublishAuditLogs);
+        this.unpublishLogs = this.transformToLogsMap(unpublishAuditLogs);
 
         return {
             publishLogs: this.getFilteredPublishLogs(),
@@ -95,45 +103,64 @@ export class DashboardContentLogListsBuilder {
         const unpublishLog = this.unpublishLogs[key];
         return unpublishLog && unpublishLog.time > contentLog.time;
     }
-}
 
-// Transform the auditlog entries to a map, keeping only the newest entry for each content
-const transformToLogsMap = (auditLogEntries: AuditLogEntry[]): ContentLogsMap => {
-    const logsTransformed = auditLogEntries.map(transformAuditlog).flat();
-
-    return logsTransformed.reduce<ContentLogsMap>((acc, contentLog) => {
+    private isArchived(contentLog: ContentLogData) {
         const key = getKey(contentLog);
-        if (!acc[key]) {
-            acc[key] = contentLog;
-        }
-        return acc;
-    }, {});
-};
+        const archiveLog = this.archiveLogs[key];
+        return archiveLog && archiveLog.time > contentLog.time;
+    }
 
-// Transform the data from the audit log to a common format for all entry types
-const transformAuditlog = (entry: AuditLogEntry): ContentLogData[] => {
-    const { type, data, time } = entry;
+    // Transform the auditlog entries to a map, keeping only the newest entry for each content
+    private transformToLogsMap(auditLogEntries: AuditLogEntry[]): ContentLogsMap {
+        const logsTransformed = auditLogEntries.map(this.transformAuditLog).flat();
 
-    const isPublishLog = type === 'system.content.publish';
+        return logsTransformed.reduce<ContentLogsMap>((acc, contentLog) => {
+            const key = getKey(contentLog);
+            if (!acc[key]) {
+                acc[key] = contentLog;
+            }
+            return acc;
+        }, {});
+    }
 
-    const publish = (isPublishLog && data.params.contentPublishInfo) || {};
-    const contentIds = isPublishLog ? data.result.pushedContents : data.result.unpublishedContents;
+    // Transform data from the audit log to a common structure for all entry types
+    private transformAuditLog(entry: AuditLogEntry): ContentLogData[] {
+        const { type, data, time } = entry;
 
-    const objects = forceArray(entry.objects);
+        const isPublishLog = type === 'system.content.publish';
 
-    return forceArray(contentIds).map((contentId) => ({
-        contentId,
-        time,
-        publish,
-        repoId: getRepoIdForContentId(objects, contentId),
-        isArchived: entry.type === 'system.content.archive',
-    }));
-};
+        const publish = isPublishLog ? data.params.contentPublishInfo || {} : {};
+        const contentIds = isPublishLog
+            ? data.result.pushedContents
+            : data.result.unpublishedContents;
+
+        const objects = forceArray(entry.objects);
+
+        return forceArray(contentIds).map((contentId) => {
+            const contentLogData: ContentLogData = {
+                contentId,
+                time,
+                publish,
+                repoId: getRepoIdForContentId(objects, contentId),
+            };
+
+            if (this.isArchived(contentLogData)) {
+                contentLogData.isArchived = true;
+            }
+
+            return contentLogData;
+        });
+    }
+}
 
 // The "objects" array contains references formatted like this:
 // <repo id>:<repo branch>:<content id>
+//
 // Contents that were indirectly (un)published (ie via a "publish tree" action) may not have
 // an objects entry, so we have fallbacks for this case.
+//
+// In every observed case, a single audit log entry does not go across multiple repos,
+// but we keep the find function just in case this changes in the future.
 const getRepoIdForContentId = (objects: string[], contentId: string): string => {
     const foundObject =
         objects.find((object) => {
