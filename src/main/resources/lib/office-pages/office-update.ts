@@ -9,6 +9,7 @@ import { CONTENT_LOCALE_DEFAULT, URLS } from '../constants';
 import { createObjectChecksum } from '../utils/object-utils';
 
 type OfficePageDescriptor = NavNoDescriptor<'office-page'>;
+type OfficeBranchPageDescriptor = NavNoDescriptor<'office-branch'>;
 type InternalLinkDescriptor = NavNoDescriptor<'internal-link'>;
 
 type OfficeNorgData = OfficePageData['officeNorgData']['data'];
@@ -29,13 +30,14 @@ type OfficeOverview = {
 type OfficeTypeDictionary = Map<string, string>;
 
 const OFFICE_PAGE_CONTENT_TYPE: OfficePageDescriptor = `no.nav.navno:office-page`;
+const OFFICE_BRANCH_CONTENT_TYPE: OfficeBranchPageDescriptor = `no.nav.navno:office-branch`;
 const INTERNAL_LINK_CONTENT_TYPE: InternalLinkDescriptor = `no.nav.navno:internal-link`;
 const OFFICES_BASE_PATH = '/www.nav.no/kontor';
 
 const getOfficeContentName = (officeData: OfficeNorgData) => commonLib.sanitize(officeData.navn);
 
-// Possible office types are FPY, KLAGE, KONTROLL, OKONOMI, HMS, YTA, OPPFUTLAND
-const generalOfficeTypes: ReadonlySet<string> = new Set(['HMS']);
+// Possible office types are FPY, KLAGE, KONTROLL, OKONOMI, HMS, YTA, OPPFUTLAND.
+const officeTypesForImport: ReadonlySet<string> = new Set(['HMS']);
 
 const norgRequest = <T>(requestConfig: RequestConfig): T[] | null => {
     const response = request({
@@ -98,34 +100,30 @@ export const fetchAllOfficeDataFromNorg = () => {
             return null;
         }
 
-        // The other endpoints will not include office type, so we need to
+        // The kontaktinformasjoner-endpoint will not include the actual office type in its payload, so we need to
         // make a dictionary to look up the type from the office number.
         officeOverview.forEach((office) => officeTypeDictionary.set(office.enhetNr, office.type));
 
-        // Not all offices in the overview should be fetched,
-        // so make a list of enhetNr to actually fetch.
-        const relevantGeneralOffices = officeOverview
-            ?.filter((office) => generalOfficeTypes.has(office.type))
+        const enhetnrForFetching = officeOverview
+            ?.filter((office) => officeTypesForImport.has(office.type))
             .map((office) => office.enhetNr);
 
-        const generalOffices = norgRequest<GeneralOfficeData>({
+        const norgOffices = norgRequest<GeneralOfficeData>({
             url: URLS.NORG_OFFICE_INFORMATION_API_URL,
             method: 'POST',
-            body: JSON.stringify(relevantGeneralOffices),
+            body: JSON.stringify(enhetnrForFetching),
         });
 
-        if (!generalOffices) {
+        if (!norgOffices) {
             logger.error(`OfficeImporting: Could not fetch offices or enhet from norg2`);
             return;
         }
 
-        const adaptedGeneralOffices = generalOffices.map((generalOffice) =>
-            generalOfficeAdapter(generalOffice, officeTypeDictionary)
+        const adaptedOffices = norgOffices.map((office) =>
+            generalOfficeAdapter(office, officeTypeDictionary)
         );
 
-        log.info(`OfficeImporting: Office: ${adaptedGeneralOffices.length}.`);
-
-        return adaptedGeneralOffices; //[...adaptedGeneralOffices, ...adaptedLocalOffices];
+        return adaptedOffices;
     } catch (e) {
         logger.error(`OfficeImporting: Exception from norg2 request: ${e}.`);
         return null;
@@ -140,6 +138,7 @@ const pathHasInvalidContent = (pathName: string) => {
     return (
         existingContent &&
         existingContent.type !== OFFICE_PAGE_CONTENT_TYPE &&
+        existingContent.type !== OFFICE_BRANCH_CONTENT_TYPE &&
         existingContent.type !== INTERNAL_LINK_CONTENT_TYPE
     );
 };
@@ -168,7 +167,7 @@ const deleteContent = (contentRef: string) => {
     return officeId;
 };
 
-const getOfficeBranchLanguage = (office: OfficeNorgData) => {
+const getOfficeLanguage = (office: OfficeNorgData) => {
     if (office.brukerkontakt?.skriftspraak?.toLowerCase() === 'nb') {
         return CONTENT_LOCALE_DEFAULT;
     }
@@ -271,7 +270,7 @@ const updateOfficePageIfChanged = (
             key: existingOfficePage._id,
             editor: (content) => ({
                 ...content,
-                language: getOfficeBranchLanguage(newOfficeData),
+                language: getOfficeLanguage(newOfficeData),
                 displayName: newOfficeData.navn,
                 data: mergeOfficeDataWithPageData({
                     pageData: content.data,
@@ -298,17 +297,17 @@ const createOfficePage = (officeData: OfficeNorgData) => {
     });
 
     try {
-        logger.info('Trying to create office page');
-
         const content = contentLib.create({
             name: getOfficeContentName(officeData),
             parentPath: OFFICES_BASE_PATH,
             displayName: officeData.navn,
-            language: getOfficeBranchLanguage(officeData),
+            language: getOfficeLanguage(officeData),
             contentType: OFFICE_PAGE_CONTENT_TYPE,
             data,
             x: {
                 'no-nav-navno': {
+                    // Newly imported (created) office pages has to be checked by
+                    // editors before being made public, so set previewOnly to true.
                     previewOnly: {
                         previewOnly: true,
                     },
@@ -318,9 +317,6 @@ const createOfficePage = (officeData: OfficeNorgData) => {
 
         return content._id;
     } catch (e) {
-        if (officeData.navn.includes('hjelpemiddelsentral')) {
-            logger.info(JSON.stringify(data, null, 2));
-        }
         logger.critical(
             `OfficeImporting: Failed to create new office page for ${officeData.navn} - ${e}`
         );

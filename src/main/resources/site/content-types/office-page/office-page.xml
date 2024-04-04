@@ -1,6 +1,6 @@
 <content-type>
     <display-name>Kontorside</display-name>
-    <description>Sidemal for kontorside.</description>
+    <description>Brukes kun for kontorer som allerede er importert fra NORG.</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
