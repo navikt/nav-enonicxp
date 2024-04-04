@@ -58,10 +58,7 @@
         }
     </style>
     <div id="admin-widget-content">
-        <strong
-            >Vi tester ny funksjonalitet. Dette dashboardet vises kun for administratorer. (Versjon
-            1)</strong
-        >
+        <strong>(Versjon 2)</strong>
         <h3>Sist publiserte</h3>
         <table th:if="${published}">
             <caption>
@@ -78,7 +75,7 @@
                     </a>
                 </th>
                 <th th:text="${result.contentType}"></th>
-                <th th:text="${result.modifiedTimeStr}"></th>
+                <th th:text="${result.modifiedTime}"></th>
                 <th th:text="${result.status}"></th>
             </tr>
         </table>
@@ -99,7 +96,7 @@
                     </a>
                 </th>
                 <th th:text="${result.contentType}"></th>
-                <th th:text="${result.modifiedTimeStr}"></th>
+                <th th:text="${result.modifiedTime}"></th>
                 <th th:text="${result.status}"></th>
             </tr>
         </table>
@@ -119,7 +116,7 @@
                     </a>
                 </th>
                 <th th:text="${result.contentType}"></th>
-                <th th:text="${result.modifiedTimeStr}"></th>
+                <th th:text="${result.modifiedTime}"></th>
                 <th th:text="${result.status}"></th>
             </tr>
         </table>
@@ -139,7 +136,7 @@
                     </a>
                 </th>
                 <th th:text="${result.contentType}"></th>
-                <th th:text="${result.modifiedTimeStr}"></th>
+                <th th:text="${result.modifiedTime}"></th>
                 <th th:text="${result.status}"></th>
             </tr>
         </table>
