@@ -59,10 +59,6 @@ const norgRequest = <T>(requestConfig: RequestConfig): T[] | null => {
     }
 };
 
-const localOfficeAdapter = (localOfficeData: OfficeNorgData): OfficeNorgData => {
-    return { ...localOfficeData, type: 'LOKAL' };
-};
-
 const generalOfficeAdapter = (
     officeData: GeneralOfficeData,
     officeTypeDictionary: OfficeTypeDictionary
@@ -112,19 +108,14 @@ export const fetchAllOfficeDataFromNorg = () => {
             ?.filter((office) => generalOfficeTypes.has(office.type))
             .map((office) => office.enhetNr);
 
-        const localOffices = norgRequest<OfficeNorgData>({
-            url: URLS.NORG_LOCAL_OFFICE_API_URL,
-            method: 'GET',
-        });
-
         const generalOffices = norgRequest<GeneralOfficeData>({
             url: URLS.NORG_OFFICE_INFORMATION_API_URL,
             method: 'POST',
             body: JSON.stringify(relevantGeneralOffices),
         });
 
-        if (!localOffices || !generalOffices) {
-            logger.error(`OfficeImporting: Could not fetch local offices or enhet from norg2`);
+        if (!generalOffices) {
+            logger.error(`OfficeImporting: Could not fetch offices or enhet from norg2`);
             return;
         }
 
@@ -132,13 +123,7 @@ export const fetchAllOfficeDataFromNorg = () => {
             generalOfficeAdapter(generalOffice, officeTypeDictionary)
         );
 
-        const adaptedLocalOffices = localOffices.map((localOffice) =>
-            localOfficeAdapter(localOffice)
-        );
-
-        log.info(
-            `OfficeImporting: Local office: ${localOffices.length}, general office: ${adaptedGeneralOffices.length}.`
-        );
+        log.info(`OfficeImporting: Office: ${adaptedGeneralOffices.length}.`);
 
         return adaptedGeneralOffices; //[...adaptedGeneralOffices, ...adaptedLocalOffices];
     } catch (e) {
@@ -322,6 +307,13 @@ const createOfficePage = (officeData: OfficeNorgData) => {
             language: getOfficeBranchLanguage(officeData),
             contentType: OFFICE_PAGE_CONTENT_TYPE,
             data,
+            x: {
+                'no-nav-navno': {
+                    previewOnly: {
+                        previewOnly: true,
+                    },
+                },
+            },
         });
 
         return content._id;
