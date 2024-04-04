@@ -1,12 +1,10 @@
 import { UserKey } from '/lib/xp/auditlog';
-import dayjs from '/assets/dayjs/1.11.9/dayjs.min.js';
 import { AuditLogEntry, ContentLogData } from '../types';
 import { AuditLogQueryProps } from './auditlog-query';
 import { forceArray } from '../../../../../lib/utils/array-utils';
 import { logger } from '../../../../../lib/utils/logging';
 import { CONTENT_ROOT_REPO_ID } from '../../../../../lib/constants';
 import {
-    auditLogGetArchiveEntries,
     auditLogGetActivePrepublishEntries,
     auditLogGetPublishEntries,
     auditLogGetUnpublishEntries,
@@ -30,7 +28,6 @@ export class DashboardContentLogListsBuilder {
     private prepublishLogs: ContentLogsMap = {};
     private unpublishLogs: ContentLogsMap = {};
 
-    private archiveLogs: ContentLogsMap = {};
     private prepublishExpiredLogs: ContentLogsMap = {};
 
     constructor({ user }: ConstructorProps) {
@@ -45,22 +42,24 @@ export class DashboardContentLogListsBuilder {
         const prepublishAuditLogs = auditLogGetActivePrepublishEntries(this.queryProps);
         const unpublishAuditLogs = auditLogGetUnpublishEntries(this.queryProps);
 
-        const archiveAuditLogs = auditLogGetArchiveEntries(this.queryProps);
         const prepublishExpiredLogs = auditLogGetExpiredPrepublishEntries(this.queryProps);
 
         logger.info(`Found ${publishedAuditLogs.length} publish entries`);
         logger.info(`Found ${prepublishAuditLogs.length} prepublish entries`);
         logger.info(`Found ${unpublishAuditLogs.length} unpublish entries`);
-        logger.info(`Found ${archiveAuditLogs.length} archive entries`);
+        logger.info(`Found ${prepublishExpiredLogs.length} prepublish expired entries`);
 
         // Always populate the maps for archived and expired content first, as it is needed to
         // build correct entries for the other maps
-        this.archiveLogs = this.transformToLogsMap(archiveAuditLogs);
-        this.prepublishExpiredLogs = this.transformToLogsMap(prepublishAuditLogs);
+        this.prepublishExpiredLogs = this.transformToLogsMap(prepublishExpiredLogs);
 
         this.publishLogs = this.transformToLogsMap(publishedAuditLogs);
         this.prepublishLogs = this.transformToLogsMap(prepublishAuditLogs);
-        this.unpublishLogs = this.transformToLogsMap(unpublishAuditLogs);
+        this.unpublishLogs = this.transformToLogsMap(
+            [...unpublishAuditLogs, ...prepublishExpiredLogs].sort((a, b) =>
+                a.time > b.time ? -1 : 1
+            )
+        );
 
         return {
             publishLogs: this.getFilteredPublishLogs(),
@@ -114,14 +113,8 @@ export class DashboardContentLogListsBuilder {
         );
     }
 
-    private isArchived(contentLog: ContentLogData) {
-        const key = getKey(contentLog);
-        const archiveLog = this.archiveLogs[key];
-        return archiveLog && archiveLog.time > contentLog.time;
-    }
-
     // Transform the auditlog entries to a map, keeping only the newest entry for each content
-    private transformToLogsMap = (auditLogEntries: AuditLogEntry[]): ContentLogsMap => {
+    private transformToLogsMap(auditLogEntries: AuditLogEntry[]): ContentLogsMap {
         const logsTransformed = auditLogEntries.map(this.transformAuditLog).flat();
 
         return logsTransformed.reduce<ContentLogsMap>((acc, contentLog) => {
@@ -131,10 +124,10 @@ export class DashboardContentLogListsBuilder {
             }
             return acc;
         }, {});
-    };
+    }
 
     // Transform data from the audit log to a common structure for all entry types
-    private transformAuditLog = (entry: AuditLogEntry): ContentLogData[] => {
+    private transformAuditLog(entry: AuditLogEntry): ContentLogData[] {
         const { type, data, time } = entry;
 
         const isPublishLog = type === 'system.content.publish';
@@ -154,15 +147,9 @@ export class DashboardContentLogListsBuilder {
                 repoId: getRepoIdForContentId(objects, contentId),
             };
 
-            contentLogData.isArchived = this.isArchived(contentLogData);
-
-            if (contentLogData.isArchived) {
-                logger.info(`is archived: ${contentId}`);
-            }
-
             return contentLogData;
         });
-    };
+    }
 }
 
 // The "objects" array contains references formatted like this:

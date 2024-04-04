@@ -35,7 +35,9 @@ const transformToContentData = (
     isPublish: boolean
 ): DashboardContentInfo => {
     const { content, log } = contentWithLog;
-    const { repoId, publish, time, isArchived } = log;
+    const { repoId, publish, time } = log;
+
+    const isArchived = !!content.archivedTime;
 
     const { repoIdToLocaleMap } = getLayersData();
 

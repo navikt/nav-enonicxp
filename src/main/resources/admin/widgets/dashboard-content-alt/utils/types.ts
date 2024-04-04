@@ -63,7 +63,6 @@ export type ContentLogData = {
     contentId: string;
     repoId: string;
     time: string;
-    isArchived?: boolean;
     publish: {
         from?: string;
         to?: string;
