@@ -15,6 +15,8 @@ type ContentWithLog = {
     log: ContentLogData;
 };
 
+const NUM_ENTRIES_TO_DISPLAY = 5;
+
 const contentTypesToShow = [
     ...contentTypesRenderedByEditorFrontend,
     `${APP_DESCRIPTOR}:content-list`,
@@ -73,7 +75,7 @@ const getContentFromLogs = (logs: ContentLogData[]): ContentWithLog[] => {
             log: logEntry,
         });
 
-        if (contentNodes.length === 5) {
+        if (contentNodes.length === NUM_ENTRIES_TO_DISPLAY) {
             break;
         }
     }
@@ -89,5 +91,5 @@ export const dashboardContentResolveLogs = (
 
     return contentsWithLogs
         .map((contentWithLog) => transformToContentData(contentWithLog, isPublish))
-        .slice(0, 5);
+        .slice(0, NUM_ENTRIES_TO_DISPLAY);
 };

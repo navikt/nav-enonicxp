@@ -21,7 +21,7 @@ type ConstructorProps = {
 
 const COUNT = 100;
 
-export class DashboardContentAuditLogListsBuilder {
+export class DashboardContentLogListsBuilder {
     private readonly queryProps: QueryProps;
 
     private publishLogs: ContentLogsMap = {};
@@ -45,18 +45,18 @@ export class DashboardContentAuditLogListsBuilder {
         logger.info(`Found ${prepublishAuditlog.length} prepublish entries`);
         logger.info(`Found ${unpublishAuditlog.length} unpublish entries`);
 
-        this.publishLogs = buildTransformedLogsMap(publishedAuditlogs);
-        this.prepublishLogs = buildTransformedLogsMap(prepublishAuditlog);
-        this.unpublishLogs = buildTransformedLogsMap(unpublishAuditlog);
+        this.publishLogs = transformToLogsMap(publishedAuditlogs);
+        this.prepublishLogs = transformToLogsMap(prepublishAuditlog);
+        this.unpublishLogs = transformToLogsMap(unpublishAuditlog);
 
         return {
-            publishedData: this.filterPublishedData(),
-            prepublishedData: this.filterPrepublishedData(),
-            unpublishedData: this.filterUnpublishedData(),
+            publishLogs: this.getFilteredPublishLogs(),
+            prepublishLogs: this.getFilteredPrepublishLogs(),
+            unpublishLogs: this.getFilteredUnpublishLogs(),
         };
     }
 
-    private filterPublishedData() {
+    private getFilteredPublishLogs() {
         // Skal ikke være avpublisert igjen senere av user (men kan være avpublisert av andre)
         // Skal ikke avvente forhåndspublisering
         return Object.values(this.publishLogs).filter(
@@ -64,17 +64,17 @@ export class DashboardContentAuditLogListsBuilder {
         );
     }
 
-    private filterUnpublishedData() {
-        // Skal ikke være publisert igjen senere av user (men kan være publisert av andre)
-        return Object.values(this.unpublishLogs).filter(
-            (unpublishLog) => !this.isPublished(unpublishLog) && !this.isPrepublished(unpublishLog)
-        );
-    }
-
-    private filterPrepublishedData() {
+    private getFilteredPrepublishLogs() {
         // Skal ikke være avpublisert igjen senere av user (men kan være avpublisert av andre)
         return Object.values(this.prepublishLogs).filter(
             (prepublishLog) => !this.isUnpublished(prepublishLog)
+        );
+    }
+
+    private getFilteredUnpublishLogs() {
+        // Skal ikke være publisert igjen senere av user (men kan være publisert av andre)
+        return Object.values(this.unpublishLogs).filter(
+            (unpublishLog) => !this.isPublished(unpublishLog) && !this.isPrepublished(unpublishLog)
         );
     }
 
@@ -84,21 +84,21 @@ export class DashboardContentAuditLogListsBuilder {
         return publishLog && publishLog.time > contentLog.time;
     }
 
-    private isUnpublished(contentLog: ContentLogData) {
-        const key = getKey(contentLog);
-        const unpublishLog = this.unpublishLogs[key];
-        return unpublishLog && unpublishLog.time > contentLog.time;
-    }
-
     private isPrepublished(contentLog: ContentLogData) {
         const key = getKey(contentLog);
         const prepublishLog = this.prepublishLogs[key];
         return prepublishLog && prepublishLog.time > contentLog.time;
     }
+
+    private isUnpublished(contentLog: ContentLogData) {
+        const key = getKey(contentLog);
+        const unpublishLog = this.unpublishLogs[key];
+        return unpublishLog && unpublishLog.time > contentLog.time;
+    }
 }
 
 // Transform the auditlog entries to a map, keeping only the newest entry for each content
-const buildTransformedLogsMap = (auditLogEntries: AuditLogEntry[]): ContentLogsMap => {
+const transformToLogsMap = (auditLogEntries: AuditLogEntry[]): ContentLogsMap => {
     const logsTransformed = auditLogEntries.map(transformAuditlog).flat();
 
     return logsTransformed.reduce<ContentLogsMap>((acc, contentLog) => {
@@ -132,6 +132,8 @@ const transformAuditlog = (entry: AuditLogEntry): ContentLogData[] => {
 
 // The "objects" array contains references formatted like this:
 // <repo id>:<repo branch>:<content id>
+// Contents that were indirectly (un)published (ie via a "publish tree" action) may not have
+// an objects entry, so we have fallbacks for this case.
 const getRepoIdForContentId = (objects: string[], contentId: string): string => {
     const foundObject =
         objects.find((object) => {
