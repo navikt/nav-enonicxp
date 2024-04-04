@@ -31,7 +31,7 @@ module.exports = {
         '@typescript-eslint/no-unused-vars': [
             'warn',
             {
-                'argsIgnorePattern': '^_$',
+                'varsIgnorePattern': '^_',
             },
         ],
         '@typescript-eslint/no-var-requires': 'off',
@@ -70,7 +70,11 @@ module.exports = {
                     },
                     {
                         'group': ['\@enonic-types/*'],
-                        'message': '@enonic-types modules should not be imported directly',
+                        'message': '@enonic-types modules should not be imported directly (use /lib/xp/*)',
+                    },
+                    {
+                        'group': ['?types/xp-libs/*'],
+                        'message': 'xp-libs patches should not be imported directly (use /lib/xp/*)',
                     },
                 ],
             },

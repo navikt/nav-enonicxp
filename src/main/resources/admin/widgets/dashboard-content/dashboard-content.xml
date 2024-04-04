@@ -3,10 +3,10 @@
 		<interface>admin.dashboard</interface>
 	</interfaces>
 	<allow>
-		<principal>role:system.authenticated</principal>
+		<principal>role:system.admin</principal>
 	</allow>
 	<config>
-		<property name="width" value="medium"/>
+		<property name="width" value="large"/>
 		<property name="height" value="full"/>
 		<property name="style" value="custom"/>
 		<property name="order" value="-2"/>

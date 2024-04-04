@@ -1,6 +1,5 @@
 import { AuditLog as _AudigLog } from '/lib/xp/auditlog';
 import { ArrayOrSingle } from '../../../../types/util-types';
-import { Dayjs } from '/assets/dayjs/1.11.9/dayjs.min.js';
 
 type AuditLog<Data extends _AudigLog['data']> = Omit<_AudigLog<Data>, 'objects'> & {
     objects: ArrayOrSingle<_AudigLog['objects'][number]>;
@@ -41,9 +40,11 @@ type AuditLogDataArchived = {
 export type AuditLogPublished = AuditLog<AuditLogDataPublished> & {
     type: 'system.content.publish';
 };
+
 export type AuditLogUnpublished = AuditLog<AuditLogDataUnpublished> & {
     type: 'system.content.unpublishContent';
 };
+
 export type AuditLogArchived = AuditLog<AuditLogDataArchived> & { type: 'system.content.archive' };
 
 export type AuditLogEntry = AuditLogPublished | AuditLogUnpublished | AuditLogArchived;
@@ -51,9 +52,19 @@ export type AuditLogEntry = AuditLogPublished | AuditLogUnpublished | AuditLogAr
 export type DashboardContentInfo = {
     displayName: string;
     contentType: string;
-    modifiedTimeStr: string;
-    modifyDate: Dayjs | string | undefined;
+    modifiedTimeRaw: string;
+    modifiedTime: string;
     status: string;
     title: string;
     url: string;
+};
+
+export type ContentLogData = {
+    contentId: string;
+    repoId: string;
+    time: string;
+    publish: {
+        from?: string;
+        to?: string;
+    };
 };

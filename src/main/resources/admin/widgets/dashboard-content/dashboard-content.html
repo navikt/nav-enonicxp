@@ -59,13 +59,12 @@
     </style>
     <div id="admin-widget-content">
         <strong
-            >Vi tester ny funksjonalitet. Dette dashboardet vises kun for administratorer. (Versjon
-            1)</strong
+            >Vi tester ny funksjonalitet. Dette dashboardet vises kun for administratorer.</strong
         >
         <h3>Sist publiserte</h3>
         <table th:if="${published}">
             <caption>
-                Dine (inntil) 5 siste publiserte innholdselementer siste 6 måneder
+                Dine (inntil) 5 siste publiserte innholdselementer
             </caption>
             <tr th:each="result: ${published}">
                 <th class="first-col">
@@ -78,7 +77,7 @@
                     </a>
                 </th>
                 <th th:text="${result.contentType}"></th>
-                <th th:text="${result.modifiedTimeStr}"></th>
+                <th th:text="${result.modifiedTime}"></th>
                 <th th:text="${result.status}"></th>
             </tr>
         </table>
@@ -99,14 +98,14 @@
                     </a>
                 </th>
                 <th th:text="${result.contentType}"></th>
-                <th th:text="${result.modifiedTimeStr}"></th>
+                <th th:text="${result.modifiedTime}"></th>
                 <th th:text="${result.status}"></th>
             </tr>
         </table>
         <h3>Under arbeid</h3>
         <table th:if="${modified}">
             <caption>
-                Dine (inntil) 5 siste innholdselementer under arbeid siste 6 måneder
+                Dine (inntil) 5 siste innholdselementer under arbeid
             </caption>
             <tr th:each="result: ${modified}">
                 <th class="first-col">
@@ -119,14 +118,14 @@
                     </a>
                 </th>
                 <th th:text="${result.contentType}"></th>
-                <th th:text="${result.modifiedTimeStr}"></th>
+                <th th:text="${result.modifiedTime}"></th>
                 <th th:text="${result.status}"></th>
             </tr>
         </table>
         <h3>Sist avpubliserte</h3>
         <table th:if="${unPublished}">
             <caption>
-                Dine (inntil) 5 siste avpubliserte innholdselementer siste 6 måneder
+                Dine (inntil) 5 siste avpubliserte innholdselementer
             </caption>
             <tr th:each="result: ${unPublished}">
                 <th class="first-col">
@@ -139,7 +138,7 @@
                     </a>
                 </th>
                 <th th:text="${result.contentType}"></th>
-                <th th:text="${result.modifiedTimeStr}"></th>
+                <th th:text="${result.modifiedTime}"></th>
                 <th th:text="${result.status}"></th>
             </tr>
         </table>
