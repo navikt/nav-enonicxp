@@ -1,14 +1,13 @@
 import { AuditLogQueryProps, getAuditLogEntries } from './auditlog-query';
 
-type Props = Required<Pick<AuditLogQueryProps, 'from' | 'user' | 'count'>>;
+type Props = Required<Pick<AuditLogQueryProps, 'user' | 'count'>>;
 
-export const auditLogGetPrepublishEntries = ({ from, user, count }: Props) => {
+export const auditLogGetActivePrepublishEntries = ({ user, count }: Props) => {
     const now = new Date().toISOString();
 
     return getAuditLogEntries({
         count,
         user,
-        from,
         type: 'publish',
         queries: [
             {
@@ -42,13 +41,42 @@ export const auditLogGetPrepublishEntries = ({ from, user, count }: Props) => {
     });
 };
 
-export const auditLogGetPublishEntries = ({ from, user, count }: Props) => {
+export const auditLogGetExpiredPrepublishEntries = ({ user, count }: Props) => {
     const now = new Date().toISOString();
 
     return getAuditLogEntries({
         count,
         user,
-        from,
+        type: 'publish',
+        queries: [
+            {
+                exists: {
+                    field: 'data.result.pushedContents',
+                },
+            },
+            {
+                boolean: {
+                    must: [
+                        {
+                            range: {
+                                field: 'data.params.contentPublishInfo.to',
+                                type: 'dateTime',
+                                lt: now,
+                            },
+                        },
+                    ],
+                },
+            },
+        ],
+    });
+};
+
+export const auditLogGetPublishEntries = ({ user, count }: Props) => {
+    const now = new Date().toISOString();
+
+    return getAuditLogEntries({
+        count,
+        user,
         type: 'publish',
         queries: [
             {
@@ -80,11 +108,10 @@ export const auditLogGetPublishEntries = ({ from, user, count }: Props) => {
     });
 };
 
-export const auditLogGetUnpublishEntries = ({ from, user, count }: Props) => {
+export const auditLogGetUnpublishEntries = ({ user, count }: Props) => {
     return getAuditLogEntries({
         count,
         user,
-        from,
         type: ['unpublish', 'archive'],
         queries: [
             {
@@ -96,11 +123,10 @@ export const auditLogGetUnpublishEntries = ({ from, user, count }: Props) => {
     });
 };
 
-export const auditLogGetArchiveEntries = ({ from, user, count }: Props) => {
+export const auditLogGetArchiveEntries = ({ user, count }: Props) => {
     return getAuditLogEntries({
         count,
         user,
-        from,
         type: 'archive',
         queries: [
             {

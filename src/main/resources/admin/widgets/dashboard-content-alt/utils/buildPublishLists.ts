@@ -22,7 +22,7 @@ export const dashboardContentBuildPublishLists = (user: UserKey) => {
 
     return {
         published: published.sort(sortDecending),
-        prePublished: prePublished.sort(sortDecending),
+        prePublished: prePublished.sort(sortAscending),
         unPublished: unPublished.sort(sortDecending),
     };
 };

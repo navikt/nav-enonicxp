@@ -7,12 +7,13 @@ import { logger } from '../../../../../lib/utils/logging';
 import { CONTENT_ROOT_REPO_ID } from '../../../../../lib/constants';
 import {
     auditLogGetArchiveEntries,
-    auditLogGetPrepublishEntries,
+    auditLogGetActivePrepublishEntries,
     auditLogGetPublishEntries,
     auditLogGetUnpublishEntries,
+    auditLogGetExpiredPrepublishEntries,
 } from './auditlog-lists-queries';
 
-type QueryProps = Required<Pick<AuditLogQueryProps, 'from' | 'user' | 'count'>>;
+type QueryProps = Required<Pick<AuditLogQueryProps, 'user' | 'count'>>;
 
 type ContentLogsMap = Record<string, ContentLogData>;
 
@@ -28,30 +29,34 @@ export class DashboardContentLogListsBuilder {
     private publishLogs: ContentLogsMap = {};
     private prepublishLogs: ContentLogsMap = {};
     private unpublishLogs: ContentLogsMap = {};
+
     private archiveLogs: ContentLogsMap = {};
+    private prepublishExpiredLogs: ContentLogsMap = {};
 
     constructor({ user }: ConstructorProps) {
         this.queryProps = {
             user,
             count: COUNT,
-            from: getFromDate(),
         };
     }
 
     public build() {
         const publishedAuditLogs = auditLogGetPublishEntries(this.queryProps);
-        const prepublishAuditLogs = auditLogGetPrepublishEntries(this.queryProps);
+        const prepublishAuditLogs = auditLogGetActivePrepublishEntries(this.queryProps);
         const unpublishAuditLogs = auditLogGetUnpublishEntries(this.queryProps);
+
         const archiveAuditLogs = auditLogGetArchiveEntries(this.queryProps);
+        const prepublishExpiredLogs = auditLogGetExpiredPrepublishEntries(this.queryProps);
 
         logger.info(`Found ${publishedAuditLogs.length} publish entries`);
         logger.info(`Found ${prepublishAuditLogs.length} prepublish entries`);
         logger.info(`Found ${unpublishAuditLogs.length} unpublish entries`);
         logger.info(`Found ${archiveAuditLogs.length} archive entries`);
 
-        // Always populate the archive map first, as it is needed to build correct entries
-        // for the other maps
+        // Always populate the maps for archived and expired content first, as it is needed to
+        // build correct entries for the other maps
         this.archiveLogs = this.transformToLogsMap(archiveAuditLogs);
+        this.prepublishExpiredLogs = this.transformToLogsMap(prepublishAuditLogs);
 
         this.publishLogs = this.transformToLogsMap(publishedAuditLogs);
         this.prepublishLogs = this.transformToLogsMap(prepublishAuditLogs);
@@ -101,7 +106,12 @@ export class DashboardContentLogListsBuilder {
     private isUnpublished(contentLog: ContentLogData) {
         const key = getKey(contentLog);
         const unpublishLog = this.unpublishLogs[key];
-        return unpublishLog && unpublishLog.time > contentLog.time;
+        const prepublishExpiredLog = this.prepublishExpiredLogs[key];
+
+        return (
+            (unpublishLog && unpublishLog.time > contentLog.time) ||
+            (prepublishExpiredLog && prepublishExpiredLog.time > contentLog.time)
+        );
     }
 
     private isArchived(contentLog: ContentLogData) {
@@ -146,6 +156,10 @@ export class DashboardContentLogListsBuilder {
 
             contentLogData.isArchived = this.isArchived(contentLogData);
 
+            if (contentLogData.isArchived) {
+                logger.info(`is archived: ${contentId}`);
+            }
+
             return contentLogData;
         });
     };
@@ -175,5 +189,3 @@ const getRepoIdForContentId = (objects: string[], contentId: string): string => 
 };
 
 const getKey = (entry: ContentLogData) => `${entry.repoId}-${entry.contentId}`;
-
-const getFromDate = () => dayjs().subtract(6, 'months');
