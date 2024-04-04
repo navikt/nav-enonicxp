@@ -1,12 +1,6 @@
 import { UserKey } from '/lib/xp/auditlog';
 import dayjs from '/assets/dayjs/1.11.9/dayjs.min.js';
-import {
-    AuditLogArchived,
-    AuditLogEntry,
-    AuditLogPublished,
-    AuditLogUnpublished,
-    ContentLogData,
-} from '../types';
+import { AuditLogEntry, ContentLogData } from '../types';
 import { AuditLogQueryProps } from './auditlog-query';
 import { forceArray } from '../../../../../lib/utils/array-utils';
 import { logger } from '../../../../../lib/utils/logging';
@@ -30,9 +24,9 @@ const COUNT = 100;
 export class DashboardContentAuditLogListsBuilder {
     private readonly queryProps: QueryProps;
 
-    private publishedData: ContentLogsMap = {};
-    private prepublishedData: ContentLogsMap = {};
-    private unpublishedData: ContentLogsMap = {};
+    private publishLogs: ContentLogsMap = {};
+    private prepublishLogs: ContentLogsMap = {};
+    private unpublishLogs: ContentLogsMap = {};
 
     constructor({ user }: ConstructorProps) {
         this.queryProps = {
@@ -51,9 +45,9 @@ export class DashboardContentAuditLogListsBuilder {
         logger.info(`Found ${prepublishAuditlog.length} prepublish entries`);
         logger.info(`Found ${unpublishAuditlog.length} unpublish entries`);
 
-        this.publishedData = buildLogsDataMap(publishedAuditlogs);
-        this.prepublishedData = buildLogsDataMap(prepublishAuditlog);
-        this.unpublishedData = buildLogsDataMap(unpublishAuditlog);
+        this.publishLogs = buildTransformedLogsMap(publishedAuditlogs);
+        this.prepublishLogs = buildTransformedLogsMap(prepublishAuditlog);
+        this.unpublishLogs = buildTransformedLogsMap(unpublishAuditlog);
 
         return {
             publishedData: this.filterPublishedData(),
@@ -65,58 +59,58 @@ export class DashboardContentAuditLogListsBuilder {
     private filterPublishedData() {
         // Skal ikke være avpublisert igjen senere av user (men kan være avpublisert av andre)
         // Skal ikke avvente forhåndspublisering
-        return Object.values(this.publishedData).filter(
-            (publishedEntry) =>
-                !this.isUnpublished(publishedEntry) && !this.isPrepublished(publishedEntry)
+        return Object.values(this.publishLogs).filter(
+            (publishLog) => !this.isUnpublished(publishLog) && !this.isPrepublished(publishLog)
         );
     }
 
     private filterUnpublishedData() {
-        // Skal være avpublisert av user
         // Skal ikke være publisert igjen senere av user (men kan være publisert av andre)
-        return Object.values(this.unpublishedData).filter(
-            (unPublishedEntry) =>
-                !this.isPublished(unPublishedEntry) && !this.isPrepublished(unPublishedEntry)
+        return Object.values(this.unpublishLogs).filter(
+            (unpublishLog) => !this.isPublished(unpublishLog) && !this.isPrepublished(unpublishLog)
         );
     }
 
     private filterPrepublishedData() {
         // Skal ikke være avpublisert igjen senere av user (men kan være avpublisert av andre)
-        return Object.values(this.prepublishedData).filter(
-            (prePublishedEntry) => !this.isUnpublished(prePublishedEntry)
+        return Object.values(this.prepublishLogs).filter(
+            (prepublishLog) => !this.isUnpublished(prepublishLog)
         );
     }
 
-    private isPublished(entry: ContentLogData) {
-        const key = getKey(entry);
-        const publishedEntry = this.publishedData[key];
-        return publishedEntry && publishedEntry.time > entry.time;
+    private isPublished(contentLog: ContentLogData) {
+        const key = getKey(contentLog);
+        const publishLog = this.publishLogs[key];
+        return publishLog && publishLog.time > contentLog.time;
     }
 
-    private isUnpublished(entry: ContentLogData) {
-        const key = getKey(entry);
-        const unpublishedEntry = this.unpublishedData[key];
-        return unpublishedEntry && unpublishedEntry.time > entry.time;
+    private isUnpublished(contentLog: ContentLogData) {
+        const key = getKey(contentLog);
+        const unpublishLog = this.unpublishLogs[key];
+        return unpublishLog && unpublishLog.time > contentLog.time;
     }
 
-    private isPrepublished(entry: ContentLogData) {
-        const key = getKey(entry);
-        return !!this.prepublishedData[key];
+    private isPrepublished(contentLog: ContentLogData) {
+        const key = getKey(contentLog);
+        const prepublishLog = this.prepublishLogs[key];
+        return prepublishLog && prepublishLog.time > contentLog.time;
     }
 }
 
-const buildLogsDataMap = (auditLogEntries: AuditLogEntry[]): ContentLogsMap => {
+// Transform the auditlog entries to a map, keeping only the newest entry for each content
+const buildTransformedLogsMap = (auditLogEntries: AuditLogEntry[]): ContentLogsMap => {
     const logsTransformed = auditLogEntries.map(transformAuditlog).flat();
 
-    return logsTransformed.reduce<ContentLogsMap>((acc, entry) => {
-        const key = getKey(entry);
+    return logsTransformed.reduce<ContentLogsMap>((acc, contentLog) => {
+        const key = getKey(contentLog);
         if (!acc[key]) {
-            acc[key] = entry;
+            acc[key] = contentLog;
         }
         return acc;
     }, {});
 };
 
+// Transform the data from the audit log to a common format for all entry types
 const transformAuditlog = (entry: AuditLogEntry): ContentLogData[] => {
     const { type, data, time } = entry;
 
@@ -136,17 +130,21 @@ const transformAuditlog = (entry: AuditLogEntry): ContentLogData[] => {
     }));
 };
 
+// The "objects" array contains references formatted like this:
+// <repo id>:<repo branch>:<content id>
 const getRepoIdForContentId = (objects: string[], contentId: string): string => {
-    for (const object of objects) {
-        const [repoId, branch, objContentId] = object.split(':');
-        if (objContentId === contentId) {
-            return repoId;
-        }
+    const foundObject =
+        objects.find((object) => {
+            const [_repoId, _branch, objContentId] = object.split(':');
+            return objContentId === contentId;
+        }) || objects[0];
+
+    if (!foundObject) {
+        logger.warning(`No repoId found in auditlog entry for ${contentId}`);
+        return CONTENT_ROOT_REPO_ID;
     }
 
-    logger.warning(`No repoId found for ${contentId} in objects: ${objects.join(', ')}`);
-
-    return CONTENT_ROOT_REPO_ID;
+    return objects[0].split(':')[0];
 };
 
 const getKey = (entry: ContentLogData) => `${entry.repoId}-${entry.contentId}`;
