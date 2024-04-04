@@ -1,6 +1,12 @@
 import { UserKey } from '/lib/xp/auditlog';
 import dayjs from '/assets/dayjs/1.11.9/dayjs.min.js';
-import { AuditLogArchived, AuditLogPublished, AuditLogUnpublished, ContentLogData } from '../types';
+import {
+    AuditLogArchived,
+    AuditLogEntry,
+    AuditLogPublished,
+    AuditLogUnpublished,
+    ContentLogData,
+} from '../types';
 import { AuditLogQueryProps } from './auditlog-query';
 import { forceArray } from '../../../../../lib/utils/array-utils';
 import { logger } from '../../../../../lib/utils/logging';
@@ -37,60 +43,23 @@ export class DashboardContentAuditLogListsBuilder {
     }
 
     public build() {
-        const publishedLogEntries = auditLogGetPublishEntries(this.queryProps);
-        const prepublishLogEntries = auditLogGetPrepublishEntries(this.queryProps);
-        const unPublishedLogEntries = auditLogGetUnpublishEntries(this.queryProps);
+        const publishedAuditlogs = auditLogGetPublishEntries(this.queryProps);
+        const prepublishAuditlog = auditLogGetPrepublishEntries(this.queryProps);
+        const unpublishAuditlog = auditLogGetUnpublishEntries(this.queryProps);
 
-        logger.info(`Found ${publishedLogEntries.length} publish entries`);
-        logger.info(`Found ${prepublishLogEntries.length} prepublish entries`);
-        logger.info(`Found ${unPublishedLogEntries.length} unpublish entries`);
+        logger.info(`Found ${publishedAuditlogs.length} publish entries`);
+        logger.info(`Found ${prepublishAuditlog.length} prepublish entries`);
+        logger.info(`Found ${unpublishAuditlog.length} unpublish entries`);
 
-        this.publishedData = buildContentLogsMap(
-            publishedLogEntries.map(this.getPublishedContentData).flat()
-        );
-        this.prepublishedData = buildContentLogsMap(
-            prepublishLogEntries.map(this.getPublishedContentData).flat()
-        );
-        this.unpublishedData = buildContentLogsMap(
-            unPublishedLogEntries.map(this.getUnpublishedContentData).flat()
-        );
+        this.publishedData = buildLogsDataMap(publishedAuditlogs);
+        this.prepublishedData = buildLogsDataMap(prepublishAuditlog);
+        this.unpublishedData = buildLogsDataMap(unpublishAuditlog);
 
         return {
             publishedData: this.filterPublishedData(),
             prepublishedData: this.filterPrepublishedData(),
             unpublishedData: this.filterUnpublishedData(),
         };
-    }
-
-    private getPublishedContentData(entry: AuditLogPublished): ContentLogData[] {
-        const { result, params } = entry.data;
-
-        const publish = params.contentPublishInfo || {};
-
-        const pushedContents = forceArray(result?.pushedContents);
-        const objects = forceArray(entry.objects);
-
-        return pushedContents.map((contentId) => ({
-            contentId,
-            repoId: getRepoIdForContentId(objects, contentId),
-            time: entry.time,
-            publish: publish,
-        }));
-    }
-
-    private getUnpublishedContentData(
-        entry: AuditLogUnpublished | AuditLogArchived
-    ): ContentLogData[] {
-        const pushedContents = entry.data.result?.unpublishedContents;
-        const objects = forceArray(entry.objects);
-
-        return forceArray(pushedContents).map((contentId) => ({
-            contentId,
-            repoId: getRepoIdForContentId(objects, contentId),
-            time: entry.time,
-            isArchived: entry.type === 'system.content.archive',
-            publish: {},
-        }));
     }
 
     private filterPublishedData() {
@@ -136,14 +105,35 @@ export class DashboardContentAuditLogListsBuilder {
     }
 }
 
-const buildContentLogsMap = (contentLogData: ContentLogData[]): ContentLogsMap => {
-    return contentLogData.reduce<ContentLogsMap>((acc, entry) => {
+const buildLogsDataMap = (auditLogEntries: AuditLogEntry[]): ContentLogsMap => {
+    const logsTransformed = auditLogEntries.map(transformAuditlog).flat();
+
+    return logsTransformed.reduce<ContentLogsMap>((acc, entry) => {
         const key = getKey(entry);
         if (!acc[key]) {
             acc[key] = entry;
         }
         return acc;
     }, {});
+};
+
+const transformAuditlog = (entry: AuditLogEntry): ContentLogData[] => {
+    const { type, data, time } = entry;
+
+    const isPublishLog = type === 'system.content.publish';
+
+    const publish = (isPublishLog && data.params.contentPublishInfo) || {};
+    const contentIds = isPublishLog ? data.result.pushedContents : data.result.unpublishedContents;
+
+    const objects = forceArray(entry.objects);
+
+    return forceArray(contentIds).map((contentId) => ({
+        contentId,
+        time,
+        publish,
+        repoId: getRepoIdForContentId(objects, contentId),
+        isArchived: entry.type === 'system.content.archive',
+    }));
 };
 
 const getRepoIdForContentId = (objects: string[], contentId: string): string => {

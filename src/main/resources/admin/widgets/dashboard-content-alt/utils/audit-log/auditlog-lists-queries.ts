@@ -12,6 +12,11 @@ export const auditLogGetPrepublishEntries = ({ from, user, count }: Props) => {
         type: 'publish',
         queries: [
             {
+                exists: {
+                    field: 'data.result.pushedContents',
+                },
+            },
+            {
                 boolean: {
                     must: [
                         {
@@ -46,6 +51,11 @@ export const auditLogGetPublishEntries = ({ from, user, count }: Props) => {
         from,
         type: 'publish',
         queries: [
+            {
+                exists: {
+                    field: 'data.result.pushedContents',
+                },
+            },
             {
                 boolean: {
                     mustNot: [
