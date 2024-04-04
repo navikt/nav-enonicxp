@@ -388,7 +388,7 @@ export const processAllOffices = (offices: OfficeNorgData[]) => {
         processedOfficeEnhetsNr.push(officePageData.enhetNr);
     });
 
-    summary.deleted = []; // deleteStaleOfficePages(existingOfficePages, processedOfficeEnhetsNr);
+    summary.deleted = deleteStaleOfficePages(existingOfficePages, processedOfficeEnhetsNr);
 
     if (summary.deleted.length > 0) {
         logger.info(`Office pages deleted: ${summary.deleted.length}`);
