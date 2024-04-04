@@ -6,10 +6,10 @@
 		<principal>role:system.admin</principal>
 	</allow>
 	<config>
-		<property name="width" value="medium"/>
+		<property name="width" value="large"/>
 		<property name="height" value="full"/>
 		<property name="style" value="custom"/>
-		<property name="order" value="-1"/>
+		<property name="order" value="-2"/>
 	</config>
 </widget>
 

@@ -46,7 +46,7 @@ const dayjsDateTime = (datetime?: string) => {
     return dayjs(localDate).utc(true).local().toISOString();
 };
 
-// Hent brukers endringer av innhold siste 6 måneder (bare lokalisert innhold av "våre" innholdsyper)
+// Hent brukers endringer av innhold (bare lokalisert innhold av "våre" innholdsyper)
 const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
     const repos = getLayersMultiConnection('draft');
     return repos
@@ -61,6 +61,8 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
                                 field: 'type',
                                 values: contentTypesToShow,
                             },
+                        },
+                        {
                             hasValue: {
                                 field: 'modifier',
                                 values: [user],

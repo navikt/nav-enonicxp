@@ -44,12 +44,7 @@ export class DashboardContentLogListsBuilder {
 
         const prepublishExpiredLogs = auditLogGetExpiredPrepublishEntries(this.queryProps);
 
-        logger.info(`Found ${publishedAuditLogs.length} publish entries`);
-        logger.info(`Found ${prepublishAuditLogs.length} prepublish entries`);
-        logger.info(`Found ${unpublishAuditLogs.length} unpublish entries`);
-        logger.info(`Found ${prepublishExpiredLogs.length} prepublish expired entries`);
-
-        // Always populate the maps for archived and expired content first, as it is needed to
+        // Always populate the maps for expired content first, as it is needed to
         // build correct entries for the other maps
         this.prepublishExpiredLogs = this.transformToLogsMap(prepublishExpiredLogs);
 
