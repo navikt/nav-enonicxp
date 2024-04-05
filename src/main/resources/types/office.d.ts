@@ -4,7 +4,7 @@ interface GeneralOfficeData {
     enhetNr: string;
     navn: string;
     telefonnummer: string;
-    telefonnummerKommentar: StringOrNothing;
+    telefonnummerKommentar: string;
     epost: undefined | string;
     postadresse: {
         type: string;

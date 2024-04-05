@@ -42,7 +42,12 @@ export type OfficePage = {
           /**
            * Telefonnummer
            */
-          telefonnummer: string;
+          telefonnummer?: string;
+
+          /**
+           * Telefonnummer
+           */
+          telefonnummerKommentar?: string;
 
           /**
            * EnhetNr
