@@ -20,7 +20,7 @@ const getOfficeContentName = (officeData: OfficeBranchData) => commonLib.sanitiz
 export const fetchAllOfficeBranchDataFromNorg = () => {
     try {
         const response = httpClient.request({
-            url: URLS.NORG_OFFICE_API_URL,
+            url: URLS.NORG_LOCAL_OFFICE_API_URL,
             method: 'GET',
             headers: {
                 'x-nav-apiKey': app.config.norg2ApiKey,
@@ -38,7 +38,7 @@ export const fetchAllOfficeBranchDataFromNorg = () => {
         }
     } catch (e) {
         logger.error(
-            `OfficeImporting: Exception from norg2 request: ${e}. Fetching from ${URLS.NORG_OFFICE_API_URL}.`
+            `OfficeImporting: Exception from norg2 request: ${e}. Fetching from ${URLS.NORG_LOCAL_OFFICE_API_URL}.`
         );
         return null;
     }

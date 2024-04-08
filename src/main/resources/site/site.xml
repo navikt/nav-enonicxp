@@ -19,7 +19,7 @@
             <match>type:'no.nav.navno:area-page'</match>
         </mapping>
         <mapping controller="/lib/controllers/dynamic-page-controller.js">
-            <match>type:'no.nav.navno:(content-page-with-sidemenus|guide-page|tools-page|generic-page|themed-article-page)'</match>
+            <match>type:'no.nav.navno:(content-page-with-sidemenus|guide-page|tools-page|generic-page|themed-article-page|office-page)'</match>
         </mapping>
         <mapping controller="/lib/controllers/form-intermediate-step-controller.js">
             <match>type:'no.nav.navno:form-intermediate-step'</match>
