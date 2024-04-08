@@ -33,10 +33,16 @@ const buildAddressElement = (mottakList?: Publikumsmottak) => {
 
 export const buildSearchDocumentOfficeIngress = (content: OfficeContent): string => {
     const isLegacyType = content.type === 'no.nav.navno:office-information';
-
     const phoneElement = buildPhoneElement(
         isLegacyType ? content.data.kontaktinformasjon?.telefonnummer : DEFAULT_PHONE
     );
+
+    if (content.type === 'no.nav.navno:office-page') {
+        const address = buildAddressElement(
+            content.data.officeNorgData?.data?.brukerkontakt?.publikumsmottak
+        );
+        return address ? `${phoneElement}<br />${address}` : phoneElement;
+    }
 
     const addressElement = buildAddressElement(
         isLegacyType

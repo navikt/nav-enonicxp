@@ -1,8 +1,9 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { request } from '/lib/http-client';
+import { HttpRequestParams, request } from '/lib/http-client';
 import * as commonLib from '/lib/xp/common';
 import { OfficePage as OfficePageData } from '@xp-types/site/content-types/office-page';
+import { parseJsonToArray } from '../../lib/utils/array-utils';
 import { NavNoDescriptor } from '../../types/common';
 import { logger } from '../utils/logging';
 import { CONTENT_LOCALE_DEFAULT, URLS } from '../constants';
@@ -13,12 +14,6 @@ type OfficeBranchPageDescriptor = NavNoDescriptor<'office-branch'>;
 type InternalLinkDescriptor = NavNoDescriptor<'internal-link'>;
 
 type OfficeNorgData = OfficePageData['officeNorgData']['data'];
-
-type RequestConfig = {
-    url: string;
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-    body?: string;
-};
 
 type OfficeOverview = {
     enhetId: string;
@@ -39,7 +34,7 @@ const getOfficeContentName = (officeData: OfficeNorgData) => commonLib.sanitize(
 // Possible office types are FPY, KLAGE, KONTROLL, OKONOMI, HMS, YTA, OPPFUTLAND.
 const officeTypesForImport: ReadonlySet<string> = new Set(['HMS']);
 
-const norgRequest = <T>(requestConfig: RequestConfig): T[] | null => {
+const norgRequest = <T>(requestConfig: HttpRequestParams): T[] | null => {
     const response = request({
         url: requestConfig.url,
         method: requestConfig.method,
@@ -52,7 +47,7 @@ const norgRequest = <T>(requestConfig: RequestConfig): T[] | null => {
     });
 
     if (response.status === 200 && response.body) {
-        return JSON.parse(response.body);
+        return parseJsonToArray(response.body);
     } else {
         logger.error(
             `OfficeImporting: Bad response from norg2: ${response.status} - ${response.message}, ${requestConfig.url}`
@@ -66,6 +61,13 @@ const generalOfficeAdapter = (
     officeTypeDictionary: OfficeTypeDictionary
 ): OfficeNorgData => {
     const type = officeTypeDictionary.get(officeData.enhetNr) || '';
+
+    if (!type) {
+        logger.warning(
+            `OfficeImporting: Could not find the type for office with enhetNr: ${officeData.enhetNr}`
+        );
+    }
+
     return {
         enhetNr: officeData.enhetNr,
         navn: officeData.navn,
