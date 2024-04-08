@@ -108,7 +108,7 @@ export const fetchAllOfficeDataFromNorg = () => {
         officeOverview.forEach((office) => officeTypeDictionary.set(office.enhetNr, office.type));
 
         const enhetnrForFetching = officeOverview
-            ?.filter((office) => officeTypesForImport.has(office.type))
+            .filter((office) => officeTypesForImport.has(office.type))
             .map((office) => office.enhetNr);
 
         const norgOffices = norgRequest<GeneralOfficeData>({
