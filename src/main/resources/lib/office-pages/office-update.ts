@@ -8,6 +8,7 @@ import { NavNoDescriptor } from '../../types/common';
 import { logger } from '../utils/logging';
 import { CONTENT_LOCALE_DEFAULT, URLS } from '../constants';
 import { createObjectChecksum } from '../utils/object-utils';
+import { OfficeRawNORGData } from './office-raw-norg-data';
 
 type OfficePageDescriptor = NavNoDescriptor<'office-page'>;
 type OfficeBranchPageDescriptor = NavNoDescriptor<'office-branch'>;
@@ -57,7 +58,7 @@ const norgRequest = <T>(requestConfig: HttpRequestParams): T[] | null => {
 };
 
 const generalOfficeAdapter = (
-    officeData: NORGRawOfficeData,
+    officeData: OfficeRawNORGData,
     officeTypeDictionary: OfficeTypeDictionary
 ): OfficeNorgData => {
     const type = officeTypeDictionary.get(officeData.enhetNr) || '';
@@ -111,7 +112,7 @@ export const fetchAllOfficeDataFromNorg = () => {
             .filter((office) => officeTypesForImport.has(office.type))
             .map((office) => office.enhetNr);
 
-        const norgOffices = norgRequest<NORGRawOfficeData>({
+        const norgOffices = norgRequest<OfficeRawNORGData>({
             url: URLS.NORG_OFFICE_INFORMATION_API_URL,
             method: 'POST',
             body: JSON.stringify(enhetnrForFetching),

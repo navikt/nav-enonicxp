@@ -1,4 +1,4 @@
-interface NORGRawOfficeData {
+export interface OfficeRawNORGData {
     enhetNr: string;
     navn: string;
     telefonnummer: string;
