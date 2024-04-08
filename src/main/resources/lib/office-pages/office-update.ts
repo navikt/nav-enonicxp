@@ -57,7 +57,7 @@ const norgRequest = <T>(requestConfig: HttpRequestParams): T[] | null => {
 };
 
 const generalOfficeAdapter = (
-    officeData: GeneralOfficeData,
+    officeData: NORGRawOfficeData,
     officeTypeDictionary: OfficeTypeDictionary
 ): OfficeNorgData => {
     const type = officeTypeDictionary.get(officeData.enhetNr) || '';
@@ -111,7 +111,7 @@ export const fetchAllOfficeDataFromNorg = () => {
             .filter((office) => officeTypesForImport.has(office.type))
             .map((office) => office.enhetNr);
 
-        const norgOffices = norgRequest<GeneralOfficeData>({
+        const norgOffices = norgRequest<NORGRawOfficeData>({
             url: URLS.NORG_OFFICE_INFORMATION_API_URL,
             method: 'POST',
             body: JSON.stringify(enhetnrForFetching),

@@ -1,6 +1,4 @@
-type StringOrNothing = string | undefined;
-
-interface GeneralOfficeData {
+interface NORGRawOfficeData {
     enhetNr: string;
     navn: string;
     telefonnummer: string;
@@ -11,7 +9,7 @@ interface GeneralOfficeData {
         postnummer: string;
         poststed: string;
         postboksnummer: string;
-        postboksanlegg: StringOrNothing;
+        postboksanlegg?: string;
     };
     besoeksadresse: {
         type: string;
@@ -19,8 +17,8 @@ interface GeneralOfficeData {
         poststed: string;
         gatenavn: string;
         husnummer: string;
-        husbokstav: StringOrNothing;
-        adresseTilleggsnavn: StringOrNothing;
+        husbokstav?: string;
+        adresseTilleggsnavn?: string;
     };
     spesielleOpplysninger: string;
     brukerkontakt: {
@@ -31,20 +29,20 @@ interface GeneralOfficeData {
                 poststed: string;
                 gatenavn: string;
                 husnummer: string;
-                husbokstav: StringOrNothing;
-                adresseTilleggsnavn: StringOrNothing;
+                husbokstav?: string;
+                adresseTilleggsnavn?: string;
             };
             aapningstider: {
-                dag: StringOrNothing;
-                dato: StringOrNothing;
-                fra: StringOrNothing;
-                til: StringOrNothing;
+                dag?: string;
+                dato?: string;
+                fra?: string;
+                til?: string;
                 kommentar: string;
                 stengt: string;
                 kunTimeavtale: string;
             }[];
             stedsbeskrivelse: string;
-            adkomstbeskrivelse: StringOrNothing;
+            adkomstbeskrivelse?: string;
         }[];
         publikumskanaler: any[];
         brukertjenesteTilbud: {
@@ -57,7 +55,7 @@ interface GeneralOfficeData {
             digitaleSoeknader: any[];
             papirsoeknadInformasjon: string;
         };
-        informasjonUtbetalinger: StringOrNothing;
+        informasjonUtbetalinger?: string;
         skriftspraak: string;
     };
 }
