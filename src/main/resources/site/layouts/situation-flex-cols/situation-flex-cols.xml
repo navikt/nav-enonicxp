@@ -3,31 +3,6 @@
     <description>Responsive flexbox-kolonner</description>
     <form>
         <mixin name="header-with-anchor"/>
-        <option-set name="shelf">
-            <label>Innstilling for varehyller</label>
-            <help-text>Brukes kun hvis dette er en type varehylle.</help-text>
-            <options minimum="1" maximum="1">
-                <option name="products">
-                    <label>Produkter</label>
-                    <help-text>Varehyllen skal inneholde kort til andre produkter i NAV</help-text>
-                    <items>
-                        <input type="ComboBox" name="priority">
-                            <label>Prioritering</label>
-                            <config>
-                                <option value="primary">Primær</option>
-                                <option value="secondary">Sekundær</option>
-                                <option value="tertiary">Tertier</option>
-                            </config>
-                            <default>primary</default>
-                        </input>
-                    </items>
-                </option>
-                <option name="providers">
-                    <label>Samarbeidspartner</label>
-                    <help-text>Varehyllen skal inneholde kort eksterne samarbeidspartnere eller andre offentlige tjenester.</help-text>
-                </option>
-            </options>
-        </option-set>
         <input type="Long" name="numCols">
             <label>Antall kolonner ved full skjermbredde</label>
             <config>
