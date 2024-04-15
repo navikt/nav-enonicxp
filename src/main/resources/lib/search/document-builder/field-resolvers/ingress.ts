@@ -9,8 +9,23 @@ const DEFAULT_PHONE = '55 55 33 33';
 const buildPhoneElement = (phoneNr?: string) =>
     `<strong>Telefon:</strong> ${phoneNr || DEFAULT_PHONE}`;
 
-const buildAddressElement = (mottakList?: Publikumsmottak) => {
-    const address = forceArray(mottakList).find(
+const getPublikumsmottak = (content: OfficeContent): Publikumsmottak | undefined => {
+    const { type, data } = content;
+
+    switch (type) {
+        case 'no.nav.navno:office-page':
+            return data.officeNorgData.data.brukerkontakt?.publikumsmottak;
+        case 'no.nav.navno:office-branch':
+            return data.brukerkontakt?.publikumsmottak;
+        case 'no.nav.navno:office-information':
+            return data.kontaktinformasjon?.publikumsmottak;
+    }
+};
+
+const buildAddressElement = (content: OfficeContent) => {
+    const publikumsmottak = getPublikumsmottak(content);
+
+    const address = forceArray(publikumsmottak).find(
         (mottak) => mottak.besoeksadresse?.type === 'stedsadresse'
     )?.besoeksadresse;
 
@@ -32,29 +47,15 @@ const buildAddressElement = (mottakList?: Publikumsmottak) => {
 };
 
 export const buildSearchDocumentOfficeIngress = (content: OfficeContent): string => {
-    const isLegacyType = content.type === 'no.nav.navno:office-information';
     const phoneElement = buildPhoneElement(
-        isLegacyType ? content.data.kontaktinformasjon?.telefonnummer : DEFAULT_PHONE
+        content.type === 'no.nav.navno:office-information'
+            ? content.data.kontaktinformasjon?.telefonnummer
+            : DEFAULT_PHONE
     );
 
-    if (content.type === 'no.nav.navno:office-page') {
-        const address = buildAddressElement(
-            content.data.officeNorgData?.data?.brukerkontakt?.publikumsmottak
-        );
-        return address ? `${phoneElement}<br />${address}` : phoneElement;
-    }
+    const addressElement = buildAddressElement(content);
 
-    const addressElement = buildAddressElement(
-        isLegacyType
-            ? content.data.kontaktinformasjon?.publikumsmottak
-            : content.data.brukerkontakt?.publikumsmottak
-    );
-
-    if (!addressElement) {
-        return phoneElement;
-    }
-
-    return `${phoneElement}<br/>${addressElement}`;
+    return addressElement ? `${phoneElement}<br/>${addressElement}` : phoneElement;
 };
 
 const withoutTable = (text: string) => text.split('<table')[0];
