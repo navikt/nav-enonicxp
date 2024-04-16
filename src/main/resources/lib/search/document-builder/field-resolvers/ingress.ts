@@ -6,6 +6,8 @@ type Publikumsmottak = NonNullable<NonNullable<OfficeBranch['brukerkontakt']>['p
 
 const DEFAULT_PHONE = '55 55 33 33';
 
+const INGRESS_MAX_LENGTH = 500;
+
 const buildPhoneElement = (phoneNr?: string) =>
     `<strong>Telefon:</strong> ${phoneNr || DEFAULT_PHONE}`;
 
@@ -73,5 +75,5 @@ export const buildSearchDocumentOfficeIngress = (content: OfficeContent) => {
 const withoutTable = (text: string) => text.split('<table')[0];
 
 export const buildSearchDocumentIngress = (ingressTextRaw?: string) => {
-    return ingressTextRaw ? withoutTable(ingressTextRaw) : '';
+    return ingressTextRaw ? withoutTable(ingressTextRaw).slice(0, INGRESS_MAX_LENGTH) : '';
 };
