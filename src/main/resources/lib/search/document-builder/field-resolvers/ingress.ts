@@ -1,8 +1,9 @@
 import { OfficeContent } from '../../../office-pages/types';
-import { forceArray } from '../../../utils/array-utils';
+import { forceArray, removeDuplicatesFilter } from '../../../utils/array-utils';
 import { OfficeBranch } from '@xp-types/site/content-types/office-branch';
 
 type Publikumsmottak = NonNullable<NonNullable<OfficeBranch['brukerkontakt']>['publikumsmottak']>;
+type WithBesoeksAdresse = NonNullable<Pick<Publikumsmottak[number], 'besoeksadresse'>>;
 
 const DEFAULT_PHONE = '55 55 33 33';
 
@@ -27,30 +28,32 @@ const getPublikumsmottak = (content: OfficeContent): Publikumsmottak | undefined
 const buildAddressElement = (content: OfficeContent) => {
     const publikumsmottak = getPublikumsmottak(content);
 
-    const addresses = forceArray(publikumsmottak).reduce<string[]>((acc, mottak) => {
-        if (mottak.besoeksadresse?.type !== 'stedsadresse') {
-            return acc;
-        }
+    const validMottak = forceArray(publikumsmottak)
+        .filter(
+            (mottak): mottak is WithBesoeksAdresse => mottak.besoeksadresse?.type === 'stedsadresse'
+        )
+        .filter(
+            removeDuplicatesFilter(
+                (a, b) => a.besoeksadresse?.postnummer === b.besoeksadresse?.postnummer
+            )
+        );
 
+    if (validMottak.length === 0) {
+        return null;
+    }
+
+    const addresses = validMottak.map((mottak) => {
         const {
             gatenavn = '',
             husnummer = '',
             husbokstav = '',
             postnummer = '',
             poststed = '',
-        } = mottak.besoeksadresse;
+        } = mottak.besoeksadresse as any;
 
         const husNrOgBokstav = husnummer || husbokstav ? ` ${husnummer}${husbokstav}` : '';
-        const address = `${gatenavn}${husNrOgBokstav}, ${postnummer} ${poststed.toUpperCase()}`;
-
-        acc.push(address);
-
-        return acc;
-    }, []);
-
-    if (addresses.length === 0) {
-        return null;
-    }
+        return `${gatenavn}${husNrOgBokstav}, ${postnummer} ${poststed.toUpperCase()}`;
+    });
 
     const addressesList =
         addresses.length === 1
