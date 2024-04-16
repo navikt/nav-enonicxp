@@ -53,7 +53,7 @@ const buildAddressElement = (content: OfficeContent) => {
     const addressesList =
         addresses.length === 1
             ? addresses[0]
-            : `<ul>${addresses.map((address) => `<li>${address}</li>`).join()}</ul>`;
+            : `<ul>${addresses.map((address) => `<li>${address}</li>`).join('')}</ul>`;
 
     return `<strong>Publikumsmottak:</strong> ${addressesList}`;
 };
