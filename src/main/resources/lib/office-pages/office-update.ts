@@ -2,7 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { HttpRequestParams, request } from '/lib/http-client';
 import * as commonLib from '/lib/xp/common';
-import { getRepoConnection } from '../utils/repo-utils';
+import { isDraftAndMasterSameVersion } from '../utils/repo-utils';
 import { OfficePage as OfficePageData } from '@xp-types/site/content-types/office-page';
 import { parseJsonToArray } from '../../lib/utils/array-utils';
 import { NavNoDescriptor } from '../../types/common';
@@ -269,20 +269,10 @@ const updateOfficePageIfChanged = (
     }
 
     try {
-        const rootContentDraft = getRepoConnection({
-            repoId: CONTENT_ROOT_REPO_ID,
-            branch: 'draft',
-            asAdmin: true,
-        }).get(existingOfficePage._id);
-
-        const rootContentMaster = getRepoConnection({
-            repoId: CONTENT_ROOT_REPO_ID,
-            branch: 'master',
-            asAdmin: true,
-        }).get(existingOfficePage._id);
-
-        const isUpToDateWithMaster =
-            rootContentDraft?._versionKey === rootContentMaster?._versionKey;
+        const isUpToDateWithMaster = isDraftAndMasterSameVersion(
+            existingOfficePage._id,
+            CONTENT_ROOT_REPO_ID
+        );
 
         moveAndRedirectOnNameChange(existingOfficePage, newOfficeData);
 
