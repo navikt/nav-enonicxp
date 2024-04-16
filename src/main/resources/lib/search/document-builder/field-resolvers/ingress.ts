@@ -25,28 +25,40 @@ const getPublikumsmottak = (content: OfficeContent): Publikumsmottak | undefined
 const buildAddressElement = (content: OfficeContent) => {
     const publikumsmottak = getPublikumsmottak(content);
 
-    const address = forceArray(publikumsmottak).find(
-        (mottak) => mottak.besoeksadresse?.type === 'stedsadresse'
-    )?.besoeksadresse;
+    const addresses = forceArray(publikumsmottak).reduce<string[]>((acc, mottak) => {
+        if (mottak.besoeksadresse?.type !== 'stedsadresse') {
+            return acc;
+        }
 
-    if (!address) {
+        const {
+            gatenavn = '',
+            husnummer = '',
+            husbokstav = '',
+            postnummer = '',
+            poststed = '',
+        } = mottak.besoeksadresse;
+
+        const husNrOgBokstav = husnummer || husbokstav ? ` ${husnummer}${husbokstav}` : '';
+        const address = `${gatenavn}${husNrOgBokstav}, ${postnummer} ${poststed.toUpperCase()}`;
+
+        acc.push(address);
+
+        return acc;
+    }, []);
+
+    if (addresses.length === 0) {
         return null;
     }
 
-    const {
-        gatenavn = '',
-        husnummer = '',
-        husbokstav = '',
-        postnummer = '',
-        poststed = '',
-    } = address;
+    const addressesList =
+        addresses.length === 1
+            ? addresses[0]
+            : `<ul>${addresses.map((address) => `<li>${address}</li>`)}</ul>`;
 
-    const husNrOgBokstav = husnummer || husbokstav ? ` ${husnummer}${husbokstav}` : '';
-
-    return `<strong>Publikumsmottak:</strong> ${gatenavn}${husNrOgBokstav}, ${postnummer} ${poststed.toUpperCase()}`;
+    return `<strong>Publikumsmottak:</strong> ${addressesList}`;
 };
 
-export const buildSearchDocumentOfficeIngress = (content: OfficeContent): string => {
+export const buildSearchDocumentOfficeIngress = (content: OfficeContent) => {
     const phoneElement = buildPhoneElement(
         content.type === 'no.nav.navno:office-information'
             ? content.data.kontaktinformasjon?.telefonnummer
