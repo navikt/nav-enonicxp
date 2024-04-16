@@ -8,7 +8,6 @@ import { getRepoConnection } from '../utils/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { SitecontentResponse } from '../../services/sitecontent/common/content-response';
 import { getLayersMigrationArchivedContentRef } from './layers-migration-refs';
-import { getLayerMigrationData } from '../localization/layers-migration/migration-data';
 
 const getArchivedContentRef = (contentId: string, repoId: string, requestedTimestamp: string) => {
     const archivedContentRef = getLayersMigrationArchivedContentRef({
