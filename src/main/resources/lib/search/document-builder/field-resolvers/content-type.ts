@@ -27,7 +27,7 @@ const xpContentTypeToSearchContentType: {
     'no.nav.navno:section-page': 'legacy',
     'no.nav.navno:page-list': 'legacy',
     'no.nav.navno:office-information': 'kontor-legacy',
-    'no.nav.navno:office-branch': 'kontor',
+    'no.nav.navno:office-page': 'kontor',
     'no.nav.navno:large-table': 'tabell',
     'no.nav.navno:form-details': 'skjema',
     'no.nav.navno:content-page-with-sidemenus': 'produktside',

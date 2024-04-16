@@ -1,8 +1,10 @@
 import { OfficeContent } from '../../../office-pages/types';
 import { forceArray } from '../../../utils/array-utils';
-import { OfficeBranch } from '@xp-types/site/content-types/office-branch';
+import { OfficePage } from '@xp-types/site/content-types/office-page';
 
-type Publikumsmottak = NonNullable<NonNullable<OfficeBranch['brukerkontakt']>['publikumsmottak']>;
+type Publikumsmottak = NonNullable<
+    NonNullable<OfficePage['officeNorgData']['data']['brukerkontakt']>['publikumsmottak']
+>;
 
 const DEFAULT_PHONE = '55 55 33 33';
 
@@ -37,24 +39,18 @@ export const buildSearchDocumentOfficeIngress = (content: OfficeContent): string
         isLegacyType ? content.data.kontaktinformasjon?.telefonnummer : DEFAULT_PHONE
     );
 
-    if (content.type === 'no.nav.navno:office-page') {
-        const address = buildAddressElement(
-            content.data.officeNorgData?.data?.brukerkontakt?.publikumsmottak
+    if (content.type === 'no.nav.navno:office-information') {
+        const addressElement = buildAddressElement(
+            content.data.kontaktinformasjon?.publikumsmottak
         );
-        return address ? `${phoneElement}<br />${address}` : phoneElement;
+
+        return addressElement ? `${phoneElement}<br/>${addressElement}` : phoneElement;
     }
 
-    const addressElement = buildAddressElement(
-        isLegacyType
-            ? content.data.kontaktinformasjon?.publikumsmottak
-            : content.data.brukerkontakt?.publikumsmottak
-    );
+    const officeData = content.data.officeNorgData?.data;
+    const addressElement = buildAddressElement(officeData.brukerkontakt?.publikumsmottak);
 
-    if (!addressElement) {
-        return phoneElement;
-    }
-
-    return `${phoneElement}<br/>${addressElement}`;
+    return addressElement ? `${phoneElement}<br/>${addressElement}` : phoneElement;
 };
 
 const withoutTable = (text: string) => text.split('<table')[0];

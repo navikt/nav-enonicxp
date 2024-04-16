@@ -32,7 +32,6 @@ export type MainArticle = import("./main-article").MainArticle;
 export type MegamenuItem = import("./megamenu-item").MegamenuItem;
 export type Melding = import("./melding").Melding;
 export type Notification = import("./notification").Notification;
-export type OfficeBranch = import("./office-branch").OfficeBranch;
 export type OfficeEditorialPage = import("./office-editorial-page").OfficeEditorialPage;
 export type OfficeInformation = import("./office-information").OfficeInformation;
 export type OfficePage = import("./office-page").OfficePage;
@@ -90,7 +89,6 @@ declare global {
       "no.nav.navno:megamenu-item": MegamenuItem;
       "no.nav.navno:melding": Melding;
       "no.nav.navno:notification": Notification;
-      "no.nav.navno:office-branch": OfficeBranch;
       "no.nav.navno:office-editorial-page": OfficeEditorialPage;
       "no.nav.navno:office-information": OfficeInformation;
       "no.nav.navno:office-page": OfficePage;

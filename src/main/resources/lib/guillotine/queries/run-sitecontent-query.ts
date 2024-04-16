@@ -51,8 +51,8 @@ export const runSitecontentGuillotineQuery = (
     }
 
     // Certain pages need extra queries for resolving.
-    if (baseContent.type === 'no.nav.navno:office-branch') {
-        return buildOfficeBranchPageWithEditorialContent(contentQueryResult);
+    if (baseContent.type === 'no.nav.navno:office-page') {
+        return buildOfficePageWithEditorialContent(contentQueryResult);
     }
 
     const { components, fragments } = runGuillotineComponentsQuery(baseQueryParams, baseContent);
@@ -131,8 +131,11 @@ export const runGuillotineComponentsQuery = (
     return { components: transformedComponents, fragments };
 };
 
-const buildOfficeBranchPageWithEditorialContent = (contentQueryResult: any) => {
+const buildOfficePageWithEditorialContent = (contentQueryResult: any) => {
     const officeEditorialPageContent = contentQueryResult?.editorial;
+
+    // Editorial page is null if office is not of type LOKAL,
+    // so skip further resolving and just return.
     if (!officeEditorialPageContent) {
         return {
             ...contentQueryResult,

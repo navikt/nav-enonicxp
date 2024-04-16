@@ -43,7 +43,7 @@ export const linkContentTypes = [
 export const contentTypesInSitemap = [
     ...dynamicPageContentTypes,
     ...legacyPageContentTypes,
-    `${APP_DESCRIPTOR}:office-branch`,
+    `${APP_DESCRIPTOR}:office-page`,
 ] as const satisfies ContentTypeList;
 
 export const contentTypesInDataQuery = [
@@ -92,7 +92,7 @@ export const contentTypesWithBreadcrumbs = [
 export const contentTypesWithComponents = [
     ...dynamicPageContentTypes,
     `${APP_DESCRIPTOR}:product-details`,
-    `${APP_DESCRIPTOR}:office-branch`,
+    `${APP_DESCRIPTOR}:office-page`,
     'portal:page-template',
 ] as const satisfies ContentTypeList;
 
@@ -128,7 +128,6 @@ export const contentTypesRenderedByEditorFrontend = [
     `${APP_DESCRIPTOR}:calculator`,
     `${APP_DESCRIPTOR}:product-details`,
     `${APP_DESCRIPTOR}:form-details`,
-    `${APP_DESCRIPTOR}:office-branch`,
     `${APP_DESCRIPTOR}:office-page`,
     `${APP_DESCRIPTOR}:office-editorial-page`,
     `${APP_DESCRIPTOR}:payout-dates`,

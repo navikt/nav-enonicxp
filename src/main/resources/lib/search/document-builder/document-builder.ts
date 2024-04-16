@@ -199,7 +199,7 @@ const isExcludedContent = (content: ContentNode) => {
     }
 
     switch (content.type) {
-        // 'LOKAL' office type is handled by the new office-branch content type
+        // 'LOKAL' office type is handled by the new office-page content type
         case 'no.nav.navno:office-information': {
             return content.data.enhet.type === 'LOKAL';
         }
