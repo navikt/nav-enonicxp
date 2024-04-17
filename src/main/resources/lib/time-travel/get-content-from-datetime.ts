@@ -9,7 +9,16 @@ import { getLayersData } from '../localization/layers-data';
 import { SitecontentResponse } from '../../services/sitecontent/common/content-response';
 import { getLayersMigrationArchivedContentRef } from './layers-migration-refs';
 
-const getArchivedContentRef = (contentId: string, repoId: string, requestedTimestamp: string) => {
+type BaseContentRef = { baseContentId: string; baseRepoId: string };
+
+// This refers to content which were previously in the default project, and was later migrated to
+// a language-specific layer. The original default-project content was then archived, with a
+// reference saved to the new content object in the language layer
+const getArchivedContentRef = (
+    contentId: string,
+    repoId: string,
+    requestedTimestamp: string
+): BaseContentRef | null => {
     const archivedContentRef = getLayersMigrationArchivedContentRef({
         contentId,
         repoId,
@@ -34,7 +43,7 @@ const getBaseContentRefForRequestedDateTime = (
     contentId: string,
     repoId: string,
     requestedTimestamp: string
-): { baseContentId: string; baseRepoId: string } | null => {
+): BaseContentRef | null => {
     const content = getRepoConnection({ branch: 'draft', repoId, asAdmin: true }).get({
         key: contentId,
     });
@@ -42,16 +51,19 @@ const getBaseContentRefForRequestedDateTime = (
         return null;
     }
 
-    return (
-        getArchivedContentRef(contentId, repoId, requestedTimestamp) || {
-            baseContentId: contentId,
-            baseRepoId: repoId,
-        }
-    );
+    const archivedRef = getArchivedContentRef(contentId, repoId, requestedTimestamp);
+    if (archivedRef) {
+        return archivedRef;
+    }
+
+    return {
+        baseContentId: contentId,
+        baseRepoId: repoId,
+    };
 };
 
 // Get content from a specific datetime (used for requests from the internal version history selector)
-export const getContentVersionFromDateTime = ({
+export const sitecontentVersionResolver = ({
     liveContentId,
     liveLocale,
     branch,

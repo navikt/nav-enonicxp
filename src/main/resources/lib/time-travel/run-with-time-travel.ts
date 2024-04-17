@@ -88,6 +88,7 @@ export const runInTimeTravelContext = <CallbackReturn>(
         {
             repository: repoId,
             attributes: attribs,
+            asAdmin: true,
         },
         callback
     );

@@ -2,11 +2,12 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { HttpRequestParams, request } from '/lib/http-client';
 import * as commonLib from '/lib/xp/common';
+import { isDraftAndMasterSameVersion } from '../utils/repo-utils';
 import { OfficePage as OfficePageData } from '@xp-types/site/content-types/office-page';
 import { parseJsonToArray } from '../../lib/utils/array-utils';
 import { NavNoDescriptor } from '../../types/common';
 import { logger } from '../utils/logging';
-import { CONTENT_LOCALE_DEFAULT, URLS } from '../constants';
+import { CONTENT_LOCALE_DEFAULT, URLS, CONTENT_ROOT_REPO_ID } from '../constants';
 import { createObjectChecksum } from '../utils/object-utils';
 import { OfficeRawNORGData } from './office-raw-norg-data';
 
@@ -268,6 +269,11 @@ const updateOfficePageIfChanged = (
     }
 
     try {
+        const isUpToDateWithMaster = isDraftAndMasterSameVersion(
+            existingOfficePage._id,
+            CONTENT_ROOT_REPO_ID
+        );
+
         moveAndRedirectOnNameChange(existingOfficePage, newOfficeData);
 
         contentLib.modify<OfficePageDescriptor>({
@@ -284,7 +290,11 @@ const updateOfficePageIfChanged = (
             }),
         });
 
-        return true;
+        // Content can only be published if it was already
+        // up to date with master. Ie, content that currently in
+        // some sort of "in progress" by editors, should not
+        // be automatically published.
+        return isUpToDateWithMaster;
     } catch (e) {
         logger.critical(
             `OfficeImporting: Failed to modify office page content ${existingOfficePage._path} - ${e}`
@@ -374,8 +384,8 @@ export const processAllOffices = (offices: OfficeNorgData[]) => {
         );
 
         if (existingPage) {
-            const wasUpdated = updateOfficePageIfChanged(officePageData, existingPage);
-            if (wasUpdated) {
+            const shouldBePublished = updateOfficePageIfChanged(officePageData, existingPage);
+            if (shouldBePublished) {
                 summary.updated.push(existingPage._id);
             }
         } else {
