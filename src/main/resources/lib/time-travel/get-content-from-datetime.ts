@@ -9,10 +9,16 @@ import { getLayersData } from '../localization/layers-data';
 import { SitecontentResponse } from '../../services/sitecontent/common/content-response';
 import { getLayersMigrationArchivedContentRef } from './layers-migration-refs';
 
+type BaseContentRef = { baseContentId: string; baseRepoId: string };
+
 // This refers to content which were previously in the default project, and was later migrated to
 // a language-specific layer. The original default-project content was then archived, with a
 // reference saved to the new content object in the language layer
-const getArchivedContentRef = (contentId: string, repoId: string, requestedTimestamp: string) => {
+const getArchivedContentRef = (
+    contentId: string,
+    repoId: string,
+    requestedTimestamp: string
+): BaseContentRef | null => {
     const archivedContentRef = getLayersMigrationArchivedContentRef({
         contentId,
         repoId,
@@ -37,7 +43,7 @@ const getBaseContentRefForRequestedDateTime = (
     contentId: string,
     repoId: string,
     requestedTimestamp: string
-): { baseContentId: string; baseRepoId: string } | null => {
+): BaseContentRef | null => {
     const content = getRepoConnection({ branch: 'draft', repoId, asAdmin: true }).get({
         key: contentId,
     });
