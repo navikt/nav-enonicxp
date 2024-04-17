@@ -56,8 +56,6 @@ export type SearchDocument = {
     };
 };
 
-const INGRESS_MAX_LENGTH = 500;
-
 class ExternalSearchDocumentBuilder {
     private readonly content: ContentNode<any>;
     private readonly locale: string;
@@ -95,7 +93,7 @@ class ExternalSearchDocumentBuilder {
             id: generateSearchDocumentId(content._id, locale),
             href,
             title,
-            ingress: this.getIngress().slice(0, INGRESS_MAX_LENGTH),
+            ingress: this.getIngress(),
             text: this.getText(),
             metadata: {
                 audience: getSearchDocumentAudience(content),
