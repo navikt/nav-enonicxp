@@ -1,4 +1,3 @@
-import { getRepoConnection } from './repo-utils';
 import { NodeVersion } from '/lib/xp/node';
 import { RepoBranch } from '../../types/common';
 import { nodeLibConnectStandard } from '../time-travel/standard-functions';
@@ -9,6 +8,8 @@ import { getLayersData } from '../localization/layers-data';
 import { getLayersMigrationArchivedContentRef } from '../time-travel/layers-migration-refs';
 import { Content } from '/lib/xp/content';
 import { ContentDescriptor } from '../../types/content-types/content-config';
+import { isContentLocalized } from '../localization/locale-utils';
+import { CONTENT_ROOT_REPO_ID } from '../constants';
 
 const MAX_VERSIONS_COUNT_TO_RETRIEVE = 2000;
 
@@ -24,13 +25,30 @@ type GetNodeVersionsParams = {
     modifiedOnly?: boolean;
 };
 
+// For non-localized content, we need to retrieve content from the default repo
+// as the locale layer content will not have a complete version history
+const getRepoIdForLocalizedContent = ({
+    nodeKey,
+    repoId,
+    branch,
+}: GetNodeVersionsParams): string => {
+    const selectedRepo = nodeLibConnectStandard({ repoId, branch });
+    const selectedContent = selectedRepo.get<Content>(nodeKey);
+
+    return !selectedContent ||
+        selectedContent._nodeType !== 'content' ||
+        isContentLocalized(selectedContent)
+        ? repoId
+        : CONTENT_ROOT_REPO_ID;
+};
+
 export const getNodeVersions = ({
     nodeKey,
     repoId,
     branch,
     modifiedOnly = false,
 }: GetNodeVersionsParams): NodeVersion[] => {
-    const repo = getRepoConnection({ repoId, branch });
+    const repo = nodeLibConnectStandard({ repoId, branch });
 
     const result = repo.findVersions({
         key: nodeKey,
@@ -80,20 +98,26 @@ export const getNodeVersions = ({
     return modifiedVersions;
 };
 
-export const getVersionFromTime = ({
+export const getContentVersionFromTime = ({
     nodeKey,
     unixTime,
     repoId,
     branch,
     getOldestIfNotFound,
+    localizedOnly,
 }: {
     nodeKey: string;
     unixTime: number;
     repoId: string;
     branch: RepoBranch;
     getOldestIfNotFound: boolean;
+    localizedOnly?: boolean;
 }) => {
-    const contentVersions = getNodeVersions({ nodeKey, repoId, branch });
+    const repoIdActual = localizedOnly
+        ? getRepoIdForLocalizedContent({ nodeKey, repoId, branch })
+        : repoId;
+
+    const contentVersions = getNodeVersions({ nodeKey, repoId: repoIdActual, branch });
     const length = contentVersions?.length;
     if (!length) {
         return null;
@@ -105,11 +129,10 @@ export const getVersionFromTime = ({
         return unixTime >= versionUnixTime;
     });
 
-    if (!foundVersion && getOldestIfNotFound) {
-        return contentVersions[length - 1];
-    }
+    const foundVersionFinal =
+        !foundVersion && getOldestIfNotFound ? contentVersions[length - 1] : foundVersion;
 
-    return foundVersion;
+    return foundVersionFinal ? { ...foundVersionFinal, repoId: repoIdActual } : foundVersionFinal;
 };
 
 const getLayerMigrationVersionRefs = ({
@@ -121,7 +144,7 @@ const getLayerMigrationVersionRefs = ({
     repoId: string;
     branch: RepoBranch;
 }): VersionHistoryReference[] => {
-    const contentNode = getRepoConnection({ repoId, branch: 'draft' }).get(nodeKey);
+    const contentNode = nodeLibConnectStandard({ repoId, branch: 'draft' }).get(nodeKey);
     if (!contentNode) {
         return [];
     }
@@ -151,7 +174,7 @@ const getLayerMigrationVersionRefs = ({
 // in the same way as the Content Studio editor. We always need to include all timestamps for these
 // types.
 const shouldGetModifiedTimestampsOnly = (contentRef: string, repoId: string) => {
-    const content = getRepoConnection({
+    const content = nodeLibConnectStandard({
         repoId,
         branch: 'master',
     }).get<Content>(contentRef);

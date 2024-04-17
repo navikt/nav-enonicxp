@@ -6,7 +6,7 @@ import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { SITECONTENT_404_MSG_PREFIX } from '../../lib/constants';
 import { forceArray } from '../../lib/utils/array-utils';
 import { getRepoConnection } from '../../lib/utils/repo-utils';
-import { getNodeVersions, getVersionFromTime } from '../../lib/utils/version-utils';
+import { getNodeVersions, getContentVersionFromTime } from '../../lib/utils/version-utils';
 import { runInTimeTravelContext } from '../../lib/time-travel/run-with-time-travel';
 import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-sitecontent-query';
 import { isUUID } from '../../lib/utils/uuid';
@@ -81,7 +81,7 @@ const getPreArchiveContent = (idOrArchivedPath: string, repoId: string, time?: s
     const preArchivedVersions = getPreArchivedVersions(archivedNode._id, repoId);
 
     const requestedVersion = time
-        ? getVersionFromTime({
+        ? getContentVersionFromTime({
               nodeKey: contentRef,
               unixTime: getUnixTimeFromDateTimeString(time),
               repoId,
