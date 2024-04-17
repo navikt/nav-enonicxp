@@ -1,5 +1,5 @@
 import { OfficeContent } from '../../../office-pages/types';
-import { forceArray } from '../../../utils/array-utils';
+import { forceArray, removeDuplicatesFilter } from '../../../utils/array-utils';
 import { capitalize } from '../../../utils/string-utils';
 
 const INGRESS_MAX_LENGTH = 500;
@@ -17,7 +17,8 @@ export const buildSearchDocumentOfficeIngress = (content: OfficeContent) => {
             (mottak) =>
                 mottak.besoeksadresse?.type === 'stedsadresse' && !!mottak.besoeksadresse.poststed
         )
-        .map((mottak) => capitalize(mottak.besoeksadresse?.poststed as string));
+        .map((mottak) => capitalize(mottak.besoeksadresse?.poststed as string))
+        .filter(removeDuplicatesFilter());
 
     if (poststeder.length === 0) {
         return DEFAULT_OFFICE_INGRESS;
@@ -28,7 +29,7 @@ export const buildSearchDocumentOfficeIngress = (content: OfficeContent) => {
             ? poststeder[0]
             : `${poststeder.slice(0, -1).join(', ')} og ${poststeder.slice(-1)}`;
 
-    return `Lokalkontor for ${poststederStr}`;
+    return `Lokalkontor i ${poststederStr}`;
 };
 
 const withoutTable = (text: string) => text.split('<table')[0];
