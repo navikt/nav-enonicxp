@@ -1,64 +1,39 @@
 import { OfficeContent } from '../../../office-pages/types';
-import { forceArray } from '../../../utils/array-utils';
-import { OfficeBranch } from '@xp-types/site/content-types/office-branch';
+import { forceArray, removeDuplicatesFilter } from '../../../utils/array-utils';
+import { capitalize } from '../../../utils/string-utils';
 
-type Publikumsmottak = NonNullable<NonNullable<OfficeBranch['brukerkontakt']>['publikumsmottak']>;
+const INGRESS_MAX_LENGTH = 500;
 
-const DEFAULT_PHONE = '55 55 33 33';
+const DEFAULT_OFFICE_INGRESS = 'Kontorinformasjon';
 
-const buildPhoneElement = (phoneNr?: string) =>
-    `<strong>Telefon:</strong> ${phoneNr || DEFAULT_PHONE}`;
-
-const buildAddressElement = (mottakList?: Publikumsmottak) => {
-    const address = forceArray(mottakList).find(
-        (mottak) => mottak.besoeksadresse?.type === 'stedsadresse'
-    )?.besoeksadresse;
-
-    if (!address) {
-        return null;
+export const buildSearchDocumentOfficeIngress = (content: OfficeContent) => {
+    const isLocalOffice = content.type === 'no.nav.navno:office-branch';
+    if (!isLocalOffice) {
+        return DEFAULT_OFFICE_INGRESS;
     }
 
-    const {
-        gatenavn = '',
-        husnummer = '',
-        husbokstav = '',
-        postnummer = '',
-        poststed = '',
-    } = address;
+    const poststeder = forceArray(content.data.brukerkontakt?.publikumsmottak)
+        .filter(
+            (mottak) =>
+                mottak.besoeksadresse?.type === 'stedsadresse' && !!mottak.besoeksadresse.poststed
+        )
+        .map((mottak) => capitalize(mottak.besoeksadresse?.poststed as string))
+        .filter(removeDuplicatesFilter());
 
-    const husNrOgBokstav = husnummer || husbokstav ? ` ${husnummer}${husbokstav}` : '';
-
-    return `<strong>Publikumsmottak:</strong> ${gatenavn}${husNrOgBokstav}, ${postnummer} ${poststed.toUpperCase()}`;
-};
-
-export const buildSearchDocumentOfficeIngress = (content: OfficeContent): string => {
-    const isLegacyType = content.type === 'no.nav.navno:office-information';
-    const phoneElement = buildPhoneElement(
-        isLegacyType ? content.data.kontaktinformasjon?.telefonnummer : DEFAULT_PHONE
-    );
-
-    if (content.type === 'no.nav.navno:office-page') {
-        const address = buildAddressElement(
-            content.data.officeNorgData?.data?.brukerkontakt?.publikumsmottak
-        );
-        return address ? `${phoneElement}<br />${address}` : phoneElement;
+    if (poststeder.length === 0) {
+        return DEFAULT_OFFICE_INGRESS;
     }
 
-    const addressElement = buildAddressElement(
-        isLegacyType
-            ? content.data.kontaktinformasjon?.publikumsmottak
-            : content.data.brukerkontakt?.publikumsmottak
-    );
+    const poststederStr =
+        poststeder.length === 1
+            ? poststeder[0]
+            : `${poststeder.slice(0, -1).join(', ')} og ${poststeder.slice(-1)}`;
 
-    if (!addressElement) {
-        return phoneElement;
-    }
-
-    return `${phoneElement}<br/>${addressElement}`;
+    return `Lokalkontor i ${poststederStr}`;
 };
 
 const withoutTable = (text: string) => text.split('<table')[0];
 
 export const buildSearchDocumentIngress = (ingressTextRaw?: string) => {
-    return ingressTextRaw ? withoutTable(ingressTextRaw) : '';
+    return ingressTextRaw ? withoutTable(ingressTextRaw).slice(0, INGRESS_MAX_LENGTH) : '';
 };
