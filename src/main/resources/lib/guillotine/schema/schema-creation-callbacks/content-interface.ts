@@ -1,4 +1,4 @@
-import graphQlLib, { GraphQLResolverEnvironment } from '/lib/graphql';
+import graphQlLib from '/lib/graphql';
 import * as contextLib from '/lib/xp/context';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import { getLocaleFromContext } from '../../../localization/locale-context';
@@ -7,6 +7,28 @@ import { logger } from '../../../utils/logging';
 import { getRepoConnection } from '../../../utils/repo-utils';
 import { Content } from '/lib/xp/content';
 import { forceArray } from '../../../utils/array-utils';
+
+const componentsResolveForPath = (contentId: string, componentPath: string) => {
+    const { repository, branch } = contextLib.get();
+
+    const contentNode = getRepoConnection({ repoId: repository, branch }).get<Content>(contentId);
+    if (!contentNode) {
+        return null;
+    }
+
+    const componentsForPath = forceArray(contentNode.components).filter((component) =>
+        component.path.startsWith(componentPath)
+    );
+
+    if (componentsForPath.length === 0) {
+        logger.warning(
+            `Invalid component path ${componentPath} on content ${contentId}[${repository}][${branch}] - no components found`
+        );
+        return null;
+    }
+
+    return componentsForPath;
+};
 
 export const contentInterfaceCallback: CreationCallback = (context, params) => {
     params.fields._path.resolve = (env) => {
@@ -23,28 +45,8 @@ export const contentInterfaceCallback: CreationCallback = (context, params) => {
 
     params.fields.components.resolve = (env) => {
         const { path } = env.args;
-        if (!path) {
-            return componentsResolveOriginal(env);
-        }
-
-        const { _id } = env.source;
-        const { repository, branch } = contextLib.get();
-
-        const contentNode = getRepoConnection({ repoId: repository, branch }).get<Content>(_id);
-        if (!contentNode) {
-            return null;
-        }
-
-        const { components } = contentNode;
-
-        const componentWithChildren = forceArray(components).filter((c) => c.path.startsWith(path));
-        if (componentWithChildren.length === 0) {
-            logger.warning(
-                `Invalid component path ${path} on content ${_id}[${repository}][${branch}] - no components found`
-            );
-            return null;
-        }
-
-        return componentWithChildren;
+        return path
+            ? componentsResolveForPath(env.source._id, path)
+            : componentsResolveOriginal(env);
     };
 };
