@@ -68,7 +68,7 @@ export const runSitecontentGuillotineQuery = (
     };
 };
 
-const processComponentsQuery = (
+const processComponentsQueryResult = (
     baseContent: Content,
     components: GuillotineComponent[],
     queryParams: GuillotineQueryParams
@@ -135,7 +135,7 @@ export const runGuillotineComponentsQuery = (
         return { components: [], fragments: [] };
     }
 
-    return processComponentsQuery(baseContent, result.components, queryParams);
+    return processComponentsQueryResult(baseContent, result.components, queryParams);
 };
 
 export const runGuillotineComponentPreviewQuery = (baseContent: Content, componentPath: string) => {
@@ -154,7 +154,7 @@ export const runGuillotineComponentPreviewQuery = (baseContent: Content, compone
         return null;
     }
 
-    return processComponentsQuery(baseContent, result.components, queryParams);
+    return processComponentsQueryResult(baseContent, result.components, queryParams);
 };
 
 const buildOfficeBranchPageWithEditorialContent = (contentQueryResult: any) => {
