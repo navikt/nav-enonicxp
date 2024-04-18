@@ -1,0 +1,11 @@
+#import "../fragments/components/allComponentsFragment.graphql"
+
+query componentPreviewQuery($ref: ID!, $componentPath: String!) {
+    guillotine {
+        get(key: $ref) {
+            components(resolveTemplate: true, resolveFragment: false) {
+                ...allComponents
+            }
+        }
+    }
+}
