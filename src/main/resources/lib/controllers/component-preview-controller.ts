@@ -31,20 +31,30 @@ const getComponentProps = () => {
 
     const result = runGuillotineComponentPreviewQuery(content, portalComponent.path);
     if (!result) {
+        logger.warning(`Could not resolve component for ${portalComponent.path} ${content._id}`);
         return null;
     }
 
     const { components, fragments } = result;
 
-    // Fragments are already fully processed in the components query
-    if (portalComponent.type === 'fragment') {
-        return fragments.find((fragment) => fragment.path === portalComponent.path);
-    }
-
     const rootComponent = components.find((component) => component.path === portalComponent.path);
     if (!rootComponent) {
-        logger.warning('Root component not found in query result!');
+        logger.warning(
+            `Root component not found in query result for ${portalComponent.path} ${content._id}`
+        );
         return null;
+    }
+
+    // Fragments are already fully processed in the components query
+    if (rootComponent.type === 'fragment') {
+        const rootFragment = fragments.find((fragment) => fragment.path === portalComponent.path);
+        if (!rootFragment) {
+            logger.warning(
+                `Root fragment not found in query result for  ${portalComponent.path} ${content._id}`
+            );
+        }
+
+        return rootFragment;
     }
 
     // Layouts must include components in its regions
@@ -64,14 +74,12 @@ const getContentProps = (): Content | null => {
         return null;
     }
 
-    const contentQueryResult = runGuillotineContentQuery(content, {
+    return runGuillotineContentQuery(content, {
         branch: 'draft',
         params: {
             ref: content._id,
         },
     });
-
-    return contentQueryResult;
 };
 
 // This controller fetches component-HTML from the frontend rendered with the
@@ -85,13 +93,14 @@ export const componentPreviewController = (_: XP.Request) => {
         return fallbackResponse;
     }
 
-    const contentProps = getContentProps();
-
     try {
         const componentHtml = httpClient.request({
             url: `${URLS.FRONTEND_ORIGIN}/api/component-preview`,
             method: 'POST',
-            body: JSON.stringify({ props: componentProps, contentProps }),
+            body: JSON.stringify({
+                props: componentProps,
+                contentProps: getContentProps(),
+            }),
             contentType: 'application/json',
             headers: {
                 secret: app.config.serviceSecret,
