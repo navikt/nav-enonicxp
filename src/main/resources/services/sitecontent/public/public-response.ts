@@ -7,7 +7,7 @@ import { sitecontentNotFoundRedirect } from './not-found-redirects';
 const ONE_DAY = 60 * 60 * 24;
 const CACHE_NULL_VALUE_EXCEPTION_MESSAGE = 'CacheLoader returned null for key';
 
-const cache = cacheLib.newCache({ size: 10000, expire: ONE_DAY });
+const cache = cacheLib.newCache({ size: 2000, expire: ONE_DAY });
 
 const _sitecontentPublicResponse = ({
     idOrPath,
