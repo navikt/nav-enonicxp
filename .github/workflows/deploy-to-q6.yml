@@ -12,7 +12,7 @@ jobs:
       NAIS_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
     with:
       imagename: 'q6-deploy'
-      xpVersion: '7.14.0'
+      xpVersion: '7.14.1'
   deploy:
     uses: ./.github/workflows/deploy-with-naisjob.yml
     needs: build
