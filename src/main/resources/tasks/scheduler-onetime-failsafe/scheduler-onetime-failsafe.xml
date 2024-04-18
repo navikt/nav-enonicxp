@@ -1,3 +1,0 @@
-<task>
-    <description>Check if any one-time scheduled tasks have failed to run, and if so run them</description>
-</task>

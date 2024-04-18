@@ -8,7 +8,7 @@ import * as contentLib from '/lib/xp/content';
 import * as nodeLib from '/lib/xp/node';
 import * as contextLib from '/lib/xp/context';
 import { RepoConnection } from '/lib/xp/node';
-import { getNodeKey, getVersionFromTime } from '../utils/version-utils';
+import { getNodeKey, getContentVersionFromTime } from '../utils/version-utils';
 import { runInContext } from '../context/run-in-context';
 import { logger } from '../utils/logging';
 import { contentLibGetStandard, nodeLibConnectStandard } from './standard-functions';
@@ -61,12 +61,13 @@ export const hookLibsWithTimeTravel = () => {
             timeTravelBaseContentKey,
         } = timeTravelContext;
 
-        const requestedVersion = getVersionFromTime({
+        const requestedVersion = getContentVersionFromTime({
             nodeKey: getNodeKey(key),
             repoId: timeTravelRepoId,
             branch: timeTravelBranch,
             unixTime: timeTravelTargetUnixTime,
             getOldestIfNotFound: key === timeTravelBaseContentKey,
+            localizedOnly: true,
         });
 
         if (!requestedVersion) {
@@ -75,7 +76,7 @@ export const hookLibsWithTimeTravel = () => {
 
         // If a content node version from the requested time was found, retrieve this
         // content with standard functionality
-        return runInContext({ branch: 'draft' }, () =>
+        return runInContext({ branch: 'draft', repository: requestedVersion.repoId }, () =>
             contentLibGetStandard({
                 key: requestedVersion.nodeId,
                 versionId: requestedVersion.versionId,
@@ -119,7 +120,7 @@ export const hookLibsWithTimeTravel = () => {
         };
 
         const getNode = (nodeKey: string) => {
-            const requestedVersion = getVersionFromTime({
+            const requestedVersion = getContentVersionFromTime({
                 nodeKey,
                 repoId: timeTravelRepoId,
                 branch: timeTravelBranch,
