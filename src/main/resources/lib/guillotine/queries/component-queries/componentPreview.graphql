@@ -1,9 +1,10 @@
 #import "../fragments/components/allComponentsFragment.graphql"
+#import "../fragments/contentCommonFragment.graphql"
 
-query componentPreviewQuery($ref: ID!, $componentPath: String!) {
+query componentPreviewQuery($ref: ID!, $path: String!) {
     guillotine {
         get(key: $ref) {
-            components(resolveTemplate: true, resolveFragment: false) {
+            components(path: $path, resolveTemplate: true, resolveFragment: false) {
                 ...allComponents
             }
         }
