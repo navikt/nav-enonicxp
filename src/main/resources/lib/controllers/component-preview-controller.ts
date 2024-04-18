@@ -36,19 +36,19 @@ const getComponentProps = () => {
 
     const { components, fragments } = result;
 
+    // Fragments are already fully processed in the components query
+    if (portalComponent.type === 'fragment') {
+        return fragments.find((fragment) => fragment.path === portalComponent.path);
+    }
+
     const rootComponent = components.find((component) => component.path === portalComponent.path);
     if (!rootComponent) {
         logger.warning('Root component not found in query result!');
         return null;
     }
 
-    // Fragments are already fully processed in the components query
-    if (rootComponent.type === 'fragment') {
-        return rootComponent;
-    }
-
     // Layouts must include components in its regions
-    if (rootComponent.type === 'layout') {
+    if (portalComponent.type === 'layout') {
         return insertComponentsIntoRegions(portalComponent, components, fragments);
     }
 

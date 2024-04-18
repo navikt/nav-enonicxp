@@ -19,8 +19,7 @@ export const contentInterfaceCallback: CreationCallback = (context, params) => {
         path: graphQlLib.GraphQLString,
     };
 
-    const componentsResolveOriginal =
-        params.fields.components.resolve || ((_: GraphQLResolverEnvironment) => null);
+    const componentsResolveOriginal = params.fields.components.resolve!;
 
     params.fields.components.resolve = (env) => {
         const { path } = env.args;
