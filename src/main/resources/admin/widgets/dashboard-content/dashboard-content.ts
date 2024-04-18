@@ -141,7 +141,8 @@ const getUsersLastContent = () => {
 
     const { published, prePublished, unPublished } = dashboardContentBuildPublishLists(user);
 
-    const modified = getUsersModifications(user);
+    // TODO: this needs to be optimized before enabling
+    const modified: DashboardContentInfo[] = []; // getUsersModifications(user);
 
     return {
         body: thymeleafLib.render(view, {
