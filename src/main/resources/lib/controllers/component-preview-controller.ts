@@ -1,13 +1,14 @@
 import * as portalLib from '/lib/xp/portal';
 import httpClient from '/lib/http-client';
 import { URLS } from '../constants';
+import { logger } from '../utils/logging';
+import { runGuillotineComponentPreviewQuery } from '../guillotine/queries/run-sitecontent-query';
 import {
     destructureComponent,
     insertComponentsIntoRegions,
 } from '../guillotine/utils/process-components';
-import { logger } from '../utils/logging';
-import { runGuillotineComponentsQuery } from '../guillotine/queries/run-sitecontent-query';
-import { runInLocaleContext } from '../localization/locale-context';
+import { runGuillotineContentQuery } from '../guillotine/queries/run-content-query';
+import { Content } from '/lib/xp/portal';
 
 const fallbackResponse = {
     contentType: 'text/html',
@@ -28,40 +29,57 @@ const getComponentProps = () => {
         return null;
     }
 
-    const { components, fragments } = runInLocaleContext({ locale: content.language }, () =>
-        runGuillotineComponentsQuery(
-            {
-                params: {
-                    ref: content._id,
-                },
-                branch: 'draft',
-            },
-            content
-        )
-    );
+    const result = runGuillotineComponentPreviewQuery(content, portalComponent.path);
+    if (!result) {
+        logger.warning(`Could not resolve component for ${portalComponent.path} ${content._id}`);
+        return null;
+    }
 
-    const componentPath = portalComponent.path || '/';
+    const { components, fragments } = result;
 
-    const componentFromGuillotine = components.find(
-        (guillotineComponent: any) => guillotineComponent.path === componentPath
-    );
-
-    if (!componentFromGuillotine) {
+    const rootComponent = components.find((component) => component.path === portalComponent.path);
+    if (!rootComponent) {
+        logger.warning(
+            `Root component not found in query result for ${portalComponent.path} ${content._id}`
+        );
         return null;
     }
 
     // Fragments are already fully processed in the components query
-    if (componentFromGuillotine.type === 'fragment') {
-        return fragments.find((fragment) => fragment.path === componentPath);
+    if (rootComponent.type === 'fragment') {
+        const rootFragment = fragments.find((fragment) => fragment.path === portalComponent.path);
+        if (!rootFragment) {
+            logger.warning(
+                `Root fragment not found in query result for  ${portalComponent.path} ${content._id}`
+            );
+        }
+
+        return rootFragment;
     }
 
     // Layouts must include components in its regions
-    if (componentFromGuillotine.type === 'layout') {
+    if (portalComponent.type === 'layout') {
         return insertComponentsIntoRegions(portalComponent, components, fragments);
     }
 
     // Parts need to be destructured into the structure the frontend expects for rendering
-    return destructureComponent(componentFromGuillotine);
+    return destructureComponent(rootComponent);
+};
+
+const getContentProps = (): Content | null => {
+    const content = portalLib.getContent();
+
+    if (!content) {
+        logger.warning('Could not get content from context!');
+        return null;
+    }
+
+    return runGuillotineContentQuery(content, {
+        branch: 'draft',
+        params: {
+            ref: content._id,
+        },
+    });
 };
 
 // This controller fetches component-HTML from the frontend rendered with the
@@ -79,7 +97,10 @@ export const componentPreviewController = (_: XP.Request) => {
         const componentHtml = httpClient.request({
             url: `${URLS.FRONTEND_ORIGIN}/api/component-preview`,
             method: 'POST',
-            body: JSON.stringify({ props: componentProps }),
+            body: JSON.stringify({
+                props: componentProps,
+                contentProps: getContentProps(),
+            }),
             contentType: 'application/json',
             headers: {
                 secret: app.config.serviceSecret,

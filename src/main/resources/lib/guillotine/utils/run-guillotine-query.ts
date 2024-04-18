@@ -46,11 +46,7 @@ export const runGuillotineQuery = ({
             .join(' :: ')}`;
 
         if (throwOnErrors) {
-            throw new Error(
-                `GraphQL errors for ${JSON.stringify(params)}: ${errors
-                    .map((error) => error.message)
-                    .join(' :: ')}`
-            );
+            throw new Error(errorMsg);
         } else {
             logger.error(errorMsg);
         }
