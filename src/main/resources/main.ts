@@ -11,7 +11,6 @@ import {
 import { updateClusterInfo } from './lib/cluster-utils/cluster-api';
 import { startOfficeInfoPeriodicUpdateSchedule } from './lib/office-pages/_legacy-office-information/legacy-office-update';
 import { activateContentListItemUnpublishedListener } from './lib/contentlists/remove-unpublished';
-import { startFailsafeSchedule } from './lib/scheduling/scheduler-failsafe';
 import { activateCustomPathNodeListeners } from './lib/paths/custom-paths/custom-path-event-listeners';
 import { createOfficeBranchFetchSchedule } from './lib/office-pages/office-branch-tasks';
 import { createOfficeFetchSchedule } from './lib/office-pages/office-tasks';
@@ -37,7 +36,6 @@ if (clusterLib.isMaster()) {
 createOfficeBranchFetchSchedule();
 createOfficeFetchSchedule();
 startOfficeInfoPeriodicUpdateSchedule();
-startFailsafeSchedule();
 activateLayersEventListeners();
 activateCacheEventListeners();
 activateSitemapDataUpdateEventListener();
