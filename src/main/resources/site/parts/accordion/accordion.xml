@@ -11,7 +11,7 @@
                 </input>
                 <input name="anchorId" type="TextLine">
                     <label>Ankerid</label>
-                    <help-text>Setter inn anker-id som kan brukes i URL, feks slik: https://www.nav.no/barnebidrag#privatavtale</help-text>
+                    <help-text>Setter inn anker-id som kan legges til etter selve url'en.</help-text>
                     <occurrences minimum="0" maximum="1"/>
                 </input>
                 <input name="html" type="HtmlArea">
