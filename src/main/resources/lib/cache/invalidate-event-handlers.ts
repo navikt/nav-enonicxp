@@ -16,13 +16,12 @@ import { customListenerType } from '../utils/events';
 import { getRepoConnection } from '../utils/repo-utils';
 import { isContentLocalized } from '../localization/locale-utils';
 import { scheduleContactInformationInvalidation } from './invalidate-special-content-types';
-import { NAVNO_ROOT_PATH } from '../constants';
+import { NAVNO_NODE_ROOT_PATH } from '../constants';
 import { isMainDatanode } from '../cluster-utils/main-datanode';
 import { updateExternalSearchDocumentForContent } from '../search/update-one';
+import { draftCacheInvalidateOnUpdateEvent } from './draft-cache';
 
 let hasSetupListeners = false;
-
-const NODE_ROOT_PATH = `/content${NAVNO_ROOT_PATH}/`;
 
 const nodeListenerCallback = (event: EnonicEvent) => {
     if (isDeferringCacheInvalidation()) {
@@ -34,7 +33,7 @@ const nodeListenerCallback = (event: EnonicEvent) => {
             return;
         }
 
-        if (!node.path.startsWith(NODE_ROOT_PATH)) {
+        if (!node.path.startsWith(NAVNO_NODE_ROOT_PATH)) {
             return;
         }
 
@@ -110,6 +109,13 @@ export const activateCacheEventListeners = () => {
         type: customListenerType(LOCAL_CACHE_INVALIDATION_EVENT_NAME),
         localOnly: false,
         callback: invalidateLocalCache,
+    });
+
+    // Invalidate the draft cache on every content update
+    eventLib.listener({
+        type: 'node.updated',
+        localOnly: false,
+        callback: draftCacheInvalidateOnUpdateEvent,
     });
 
     // This event is sent via the Content Studio widget for manual invalidation of a single page
