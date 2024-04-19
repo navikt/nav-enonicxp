@@ -1,6 +1,5 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import cacheLib from '/lib/cache';
 import { logger } from '../../../lib/utils/logging';
 import { getLayersData, isValidLocale } from '../../../lib/localization/layers-data';
 import { runInLocaleContext } from '../../../lib/localization/locale-context';
@@ -11,27 +10,12 @@ import { sitecontentContentResponse, SitecontentResponse } from '../common/conte
 import { findTargetContentAndLocale as findTargetContentPublic } from '../common/find-target-content-and-locale';
 import { sitecontentNotFoundRedirect } from '../public/not-found-redirects';
 import { isUUID } from '../../../lib/utils/uuid';
-import { getRepoConnection } from '../../../lib/utils/repo-utils';
-
-const ONE_HOUR = 60 * 60;
-const guillotineCache = cacheLib.newCache({ size: 2000, expire: ONE_HOUR });
+import { getFromDraftCache } from '../../../lib/cache/draft-cache';
 
 const resolveWithGuillotine = (content: Content, locale: string) => {
-    // The cache should only be valid for the current content version
-    const cacheKey = getRepoConnection({
-        repoId: getLayersData().localeToRepoIdMap[locale],
-        branch: 'draft',
-        asAdmin: true,
-    }).get<Content>(content._id)!._versionKey;
-
-    try {
-        return guillotineCache.get(cacheKey, () =>
-            sitecontentContentResponse({ baseContent: content, branch: 'draft', locale })
-        );
-    } catch (e) {
-        logger.warning(`Error while resolving draft content for ${content._id} / ${locale} - ${e}`);
-        return null;
-    }
+    return getFromDraftCache(content._id, locale, () =>
+        sitecontentContentResponse({ baseContent: content, branch: 'draft', locale })
+    );
 };
 
 const contentTypesForGuillotineQuery: ReadonlySet<ContentDescriptor> = new Set(

@@ -69,7 +69,7 @@ module.exports = {
                         'message': 'Imports from /lib/xp/* must not be prefixed with anything',
                     },
                     {
-                        'group': ['\@enonic-types/*'],
+                        'group': ['@enonic-types/*'],
                         'message': '@enonic-types modules should not be imported directly (use /lib/xp/*)',
                     },
                     {
