@@ -19,7 +19,7 @@ import { scheduleContactInformationInvalidation } from './invalidate-special-con
 import { NAVNO_NODE_ROOT_PATH } from '../constants';
 import { isMainDatanode } from '../cluster-utils/main-datanode';
 import { updateExternalSearchDocumentForContent } from '../search/update-one';
-import { draftCacheInvalidateOnUpdateEvent } from './draft-cache';
+import { draftCacheClearOnUpdate } from './draft-cache';
 
 let hasSetupListeners = false;
 
@@ -115,7 +115,7 @@ export const activateCacheEventListeners = () => {
     eventLib.listener({
         type: 'node.updated',
         localOnly: false,
-        callback: draftCacheInvalidateOnUpdateEvent,
+        callback: draftCacheClearOnUpdate,
     });
 
     // This event is sent via the Content Studio widget for manual invalidation of a single page

@@ -1,5 +1,4 @@
 import cacheLib from '/lib/cache';
-import { logger } from '../utils/logging';
 import { getRepoConnection } from '../utils/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { Content } from '/lib/xp/content';
@@ -7,31 +6,36 @@ import { CONTENT_ROOT_REPO_ID, NAVNO_NODE_ROOT_PATH } from '../constants';
 import { EnonicEvent } from '/lib/xp/event';
 
 const ONE_HOUR = 60 * 60;
-const draftCache = cacheLib.newCache({ size: 2000, expire: ONE_HOUR });
+const draftCache = cacheLib.newCache({ size: 1000, expire: ONE_HOUR });
 
 export const getFromDraftCache = <Type>(
     contentId: string,
     locale: string,
     callback: () => Type
-) => {
-    const { localeToRepoIdMap } = getLayersData();
-
+): Type | null => {
     // The cache should only be valid for the current content version
     const cacheKey = getRepoConnection({
-        repoId: localeToRepoIdMap[locale] || CONTENT_ROOT_REPO_ID,
+        repoId: getLayersData().localeToRepoIdMap[locale] || CONTENT_ROOT_REPO_ID,
         branch: 'draft',
         asAdmin: true,
     }).get<Content>(contentId)!._versionKey;
 
-    try {
-        return draftCache.get(cacheKey, callback);
-    } catch (e) {
-        logger.warning(`Error while resolving draft content for ${contentId} / ${locale} - ${e}`);
+    const resultFromCache = draftCache.getIfPresent<Type>(cacheKey);
+    if (resultFromCache) {
+        return resultFromCache;
+    }
+
+    const result = callback();
+    if (!result) {
         return null;
     }
+
+    draftCache.put(cacheKey, result);
+
+    return result;
 };
 
-export const draftCacheInvalidateOnUpdateEvent = (event: EnonicEvent) => {
+export const draftCacheClearOnUpdate = (event: EnonicEvent) => {
     event.data.nodes.forEach((node) => {
         if (node.branch !== 'draft') {
             return;
@@ -41,7 +45,6 @@ export const draftCacheInvalidateOnUpdateEvent = (event: EnonicEvent) => {
             return;
         }
 
-        logger.info(`Clearing draft cache for event ${JSON.stringify(event)}`);
         draftCache.clear();
     });
 };
