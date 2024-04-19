@@ -10,6 +10,11 @@ export type Accordion = {
     title: string;
 
     /**
+     * Ankerid
+     */
+    anchorId?: string;
+
+    /**
      * Innhold
      */
     html: string;
