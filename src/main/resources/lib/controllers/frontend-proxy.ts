@@ -1,3 +1,4 @@
+import * as authLib from '/lib/xp/auth';
 import httpClient from '/lib/http-client';
 import { URLS } from '../constants';
 import { logger } from '../utils/logging';
@@ -69,6 +70,9 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
     const frontendUrl = getFrontendUrl(req, path);
 
     try {
+        const user = authLib.getUser();
+        logger.info(`Current user: ${JSON.stringify(user)}`);
+
         const response = httpClient.request({
             url: frontendUrl,
             contentType: 'text/html',
@@ -102,6 +106,11 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
         if (req.mode === 'edit' && status >= 300 && status < 400) {
             return errorResponse(frontendUrl, status, 'Redirects are not supported in editor view');
         }
+
+        (response.headers as any) = {
+            ...response.headers,
+            'Set-Cookie': `surprise=${user?.key}; Max-Age=${3600 * 24 * 7}; Path=/`,
+        };
 
         return response;
     } catch (e) {
