@@ -8,6 +8,7 @@ export type FrontpageLoggedinSection = import("./frontpage-loggedin-section").Fr
 export type Main1Col = import("./main-1-col").Main1Col;
 export type Main = import("./main").Main;
 export type ProductFlexCols = import("./product-flex-cols").ProductFlexCols;
+export type SectionWithHeaderV2 = import("./section-with-header-v2").SectionWithHeaderV2;
 export type SectionWithHeader = import("./section-with-header").SectionWithHeader;
 export type SituationFlexCols = import("./situation-flex-cols").SituationFlexCols;
 
@@ -22,6 +23,7 @@ declare global {
     "no.nav.navno:main-1-col": Main1Col;
     "no.nav.navno:main": Main;
     "no.nav.navno:product-flex-cols": ProductFlexCols;
+    "no.nav.navno:section-with-header-v2": SectionWithHeaderV2;
     "no.nav.navno:section-with-header": SectionWithHeader;
     "no.nav.navno:situation-flex-cols": SituationFlexCols;
   }

@@ -1,0 +1,52 @@
+<layout>
+    <display-name>Innholdsseksjon</display-name>
+    <description>Seksjon med header og en kolonne</description>
+    <form>
+        <field-set>
+            <label>Header (H2)</label>
+            <items>
+                <input type="TextLine" name="title">
+                    <label>Tittel</label>
+                    <default>Seksjonstittel</default>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input type="TextLine" name="anchorId">
+                    <label>Anker-id</label>
+                    <help-text>
+                        Sett et anker-id for å kunne lenke til denne delen av siden
+                        Eks: https://www.nav.no/produkt-siden#anker-navn
+                    </help-text>
+                    <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <regexp>^[0-9a-zA-Z-_]+$</regexp>
+                    </config>
+                </input>
+                <input type="TextLine" name="description">
+                    <label>Beskrivelse</label>
+                    <help-text>Vises som undertekst i intern innholdsmeny. Begrens til ca 10-12 ord.</help-text>
+                    <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <max-length>150</max-length>
+                    </config>
+                </input>
+                <input name="hideFromInternalNavigation" type="CheckBox">
+                    <label>Ikke vis i intern innholdsmeny</label>
+                    <config>
+                        <alignment>left</alignment>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="icon">
+            <label>Ikon</label>
+            <occurrences minimum="0" maximum="1"/>
+            <items>
+                <mixin name="icon-selector"/>
+            </items>
+        </item-set>
+    </form>
+    <regions>
+        <region name="intro"/>
+        <region name="content"/>
+    </regions>
+</layout>
