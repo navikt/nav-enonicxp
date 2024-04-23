@@ -1,0 +1,7 @@
+<page>
+    <display-name>Side med en kolonne v2</display-name>
+    <description>En enkelt kolonne for innhold for v2 sidemaler</description>
+    <regions>
+        <region name="pageContent"/>
+    </regions>
+</page>
