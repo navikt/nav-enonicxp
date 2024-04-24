@@ -3,6 +3,7 @@
 fragment partComponentAccordion on Part_no_nav_navno_accordion {
     accordion {
         title
+        anchorId
         html(processHtml: { type: server }) {
             ...richText
         }

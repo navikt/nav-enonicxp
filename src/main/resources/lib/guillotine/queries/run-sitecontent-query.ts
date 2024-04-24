@@ -10,6 +10,7 @@ import {
 import { runGuillotineContentQuery } from './run-content-query';
 import { GuillotineQueryParams, runGuillotineQuery } from '../utils/run-guillotine-query';
 import componentsQuery from './component-queries/components.graphql';
+import componentPreviewQuery from './component-queries/componentPreview.graphql';
 import fragmentComponentsQuery from './component-queries/fragmentComponents.graphql';
 import { PortalComponent } from '../../../types/components/component-portal';
 import { guillotineTransformSpecialComponents } from './transform-special-components';
@@ -52,7 +53,7 @@ export const runSitecontentGuillotineQuery = (
 
     // Certain pages need extra queries for resolving.
     if (baseContent.type === 'no.nav.navno:office-page') {
-        return buildOfficePageWithEditorialContent(contentQueryResult);
+        return buildOfficeBranchPageWithEditorialContent(contentQueryResult);
     }
 
     const { components, fragments } = runGuillotineComponentsQuery(baseQueryParams, baseContent);
@@ -67,24 +68,11 @@ export const runSitecontentGuillotineQuery = (
     };
 };
 
-export const runGuillotineComponentsQuery = (
-    baseQueryParams: Omit<GuillotineQueryParams, 'query'>,
-    baseContent: Content
+const processComponentsQueryResult = (
+    baseContent: Content,
+    components: GuillotineComponent[],
+    queryParams: GuillotineQueryParams
 ) => {
-    const queryParams = {
-        ...baseQueryParams,
-        query: componentsQuery,
-        jsonBaseKeys: ['config', 'data'],
-    };
-
-    const result = runGuillotineQuery(queryParams)?.get as GuillotineComponentQueryResult;
-
-    if (!result) {
-        return { components: [], fragments: [] };
-    }
-
-    const { components } = result;
-
     // Resolve fragments through separate queries to workaround a bug in the Guillotine resolver which prevents
     // nested fragments from resolving
     const fragments = components.reduce<PortalComponent<'fragment'>[]>((acc, component) => {
@@ -124,14 +112,52 @@ export const runGuillotineComponentsQuery = (
     const transformedComponents = guillotineTransformSpecialComponents({
         components,
         baseContent,
-        branch: baseQueryParams.branch,
+        branch: queryParams.branch,
         runSitecontentGuillotineQuery,
     });
 
     return { components: transformedComponents, fragments };
 };
 
-const buildOfficePageWithEditorialContent = (contentQueryResult: any) => {
+export const runGuillotineComponentsQuery = (
+    baseQueryParams: Omit<GuillotineQueryParams, 'query'>,
+    baseContent: Content
+) => {
+    const queryParams: GuillotineQueryParams = {
+        ...baseQueryParams,
+        query: componentsQuery,
+        jsonBaseKeys: ['config', 'data'],
+    };
+
+    const result = runGuillotineQuery(queryParams)?.get as GuillotineComponentQueryResult;
+
+    if (!result) {
+        return { components: [], fragments: [] };
+    }
+
+    return processComponentsQueryResult(baseContent, result.components, queryParams);
+};
+
+export const runGuillotineComponentPreviewQuery = (baseContent: Content, componentPath: string) => {
+    const queryParams: GuillotineQueryParams = {
+        branch: 'draft',
+        query: componentPreviewQuery,
+        jsonBaseKeys: ['config', 'data'],
+        params: {
+            ref: baseContent._id,
+            path: componentPath,
+        },
+    };
+
+    const result = runGuillotineQuery(queryParams)?.get as GuillotineComponentQueryResult;
+    if (!result) {
+        return null;
+    }
+
+    return processComponentsQueryResult(baseContent, result.components, queryParams);
+};
+
+const buildOfficeBranchPageWithEditorialContent = (contentQueryResult: any) => {
     const officeEditorialPageContent = contentQueryResult?.editorial;
 
     // Editorial page is null if office is not of type LOKAL,

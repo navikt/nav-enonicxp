@@ -10,6 +10,13 @@ import { sitecontentContentResponse, SitecontentResponse } from '../common/conte
 import { findTargetContentAndLocale as findTargetContentPublic } from '../common/find-target-content-and-locale';
 import { sitecontentNotFoundRedirect } from '../public/not-found-redirects';
 import { isUUID } from '../../../lib/utils/uuid';
+import { getFromDraftCache } from '../../../lib/cache/draft-cache';
+
+const resolveWithGuillotine = (content: Content, locale: string) => {
+    return getFromDraftCache(content._id, locale, () =>
+        sitecontentContentResponse({ baseContent: content, branch: 'draft', locale })
+    );
+};
 
 const contentTypesForGuillotineQuery: ReadonlySet<ContentDescriptor> = new Set(
     contentTypesRenderedByEditorFrontend
@@ -62,7 +69,7 @@ export const sitecontentDraftResponse = ({
     // If the content type can not be resolved through Guillotine, just return the raw content,
     // which is used to show certain info in place of the normal preview
     const contentResolved = isGuillotineResolvable(content)
-        ? sitecontentContentResponse({ baseContent: content, branch: 'draft', locale })
+        ? resolveWithGuillotine(content, locale)
         : { ...content, contentLayer: locale };
 
     const localeRedirectTarget = getContentLocaleRedirectTarget(content);

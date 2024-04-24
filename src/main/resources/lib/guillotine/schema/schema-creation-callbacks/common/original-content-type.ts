@@ -3,6 +3,7 @@ import graphQlLib from '/lib/graphql';
 import * as contextLib from '/lib/xp/context';
 import { getNodeVersions } from '../../../../utils/version-utils';
 import { logger } from '../../../../utils/logging';
+import { getGuillotineContentQueryBaseContentId } from '../../../utils/content-query-context';
 
 // Find the original content type for a content source.
 //
@@ -27,6 +28,11 @@ export const insertOriginalContentTypeField = (params: graphQlLib.CreateObjectTy
                         env.source
                     )}`
                 );
+                return null;
+            }
+
+            const baseContentId = getGuillotineContentQueryBaseContentId();
+            if (baseContentId !== _id) {
                 return null;
             }
 

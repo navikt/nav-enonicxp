@@ -9,6 +9,11 @@
                     <label>Tittel</label>
                     <occurrences minimum="1" maximum="1"/>
                 </input>
+                <input name="anchorId" type="TextLine">
+                    <label>Ankerid</label>
+                    <help-text>Setter inn anker-id som kan legges til etter selve url'en.</help-text>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
                 <input name="html" type="HtmlArea">
                     <label>Innhold</label>
                     <occurrences minimum="1" maximum="1"/>

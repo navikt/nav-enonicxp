@@ -1,3 +1,5 @@
+import { CONTENT_ROOT_PATH } from '/lib/xp/content';
+
 type ServerEnv = typeof app.config.env;
 type EnvRecord = Record<ServerEnv, string>;
 
@@ -81,6 +83,7 @@ export const CONTENT_LOCALE_DEFAULT = 'no';
 
 export const SEARCH_REPO_ID = 'nav.no.search';
 export const NAVNO_ROOT_PATH = '/www.nav.no';
+export const NAVNO_NODE_ROOT_PATH = `${CONTENT_ROOT_PATH}${NAVNO_ROOT_PATH}`;
 export const REDIRECTS_PATH = '/redirects';
 export const REDIRECTS_ROOT_PATH = `${NAVNO_ROOT_PATH}${REDIRECTS_PATH}`;
 export const FRONTEND_APP_NAME = 'nav-enonicxp-frontend';
