@@ -1,0 +1,44 @@
+<content-type>
+    <display-name>Produktside v2</display-name>
+    <description>(Ikke klar til bruk)</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set>
+            <label>Tittel og ingress</label>
+            <items>
+                <mixin name="page-header"/>
+                <mixin name="ingress-required" />
+            </items>
+        </field-set>
+        <field-set>
+            <label>Produktdata</label>
+            <items>
+                <mixin name="audience" />
+                <mixin name="taxonomy" />
+                <mixin name="area" />
+            </items>
+        </field-set>
+        <mixin name="alternative-audience" />
+        <mixin name="related-situations" />
+        <field-set>
+            <label>Piktogram</label>
+            <items>
+                <mixin name="illustration" />
+            </items>
+        </field-set>
+        <field-set>
+            <label>URL</label>
+            <items>
+                <mixin name="external-product-url" />
+                <mixin name="custom-path-selector-required"/>
+            </items>
+        </field-set>
+        <mixin name="owner" />
+        <mixin name="managed-by" />
+        <mixin name="product-details-selector"/>
+        <mixin name="form-details-selector"/>
+    </form>
+</content-type>
