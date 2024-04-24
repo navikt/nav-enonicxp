@@ -40,6 +40,7 @@ export type PageList = import("./page-list").PageList;
 export type PayoutDates = import("./payout-dates").PayoutDates;
 export type PressLandingPage = import("./press-landing-page").PressLandingPage;
 export type ProductDetails = import("./product-details").ProductDetails;
+export type ProductPageV2 = import("./product-page-v2").ProductPageV2;
 export type PublishingCalendarEntry = import("./publishing-calendar-entry").PublishingCalendarEntry;
 export type PublishingCalendar = import("./publishing-calendar").PublishingCalendar;
 export type RedirectsFolder = import("./redirects-folder").RedirectsFolder;
@@ -97,6 +98,7 @@ declare global {
       "no.nav.navno:payout-dates": PayoutDates;
       "no.nav.navno:press-landing-page": PressLandingPage;
       "no.nav.navno:product-details": ProductDetails;
+      "no.nav.navno:product-page-v2": ProductPageV2;
       "no.nav.navno:publishing-calendar-entry": PublishingCalendarEntry;
       "no.nav.navno:publishing-calendar": PublishingCalendar;
       "no.nav.navno:redirects-folder": RedirectsFolder;
