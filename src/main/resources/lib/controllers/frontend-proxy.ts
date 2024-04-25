@@ -70,7 +70,7 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
 
     try {
         const response = httpClient.request({
-            url: frontendUrl,
+            url: encodeURI(frontendUrl),
             contentType: 'text/html',
             readTimeout: 30000,
             headers: {
