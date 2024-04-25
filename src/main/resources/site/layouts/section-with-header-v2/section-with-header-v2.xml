@@ -42,6 +42,9 @@
             </items>
         </item-set>
     </form>
+    <config>
+        <allow-on-content-type>${app}:product-page-v2</allow-on-content-type>
+    </config>
     <regions>
         <region name="intro"/>
         <region name="content"/>

@@ -1,5 +1,5 @@
 <layout>
-    <display-name>Innholdsseksjon (v1)</display-name>
+    <display-name>Innholdsseksjon</display-name>
     <description>Seksjon med header og en kolonne</description>
     <form>
         <field-set>

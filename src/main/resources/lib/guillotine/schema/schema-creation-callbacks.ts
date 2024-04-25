@@ -88,6 +88,8 @@ export const schemaCreationCallbacks: Record<string, CreationCallback> = {
     Part_no_nav_navno_page_navigation_menu: pageNavigationMenuCallback,
     Part_no_nav_navno_page_navigation_menu_AnchorLinks: anchorLinksCallback,
     Page_no_nav_navno_page_with_side_menus: pageNavigationMenuCallback,
+    Page_no_nav_navno_single_col_page_v2: pageNavigationMenuCallback,
+    Page_no_nav_navno_single_col_page_v2_AnchorLinks: anchorLinksCallback,
     Page_no_nav_navno_page_with_side_menus_AnchorLinks: anchorLinksCallback,
     Part_no_nav_navno_filters_menu_Filters: filterCallback,
     Part_no_nav_navno_form_details: formDetailsPartOrMacroCallback,

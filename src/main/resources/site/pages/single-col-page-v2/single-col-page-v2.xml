@@ -2,10 +2,7 @@
     <display-name>~Side med en kolonne v2 (ikke klar til bruk)</display-name>
     <description>En enkelt kolonne for innhold for v2 sidemaler</description>
     <form>
-        <input type="CheckBox" name="test">
-            <label>Checbox-text</label>
-            <default>unchecked</default>
-        </input>
+        <mixin name="page-navigation-menu"/>
     </form>
     <regions>
         <region name="pageContent"/>
