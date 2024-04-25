@@ -1,6 +1,6 @@
 <content-type>
     <display-name>~Produktside v2</display-name>
-    <description>(Ikke klar til bruk)</description>
+    <description>Obs! Ikke klar til bruk!</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
