@@ -9,6 +9,9 @@ fragment pageComponents on PageComponentData {
             page_with_side_menus {
                 ...pagePageWithSideMenus
             }
+            single_col_page_v2 {
+                test
+            }
         }
     }
 }

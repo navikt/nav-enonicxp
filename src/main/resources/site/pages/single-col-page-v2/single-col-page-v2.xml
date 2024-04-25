@@ -1,6 +1,12 @@
 <page>
-    <display-name>Side med en kolonne v2</display-name>
+    <display-name>~Side med en kolonne v2 (ikke klar til bruk)</display-name>
     <description>En enkelt kolonne for innhold for v2 sidemaler</description>
+    <form>
+        <input type="CheckBox" name="test">
+            <label>Sticky-meny</label>
+            <default>unchecked</default>
+        </input>
+    </form>
     <regions>
         <region name="pageContent"/>
     </regions>

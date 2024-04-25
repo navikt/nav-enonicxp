@@ -1,0 +1,11 @@
+#import "../fragments/contentCommonWithPageFragment.graphql"
+#import "../fragments/content-types/contentProductPageV2Fragment.graphql"
+
+query productPageV2Query($ref: ID!) {
+    guillotine {
+        get(key: $ref) {
+            ...contentCommonWithPage
+            ...contentProductPageV2
+        }
+    }
+}
