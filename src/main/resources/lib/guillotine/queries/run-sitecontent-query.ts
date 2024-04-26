@@ -89,12 +89,12 @@ const processComponentsQueryResult = (
         })?.get;
 
         if (!fragment) {
-            const locale = getLocaleFromContext();
-            const logLevel = isContentPreviewOnly(baseContent) ? 'warning' : 'critical';
-            logger[logLevel](
-                `Invalid fragment reference ${fragmentId} in content [${locale}] ${baseContent._id}`,
-                true
-            );
+            const msg = `Invalid fragment reference ${fragmentId} in content [${getLocaleFromContext()}] ${baseContent._id}`;
+            if (isContentPreviewOnly(baseContent)) {
+                logger.info(msg);
+            } else {
+                logger.critical(msg, true);
+            }
         }
 
         acc.push({
