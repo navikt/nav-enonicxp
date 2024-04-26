@@ -90,10 +90,10 @@ const processComponentsQueryResult = (
 
         if (!fragment) {
             const msg = `Invalid fragment reference ${fragmentId} in content [${getLocaleFromContext()}] ${baseContent._id}`;
-            if (isContentPreviewOnly(baseContent)) {
+            if (queryParams.branch === 'draft' || isContentPreviewOnly(baseContent)) {
                 logger.info(msg);
             } else {
-                logger.critical(msg, true);
+                logger.critical(msg);
             }
         }
 
