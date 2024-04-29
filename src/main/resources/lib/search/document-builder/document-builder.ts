@@ -1,6 +1,5 @@
 import { Content } from '/lib/xp/content';
 import { forceArray } from '../../utils/array-utils';
-import { getSearchNodeHref } from '../_legacy/create-or-update-search-node';
 import { generateSearchDocumentId } from '../utils';
 import {
     getContentLocaleRedirectTarget,
@@ -32,6 +31,7 @@ import {
     buildSearchDocumentIngress,
     buildSearchDocumentOfficeIngress,
 } from './field-resolvers/ingress';
+import { getSearchNodeHref } from './field-resolvers/href';
 
 type SearchConfig = Content<'no.nav.navno:search-config-v2'>;
 type KeysConfig = Partial<SearchConfig['data']['defaultKeys']>;

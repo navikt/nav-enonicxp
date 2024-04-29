@@ -14,9 +14,8 @@ import { activateContentListItemUnpublishedListener } from './lib/contentlists/r
 import { activateCustomPathNodeListeners } from './lib/paths/custom-paths/custom-path-event-listeners';
 import { createOfficeBranchFetchSchedule } from './lib/office-pages/office-branch-tasks';
 import { createOfficeFetchSchedule } from './lib/office-pages/office-tasks';
-import { activateSearchIndexEventHandlers } from './lib/search/_legacy/search-event-handlers';
 import { hookLibsWithTimeTravel } from './lib/time-travel/time-travel-hooks';
-import { initSearchRepo } from './lib/search/_legacy/search-repo';
+import { initSearchRepo } from './lib/search/search-repo';
 import { initLayersData } from './lib/localization/layers-data';
 import { activateLayersEventListeners } from './lib/localization/publish-events';
 import { activateContentUpdateListener } from './lib/contentUpdate/content-update-listener';
@@ -41,7 +40,6 @@ activateCacheEventListeners();
 activateSitemapDataUpdateEventListener();
 activateContentListItemUnpublishedListener();
 activateCustomPathNodeListeners();
-activateSearchIndexEventHandlers();
 activateExternalSearchIndexEventHandlers();
 activateContentUpdateListener();
 
