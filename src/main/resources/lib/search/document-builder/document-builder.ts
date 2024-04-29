@@ -79,7 +79,7 @@ class ExternalSearchDocumentBuilder {
 
         const href = getSearchNodeHref(content, locale);
         if (!href) {
-            logger.error(`No href found for ${content._id} / ${locale}`);
+            logger.warning(`No href found for ${content._id} / ${locale}`);
             return null;
         }
 
