@@ -1,6 +1,5 @@
 import * as taskLib from '/lib/xp/task';
 import thymeleafLib from '/lib/thymeleaf';
-import * as eventLib from '/lib/xp/event';
 import { runOfficeBranchFetchTask } from '../lib/office-pages/office-branch-tasks';
 import { runInContext } from '../lib/context/run-in-context';
 import { frontendInvalidateAllAsync } from '../lib/cache/frontend-cache';
@@ -9,20 +8,22 @@ import { updateScheduledPublishJobs } from '../lib/scheduling/scheduled-publish-
 import { generateUUID } from '../lib/utils/uuid';
 import { removeUnpublishedFromAllContentLists } from '../lib/contentlists/remove-unpublished';
 import { userIsAdmin } from '../lib/utils/auth-utils';
-import {
-    revalidateAllSearchNodesAsync,
-    SEARCH_NODES_UPDATE_ABORT_EVENT,
-} from '../lib/search/_legacy/search-event-handlers';
-import { pushLayerContentToMaster } from '../lib/localization/layers-data';
 import { externalSearchUpdateAll } from '../lib/search/update-all';
 import { URLS } from '../lib/constants';
 import { fetchAndUpdateOfficeInfo } from '../lib/office-pages/_legacy-office-information/legacy-office-update';
+import { migrateExternalSearchContentRefs } from '../lib/search/external-ref-migration';
 
 type ActionsMap = Record<string, { description: string; callback: () => any }>;
 
 const view = resolve('webapp.html');
 
 const validActions: ActionsMap = {
+    migrateSearchRefs: {
+        description: 'Migrering av referanser til eksternt innhold til søket',
+        callback: () => {
+            migrateExternalSearchContentRefs();
+        },
+    },
     norg: {
         description: 'Oppdater kontor-info fra norg',
         callback: () => {
@@ -48,37 +49,25 @@ const validActions: ActionsMap = {
         description: 'Fjern avpublisert innhold fra alle innholdslister',
         callback: removeUnpublishedFromAllContentLists,
     },
-    updateAllSearchNodes: {
-        description: 'Oppdater alle søke-noder',
-        callback: revalidateAllSearchNodesAsync,
-    },
     ...(!!URLS.SEARCH_API_URL && {
         updateAllSearchNodesExternal: {
-            description: 'Oppdater alle søke-noder (eksternt søk)',
+            description: 'Oppdater alle dokumenter for eksternt søk',
             callback: externalSearchUpdateAll,
         },
     }),
-    abortSearchNodesUpdate: {
-        description: 'Avbryt pågående batch-jobb for søke-config oppdateringer',
-        callback: () => {
-            eventLib.send({
-                type: SEARCH_NODES_UPDATE_ABORT_EVENT,
-                distributed: true,
-            });
-        },
-    },
-    pushLayerContentToMaster: {
-        description:
-            'Push manglende layer content til master (bør gjøres etter opprettelse av nytt layer)',
-        callback: () => pushLayerContentToMaster(true),
-    },
-    ...(app.config.env !== 'p' && {
-        pushLayerContentToMasterFull: {
-            description:
-                'Push ALT layer content til master (OBS: denne kan føre til at avpublisert innhold i layeret blir republisert! Ikke la denne være aktiv i prod med mindre det er et spesielt behov :))',
-            callback: () => pushLayerContentToMaster(false),
-        },
-    }),
+    // These should only be used after creating a new content layer
+    // pushLayerContentToMaster: {
+    //     description:
+    //         'Push manglende layer content til master (bør gjøres etter opprettelse av nytt layer)',
+    //     callback: () => pushLayerContentToMaster(true),
+    // },
+    // ...(app.config.env !== 'p' && {
+    //     pushLayerContentToMasterFull: {
+    //         description:
+    //             'Push ALT layer content til master (OBS: denne kan føre til at avpublisert innhold i layeret blir republisert! Ikke la denne være aktiv i prod med mindre det er et spesielt behov :))',
+    //         callback: () => pushLayerContentToMaster(false),
+    //     },
+    // }),
 };
 
 type Params = {

@@ -6,7 +6,7 @@ import { createSchemaTypes } from './create-schema-types';
 
 const schemaContextOptions = {
     creationCallbacks: schemaCreationCallbacks,
-    applications: [app.name, 'navno.nav.no.search'],
+    applications: [app.name],
 };
 
 const initAndCreateSchema = () => {
