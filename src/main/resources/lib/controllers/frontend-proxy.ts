@@ -1,8 +1,11 @@
 import httpClient from '/lib/http-client';
+import * as portalLib from '/lib/xp/portal';
 import { URLS } from '../constants';
 import { logger } from '../utils/logging';
 import { getLocaleFromRepoId } from '../localization/layers-data';
 import { stripPathPrefix } from '../paths/path-utils';
+import { isMedia } from '../utils/content-utils';
+import { Content } from '/lib/xp/portal';
 
 // Used for checking if a request to the frontend looped back to this controller
 const LOOPBACK_PARAM = 'fromXp';
@@ -17,6 +20,16 @@ const errorResponse = (url: string, status: number, message: string) => {
         contentType: 'text/html; charset=UTF-8',
         body: `<div>${msg}</div>`,
         status,
+    };
+};
+
+const mediaResponse = (content: Content) => {
+    const url = portalLib.attachmentUrl({ id: content._id, download: true });
+
+    return {
+        contentType: 'text/html',
+        body: `<div>Filer av typen "${content.type}" støtter ikke forhåndsvisning - <a href="${url}">Last ned filen</a></div>`,
+        status: 200,
     };
 };
 
@@ -66,11 +79,17 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
         return healthCheckDummyResponse();
     }
 
+    const content = portalLib.getContent();
+
+    if (content && isMedia(content)) {
+        return mediaResponse(content);
+    }
+
     const frontendUrl = getFrontendUrl(req, path);
 
     try {
         const response = httpClient.request({
-            url: frontendUrl,
+            url: encodeURI(frontendUrl),
             contentType: 'text/html',
             readTimeout: 30000,
             headers: {
