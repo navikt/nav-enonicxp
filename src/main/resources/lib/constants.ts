@@ -45,7 +45,7 @@ const norgLegacyOfficeInformationApiUrl: EnvRecord = {
     dev: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
     q6: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
     localhost:
-        'https://norg2.prod-fss-pub.nais.io/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
+        'https://norg2.dev-fss-pub.nais.io/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
 } as const;
 
 const norgLocalOfficeApiUrl: EnvRecord = {
