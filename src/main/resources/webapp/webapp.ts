@@ -11,19 +11,12 @@ import { userIsAdmin } from '../lib/utils/auth-utils';
 import { externalSearchUpdateAll } from '../lib/search/update-all';
 import { URLS } from '../lib/constants';
 import { fetchAndUpdateOfficeInfo } from '../lib/office-pages/_legacy-office-information/legacy-office-update';
-import { migrateExternalSearchContentRefs } from '../lib/search/external-ref-migration';
 
 type ActionsMap = Record<string, { description: string; callback: () => any }>;
 
 const view = resolve('webapp.html');
 
 const validActions: ActionsMap = {
-    migrateSearchRefs: {
-        description: 'Migrering av referanser til eksternt innhold til søket',
-        callback: () => {
-            migrateExternalSearchContentRefs();
-        },
-    },
     norg: {
         description: 'Oppdater kontor-info fra norg',
         callback: () => {

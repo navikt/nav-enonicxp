@@ -7,7 +7,6 @@ import { hasExternalProductUrl } from '../../../paths/path-utils';
 
 export const getSearchNodeHref = (content: Content, locale: string) => {
     switch (content.type) {
-        case 'navno.nav.no.search:search-api2':
         case 'no.nav.navno:external-search-content':
         case 'no.nav.navno:external-link': {
             return content.data.url;
