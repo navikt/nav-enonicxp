@@ -3,12 +3,8 @@ declare const app: {
     version: string;
     config: {
         env: 'p' | 'dev' | 'q6' | 'localhost';
-        norg2: string;
         norg2ApiKey: string;
         norg2ConsumerId: string;
-        frontendOrigin: string;
-        xpOrigin: string;
-        revalidatorProxyOrigin: string;
         serviceSecret: string;
         searchApiKey: string;
     };
