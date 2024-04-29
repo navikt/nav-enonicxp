@@ -7,10 +7,11 @@ import { createOrUpdateSchedule } from '../../scheduling/schedule-job';
 import { OfficeInformation } from '@xp-types/site/content-types/office-information';
 import { NavNoDescriptor } from '../../../types/common';
 import { logger } from '../../utils/logging';
-import { CONTENT_ROOT_REPO_ID } from '../../constants';
+import { CONTENT_ROOT_REPO_ID, URLS } from '../../constants';
 import { createObjectChecksum } from '../../utils/object-utils';
 import { runInContext } from '../../context/run-in-context';
 import { UpdateOfficeInfo } from '@xp-types/tasks/update-office-info';
+import { parseJsonToArray } from '../../utils/array-utils';
 
 type OfficeInformationDescriptor = NavNoDescriptor<'office-information'>;
 
@@ -195,7 +196,7 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
 const fetchOfficeInfo = () => {
     try {
         const response = httpClient.request({
-            url: app.config.norg2,
+            url: URLS.NORG_LEGACY_OFFICE_INFORMATION_API_URL,
             method: 'GET',
             headers: {
                 'x-nav-apiKey': app.config.norg2ApiKey,
@@ -204,7 +205,7 @@ const fetchOfficeInfo = () => {
         });
 
         if (response.status === 200 && response.body) {
-            return JSON.parse(response.body);
+            return parseJsonToArray<OfficeInformation>(response.body);
         } else {
             logger.error(
                 `Bad response from legacy norg2: ${response.status} - ${response.message}`
@@ -215,6 +216,14 @@ const fetchOfficeInfo = () => {
         logger.error(`Exception from legacy norg2 request: ${e}`);
         return null;
     }
+};
+
+const cleanOfficeInfo = (officeInfo: OfficeInformation[]): OfficeInformation[] => {
+    return officeInfo.map((entry) => {
+        // enhet.sosialeTjenester may contain data meant for internal use only
+        // and should not be exposed to the public in any way
+        return { ...entry, enhet: { ...entry.enhet, sosialeTjenester: undefined } };
+    });
 };
 
 export const fetchAndUpdateOfficeInfo = (retry?: boolean) => {
@@ -231,13 +240,15 @@ export const fetchAndUpdateOfficeInfo = (retry?: boolean) => {
 
     logger.info('Fetched legacy office info from norg2, updating site data...');
 
+    const cleanedOfficeInfo = cleanOfficeInfo(newOfficeInfo);
+
     runInContext(
         {
             branch: 'draft',
             repository: CONTENT_ROOT_REPO_ID,
             asAdmin: true,
         },
-        () => updateOfficeInfo(newOfficeInfo)
+        () => updateOfficeInfo(cleanedOfficeInfo)
     );
 };
 
