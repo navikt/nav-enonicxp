@@ -50,7 +50,7 @@ const createImageAsset = (imageUrl: string, targetPath: string, targetName: stri
         method: 'GET',
         url: imageUrl,
         contentType: 'image/jpeg',
-        connectionTimeout: 5000,
+        connectionTimeout: 10000,
         followRedirects: false,
         ...proxyConfig,
     });
@@ -127,7 +127,7 @@ const fetchMetaData = (accountId: number, mediaId: string) => {
         const response = httpClient.request({
             method: 'GET',
             url: qbrickURI,
-            connectionTimeout: 8000,
+            connectionTimeout: 10000,
             followRedirects: false,
             ...proxyConfig,
         });

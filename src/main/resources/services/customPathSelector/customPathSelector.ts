@@ -27,11 +27,13 @@ const generateErrorHit = (displayName: string, description: string) => ({
 });
 
 const verifyIngressOwner = (path: string) => {
+    log.info('verifyIngressOwner');
+    log.info(`${URLS.FRONTEND_ORIGIN}${path}`);
     try {
         const response = httpClient.request({
             method: 'HEAD',
             url: `${URLS.FRONTEND_ORIGIN}${path}`,
-            connectionTimeout: 5000,
+            connectionTimeout: 10000,
             followRedirects: false,
         });
 
