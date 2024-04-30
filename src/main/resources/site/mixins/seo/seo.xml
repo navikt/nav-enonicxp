@@ -9,7 +9,8 @@
                         Sidebeskrivelse for søk og sosiale medier
                     </label>
                     <help-text>
-                        Søkemotorer/sosiale medier bruker beskrivelsen i søkeresultat/når siden blir delt.
+                        Søkemotorer/sosiale medier bruker beskrivelsen i søkeresultat/når siden blir
+                        delt.
                         Hvis feltet ikke fylles ut, brukes ingress-feltet.
                     </help-text>
                 </input>
@@ -17,7 +18,7 @@
                     <label>
                         Canonical url - NB! Skal bare legges inn av hovedredaktør/administrator
                     </label>
-                    <occurrences minimum="0" maximum="1"/>
+                    <occurrences minimum="0" maximum="1" />
                     <config>
                         <regexp>^https:\/\/([a-z0-9_\-.]*\.)?nav\.no($|\/).*</regexp>
                     </config>
@@ -35,7 +36,9 @@
                         Ikke vis utdrag (snippets) i Google-søk
                     </label>
                     <help-text>
-                        Google vil ikke forsøke å vise utdrag fra denne siden i søkeresultatet. Innholdet vil fortsatt være søkbart.
+                        Google vil ikke forsøke å vise utdrag fra denne siden i søkeresultatet,
+                        men vil sannsynligvis vise SEO-teksten eller ingressen. Innholdet vil
+                        fortsatt være søkbart.
                     </help-text>
                 </input>
             </items>
