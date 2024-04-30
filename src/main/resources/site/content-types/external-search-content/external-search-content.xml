@@ -1,0 +1,33 @@
+<content-type>
+    <display-name>Eksternt innhold til søket</display-name>
+    <description>Innhold utenfra Enonic som skal indekseres i søket på nav.no</description>
+    <super-type>base:structured</super-type>
+    <form>
+        <input name="keywords" type="Tag">
+            <label>Nøkkelord</label>
+            <occurrences minimum="0" maximum="0"/>
+        </input>
+        <input name="url" type="TextLine">
+            <label>URL</label>
+            <occurrences maximum="1" minimum="1"/>
+            <help-text>Sett inn url til nettsted</help-text>
+        </input>
+        <input name="text" type="TextArea">
+            <label>Fritekst</label>
+            <occurrences minimum="0" maximum="0"/>
+        </input>
+        <input name="ingress" type="TextArea">
+            <label>Ingress</label>
+            <occurrences minimum="1" maximum="1"/>
+        </input>
+        <input name="audience" type="ComboBox">
+            <label>Målgruppe</label>
+            <occurrences minimum="0" maximum="0"/>
+            <config>
+                <option value="person">Privatperson</option>
+                <option value="employer">Arbeidsgiver</option>
+                <option value="provider">Samarbeidspartner</option>
+            </config>
+        </input>
+    </form>
+</content-type>
