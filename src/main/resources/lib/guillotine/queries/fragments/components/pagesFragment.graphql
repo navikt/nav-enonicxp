@@ -1,4 +1,5 @@
 #import "./pages/pagePageWithSideMenus.graphql"
+#import "./pages/pageSingleColPageV2.graphql"
 
 fragment pageComponents on PageComponentData {
     descriptor
@@ -8,6 +9,9 @@ fragment pageComponents on PageComponentData {
         no_nav_navno {
             page_with_side_menus {
                 ...pagePageWithSideMenus
+            }
+            single_col_page_v2 {
+                ...pageSingleColPageV2
             }
         }
     }

@@ -14,6 +14,7 @@ let hasContentUpdateListener = false;
 
 const contentTypesToMetaSynchronize = [
     'no.nav.navno:content-page-with-sidemenus',
+    'no.nav.navno:product-page-v2',
     'no.nav.navno:situation-page',
     'no.nav.navno:guide-page',
     'no.nav.navno:themed-article-page',
