@@ -36,9 +36,9 @@
                         Ikke vis utdrag (snippets) i Google-søk
                     </label>
                     <help-text>
-                        Google vil ikke forsøke å vise utdrag fra denne siden i søkeresultatet,
-                        men vil sannsynligvis vise SEO-teksten eller ingressen. Innholdet vil
-                        fortsatt være søkbart.
+                        Google vil ikke forsøke å vise "tilfeldige" utdrag fra denne siden i
+                        søkeresultatet, men vil sannsynligvis vise SEO-teksten eller ingressen.
+                        Innholdet vil fortsatt være søkbart.
                     </help-text>
                 </input>
             </items>
