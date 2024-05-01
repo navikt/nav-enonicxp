@@ -33,7 +33,7 @@
                 </input>
                 <input name="nosnippet" type="CheckBox">
                     <label>
-                        Ikke vis utdrag (snippets) i Google-søk
+                        Ikke vis "tilfeldige" utdrag (snippets) i Google-søk
                     </label>
                     <help-text>
                         Google vil ikke forsøke å vise "tilfeldige" utdrag fra denne siden i
