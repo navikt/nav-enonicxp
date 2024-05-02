@@ -22,7 +22,7 @@ export const runSchedulerCleanup = (dryRun?: boolean) => {
                 boolean: {
                     must: [
                         {
-                            like: {
+                            term: {
                                 field: 'calendar.type',
                                 value: 'ONE_TIME',
                             },
