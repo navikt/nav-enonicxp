@@ -41,7 +41,7 @@ export type DynamicPageCommon = {
   noindex: boolean;
 
   /**
-   * Ikke vis utdrag (snippets) i Google-søk
+   * Ikke vis "tilfeldige" utdrag (snippets) i Google-søk
    */
   nosnippet: boolean;
 }

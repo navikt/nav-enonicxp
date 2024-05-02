@@ -11,6 +11,7 @@ import { userIsAdmin } from '../lib/utils/auth-utils';
 import { externalSearchUpdateAll } from '../lib/search/update-all';
 import { URLS } from '../lib/constants';
 import { fetchAndUpdateOfficeInfo } from '../lib/office-pages/_legacy-office-information/legacy-office-update';
+import { runSchedulerCleanup } from '../lib/scheduling/schedule-cleanup';
 
 type ActionsMap = Record<string, { description: string; callback: () => any }>;
 
@@ -41,6 +42,10 @@ const validActions: ActionsMap = {
     removeUnpublishedFromContentLists: {
         description: 'Fjern avpublisert innhold fra alle innholdslister',
         callback: removeUnpublishedFromAllContentLists,
+    },
+    schedulerCleanup: {
+        description: 'Fjern expired scheduler jobs (kjøres normalt automatisk hver morgen)',
+        callback: () => runSchedulerCleanup(),
     },
     ...(!!URLS.SEARCH_API_URL && {
         updateAllSearchNodesExternal: {
