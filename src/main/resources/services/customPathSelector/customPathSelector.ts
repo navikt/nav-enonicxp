@@ -31,7 +31,7 @@ const verifyIngressOwner = (path: string) => {
         const response = httpClient.request({
             method: 'HEAD',
             url: `${URLS.FRONTEND_ORIGIN}${path}`,
-            connectionTimeout: 5000,
+            connectionTimeout: 10000,
             followRedirects: false,
         });
 

@@ -1,5 +1,6 @@
 #import "./layouts/layoutFrontpageLoggedinSection.graphql"
 #import "./layouts/layoutSectionWithHeader.graphql"
+#import "./layouts/layoutSectionWithHeaderV2.graphql"
 #import "./layouts/layoutSituationFlexCols.graphql"
 
 fragment layoutComponents on LayoutComponentData {
@@ -12,6 +13,9 @@ fragment layoutComponents on LayoutComponentData {
             }
             section_with_header {
                 ...layoutComponentSectionWithHeader
+            }
+            section_with_header_v2 {
+                ...layoutComponentSectionWithHeaderV2
             }
             situation_flex_cols {
                 ...layoutComponentSituationFlexCols

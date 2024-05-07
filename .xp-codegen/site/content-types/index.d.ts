@@ -14,6 +14,7 @@ export type ContentPageWithSidemenus = import("./content-page-with-sidemenus").C
 export type CurrentTopicPage = import("./current-topic-page").CurrentTopicPage;
 export type DynamicPage = import("./dynamic-page").DynamicPage;
 export type ExternalLink = import("./external-link").ExternalLink;
+export type ExternalSearchContent = import("./external-search-content").ExternalSearchContent;
 export type FormDetails = import("./form-details").FormDetails;
 export type FormIntermediateStep = import("./form-intermediate-step").FormIntermediateStep;
 export type FormsOverview = import("./forms-overview").FormsOverview;
@@ -72,6 +73,7 @@ declare global {
       "no.nav.navno:current-topic-page": CurrentTopicPage;
       "no.nav.navno:dynamic-page": DynamicPage;
       "no.nav.navno:external-link": ExternalLink;
+      "no.nav.navno:external-search-content": ExternalSearchContent;
       "no.nav.navno:form-details": FormDetails;
       "no.nav.navno:form-intermediate-step": FormIntermediateStep;
       "no.nav.navno:forms-overview": FormsOverview;

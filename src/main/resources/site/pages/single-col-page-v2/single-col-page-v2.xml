@@ -1,6 +1,9 @@
 <page>
-    <display-name>Side med en kolonne v2</display-name>
+    <display-name>~Side med en kolonne v2 (ikke klar til bruk)</display-name>
     <description>En enkelt kolonne for innhold for v2 sidemaler</description>
+    <form>
+        <mixin name="page-navigation-menu"/>
+    </form>
     <regions>
         <region name="pageContent"/>
     </regions>

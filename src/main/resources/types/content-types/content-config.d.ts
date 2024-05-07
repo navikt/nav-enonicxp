@@ -4,12 +4,6 @@ import { RepoNode } from '/lib/xp/node';
 import { GlobalNumberValueSetData } from './global-value-set';
 import { EmptyObject } from '../util-types';
 import { GlobalCaseTimeSetData } from './global-case-time-set';
-import {
-    SearchConfigData,
-    SearchConfigDescriptor,
-    SearchExternalResourceData,
-    SearchExternalResourceDescriptor,
-} from './search-config';
 
 // Override types for content-types with a custom editor
 declare global {
@@ -44,16 +38,12 @@ export type ContentDataMapper<Type extends ContentDescriptor> = Type extends Cus
                 type: Type;
                 data: undefined;
             }
-          : Type extends SearchConfigDescriptor
-            ? { type: Type; data: SearchConfigData }
-            : Type extends SearchExternalResourceDescriptor
-              ? { type: Type; data: SearchExternalResourceData }
-              : Type extends MediaDescriptor
-                ? {
-                      type: Type;
-                      data: BaseMedia;
-                  }
-                : { type: Type; data: unknown };
+          : Type extends MediaDescriptor
+            ? {
+                  type: Type;
+                  data: BaseMedia;
+              }
+            : { type: Type; data: unknown };
 
 export type BuiltinContentDescriptor =
     | 'portal:fragment'
@@ -83,9 +73,7 @@ export type CustomContentDescriptor = keyof XP.ContentTypes;
 export type ContentDescriptor =
     | MediaDescriptor
     | CustomContentDescriptor
-    | BuiltinContentDescriptor
-    | SearchConfigDescriptor
-    | SearchExternalResourceDescriptor;
+    | BuiltinContentDescriptor;
 
 export type ContentNode<ContentType extends ContentDescriptor = ContentDescriptor> = RepoNode<
     Content<ContentType>

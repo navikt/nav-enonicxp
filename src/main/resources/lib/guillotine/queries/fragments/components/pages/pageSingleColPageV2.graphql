@@ -1,0 +1,7 @@
+fragment pageSingleColPageV2 on Page_no_nav_navno_single_col_page_v2 {
+    anchorLinks(contentId: $ref) {
+        anchorId
+        linkText
+        isDupe
+    }
+}
