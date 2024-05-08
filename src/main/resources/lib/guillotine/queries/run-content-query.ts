@@ -30,7 +30,6 @@ import areaPageQuery from './content-queries/areaPageQuery.graphql';
 import contactInformationQuery from './content-queries/contactInformationQuery.graphql';
 import calculatorQuery from './content-queries/calculatorQuery.graphql';
 import contentPageWithSidemenusQuery from './content-queries/contentPageWithSidemenusQuery.graphql';
-import productPageV2Query from './content-queries/productPageV2Query.graphql';
 import dynamicPageQuery from './content-queries/dynamicPageQuery.graphql';
 import externalLinkQuery from './content-queries/externalLinkQuery.graphql';
 import frontPageQuery from './content-queries/frontPageQuery.graphql';
@@ -89,7 +88,6 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:calculator': calculatorQuery,
     'no.nav.navno:contact-information': contactInformationQuery,
     'no.nav.navno:content-page-with-sidemenus': contentPageWithSidemenusQuery,
-    'no.nav.navno:product-page-v2': productPageV2Query,
     'no.nav.navno:product-details': productDetailsQuery,
     'no.nav.navno:form-details': formDetailsQuery,
     'no.nav.navno:form-intermediate-step': formIntermediateStepQuery,
