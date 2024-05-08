@@ -3,7 +3,6 @@ export type IndexPage = import("./index-page").IndexPage;
 export type MainPage = import("./main-page").MainPage;
 export type PageWithSideMenus = import("./page-with-side-menus").PageWithSideMenus;
 export type ProductDetailsPage = import("./product-details-page").ProductDetailsPage;
-export type SingleColPageV2 = import("./single-col-page-v2").SingleColPageV2;
 export type SingleColPage = import("./single-col-page").SingleColPage;
 export type TwoColsPage = import("./two-cols-page").TwoColsPage;
 
@@ -13,7 +12,6 @@ declare global {
     "no.nav.navno:main-page": MainPage;
     "no.nav.navno:page-with-side-menus": PageWithSideMenus;
     "no.nav.navno:product-details-page": ProductDetailsPage;
-    "no.nav.navno:single-col-page-v2": SingleColPageV2;
     "no.nav.navno:single-col-page": SingleColPage;
     "no.nav.navno:two-cols-page": TwoColsPage;
   }

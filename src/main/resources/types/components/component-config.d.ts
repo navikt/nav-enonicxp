@@ -31,13 +31,12 @@ import {
     ReadMore,
 } from '@xp-types/site/parts';
 
-import { PageWithSideMenus, SingleColPageV2 } from '@xp-types/site/pages';
+import { PageWithSideMenus } from '@xp-types/site/pages';
 
 export type ComponentType = 'page' | 'layout' | 'part' | 'fragment';
 
 type PageConfigs = {
     'page-with-side-menus': PageWithSideMenus;
-    'single-col-page-v2': SingleColPageV2;
 };
 
 type LayoutConfigs = {
