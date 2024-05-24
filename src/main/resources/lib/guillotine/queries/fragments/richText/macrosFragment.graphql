@@ -163,6 +163,28 @@ fragment html_fragmentMacro on Macro {
                                 }
                             }
                         }
+                        form_details {
+                            targetFormDetails {
+                                ... on no_nav_navno_FormDetails {
+                                    dataAsJson
+                                    data {
+                                        ingress(processHtml: { type: server }) {
+                                            ... on RichText {
+                                                processedHtml
+                                                macros {
+                                                    ...macros
+                                                }
+                                            }
+                                        }
+                                        ...formTypeMixin
+                                    }
+                                }
+                            }
+                            showTitle
+                            showIngress
+                            showApplications
+                            showAddendums
+                        }
                     }
                 }
             }
