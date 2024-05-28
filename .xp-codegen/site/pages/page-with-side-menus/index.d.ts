@@ -24,4 +24,9 @@ export type PageWithSideMenus = {
      */
     linkText: string;
   }>;
+
+  /**
+   * Vis produktnavnet i 'Det finnes også informasjon om...'
+   */
+  showProductName: boolean;
 }

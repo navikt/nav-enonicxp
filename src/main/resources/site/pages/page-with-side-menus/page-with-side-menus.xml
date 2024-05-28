@@ -16,6 +16,16 @@
                 <mixin name="page-navigation-menu"/>
             </items>
         </field-set>
+        <field-set>
+            <label>Andre innstillinger</label>
+            <items>
+                <input name="showProductName" type="CheckBox">
+                    <label>Vis produktnavnet i 'Det finnes også informasjon om...'</label>
+                    <help-text>Hvis du krysser vekk, blir ordet 'dette' vist istedet for produktnavnet.</help-text>
+                    <default>checked</default>
+                </input>
+            </items>
+        </field-set>
     </form>
     <regions>
         <region name="topPageContent"/>
