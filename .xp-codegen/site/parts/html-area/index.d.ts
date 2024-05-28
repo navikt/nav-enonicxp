@@ -6,6 +6,11 @@ export type HtmlArea = {
   html: string;
 
   /**
+   * Type innhold
+   */
+  type?: "documentation_requirements";
+
+  /**
    * Utvidbar
    */
   expandable: boolean;
