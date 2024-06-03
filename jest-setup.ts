@@ -5,7 +5,8 @@ global.Java = {
 };
 
 global.log = {
-    info: () => ({}),
-    warning: () => ({}),
-    error: () => ({}),
+    debug: console.debug,
+    info: console.log,
+    warning: console.warn,
+    error: console.error,
 };
