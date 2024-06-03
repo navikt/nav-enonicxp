@@ -1,5 +1,5 @@
 import { Log } from '@enonic/mock-xp';
-import './src/main/resources/__test/_utils/xp-mocks';
+import './src/main/resources/__test/__mocks/xp-mocks';
 
 declare const global: {
     Java: any;

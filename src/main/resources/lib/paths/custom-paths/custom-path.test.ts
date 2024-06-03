@@ -3,7 +3,7 @@ import {
     hasInvalidCustomPath,
     hasValidCustomPath,
 } from './custom-path-utils';
-import { xpMocks } from '../../../__test/_utils/xp-mocks';
+import { xpMocks } from '../../../__test/__mocks/xp-mocks';
 
 const { libContent } = xpMocks;
 

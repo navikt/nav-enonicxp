@@ -49,7 +49,6 @@
         "@item-enonic-types/lib-guillotine": "5.5.0",
         "@item-enonic-types/lib-http-client": "3.2.1",
         "@item-enonic-types/lib-thymeleaf": "2.1.0",
-        "@jest/types": "29.6.3",
         "@types/jest": "29.5.12",
         "@types/node": "18.19.24",
         "@typescript-eslint/eslint-plugin": "7.2.0",

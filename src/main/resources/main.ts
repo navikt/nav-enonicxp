@@ -1,3 +1,4 @@
+/// <reference path="types/global.d.ts" />
 log.info('Started running main');
 
 import './lib/polyfills';
