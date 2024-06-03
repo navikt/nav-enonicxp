@@ -3,60 +3,36 @@ import {
     hasInvalidCustomPath,
     hasValidCustomPath,
 } from './custom-path-utils';
-import * as contentLib from '/lib/xp/content';
-import { Content } from '/lib/xp/content';
-import { mockReturnValue } from '../../../__test/utils/mock-utils';
+import { createMockServer } from '../../../__test/_utils/xp-mocks';
 
-jest.mock('/lib/xp/content');
+const { libContent } = createMockServer();
 
-const contentWithoutCustomPath: Content = {
-    _id: 'bfb67caa-c149-4302-bdb6-09f2ee0c3649',
-    _name: 'test-side',
-    _path: '/www.nav.no/test-side',
-    creator: 'user:system:su',
-    modifier: 'user:system:su',
-    createdTime: '2022-05-09T10:44:58.676477300Z',
-    modifiedTime: '2022-05-09T10:45:26.228985500Z',
-    owner: 'user:system:su',
-    type: 'no.nav.navno:dynamic-page',
-    displayName: 'Test-side',
-    hasChildren: false,
-    language: 'no',
-    valid: true,
-    childOrder: 'modifiedtime DESC',
-    data: {
-        chatbotToggle: true,
-        feedbackToggle: false,
-        noindex: false,
-        nosnippet: false,
-    },
-    x: {
-        'no-nav-navno': {
-            virtualParent: {},
-            fasetter: {},
-        },
-    },
-    page: {},
-    attachments: {},
-    publish: {
-        from: '2022-05-09T10:45:26.046973700Z',
-        first: '2022-05-09T10:45:26.046973700Z',
-    },
-    workflow: {
-        state: 'READY',
-        checks: {},
-    },
-};
+jest.mock('/lib/xp/content', () => {
+    return {
+        get: jest.fn((params) => libContent.get(params)),
+    };
+});
 
-const contentWithValidCustomPath = {
-    ...contentWithoutCustomPath,
-    data: { ...contentWithoutCustomPath.data, customPath: '/test-valid-path' },
-};
+const contentWithValidCustomPath = libContent.create({
+    contentType: 'no.nav.navno:dynamic-page',
+    data: { customPath: '/valid-path' },
+    name: 'content-with-valid-customPath',
+    parentPath: '/',
+});
 
-const contentWithInvalidCustomPath = {
-    ...contentWithoutCustomPath,
-    data: { ...contentWithoutCustomPath.data, customPath: 'test-invalid-path' },
-};
+const contentWithInvalidCustomPath = libContent.create({
+    contentType: 'no.nav.navno:dynamic-page',
+    data: { customPath: 'invalid-path' },
+    name: 'content-with-invalid-customPath',
+    parentPath: '/',
+});
+
+const contentWithoutCustomPath = libContent.create({
+    contentType: 'no.nav.navno:dynamic-page',
+    data: {},
+    name: 'content-without-customPath',
+    parentPath: '/',
+});
 
 describe('Custom paths', () => {
     test('Content with valid custompath should be valid', () => {
@@ -81,15 +57,11 @@ describe('Custom paths', () => {
     });
 
     test('Should return customPath if it is valid', () => {
-        mockReturnValue(contentLib.get, contentWithValidCustomPath);
-        expect(getCustomPathFromContent('someId')).toBe(contentWithValidCustomPath.data.customPath);
+        expect(getCustomPathFromContent('/content-with-valid-customPath')).toBe('/valid-path');
     });
 
     test('Should return null if no valid customPath', () => {
-        mockReturnValue(contentLib.get, contentWithInvalidCustomPath);
-        expect(getCustomPathFromContent('someId')).toBeNull();
-
-        mockReturnValue(contentLib.get, contentWithoutCustomPath);
-        expect(getCustomPathFromContent('someId')).toBeNull();
+        expect(getCustomPathFromContent('/content-with-invalid-customPath')).toBeNull();
+        expect(getCustomPathFromContent('/content-without-customPath')).toBeNull();
     });
 });
