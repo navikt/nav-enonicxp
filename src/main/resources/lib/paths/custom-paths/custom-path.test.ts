@@ -3,15 +3,9 @@ import {
     hasInvalidCustomPath,
     hasValidCustomPath,
 } from './custom-path-utils';
-import { createMockServer } from '../../../__test/_utils/xp-mocks';
+import { xpMocks } from '../../../__test/_utils/xp-mocks';
 
-const { libContent } = createMockServer();
-
-jest.mock('/lib/xp/content', () => {
-    return {
-        get: jest.fn((params) => libContent.get(params)),
-    };
-});
+const { libContent } = xpMocks;
 
 const contentWithValidCustomPath = libContent.create({
     contentType: 'no.nav.navno:dynamic-page',

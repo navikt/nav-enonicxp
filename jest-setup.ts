@@ -1,4 +1,10 @@
-// @ts-nocheck
+import { Log } from '@enonic/mock-xp';
+import './src/main/resources/__test/_utils/xp-mocks';
+
+declare const global: {
+    Java: any;
+    log: Log;
+};
 
 global.Java = {
     type: () => ({}),
