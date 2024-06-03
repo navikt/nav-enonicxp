@@ -1,3 +1,0 @@
-fragment contentProductPageV2 on no_nav_navno_ProductPageV2 {
-    dataAsJson
-}
