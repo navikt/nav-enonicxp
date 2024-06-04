@@ -3,7 +3,7 @@ import { CONTENT_ROOT_PATH } from '/lib/xp/content';
 type ServerEnv = typeof app.config.env;
 type EnvRecord = Record<ServerEnv, string>;
 
-const env = app.config.env || 'p';
+const env: ServerEnv = app.config.env || 'p';
 
 const portalAdminOrigins: EnvRecord = {
     p: 'https://portal-admin.oera.no',
