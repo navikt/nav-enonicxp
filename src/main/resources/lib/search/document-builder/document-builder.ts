@@ -90,6 +90,8 @@ class ExternalSearchDocumentBuilder {
             return null;
         }
 
+        const publishedTime = content.publish?.from || content.createdTime;
+
         return {
             id: generateSearchDocumentId(content._id, locale),
             href,
@@ -102,8 +104,8 @@ class ExternalSearchDocumentBuilder {
                 fylke: getSearchDocumentFylke(content),
                 metatags: getSearchDocumentMetatags(content),
                 type: getSearchDocumentContentType(content),
-                createdAt: content.createdTime,
-                lastUpdated: content.modifiedTime || content.createdTime,
+                createdAt: publishedTime,
+                lastUpdated: content.modifiedTime || publishedTime,
                 keywords: forceArray(content.data.keywords),
                 languageRefs: getSearchDocumentLanguageRefs(content),
             },

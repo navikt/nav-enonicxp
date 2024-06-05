@@ -103,7 +103,9 @@ export default {
 
     // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
     moduleNameMapper: {
-        '^/lib/(.*)': '<rootDir>/src/main/resources/__test/module-mocks/lib/$1',
+        '^/lib/(.*)': '<rootDir>/src/main/resources/__test/__mocks/modules/lib/$1',
+        '^/assets/html-entities/2.3.3': '<rootDir>/node_modules/html-entities',
+        '^/assets/striptags/3.1.1': '<rootDir>/node_modules/striptags',
     },
 
     // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
