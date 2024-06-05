@@ -11,6 +11,10 @@
             <items>
                 <mixin name="page-header"/>
                 <mixin name="ingress-required" />
+                <input type="CheckBox" name="hideIngress">
+                    <label>Ikke vis ingress på selve siden</label>
+                    <default>checked</default>
+                </input>
             </items>
         </field-set>
         <field-set>
