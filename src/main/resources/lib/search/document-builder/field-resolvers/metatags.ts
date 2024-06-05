@@ -37,17 +37,16 @@ const isStatistikk = (content: ContentNode) =>
 const isAnalyse = (content: ContentNode) =>
     content._path.startsWith('/content/www.nav.no/no/nav-og-samfunn/kunnskap');
 
+const pressePaths = [
+    // "innhold-til-person-forside" news are included for historical reasons. Can be removed if/when the news under
+    // this folder are moved to a more logical parent folder
+    '/content/www.nav.no/no/person/innhold-til-person-forside/nyheter',
+    '/content/www.nav.no/no/samarbeidspartner/presse',
+] as const;
+
 const isPresse = (content: ContentNode) =>
     isPressemelding(content) ||
-    (isNyhet(content) &&
-        (content._path.startsWith(
-            '/content/www.nav.no/no/person/innhold-til-person-forside/nyheter'
-        ) ||
-            !(
-                content._path.startsWith('/content/www.nav.no/no/person') ||
-                content._path.startsWith('/content/www.nav.no/no/bedrift') ||
-                content._path.startsWith('/content/www.nav.no/no/nav-og-samfunn')
-            )));
+    (isNyhet(content) && pressePaths.some((path) => content._path.startsWith(path)));
 
 export const getSearchDocumentMetatags = (content: ContentNode) => {
     const metaTags: SearchDocumentMetatag[] = [];

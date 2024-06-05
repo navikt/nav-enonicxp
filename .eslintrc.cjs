@@ -35,6 +35,7 @@ module.exports = {
             },
         ],
         '@typescript-eslint/no-var-requires': 'off',
+        '@typescript-eslint/triple-slash-reference': 'off',
         'camelcase': 'off',
         'comma-dangle': ['error', 'only-multiline'],
         'dot-notation': 'off',
