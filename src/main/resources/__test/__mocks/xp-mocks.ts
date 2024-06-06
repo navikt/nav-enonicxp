@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 import { LibContent, LibContext, LibNode, Server } from '@enonic/mock-xp';
 import { CONTENT_ROOT_PROJECT_ID } from '../../lib/constants';
 
