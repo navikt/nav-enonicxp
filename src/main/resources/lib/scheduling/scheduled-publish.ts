@@ -27,7 +27,7 @@ const getPublish = (node: NodeEventData) => {
     return content.publish;
 };
 
-export const isPrepublished = (publishFrom?: string): publishFrom is string => {
+export const isAwaitingPrepublishing = (publishFrom?: string): publishFrom is string => {
     return publishFrom ? publishFrom > new Date().toISOString() : false;
 };
 
@@ -114,7 +114,7 @@ export const handleScheduledPublish = (nodeData: NodeEventData, eventType: strin
         scheduleUnpublish({ id, path, repoId: repo, publishTo: publish.to });
     }
 
-    if (isPrepublished(publish.from)) {
+    if (isAwaitingPrepublishing(publish.from)) {
         scheduleCacheInvalidation({
             jobName: getPrepublishJobName(id, repo),
             id,
