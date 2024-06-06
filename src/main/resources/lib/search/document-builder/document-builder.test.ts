@@ -41,7 +41,7 @@ const searchConfig = libContentMock.create({
     parentPath: '/',
 });
 
-const mainArticleContent = libContentMock.create({
+const publishedArticle = libContentMock.create({
     contentType: 'no.nav.navno:main-article',
     data: {},
     name: 'article',
@@ -49,7 +49,7 @@ const mainArticleContent = libContentMock.create({
     displayName: 'Main article',
 }) as Content<'no.nav.navno:main-article'>;
 
-const contentListContent = libContentMock.create({
+const publishedContentList = libContentMock.create({
     contentType: 'no.nav.navno:content-list',
     data: {},
     name: 'content-list',
@@ -57,7 +57,7 @@ const contentListContent = libContentMock.create({
     displayName: 'Content list',
 }) as Content<'no.nav.navno:content-list'>;
 
-const prepublishedContent = libContentMock.create({
+const prepublishedArticle = libContentMock.create({
     contentType: 'no.nav.navno:main-article',
     data: {},
     name: 'article-prepublished',
@@ -66,7 +66,7 @@ const prepublishedContent = libContentMock.create({
 }) as Content<'no.nav.navno:main-article'>;
 
 libContentMock.publish({
-    keys: [mainArticleContent._id, contentListContent._id, prepublishedContent._id],
+    keys: [publishedArticle._id, publishedContentList._id, prepublishedArticle._id],
 });
 
 jest.mock('../config', () => {
@@ -86,35 +86,33 @@ describe('Document builder for external search api', () => {
     });
 
     test('Content types with a search config should generate a document', () => {
-        const contentNode = repoConnection.get(mainArticleContent._id) as ContentNode;
+        const contentNode = repoConnection.get(publishedArticle._id) as ContentNode;
         const searchDocument = buildExternalSearchDocument(contentNode, 'no');
 
         expect(searchDocument).toBeTruthy();
     });
 
     test('Content types without a search config should not generate a document', () => {
-        const contentNode = repoConnection.get(contentListContent._id) as ContentNode;
+        const contentNode = repoConnection.get(publishedContentList._id) as ContentNode;
         const searchDocument = buildExternalSearchDocument(contentNode, 'no');
 
         expect(searchDocument).toBeNull();
     });
 
     test('Content awaiting scheduled publishing should not generate a document', () => {
-        const modified = repoConnection.modify({
-            key: prepublishedContent._id,
+        // contentLib mock library has not implemented scheduled publish yet, so we add it manually
+        repoConnection.modify({
+            key: prepublishedArticle._id,
             editor: (content: ContentNode) => {
                 content.publish = {
-                    from: new Date(Date.now() + 1000 * 3600 * 24).toISOString(),
+                    from: new Date(Date.now() + 10000).toISOString(),
                 };
                 return content;
             },
         });
 
-        console.log('Modified: ', modified);
+        const contentNode = repoConnection.get(prepublishedArticle._id) as ContentNode;
 
-        const contentNode = repoConnection.get(prepublishedContent._id) as ContentNode;
-
-        console.log(contentNode);
         const searchDocument = buildExternalSearchDocument(contentNode, 'no');
 
         expect(searchDocument).toBeNull();

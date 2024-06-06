@@ -4,7 +4,6 @@ import { APP_DESCRIPTOR } from '../constants';
 import { createOrUpdateSchedule } from './schedule-job';
 import { NodeEventData } from '../cache/utils';
 import { logger } from '../utils/logging';
-import { getUnixTimeFromDateTimeString } from '../utils/datetime-utils';
 import { isContentLocalized } from '../localization/locale-utils';
 import { PrepublishCacheWipe } from '@xp-types/tasks/prepublish-cache-wipe';
 import { UnpublishExpiredContent } from '@xp-types/tasks/unpublish-expired-content';
@@ -29,7 +28,7 @@ const getPublish = (node: NodeEventData) => {
 };
 
 export const isPrepublished = (publishFrom?: string): publishFrom is string => {
-    return publishFrom ? getUnixTimeFromDateTimeString(publishFrom) > Date.now() : false;
+    return publishFrom ? publishFrom > new Date().toISOString() : false;
 };
 
 export const getPrepublishJobName = (contentId: string, repoId: string, suffix?: string) =>

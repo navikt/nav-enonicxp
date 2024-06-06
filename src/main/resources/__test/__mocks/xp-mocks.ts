@@ -13,8 +13,7 @@ const server = new Server({
     },
 })
     .createProject({ projectName: CONTENT_ROOT_PROJECT_ID })
-    .setContext({ projectName: CONTENT_ROOT_PROJECT_ID })
-    .createUser({ name: 'user:system:system-user' });
+    .setContext({ projectName: CONTENT_ROOT_PROJECT_ID });
 
 const libContentMock = new LibContent({ server });
 const libNodeMock = new LibNode({ server });
