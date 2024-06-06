@@ -5,23 +5,23 @@ import {
 } from './custom-path-utils';
 import { xpMocks } from '../../../__test/__mocks/xp-mocks';
 
-const { libContent } = xpMocks;
+const { libContentMock } = xpMocks;
 
-const contentWithValidCustomPath = libContent.create({
+const contentWithValidCustomPath = libContentMock.create({
     contentType: 'no.nav.navno:dynamic-page',
     data: { customPath: '/valid-path' },
     name: 'content-with-valid-customPath',
     parentPath: '/',
 });
 
-const contentWithInvalidCustomPath = libContent.create({
+const contentWithInvalidCustomPath = libContentMock.create({
     contentType: 'no.nav.navno:dynamic-page',
     data: { customPath: 'invalid-path' },
     name: 'content-with-invalid-customPath',
     parentPath: '/',
 });
 
-const contentWithoutCustomPath = libContent.create({
+const contentWithoutCustomPath = libContentMock.create({
     contentType: 'no.nav.navno:dynamic-page',
     data: {},
     name: 'content-without-customPath',

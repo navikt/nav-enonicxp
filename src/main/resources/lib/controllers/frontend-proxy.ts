@@ -2,7 +2,7 @@ import httpClient from '/lib/http-client';
 import * as portalLib from '/lib/xp/portal';
 import { URLS } from '../constants';
 import { logger } from '../utils/logging';
-import { getLocaleFromRepoId } from '../localization/layers-data';
+import { getLayersData } from '../localization/layers-data';
 import { stripPathPrefix } from '../paths/path-utils';
 import { isMedia } from '../utils/content-utils';
 import { Content } from '/lib/xp/portal';
@@ -101,7 +101,7 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
                 ...req.params,
                 [LOOPBACK_PARAM]: 'true',
                 mode: req.mode,
-                locale: getLocaleFromRepoId(req.repositoryId),
+                locale: getLayersData().repoIdToLocaleMap[req.repositoryId],
             },
         });
 

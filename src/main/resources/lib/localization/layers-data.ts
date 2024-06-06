@@ -20,7 +20,7 @@ type RepoIdToLocaleMap = Record<string, string>;
 
 type Source = Required<Pick<ConnectParams, 'repoId' | 'branch' | 'principals'>>;
 
-type LayersRepoData = {
+export type LayersRepoData = {
     defaultLocale: string;
     localeToRepoIdMap: LocaleToRepoIdMap;
     repoIdToLocaleMap: RepoIdToLocaleMap;
@@ -46,8 +46,6 @@ const ONE_DAY_MS = 1000 * 60 * 60 * 24;
 
 export const isValidLocale = (locale?: string): locale is string =>
     !!(locale && data.localeToRepoIdMap[locale]);
-
-export const getLocaleFromRepoId = (repoId: string) => data.repoIdToLocaleMap[repoId];
 
 export const getLayersData = () => data;
 

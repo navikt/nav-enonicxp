@@ -121,6 +121,12 @@ module.exports = {
                 'no-restricted-imports': 'off',
             },
         },
+        {
+            'files': ['*.test.ts'],
+            'rules': {
+                'no-console': 'off',
+            },
+        },
     ],
     'settings': {
         'import/parsers': {
