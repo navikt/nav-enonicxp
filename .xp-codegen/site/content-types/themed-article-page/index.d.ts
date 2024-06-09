@@ -268,7 +268,7 @@ export type ThemedArticlePage = {
   rates?: string;
 
   /**
-   * Vis intern navigasjon i innholdsseksjoner
+   * Vis kapittelnavigasjon i hver innholdsseksjon
    */
   showSubsectionNavigation: boolean;
 
