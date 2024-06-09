@@ -14,28 +14,16 @@
         </encoder>
     </appender>
 
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%date{ISO8601} %-5level %logger{36} - %replace(%msg){'\(\/lib\/utils\/logging\.js\) ',''}%n</pattern>
-        </encoder>
-    </appender>
-
-    <appender name="SYSLOG" class="ch.qos.logback.classic.net.SyslogAppender">
-        <syslogHost>localhost</syslogHost>
-        <facility>LOCAL1</facility>
-        <suffixPattern>EnonicXP %mdc %logger{30} %replace(%msg){'\(\/lib\/utils\/logging\.js\) ',''} %n%rEx</suffixPattern>
-        <throwableExcluded>true</throwableExcluded>
-    </appender>
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<withJansi>true</withJansi>
+		<encoder>
+			<pattern>%date{ISO8601} %highlight(%-5level) %cyan(%logger{36}) - %replace(%msg){'\(\/lib\/utils\/logging\.js\) ',''}%n</pattern>
+		</encoder>
+	</appender>
 
     <root level="info">
         <appender-ref ref="FILE"/>
-        <appender-ref ref="SYSLOG"/>
+        <appender-ref ref="STDOUT"/>
     </root>
-
-    <logger name="org.apache.ignite" additivity="false">
-        <level value="WARN"/>
-        <appender-ref ref="FILE"/>
-        <appender-ref ref="SYSLOG"/>
-    </logger>
 
 </configuration>
