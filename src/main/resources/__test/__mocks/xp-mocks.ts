@@ -6,7 +6,7 @@ const TEST_SERVER_ENGLISH_PROJECT_ID = 'navno-english';
 const server = new Server({
     loglevel: 'info',
     log: {
-        debug: () => ({}),
+        debug: () => ({}), // console.debug,
         info: console.log,
         warning: console.warn,
         error: console.error,
@@ -23,6 +23,16 @@ const libNodeMock = new LibNode({ server });
 const libContextMock = new LibContext({ server });
 const libEventMock = new LibEvent({ server });
 
+const site = libContentMock.create({
+    contentType: 'portal:site',
+    data: {},
+    parentPath: '/',
+    language: 'no',
+    name: 'www.nav.no',
+});
+
+libContentMock.publish({ keys: [site._id] });
+
 jest.mock(
     '/lib/xp/content',
     () => {
@@ -38,6 +48,7 @@ jest.mock(
     () => {
         return {
             connect: jest.fn((params) => libNodeMock.connect(params)),
+            // TODO: use actual multiRepoConnect mock when mock-xp has implemented it
             multiRepoConnect: jest.fn(({ sources }) => libNodeMock.connect(sources[0])),
         };
     },
@@ -58,7 +69,14 @@ jest.mock(
 jest.mock(
     '/lib/xp/event',
     () => {
-        return {};
+        return {
+            listener: jest.fn((params) => {
+                return libEventMock.listener(params);
+            }),
+            send: jest.fn((params) => {
+                return libEventMock.send(params);
+            }),
+        };
     },
     { virtual: true }
 );
