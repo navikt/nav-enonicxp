@@ -1,5 +1,7 @@
-import { LibContent, LibContext, LibNode, Server } from '@enonic/mock-xp';
+import { LibContent, LibContext, LibEvent, LibNode, Server } from '@enonic/mock-xp';
 import { CONTENT_ROOT_PROJECT_ID } from '../../lib/constants';
+
+const TEST_SERVER_ENGLISH_PROJECT_ID = 'navno-english';
 
 const server = new Server({
     loglevel: 'info',
@@ -10,12 +12,16 @@ const server = new Server({
         error: console.error,
     },
 })
-    .createProject({ projectName: CONTENT_ROOT_PROJECT_ID })
+    .createProject({
+        projectName: CONTENT_ROOT_PROJECT_ID,
+    })
+    .createProject({ projectName: TEST_SERVER_ENGLISH_PROJECT_ID })
     .setContext({ projectName: CONTENT_ROOT_PROJECT_ID });
 
 const libContentMock = new LibContent({ server });
 const libNodeMock = new LibNode({ server });
 const libContextMock = new LibContext({ server });
+const libEventMock = new LibEvent({ server });
 
 jest.mock(
     '/lib/xp/content',
@@ -49,8 +55,19 @@ jest.mock(
     { virtual: true }
 );
 
+jest.mock(
+    '/lib/xp/event',
+    () => {
+        return {};
+    },
+    { virtual: true }
+);
+
 export const xpMocks = {
     server,
     libContentMock,
     libNodeMock,
+    libContextMock,
+    libEventMock,
+    TEST_SERVER_ENGLISH_PROJECT_ID,
 };

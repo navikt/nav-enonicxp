@@ -139,8 +139,6 @@ describe('Document builder for external search api', () => {
             key: dynamicPage._id,
             editor: (content: ContentNode) => {
                 content.language = 'en';
-                content.inherit = [];
-
                 return content;
             },
         });
@@ -148,7 +146,7 @@ describe('Document builder for external search api', () => {
         const contentNode = repoConnection.get(dynamicPage._id) as ContentNode;
         const searchDocument = buildExternalSearchDocument(contentNode, 'en');
 
-        expect(searchDocument?.href.endsWith(dynamicPage.data.customPath)).toBeTruthy();
+        expect(searchDocument?.href).toMatch(new RegExp(`${contentNode.data.customPath}/en$`));
     });
 
     test('Content awaiting scheduled publishing should not generate a document', () => {
