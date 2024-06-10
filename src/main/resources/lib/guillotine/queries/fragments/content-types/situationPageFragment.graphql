@@ -5,6 +5,10 @@ fragment contentSituationPage on no_nav_navno_SituationPage {
     dataAsJson
     data {
         area
+        relatedSituations {
+            ...contentCommon
+            dataAsJson
+        }
         audience {
             _selected
             provider {

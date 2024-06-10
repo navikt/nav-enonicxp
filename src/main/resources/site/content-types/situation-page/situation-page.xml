@@ -10,6 +10,7 @@
         <mixin name="ingress-required" />
         <mixin name="audience" />
         <mixin name="area" />
+        <mixin name="related-situations" />
         <mixin name="illustration" />
         <mixin name="external-product-url" />
         <mixin name="custom-path-selector-required"/>

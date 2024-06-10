@@ -80,6 +80,11 @@ export type SituationPage = {
   area: Array<"health" | "other" | "work" | "family" | "accessibility" | "pension" | "social_counselling" | "inclusion" | "downsizing" | "recruitment"> | "health" | "other" | "work" | "family" | "accessibility" | "pension" | "social_counselling" | "inclusion" | "downsizing" | "recruitment";
 
   /**
+   * Situasjoner
+   */
+  relatedSituations?: Array<string> | string;
+
+  /**
    * Velg piktogram
    */
   illustration: string;
