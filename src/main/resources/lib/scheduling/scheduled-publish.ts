@@ -7,8 +7,9 @@ import { logger } from '../utils/logging';
 import { isContentLocalized } from '../localization/locale-utils';
 import { PrepublishCacheWipe } from '@xp-types/tasks/prepublish-cache-wipe';
 import { UnpublishExpiredContent } from '@xp-types/tasks/unpublish-expired-content';
+import { isContentAwaitingPrepublish } from '../utils/content-utils';
 
-const getPublish = (node: NodeEventData) => {
+const getContentNode = (node: NodeEventData) => {
     const repo = getRepoConnection({
         repoId: node.repo,
         branch: 'master',
@@ -20,15 +21,11 @@ const getPublish = (node: NodeEventData) => {
         return null;
     }
 
-    if (!content.publish || !isContentLocalized(content)) {
+    if (!isContentLocalized(content)) {
         return null;
     }
 
-    return content.publish;
-};
-
-export const isAwaitingPrepublishing = (publishFrom?: string): publishFrom is string => {
-    return publishFrom ? publishFrom > new Date().toISOString() : false;
+    return content;
 };
 
 export const getPrepublishJobName = (contentId: string, repoId: string, suffix?: string) =>
@@ -103,24 +100,24 @@ export const handleScheduledPublish = (nodeData: NodeEventData, eventType: strin
         return false;
     }
 
-    const publish = getPublish(nodeData);
-    if (!publish) {
+    const contentNode = getContentNode(nodeData);
+    if (!contentNode?.publish) {
         return false;
     }
 
     const { id, path, repo } = nodeData;
 
-    if (publish.to) {
-        scheduleUnpublish({ id, path, repoId: repo, publishTo: publish.to });
+    if (contentNode.publish.to) {
+        scheduleUnpublish({ id, path, repoId: repo, publishTo: contentNode.publish.to });
     }
 
-    if (isAwaitingPrepublishing(publish.from)) {
+    if (isContentAwaitingPrepublish(contentNode)) {
         scheduleCacheInvalidation({
             jobName: getPrepublishJobName(id, repo),
             id,
             path,
             repoId: repo,
-            time: publish.from,
+            time: contentNode.publish.from,
         });
         return true;
     }

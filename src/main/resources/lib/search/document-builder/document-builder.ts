@@ -5,7 +5,7 @@ import {
     getContentLocaleRedirectTarget,
     isContentNoIndex,
     isContentPreviewOnly,
-    isContentPrepublished,
+    isContentAwaitingPrepublish,
 } from '../../utils/content-utils';
 import { getNestedValues } from '../../utils/object-utils';
 import { getExternalSearchConfig } from '../config';
@@ -191,7 +191,7 @@ const isExcludedContent = (content: ContentNode) => {
     }
 
     if (
-        isContentPrepublished(content) ||
+        isContentAwaitingPrepublish(content) ||
         isContentNoIndex(content) ||
         isContentPreviewOnly(content) ||
         getContentLocaleRedirectTarget(content) ||
