@@ -9,10 +9,6 @@
                     <label>Vis intern-navigasjon</label>
                     <default>checked</default>
                 </input>
-                <input type="TextLine" name="leftMenuHeader">
-                    <label>Tittel</label>
-                    <default>Innhold</default>
-                </input>
                 <mixin name="page-navigation-menu"/>
             </items>
         </field-set>

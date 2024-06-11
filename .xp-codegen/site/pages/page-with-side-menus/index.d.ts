@@ -6,11 +6,6 @@ export type PageWithSideMenus = {
   showInternalNav: boolean;
 
   /**
-   * Tittel
-   */
-  leftMenuHeader?: string;
-
-  /**
    * Overstyr lenketekster
    */
   anchorLinks?: Array<{
