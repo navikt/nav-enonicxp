@@ -1,3 +1,3 @@
-import './globals';
+import './__mocks/globals';
 import './__mocks/xp-mocks';
-import './layers';
+import './__mocks/layers';

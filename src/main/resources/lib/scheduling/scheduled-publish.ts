@@ -15,7 +15,7 @@ const getContentNode = (node: NodeEventData) => {
         branch: 'master',
     });
 
-    const content = repo.get<Content>({ key: node.id });
+    const content = repo.get<Content>(node.id);
     if (!content) {
         logger.info(`Content for ${node.id} not found in repo ${node.repo}!`);
         return null;

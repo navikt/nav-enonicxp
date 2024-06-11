@@ -1,2 +1,1 @@
-export const get = () => ({});
-export const query = () => ({});
+export default {};
