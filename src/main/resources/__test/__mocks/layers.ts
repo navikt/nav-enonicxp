@@ -46,4 +46,5 @@ const layersData: LayersRepoData = {
 
 jest.mock('../../lib/localization/layers-data', () => ({
     getLayersData: (): LayersRepoData => layersData,
+    isValidLocale: (locale?: string) => locale && layersData.localeToRepoIdMap[locale],
 }));
