@@ -4,8 +4,8 @@
             <label>Intern navigasjon</label>
             <items>
                 <input type="CheckBox" name="showSubsectionNavigation">
-                    <label>Vis intern navigasjon i innholdsseksjoner</label>
-                    <default>unchecked</default>
+                    <label>Vis kapittelnavigasjon i hver innholdsseksjon</label>
+                    <default>checked</default>
                     <config>
                         <alignment>left</alignment>  
                     </config>

@@ -21,6 +21,11 @@ export type GenericPage = {
   ingress: string;
 
   /**
+   * Ikke vis ingress på selve siden
+   */
+  hideIngress: boolean;
+
+  /**
    * Målgruppe
    */
   audience:

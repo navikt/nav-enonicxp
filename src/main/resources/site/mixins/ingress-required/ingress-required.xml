@@ -5,6 +5,10 @@
             <label>Ingress</label>
             <help-text>Ingressen skal være kort og brukes på produktkortet. Den skrives på formatet [Dette gjør produktet] når du [situasjon eller målgruppe].</help-text>
             <occurrences minimum="1" maximum="1"/>
+            <config>
+                <max-length>260</max-length>  
+                <show-counter>true</show-counter>  
+            </config>
         </input>
     </form>
 </mixin>

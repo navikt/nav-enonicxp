@@ -110,6 +110,11 @@ export type SituationPage = {
   "managed-by"?: Array<"po_aap" | "po_arbeid" | "po_familie" | "po_helse" | "po_pensjon" | "po_arbeidsgiver" | "digisos"> | "po_aap" | "po_arbeid" | "po_familie" | "po_helse" | "po_pensjon" | "po_arbeidsgiver" | "digisos";
 
   /**
+   * Vis kapittelnavigasjon i hver innholdsseksjon
+   */
+  showSubsectionNavigation: boolean;
+
+  /**
    * Legg til andre språkversjoner
    */
   languages?: Array<string> | string;

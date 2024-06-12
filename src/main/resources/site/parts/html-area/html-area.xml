@@ -11,6 +11,13 @@
                 <allowHeadings>h3 h4 normal</allowHeadings>
             </config>
         </input>
+        <input name="type" type="ComboBox">
+            <label>Type innhold</label>
+            <occurrences minimum="0" maximum="1"/>
+            <config>
+                <option value="documentation_requirements">Dokumentasjonskrav</option>
+            </config>
+        </input>
         <mixin name="expandable"/>
         <mixin name="filter-selector"/>
         <mixin name="auth-render-option"/>
