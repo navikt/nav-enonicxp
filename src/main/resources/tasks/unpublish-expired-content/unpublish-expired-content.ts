@@ -5,7 +5,6 @@ import { logger } from '../../lib/utils/logging';
 import { getLayersData } from '../../lib/localization/layers-data';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { CONTENT_ROOT_REPO_ID } from '../../lib/constants';
-import { getUnixTimeFromDateTimeString } from '../../lib/utils/datetime-utils';
 import { UnpublishExpiredContent } from '@xp-types/tasks/unpublish-expired-content';
 import { getRepoConnection } from '../../lib/utils/repo-utils';
 
@@ -30,11 +29,10 @@ export const run = (params: UnpublishExpiredContent) => {
         return;
     }
 
-    const currentTime = Date.now();
-    const publishToTime = getUnixTimeFromDateTimeString(publishTo);
-    if (currentTime < publishToTime) {
+    const now = new Date().toISOString();
+    if (now < publishTo) {
         logger.info(
-            `Content ${contentInfo} has not yet expired - rescheduling unpublish task (current time: ${currentTime} - expire time: ${publishToTime})`
+            `Content ${contentInfo} has not yet expired - rescheduling unpublish task (current time: ${now} - expire time: ${publishTo})`
         );
         scheduleUnpublish({ id, path, repoId, publishTo });
         return;

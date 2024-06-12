@@ -1,9 +1,6 @@
-import { Log } from '@enonic/mock-xp';
-import './src/main/resources/__test/__mocks/xp-mocks';
-
 declare const global: {
     Java: any;
-    log: Log;
+    log: any;
 };
 
 global.Java = {
@@ -16,3 +13,5 @@ global.log = {
     warning: console.warn,
     error: console.error,
 };
+
+export {};

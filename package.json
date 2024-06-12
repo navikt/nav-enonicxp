@@ -5,7 +5,7 @@
         "test": "jest",
         "build": "npm-run-all test lint babel",
         "lint": "eslint ./src/main/resources --ext=ts --quiet && tsc -p tsconfig-build.json --noemit",
-        "babel": "babel src/main/resources --out-dir=build/resources/main --ignore \"src/**/*.test.ts\",\"src/main/resources/__test\" --no-copy-ignored --extensions \".ts\""
+        "babel": "babel src/main/resources --out-dir=build/resources/main --no-copy-ignored --extensions \".ts\""
     },
     "repository": {
         "type": "git",

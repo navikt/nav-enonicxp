@@ -77,6 +77,10 @@ module.exports = {
                         'group': ['?types/xp-libs/*'],
                         'message': 'xp-libs patches should not be imported directly (use /lib/xp/*)',
                     },
+                    {
+                        'group': ['*__test*'],
+                        'message': 'Test modules should not be imported outside of tests',
+                    },
                 ],
             },
         ],
@@ -118,6 +122,13 @@ module.exports = {
                         'ignore': ['/lib/xp'],
                     },
                 ],
+                'no-restricted-imports': 'off',
+            },
+        },
+        {
+            'files': ['*.test.ts', 'src/main/resources/__test/**/*.*'],
+            'rules': {
+                'no-console': 'off',
                 'no-restricted-imports': 'off',
             },
         },

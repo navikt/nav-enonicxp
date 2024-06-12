@@ -2,7 +2,6 @@ import * as contextLib from '/lib/xp/context';
 import { Content } from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
 import { ContentDescriptor, MediaDescriptor } from '../../types/content-types/content-config';
-import { isPrepublished } from '../scheduling/scheduled-publish';
 import { logger } from './logging';
 import { COMPONENT_APP_KEY } from '../constants';
 
@@ -45,6 +44,9 @@ export const isContentNoIndex = (content: Content<any>) => {
     return !!content.data?.noindex;
 };
 
-export const isContentPrepublished = (content: Content<any>) => {
-    return isPrepublished(content?.publish?.from);
+export const isContentAwaitingPrepublish = (
+    content: Content<any>
+): content is Content & { publish: { from: string } } => {
+    const publishFrom = content.publish?.from;
+    return publishFrom ? publishFrom > new Date().toISOString() : false;
 };

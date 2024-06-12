@@ -2,7 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import * as eventLib from '/lib/xp/event';
 import { runInContext } from '../context/run-in-context';
-import { isPrepublished } from '../scheduling/scheduled-publish';
+import { isContentAwaitingPrepublish } from '../utils/content-utils';
 import { logger } from '../utils/logging';
 import { forceArray } from '../utils/array-utils';
 import { CONTENT_REPO_PREFIX } from '../constants';
@@ -28,7 +28,11 @@ const isPublishedOrPrepublished = (contentId: string) => {
         const draftContent = runInContext({ branch: 'draft' }, () =>
             contentLib.get({ key: contentId })
         );
-        return isPrepublished(draftContent?.publish?.from);
+        if (!draftContent) {
+            return false;
+        }
+
+        return isContentAwaitingPrepublish(draftContent);
     } catch (e) {
         logger.error(
             `Error getting publish state for ${contentId}, assuming content is corrupted and returning false - ${e}`
