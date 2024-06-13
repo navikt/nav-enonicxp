@@ -105,6 +105,9 @@ const getComponentAnchorLink = (
     component: NodeComponent,
     repo: RepoConnection
 ): AnchorLink | null => {
+    if (component.path.includes('/topPageContent')) {
+        return null;
+    }
     if (component.type === 'layout') {
         return getLayoutAnchorLink(component.layout);
     }
