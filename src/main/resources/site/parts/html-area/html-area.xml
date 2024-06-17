@@ -16,6 +16,8 @@
             <occurrences minimum="0" maximum="1"/>
             <config>
                 <option value="documentation_requirements">Dokumentasjonskrav</option>
+                <option value="processing_times">Saksbehandlingstider</option>
+                <option value="rates">Satser</option>
             </config>
         </input>
         <mixin name="expandable"/>

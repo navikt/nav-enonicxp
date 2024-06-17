@@ -8,7 +8,7 @@ export type HtmlArea = {
   /**
    * Type innhold
    */
-  type?: "documentation_requirements";
+  type?: "documentation_requirements" | "processing_times" | "rates";
 
   /**
    * Utvidbar
