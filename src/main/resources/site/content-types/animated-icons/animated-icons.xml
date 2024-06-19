@@ -1,6 +1,6 @@
 <content-type>
-    <display-name>Illustrasjon</display-name>
-    <description>Ikoner med mouseover animasjon</description>
+    <display-name>Piktogram</display-name>
+    <description>Piktogrammer til bruk på områdesider, produktsider, situasjoner etc</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
@@ -8,24 +8,10 @@
     <form>
         <item-set name="icons">
             <label>Velg ikoner</label>
-            <occurrences minimum="3" maximum="0"/>
+            <occurrences minimum="2" maximum="2"/>
             <items>
                 <mixin name="icon-selector"/>
             </items>
         </item-set>
-        <field-set>
-            <label>Lottie-files (animasjon)</label>
-            <help-text>Dersom du laster opp en lottie-fil så vil denne vises istedet for statisk illustrasjon</help-text>
-            <items>
-                <input name="lottieHover" type="MediaSelector">
-                    <label>Lottie-animasjon ved hover</label>
-                    <config>
-                        <allowContentType>media:code</allowContentType>
-                        <allowPath>./*.json</allowPath>
-                        <hideToggleIcon>true</hideToggleIcon>
-                    </config>
-                </input>
-            </items>
-        </field-set>
     </form>
 </content-type>

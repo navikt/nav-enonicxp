@@ -9,9 +9,4 @@ export type AnimatedIcons = {
      */
     icon?: string;
   }>;
-
-  /**
-   * Lottie-animasjon ved hover
-   */
-  lottieHover?: string;
 }
