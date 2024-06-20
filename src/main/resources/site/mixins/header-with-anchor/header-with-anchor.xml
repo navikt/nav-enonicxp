@@ -25,10 +25,6 @@
                         <alignment>left</alignment>
                     </config>
                 </input>
-                <input type="CheckBox" name="toggleCopyButton">
-                    <label>Toggle "kopier lenke" knapp</label>
-                    <help-text>Skjuler "kopier lenke" dersom den er default på for denne komponenten, eller vice versa</help-text>
-                </input>
             </items>
         </field-set>
     </form>

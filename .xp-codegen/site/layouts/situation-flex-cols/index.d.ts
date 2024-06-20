@@ -16,11 +16,6 @@ export type SituationFlexCols = {
   hideFromInternalNavigation: boolean;
 
   /**
-   * Toggle "kopier lenke" knapp
-   */
-  toggleCopyButton: boolean;
-
-  /**
    * Antall kolonner ved full skjermbredde
    */
   numCols?: number;
