@@ -31,7 +31,7 @@ const transformToListItem = (content: Content<any>): Item => {
     };
 };
 
-const splitByEnabledStatus = (items: ReadonlyArray<Item>) => {
+const splitByEnabledStatus = (items: Item[]) => {
     return items.reduce<{
         enabledItems: Item[];
         disabledItems: Item[];
@@ -77,7 +77,7 @@ const findNewItems = (content: FallbackContent, existingItems: Item[]) => {
 // We always keep existing items if they are enabled. Disabled items are removed if they no longer
 // match the restrictions set on the fallback content.
 const refreshItemsList = (content: FallbackContent) => {
-    const currentItemsList: ReadonlyArray<Item> = forceArray(content.data.items);
+    const currentItemsList = forceArray(content.data.items);
 
     const { enabledItems, disabledItems } = splitByEnabledStatus(currentItemsList);
 
@@ -87,7 +87,7 @@ const refreshItemsList = (content: FallbackContent) => {
         return currentDisabledItemsMap.get(newItem.contentId) || newItem;
     });
 
-    const updatedItemsList: Array<Item> = removeDuplicates(
+    const updatedItemsList = removeDuplicates(
         [...updatedDisabledItems.sort(sortByTitle), ...enabledItems.sort(sortByTitle)],
         (a, b) => a.contentId === b.contentId
     );
