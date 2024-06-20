@@ -7,10 +7,5 @@ fragment contentAnimatedIcons on no_nav_navno_AnimatedIcons {
                 ...imageInlineMixin
             }
         }
-        lottieHover {
-            ... on media_Code {
-                mediaUrl(type: server, download: false)
-            }
-        }
     }
 }
