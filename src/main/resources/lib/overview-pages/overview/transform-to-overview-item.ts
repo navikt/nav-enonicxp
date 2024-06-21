@@ -14,19 +14,23 @@ export const transformToOverviewItem = (
     const pageTitle = title || displayName;
     const listItemTitle = sortTitle || pageTitle;
 
-    const locale = language || getLayersData().defaultLocale;
+    const { defaultLocale } = getLayersData();
+
+    const productPageLocale = language || defaultLocale;
 
     return {
         ...data,
         title: listItemTitle,
         audience: audience._selected,
         anchorId: sanitize(listItemTitle),
-        productDetailsPath: productDetail ? getPublicPath(productDetail, locale) : undefined,
+        productDetailsPath: productDetail
+            ? getPublicPath(productDetail, productDetail.language || defaultLocale)
+            : undefined,
         productLinks: [
             {
-                language: locale,
+                language: productPageLocale,
                 type,
-                url: externalProductUrl || getPublicPath(productPage, locale),
+                url: externalProductUrl || getPublicPath(productPage, productPageLocale),
                 title: pageTitle,
             },
         ],
