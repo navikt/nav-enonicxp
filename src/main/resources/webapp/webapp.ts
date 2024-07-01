@@ -1,6 +1,6 @@
 import * as taskLib from '/lib/xp/task';
 import thymeleafLib from '/lib/thymeleaf';
-import { runOfficeBranchFetchTask } from '../lib/office-pages/office-branch-tasks';
+import { runOfficeFetchTask } from '../lib/office-pages/office-tasks';
 import { runInContext } from '../lib/context/run-in-context';
 import { frontendInvalidateAllAsync } from '../lib/cache/frontend-cache';
 import { requestSitemapUpdate } from '../lib/sitemap/sitemap';
@@ -19,9 +19,9 @@ const view = resolve('webapp.html');
 
 const validActions: ActionsMap = {
     norg: {
-        description: 'Oppdater kontor-info fra norg',
+        description: 'Oppdater kontor fra norg',
         callback: () => {
-            runOfficeBranchFetchTask();
+            runOfficeFetchTask();
             fetchAndUpdateOfficeInfo();
         },
     },

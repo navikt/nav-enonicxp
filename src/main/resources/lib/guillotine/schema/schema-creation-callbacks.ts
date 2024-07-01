@@ -28,7 +28,7 @@ import {
 import { macroAlertboxCallback } from './schema-creation-callbacks/macro-alert-box';
 import { richTextCallback } from './schema-creation-callbacks/richtext';
 import { overviewDataCallback } from './schema-creation-callbacks/overview-data-callback';
-import { officeBranchCallback } from './schema-creation-callbacks/office-branch-callback';
+import { officeCallback } from './schema-creation-callbacks/office-callback';
 import {
     formDetailsPartOrMacroCallback,
     formDetailsDataCallback,
@@ -65,7 +65,7 @@ export const schemaCreationCallbacks: Record<string, CreationCallback> = {
     no_nav_navno_SectionPage_Data: sectionPageDataCallback,
     no_nav_navno_ContentList_Data: contentListDataCallback,
     no_nav_navno_Overview_Data: overviewDataCallback,
-    no_nav_navno_OfficeBranch: officeBranchCallback,
+    no_nav_navno_OfficePage: officeCallback,
     no_nav_navno_ContactInformation_Chat: createOpeningHoursFields('chat'),
     no_nav_navno_ContactInformation_Telephone: createOpeningHoursFields('telephone'),
     no_nav_navno_MainArticle_MenuListItems: menuListDataCallback,

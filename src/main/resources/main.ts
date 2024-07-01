@@ -13,7 +13,6 @@ import { updateClusterInfo } from './lib/cluster-utils/cluster-api';
 import { startOfficeInfoPeriodicUpdateSchedule } from './lib/office-pages/_legacy-office-information/legacy-office-update';
 import { activateContentListItemUnpublishedListener } from './lib/contentlists/remove-unpublished';
 import { activateCustomPathNodeListeners } from './lib/paths/custom-paths/custom-path-event-listeners';
-import { createOfficeBranchFetchSchedule } from './lib/office-pages/office-branch-tasks';
 import { createOfficeFetchSchedule } from './lib/office-pages/office-tasks';
 import { hookLibsWithTimeTravel } from './lib/time-travel/time-travel-hooks';
 import { initSearchRepo } from './lib/search/search-repo';
@@ -34,7 +33,6 @@ if (clusterLib.isMaster()) {
     initSearchRepo();
 }
 
-createOfficeBranchFetchSchedule();
 createOfficeFetchSchedule();
 startOfficeInfoPeriodicUpdateSchedule();
 activateLayersEventListeners();

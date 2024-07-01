@@ -4,7 +4,7 @@ import { CreationCallback } from '../../utils/creation-callback-utils';
 import { logger } from '../../../utils/logging';
 import { CONTENT_LOCALE_DEFAULT } from '../../../constants';
 
-export const officeBranchCallback: CreationCallback = (context, params) => {
+export const officeCallback: CreationCallback = (context, params) => {
     params.fields.editorial = {
         args: { contentId: graphQlLib.GraphQLID },
         type: graphQlLib.reference('no_nav_navno_OfficeEditorialPage'),
@@ -14,16 +14,22 @@ export const officeBranchCallback: CreationCallback = (context, params) => {
             const officeDataContent = contentLib.get({ key: contentId });
 
             if (!officeDataContent) {
-                logger.info('No content found');
+                logger.info(`No content found when looking for office with id ${contentId}`);
                 return;
             }
 
-            if (officeDataContent.type !== 'no.nav.navno:office-branch') {
-                logger.info('Content found, but it is not the excepted type of office-branch');
+            if (officeDataContent.type !== 'no.nav.navno:office-page') {
+                logger.info('Office content found, but it is not the excepted type of office-page');
                 return;
             }
 
-            const skriftspraak = officeDataContent.data.brukerkontakt?.skriftspraak;
+            const officeData = officeDataContent.data?.officeNorgData?.data;
+
+            if (!officeData || officeData.type !== 'LOKAL') {
+                return null;
+            }
+
+            const skriftspraak = officeData.brukerkontakt?.skriftspraak;
 
             // The field skriftspraak in NORG is an open text field, so uppercase
             // before checking.

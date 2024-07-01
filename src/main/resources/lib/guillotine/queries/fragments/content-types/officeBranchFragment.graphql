@@ -1,8 +1,0 @@
-#import "../contentCommonWithPageFragment.graphql"
-
-fragment contentOfficeBranch on no_nav_navno_OfficeBranch {
-    dataAsJson
-    editorial(contentId: $ref) {
-        ...contentCommonWithPage
-    }
-}
