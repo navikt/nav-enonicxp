@@ -3,7 +3,6 @@ import { runInContext } from '../../context/run-in-context';
 import { sortByLocaleCompareOnField } from '../../utils/sort-utils';
 import { getOverviewContent } from './get-overview-content';
 import { logger } from '../../utils/logging';
-import { buildOverviewListLegacy } from './build-overview-list-legacy';
 import { transformToOverviewItem } from './transform-to-overview-item';
 import { ContentInOverviewPages, OverviewPageDetailedType, OverviewPageItem } from './types';
 import { forceArray } from '../../utils/array-utils';
@@ -55,11 +54,6 @@ export const buildOverviewList = (overviewContent: Content<'no.nav.navno:overvie
     const locale = language || getLayersData().defaultLocale;
 
     const overviewList = runInContext({ branch: 'master' }, () => {
-        // TODO: remove this once all relevant overview pages have been converted to the locale fallback system
-        if (!localeFallback && overviewType !== 'all_products') {
-            return buildOverviewListLegacy(listContents, overviewType, locale);
-        }
-
         const localizedContent = getLocalizedContentWithFallbackData({
             contents: listContents,
             localeFallbackIds: forceArray(localeFallback),

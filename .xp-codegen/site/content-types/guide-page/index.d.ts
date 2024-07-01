@@ -268,7 +268,7 @@ export type GuidePage = {
   formDetailsTargets?: Array<string> | string;
 
   /**
-   * Vis intern navigasjon i innholdsseksjoner
+   * Vis kapittelnavigasjon i hver innholdsseksjon
    */
   showSubsectionNavigation: boolean;
 

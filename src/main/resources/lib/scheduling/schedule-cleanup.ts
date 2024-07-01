@@ -5,6 +5,8 @@ import { createOrUpdateSchedule } from './schedule-job';
 import { APP_DESCRIPTOR } from '../constants';
 import { SchedulerCleanup } from '@xp-types/tasks/scheduler-cleanup';
 
+const ONE_MONTH_MS = 30 * 24 * 60 * 60 * 1000;
+
 // Removes expired one-time jobs
 export const runSchedulerCleanup = (dryRun?: boolean) => {
     const repoConnection = getRepoConnection({
@@ -13,7 +15,8 @@ export const runSchedulerCleanup = (dryRun?: boolean) => {
         asAdmin: true,
     });
 
-    const now = new Date().toISOString();
+    // Keep jobs up to a month old in case we need to debug jobs that ran recently
+    const oneMonthAgo = new Date(Date.now() - ONE_MONTH_MS).toISOString();
 
     const jobsToPrune = batchedNodeQuery({
         queryParams: {
@@ -35,7 +38,7 @@ export const runSchedulerCleanup = (dryRun?: boolean) => {
                         {
                             range: {
                                 field: 'calendar.value',
-                                lt: now,
+                                lt: oneMonthAgo,
                             },
                         },
                     ],

@@ -43,3 +43,10 @@ export const getContentLocaleRedirectTarget = (content: Content) => {
 export const isContentNoIndex = (content: Content<any>) => {
     return !!content.data?.noindex;
 };
+
+export const isContentAwaitingPrepublish = (
+    content: Content<any>
+): content is Content & { publish: { from: string } } => {
+    const publishFrom = content.publish?.from;
+    return publishFrom ? publishFrom > new Date().toISOString() : false;
+};

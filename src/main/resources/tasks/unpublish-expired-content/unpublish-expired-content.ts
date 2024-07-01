@@ -1,38 +1,38 @@
 import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { scheduleUnpublish } from '../../lib/scheduling/scheduled-publish';
 import { logger } from '../../lib/utils/logging';
 import { getLayersData } from '../../lib/localization/layers-data';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { CONTENT_ROOT_REPO_ID } from '../../lib/constants';
-import { getUnixTimeFromDateTimeString } from '../../lib/utils/datetime-utils';
 import { UnpublishExpiredContent } from '@xp-types/tasks/unpublish-expired-content';
-import { runInContext } from '../../lib/context/run-in-context';
+import { getRepoConnection } from '../../lib/utils/repo-utils';
 
 export const run = (params: UnpublishExpiredContent) => {
     const { id, path, repoId = CONTENT_ROOT_REPO_ID } = params;
 
-    logger.info(`Running task for unpublishing expired content - ${id} - ${path}`);
+    const contentInfo = `${id} [${repoId}]`;
 
-    const getContent = () =>
-        runInContext({ branch: 'master', repository: repoId }, () => contentLib.get({ key: id }));
+    logger.info(`Running task for unpublishing expired content - ${contentInfo}`);
 
-    const content = getContent();
+    const repo = getRepoConnection({ repoId, branch: 'master' });
+
+    const content = repo.get<Content>({ key: id });
     if (!content) {
-        logger.error(`Content ${id} not found in master - aborting unpublish task`);
+        logger.error(`Content ${contentInfo} not found in master - aborting unpublish task`);
         return;
     }
 
     const publishTo = content.publish?.to;
     if (!publishTo) {
-        logger.info(`Content ${id} is no longer set to expire - aborting unpublish task`);
+        logger.info(`Content ${contentInfo} is no longer set to expire - aborting unpublish task`);
         return;
     }
 
-    const currentTime = Date.now();
-    const publishToTime = getUnixTimeFromDateTimeString(publishTo);
-    if (currentTime < publishToTime) {
+    const now = new Date().toISOString();
+    if (now < publishTo) {
         logger.info(
-            `Content ${id} has not yet expired - rescheduling unpublish task (current time: ${currentTime} - expire time: ${publishToTime})`
+            `Content ${contentInfo} has not yet expired - rescheduling unpublish task (current time: ${now} - expire time: ${publishTo})`
         );
         scheduleUnpublish({ id, path, repoId, publishTo });
         return;
@@ -46,17 +46,17 @@ export const run = (params: UnpublishExpiredContent) => {
         if (unpublished && unpublished.length > 0) {
             logger.info(`Unpublished content: ${unpublished.join(', ')}`);
             if (unpublished.length > 1) {
-                logger.error(`Unexpectedly unpublished multiple contents with id ${id}`);
+                logger.error(`Unexpectedly unpublished multiple contents: ${contentInfo}`);
             }
         } else {
-            const contentNow = getContent();
+            const contentNow = repo.get<Content>({ key: id });
             if (contentNow) {
-                logger.critical(`Could not unpublish ${id} - unknown error`);
+                logger.critical(`Could not unpublish ${contentInfo} - unknown error`);
             } else {
-                logger.warning(`Could not unpublish ${id} as it was already unpublished`);
+                logger.warning(`Could not unpublish ${contentInfo} as it was already unpublished`);
             }
         }
     } catch (e) {
-        logger.critical(`Error while unpublishing ${id} - ${e}`);
+        logger.critical(`Error while unpublishing ${contentInfo} - ${e}`);
     }
 };

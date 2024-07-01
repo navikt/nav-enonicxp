@@ -80,6 +80,11 @@ export type SituationPage = {
   area: Array<"health" | "other" | "work" | "family" | "accessibility" | "pension" | "social_counselling" | "inclusion" | "downsizing" | "recruitment"> | "health" | "other" | "work" | "family" | "accessibility" | "pension" | "social_counselling" | "inclusion" | "downsizing" | "recruitment";
 
   /**
+   * Situasjoner
+   */
+  relatedSituations?: Array<string> | string;
+
+  /**
    * Velg piktogram
    */
   illustration: string;
@@ -103,6 +108,11 @@ export type SituationPage = {
    * Velg forvalter
    */
   "managed-by"?: Array<"po_aap" | "po_arbeid" | "po_familie" | "po_helse" | "po_pensjon" | "po_arbeidsgiver" | "digisos"> | "po_aap" | "po_arbeid" | "po_familie" | "po_helse" | "po_pensjon" | "po_arbeidsgiver" | "digisos";
+
+  /**
+   * Vis kapittelnavigasjon i hver innholdsseksjon
+   */
+  showSubsectionNavigation: boolean;
 
   /**
    * Legg til andre språkversjoner

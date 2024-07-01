@@ -268,7 +268,7 @@ export type ContentPageWithSidemenus = {
   formDetailsTargets?: Array<string> | string;
 
   /**
-   * Vis intern navigasjon i innholdsseksjoner
+   * Vis kapittelnavigasjon i hver innholdsseksjon
    */
   showSubsectionNavigation: boolean;
 

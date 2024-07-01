@@ -17,12 +17,12 @@ export const isValidCustomPath = (path?: string): path is string =>
     typeof path === 'string' && validCustomPathPattern.test(path);
 
 export const hasValidCustomPath = (
-    content: Content | ContentNode
+    content: Content<any> | ContentNode
 ): content is ContentWithCustomPath => {
     return isValidCustomPath((content as ContentWithCustomPath).data?.customPath);
 };
 
-export const hasInvalidCustomPath = (content: Content): content is ContentWithCustomPath => {
+export const hasInvalidCustomPath = (content: Content<any>): content is ContentWithCustomPath => {
     const customPath = (content as ContentWithCustomPath).data?.customPath;
 
     return !!(customPath && !isValidCustomPath(customPath));

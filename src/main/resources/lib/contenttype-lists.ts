@@ -20,7 +20,6 @@ export const dynamicPageContentTypes = [
     `${APP_DESCRIPTOR}:guide-page`,
     `${APP_DESCRIPTOR}:themed-article-page`,
     `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
-    `${APP_DESCRIPTOR}:product-page-v2`,
     `${APP_DESCRIPTOR}:tools-page`,
     `${APP_DESCRIPTOR}:dynamic-page`,
     `${APP_DESCRIPTOR}:form-intermediate-step`,
@@ -73,14 +72,7 @@ export const contentTypesWithDeepReferences = [
 ] as const satisfies ContentTypeList;
 
 export const contentTypesWithBreadcrumbs = [
-    `${APP_DESCRIPTOR}:situation-page`,
-    `${APP_DESCRIPTOR}:guide-page`,
-    `${APP_DESCRIPTOR}:themed-article-page`,
-    `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
-    `${APP_DESCRIPTOR}:product-page-v2`,
-    `${APP_DESCRIPTOR}:tools-page`,
     `${APP_DESCRIPTOR}:dynamic-page`,
-    `${APP_DESCRIPTOR}:generic-page`,
     `${APP_DESCRIPTOR}:main-article`,
     `${APP_DESCRIPTOR}:main-article-chapter`,
     `${APP_DESCRIPTOR}:section-page`,
