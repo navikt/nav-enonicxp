@@ -21,7 +21,7 @@ export type FrontpageCurrentTopics = {
   sortByPublishDate: boolean;
 
 
-  link:
+  link?:
     | {
         /**
          * Selected
