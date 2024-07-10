@@ -280,6 +280,15 @@ const updateOfficePageIfChanged = (
             CONTENT_ROOT_REPO_ID
         );
 
+        // Check for dependencies
+        const outbountDeps: string[] = contentLib.getOutboundDependencies({
+            key: existingOfficePage._id,
+        });
+
+        const allOutboundsArePublished = outbountDeps.every((id) => {
+            return isDraftAndMasterSameVersion(id, CONTENT_ROOT_REPO_ID);
+        });
+
         moveAndRedirectOnNameChange(existingOfficePage, newOfficeData);
 
         contentLib.modify<OfficePageDescriptor>({
@@ -296,11 +305,11 @@ const updateOfficePageIfChanged = (
             }),
         });
 
-        // Content can only be published if it was already
-        // up to date with master. Ie, content that currently in
+        // Content can only be published if it and it's outbound content
+        // is udate with master. Ie, content that currently is in
         // some sort of "in progress" by editors, should not
         // be automatically published.
-        return isUpToDateWithMaster;
+        return isUpToDateWithMaster && allOutboundsArePublished;
     } catch (e) {
         logger.critical(
             `OfficeImporting: Failed to modify office page content ${existingOfficePage._path} - ${e}`
