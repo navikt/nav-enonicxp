@@ -44,7 +44,6 @@ import mainArticleQuery from './content-queries/mainArticleQuery.graphql';
 import mainArticleChapterQuery from './content-queries/mainArticleChapterQuery.graphql';
 import meldingQuery from './content-queries/meldingQuery.graphql';
 import officeInformationQuery from './content-queries/officeInformationQuery.graphql';
-import officeBranchQuery from './content-queries/officeBranchQuery.graphql';
 import officePageQuery from './content-queries/officePageQuery.graphql';
 import officeEditorialPageQuery from './content-queries/officeEditorialPageQuery.graphql';
 import overviewPageQuery from './content-queries/overviewPageQuery.graphql';
@@ -106,7 +105,6 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:main-article-chapter': mainArticleChapterQuery,
     'no.nav.navno:melding': meldingQuery,
     'no.nav.navno:office-information': officeInformationQuery,
-    'no.nav.navno:office-branch': officeBranchQuery,
     'no.nav.navno:office-page': officePageQuery,
     'no.nav.navno:office-editorial-page': officeEditorialPageQuery,
     'no.nav.navno:payout-dates': payoutDatesQuery,

@@ -2,4 +2,7 @@
 
 fragment contentOfficePage on no_nav_navno_OfficePage {
     dataAsJson
+    editorial(contentId: $ref) {
+        ...contentCommonWithPage
+    }
 }

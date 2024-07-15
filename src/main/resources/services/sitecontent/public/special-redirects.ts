@@ -62,7 +62,7 @@ const getPreviewOnlyResponse = ({ content, requestedPath, isPreview }: Args) => 
 
 // Note: There are legacy office pages still in effect that also have the
 // content type office-information. As long as the enhetNr doesn't match up
-// with any office-branch content, the next function will pass by these
+// with any office-page content, the next function will pass by these
 // office pages.
 const getOfficeInfoRedirect = ({ content }: Args) => {
     if (content.type !== 'no.nav.navno:office-information') {
@@ -74,12 +74,12 @@ const getOfficeInfoRedirect = ({ content }: Args) => {
     const foundOfficeContent = contentLib.query({
         start: 0,
         count: 1,
-        contentTypes: ['no.nav.navno:office-branch'],
+        contentTypes: ['no.nav.navno:office-page'],
         filters: {
             boolean: {
                 must: {
                     hasValue: {
-                        field: 'data.enhetNr',
+                        field: 'data.officeNorgData.data.enhetNr',
                         values: [enhetNr],
                     },
                 },

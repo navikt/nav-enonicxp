@@ -190,7 +190,7 @@ export class ReferencesFinder {
         this.findAndProcessReferences(() => this.findOverviewRefs(content));
         this.findAndProcessReferences(() => this.findFormsOverviewRefs(content));
         this.findAndProcessReferences(() => this.findAlertInContextRefs(content));
-        this.findAndProcessReferences(() => this.findOfficeBranchRefs(content));
+        this.findAndProcessReferences(() => this.findOfficeRefs(content));
         this.findAndProcessReferences(() => this.findContactInfoRefs(content));
         this.findAndProcessReferences(() => this.findMainArticleChapterRefs(content));
         this.findAndProcessReferences(() => this.findParentRefs(content));
@@ -438,8 +438,8 @@ export class ReferencesFinder {
         return result;
     }
 
-    // Changes to an office editorial page affects all office-branch pages in the same language
-    private findOfficeBranchRefs(content: ContentNode): QueryResult {
+    // Changes to an office editorial page affects all office-page in the same language
+    private findOfficeRefs(content: ContentNode): QueryResult {
         if (content.type !== 'no.nav.navno:office-editorial-page') {
             return [];
         }
@@ -451,7 +451,7 @@ export class ReferencesFinder {
                         {
                             hasValue: {
                                 field: 'type',
-                                values: ['no.nav.navno:office-branch'],
+                                values: ['no.nav.navno:office-page'],
                             },
                         },
                         {
@@ -465,7 +465,7 @@ export class ReferencesFinder {
             },
         });
 
-        this.logResult('office branch pages', content._id, result);
+        this.logResult('office pages', content._id, result);
 
         return result;
     }

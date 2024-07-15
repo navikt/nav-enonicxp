@@ -12,7 +12,6 @@ import { createObjectChecksum } from '../utils/object-utils';
 import { OfficeRawNORGData } from './office-raw-norg-data';
 
 type OfficePageDescriptor = NavNoDescriptor<'office-page'>;
-type OfficeBranchPageDescriptor = NavNoDescriptor<'office-branch'>;
 type InternalLinkDescriptor = NavNoDescriptor<'internal-link'>;
 
 type OfficeNorgData = OfficePageData['officeNorgData']['data'];
@@ -27,7 +26,6 @@ type OfficeOverview = {
 type OfficeTypeDictionary = Map<string, string>;
 
 const OFFICE_PAGE_CONTENT_TYPE: OfficePageDescriptor = `no.nav.navno:office-page`;
-const OFFICE_BRANCH_CONTENT_TYPE: OfficeBranchPageDescriptor = `no.nav.navno:office-branch`;
 const INTERNAL_LINK_CONTENT_TYPE: InternalLinkDescriptor = `no.nav.navno:internal-link`;
 const OFFICES_BASE_PATH = '/www.nav.no/kontor';
 
@@ -57,6 +55,8 @@ const norgRequest = <T>(requestConfig: HttpRequestParams): T[] | null => {
         return null;
     }
 };
+
+const localOfficeAdapter = (officeData: OfficeRawNORGData) => ({ ...officeData, type: 'LOKAL' });
 
 const generalOfficeAdapter = (
     officeData: OfficeRawNORGData,
@@ -119,8 +119,13 @@ export const fetchAllOfficeDataFromNorg = () => {
             body: JSON.stringify(enhetnrForFetching),
         });
 
-        if (!norgOffices) {
-            logger.error(`OfficeImporting: Could not fetch offices or enhet from norg2`);
+        const officeBranches = norgRequest<OfficeRawNORGData>({
+            url: URLS.NORG_LOCAL_OFFICE_API_URL,
+            method: 'GET',
+        });
+
+        if (!norgOffices || !officeBranches) {
+            logger.error(`OfficeImporting: Could not fetch offices or branch from norg2`);
             return;
         }
 
@@ -128,7 +133,9 @@ export const fetchAllOfficeDataFromNorg = () => {
             generalOfficeAdapter(office, officeTypeDictionary)
         );
 
-        return adaptedOffices;
+        const adaptedOfficeBranches = officeBranches.map((office) => localOfficeAdapter(office));
+
+        return [...adaptedOffices, ...adaptedOfficeBranches];
     } catch (e) {
         logger.error(`OfficeImporting: Exception from norg2 request: ${e}.`);
         return null;
@@ -143,7 +150,6 @@ const pathHasInvalidContent = (pathName: string) => {
     return (
         existingContent &&
         existingContent.type !== OFFICE_PAGE_CONTENT_TYPE &&
-        existingContent.type !== OFFICE_BRANCH_CONTENT_TYPE &&
         existingContent.type !== INTERNAL_LINK_CONTENT_TYPE
     );
 };
@@ -274,6 +280,15 @@ const updateOfficePageIfChanged = (
             CONTENT_ROOT_REPO_ID
         );
 
+        // Check for dependencies
+        const outbountDeps: string[] = contentLib.getOutboundDependencies({
+            key: existingOfficePage._id,
+        });
+
+        const allOutboundsArePublished = outbountDeps.every((id) => {
+            return isDraftAndMasterSameVersion(id, CONTENT_ROOT_REPO_ID);
+        });
+
         moveAndRedirectOnNameChange(existingOfficePage, newOfficeData);
 
         contentLib.modify<OfficePageDescriptor>({
@@ -290,11 +305,11 @@ const updateOfficePageIfChanged = (
             }),
         });
 
-        // Content can only be published if it was already
-        // up to date with master. Ie, content that currently in
+        // Content can only be published if it and it's outbound content
+        // is udate with master. Ie, content that currently is in
         // some sort of "in progress" by editors, should not
         // be automatically published.
-        return isUpToDateWithMaster;
+        return isUpToDateWithMaster && allOutboundsArePublished;
     } catch (e) {
         logger.critical(
             `OfficeImporting: Failed to modify office page content ${existingOfficePage._path} - ${e}`
@@ -310,6 +325,8 @@ const createOfficePage = (officeData: OfficeNorgData) => {
         checksum: createObjectChecksum(officeData),
     });
 
+    const previewOnly = officeData.type !== 'LOKAL';
+
     try {
         const content = contentLib.create({
             name: getOfficeContentName(officeData),
@@ -323,7 +340,7 @@ const createOfficePage = (officeData: OfficeNorgData) => {
                     // Newly imported (created) office pages has to be checked by
                     // editors before being made public, so set previewOnly to true.
                     previewOnly: {
-                        previewOnly: true,
+                        previewOnly,
                     },
                 },
             },
@@ -359,7 +376,7 @@ const deleteStaleOfficePages = (
 };
 
 export const processAllOffices = (offices: OfficeNorgData[]) => {
-    const existingOfficePages = getExistingOfficePages();
+    const existingOffices = getExistingOfficePages();
     const processedOfficeEnhetsNr: string[] = [];
 
     const summary: { created: string[]; updated: string[]; deleted: string[] } = {
@@ -377,16 +394,15 @@ export const processAllOffices = (offices: OfficeNorgData[]) => {
             deleteContent(pathName);
         }
 
-        const existingPage = existingOfficePages.find(
-            (content) =>
-                !!content.data?.officeNorgData?.data &&
-                content.data.officeNorgData.data.enhetNr === officePageData.enhetNr
+        const existingOffice = existingOffices.find(
+            (existingOffice) =>
+                existingOffice.data?.officeNorgData?.data?.enhetNr === officePageData.enhetNr
         );
 
-        if (existingPage) {
-            const shouldBePublished = updateOfficePageIfChanged(officePageData, existingPage);
+        if (existingOffice) {
+            const shouldBePublished = updateOfficePageIfChanged(officePageData, existingOffice);
             if (shouldBePublished) {
-                summary.updated.push(existingPage._id);
+                summary.updated.push(existingOffice._id);
             }
         } else {
             const createdId = createOfficePage(officePageData);
@@ -398,7 +414,7 @@ export const processAllOffices = (offices: OfficeNorgData[]) => {
         processedOfficeEnhetsNr.push(officePageData.enhetNr);
     });
 
-    summary.deleted = deleteStaleOfficePages(existingOfficePages, processedOfficeEnhetsNr);
+    summary.deleted = deleteStaleOfficePages(existingOffices, processedOfficeEnhetsNr);
 
     if (summary.deleted.length > 0) {
         logger.info(`Office pages deleted: ${summary.deleted.length}`);
