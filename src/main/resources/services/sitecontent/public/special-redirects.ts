@@ -65,7 +65,7 @@ const getPreviewOnlyResponse = ({ content, requestedPath, isPreview }: Args) => 
 // with any office-page content, the next function will pass by these
 // office pages.
 const getOfficeInfoRedirect = ({ content }: Args) => {
-    if (content.type !== 'no.nav.navno:office-information') {
+    if (content.type !== 'no.nav.navno:office-information' || content.data.enhet.type !== 'LOKAL') {
         return null;
     }
 
