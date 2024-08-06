@@ -7,6 +7,10 @@ export const getUnixTimeFromDateTimeString = (datetime?: string | null): number 
     return new Date(validDateTime).getTime();
 };
 
+export const getNowWithoutMs = () => {
+    return new Date().toISOString().split('.')[0] + 'Z';
+};
+
 // Nashorn does not parse datetime-strings with higher precision than milliseconds
 export const fixDateFormat = (date: string) => {
     const [rest, fractionalSeconds] = date.split('.');
