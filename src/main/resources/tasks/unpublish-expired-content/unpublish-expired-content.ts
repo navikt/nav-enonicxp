@@ -7,6 +7,8 @@ import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { CONTENT_ROOT_REPO_ID } from '../../lib/constants';
 import { UnpublishExpiredContent } from '@xp-types/tasks/unpublish-expired-content';
 import { getRepoConnection } from '../../lib/utils/repo-utils';
+import { deleteExternalSearchDocumentForContent } from '../../lib/search/update-one';
+import { getISONowWithoutMS } from '../../lib/utils/datetime-utils';
 
 export const run = (params: UnpublishExpiredContent) => {
     const { id, path, repoId = CONTENT_ROOT_REPO_ID } = params;
@@ -29,10 +31,11 @@ export const run = (params: UnpublishExpiredContent) => {
         return;
     }
 
-    const now = new Date().toISOString();
-    if (now < publishTo) {
+    // Time comparison gives false positive if one has milliseconds.
+    const isoNow = getISONowWithoutMS();
+    if (isoNow < publishTo) {
         logger.info(
-            `Content ${contentInfo} has not yet expired - rescheduling unpublish task (current time: ${now} - expire time: ${publishTo})`
+            `Content ${contentInfo} has not yet expired - rescheduling unpublish task (current time: ${isoNow} - expire time: ${publishTo})`
         );
         scheduleUnpublish({ id, path, repoId, publishTo });
         return;
@@ -44,6 +47,8 @@ export const run = (params: UnpublishExpiredContent) => {
             contentLib.unpublish({ keys: [id] })
         );
         if (unpublished && unpublished.length > 0) {
+            // Make sure that content isn't searchable after unpublish.
+            deleteExternalSearchDocumentForContent(id, repoId);
             logger.info(`Unpublished content: ${unpublished.join(', ')}`);
             if (unpublished.length > 1) {
                 logger.error(`Unexpectedly unpublished multiple contents: ${contentInfo}`);

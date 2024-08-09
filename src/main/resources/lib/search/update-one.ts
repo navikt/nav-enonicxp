@@ -9,7 +9,7 @@ import { searchApiDeleteDocument } from './api-handlers/delete-document';
 import { buildExternalSearchDocument } from './document-builder/document-builder';
 import { isContentLocalized } from '../localization/locale-utils';
 
-const deleteExternalSearchDocumentForContent = (contentId: string, locale: string) => {
+export const deleteExternalSearchDocumentForContent = (contentId: string, locale: string) => {
     const id = generateSearchDocumentId(contentId, locale);
 
     taskLib.executeFunction({
