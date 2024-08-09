@@ -8,7 +8,7 @@ import { CONTENT_ROOT_REPO_ID } from '../../lib/constants';
 import { UnpublishExpiredContent } from '@xp-types/tasks/unpublish-expired-content';
 import { getRepoConnection } from '../../lib/utils/repo-utils';
 import { deleteExternalSearchDocumentForContent } from '../../lib/search/update-one';
-import { getNowWithoutMs } from '../../lib/utils/datetime-utils';
+import { getISONowWithoutMS } from '../../lib/utils/datetime-utils';
 
 export const run = (params: UnpublishExpiredContent) => {
     const { id, path, repoId = CONTENT_ROOT_REPO_ID } = params;
@@ -32,10 +32,10 @@ export const run = (params: UnpublishExpiredContent) => {
     }
 
     // Time comparison gives false positive if one has milliseconds.
-    const now = getNowWithoutMs();
-    if (now < publishTo) {
+    const isoNow = getISONowWithoutMS();
+    if (isoNow < publishTo) {
         logger.info(
-            `Content ${contentInfo} has not yet expired - rescheduling unpublish task (current time: ${now} - expire time: ${publishTo})`
+            `Content ${contentInfo} has not yet expired - rescheduling unpublish task (current time: ${isoNow} - expire time: ${publishTo})`
         );
         scheduleUnpublish({ id, path, repoId, publishTo });
         return;

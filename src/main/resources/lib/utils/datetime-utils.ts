@@ -7,7 +7,7 @@ export const getUnixTimeFromDateTimeString = (datetime?: string | null): number 
     return new Date(validDateTime).getTime();
 };
 
-export const getNowWithoutMs = () => {
+export const getISONowWithoutMS = () => {
     return new Date().toISOString().split('.')[0] + 'Z';
 };
 
