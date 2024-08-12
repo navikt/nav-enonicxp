@@ -24,7 +24,6 @@ const enhetTypesToImport: ReadonlySet<string> = new Set([
     'ALS',
     'HMS',
     'KONTROLL',
-    'LOKAL',
     'OKONOMI',
     'OPPFUTLAND',
 ]);
