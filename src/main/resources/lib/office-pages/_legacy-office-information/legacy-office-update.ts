@@ -22,7 +22,6 @@ const fiveMinutes = 5 * 60 * 1000;
 
 const enhetTypesToImport: ReadonlySet<string> = new Set([
     'ALS',
-    'HMS',
     'KONTROLL',
     'OKONOMI',
     'OPPFUTLAND',
