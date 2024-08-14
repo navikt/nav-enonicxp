@@ -2,6 +2,7 @@ import * as contextLib from '/lib/xp/context';
 import { Content } from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
 import { ContentDescriptor, MediaDescriptor } from '../../types/content-types/content-config';
+import { getISONowWithoutMS } from './datetime-utils';
 import { logger } from './logging';
 import { COMPONENT_APP_KEY } from '../constants';
 
@@ -48,5 +49,6 @@ export const isContentAwaitingPrepublish = (
     content: Content<any>
 ): content is Content & { publish: { from: string } } => {
     const publishFrom = content.publish?.from;
-    return publishFrom ? publishFrom > new Date().toISOString() : false;
+    const isoNow = getISONowWithoutMS();
+    return publishFrom ? publishFrom > isoNow : false;
 };
