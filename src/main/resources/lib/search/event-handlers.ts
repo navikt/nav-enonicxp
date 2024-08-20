@@ -50,10 +50,6 @@ export const activateExternalSearchIndexEventHandlers = () => {
     eventLib.listener({
         type: '(node.pushed|node.deleted)',
         callback: (event) => {
-            if (!isMainDatanode()) {
-                return;
-            }
-
             const searchConfig = getExternalSearchConfig();
             if (!searchConfig) {
                 logger.critical(`No search config found - could not run event handler!`);
@@ -67,6 +63,10 @@ export const activateExternalSearchIndexEventHandlers = () => {
 
                 if (nodeData.repo === CONTENT_ROOT_REPO_ID && nodeData.id === searchConfig._id) {
                     revalidateExternalSearchConfigCache();
+                    return;
+                }
+
+                if (!isMainDatanode()) {
                     return;
                 }
 
