@@ -22,9 +22,23 @@ const fiveMinutes = 5 * 60 * 1000;
 
 const enhetTypesToImport: ReadonlySet<string> = new Set([
     'ALS',
+    'HMS',
     'KONTROLL',
     'OKONOMI',
     'OPPFUTLAND',
+]);
+
+const remainingHMSToImport: ReadonlySet<string> = new Set([
+    'nav-hjelpemiddelsentral-rogaland',
+    'nav-hjelpemiddelsentral-more-og-romsdal',
+    'nav-hjelpemiddelsentral-nordland',
+    'nav-hjelpemiddelsentral-trondelag',
+    'nav-hjelpemiddelsentral-ost-viken',
+    'nav-hjelpemiddelsentral-vest-viken',
+    'nav-hjelpemiddelsentral-troms-og-finnmark',
+    'nav-hjelpemiddelsentral-vestland-forde',
+    'nav-hjelpemiddelsentral-vestland-bergen',
+    'styringsenheten-for-nav-hjelpemidler-og-tilrettelegging',
 ]);
 
 // If non-office information content already exists on the path for an office, delete it
@@ -79,6 +93,13 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
         officesInNorg[enhet.enhetId] = true;
 
         const updatedName = commonLib.sanitize(enhet.navn);
+
+        // Temporary check to only import lagging HMS that hasn't been
+        // transferred to new layout
+        if (enhet.type === 'HMS' && !remainingHMSToImport.has(updatedName)) {
+            return;
+        }
+
         deleteIfContentExists(updatedName);
 
         const existingOffice = existingOffices.find(
@@ -280,7 +301,7 @@ export const startOfficeInfoPeriodicUpdateSchedule = () => {
         jobDescription: 'Updates legacy office information from norg2 every hour',
         jobSchedule: {
             type: 'CRON',
-            value: '15 * * * *',
+            value: '*/10 * * * *',
             timeZone: 'GMT+2:00',
         },
         taskDescriptor: officeInfoUpdateTaskDescriptor,
