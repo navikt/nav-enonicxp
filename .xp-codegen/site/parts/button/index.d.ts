@@ -46,16 +46,6 @@ export type Button = {
       };
 
   /**
-   * Type
-   */
-  type: "standard" | "hoved" | "fare" | "flat";
-
-  /**
-   * Størrelse
-   */
-  size: "normal" | "small";
-
-  /**
    * Full bredde
    */
   fullwidth: boolean;

@@ -1,6 +1,6 @@
 <macro>
-    <display-name>Hvit knapp</display-name>
-    <description>Sett inn hvit knapp i brødteksten</description>
+    <display-name>Knapp</display-name>
+    <description>Sett inn vanlig knapp i brødteksten</description>
     <form>
         <input name="url" type="TextLine">
             <label>Url</label>
