@@ -20,13 +20,7 @@ const parentPath = '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer';
 const officeInfoUpdateTaskDescriptor = 'no.nav.navno:update-office-info';
 const fiveMinutes = 5 * 60 * 1000;
 
-const enhetTypesToImport: ReadonlySet<string> = new Set([
-    'ALS',
-    'HMS',
-    'KONTROLL',
-    'OKONOMI',
-    'OPPFUTLAND',
-]);
+const enhetTypesToImport: ReadonlySet<string> = new Set(['ALS', 'HMS', 'OKONOMI', 'OPPFUTLAND']);
 
 const remainingHMSToImport: ReadonlySet<string> = new Set([
     'nav-hjelpemiddelsentral-rogaland',
