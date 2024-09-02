@@ -41,11 +41,11 @@ const norgOfficeInformationApiUrl: EnvRecord = {
 } as const;
 
 const norgLegacyOfficeInformationApiUrl: EnvRecord = {
-    p: 'https://norg2.prod-fss-pub.nais.io/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
-    dev: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
-    q6: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
+    p: 'https://norg2.intern.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
+    dev: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
+    q6: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
     localhost:
-        'https://norg2.dev-fss-pub.nais.io/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
+        'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
 } as const;
 
 const norgLocalOfficeApiUrl: EnvRecord = {
