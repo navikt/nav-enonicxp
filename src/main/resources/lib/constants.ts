@@ -27,17 +27,17 @@ const revalidatorProxyOrigins: EnvRecord = {
 } as const;
 
 const norgOfficeOverviewApiUrl: EnvRecord = {
-    p: 'https://norg2.prod-fss-pub.nais.io/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
-    dev: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
-    q6: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
-    localhost: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
+    p: 'https://norg2.intern.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
+    dev: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
+    q6: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
+    localhost: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
 } as const;
 
 const norgOfficeInformationApiUrl: EnvRecord = {
-    p: 'https://norg2.prod-fss-pub.nais.io/norg2/api/v2/enhet/kontaktinformasjoner',
-    dev: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/enhet/kontaktinformasjoner',
-    q6: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/enhet/kontaktinformasjoner',
-    localhost: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/enhet/kontaktinformasjoner',
+    p: 'https://norg2.intern.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
+    dev: 'https://norg2.intern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
+    q6: 'https://norg2.intern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
+    localhost: 'https://norg2.intern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
 } as const;
 
 const norgLegacyOfficeInformationApiUrl: EnvRecord = {
@@ -49,10 +49,10 @@ const norgLegacyOfficeInformationApiUrl: EnvRecord = {
 } as const;
 
 const norgLocalOfficeApiUrl: EnvRecord = {
-    p: 'https://norg2.prod-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
-    dev: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
-    q6: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
-    localhost: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
+    p: 'https://norg2.intern.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
+    dev: 'https://norg2.intern.dev.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
+    q6: 'https://norg2.intern.dev.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
+    localhost: 'https://norg2.intern.dev.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
 } as const;
 
 const xpOrigins: EnvRecord = {
