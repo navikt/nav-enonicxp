@@ -4,7 +4,7 @@ import { HttpRequestParams, request } from '/lib/http-client';
 import * as commonLib from '/lib/xp/common';
 import { isDraftAndMasterSameVersion } from '../utils/repo-utils';
 import { OfficePage as OfficePageData } from '@xp-types/site/content-types/office-page';
-import { parseJsonToArray } from '../../lib/utils/array-utils';
+import { parseJsonToArray } from '../utils/array-utils';
 import { NavNoDescriptor } from '../../types/common';
 import { logger } from '../utils/logging';
 import { CONTENT_LOCALE_DEFAULT, URLS, CONTENT_ROOT_REPO_ID } from '../constants';
@@ -39,10 +39,6 @@ const norgRequest = <T>(requestConfig: HttpRequestParams): T[] | null => {
         url: requestConfig.url,
         method: requestConfig.method,
         contentType: 'application/json',
-        headers: {
-            'x-nav-apiKey': app.config.norg2ApiKey,
-            consumerId: app.config.norg2ConsumerId,
-        },
         body: requestConfig.body,
     });
 

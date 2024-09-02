@@ -216,10 +216,6 @@ const fetchOfficeInfo = () => {
         const response = httpClient.request({
             url: URLS.NORG_LEGACY_OFFICE_INFORMATION_API_URL,
             method: 'GET',
-            headers: {
-                'x-nav-apiKey': app.config.norg2ApiKey,
-                consumerId: app.config.norg2ConsumerId,
-            },
         });
 
         if (response.status === 200 && response.body) {
