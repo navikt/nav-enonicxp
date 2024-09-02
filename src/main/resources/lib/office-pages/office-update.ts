@@ -7,7 +7,12 @@ import { OfficePage as OfficePageData } from '@xp-types/site/content-types/offic
 import { parseJsonToArray } from '../utils/array-utils';
 import { NavNoDescriptor } from '../../types/common';
 import { logger } from '../utils/logging';
-import { CONTENT_LOCALE_DEFAULT, URLS, CONTENT_ROOT_REPO_ID } from '../constants';
+import {
+    CONTENT_LOCALE_DEFAULT,
+    URLS,
+    CONTENT_ROOT_REPO_ID,
+    NORG2_CONSUMER_ID,
+} from '../constants';
 import { createObjectChecksum } from '../utils/object-utils';
 import { OfficeRawNORGData } from './office-raw-norg-data';
 
@@ -39,6 +44,9 @@ const norgRequest = <T>(requestConfig: HttpRequestParams): T[] | null => {
         url: requestConfig.url,
         method: requestConfig.method,
         contentType: 'application/json',
+        headers: {
+            consumerId: NORG2_CONSUMER_ID,
+        },
         body: requestConfig.body,
     });
 

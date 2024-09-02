@@ -7,7 +7,7 @@ import { createOrUpdateSchedule } from '../../scheduling/schedule-job';
 import { OfficeInformation } from '@xp-types/site/content-types/office-information';
 import { NavNoDescriptor } from '../../../types/common';
 import { logger } from '../../utils/logging';
-import { CONTENT_ROOT_REPO_ID, URLS } from '../../constants';
+import { CONTENT_ROOT_REPO_ID, NORG2_CONSUMER_ID, URLS } from '../../constants';
 import { createObjectChecksum } from '../../utils/object-utils';
 import { runInContext } from '../../context/run-in-context';
 import { UpdateOfficeInfo } from '@xp-types/tasks/update-office-info';
@@ -216,6 +216,9 @@ const fetchOfficeInfo = () => {
         const response = httpClient.request({
             url: URLS.NORG_LEGACY_OFFICE_INFORMATION_API_URL,
             method: 'GET',
+            headers: {
+                consumerId: NORG2_CONSUMER_ID,
+            },
         });
 
         if (response.status === 200 && response.body) {

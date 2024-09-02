@@ -110,3 +110,5 @@ export const SUPER_USER_FULL = `user:system:${SUPER_USER}`;
 
 export const ADMIN_PRINCIPAL = 'role:system.admin';
 export const AUTHENTICATED_PRINCIPAL = 'role:system.authenticated';
+
+export const NORG2_CONSUMER_ID = 'navno-enonicxp';
