@@ -39,7 +39,7 @@ const enhetNrToImport: ReadonlySet<string> = new Set([
 
 const shouldImportOffice = (enhet: OfficeInformation['enhet']) => {
     return (
-        enhet.status !== 'nedlagt' &&
+        enhet.status?.toLowerCase() !== 'nedlagt' &&
         (enhetTypesToImport.has(enhet.type) || enhetNrToImport.has(enhet.enhetNr))
     );
 };
