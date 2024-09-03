@@ -20,20 +20,29 @@ const parentPath = '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer';
 const officeInfoUpdateTaskDescriptor = 'no.nav.navno:update-office-info';
 const fiveMinutes = 5 * 60 * 1000;
 
-const enhetTypesToImport: ReadonlySet<string> = new Set(['ALS', 'HMS', 'OKONOMI', 'OPPFUTLAND']);
+const enhetTypesToImport: ReadonlySet<string> = new Set(['ALS', 'OKONOMI', 'OPPFUTLAND']);
 
-const remainingHMSToImport: ReadonlySet<string> = new Set([
-    'nav-hjelpemiddelsentral-rogaland',
-    'nav-hjelpemiddelsentral-more-og-romsdal',
-    'nav-hjelpemiddelsentral-nordland',
-    'nav-hjelpemiddelsentral-trondelag',
-    'nav-hjelpemiddelsentral-ost-viken',
-    'nav-hjelpemiddelsentral-vest-viken',
-    'nav-hjelpemiddelsentral-troms-og-finnmark',
-    'nav-hjelpemiddelsentral-vestland-forde',
-    'nav-hjelpemiddelsentral-vestland-bergen',
-    'styringsenheten-for-nav-hjelpemidler-og-tilrettelegging',
+// Always import these even if not in the set of types
+const enhetNrToImport: ReadonlySet<string> = new Set([
+    '4534', // [KONTROLL] NAV Registerforvaltning
+    '4700', // [HMS] Styringsenheten for NAV Hjelpemidler og tilrettelegging
+    '4701', // [HMS] Øst-Viken
+    '4706', // [HMS] Vest-Viken
+    '4711', // [HMS] Rogaland
+    '4712', // [HMS] Vestland-Bergen
+    '4714', // [HMS] Vestland-Førde
+    '4715', // [HMS] Møre og Romsdal
+    '4716', // [HMS] Trøndalag
+    '4718', // [HMS] Nordland
+    '4719', // [HMS] Troms og Finnmark
 ]);
+
+const shouldImportOffice = (enhet: OfficeInformation['enhet']) => {
+    return (
+        enhet.status !== 'nedlagt' &&
+        (enhetTypesToImport.has(enhet.type) || enhetNrToImport.has(enhet.enhetNr))
+    );
+};
 
 // If non-office information content already exists on the path for an office, delete it
 // (the main purpose of this is to get rid of redirects in the event of an office changing name
@@ -79,20 +88,13 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
     officeInformationUpdated.forEach((updatedOfficeData) => {
         const { enhet } = updatedOfficeData;
 
-        // ignore closed offices and include only selected types
-        if (enhet.status === 'Nedlagt' || !enhetTypesToImport.has(enhet.type)) {
+        if (!shouldImportOffice(enhet)) {
             return;
         }
 
         officesInNorg[enhet.enhetId] = true;
 
         const updatedName = commonLib.sanitize(enhet.navn);
-
-        // Temporary check to only import lagging HMS that hasn't been
-        // transferred to new layout
-        if (enhet.type === 'HMS' && !remainingHMSToImport.has(updatedName)) {
-            return;
-        }
 
         deleteIfContentExists(updatedName);
 
