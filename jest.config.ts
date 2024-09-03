@@ -69,9 +69,6 @@ export default {
         app: {
             config: {
                 env: 'localhost',
-                norg2: '',
-                norg2ApiKey: '',
-                norg2ConsumerId: '',
                 frontendOrigin: 'http://localhost:3000',
                 xpOrigin: 'http://localhost:8080',
                 revalidatorProxyOrigin: 'http://localhost:3002',
