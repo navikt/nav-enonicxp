@@ -4,10 +4,15 @@ import { HttpRequestParams, request } from '/lib/http-client';
 import * as commonLib from '/lib/xp/common';
 import { isDraftAndMasterSameVersion } from '../utils/repo-utils';
 import { OfficePage as OfficePageData } from '@xp-types/site/content-types/office-page';
-import { parseJsonToArray } from '../../lib/utils/array-utils';
+import { parseJsonToArray } from '../utils/array-utils';
 import { NavNoDescriptor } from '../../types/common';
 import { logger } from '../utils/logging';
-import { CONTENT_LOCALE_DEFAULT, URLS, CONTENT_ROOT_REPO_ID } from '../constants';
+import {
+    CONTENT_LOCALE_DEFAULT,
+    URLS,
+    CONTENT_ROOT_REPO_ID,
+    NORG2_CONSUMER_ID,
+} from '../constants';
 import { createObjectChecksum } from '../utils/object-utils';
 import { OfficeRawNORGData } from './office-raw-norg-data';
 
@@ -40,8 +45,7 @@ const norgRequest = <T>(requestConfig: HttpRequestParams): T[] | null => {
         method: requestConfig.method,
         contentType: 'application/json',
         headers: {
-            'x-nav-apiKey': app.config.norg2ApiKey,
-            consumerId: app.config.norg2ConsumerId,
+            consumerId: NORG2_CONSUMER_ID,
         },
         body: requestConfig.body,
     });
