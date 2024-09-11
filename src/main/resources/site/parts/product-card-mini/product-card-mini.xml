@@ -2,6 +2,11 @@
     <display-name>Produkt-kort (mini)</display-name>
     <description>Lenker til en produkt- eller livssituasjons-side</description>
     <form>
-        <mixin name="product-card-mini"/>
+        <field-set>
+            <label>Målside for produktkortet</label>
+            <items>
+                <mixin name="product-target-selector"/>
+            </items>
+        </field-set>
     </form>
 </part>
