@@ -2,20 +2,16 @@ import * as authLib from '/lib/xp/auth';
 import { logger } from '../lib/utils/logging';
 import { LAYERS_ANON_USER, LAYERS_ID_PROVIDER } from '../lib/constants';
 
-export const handle401 = (req: XP.Request) => {
-    logger.info(`401: ${JSON.stringify(req)}`);
-
-    return {
-        status: 200,
-        body: {
-            type: '401',
-            req,
-        },
-    };
-};
-
+// Allows requests for non-authenticated users to files which should be publically availiable
+//
+// Permissions to view our content layers are restricted to certain user groups only, but we want to
+// bypass this for published files.
 export const autoLogin = (req: XP.Request) => {
-    logger.info(`Autologin: ${JSON.stringify(req)}`);
+    if (!isPublicFileRequest(req)) {
+        logger.info(`Unexpected request: ${req.url}`);
+        return;
+    }
+
     const result = authLib.login({
         user: LAYERS_ANON_USER,
         idProvider: LAYERS_ID_PROVIDER,
@@ -23,12 +19,12 @@ export const autoLogin = (req: XP.Request) => {
         scope: 'REQUEST',
     });
 
-    const memberships = authLib.getMemberships(
-        `user:${LAYERS_ID_PROVIDER}:${LAYERS_ANON_USER}`,
-        true
-    );
-
-    logger.info(
-        `Autologin result: ${JSON.stringify(result)} - principals: ${JSON.stringify(memberships)}`
-    );
+    if (!result.authenticated) {
+        logger.error(`Autologin failed on ${req.url} - ${result.message}`);
+    }
 };
+
+const isPublicFileRequest = (req: XP.Request) =>
+    req.mode === 'live' &&
+    req.branch === 'master' &&
+    req.path.match(/^\/_\/((en|nn|se)\/)?(image|attachment)\//);
