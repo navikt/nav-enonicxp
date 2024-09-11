@@ -51,7 +51,7 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
     const repos = getLayersMultiConnection('draft');
     return repos
         .query({
-            count: 5000,
+            count: 5,
             filters: {
                 boolean: {
                     mustNot: NON_LOCALIZED_QUERY_FILTER,
@@ -71,6 +71,12 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
                     ],
                 },
             },
+            sort: [
+                {
+                    field: 'modifiedTime',
+                    direction: 'DESC',
+                },
+            ],
         })
         .hits.map((hit): DashboardContentInfo | undefined => {
             const draftContent = getRepoConnection({
@@ -128,9 +134,7 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
                 url: `/admin/tool/com.enonic.app.contentstudio/main/${projectId}/edit/${draftContent._id}`,
             };
         })
-        .filter(notNullOrUndefined)
-        .sort((a, b) => (a.modifiedTimeRaw > b.modifiedTimeRaw ? -1 : 1))
-        .slice(0, 5);
+        .filter(notNullOrUndefined);
 };
 
 const getUsersLastContent = () => {
@@ -142,7 +146,7 @@ const getUsersLastContent = () => {
     const { published, prePublished, unPublished } = dashboardContentBuildPublishLists(user);
 
     // TODO: this needs to be optimized before enabling
-    const modified: DashboardContentInfo[] = []; // getUsersModifications(user);
+    const modified: DashboardContentInfo[] = getUsersModifications(user); // getUsersModifications(user);
 
     return {
         body: thymeleafLib.render(view, {
