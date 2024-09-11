@@ -1,0 +1,10 @@
+<id-provider>
+    <mode>LOCAL</mode>
+    <form>
+        <input name="title" type="TextLine">
+            <label>Title</label>
+            <occurrences minimum="0" maximum="1"/>
+            <default>User Login</default>
+        </input>
+    </form>
+</id-provider>

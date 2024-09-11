@@ -108,7 +108,10 @@ export const SYSTEM_USER = 'system-user';
 export const SUPER_USER = 'su';
 export const SUPER_USER_FULL = `user:system:${SUPER_USER}`;
 
+export const LAYERS_ID_PROVIDER = 'layers';
+export const LAYERS_ANON_USER = 'layers-viewer';
+
 export const ADMIN_PRINCIPAL = 'role:system.admin';
-export const AUTHENTICATED_PRINCIPAL = 'role:system.authenticated';
+export const LOGGED_IN_PRINCIPAL = 'role:system.admin.login';
 
 export const NORG2_CONSUMER_ID = 'navno-enonicxp';
