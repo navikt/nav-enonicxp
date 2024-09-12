@@ -9,6 +9,7 @@ import { RepoBranch } from '../../types/common';
 import { hasValidCustomPath } from '../paths/custom-paths/custom-path-utils';
 import { runInContext } from '../context/run-in-context';
 import { getFromLocalCache } from '../cache/local-cache';
+import { buildCacheKeyForReqContext } from '../cache/utils';
 
 const FRONTEND_API_URL = `${URLS.FRONTEND_ORIGIN}/editor/site-info`;
 const CACHE_KEY = 'content-lists';
@@ -93,50 +94,49 @@ const contentQuery = (query: string, branch: RepoBranch, sort?: string) =>
             .hits.map(transformContent)
     );
 
-const getContentLists = () =>
-    getFromLocalCache(CACHE_KEY, (): ContentLists => {
-        const currentTime = new Date().toISOString();
-        const currentTimeMinusOneDay = new Date(Date.now() - 1000 * 3600 * 24).toISOString();
-        const currentTimePlusOneWeek = new Date(Date.now() + 1000 * 3600 * 24 * 7).toISOString();
+const getContentLists = (): ContentLists => {
+    const currentTime = new Date().toISOString();
+    const currentTimeMinusOneDay = new Date(Date.now() - 1000 * 3600 * 24).toISOString();
+    const currentTimePlusOneWeek = new Date(Date.now() + 1000 * 3600 * 24 * 7).toISOString();
 
-        const publishScheduled = contentQuery(
-            `publish.from > instant("${currentTime}")`,
-            'draft',
-            'publish.from ASC'
-        );
+    const publishScheduled = contentQuery(
+        `publish.from > instant("${currentTime}")`,
+        'draft',
+        'publish.from ASC'
+    );
 
-        const unpublishScheduledNextWeek = contentQuery(
-            `publish.to <= instant("${currentTimePlusOneWeek}")`,
-            'master',
-            'publish.to ASC'
-        );
+    const unpublishScheduledNextWeek = contentQuery(
+        `publish.to <= instant("${currentTimePlusOneWeek}")`,
+        'master',
+        'publish.to ASC'
+    );
 
-        const unpublishScheduledLater = contentQuery(
-            `publish.to > instant("${currentTimePlusOneWeek}")`,
-            'master',
-            'publish.to ASC'
-        );
+    const unpublishScheduledLater = contentQuery(
+        `publish.to > instant("${currentTimePlusOneWeek}")`,
+        'master',
+        'publish.to ASC'
+    );
 
-        const recentlyPublished = contentQuery(
-            `range("publish.from", instant("${currentTimeMinusOneDay}"), instant("${currentTime}"))`,
-            'master',
-            'publish.from DESC'
-        );
+    const recentlyPublished = contentQuery(
+        `range("publish.from", instant("${currentTimeMinusOneDay}"), instant("${currentTime}"))`,
+        'master',
+        'publish.from DESC'
+    );
 
-        const contentWithCustomPath = contentQuery(
-            'data.customPath LIKE "*"',
-            'master',
-            'data.customPath'
-        ).filter((content) => !!content.customPath);
+    const contentWithCustomPath = contentQuery(
+        'data.customPath LIKE "*"',
+        'master',
+        'data.customPath'
+    ).filter((content) => !!content.customPath);
 
-        return {
-            publishScheduled,
-            unpublishScheduledNextWeek,
-            unpublishScheduledLater,
-            recentlyPublished,
-            contentWithCustomPath,
-        };
-    });
+    return {
+        publishScheduled,
+        unpublishScheduledNextWeek,
+        unpublishScheduledLater,
+        recentlyPublished,
+        contentWithCustomPath,
+    };
+};
 
 export const get = (req: XP.Request) => {
     if (req.method !== 'GET') {
@@ -147,7 +147,10 @@ export const get = (req: XP.Request) => {
 
     const clusterInfoResponse = requestClusterInfo();
 
-    const contentLists = getContentLists();
+    const contentLists = getFromLocalCache(
+        buildCacheKeyForReqContext(req, CACHE_KEY),
+        getContentLists
+    );
 
     const requestBody: SiteInfo = {
         ...contentLists,
@@ -157,13 +160,11 @@ export const get = (req: XP.Request) => {
         },
     };
 
-    const frontendResponse = httpClient.request({
+    return httpClient.request({
         url: FRONTEND_API_URL,
         method: 'POST',
         contentType: 'application/json',
         headers: { secret: app.config.serviceSecret },
         body: JSON.stringify(requestBody),
     });
-
-    return frontendResponse;
 };

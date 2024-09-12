@@ -5,6 +5,7 @@ import { getPublicPath } from '../../lib/paths/public-path';
 import { getFromLocalCache } from '../../lib/cache/local-cache';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { getLayersData } from '../../lib/localization/layers-data';
+import { buildCacheKeyForReqContext } from '../../lib/cache/utils';
 
 const CACHE_KEY = 'decorator-menu-cache';
 const MENU_PATH = '/www.nav.no/dekorator-meny/';
@@ -79,7 +80,7 @@ const getMenuItemChildren = (contentId: string, locale?: string) => {
         }, [] as MenuItem[]);
 };
 
-export const get = () => {
+export const get = (req: XP.Request) => {
     try {
         const menuContent = contentLib.get({ key: MENU_PATH });
         if (!menuContent) {
@@ -89,7 +90,9 @@ export const get = () => {
             };
         }
 
-        const menu = getFromLocalCache(CACHE_KEY, () => getMenuItemChildren(menuContent._id));
+        const menu = getFromLocalCache(buildCacheKeyForReqContext(req, CACHE_KEY), () =>
+            getMenuItemChildren(menuContent._id)
+        );
 
         return {
             body: menu,

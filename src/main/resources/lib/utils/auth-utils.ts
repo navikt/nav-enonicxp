@@ -3,7 +3,7 @@ import * as contentLib from '/lib/xp/content';
 import { Permission, AccessControlEntry } from '/lib/xp/content';
 import * as contextLib from '/lib/xp/context';
 import { logger } from './logging';
-import { ADMIN_PRINCIPAL, AUTHENTICATED_PRINCIPAL } from '../constants';
+import { ADMIN_PRINCIPAL, LOGGED_IN_PRINCIPAL } from '../constants';
 
 export const insufficientPermissionResponse = (requiredPermission: string) => ({
     status: 403,
@@ -14,7 +14,7 @@ export const insufficientPermissionResponse = (requiredPermission: string) => ({
     },
 });
 
-export const userIsAuthenticated = () => authLib.hasRole(AUTHENTICATED_PRINCIPAL);
+export const userIsLoggedIn = () => authLib.hasRole(LOGGED_IN_PRINCIPAL);
 
 export const userIsAdmin = () => authLib.hasRole(ADMIN_PRINCIPAL);
 

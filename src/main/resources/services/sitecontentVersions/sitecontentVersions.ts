@@ -3,7 +3,7 @@ import { isValidBranch } from '../../lib/context/branches';
 import { logger } from '../../lib/utils/logging';
 import { sitecontentVersionResolver } from '../../lib/time-travel/get-content-from-datetime';
 import { getServiceRequestSubPath } from '../service-utils';
-import { userIsAuthenticated, validateServiceSecretHeader } from '../../lib/utils/auth-utils';
+import { userIsLoggedIn, validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { publishedVersionsReqHandler } from './publishedVersions/publishedVersions';
 import { SITECONTENT_404_MSG_PREFIX } from '../../lib/constants';
 
@@ -101,7 +101,7 @@ const sitecontentVersionsReqHandler = (req: XP.Request) => {
 };
 
 export const get = (req: XP.Request) => {
-    if (!validateServiceSecretHeader(req) && !userIsAuthenticated()) {
+    if (!validateServiceSecretHeader(req) && !userIsLoggedIn()) {
         return {
             status: 401,
             body: {
