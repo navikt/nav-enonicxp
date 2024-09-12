@@ -19,6 +19,13 @@ const frontendOrigins: EnvRecord = {
     localhost: 'http://localhost:3000',
 } as const;
 
+const frontendDashboardOrigins: EnvRecord = {
+    p: 'https://www.nav.no/person/dashboard',
+    dev: 'https://www.ekstern.dev.nav.no/person/dashboard',
+    q6: 'https://www-2.ekstern.dev.nav.no/person/dashboard',
+    localhost: 'http://localhost:3010/person/dashboard',
+} as const;
+
 const revalidatorProxyOrigins: EnvRecord = {
     p: 'https://nav-enonicxp-frontend-revalidator-proxy.intern.nav.no',
     dev: 'https://nav-enonicxp-frontend-revalidator-proxy.intern.dev.nav.no',
@@ -71,6 +78,7 @@ const searchApiUrls: EnvRecord = {
 
 export const URLS = {
     FRONTEND_ORIGIN: frontendOrigins[env],
+    FRONTEND_DASHBOARD_ORIGIN: frontendDashboardOrigins[env],
     XP_ORIGIN: xpOrigins[env],
     REVALIDATOR_PROXY_ORIGIN: revalidatorProxyOrigins[env],
     PORTAL_ADMIN_ORIGIN: portalAdminOrigins[env],
