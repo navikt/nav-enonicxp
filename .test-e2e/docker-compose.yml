@@ -1,0 +1,27 @@
+version: '3'
+services:
+  xp:
+    image: enonic/xp:7.14.4-ubuntu
+    restart: always
+    environment:
+      # Assuming this computer has 4 GB of RAM, set JVM heap to 30% of available heap or 1230 MB. Also enable JVM OOME heap dump
+      XP_OPTS: -Xms1230M -Xmx1230M -XX:-HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/enonic-xp/home/data/oom.hprof
+    ports:
+      - 8079:8080
+#      - 2609:2609 # Metrics
+#      - 4848:4848 # Management
+    volumes:
+      - blobstore:/enonic-xp/home/repo/blob
+      - data:/enonic-xp/home/data
+      - deploy:/enonic-xp/home/deploy
+      - index:/enonic-xp/home/repo/index
+      - snapshots:/enonic-xp/home/snapshots
+      - ./config:/enonic-xp/home/config
+      - ./setenv.sh:/enonic-xp/home/setenv.sh
+      - ../build/libs/navno.jar:/enonic-xp/home/navno.jar
+volumes:
+  blobstore:
+  data:
+  deploy:
+  index:
+  snapshots:
