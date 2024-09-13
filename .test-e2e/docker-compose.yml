@@ -11,11 +11,11 @@ services:
 #      - 2609:2609 # Metrics
 #      - 4848:4848 # Management
     volumes:
-      - blobstore:/enonic-xp/home/repo/blob
-      - data:/enonic-xp/home/data
-      - deploy:/enonic-xp/home/deploy
-      - index:/enonic-xp/home/repo/index
-      - snapshots:/enonic-xp/home/snapshots
+#      - blobstore:/enonic-xp/home/repo/blob
+#      - data:/enonic-xp/home/data
+#      - deploy:/enonic-xp/home/deploy
+#      - index:/enonic-xp/home/repo/index
+#      - snapshots:/enonic-xp/home/snapshots
       - ./config:/enonic-xp/home/config
       - ./setenv.sh:/enonic-xp/home/setenv.sh
       - ../build/libs/navno.jar:/enonic-xp/home/navno.jar
