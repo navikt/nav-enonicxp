@@ -28,7 +28,6 @@ Temporary Items
 
 ### Gradle ###
 .gradle
-gradle.properties
 build/
 bin/
 
@@ -68,3 +67,4 @@ node_modules/
 .enonic
 /guillotine-schema.graphql
 /coverage/
+/.test-e2e/xp-image/navno.jar

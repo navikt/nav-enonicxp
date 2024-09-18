@@ -1,0 +1,10 @@
+{
+    "name": "navno-enonicxp-test-data",
+    "version": "1.0.0",
+    "scripts": {
+        "build": "npm-run-all lint babel",
+        "lint": "eslint ./src/main/resources --ext=ts --quiet && tsc -p tsconfig.json --noemit",
+        "babel": "babel ./src/main/resources --out-file=./build/resources/main/main.js --extensions \".ts\""
+    },
+    "type": "module"
+}

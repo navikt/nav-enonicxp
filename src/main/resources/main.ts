@@ -2,7 +2,6 @@
 log.info('Started running main');
 
 import './lib/polyfills';
-import './init-test-data';
 
 import * as clusterLib from '/lib/xp/cluster';
 import { activateCacheEventListeners } from './lib/cache/invalidate-event-handlers';
