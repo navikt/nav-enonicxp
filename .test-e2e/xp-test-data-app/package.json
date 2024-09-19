@@ -2,9 +2,14 @@
     "name": "navno-enonicxp-test-data",
     "version": "1.0.0",
     "scripts": {
-        "build": "npm-run-all lint babel",
+        "build": "npm-run-all lint swc",
         "lint": "eslint ./src/main/resources --ext=ts --quiet && tsc -p tsconfig.json --noemit",
-        "babel": "babel ./src/main/resources --out-file=./build/resources/main/main.js --extensions \".ts\""
+        "swc": "cd src/main && swc resources --out-dir ../../build/resources/main --strip-leading-paths --config-file ../../.swcrc"
     },
-    "type": "module"
+    "type": "module",
+    "devDependencies": {
+        "@swc/core": "1.7.26",
+        "@swc/cli": "0.4.0",
+        "esbuild": "0.23.1"
+    }
 }

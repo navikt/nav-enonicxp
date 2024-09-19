@@ -29,14 +29,13 @@ dependencies {
     include "com.enonic.xp:lib-repo:${xpVersion}"
 }
 
-tasks.register('babelJs', NpmTask) {
+tasks.register('buildJs', NpmTask) {
     dependsOn 'npmInstall'
-    dependsOn(processResources)
 
     args = ['run', 'build']
 
     inputs.dir 'src/main/resources'
-    outputs.dir "$buildDir/resources/main"
+    outputs.dir "build/resources/main"
 }
 
-jar.dependsOn(babelJs)
+jar.dependsOn(buildJs)
