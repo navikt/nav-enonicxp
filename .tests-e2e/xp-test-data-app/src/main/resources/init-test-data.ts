@@ -2,14 +2,23 @@ import * as projectLib from '/lib/xp/project';
 import { CreateProjectParams } from '/lib/xp/project';
 import * as contentLib from '/lib/xp/content';
 import * as contextLib from '/lib/xp/context';
+import {
+    ADMIN_PRINCIPAL,
+    APP_DESCRIPTOR,
+    CONTENT_LOCALE_DEFAULT,
+    CONTENT_ROOT_PROJECT_ID,
+    NAVNO_ROOT_PATH,
+    SUPER_USER,
+    SYSTEM_ID_PROVIDER,
+} from 'constants';
 
-export const APP_DESCRIPTOR = 'no.nav.navno';
-export const CONTENT_ROOT_PROJECT_ID = 'default';
-export const CONTENT_LOCALE_DEFAULT = 'no';
-export const NAVNO_ROOT_PATH = '/www.nav.no';
-export const SYSTEM_ID_PROVIDER = 'system';
-export const SUPER_USER = 'su';
-export const ADMIN_PRINCIPAL = 'role:system.admin';
+// export const APP_DESCRIPTOR = 'no.nav.navno';
+// export const CONTENT_ROOT_PROJECT_ID = 'default';
+// export const CONTENT_LOCALE_DEFAULT = 'no';
+// export const NAVNO_ROOT_PATH = '/www.nav.no';
+// export const SYSTEM_ID_PROVIDER = 'system';
+// export const SUPER_USER = 'su';
+// export const ADMIN_PRINCIPAL = 'role:system.admin';
 
 const layersParams: CreateProjectParams<Record<string, unknown>>[] = [
     {

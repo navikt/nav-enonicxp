@@ -1,6 +1,6 @@
 {
   "$schema": "https://swc.rs/schema.json",
-  "exclude": ["\/lib\/.*"],
+  "exclude": ["^\/lib\/.*"],
   "jsc": {
     "parser": {
       "syntax": "typescript",

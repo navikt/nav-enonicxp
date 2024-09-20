@@ -3,6 +3,7 @@
     "compilerOptions": {
         "baseUrl": "./src/main/resources",
         "paths": {
+            "constants": ["../../../../../src/main/resources/lib/constants.ts"],
             "@xp-types/*": ["../../../../../.xp-codegen/*"],
             "/lib/xp/content": ["../../../../../src/main/resources/types/xp-libs/lib-content"],
             "/lib/xp/context": ["../../../../../node_modules/@enonic-types/lib-context"],
@@ -14,7 +15,7 @@
     "include": [
         "./src/main/resources/**/*.ts",
         "../../.xp-codegen/**/*.ts",
-        "../../src/main/resources/types/**/*.ts",
-        "../../src/main/resources/lib/constants.ts"
+        "../../src/main/resources/lib/constants.ts",
+        "../../src/main/resources/types/**/*.ts"
     ]
 }
