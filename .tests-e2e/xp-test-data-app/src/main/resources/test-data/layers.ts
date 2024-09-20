@@ -1,8 +1,15 @@
 import { CreateProjectParams } from '/lib/xp/project';
 import * as projectLib from '/lib/xp/project';
 import * as contentLib from '/lib/xp/content';
-import { APP_DESCRIPTOR, CONTENT_REPO_PREFIX } from '@constants';
+import * as nodeLib from '/lib/xp/node';
+import {
+    APP_DESCRIPTOR,
+    CONTENT_REPO_PREFIX,
+    CONTENT_ROOT_PROJECT_ID,
+    SUPER_USER_PRINCIPAL,
+} from '@constants';
 import { runAsAdmin } from '../utils/context';
+import { PublishContentParams } from '/lib/xp/content';
 
 const layersParams: CreateProjectParams<Record<string, unknown>>[] = [
     {
@@ -24,38 +31,61 @@ const layersParams: CreateProjectParams<Record<string, unknown>>[] = [
 ];
 
 export const initLayers = () => {
-    layersParams.forEach((params) =>
+    layersParams.forEach((params) => {
+        if (projectLib.get({ id: params.id })) {
+            log.info(`Project ${params.id} already exists, skipping`);
+            return;
+        }
+
         projectLib.create({
             ...params,
-            parent: 'default',
+            parent: CONTENT_ROOT_PROJECT_ID,
             siteConfig: [{ applicationKey: APP_DESCRIPTOR }],
             permissions: {
-                owner: ['user:system:su'],
+                owner: [SUPER_USER_PRINCIPAL],
                 author: [],
                 editor: [],
                 contributor: [],
                 viewer: [],
             },
-        })
-    );
+        });
+    });
 };
 
-export const publishNonLocalized = (key: string, withChildren = false) => {
+export const publishToAllLayers = (params: PublishContentParams) => {
+    const { keys } = params;
+
+    contentLib.publish(params);
+
     layersParams.forEach((layer) => {
         runAsAdmin(
             () => {
-                const layerContent = contentLib.get({ key });
+                keys.forEach((key) => {
+                    const layerContent = contentLib.get({ key });
 
-                if (!layerContent || !layerContent.inherit?.includes('CONTENT')) {
-                    log.info(`Content ${key} is localized to layer ${layer.id} - skipping publish`);
-                    return;
-                }
+                    if (!layerContent) {
+                        log.warning(`Content ${key} not found in layer ${layer.id}`);
+                        return;
+                    }
 
-                contentLib.publish({ keys: [key], includeChildren: withChildren });
+                    if (layerContent.inherit?.indexOf('CONTENT') === -1) {
+                        log.info(
+                            `Content ${key} is localized to layer ${layer.id} - skipping publish`
+                        );
+                        return;
+                    }
+
+                    const result = contentLib.publish({
+                        ...params,
+                        keys: [key],
+                    });
+
+                    log.info(`Publish result for ${key} in ${layer.id}: ${JSON.stringify(result)}`);
+                });
             },
             {
                 branch: 'draft',
-                repository: `${CONTENT_REPO_PREFIX}:${layer.id}`,
+                repository: `${CONTENT_REPO_PREFIX}.${layer.id}`,
             }
         );
     });

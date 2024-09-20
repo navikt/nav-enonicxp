@@ -10,15 +10,13 @@ export const initRootProject = () => {
     });
 
     try {
-        const modifyRes = projectLib.modify({
+        projectLib.modify({
             id: CONTENT_ROOT_PROJECT_ID,
             displayName: 'nav.no',
             language: CONTENT_LOCALE_DEFAULT,
             siteConfig: [{ applicationKey: APP_DESCRIPTOR }],
         });
-
-        log.info(`Default modify result: ${JSON.stringify(modifyRes)}`);
     } catch (e: any) {
-        log.error(`Default modify error: ${e.toString()}`);
+        log.error(`Creating root project ${CONTENT_ROOT_PROJECT_ID} failed - ${e.toString()}`);
     }
 };
