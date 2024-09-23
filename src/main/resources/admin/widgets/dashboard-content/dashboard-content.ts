@@ -51,7 +51,7 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
     const repos = getLayersMultiConnection('draft');
     return repos
         .query({
-            count: 5, // Only retrieve the top 5 most recent entries
+            count: 5,
             filters: {
                 boolean: {
                     mustNot: NON_LOCALIZED_QUERY_FILTER,
@@ -73,8 +73,8 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
             },
             sort: [
                 {
-                    field: 'modifiedTime', // Sort by modifiedTime
-                    direction: 'DESC', // Descending order, so most recent entries come first
+                    field: 'modifiedTime',
+                    direction: 'DESC',
                 },
             ],
         })
@@ -150,9 +150,7 @@ const getUsersLastContent = () => {
     }
 
     const { published, prePublished, unPublished } = dashboardContentBuildPublishLists(user);
-
-    // TODO: this needs to be optimized before enabling
-    const modified: DashboardContentInfo[] = getUsersModifications(user); // getUsersModifications(user);
+    const modified: DashboardContentInfo[] = getUsersModifications(user);
 
     return {
         body: thymeleafLib.render(view, {
