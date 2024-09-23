@@ -1,3 +1,4 @@
+import { Content } from '/lib/xp/content';
 import thymeleafLib from '/lib/thymeleaf';
 import * as authLib from '/lib/xp/auth';
 import { UserKey } from '/lib/xp/auditlog';
@@ -13,7 +14,7 @@ import { notNullOrUndefined } from '../../../lib/utils/mixed-bag-of-utils';
 import { DashboardContentInfo } from './utils/types';
 import { ContentDescriptor } from '../../../types/content-types/content-config';
 import { dashboardContentBuildPublishLists } from './utils/buildPublishLists';
-import { Content } from '/lib/xp/content';
+import { layerStr } from './utils/contentResolver';
 
 const view = resolve('./dashboard-content.html');
 
@@ -31,8 +32,6 @@ const contentInfo = contentTypesToShow.map((contentType) => {
         name: typeInfo ? typeInfo.displayName : '',
     };
 });
-
-const layerStr = (repo: string) => (repo !== 'default' ? ` [${repo.replace('navno-', '')}]` : '');
 
 // Lag dayjs-dato - Kan være på Elastic-format (yyyy-mm-ddThh:mm:ss.mmmmmmZ)
 const dayjsDateTime = (datetime?: string) => {
@@ -126,12 +125,11 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
             }
 
             const projectId = getContentProjectIdFromRepoId(hit.repoId);
-            const layer = layerStr(projectId);
             const contentTypeInfo = contentInfo.find((el) => el.type === draftContent.type);
             const dateFinal = dayjs(modifiedLocalTime).format('DD.MM.YYYY - HH:mm:ss');
 
             return {
-                displayName: draftContent.displayName + layer,
+                displayName: draftContent.displayName + layerStr(projectId),
                 contentType: contentTypeInfo ? contentTypeInfo.name : '',
                 modifiedTimeRaw: modifiedLocalTime,
                 modifiedTime: dateFinal,
