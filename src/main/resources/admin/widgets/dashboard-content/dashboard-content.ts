@@ -51,7 +51,7 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
     const repos = getLayersMultiConnection('draft');
     return repos
         .query({
-            count: 5000,
+            count: 5,
             filters: {
                 boolean: {
                     mustNot: NON_LOCALIZED_QUERY_FILTER,
@@ -71,6 +71,12 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
                     ],
                 },
             },
+            sort: [
+                {
+                    field: 'modifiedTime',
+                    direction: 'DESC',
+                },
+            ],
         })
         .hits.map((hit): DashboardContentInfo | undefined => {
             const draftContent = getRepoConnection({
@@ -89,7 +95,11 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
             if (!draftContent.displayName) {
                 draftContent.displayName = 'Uten tittel';
             }
+
             let status = 'Ny';
+            const modifiedLocalTime = dayjsDateTime(draftContent.modifiedTime);
+            const tsLocalTime = dayjsDateTime(draftContent._ts);
+
             if (masterContent?.publish?.first && masterContent?.publish?.from) {
                 // Innholdet ER publisert, eventuelt endret etterpå
                 if (draftContent?._versionKey !== masterContent?._versionKey) {
@@ -102,6 +112,9 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
             } else if (draftContent?.archivedTime) {
                 // Arkivert, skal ikke vises her
                 return undefined;
+            } else if (tsLocalTime > modifiedLocalTime) {
+                // Hvis avpublisert er større enn endret, skal den fjernes fra Under arbeid
+                return undefined;
             } else if (draftContent?.publish?.first) {
                 // Avpublisert, eventuelt endret etterpå
                 if (draftContent?.workflow?.state === 'IN_PROGRESS') {
@@ -112,7 +125,6 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
                 }
             }
 
-            const modifiedLocalTime = dayjsDateTime(draftContent.modifiedTime);
             const projectId = getContentProjectIdFromRepoId(hit.repoId);
             const layer = layerStr(projectId);
             const contentTypeInfo = contentInfo.find((el) => el.type === draftContent.type);
@@ -128,9 +140,7 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
                 url: `/admin/tool/com.enonic.app.contentstudio/main/${projectId}/edit/${draftContent._id}`,
             };
         })
-        .filter(notNullOrUndefined)
-        .sort((a, b) => (a.modifiedTimeRaw > b.modifiedTimeRaw ? -1 : 1))
-        .slice(0, 5);
+        .filter(notNullOrUndefined);
 };
 
 const getUsersLastContent = () => {
@@ -140,9 +150,7 @@ const getUsersLastContent = () => {
     }
 
     const { published, prePublished, unPublished } = dashboardContentBuildPublishLists(user);
-
-    // TODO: this needs to be optimized before enabling
-    const modified: DashboardContentInfo[] = []; // getUsersModifications(user);
+    const modified: DashboardContentInfo[] = getUsersModifications(user);
 
     return {
         body: thymeleafLib.render(view, {
