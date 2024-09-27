@@ -68,3 +68,4 @@ node_modules/
 /guillotine-schema.graphql
 /coverage/
 /e2e-tests/xp-image/navno.jar
+/e2e-tests/xp-image/navno-testdata.jar

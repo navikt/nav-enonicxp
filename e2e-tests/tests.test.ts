@@ -6,10 +6,16 @@ describe('Tester testcontainers', () => {
     beforeAll(async () => {
         const image = await GenericContainer.fromDockerfile('./xp-image').build();
         container = await image
-            .withExposedPorts(8080)
+            .withExposedPorts(8080, 4848)
             .withWaitStrategy(Wait.forLogMessage(/.*Finished running main.*/, 1))
             .start();
-    }, 20000);
+
+        (await container.logs()).on('data', (data) => {
+            console.log(data);
+        });
+
+        await container.exec('app.sh add file:///enonic-xp/home/navno-testdata.jar --force');
+    }, 30000);
 
     test('App responds to liveness check', async () => {
         const port = container.getMappedPort(8080);
@@ -19,5 +25,5 @@ describe('Tester testcontainers', () => {
         );
 
         expect(isAliveResponse.status).toBe(200);
-    }, 20000);
+    });
 });

@@ -2,8 +2,8 @@
     "name": "navno-enonicxp-tests",
     "version": "1.0.0",
     "scripts": {
-        "build": "npm-run-all copy-navno-jar build-image",
-        "copy-navno-jar": "cp ../build/libs/navno.jar xp-image",
+        "build": "npm-run-all copy-jars build-image",
+        "copy-jars": "cp ../build/libs/navno.jar xp-image && cp ./xp-test-data-app/build/libs/navno-testdata.jar xp-image",
         "build-image": "docker buildx build ./xp-image -t navno_tests",
         "test": "jest"
     },
