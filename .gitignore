@@ -67,4 +67,4 @@ node_modules/
 .enonic
 /guillotine-schema.graphql
 /coverage/
-/.tests-e2e/xp-image/navno.jar
+/e2e-tests/xp-image/navno.jar

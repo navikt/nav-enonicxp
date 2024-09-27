@@ -1,6 +1,7 @@
 FROM enonic/xp:7.14.4-ubuntu
 
 ARG NAVNO_JAR="navno.jar"
+ARG TEST_JAR
 
 # Assuming this computer has 4 GB of RAM, set JVM heap to 30% of available heap or 1230 MB. Also enable JVM OOME heap dump
 ENV XP_OPTS: -Xms1230M -Xmx1230M -XX:-HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/enonic-xp/home/data/oom.hprof
