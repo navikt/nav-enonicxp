@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: NPM dependencies
+      - name: Install unit tests dependencies
         run: npm ci
       - name: Run unit tests
         run: npm run test
@@ -29,5 +29,9 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle-
       - name: Build application
         run: gradle clean build deploy
+      - name: Install e2e tests dependencies
+        working-directory: e2e-tests
+        run: npm ci
       - name: Run e2e tests
-        run: npm run --prefix e2e-tests test
+        working-directory: e2e-tests
+        run: npm run test
