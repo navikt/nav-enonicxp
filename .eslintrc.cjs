@@ -126,7 +126,7 @@ module.exports = {
             },
         },
         {
-            'files': ['*.test.ts', 'src/main/resources/__test/**/*.*'],
+            'files': ['*.test.ts', 'src/main/resources/__test/**/*.*', 'e2e-tests/**/*.*'],
             'rules': {
                 'no-console': 'off',
                 'no-restricted-imports': 'off',
