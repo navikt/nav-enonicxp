@@ -15,7 +15,7 @@ describe('Tester testcontainers', () => {
         });
 
         await container.exec('app.sh add file:///enonic-xp/home/navno-testdata.jar --force');
-    }, 30000);
+    }, 60000);
 
     afterAll(async () => {
         await container.stop({ timeout: 10000 });
