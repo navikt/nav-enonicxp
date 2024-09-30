@@ -1,4 +1,5 @@
 import * as projectLib from '/lib/xp/project';
+import * as contentLib from '/lib/xp/content';
 import { NAVNO_ROOT_PATH } from '@constants';
 import { initLayers } from './test-data/layers';
 import { initRootProject } from './test-data/root-project';
@@ -25,4 +26,6 @@ export const initTestData = () =>
             name: 'kontor',
             data: {},
         });
+
+        contentLib.publish({ keys: ['/www.nav.no'], includeChildren: true });
     });
