@@ -6,20 +6,21 @@
             <expanded>true</expanded>
             <options minimum="1" maximum="1">
                 <option name="internal">
-                    <label>Lenke til mellomsteg</label>
+                    <label>Intern lenke til skjema/mellomsteg</label>
                     <items>
                         <input name="target" type="ContentSelector">
-                            <label>Velg mellomsteg</label>
+                            <label>Velg skjema eller mellomsteg</label>
                             <occurrences minimum="1" maximum="1"/>
                             <config>
                                 <allowContentType>no.nav.navno:form-intermediate-step</allowContentType>
+                                <allowContentType>media:document</allowContentType>
                                 <showStatus>true</showStatus>
                             </config>
                         </input>
                     </items>
                 </option>
                 <option name="external">
-                    <label>Direkte lenke til skjema</label>
+                    <label>Ekstern lenke til skjema</label>
                     <items>
                         <input name="url" type="TextLine">
                             <label>URL</label>

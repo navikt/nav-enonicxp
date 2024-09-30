@@ -7,8 +7,8 @@ import { ContentNode } from '../../../types/content-types/content-config';
 
 type ContentWithCustomPath = Extract<Content, { data: { customPath: string } }>;
 
-// Valid: (0-9 OR a-z OR - OR / AND NOT trailing /) OR /
-const validCustomPathPattern = new RegExp('^(/[0-9a-z-/]*[^/]|/)$');
+// Valid: The root path / OR path segments containing the specified characters with no repeating or trailing slashes
+const validCustomPathPattern = new RegExp('^((/)|((/[0-9a-z-]+)+))$');
 
 // For custom paths, we need the leading slash on the root path
 const stripPathPrefix = (path: string) => _stripPathPrefix(path) || '/';
@@ -24,7 +24,6 @@ export const hasValidCustomPath = (
 
 export const hasInvalidCustomPath = (content: Content<any>): content is ContentWithCustomPath => {
     const customPath = (content as ContentWithCustomPath).data?.customPath;
-
     return !!(customPath && !isValidCustomPath(customPath));
 };
 

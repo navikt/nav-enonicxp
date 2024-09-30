@@ -1,14 +1,13 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { ContentLogData, DashboardContentInfo } from './types';
-import { getContentProjectIdFromRepoId, getRepoConnection } from '../../../../lib/utils/repo-utils';
-import { getLayersData } from '../../../../lib/localization/layers-data';
-import { APP_DESCRIPTOR, CONTENT_ROOT_REPO_ID } from '../../../../lib/constants';
 import dayjs from '/assets/dayjs/1.11.9/dayjs.min.js';
+import { getContentProjectIdFromRepoId, getRepoConnection } from '../../../../lib/utils/repo-utils';
+import { fixDateFormat } from '../../../../lib/utils/datetime-utils';
+import { APP_DESCRIPTOR } from '../../../../lib/constants';
 import { stripPathPrefix } from '../../../../lib/paths/path-utils';
 import { contentTypesRenderedByEditorFrontend } from '../../../../lib/contenttype-lists';
 import { ContentDescriptor, ContentNode } from '../../../../types/content-types/content-config';
-import { fixDateFormat } from '../../../../lib/utils/datetime-utils';
 
 type ContentWithLog = {
     content: ContentNode;
@@ -30,27 +29,22 @@ const contentTypeNameMap = contentTypesToShow.reduce<Record<string, string>>((ac
     return acc;
 }, {});
 
+export const layerStr = (repo: string) => (repo !== 'default' ? ` [${repo.replace('navno-', '')}]` : '');
+
 const transformToContentData = (
     contentWithLog: ContentWithLog,
     isPublish: boolean
 ): DashboardContentInfo => {
     const { content, log } = contentWithLog;
     const { repoId, publish, time } = log;
-
     const isArchived = !!content.archivedTime;
-
-    const { repoIdToLocaleMap } = getLayersData();
-
     const projectId = getContentProjectIdFromRepoId(repoId);
-
-    const displayName = `${content.displayName}${repoId !== CONTENT_ROOT_REPO_ID ? ` [${repoIdToLocaleMap[repoId]}]` : ''}`;
     const editorPath = isArchived ? 'widget/plus/archive' : `edit/${content._id}`;
-
     const modifiedTimeRaw = fixDateFormat((isPublish ? publish?.from : publish?.to) || time);
     const modifiedTime = dayjs(modifiedTimeRaw).format('DD.MM.YYYY - HH:mm:ss');
 
     return {
-        displayName,
+        displayName: content.displayName + layerStr(projectId),
         contentType: contentTypeNameMap[content.type],
         modifiedTimeRaw,
         modifiedTime,
