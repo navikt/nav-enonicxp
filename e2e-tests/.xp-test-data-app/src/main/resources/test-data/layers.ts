@@ -1,7 +1,6 @@
 import { CreateProjectParams } from '/lib/xp/project';
 import * as projectLib from '/lib/xp/project';
 import * as contentLib from '/lib/xp/content';
-import * as nodeLib from '/lib/xp/node';
 import {
     APP_DESCRIPTOR,
     CONTENT_REPO_PREFIX,
