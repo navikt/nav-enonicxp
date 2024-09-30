@@ -4,15 +4,18 @@ describe('Tester testcontainers', () => {
     let container: StartedTestContainer;
 
     beforeAll(async () => {
+        console.log('Building XP container...');
+
         const image = await GenericContainer.fromDockerfile('./.xp-image').build();
+
+        console.log('Waiting for nav.no app to start...');
+
         container = await image
             .withExposedPorts(8080)
             .withWaitStrategy(Wait.forLogMessage(/.*Finished running main.*/, 1))
             .start();
 
-        (await container.logs()).on('data', (data) => {
-            console.log(data);
-        });
+        console.log('Installing test data...');
 
         await container.exec('app.sh add file:///enonic-xp/home/navno-testdata.jar --force');
     }, 60000);
