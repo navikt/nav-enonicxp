@@ -17,14 +17,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      - uses: actions/cache@v3
+      - name: NPM dependencies
+        run: npm ci
+      - name: Run unit tests
+        run: npm run test
+      - name: Build cache
+        uses: actions/cache@v3
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-      - name: Run unit tests
-        run: npm run test
+          restore-keys: ${{ runner.os }}-gradle-
       - name: Build application
         run: gradle clean build deploy
       - name: Run e2e tests
