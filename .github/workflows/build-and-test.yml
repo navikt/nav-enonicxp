@@ -19,6 +19,9 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Build application and run tests
-        run: |
-          gradle clean build deploy
+      - name: Run unit tests
+        run: npm run test
+      - name: Build application
+        run: gradle clean build deploy
+      - name: Run e2e tests
+        run: npm run --prefix e2e-tests test
