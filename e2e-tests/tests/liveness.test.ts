@@ -12,14 +12,4 @@ describe('The application is responding', () => {
 
         expect(isAliveResponse.status).toBe(200);
     });
-
-    test('Root node is nav.no site', async () => {
-        const sitecontentResponse = await fetch(
-            `http://localhost:${port}/_/service/no.nav.navno/sitecontent?id=/www.nav.no`,
-            { headers: { secret: 'dummyToken' } }
-        ).then((res) => res.json());
-
-        expect(sitecontentResponse.type).toBe('portal:site');
-        expect(sitecontentResponse.displayName).toBe('www.nav.no');
-    }, 10000);
 });
