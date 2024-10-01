@@ -4,24 +4,17 @@ on:
     types: [released]
 
 jobs:
-  build:
-    permissions:
-      contents: "read"
-      id-token: "write"
-    if: github.event.release.target_commitish == 'master'
-    uses: ./.github/workflows/build-deploy-image.yml
-    secrets:
-      NAIS_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
-    with:
-      imagename: 'prod-release-${{ github.ref_name }}'
-      xpVersion: '7.14.2'
   deploy:
-    uses: ./.github/workflows/deploy-with-naisjob.yml
-    needs: build
+    name: Deploy to prod
+    if: github.event.release.target_commitish == 'master'
+    uses: ./.github/workflows/build-test-deploy.yml
+    permissions:
+      contents: read
+      id-token: write
     with:
       naisCluster: prod-gcp
       xpAdminHost: portal-admin.oera.no
       xpEnv: prod
-      image: ${{ needs.build.outputs.image }}
+      xpVersion: '7.14.2'
     secrets:
-      NAIS_DEPLOY_APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+      NAIS_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
