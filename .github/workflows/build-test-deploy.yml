@@ -50,7 +50,7 @@ jobs:
   deploy:
     name: Deploy app
     uses: ./.github/workflows/deploy-with-naisjob.yml
-    needs: build-deploy-image
+    needs: [build-deploy-image, e2e-tests]
     permissions:
       contents: read
     with:
