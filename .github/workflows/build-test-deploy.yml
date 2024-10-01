@@ -1,0 +1,60 @@
+name: Build, test and deploy
+on:
+  workflow_call:
+    inputs:
+      naisCluster:
+        required: true
+        type: string
+      xpAdminHost:
+        required: true
+        type: string
+      xpEnv:
+        required: true
+        type: string
+      xpVersion:
+        required: true
+        type: string
+    secrets:
+      NAIS_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+
+jobs:
+  build:
+    name: Build app
+    uses: ./.github/workflows/build-app.yml
+    permissions:
+      contents: read
+    with:
+      environment: ${{ inputs.xpEnv }}
+  e2e-tests:
+    name: Run e2e tests
+    uses: ./.github/workflows/e2e-tests.yml
+    needs: build
+    permissions:
+      contents: read
+    with:
+      buildArtifact: ${{ needs.build.outputs.buildArtifact }}
+  build-deploy-image:
+    name: Build naisjob deploy image
+    uses: ./.github/workflows/build-deploy-image.yml
+    needs: build
+    permissions:
+      contents: read
+      id-token: write
+    with:
+      buildArtifact: ${{ needs.build.outputs.buildArtifact }}
+      imageSuffix: ${{ inputs.xpEnv }}
+      xpVersion: ${{ inputs.xpVersion }}
+    secrets:
+      NAIS_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+  deploy:
+    name: Deploy app
+    uses: ./.github/workflows/deploy-with-naisjob.yml
+    needs: build-deploy-image
+    permissions:
+      contents: read
+    with:
+      image: ${{ needs.build-deploy-image.outputs.image }}
+      naisCluster: ${{ inputs.naisCluster }}
+      xpAdminHost: ${{ inputs.naisCluster }}
+      xpEnv: ${{ inputs.xpEnv }}

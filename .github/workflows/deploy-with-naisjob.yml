@@ -2,6 +2,9 @@ name: Deploy with naisjob
 on:
   workflow_call:
     inputs:
+      image:
+        required: true
+        type: string
       naisCluster:
         required: true
         type: string
@@ -11,12 +14,6 @@ on:
       xpEnv:
         required: true
         type: string
-      image:
-        required: true
-        type: string
-    secrets:
-      NAIS_DEPLOY_APIKEY:
-        required: true
 
 jobs:
   deploy:
@@ -24,11 +21,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Deploy to nais
-        uses: nais/deploy/actions/deploy@v1
+        uses: nais/deploy/actions/deploy@v2
         env:
           CLUSTER: ${{ inputs.naisCluster }}
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           RESOURCE: .nais-deploy-job/deploy-job.yml
           VAR: image=${{ inputs.image }},xpAdminHost=${{ inputs.xpAdminHost }},xpEnv=${{ inputs.xpEnv }}
