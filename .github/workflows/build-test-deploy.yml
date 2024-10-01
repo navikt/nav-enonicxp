@@ -53,6 +53,7 @@ jobs:
     needs: [build-deploy-image, e2e-tests]
     permissions:
       contents: read
+      id-token: write
     with:
       image: ${{ needs.build-deploy-image.outputs.image }}
       naisCluster: ${{ inputs.naisCluster }}
