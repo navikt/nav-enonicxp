@@ -6,7 +6,7 @@ on:
         required: true
         type: string
       xpVersion:
-        required: false
+        required: true
         type: string
     outputs:
       buildArtifact:
