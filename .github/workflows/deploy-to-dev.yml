@@ -6,6 +6,9 @@ jobs:
   deploy:
     name: Build and deploy to dev
     uses: ./.github/workflows/build-test-deploy.yml
+    permissions:
+      contents: read
+      id-token: write
     with:
       naisCluster: dev-gcp
       xpAdminHost: portal-admin-dev.oera.no
