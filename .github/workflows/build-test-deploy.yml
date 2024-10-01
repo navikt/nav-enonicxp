@@ -1,4 +1,4 @@
-name: Build, test and deploy application
+name: Build, test and deploy app
 on:
   workflow_call:
     inputs:
@@ -19,36 +19,37 @@ on:
         required: true
 
 jobs:
-  build-application:
-    name: Build application
+  build-app:
+    name: Build app
     uses: ./.github/workflows/build-app.yml
     permissions:
       contents: read
     with:
       environment: ${{ inputs.xpEnv }}
+      xpVersion: ${{ inputs.xpVersion }}
   e2e-tests:
     name: Run e2e tests
     uses: ./.github/workflows/e2e-tests.yml
-    needs: build-application
+    needs: build-app
     permissions:
       contents: read
     with:
-      buildArtifact: ${{ needs.build.outputs.buildArtifact }}
+      buildArtifact: ${{ needs.build-app.outputs.buildArtifact }}
   build-deploy-image:
-    name: Build naisjob deploy image
+    name: Build deploy image
     uses: ./.github/workflows/build-deploy-image.yml
-    needs: build-application
+    needs: build-app
     permissions:
       contents: read
       id-token: write
     with:
-      buildArtifact: ${{ needs.build.outputs.buildArtifact }}
+      buildArtifact: ${{ needs.build-app.outputs.buildArtifact }}
       imageSuffix: ${{ inputs.xpEnv }}
       xpVersion: ${{ inputs.xpVersion }}
     secrets:
       NAIS_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
   deploy:
-    name: Deploy application
+    name: Deploy app
     uses: ./.github/workflows/deploy-with-naisjob.yml
     needs: [build-deploy-image, e2e-tests]
     permissions:
