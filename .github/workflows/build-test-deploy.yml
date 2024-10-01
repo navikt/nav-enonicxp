@@ -58,5 +58,5 @@ jobs:
     with:
       image: ${{ needs.build-deploy-image.outputs.image }}
       naisCluster: ${{ inputs.naisCluster }}
-      xpAdminHost: ${{ inputs.naisCluster }}
+      xpAdminHost: ${{ inputs.xpAdminHost }}
       xpEnv: ${{ inputs.xpEnv }}
