@@ -21,7 +21,7 @@ on:
 jobs:
   build-app:
     name: Build app
-    uses: ./.github/workflows/build-app.yml
+    uses: ./.github/workflows/.build-app.yml
     permissions:
       contents: read
     with:
@@ -29,7 +29,7 @@ jobs:
       xpVersion: ${{ inputs.xpVersion }}
   e2e-tests:
     name: Run e2e tests
-    uses: ./.github/workflows/e2e-tests.yml
+    uses: ./.github/workflows/.run-e2e-tests.yml
     needs: build-app
     permissions:
       contents: read
@@ -37,7 +37,7 @@ jobs:
       buildArtifact: ${{ needs.build-app.outputs.buildArtifact }}
   build-deploy-image:
     name: Build deploy image
-    uses: ./.github/workflows/build-deploy-image.yml
+    uses: ./.github/workflows/.build-deploy-image.yml
     needs: build-app
     permissions:
       contents: read
@@ -50,7 +50,7 @@ jobs:
       NAIS_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
   deploy:
     name: Deploy app
-    uses: ./.github/workflows/deploy-with-naisjob.yml
+    uses: ./.github/workflows/.deploy-with-naisjob.yml
     needs: [build-deploy-image, e2e-tests]
     permissions:
       contents: read

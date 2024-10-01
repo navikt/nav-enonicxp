@@ -7,7 +7,7 @@ jobs:
   deploy:
     name: Deploy to prod
     if: github.event.release.target_commitish == 'master'
-    uses: ./.github/workflows/build-test-deploy.yml
+    uses: ./.github/workflows/.build-and-deploy.yml
     permissions:
       contents: read
       id-token: write

@@ -1,4 +1,4 @@
-name: Build and test on PR
+name: Run tests on PR
 on:
   pull_request:
     branches:
@@ -7,15 +7,16 @@ on:
 jobs:
   build:
     name: Build app
-    uses: ./.github/workflows/build-app.yml
+    uses: ./.github/workflows/.build-app.yml
     permissions:
       contents: read
     with:
       environment: pr
+      # Should use the current prod version
       xpVersion: "7.14.2"
   e2e-tests:
     name: Run e2e tests
-    uses: ./.github/workflows/e2e-tests.yml
+    uses: ./.github/workflows/.run-e2e-tests.yml
     needs: build
     with:
       buildArtifact: ${{ needs.build.outputs.buildArtifact }}
