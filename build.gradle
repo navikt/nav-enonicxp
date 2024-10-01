@@ -52,6 +52,7 @@ dependencies {
 }
 
 tasks.register('babelJs', NpmTask) {
+    dependsOn 'npmInstall'
     dependsOn(generateTypeScript)
     dependsOn(processResources)
 

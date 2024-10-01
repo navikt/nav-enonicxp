@@ -1,0 +1,52 @@
+name: Build application
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+#      xpVersion:
+#        required: true
+#        type: string
+    outputs:
+      buildArtifact:
+        description: "nav.no app jar"
+        value: ${{ jobs.build-and-test.outputs.buildArtifact }}
+
+jobs:
+  build:
+    name: Build application
+    runs-on: ubuntu-latest
+    env:
+      buildArtifact: navno-jar-${{inputs.environment}}-${{github.sha}}
+    outputs:
+      buildArtifact: ${{ env.artifactName }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: 21
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.10.2"
+      - name: Setup node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install node.js dependencies
+        run: npm ci
+      - name: Run unit tests
+        run: npm run test
+      - name: Build application
+        run: gradle clean build deploy #-PxpVersion=${{ inputs.xpVersion }}
+      - name: Upload app jar file
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.buildArtifact }}
+          path: build/libs/navno.jar
+          overwrite: 'true'
+          retention-days: 1
