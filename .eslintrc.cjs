@@ -20,11 +20,6 @@ module.exports = {
     ],
     'plugins': ['prettier', '@typescript-eslint', 'import'],
     'parser': '@typescript-eslint/parser',
-    // 'parserOptions': {
-    //     'ecmaVersion': 2020,
-    //     'project': './tsconfig.json',
-    //     'tsconfigRootDir': './',
-    // },
     'rules': {
         '@typescript-eslint/ban-ts-comment': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
