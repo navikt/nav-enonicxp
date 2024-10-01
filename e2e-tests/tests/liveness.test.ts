@@ -1,6 +1,6 @@
 import { xpTestContainer } from './utils/xp-test-container';
 
-const container = await xpTestContainer(true);
+const container = await xpTestContainer();
 
 describe('The application is responding', () => {
     const port = container.getMappedPort(8080);
@@ -21,5 +21,5 @@ describe('The application is responding', () => {
 
         expect(sitecontentResponse.type).toBe('portal:site');
         expect(sitecontentResponse.displayName).toBe('www.nav.no');
-    });
+    }, 10000);
 });
