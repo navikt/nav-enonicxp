@@ -22,7 +22,7 @@ export const xpTestContainer = async (withLogs?: boolean) => {
 
     if (withLogs) {
         (await startedContainer.logs()).on('data', (chunk) => {
-            console.log(chunk.toString());
+            console.log(`[XP container] ${chunk.toString()}`);
         });
     }
 

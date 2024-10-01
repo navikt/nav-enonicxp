@@ -19,8 +19,6 @@ describe('The application is responding', () => {
             { headers: { secret: 'dummyToken' } }
         ).then((res) => res.json());
 
-        console.log(`Response: ${JSON.stringify(sitecontentResponse)}`);
-
         expect(sitecontentResponse.type).toBe('portal:site');
         expect(sitecontentResponse.displayName).toBe('www.nav.no');
     });

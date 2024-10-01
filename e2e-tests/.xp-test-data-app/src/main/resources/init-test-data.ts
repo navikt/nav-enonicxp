@@ -8,16 +8,14 @@ import { createOrReplace } from './utils/content';
 
 export const initTestData = () =>
     runAsAdmin(() => {
-        log.info(`Current projects: ${JSON.stringify(projectLib.list())}`);
-
         initRootProject();
         initLayers();
 
         createOrReplace({
             parentPath: '/',
             contentType: 'portal:site',
-            data: {},
             name: 'www.nav.no',
+            data: {},
         });
 
         createOrReplace({

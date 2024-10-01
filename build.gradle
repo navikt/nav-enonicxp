@@ -52,29 +52,12 @@ dependencies {
 }
 
 tasks.register('babelJs', NpmTask) {
-    dependsOn 'npmInstall'
     dependsOn(generateTypeScript)
     dependsOn(processResources)
 
     args = ['run', 'build']
-
-    inputs.dir 'src/main/resources'
-    outputs.dir "$buildDir/resources/main"
 }
 
 
 jar.dependsOn(babelJs)
 processResources.dependsOn(generateTypeScript)
-
-//tasks.register('e2eTests', NpmTask) {
-//    dependsOn(babelJs)
-//    dependsOn(jar)
-//    dependsOn 'npmInstall'
-//    args = ["run", "test"]
-//}
-//
-//tasks.named("test") {
-//    finalizedBy(e2eTests)
-//}
-//
-//tasks.e2eTests.workingDir = new File("e2e-tests/")
