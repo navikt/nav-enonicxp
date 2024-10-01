@@ -20,7 +20,7 @@ jobs:
     env:
       buildArtifact: navno-jar-${{inputs.environment}}-${{github.sha}}
     outputs:
-      buildArtifact: ${{ env.artifactName }}
+      buildArtifact: ${{ env.buildArtifact }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
