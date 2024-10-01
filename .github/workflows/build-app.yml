@@ -11,7 +11,7 @@ on:
     outputs:
       buildArtifact:
         description: "nav.no app jar"
-        value: ${{ jobs.build-and-test.outputs.buildArtifact }}
+        value: ${{ jobs.build.outputs.buildArtifact }}
 
 jobs:
   build:
