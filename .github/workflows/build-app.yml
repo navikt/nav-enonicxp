@@ -17,10 +17,8 @@ jobs:
   build:
     name: Build application
     runs-on: ubuntu-latest
-    env:
-      buildArtifact: navno-jar-${{inputs.environment}}-${{github.sha}}
     outputs:
-      buildArtifact: ${{ env.buildArtifact }}
+      buildArtifact: ${{ steps.artifact-upload.outputs.artifact-id }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -45,8 +43,9 @@ jobs:
         run: gradle clean build deploy #-PxpVersion=${{ inputs.xpVersion }}
       - name: Upload app jar file
         uses: actions/upload-artifact@v4
+        id: artifact-upload
         with:
-          name: ${{ env.buildArtifact }}
+          name: navno-jar-${{inputs.environment}}-${{github.sha}}
           path: build/libs/navno.jar
           overwrite: 'true'
           retention-days: 1
