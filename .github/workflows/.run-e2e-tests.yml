@@ -22,10 +22,10 @@ jobs:
           java-version: 21
           cache: 'gradle'
           cache-dependency-path: |
-            e2e-tests/build.gradle
-            e2e-tests/gradle.properties
-            e2e-tests/settings.gradle
-            e2e-tests/gradle/wrapper/gradle-wrapper.properties
+            gradle/wrapper/gradle-wrapper.properties
+            e2e-tests/.xp-test-data-app/build.gradle
+            e2e-tests/.xp-test-data-app/gradle.properties
+            e2e-tests/.xp-test-data-app/settings.gradle
       - name: Setup node.js
         uses: actions/setup-node@v4
         with:
