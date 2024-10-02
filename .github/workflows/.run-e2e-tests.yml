@@ -29,9 +29,6 @@ jobs:
       - name: Copy jar files to test image
         working-directory: e2e-tests
         run: npm run copy-jars
-      - name: Print dir
-        run: |
-          ls -R e2e-tests/.xp-image
       - name: Install node.js dependencies
         working-directory: e2e-tests
         run: npm ci
