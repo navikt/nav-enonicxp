@@ -25,7 +25,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.buildArtifact }}
-          merge-multiple: 'true'
       - name: Copy jar files to test image
         working-directory: e2e-tests
         run: npm run copy-jars
