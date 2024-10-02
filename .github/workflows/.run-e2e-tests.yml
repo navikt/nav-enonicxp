@@ -26,6 +26,7 @@ jobs:
         with:
           name: ${{ inputs.buildArtifact }}
           path: e2e-tests/.xp-image
+          merge-multiple: 'true'
       - name: Install node.js dependencies
         working-directory: e2e-tests
         run: npm ci
