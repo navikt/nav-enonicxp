@@ -4,7 +4,7 @@ import * as clusterLib from '/lib/xp/cluster';
 import { NavNoDescriptor } from '../../types/common';
 import { logger } from '../utils/logging';
 import { runInContext } from '../context/run-in-context';
-import { SUPER_USER_FULL } from '../constants';
+import { SUPER_USER_PRINCIPAL } from '../constants';
 
 type Props<TaskConfig extends Record<string, unknown>> = {
     jobName: string;
@@ -28,7 +28,7 @@ export const createOrUpdateSchedule = <
     taskConfig,
     enabled = true,
     masterOnly = true,
-    user = SUPER_USER_FULL,
+    user = SUPER_USER_PRINCIPAL,
     onScheduleExistsAction = 'modify',
 }: Props<TaskConfig>) => {
     if (masterOnly && !clusterLib.isMaster()) {

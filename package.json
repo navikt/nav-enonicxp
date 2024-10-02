@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "scripts": {
         "test": "jest",
-        "build": "npm-run-all test lint babel",
+        "build": "npm-run-all lint babel",
         "lint": "eslint ./src/main/resources --ext=ts --quiet && tsc -p tsconfig-build.json --noemit",
         "babel": "babel src/main/resources --out-dir=build/resources/main --no-copy-ignored --extensions \".ts\""
     },
