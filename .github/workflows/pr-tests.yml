@@ -14,9 +14,12 @@ jobs:
       environment: pr
       # Should use the current prod version
       xpVersion: "7.14.2"
+
   e2e-tests:
     name: Run e2e tests
     uses: ./.github/workflows/.run-e2e-tests.yml
     needs: build
+    permissions:
+      contents: read
     with:
       buildArtifact: ${{ needs.build.outputs.buildArtifact }}

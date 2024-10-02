@@ -27,6 +27,7 @@ jobs:
     with:
       environment: ${{ inputs.xpEnv }}
       xpVersion: ${{ inputs.xpVersion }}
+
   e2e-tests:
     name: Run e2e tests
     uses: ./.github/workflows/.run-e2e-tests.yml
@@ -35,6 +36,7 @@ jobs:
       contents: read
     with:
       buildArtifact: ${{ needs.build-app.outputs.buildArtifact }}
+
   build-deploy-image:
     name: Build deploy image
     uses: ./.github/workflows/.build-deploy-image.yml
@@ -48,6 +50,7 @@ jobs:
       xpVersion: ${{ inputs.xpVersion }}
     secrets:
       NAIS_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+
   deploy:
     name: Deploy app
     uses: ./.github/workflows/.deploy-with-naisjob.yml

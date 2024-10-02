@@ -21,6 +21,9 @@ jobs:
           node-version: 22
           cache: 'npm'
           cache-dependency-path: e2e-tests/package-lock.json
+      - name: Install node.js dependencies
+        working-directory: e2e-tests
+        run: npm ci
       - name: Download jar files
         uses: actions/download-artifact@v4
         with:
@@ -28,9 +31,6 @@ jobs:
       - name: Copy jar files to test image
         working-directory: e2e-tests
         run: npm run copy-jars
-      - name: Install node.js dependencies
-        working-directory: e2e-tests
-        run: npm ci
       - name: Build test image
         working-directory: e2e-tests
         run: npm run build-xp-image

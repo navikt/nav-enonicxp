@@ -1,4 +1,4 @@
-name: Build image for deploy job
+name: Build image for deploy
 on:
   workflow_call:
     inputs:
