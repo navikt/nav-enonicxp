@@ -15,34 +15,23 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: 21
-          cache: 'gradle'
-          cache-dependency-path: |
-            gradle/wrapper/gradle-wrapper.properties
-            e2e-tests/.xp-test-data-app/build.gradle
-            e2e-tests/.xp-test-data-app/gradle.properties
-            e2e-tests/.xp-test-data-app/settings.gradle
       - name: Setup node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: 'npm'
           cache-dependency-path: e2e-tests/package-lock.json
-      - name: Download app jar
+      - name: Download jar files
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.buildArtifact }}
-          path: build/libs
+          path: e2e-tests/.xp-image
       - name: Install node.js dependencies
         working-directory: e2e-tests
         run: npm ci
-      - name: Build test assets
+      - name: Build test image
         working-directory: e2e-tests
-        run: npm run build
+        run: npm run build-xp-image
       - name: Run tests
         working-directory: e2e-tests
         run: npm run test
