@@ -11,7 +11,7 @@ import { runInContext } from '../context/run-in-context';
 import { getFromLocalCache } from '../cache/local-cache';
 import { buildCacheKeyForReqContext } from '../cache/utils';
 
-const FRONTEND_API_URL = `${URLS.FRONTEND_ORIGIN}/editor/site-info`;
+const FRONTEND_API_URL = `${URLS.FRONTEND_DASHBOARD_ORIGIN}/editor/site-info`;
 const CACHE_KEY = 'content-lists';
 
 type PublishInfo = Content['publish'] & {
@@ -159,12 +159,19 @@ export const get = (req: XP.Request) => {
             clusterState: clusterInfoResponse?.state,
         },
     };
+    log.info('requestBody');
+    log.info(JSON.stringify(requestBody));
 
-    return httpClient.request({
+    const response = httpClient.request({
         url: FRONTEND_API_URL,
         method: 'POST',
         contentType: 'application/json',
         headers: { secret: app.config.serviceSecret },
         body: JSON.stringify(requestBody),
     });
+
+    log.info('Site info response');
+    log.info(JSON.stringify(response));
+
+    return response;
 };
