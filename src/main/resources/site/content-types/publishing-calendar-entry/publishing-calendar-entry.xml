@@ -8,13 +8,18 @@
             <items>
                 <input type="TextArea" name="period">
                     <label>Periode</label>
-                    <help-text></help-text>
                     <occurrences minimum="1" maximum="1"/>
                 </input>
                 <input type="Date" name="date">
                     <label>Dato for publisering</label>
-                    <help-text></help-text>
                     <occurrences minimum="1" maximum="1"/>
+                </input>
+                <input type="ContentSelector" name="link">
+                    <label>Lenke til relevant innhold</label>
+                    <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <allowContentType>${app}:*</allowContentType>
+                    </config>
                 </input>
             </items>
         </field-set>
