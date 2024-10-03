@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "resolveJsonModule": true,
+        "target": "es2022",
+        "module": "es2022",
+        "strict": true,
+        "esModuleInterop": true,
+        "moduleResolution": "node",
+        "noEmit": true,
+        "baseUrl": "../../",
+        "types": ["@types/jest"],
+        "paths": {
+            "@constants": ["src/main/resources/lib/constants.ts"],
+            "@test-data/*": ["e2e-tests/.xp-test-data-app/src/main/resources/*"],
+            "@test-utils/*": ["e2e-tests/tests/.utils/*"]
+        }
+    },
+    "include": [
+        "./**/*.ts",
+        "../.xp-test-data-app/src/main/resources/**/*.ts",
+        "../../src/main/resources/**/*.ts",
+        "./tsconfig.json"
+    ],
+    "exclude": ["node_modules"]
+}

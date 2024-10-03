@@ -1,5 +1,5 @@
 import * as contentLib from '/lib/xp/content';
-import { NAVNO_ROOT_PATH } from '@constants';
+import { APP_DESCRIPTOR, NAVNO_ROOT_PATH } from '@constants';
 import { initLayers } from './test-data/layers';
 import { initRootProject } from './test-data/root-project';
 import { runAsAdmin } from './utils/context';
@@ -14,7 +14,12 @@ export const initTestData = () =>
             parentPath: '/',
             contentType: 'portal:site',
             name: 'www.nav.no',
-            data: {},
+            data: {
+                siteConfig: {
+                    applicationKey: APP_DESCRIPTOR,
+                    config: {},
+                },
+            },
         });
 
         createOrReplace({
