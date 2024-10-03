@@ -6,7 +6,7 @@ await startXpTestContainer();
 describe('sitecontent service (serves content for the frontend)', () => {
     const fetchFromSitecontent = buildServiceFetcher('sitecontent');
 
-    test('Should get 404 for non-existant content', async () => {
+    test('Should return 404 for non-existing content', async () => {
         const response = await fetchFromSitecontent({
             params: { id: '/www.nav.no/asdf' },
             withSecret: true,
@@ -18,7 +18,7 @@ describe('sitecontent service (serves content for the frontend)', () => {
         expect(responseMsg).toBe(SITECONTENT_404_MSG_PREFIX);
     });
 
-    test('Should get 401 if no api secret specified', async () => {
+    test('Should return 401 if no api secret specified', async () => {
         const response = await fetchFromSitecontent({
             params: { id: '/www.nav.no/legacy-content/' },
         });
@@ -69,5 +69,24 @@ describe('sitecontent service (serves content for the frontend)', () => {
         }).then((res) => res.json());
 
         expect(response.displayName).toBe('Prepublish for tomorrow');
+    });
+
+    test('Should resolve customPath', async () => {
+        const response = await fetchFromSitecontent({
+            params: { id: '/www.nav.no/my-custompath' },
+            withSecret: true,
+        }).then((res) => res.json());
+
+        expect(response.displayName).toBe('Content with customPath');
+    });
+
+    test('Should return a redirect to the customPath from an internal _path', async () => {
+        const response = await fetchFromSitecontent({
+            params: { id: '/www.nav.no/content-with-custompath' },
+            withSecret: true,
+        }).then((res) => res.json());
+
+        expect(response.type).toBe('no.nav.navno:internal-link');
+        expect(response.data.target._path).toBe('/my-custompath');
     });
 });

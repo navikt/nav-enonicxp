@@ -44,6 +44,19 @@ export const publishedContentParams: ContentWithChildren[] = [
             },
             {
                 contentParams: {
+                    displayName: 'Content with customPath',
+                    contentType: 'no.nav.navno:dynamic-page',
+                    data: {
+                        chatbotToggle: false,
+                        feedbackToggle: false,
+                        noindex: false,
+                        nosnippet: false,
+                        customPath: '/my-custompath',
+                    } satisfies DynamicPage,
+                },
+            },
+            {
+                contentParams: {
                     displayName: 'Unpublished content',
                     contentType: 'no.nav.navno:dynamic-page',
                     data: {
@@ -77,31 +90,6 @@ export const publishedContentParams: ContentWithChildren[] = [
                     contentType: 'base:folder',
                     data: {},
                 },
-            },
-            {
-                contentParams: {
-                    name: 'legacy-content',
-                    contentType: 'base:folder',
-                    data: {},
-                },
-                children: [
-                    {
-                        contentParams: {
-                            name: 'main-article',
-                            displayName: 'Main article test',
-                            contentType: 'no.nav.navno:main-article',
-                            data: {
-                                contentType: 'lastingContent',
-                                subContentType: 'none',
-                                chatbotToggle: false,
-                                feedbackToggle: false,
-                                noindex: false,
-                                nosnippet: false,
-                                text: 'asdf',
-                            } satisfies MainArticle,
-                        },
-                    },
-                ],
             },
         ],
     },
