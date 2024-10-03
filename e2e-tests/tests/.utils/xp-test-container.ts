@@ -2,14 +2,11 @@ import { GenericContainer, StartedTestContainer, Wait } from 'testcontainers';
 
 let container: StartedTestContainer;
 
-export const getXpTestContainer = async (withLogs?: boolean) => {
+export const startXpTestContainer = async (withLogs?: boolean) => {
     if (container) {
-        console.log('XP container already running!');
+        console.log('XP container already running');
         return container;
     }
-
-    // console.log('Building XP test container...');
-    // const container = await GenericContainer.fromDockerfile('./.xp-image').build('xp-test-image');
 
     console.log('Starting XP test container...');
 
@@ -34,28 +31,32 @@ export const getXpTestContainer = async (withLogs?: boolean) => {
     return container;
 };
 
+export const stopXpTestContainer = async () => {
+    return startXpTestContainer().then((container) => container.stop());
+};
+
 export const buildXpUrl = (path: string) => {
     const port = container.getMappedPort(8080);
     return `http://localhost:${port}/${path.replace(/^\//, '')}`;
 };
 
-export const fetchFromService = async ({
-    serviceName,
-    headers = {},
-    params = {},
-    withSecret,
-}: {
-    serviceName: string;
-    headers?: Record<string, string>;
-    params?: Record<string, string>;
-    withSecret?: boolean;
-}) => {
-    const paramsStr = new URLSearchParams(params).toString();
-    const url = buildXpUrl(
-        `/_/service/no.nav.navno/${serviceName}${paramsStr ? `?${paramsStr}` : ''}`
-    );
+export const buildServiceFetcher = (serviceName: string) => {
+    return async ({
+        headers = {},
+        params = {},
+        withSecret,
+    }: {
+        headers?: Record<string, string>;
+        params?: Record<string, string>;
+        withSecret?: boolean;
+    }) => {
+        const paramsStr = new URLSearchParams(params).toString();
+        const url = buildXpUrl(
+            `/_/service/no.nav.navno/${serviceName}${paramsStr ? `?${paramsStr}` : ''}`
+        );
 
-    return fetch(url, {
-        headers: withSecret ? { ...headers, secret: app.config.serviceSecret } : headers,
-    });
+        return fetch(url, {
+            headers: withSecret ? { ...headers, secret: app.config.serviceSecret } : headers,
+        });
+    };
 };

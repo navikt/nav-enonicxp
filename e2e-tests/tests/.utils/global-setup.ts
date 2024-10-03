@@ -1,7 +1,7 @@
-import { getXpTestContainer } from './xp-test-container';
+import { startXpTestContainer } from './xp-test-container';
 
 const globalSetup = async () => {
-    await getXpTestContainer();
+    await startXpTestContainer();
 };
 
 export default globalSetup;

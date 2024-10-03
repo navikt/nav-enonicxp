@@ -1,7 +1,7 @@
-import { getXpTestContainer } from './xp-test-container';
+import { stopXpTestContainer } from './xp-test-container';
 
 const globalTeardown = async () => {
-    return (await getXpTestContainer()).stop();
+    return stopXpTestContainer();
 };
 
 export default globalTeardown;
