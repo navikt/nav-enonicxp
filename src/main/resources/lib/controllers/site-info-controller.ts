@@ -162,11 +162,16 @@ export const get = (req: XP.Request) => {
 
     */
 
+    const testData = {
+        pageTitle: 'Redaktør-admin',
+        prepublish: [{ id: '123', title: 'Artikkel for forhåndspublisering' }],
+    };
+
     return httpClient.request({
         url: FRONTEND_EDITOR_ADMIN_URL,
         method: 'POST',
         contentType: 'application/json',
         headers: { secret: app.config.serviceSecret },
-        body: JSON.stringify({ foo: 'bar' }),
+        body: JSON.stringify(testData),
     });
 };
