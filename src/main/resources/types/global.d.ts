@@ -2,7 +2,7 @@ declare const app: {
     name: 'no.nav.navno';
     version: string;
     config: {
-        env: 'p' | 'dev' | 'q6' | 'localhost';
+        env: 'p' | 'dev' | 'q6' | 'localhost' | 'test';
         serviceSecret: string;
         searchApiKey: string;
     };

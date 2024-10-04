@@ -14,7 +14,7 @@ type UpdateVideoContentParams = {
 };
 
 const proxyConfig =
-    app.config.env === 'localhost'
+    app.config.env === 'localhost' || app.config.env === 'test'
         ? {}
         : {
               proxy: {

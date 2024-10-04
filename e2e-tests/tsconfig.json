@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "target": "es2022",
+        "module": "es2022",
+        "strict": true,
+        "esModuleInterop": true,
+        "moduleResolution": "node",
+        "noEmit": true,
+        "baseUrl": "./tests",
+        "types": ["@types/jest"],
+        "paths": {
+            "@test-data/*": ["./.xp-test-data-app/src/main/resources/*"]
+        }
+    },
+    "include": ["tests/**/*.ts", ".xp-test-data-app/src/main/resources/**/*.ts"]
+}

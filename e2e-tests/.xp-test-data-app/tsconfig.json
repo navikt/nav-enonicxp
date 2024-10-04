@@ -1,0 +1,21 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "baseUrl": "./src/main/resources",
+        "paths": {
+            "@constants": ["../../../../../src/main/resources/lib/constants.ts"],
+            "@xp-types/*": ["../../../../../.xp-codegen/*"],
+            "/lib/xp/content": ["../../../../../src/main/resources/types/xp-libs/lib-content"],
+            "/lib/xp/context": ["../../../../../node_modules/@enonic-types/lib-context"],
+            "/lib/xp/node": ["../../../../../src/main/resources/types/xp-libs/lib-node"],
+            "/lib/xp/project": ["../../../../../node_modules/@enonic-types/lib-project"],
+            "/lib/xp/repo": ["../../../../../node_modules/@enonic-types/lib-repo"]
+        }
+    },
+    "include": [
+        "./src/main/resources/**/*.ts",
+        "../../.xp-codegen/**/*.ts",
+        "../../src/main/resources/lib/constants.ts",
+        "../../src/main/resources/types/**/*.ts"
+    ]
+}

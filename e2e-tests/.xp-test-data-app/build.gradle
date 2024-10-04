@@ -1,0 +1,37 @@
+plugins {
+    id 'com.enonic.xp.app' version '3.4.0'
+    id "com.github.node-gradle.node" version '7.0.0'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    xp.enonicRepo()
+}
+
+app {
+    name = project.appName
+    displayName = 'Nav.no e2e test data'
+    systemVersion = "${xpVersion}"
+}
+
+node {
+    version = '22.8.0'
+}
+
+dependencies {
+    implementation "com.enonic.xp:core-api:${xpVersion}"
+    implementation "com.enonic.xp:portal-api:${xpVersion}"
+    include "com.enonic.xp:lib-content:${xpVersion}"
+    include "com.enonic.xp:lib-context:${xpVersion}"
+    include "com.enonic.xp:lib-node:${xpVersion}"
+    include "com.enonic.xp:lib-project:${xpVersion}"
+    include "com.enonic.xp:lib-repo:${xpVersion}"
+}
+
+tasks.register('buildJs', NpmTask) {
+    dependsOn 'npmInstall'
+    args = ['run', 'build']
+}
+
+jar.dependsOn(buildJs)

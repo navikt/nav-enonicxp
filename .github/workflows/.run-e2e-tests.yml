@@ -1,0 +1,39 @@
+name: Run end-to-end tests
+on:
+  workflow_call:
+    inputs:
+      buildArtifact:
+        required: true
+        type: string
+
+jobs:
+  e2e-tests:
+    name: Run end-to-end tests
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Setup node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: e2e-tests/package-lock.json
+      - name: Install node.js dependencies
+        working-directory: e2e-tests
+        run: npm ci
+      - name: Download jar files
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.buildArtifact }}
+      - name: Copy jar files to test image
+        working-directory: e2e-tests
+        run: npm run copy-jars
+      - name: Build test image
+        working-directory: e2e-tests
+        run: npm run build-xp-image
+      - name: Run tests
+        working-directory: e2e-tests
+        run: npm run test

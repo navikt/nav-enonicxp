@@ -3,23 +3,16 @@ on:
   workflow_dispatch
 
 jobs:
-  build:
-    permissions:
-      contents: "read"
-      id-token: "write"
-    uses: ./.github/workflows/build-deploy-image.yml
-    secrets:
-      NAIS_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
-    with:
-      imagename: 'q6-deploy'
-      xpVersion: '7.14.4'
   deploy:
-    uses: ./.github/workflows/deploy-with-naisjob.yml
-    needs: build
+    name: Deploy to dev2/q6
+    uses: ./.github/workflows/.build-and-deploy.yml
+    permissions:
+      contents: read
+      id-token: write
     with:
       naisCluster: dev-gcp
       xpAdminHost: portal-admin-q6.oera.no
       xpEnv: q6
-      image: ${{ needs.build.outputs.image }}
+      xpVersion: '7.14.4'
     secrets:
-      NAIS_DEPLOY_APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+      NAIS_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
