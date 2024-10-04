@@ -26,6 +26,7 @@ const frontendEditorAdminOrigins: EnvRecord = {
     dev: 'https://www.ekstern.dev.nav.no/person/dashboard',
     q6: 'https://www-2.ekstern.dev.nav.no/person/dashboard',
     localhost: 'http://localhost:3010/person/dashboard',
+    test: 'http://localhost:3010',
 } as const;
 
 const revalidatorProxyOrigins: EnvRecord = {
