@@ -5,10 +5,12 @@ import { getPublicPath } from '../../../paths/public-path';
 import { getLocaleFromContext } from '../../../localization/locale-context';
 import { logger } from '../../../utils/logging';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
+import { stripPathPrefix } from '../../../paths/path-utils';
 
-type Links = {
+type Link = {
     contentId: string;
     linkRef: string;
+    uri: string;
 };
 
 const macroTagName = 'editor-macro';
@@ -17,7 +19,7 @@ const linebreakFilter = new RegExp(/(\r\n|\n|\r|\s)/g);
 
 const macroTagFilter = new RegExp(`<${macroTagName}[^>]*>(.*?)</${macroTagName}>`, 'g');
 
-const resolvePublicPathsInLinks = (processedHtml: string, links?: Links[]) => {
+const resolvePublicPathsInLinks = (processedHtml: string, links?: Link[]) => {
     if (!links || links.length === 0) {
         return processedHtml;
     }
@@ -26,8 +28,8 @@ const resolvePublicPathsInLinks = (processedHtml: string, links?: Links[]) => {
     const baseContentId = getGuillotineContentQueryBaseContentId();
 
     return links.reduce((html, link) => {
-        const { contentId, linkRef } = link;
-        if (!contentId || !linkRef) {
+        const { contentId } = link;
+        if (!contentId) {
             return html;
         }
 
@@ -40,15 +42,10 @@ const resolvePublicPathsInLinks = (processedHtml: string, links?: Links[]) => {
             return html;
         }
 
+        const internalPath = stripPathPrefix(targetContent._path);
         const publicPath = getPublicPath(targetContent, localeFromContext);
 
-        return html.replace(
-            new RegExp(`<a href="([^"]*)" data-link-ref="${linkRef}"`, 'g'),
-            (_, hrefCapture) => {
-                const anchorId = hrefCapture.split('#')[1];
-                return `<a href="${publicPath}${anchorId ? `#${anchorId}` : ''}"`;
-            }
-        );
+        return html.replace(new RegExp(`href="${internalPath}`, 'g'), `href="${publicPath}`);
     }, processedHtml);
 };
 
