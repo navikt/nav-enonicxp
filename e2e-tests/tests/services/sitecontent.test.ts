@@ -89,4 +89,18 @@ describe('sitecontent service (serves content for the frontend)', () => {
         expect(response.type).toBe('no.nav.navno:internal-link');
         expect(response.data.target._path).toBe('/my-custompath');
     });
+
+    test('Should not redirect to customPath on draft UUID request', async () => {
+        const masterResponse = await fetchFromSitecontent({
+            params: { id: '/www.nav.no/my-custompath' },
+            withSecret: true,
+        }).then((res) => res.json());
+
+        const draftResponseNoCustomPath = await fetchFromSitecontent({
+            params: { id: masterResponse._id, branch: 'draft' },
+            withSecret: true,
+        }).then((res) => res.json());
+
+        expect(draftResponseNoCustomPath.displayName).toBe('Content with customPath');
+    });
 });

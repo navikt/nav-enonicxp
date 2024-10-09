@@ -1,4 +1,5 @@
 import * as contentLib from '/lib/xp/content';
+import * as contextLib from '/lib/xp/context';
 import { CreateContentParams, Schedule } from '/lib/xp/content';
 import { createOrReplace } from '../utils/content';
 import { APP_DESCRIPTOR } from '@constants';
@@ -14,6 +15,7 @@ export type ContentWithChildren = {
     contentParams: CreateParamsWithoutParent<any>;
     nopublish?: boolean;
     scheduledPublished?: Schedule;
+    localizedContentParams?: ContentWithChildren[];
     children?: ContentWithChildren[];
 };
 
@@ -41,6 +43,16 @@ export const publishedContentParams: ContentWithChildren[] = [
                         nosnippet: false,
                     } satisfies DynamicPage,
                 },
+                localizedContentParams: [
+                    {
+                        contentParams: {
+                            displayName: 'Published content in english!',
+                            contentType: 'no.nav.navno:dynamic-page',
+                            language: 'en',
+                            data: {},
+                        },
+                    },
+                ],
             },
             {
                 contentParams: {
@@ -96,10 +108,36 @@ export const publishedContentParams: ContentWithChildren[] = [
 ];
 
 const createContentWithChildren = (
-    { contentParams, children, nopublish, scheduledPublished }: ContentWithChildren,
+    {
+        contentParams,
+        children,
+        nopublish,
+        scheduledPublished,
+        localizedContentParams,
+    }: ContentWithChildren,
     parentPath: string
 ) => {
     const content = createOrReplace({ ...contentParams, parentPath });
+
+    if (localizedContentParams) {
+        localizedContentParams.forEach((params) => {
+            contextLib.run({ repository: 'navno-engelsk' }, () => {
+                contentLib.modify({
+                    key: content._id,
+                    editor: (rootContent) => {
+                        return {
+                            ...rootContent,
+                            ...params.contentParams,
+                        };
+                    },
+                });
+
+                if (!params.nopublish) {
+                    contentLib.publish({ keys: [content._id], schedule: scheduledPublished });
+                }
+            });
+        });
+    }
 
     if (!nopublish) {
         contentLib.publish({ keys: [content._id], schedule: scheduledPublished });
