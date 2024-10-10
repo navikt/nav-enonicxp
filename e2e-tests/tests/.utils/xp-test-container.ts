@@ -2,7 +2,7 @@ import { GenericContainer, StartedTestContainer, Wait } from 'testcontainers';
 
 let container: StartedTestContainer;
 
-export const startXpTestContainer = async () => {
+export const startXpTestContainer = async (withLogs?: boolean) => {
     if (container) {
         return container;
     }
@@ -16,13 +16,15 @@ export const startXpTestContainer = async () => {
         .withStartupTimeout(90000)
         .start();
 
+    const logs = await container.logs();
+
     const containerLogger = (chunk: any) => {
         console.log(`[XP test container] ${chunk.toString()}`);
     };
 
-    const logs = await container.logs();
-
-    logs.on('data', containerLogger);
+    if (withLogs) {
+        logs.on('data', containerLogger);
+    }
 
     console.log('Installing test data...');
 
