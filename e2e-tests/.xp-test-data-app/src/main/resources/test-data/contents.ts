@@ -1,10 +1,11 @@
 import * as contentLib from '/lib/xp/content';
 import * as contextLib from '/lib/xp/context';
-import { CreateContentParams, Schedule } from '/lib/xp/content';
+import { Content, CreateContentParams, Schedule } from '/lib/xp/content';
 import { createOrReplace } from '../utils/content';
 import { APP_DESCRIPTOR } from '@constants';
 import { ContentDescriptor } from '@navno-types/content-types/content-config';
 import { DynamicPage, MainArticle } from '@xp-types/site/content-types';
+import { languageToLayer } from './layers';
 
 type CreateParamsWithoutParent<Type extends ContentDescriptor> = Omit<
     CreateContentParams<Type>,
@@ -15,7 +16,7 @@ export type ContentWithChildren = {
     contentParams: CreateParamsWithoutParent<any>;
     nopublish?: boolean;
     scheduledPublished?: Schedule;
-    localizedContentParams?: ContentWithChildren[];
+    localizedContents?: Partial<Content<any>>[];
     children?: ContentWithChildren[];
 };
 
@@ -43,14 +44,11 @@ export const publishedContentParams: ContentWithChildren[] = [
                         nosnippet: false,
                     } satisfies DynamicPage,
                 },
-                localizedContentParams: [
+                localizedContents: [
                     {
-                        contentParams: {
-                            displayName: 'Published content in english!',
-                            contentType: 'no.nav.navno:dynamic-page',
-                            language: 'en',
-                            data: {},
-                        },
+                        displayName: 'Published content in english!',
+                        language: 'en',
+                        data: {},
                     },
                 ],
             },
@@ -113,35 +111,41 @@ const createContentWithChildren = (
         children,
         nopublish,
         scheduledPublished,
-        localizedContentParams,
+        localizedContents,
     }: ContentWithChildren,
     parentPath: string
 ) => {
     const content = createOrReplace({ ...contentParams, parentPath });
 
-    if (localizedContentParams) {
-        localizedContentParams.forEach((params) => {
-            contextLib.run({ repository: 'navno-engelsk' }, () => {
-                contentLib.modify({
-                    key: content._id,
-                    editor: (rootContent) => {
-                        return {
-                            ...rootContent,
-                            ...params.contentParams,
-                        };
-                    },
-                });
-
-                if (!params.nopublish) {
-                    contentLib.publish({ keys: [content._id], schedule: scheduledPublished });
-                }
-            });
-        });
-    }
-
     if (!nopublish) {
         contentLib.publish({ keys: [content._id], schedule: scheduledPublished });
     }
+
+    localizedContents?.forEach((localizedContent) => {
+        const layer = languageToLayer[localizedContent.language as string];
+        if (!layer) {
+            return;
+        }
+
+        contextLib.run({ repository: `com.enonic.cms.${layer.id}` }, () => {
+            contentLib.modify({
+                key: content._id,
+                editor: (rootContent) => {
+                    return {
+                        ...rootContent,
+                        ...localizedContent,
+                        inherit: [],
+                    };
+                },
+            });
+
+            if (!nopublish) {
+                contentLib.publish({
+                    keys: [content._id],
+                });
+            }
+        });
+    });
 
     if (children) {
         children.forEach((child) => createContentWithChildren(child, content._path));

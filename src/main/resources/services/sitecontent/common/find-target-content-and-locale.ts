@@ -152,6 +152,8 @@ const getContentFromLocaleLayer = (path: string, locale: string, branch: RepoBra
         contentLib.query(getPathQueryParams(path))
     );
 
+    logger.info(`Hits for ${path} in ${locale}: ${JSON.stringify(hits)}`);
+
     if (hits.length === 0) {
         return null;
     }

@@ -32,7 +32,7 @@ const norgOfficeOverviewApiUrl: EnvRecord = {
     dev: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
     q6: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
     localhost: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
-    test: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
+    test: '', // 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
 } as const;
 
 const norgOfficeInformationApiUrl: EnvRecord = {
@@ -40,7 +40,7 @@ const norgOfficeInformationApiUrl: EnvRecord = {
     dev: 'https://norg2.intern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
     q6: 'https://norg2.intern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
     localhost: 'https://norg2.intern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
-    test: 'https://norg2.intern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
+    test: '', // 'https://norg2.intern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
 } as const;
 
 const norgLegacyOfficeInformationApiUrl: EnvRecord = {
@@ -49,7 +49,7 @@ const norgLegacyOfficeInformationApiUrl: EnvRecord = {
     q6: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
     localhost:
         'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
-    test: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
+    test: '', // 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
 } as const;
 
 const norgLocalOfficeApiUrl: EnvRecord = {
@@ -57,7 +57,7 @@ const norgLocalOfficeApiUrl: EnvRecord = {
     dev: 'https://norg2.intern.dev.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
     q6: 'https://norg2.intern.dev.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
     localhost: 'https://norg2.intern.dev.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
-    test: 'https://norg2.intern.dev.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
+    test: '', //https://norg2.intern.dev.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
 } as const;
 
 const xpOrigins: EnvRecord = {

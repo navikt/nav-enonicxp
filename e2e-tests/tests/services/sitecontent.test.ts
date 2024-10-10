@@ -103,4 +103,14 @@ describe('sitecontent service (serves content for the frontend)', () => {
 
         expect(draftResponseNoCustomPath.displayName).toBe('Content with customPath');
     });
+
+    test('Should get content from the english layer with /en path suffix', async () => {
+        const response = await fetchFromSitecontent({
+            params: { id: '/www.nav.no/published-content/en' },
+            withSecret: true,
+        }).then((res) => res.json());
+
+        expect(response.displayName).toBe('Published content in english!');
+        expect(response.language).toBe('en');
+    });
 });

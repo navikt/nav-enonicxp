@@ -10,34 +10,35 @@ import {
 import { runAsAdmin } from '../utils/context';
 import { PublishContentParams } from '/lib/xp/content';
 
-const layersParams: CreateProjectParams<Record<string, unknown>>[] = [
-    {
+export const languageToLayer: Record<string, CreateProjectParams<Record<string, unknown>>> = {
+    en: {
         id: 'navno-engelsk',
         displayName: 'nav.no engelsk',
-        language: 'en',
         readAccess: {
             public: false,
         },
     },
-    {
+    nn: {
         id: 'navno-nynorsk',
         displayName: 'nav.no nynorsk',
-        language: 'nn',
         readAccess: {
             public: false,
         },
     },
-];
+};
 
 export const initLayers = () => {
-    layersParams.forEach((params) => {
-        if (projectLib.get({ id: params.id })) {
-            log.info(`Project ${params.id} already exists, skipping`);
+    Object.keys(languageToLayer).forEach((language) => {
+        const layer = languageToLayer[language];
+
+        if (projectLib.get({ id: layer.id })) {
+            log.info(`Project ${layer.id} already exists, skipping`);
             return;
         }
 
         projectLib.create({
-            ...params,
+            ...layer,
+            language,
             parent: CONTENT_ROOT_PROJECT_ID,
             siteConfig: [{ applicationKey: APP_DESCRIPTOR }],
             permissions: {
@@ -56,7 +57,8 @@ export const publishToAllLayers = (params: PublishContentParams) => {
 
     contentLib.publish(params);
 
-    layersParams.forEach((layer) => {
+    Object.keys(languageToLayer).forEach((language) => {
+        const layer = languageToLayer[language];
         runAsAdmin(
             () => {
                 keys.forEach((key) => {
