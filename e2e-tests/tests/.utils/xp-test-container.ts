@@ -4,7 +4,6 @@ let container: StartedTestContainer;
 
 export const startXpTestContainer = async () => {
     if (container) {
-        console.log('XP container already running');
         return container;
     }
 
@@ -17,8 +16,6 @@ export const startXpTestContainer = async () => {
         .withStartupTimeout(90000)
         .start();
 
-    const logs = await container.logs();
-
     console.log('Installing test data...');
 
     await container.exec('app.sh add file:///enonic-xp/home/navno-testdata.jar').then((result) => {
@@ -27,30 +24,35 @@ export const startXpTestContainer = async () => {
         if (result.exitCode !== 0) {
             throw Error('Failed to install test data!');
         }
-
-        return new Promise<void>((resolve, reject) => {
-            const timeout = setTimeout(reject, 10000);
-
-            const logWatcher = (chunk: any) => {
-                if (chunk.toString().includes('Finished generating test data')) {
-                    console.log('Finished loading test data!');
-                    clearTimeout(timeout);
-                    logs.off('data', logWatcher);
-                    resolve();
-                }
-            };
-
-            logs.on('data', logWatcher);
-        });
     });
+
+    await awaitContainerLogEntry('Finished generating test data', 10000);
 
     console.log('XP container is ready!');
 
     return container;
 };
 
-export const stopXpTestContainer = async () => {
-    return startXpTestContainer().then((container) => container.stop());
+const awaitContainerLogEntry = async (msg: string, timeoutMs: number) => {
+    const logs = await container.logs();
+
+    return new Promise<void>((resolve, reject) => {
+        const timeout = setTimeout(reject, timeoutMs);
+
+        const logWatcher = (chunk: any) => {
+            if (chunk.toString().includes(msg)) {
+                clearTimeout(timeout);
+                logs.off('data', logWatcher);
+                resolve();
+            }
+        };
+
+        logs.on('data', logWatcher);
+    });
+};
+
+export const stopXpTestContainer = () => {
+    return container.stop();
 };
 
 export const buildXpUrl = (path: string) => {
