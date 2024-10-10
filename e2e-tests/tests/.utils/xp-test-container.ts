@@ -2,7 +2,7 @@ import { GenericContainer, StartedTestContainer, Wait } from 'testcontainers';
 
 let container: StartedTestContainer;
 
-export const startXpTestContainer = async (withLogs?: boolean) => {
+export const startXpTestContainer = async () => {
     if (container) {
         console.log('XP container already running');
         return container;
@@ -14,17 +14,35 @@ export const startXpTestContainer = async (withLogs?: boolean) => {
         .withReuse()
         .withExposedPorts(8080)
         .withWaitStrategy(Wait.forLogMessage(/.*Finished running main.*/, 1))
+        .withStartupTimeout(90000)
         .start();
 
-    if (withLogs) {
-        (await container.logs()).on('data', (chunk) => {
-            console.log(`[XP container] ${chunk.toString()}`);
-        });
-    }
+    const logs = await container.logs();
 
     console.log('Installing test data...');
 
-    await container.exec('app.sh add file:///enonic-xp/home/navno-testdata.jar');
+    await container.exec('app.sh add file:///enonic-xp/home/navno-testdata.jar').then((result) => {
+        console.log(`Install test data result: ${result.output} (exit code ${result.exitCode})`);
+
+        if (result.exitCode !== 0) {
+            throw Error('Failed to install test data!');
+        }
+
+        return new Promise<void>((resolve, reject) => {
+            const timeout = setTimeout(reject, 10000);
+
+            const logWatcher = (chunk: any) => {
+                if (chunk.toString().includes('Finished generating test data')) {
+                    console.log('Finished loading test data!');
+                    clearTimeout(timeout);
+                    logs.off('data', logWatcher);
+                    resolve();
+                }
+            };
+
+            logs.on('data', logWatcher);
+        });
+    });
 
     console.log('XP container is ready!');
 
