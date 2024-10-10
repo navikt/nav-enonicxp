@@ -12,40 +12,45 @@ export const startXpTestContainer = async () => {
     container = await new GenericContainer('navno_tests')
         .withReuse()
         .withExposedPorts(8080)
-        .withWaitStrategy(Wait.forLogMessage(/.*Finished running main.*/, 1))
-        .withStartupTimeout(75000)
+        .withWaitStrategy(
+            Wait.forAll([
+                Wait.forLogMessage(/.*Finished running main.*/, 1),
+                Wait.forLogMessage(/.*Finished generating test data.*/, 1),
+            ])
+        )
+        .withStartupTimeout(90000)
         .start();
 
-    const containerLogger = (chunk: any) => {
-        console.log(`[XP test container] ${chunk.toString()}`);
-    };
-
-    const logs = await container.logs();
-
-    logs.on('data', containerLogger);
-
-    console.log('Installing test data...');
-
-    const installTestData = container
-        .exec('app.sh add file:///enonic-xp/home/navno-testdata.jar --force')
-        .then((result) => {
-            console.log(`Install test data result: ${result.output}`);
-
-            if (result.exitCode !== 0) {
-                throw Error(`Failed to install test data - exit code ${result.exitCode}`);
-            }
-        });
-
-    const finishGeneratingTestData = waitForContainerLogEntry(
-        'Finished generating test data',
-        30000
-    );
-
-    await Promise.all([installTestData, finishGeneratingTestData]);
+    // const containerLogger = (chunk: any) => {
+    //     console.log(`[XP test container] ${chunk.toString()}`);
+    // };
+    //
+    // const logs = await container.logs();
+    //
+    // logs.on('data', containerLogger);
+    //
+    // console.log('Installing test data...');
+    //
+    // const installTestData = container
+    //     .exec('app.sh add file:///enonic-xp/home/navno-testdata.jar')
+    //     .then((result) => {
+    //         console.log(`Install test data result: ${result.output}`);
+    //
+    //         if (result.exitCode !== 0) {
+    //             throw Error(`Failed to install test data - exit code ${result.exitCode}`);
+    //         }
+    //     });
+    //
+    // const finishGeneratingTestData = waitForContainerLogEntry(
+    //     'Finished generating test data',
+    //     30000
+    // );
+    //
+    // await Promise.all([installTestData, finishGeneratingTestData]);
 
     console.log('XP container is ready!');
 
-    logs.off('data', containerLogger);
+    // logs.off('data', containerLogger);
 
     return container;
 };
