@@ -4,4 +4,4 @@ export type Fotnote = {
    * Teksten i fotnoten
    */
   fotnote: string;
-}
+};

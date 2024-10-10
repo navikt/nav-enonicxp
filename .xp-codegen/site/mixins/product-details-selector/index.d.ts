@@ -14,4 +14,4 @@ export type ProductDetailsSelector = {
    * Satser
    */
   rates?: string;
-}
+};

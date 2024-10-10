@@ -144,4 +144,4 @@ export type FormIntermediateStepData = {
           };
         };
   }>;
-}
+};

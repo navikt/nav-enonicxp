@@ -39,4 +39,4 @@ export type FrontpageShortcuts = {
    * Overstyr farge på hover-effekt på snarveiene
    */
   hoverColor?: string;
-}
+};

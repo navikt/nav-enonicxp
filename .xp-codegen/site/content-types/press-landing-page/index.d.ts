@@ -108,4 +108,4 @@ export type PressLandingPage = {
    * Legg til andre språkversjoner
    */
   languages?: Array<string> | string;
-}
+};

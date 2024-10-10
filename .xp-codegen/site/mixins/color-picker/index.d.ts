@@ -4,4 +4,4 @@ export type ColorPicker = {
    * Velg farge
    */
   color: string;
-}
+};

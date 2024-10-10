@@ -9,4 +9,4 @@ export type RelatedSituations = {
    * Overstyr introduksjon (1-2 linjer)
    */
   description?: string;
-}
+};

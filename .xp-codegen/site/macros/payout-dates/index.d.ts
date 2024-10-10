@@ -4,4 +4,4 @@ export type PayoutDates = {
    * Velg utbetalingsdatoer
    */
   payoutDates: string;
-}
+};

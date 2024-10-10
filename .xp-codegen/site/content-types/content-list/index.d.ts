@@ -4,4 +4,4 @@ export type ContentList = {
    * Velg innhold
    */
   sectionContents?: Array<string> | string;
-}
+};

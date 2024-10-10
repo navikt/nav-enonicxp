@@ -19,4 +19,4 @@ export type GlobalValueWithMath = {
    * (tomt felt, skal ikke brukes)
    */
   variables?: string;
-}
+};

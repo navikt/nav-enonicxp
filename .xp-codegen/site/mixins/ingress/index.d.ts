@@ -4,4 +4,4 @@ export type Ingress = {
    * Ingress
    */
   ingress?: string;
-}
+};

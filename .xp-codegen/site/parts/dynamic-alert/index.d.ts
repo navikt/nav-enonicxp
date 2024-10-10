@@ -29,4 +29,4 @@ export type DynamicAlert = {
    * Velg visning
    */
   renderOnAuthState: "always" | "loggedIn" | "loggedOut";
-}
+};

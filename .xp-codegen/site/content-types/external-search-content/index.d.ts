@@ -24,4 +24,4 @@ export type ExternalSearchContent = {
    * Målgruppe
    */
   audience?: Array<"person" | "employer" | "provider"> | "person" | "employer" | "provider";
-}
+};

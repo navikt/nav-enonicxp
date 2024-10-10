@@ -4,4 +4,4 @@ export type AreapageSituations = {
    * Tittel
    */
   title: string;
-}
+};

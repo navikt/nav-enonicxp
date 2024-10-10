@@ -9,4 +9,4 @@ export type AnimatedIcons = {
      */
     icon?: string;
   }>;
-}
+};

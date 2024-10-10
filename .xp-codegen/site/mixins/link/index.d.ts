@@ -44,4 +44,4 @@ export type Link = {
           text: string;
         };
       };
-}
+};

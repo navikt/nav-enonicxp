@@ -59,4 +59,4 @@ export type DynamicNewsList = {
    * Velg visning
    */
   renderOnAuthState: "always" | "loggedIn" | "loggedOut";
-}
+};

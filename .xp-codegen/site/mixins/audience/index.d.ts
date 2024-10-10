@@ -53,4 +53,4 @@ export type Audience = {
          */
         other: Record<string, unknown>;
       };
-}
+};

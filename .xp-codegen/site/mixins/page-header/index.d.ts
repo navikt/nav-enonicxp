@@ -14,4 +14,4 @@ export type PageHeader = {
    * Norsk tittel (hvis fremmedspråklig innhold)
    */
   norwegianTitle?: string;
-}
+};

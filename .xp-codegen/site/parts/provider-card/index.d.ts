@@ -54,4 +54,4 @@ export type ProviderCard = {
    * Sluttnote / kategorinavn
    */
   endnote?: string;
-}
+};

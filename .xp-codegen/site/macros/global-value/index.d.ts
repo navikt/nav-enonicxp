@@ -14,4 +14,4 @@ export type GlobalValue = {
    * (tomt felt, skal ikke brukes)
    */
   value?: string;
-}
+};

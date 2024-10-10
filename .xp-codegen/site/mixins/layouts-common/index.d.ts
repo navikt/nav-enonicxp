@@ -104,4 +104,4 @@ export type LayoutsCommon = {
    * Velg visning
    */
   renderOnAuthState: "always" | "loggedIn" | "loggedOut";
-}
+};

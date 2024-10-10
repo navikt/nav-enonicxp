@@ -24,4 +24,4 @@ export type FormDetails = {
    * Vis inngang til ettersendelse
    */
   showAddendums: boolean;
-}
+};

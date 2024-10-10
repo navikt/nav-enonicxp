@@ -34,4 +34,4 @@ export type ProductDetails = {
    * Velg visning
    */
   renderOnAuthState: "always" | "loggedIn" | "loggedOut";
-}
+};

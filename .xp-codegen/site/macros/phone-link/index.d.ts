@@ -14,4 +14,4 @@ export type PhoneLink = {
    * Lenke med chevron
    */
   chevron: boolean;
-}
+};

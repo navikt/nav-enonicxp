@@ -9,4 +9,4 @@ export type OpeningHour = {
    * Til klokken
    */
   to?: string;
-}
+};

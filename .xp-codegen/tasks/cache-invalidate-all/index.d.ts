@@ -9,4 +9,4 @@ export type CacheInvalidateAll = {
    * Event id
    */
   eventId: string;
-}
+};

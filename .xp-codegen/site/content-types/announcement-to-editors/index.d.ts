@@ -4,4 +4,4 @@ export type AnnouncementToEditors = {
    * Brødtekst
    */
   text: string;
-}
+};

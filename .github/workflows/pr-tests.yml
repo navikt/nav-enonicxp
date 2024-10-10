@@ -13,7 +13,7 @@ jobs:
     with:
       environment: pr
       # Should use the current prod version
-      xpVersion: "7.14.2"
+      xpVersion: "7.14.4"
 
   e2e-tests:
     name: Run e2e tests

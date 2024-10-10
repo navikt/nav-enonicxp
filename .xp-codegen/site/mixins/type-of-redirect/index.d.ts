@@ -4,4 +4,4 @@ export type TypeOfRedirect = {
    * Permanent redirect (innhold flyttet til ny url)
    */
   permanentRedirect: boolean;
-}
+};
