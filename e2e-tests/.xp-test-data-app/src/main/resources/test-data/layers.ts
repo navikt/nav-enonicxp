@@ -6,6 +6,7 @@ import {
     CONTENT_REPO_PREFIX,
     CONTENT_ROOT_PROJECT_ID,
     SUPER_USER_PRINCIPAL,
+    SYSTEM_USER_PRINCIPAL,
 } from '@constants';
 import { runAsAdmin } from '../utils/context';
 import { PublishContentParams } from '/lib/xp/content';
@@ -44,7 +45,7 @@ export const initLayers = () => {
             permissions: {
                 owner: [SUPER_USER_PRINCIPAL],
                 author: [],
-                editor: [],
+                editor: [SYSTEM_USER_PRINCIPAL],
                 contributor: [],
                 viewer: [],
             },

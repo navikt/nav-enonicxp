@@ -112,8 +112,9 @@ export const SITECONTENT_404_MSG_PREFIX = 'Site path not found';
 
 export const SYSTEM_ID_PROVIDER = 'system';
 export const SYSTEM_USER = 'system-user';
+export const SYSTEM_USER_PRINCIPAL = `user:${SYSTEM_ID_PROVIDER}:${SYSTEM_USER}`;
 export const SUPER_USER = 'su';
-export const SUPER_USER_PRINCIPAL = `user:system:${SUPER_USER}`;
+export const SUPER_USER_PRINCIPAL = `user:${SYSTEM_ID_PROVIDER}:${SUPER_USER}`;
 
 export const LAYERS_ID_PROVIDER = 'layers';
 export const LAYERS_ANON_USER = 'layers-viewer';

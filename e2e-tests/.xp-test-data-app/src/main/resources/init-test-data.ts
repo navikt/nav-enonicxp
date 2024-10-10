@@ -3,6 +3,7 @@ import { initLayers } from './test-data/layers';
 import { initRootProject } from './test-data/root-project';
 import { runAsAdmin } from './utils/context';
 import { initContents } from './test-data/contents';
+import { initSystemUsers } from './test-data/users';
 
 export const initTestData = () =>
     runAsAdmin(() => {
@@ -11,6 +12,7 @@ export const initTestData = () =>
             return;
         }
 
+        initSystemUsers();
         initRootProject();
         initLayers();
         initContents();

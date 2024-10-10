@@ -6,6 +6,7 @@
             "@constants": ["../../../../../src/main/resources/lib/constants.ts"],
             "@navno-types/*": ["../../../../../src/main/resources/types/*"],
             "@xp-types/*": ["../../../../../.xp-codegen/*"],
+            "/lib/xp/auth": ["../../../../../node_modules/@enonic-types/lib-auth"],
             "/lib/xp/content": ["../../../../../src/main/resources/types/xp-libs/lib-content"],
             "/lib/xp/context": ["../../../../../node_modules/@enonic-types/lib-context"],
             "/lib/xp/node": ["../../../../../src/main/resources/types/xp-libs/lib-node"],
