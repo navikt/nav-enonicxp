@@ -1,5 +1,4 @@
 import { getLayersData, isValidLocale } from '../localization/layers-data';
-import { logger } from '../utils/logging';
 
 type PathAndLocale = {
     basePath: string;
@@ -11,10 +10,6 @@ export const resolveLocalePathToBasePath = (localePath: string): PathAndLocale |
 
     const pathSegments = localePath.split('/');
     const possibleLocale = pathSegments.pop();
-
-    logger.info(
-        `Locale path: ${localePath} - Possible locale ${possibleLocale} - Is valid ${isValidLocale(possibleLocale)}`
-    );
 
     // The default locale should not be an allowed suffix. For this locale we only want to resolve
     // requests for the actual path, with no locale-suffix.
