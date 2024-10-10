@@ -4,4 +4,4 @@ export type AlternativeAudience = {
    * Vis produktnavn
    */
   showProductName: boolean;
-}
+};

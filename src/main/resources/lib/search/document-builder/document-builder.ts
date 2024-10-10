@@ -131,7 +131,7 @@ class ExternalSearchDocumentBuilder {
             }
         }
 
-        return null;
+        return undefined;
     }
 
     private getFieldKeys(metaKey: MetaKey) {

@@ -4,4 +4,4 @@ export type Tankestrek = {
    * (tomt felt, skal ikke brukes)
    */
   dummy?: string;
-}
+};

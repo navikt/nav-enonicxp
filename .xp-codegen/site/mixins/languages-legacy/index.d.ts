@@ -4,4 +4,4 @@ export type LanguagesLegacy = {
    * Legg til andre språkversjoner
    */
   languages?: Array<string> | string;
-}
+};

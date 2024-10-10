@@ -19,4 +19,4 @@ export type ProductFlexCols = {
    * Toggle "kopier lenke" knapp
    */
   toggleCopyButton: boolean;
-}
+};

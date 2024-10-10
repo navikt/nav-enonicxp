@@ -9,4 +9,4 @@ export type ChevronLinkExternal = {
    * Lenketekst
    */
   text: string;
-}
+};

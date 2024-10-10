@@ -4,4 +4,4 @@ export type HtmlFragment = {
    * Velg fragment
    */
   fragmentId: string;
-}
+};

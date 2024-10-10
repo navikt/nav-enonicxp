@@ -44,4 +44,4 @@ export type FiltersMenu = {
    * Anker-id på utvidbart panel
    */
   expandableAnchorId?: string;
-}
+};

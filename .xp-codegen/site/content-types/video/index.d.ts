@@ -29,4 +29,4 @@ export type Video = {
    * Tilgjengelige språk (undertekster)
    */
   subtitles?: Array<string> | string;
-}
+};

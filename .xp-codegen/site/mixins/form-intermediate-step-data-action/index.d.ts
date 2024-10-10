@@ -14,4 +14,4 @@ export type FormIntermediateStepDataAction = {
    * Informasjon om språk
    */
   languageDisclaimer?: string;
-}
+};

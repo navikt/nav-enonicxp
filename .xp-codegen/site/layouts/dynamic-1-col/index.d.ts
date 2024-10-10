@@ -104,4 +104,4 @@ export type Dynamic1Col = {
    * Velg visning
    */
   renderOnAuthState: "always" | "loggedIn" | "loggedOut";
-}
+};

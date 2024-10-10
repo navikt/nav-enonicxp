@@ -9,4 +9,4 @@ export type UserTests = {
    * Skriv inn variant-id'er dersom kun enkelte varianter skal kunne vises
    */
   selectedTestIds?: Array<string> | string;
-}
+};

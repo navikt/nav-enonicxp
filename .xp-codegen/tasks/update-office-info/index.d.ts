@@ -4,4 +4,4 @@ export type UpdateOfficeInfo = {
    * Retry if update failed
    */
   retry: boolean;
-}
+};

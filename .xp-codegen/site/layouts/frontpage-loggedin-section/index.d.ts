@@ -54,4 +54,4 @@ export type FrontpageLoggedinSection = {
           };
         };
   };
-}
+};

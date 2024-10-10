@@ -4,4 +4,4 @@ export type ProductCardMini = {
    * Velg side
    */
   targetPage: string;
-}
+};

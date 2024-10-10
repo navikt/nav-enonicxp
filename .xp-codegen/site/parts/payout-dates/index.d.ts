@@ -24,4 +24,4 @@ export type PayoutDates = {
    * Velg visning
    */
   renderOnAuthState: "always" | "loggedIn" | "loggedOut";
-}
+};

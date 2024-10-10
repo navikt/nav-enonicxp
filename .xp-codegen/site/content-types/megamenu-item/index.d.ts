@@ -14,4 +14,4 @@ export type MegamenuItem = {
    * Ekspander underelementer
    */
   flatten: boolean;
-}
+};

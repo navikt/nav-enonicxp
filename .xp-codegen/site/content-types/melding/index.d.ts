@@ -24,4 +24,4 @@ export type Melding = {
      */
     urls: Array<string> | string;
   };
-}
+};

@@ -34,4 +34,4 @@ export type LinkPanels = {
       ref?: string;
     };
   }>;
-}
+};

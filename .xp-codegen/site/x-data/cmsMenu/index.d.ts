@@ -9,4 +9,4 @@ export type CmsMenu = {
    * Menu item related content
    */
   content?: string;
-}
+};

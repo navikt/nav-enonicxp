@@ -4,4 +4,4 @@ export type SearchOrder = {
    * Sett en egenvalgt sorteringsrekkefølge for dette innholdet i søkeresultater (lavere tall rangeres høyere i resultatlista). Dette gjelder kun når ingen søkeord er skrevet inn.
    */
   searchOrder?: number;
-}
+};

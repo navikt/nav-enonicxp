@@ -390,4 +390,4 @@ export type OfficePage = {
    * Ikke vis "tilfeldige" utdrag (snippets) i Google-søk
    */
   nosnippet: boolean;
-}
+};

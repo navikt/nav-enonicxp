@@ -74,4 +74,4 @@ export type TransportPage = {
    * Nøkkelord (internt søk)
    */
   keywords?: Array<string> | string;
-}
+};

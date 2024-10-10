@@ -4,4 +4,4 @@ export type TwoColsPage = {
    * Vis
    */
   sideColToggle: boolean;
-}
+};

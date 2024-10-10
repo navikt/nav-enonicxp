@@ -44,4 +44,4 @@ export type FrontpageContact = {
    * Lenke til kontakt-oss side
    */
   contactUsLink: string;
-}
+};

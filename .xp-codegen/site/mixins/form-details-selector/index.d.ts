@@ -4,4 +4,4 @@ export type FormDetailsSelector = {
    * Velg alle detaljer som skal brukes på denne siden
    */
   formDetailsTargets?: Array<string> | string;
-}
+};

@@ -9,4 +9,4 @@ export type LenkeFiler = {
    * Legg ved filer
    */
   files: Array<string> | string;
-}
+};

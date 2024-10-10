@@ -4,4 +4,4 @@ export type ProductDetails = {
    * Type produktdetaljer
    */
   detailType: "rates" | "payout_dates" | "processing_times";
-}
+};

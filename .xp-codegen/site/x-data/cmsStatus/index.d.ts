@@ -4,4 +4,4 @@ export type CmsStatus = {
    * Status
    */
   status?: "draft" | "snapshot" | "approved" | "archived";
-}
+};

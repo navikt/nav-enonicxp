@@ -54,4 +54,4 @@ export type SearchConfigV2 = {
       textKey?: Array<string> | string;
     };
   }>;
-}
+};

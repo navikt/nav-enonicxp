@@ -165,4 +165,4 @@ export type ContactOption = {
    * Velg visning
    */
   renderOnAuthState: "always" | "loggedIn" | "loggedOut";
-}
+};

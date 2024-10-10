@@ -9,4 +9,4 @@ export type ProductCardMicro = {
    * Velg side
    */
   "card-list": Array<string> | string;
-}
+};

@@ -14,4 +14,4 @@ export type ReadMore = {
    * Velg visning
    */
   renderOnAuthState: "always" | "loggedIn" | "loggedOut";
-}
+};

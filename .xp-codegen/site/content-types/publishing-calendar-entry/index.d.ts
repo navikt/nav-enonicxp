@@ -14,4 +14,4 @@ export type PublishingCalendarEntry = {
    * Lenke til relevant innhold
    */
   link?: string;
-}
+};

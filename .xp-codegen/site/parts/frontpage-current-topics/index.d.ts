@@ -64,4 +64,4 @@ export type FrontpageCurrentTopics = {
           text: string;
         };
       };
-}
+};

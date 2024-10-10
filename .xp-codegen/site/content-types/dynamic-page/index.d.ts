@@ -49,4 +49,4 @@ export type DynamicPage = {
    * Skriv inn ønsket kort-url
    */
   customPath?: string;
-}
+};

@@ -9,4 +9,4 @@ export type LinkExternal = {
    * Lenketekst
    */
   text: string;
-}
+};

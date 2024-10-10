@@ -159,4 +159,4 @@ export type FormsOverview = {
    * Skal ikke vises i søk
    */
   noindex: boolean;
-}
+};

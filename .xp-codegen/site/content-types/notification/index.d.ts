@@ -39,4 +39,4 @@ export type Notification = {
    * Ikon-type (deprecated, overstyres dersom ikon er valgt ovenfor)
    */
   type?: "warning" | "info";
-}
+};

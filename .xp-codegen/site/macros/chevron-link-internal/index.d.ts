@@ -9,4 +9,4 @@ export type ChevronLinkInternal = {
    * Lenketekst (hvis tom vil tittel på innholdet vises)
    */
   text?: string;
-}
+};

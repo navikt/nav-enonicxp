@@ -14,4 +14,4 @@ export type PageNavigationMenu = {
      */
     linkText: string;
   }>;
-}
+};

@@ -59,4 +59,4 @@ export type UserTestsConfig = {
      */
     ingress?: string;
   }>;
-}
+};

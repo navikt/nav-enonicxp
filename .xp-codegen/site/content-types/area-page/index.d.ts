@@ -178,4 +178,4 @@ export type AreaPage = {
    * Ikke vis "tilfeldige" utdrag (snippets) i Google-søk
    */
   nosnippet: boolean;
-}
+};

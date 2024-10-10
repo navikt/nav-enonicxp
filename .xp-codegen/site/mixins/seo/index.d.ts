@@ -19,4 +19,4 @@ export type Seo = {
    * Ikke vis "tilfeldige" utdrag (snippets) i Google-søk
    */
   nosnippet: boolean;
-}
+};

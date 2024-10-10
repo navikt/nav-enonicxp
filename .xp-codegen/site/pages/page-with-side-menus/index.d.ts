@@ -24,4 +24,4 @@ export type PageWithSideMenus = {
    * Vis produktnavnet i 'Det finnes også informasjon om...'
    */
   showProductName: boolean;
-}
+};

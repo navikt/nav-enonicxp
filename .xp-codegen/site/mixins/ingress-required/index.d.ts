@@ -4,4 +4,4 @@ export type IngressRequired = {
    * Ingress
    */
   ingress: string;
-}
+};

@@ -29,4 +29,4 @@ export type FormDetails = {
    * Velg filtre
    */
   filters?: Array<string> | string;
-}
+};

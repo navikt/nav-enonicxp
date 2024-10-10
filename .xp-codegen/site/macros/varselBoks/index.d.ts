@@ -4,4 +4,4 @@ export type VarselBoks = {
    * Deprecated - bruk Varselboks
    */
   varselBoks: string;
-}
+};
