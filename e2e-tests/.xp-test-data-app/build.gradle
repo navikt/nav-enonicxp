@@ -32,6 +32,8 @@ dependencies {
 
 tasks.register('buildJs', NpmTask) {
     dependsOn 'npmInstall'
+    dependsOn(processResources)
+
     args = ['run', 'build']
 }
 
