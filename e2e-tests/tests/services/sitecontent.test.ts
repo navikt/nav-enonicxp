@@ -1,10 +1,18 @@
-import { buildServiceFetcher, startXpTestContainer } from '@test-utils/xp-test-container';
+import {
+    buildServiceFetcher,
+    ServiceResponse,
+    startXpTestContainer,
+} from '@test-utils/xp-test-container';
 import { SITECONTENT_404_MSG_PREFIX } from '@navno-app/constants';
 
 await startXpTestContainer();
 
 describe('sitecontent service (serves content for the frontend)', () => {
     const fetchFromSitecontent = buildServiceFetcher('sitecontent');
+    const isSitecontent404 = (response: ServiceResponse) => {
+        expect(response.status).toBe(404);
+        expect(response.body.message).toBe(SITECONTENT_404_MSG_PREFIX);
+    };
 
     test('Should return 404 for non-existing content', async () => {
         const response = await fetchFromSitecontent({
@@ -12,8 +20,7 @@ describe('sitecontent service (serves content for the frontend)', () => {
             withSecret: true,
         });
 
-        expect(response.status).toBe(404);
-        expect(response.body.message).toBe(SITECONTENT_404_MSG_PREFIX);
+        isSitecontent404(response);
     });
 
     test('Should return 401 if no api secret specified', async () => {
@@ -50,7 +57,7 @@ describe('sitecontent service (serves content for the frontend)', () => {
             withSecret: true,
         });
 
-        expect(response.status).toBe(404);
+        isSitecontent404(response);
     });
 
     test('Should return unpublished content for draft request', async () => {
@@ -68,7 +75,7 @@ describe('sitecontent service (serves content for the frontend)', () => {
             withSecret: true,
         });
 
-        expect(response.status).toBe(404);
+        isSitecontent404(response);
     });
 
     test('Should return prepublished content for draft request', async () => {
@@ -129,6 +136,6 @@ describe('sitecontent service (serves content for the frontend)', () => {
             withSecret: true,
         });
 
-        expect(response.status).toBe(404);
+        isSitecontent404(response);
     });
 });

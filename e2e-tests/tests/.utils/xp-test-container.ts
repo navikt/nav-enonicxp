@@ -40,7 +40,7 @@ export const buildXpUrl = (path: string) => {
     return `http://localhost:${port}/${path.replace(/^\//, '')}`;
 };
 
-type ServiceResponse<ResponseType = any> = {
+export type ServiceResponse<ResponseType = any> = {
     status: number;
     body: ResponseType;
 };
