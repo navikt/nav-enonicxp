@@ -1,8 +1,8 @@
-import { initTestData } from './init-test-data';
+// import { initTestData } from './init-test-data';
 
 log.info('Generating test data');
 
-initTestData();
+// initTestData();
 
 log.info('Finished generating test data');
 
