@@ -4,4 +4,4 @@ export type VirtualParent = {
    * Velg innhold for brødsmulesti
    */
   virtualParent?: string;
-}
+};

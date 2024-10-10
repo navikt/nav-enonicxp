@@ -490,4 +490,4 @@ export type ContactInformation = {
               };
         };
       };
-}
+};

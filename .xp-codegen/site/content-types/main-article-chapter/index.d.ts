@@ -4,4 +4,4 @@ export type MainArticleChapter = {
    * Velg artikkel
    */
   article: string;
-}
+};

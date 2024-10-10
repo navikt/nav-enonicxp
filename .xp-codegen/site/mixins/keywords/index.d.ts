@@ -4,4 +4,4 @@ export type Keywords = {
    * Nøkkelord (internt søk)
    */
   keywords?: Array<string> | string;
-}
+};

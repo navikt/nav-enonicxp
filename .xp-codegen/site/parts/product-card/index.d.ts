@@ -9,4 +9,4 @@ export type ProductCard = {
    * Overstyr ingress
    */
   ingressOverride?: string;
-}
+};

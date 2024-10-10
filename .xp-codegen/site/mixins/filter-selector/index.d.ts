@@ -4,4 +4,4 @@ export type FilterSelector = {
    * Velg filtre
    */
   filters?: Array<string> | string;
-}
+};

@@ -4,4 +4,4 @@ export type OldContentType = {
    * Type
    */
   type?: string;
-}
+};

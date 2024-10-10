@@ -4,4 +4,4 @@ export type LargeTable = {
    * Tabell
    */
   text: string;
-}
+};

@@ -9,4 +9,4 @@ export type PageHeader = {
    * Velg visning
    */
   renderOnAuthState: "always" | "loggedIn" | "loggedOut";
-}
+};

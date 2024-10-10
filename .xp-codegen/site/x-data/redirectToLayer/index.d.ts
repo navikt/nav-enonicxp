@@ -4,4 +4,4 @@ export type RedirectToLayer = {
    * Obs: språkversjonen må være lokalisert
    */
   locale?: "no" | "nn" | "en" | "se";
-}
+};

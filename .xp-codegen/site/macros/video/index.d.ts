@@ -19,4 +19,4 @@ export type Video = {
    * (Ikke i bruk)
    */
   video?: string;
-}
+};

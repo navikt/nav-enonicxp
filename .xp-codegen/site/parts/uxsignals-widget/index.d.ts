@@ -4,4 +4,4 @@ export type UxsignalsWidget = {
    * Study ID
    */
   embedCode: string;
-}
+};

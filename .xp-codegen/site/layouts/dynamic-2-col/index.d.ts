@@ -109,4 +109,4 @@ export type Dynamic2Col = {
    * Velg visning
    */
   renderOnAuthState: "always" | "loggedIn" | "loggedOut";
-}
+};

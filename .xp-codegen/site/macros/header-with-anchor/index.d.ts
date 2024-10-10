@@ -19,4 +19,4 @@ export type HeaderWithAnchor = {
    * (Deprecated - Bruk "Tekst" feltet)
    */
   text?: string;
-}
+};

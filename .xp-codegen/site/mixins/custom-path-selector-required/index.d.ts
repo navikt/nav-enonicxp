@@ -4,4 +4,4 @@ export type CustomPathSelectorRequired = {
    * Skriv inn ønsket kort-url
    */
   customPath: string;
-}
+};

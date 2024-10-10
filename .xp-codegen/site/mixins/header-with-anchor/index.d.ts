@@ -19,4 +19,4 @@ export type HeaderWithAnchor = {
    * Toggle "kopier lenke" knapp
    */
   toggleCopyButton: boolean;
-}
+};

@@ -4,4 +4,4 @@ export type Illustration = {
    * Velg piktogram
    */
   illustration: string;
-}
+};

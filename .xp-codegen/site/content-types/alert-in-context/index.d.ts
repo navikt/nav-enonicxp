@@ -30,4 +30,4 @@ export type AlertInContext = {
           targetContent: Array<string> | string;
         };
       };
-}
+};

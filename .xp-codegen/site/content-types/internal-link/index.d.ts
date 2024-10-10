@@ -34,4 +34,4 @@ export type InternalLink = {
    * Nøkkelord (internt søk)
    */
   keywords?: Array<string> | string;
-}
+};

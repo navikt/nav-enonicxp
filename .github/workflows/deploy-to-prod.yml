@@ -15,6 +15,6 @@ jobs:
       naisCluster: prod-gcp
       xpAdminHost: portal-admin.oera.no
       xpEnv: prod
-      xpVersion: '7.14.2'
+      xpVersion: '7.14.4'
     secrets:
       NAIS_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}

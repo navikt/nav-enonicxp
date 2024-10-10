@@ -139,4 +139,4 @@ export type DynamicFlexCols = {
    * Velg visning
    */
   renderOnAuthState: "always" | "loggedIn" | "loggedOut";
-}
+};

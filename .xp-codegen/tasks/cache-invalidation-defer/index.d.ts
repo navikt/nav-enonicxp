@@ -9,4 +9,4 @@ export type CacheInvalidationDefer = {
    * Max defer time
    */
   maxDeferTime?: number;
-}
+};

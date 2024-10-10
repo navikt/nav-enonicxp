@@ -4,4 +4,4 @@ export type Quote = {
    * Sitat
    */
   quote: string;
-}
+};

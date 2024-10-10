@@ -94,4 +94,4 @@ export type PageList = {
    * Nøkkelord (internt søk)
    */
   keywords?: Array<string> | string;
-}
+};

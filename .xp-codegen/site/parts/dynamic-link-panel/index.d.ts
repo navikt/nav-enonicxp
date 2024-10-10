@@ -106,4 +106,4 @@ export type DynamicLinkPanel = {
    * Velg visning
    */
   renderOnAuthState: "always" | "loggedIn" | "loggedOut";
-}
+};

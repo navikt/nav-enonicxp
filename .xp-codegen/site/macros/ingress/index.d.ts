@@ -4,4 +4,4 @@ export type Ingress = {
    * Tekst
    */
   body: string;
-}
+};

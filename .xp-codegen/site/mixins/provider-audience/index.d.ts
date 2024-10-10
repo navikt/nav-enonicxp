@@ -4,4 +4,4 @@ export type ProviderAudience = {
    * Velg underkategorier
    */
   provider_audience: Array<"doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "other"> | "doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "other";
-}
+};

@@ -4,4 +4,4 @@ export type FragmentCreator = {
    * Velg type fragment og lagre
    */
   type: "part" | "layout";
-}
+};

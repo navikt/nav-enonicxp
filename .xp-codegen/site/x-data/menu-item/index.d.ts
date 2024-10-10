@@ -14,4 +14,4 @@ export type MenuItem = {
    * Open in new window?
    */
   newWindow: boolean;
-}
+};

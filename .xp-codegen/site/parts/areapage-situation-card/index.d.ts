@@ -9,4 +9,4 @@ export type AreapageSituationCard = {
    * Skjul denne situasjonen
    */
   disabled: boolean;
-}
+};

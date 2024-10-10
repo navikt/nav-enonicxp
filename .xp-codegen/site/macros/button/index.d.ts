@@ -14,4 +14,4 @@ export type Button = {
    * Innhold
    */
   content?: string;
-}
+};

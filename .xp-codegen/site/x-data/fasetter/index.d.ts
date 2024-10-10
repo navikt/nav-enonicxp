@@ -14,4 +14,4 @@ export type Fasetter = {
    * (tomt felt, skal ikke brukes)
    */
   className?: string;
-}
+};

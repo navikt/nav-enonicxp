@@ -344,4 +344,4 @@ export type OfficeInformation = {
       }>;
     }>;
   };
-}
+};

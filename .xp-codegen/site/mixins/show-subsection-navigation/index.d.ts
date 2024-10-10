@@ -4,4 +4,4 @@ export type ShowSubsectionNavigation = {
    * Vis kapittelnavigasjon i hver innholdsseksjon
    */
   showSubsectionNavigation: boolean;
-}
+};

@@ -9,4 +9,4 @@ export type ChatbotLink = {
    * Vis lenken som
    */
   presentation: "link" | "button";
-}
+};

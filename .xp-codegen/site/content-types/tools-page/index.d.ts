@@ -113,4 +113,4 @@ export type ToolsPage = {
    * Legg til andre språkversjoner
    */
   languages?: Array<string> | string;
-}
+};
