@@ -26,21 +26,26 @@ export const startXpTestContainer = async () => {
         }
     });
 
-    await awaitContainerLogEntry('Finished generating test data', 10000);
+    await waitForContainerLogEntry('Finished generating test data', 10000);
 
     console.log('XP container is ready!');
 
     return container;
 };
 
-const awaitContainerLogEntry = async (msg: string, timeoutMs: number) => {
+const waitForContainerLogEntry = async (msg: string, timeoutMs: number) => {
     const logs = await container.logs();
 
     return new Promise<void>((resolve, reject) => {
-        const timeout = setTimeout(reject, timeoutMs);
+        const timeout = setTimeout(() => {
+            console.error(`Timed out after ${timeoutMs} ms waiting for log entry "${msg}"`);
+            reject();
+        }, timeoutMs);
 
         const logWatcher = (chunk: any) => {
-            if (chunk.toString().includes(msg)) {
+            const logMsg = chunk.toString();
+            if (logMsg.includes(msg)) {
+                console.log(`Log entry ${msg} found in ${logMsg}!`);
                 clearTimeout(timeout);
                 logs.off('data', logWatcher);
                 resolve();
