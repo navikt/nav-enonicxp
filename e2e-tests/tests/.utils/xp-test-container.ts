@@ -13,20 +13,27 @@ export const startXpTestContainer = async () => {
         .withReuse()
         .withExposedPorts(8080)
         .withWaitStrategy(Wait.forLogMessage(/.*Finished running main.*/, 1))
-        .withStartupTimeout(90000)
+        .withStartupTimeout(75000)
         .start();
 
     console.log('Installing test data...');
 
-    await container.exec('app.sh add file:///enonic-xp/home/navno-testdata.jar').then((result) => {
-        console.log(`Install test data result: ${result.output} (exit code ${result.exitCode})`);
+    const installTestData = container
+        .exec('app.sh add file:///enonic-xp/home/navno-testdata.jar')
+        .then((result) => {
+            console.log(`Install test data result: ${result.output}`);
 
-        if (result.exitCode !== 0) {
-            throw Error('Failed to install test data!');
-        }
-    });
+            if (result.exitCode !== 0) {
+                throw Error(`Failed to install test data - exit code ${result.exitCode}`);
+            }
+        });
 
-    await waitForContainerLogEntry('Finished generating test data', 10000);
+    const finishGeneratingTestData = waitForContainerLogEntry(
+        'Finished generating test data',
+        30000
+    );
+
+    await Promise.all([installTestData, finishGeneratingTestData]);
 
     console.log('XP container is ready!');
 
