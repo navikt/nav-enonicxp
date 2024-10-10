@@ -19,7 +19,7 @@ const jestConfig: JestConfigWithTsJest = {
     testMatch: ['<rootDir>/**/*.test.ts'],
 
     globalSetup: './.utils/global-setup.ts',
-    // globalTeardown: './.utils/global-teardown.ts',
+    globalTeardown: './.utils/global-teardown.ts',
 };
 
 export default jestConfig;
