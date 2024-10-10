@@ -40,7 +40,20 @@ export const buildXpUrl = (path: string) => {
     return `http://localhost:${port}/${path.replace(/^\//, '')}`;
 };
 
-export const buildServiceFetcher = (serviceName: string) => {
+type ServiceResponse<ResponseType = any> = {
+    status: number;
+    body: ResponseType;
+};
+
+const getBody = async (response: Response) => {
+    if (response.headers.get('content-type')?.includes('application/json')) {
+        return response.json();
+    }
+
+    return response.text();
+};
+
+export const buildServiceFetcher = <ResponseType = any>(serviceName: string) => {
     return async ({
         headers = {},
         params = {},
@@ -49,14 +62,19 @@ export const buildServiceFetcher = (serviceName: string) => {
         headers?: Record<string, string>;
         params?: Record<string, string>;
         withSecret?: boolean;
-    }) => {
+    }): Promise<ServiceResponse<ResponseType>> => {
         const paramsStr = new URLSearchParams(params).toString();
         const url = buildXpUrl(
             `/_/service/no.nav.navno/${serviceName}${paramsStr ? `?${paramsStr}` : ''}`
         );
 
-        return fetch(url, {
+        const response = await fetch(url, {
             headers: withSecret ? { ...headers, secret: app.config.serviceSecret } : headers,
         });
+
+        return {
+            status: response.status,
+            body: await getBody(response),
+        };
     };
 };

@@ -12,15 +12,22 @@ describe('sitecontent service (serves content for the frontend)', () => {
             withSecret: true,
         });
 
-        const responseMsg = (await response.json()).message;
-
         expect(response.status).toBe(404);
-        expect(responseMsg).toBe(SITECONTENT_404_MSG_PREFIX);
+        expect(response.body.message).toBe(SITECONTENT_404_MSG_PREFIX);
     });
 
     test('Should return 401 if no api secret specified', async () => {
         const response = await fetchFromSitecontent({
-            params: { id: '/www.nav.no/legacy-content/' },
+            params: { id: '/www.nav.no/legacy-content' },
+        });
+
+        expect(response.status).toBe(401);
+    });
+
+    test('Should return 401 if incorrect api secret specified', async () => {
+        const response = await fetchFromSitecontent({
+            params: { id: '/www.nav.no/legacy-content' },
+            headers: { secret: 'asdf' },
         });
 
         expect(response.status).toBe(401);
@@ -30,9 +37,11 @@ describe('sitecontent service (serves content for the frontend)', () => {
         const response = await fetchFromSitecontent({
             params: { id: '/www.nav.no/published-content' },
             withSecret: true,
-        }).then((res) => res.json());
+        });
 
-        expect(response.displayName).toBe('Published content');
+        console.log(response);
+
+        expect(response.body.displayName).toBe('Published content');
     });
 
     test('Should not return unpublished content for master request', async () => {
@@ -48,9 +57,9 @@ describe('sitecontent service (serves content for the frontend)', () => {
         const response = await fetchFromSitecontent({
             params: { id: '/www.nav.no/unpublished-content', branch: 'draft' },
             withSecret: true,
-        }).then((res) => res.json());
+        });
 
-        expect(response.displayName).toBe('Unpublished content');
+        expect(response.body.displayName).toBe('Unpublished content');
     });
 
     test('Should not return prepublished content for master request', async () => {
@@ -66,51 +75,60 @@ describe('sitecontent service (serves content for the frontend)', () => {
         const response = await fetchFromSitecontent({
             params: { id: '/www.nav.no/prepublish-tomorrow', branch: 'draft' },
             withSecret: true,
-        }).then((res) => res.json());
+        });
 
-        expect(response.displayName).toBe('Prepublish for tomorrow');
+        expect(response.body.displayName).toBe('Prepublish for tomorrow');
     });
 
     test('Should resolve customPath', async () => {
         const response = await fetchFromSitecontent({
             params: { id: '/www.nav.no/my-custompath' },
             withSecret: true,
-        }).then((res) => res.json());
+        });
 
-        expect(response.displayName).toBe('Content with customPath');
+        expect(response.body.displayName).toBe('Content with customPath');
     });
 
     test('Should return a redirect to the customPath from an internal _path', async () => {
         const response = await fetchFromSitecontent({
             params: { id: '/www.nav.no/content-with-custompath' },
             withSecret: true,
-        }).then((res) => res.json());
+        });
 
-        expect(response.type).toBe('no.nav.navno:internal-link');
-        expect(response.data.target._path).toBe('/my-custompath');
+        expect(response.body.type).toBe('no.nav.navno:internal-link');
+        expect(response.body.data.target._path).toBe('/my-custompath');
     });
 
     test('Should not redirect to customPath on draft UUID request', async () => {
         const masterResponse = await fetchFromSitecontent({
             params: { id: '/www.nav.no/my-custompath' },
             withSecret: true,
-        }).then((res) => res.json());
+        });
 
         const draftResponseNoCustomPath = await fetchFromSitecontent({
-            params: { id: masterResponse._id, branch: 'draft' },
+            params: { id: masterResponse.body._id, branch: 'draft' },
             withSecret: true,
-        }).then((res) => res.json());
+        });
 
-        expect(draftResponseNoCustomPath.displayName).toBe('Content with customPath');
+        expect(draftResponseNoCustomPath.body.displayName).toBe('Content with customPath');
     });
 
-    test('Should get content from the english layer with /en path suffix', async () => {
+    test('Should get localized content from the english layer with /en path suffix', async () => {
         const response = await fetchFromSitecontent({
             params: { id: '/www.nav.no/published-content/en' },
             withSecret: true,
-        }).then((res) => res.json());
+        });
 
-        expect(response.displayName).toBe('Published content in english!');
-        expect(response.language).toBe('en');
+        expect(response.body.displayName).toBe('Published content in english!');
+        expect(response.body.language).toBe('en');
+    });
+
+    test('Should not get non-localized content with /nn path suffix', async () => {
+        const response = await fetchFromSitecontent({
+            params: { id: '/www.nav.no/published-content/nn' },
+            withSecret: true,
+        });
+
+        expect(response.status).toBe(404);
     });
 });
