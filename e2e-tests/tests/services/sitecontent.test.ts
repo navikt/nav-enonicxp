@@ -46,8 +46,6 @@ describe('sitecontent service (serves content for the frontend)', () => {
             withSecret: true,
         });
 
-        console.log(response);
-
         expect(response.body.displayName).toBe('Published content');
     });
 
