@@ -33,11 +33,14 @@ if (clusterLib.isMaster()) {
     initSearchRepo();
 }
 
-createOfficeFetchSchedule();
-startOfficeInfoPeriodicUpdateSchedule();
+if (app.config.env !== 'test') {
+    createOfficeFetchSchedule();
+    startOfficeInfoPeriodicUpdateSchedule();
+    activateSitemapDataUpdateEventListener();
+}
+
 activateLayersEventListeners();
 activateCacheEventListeners();
-activateSitemapDataUpdateEventListener();
 activateContentListItemUnpublishedListener();
 activateCustomPathNodeListeners();
 activateExternalSearchIndexEventHandlers();
@@ -46,7 +49,7 @@ activateSchedulerCleanupSchedule();
 
 // This is somewhat annoying for local development, as it will run a fairly heavy task and spam
 // the logs when generating the sitemap. This happens on every redeploy of the app.
-if (app.config.env !== 'localhost') {
+if (app.config.env !== 'localhost' && app.config.env !== 'test') {
     generateSitemapDataAndActivateSchedule();
 }
 
