@@ -16,6 +16,14 @@ export const startXpTestContainer = async () => {
         .withStartupTimeout(75000)
         .start();
 
+    const containerLogger = (chunk: any) => {
+        console.log(`[XP test container] ${chunk.toString()}`);
+    };
+
+    const logs = await container.logs();
+
+    logs.on('data', containerLogger);
+
     console.log('Installing test data...');
 
     const installTestData = container
@@ -36,6 +44,8 @@ export const startXpTestContainer = async () => {
     await Promise.all([installTestData, finishGeneratingTestData]);
 
     console.log('XP container is ready!');
+
+    logs.off('data', containerLogger);
 
     return container;
 };
