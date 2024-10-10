@@ -27,7 +27,7 @@ export const startXpTestContainer = async () => {
     console.log('Installing test data...');
 
     const installTestData = container
-        .exec('app.sh add file:///enonic-xp/home/navno-testdata.jar')
+        .exec('app.sh add file:///enonic-xp/home/navno-testdata.jar --force')
         .then((result) => {
             console.log(`Install test data result: ${result.output}`);
 
