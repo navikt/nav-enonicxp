@@ -121,7 +121,11 @@ module.exports = {
             },
         },
         {
-            'files': ['*.test.ts', 'src/main/resources/__test/**/*.*', 'e2e-tests/tests/**/*.*'],
+            'files': [
+                '*.test.ts',
+                'src/main/resources/__test/**/*.*',
+                'e2e-tests/tests/**/*.*',
+            ],
             'rules': {
                 'no-console': 'off',
                 'no-restricted-imports': 'off',
@@ -133,7 +137,12 @@ module.exports = {
             '@typescript-eslint/parser': ['.ts'],
         },
         'import/resolver': {
-            'typescript': {},
+            'typescript': {
+                'project': [
+                    'tsconfig.json',
+                    'e2e-tests/tests/tsconfig.json',
+                ],
+            },
         },
     },
 };

@@ -18,9 +18,6 @@ export default {
         app: {
             config: {
                 env: 'localhost',
-                frontendOrigin: 'http://localhost:3000',
-                xpOrigin: 'http://localhost:8080',
-                revalidatorProxyOrigin: 'http://localhost:3002',
                 serviceSecret: 'dummyToken',
             },
         },
