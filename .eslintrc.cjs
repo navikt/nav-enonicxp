@@ -72,10 +72,6 @@ module.exports = {
                         'group': ['?types/xp-libs/*'],
                         'message': 'xp-libs patches should not be imported directly (use /lib/xp/*)',
                     },
-                    {
-                        'group': ['*__test*'],
-                        'message': 'Test modules should not be imported outside of tests',
-                    },
                 ],
             },
         ],
@@ -121,11 +117,7 @@ module.exports = {
             },
         },
         {
-            'files': [
-                '*.test.ts',
-                'src/main/resources/__test/**/*.*',
-                'e2e-tests/tests/**/*.*',
-            ],
+            'files': ['test/**/*.*'],
             'rules': {
                 'no-console': 'off',
                 'no-restricted-imports': 'off',
@@ -140,7 +132,9 @@ module.exports = {
             'typescript': {
                 'project': [
                     'tsconfig.json',
-                    'e2e-tests/tests/tsconfig.json',
+                    'test/unit-tests/tsconfig.json',
+                    'test/e2e-tests/tsconfig.json',
+                    'test/e2e-tests/.xp-test-data-app/tsconfig.json',
                 ],
             },
         },

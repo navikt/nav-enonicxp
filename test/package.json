@@ -1,0 +1,20 @@
+{
+    "name": "nav-enonicxp-tests",
+    "version": "1.0.0",
+    "scripts": {
+        "test": "npm-run-all -p test:*",
+        "test:e2e": "npm run prepare-and-test --workspace e2e-tests",
+        "test:unit": "npm run test --workspace unit-tests"
+    },
+    "type": "module",
+    "workspaces": [
+        "e2e-tests",
+        "unit-tests"
+    ],
+    "devDependencies": {
+        "@types/jest": "29.5.13",
+        "jest": "29.7.0",
+        "ts-jest": "29.2.5",
+        "ts-node": "10.9.2"
+    }
+}

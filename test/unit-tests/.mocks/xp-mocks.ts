@@ -1,5 +1,5 @@
 import { LibContent, LibContext, LibEvent, LibNode, Server } from '@enonic/mock-xp';
-import { CONTENT_ROOT_PROJECT_ID } from '../../lib/constants';
+import { CONTENT_ROOT_PROJECT_ID } from '@navno-app/lib/constants';
 
 const TEST_SERVER_ENGLISH_PROJECT_ID = 'navno-english';
 

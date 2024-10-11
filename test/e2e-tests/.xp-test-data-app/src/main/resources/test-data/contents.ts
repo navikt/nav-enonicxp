@@ -4,7 +4,7 @@ import { Content, CreateContentParams, Schedule } from '/lib/xp/content';
 import { createOrReplace } from '../utils/content';
 import { APP_DESCRIPTOR } from '@constants';
 import { ContentDescriptor } from '@navno-types/content-types/content-config';
-import { DynamicPage, MainArticle } from '@xp-types/site/content-types';
+import { DynamicPage } from '@xp-types/site/content-types';
 import { languageToLayer } from './layers';
 
 type CreateParamsWithoutParent<Type extends ContentDescriptor> = Omit<

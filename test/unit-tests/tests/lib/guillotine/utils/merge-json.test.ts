@@ -1,4 +1,4 @@
-import { mergeGuillotineObject } from './merge-json';
+import { mergeGuillotineObject } from '@navno-app/lib/guillotine/utils/merge-json';
 
 describe('Test merge json functions', () => {
     const objectInitial = {

@@ -1,6 +1,6 @@
-import { xpMocks } from '../../__test/__mocks/xp-mocks';
-import { handleScheduledPublish } from './scheduled-publish';
-import { ContentNode } from '../../types/content-types/content-config';
+import { ContentNode } from '@navno-app/types/content-types/content-config';
+import { handleScheduledPublish } from '@navno-app/lib/scheduling/scheduled-publish';
+import { xpMocks } from '../../../.mocks/xp-mocks';
 
 const { libContentMock, libNodeMock, server } = xpMocks;
 

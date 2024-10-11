@@ -1,4 +1,5 @@
 {
+    "$schema": "https://json.schemastore.org/tsconfig",
     "compilerOptions": {
         "resolveJsonModule": true,
         "target": "es2022",
@@ -11,15 +12,14 @@
         "types": ["@types/jest"],
         "paths": {
             "@navno-app/*": ["src/main/resources/lib/*"],
-            "@test-data/*": ["e2e-tests/.xp-test-data-app/src/main/resources/*"],
-            "@test-utils/*": ["e2e-tests/tests/.utils/*"]
+            "@test-data/*": ["test/e2e-tests/.xp-test-data-app/src/main/resources/*"],
+            "@test-utils/*": ["test/e2e-tests/.utils/*"]
         }
     },
     "include": [
         "./**/*.ts",
-        "../.xp-test-data-app/src/main/resources/**/*.ts",
+        ".xp-test-data-app/src/main/resources/**/*.ts",
         "../../src/main/resources/**/*.ts",
         "./tsconfig.json"
-    ],
-    "exclude": ["node_modules"]
+    ]
 }
