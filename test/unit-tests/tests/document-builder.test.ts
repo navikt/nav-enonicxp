@@ -1,7 +1,7 @@
-import { xpMocks } from '../../../__test/__mocks/xp-mocks';
-import { SearchConfigV2 } from '@xp-types/site/content-types/search-config-v2';
-import { buildExternalSearchDocument } from './document-builder';
-import { ContentNode } from '../../../types/content-types/content-config';
+import { xpMocks } from '../.mocks/xp-mocks';
+import { SearchConfigV2 } from '@xp-types/site/content-types';
+import { ContentNode } from '@navno-app/types/content-types/content-config';
+import { buildExternalSearchDocument } from '@navno-app/lib/search/document-builder/document-builder';
 
 const { libContentMock, libNodeMock, server } = xpMocks;
 
@@ -79,13 +79,13 @@ libContentMock.publish({
     keys: [mainArticle._id, dynamicPage._id, contentList._id, prepublishedMainArticle._id],
 });
 
-jest.mock('../config', () => {
+jest.mock('@navno-app/lib/search/config', () => {
     return {
         getExternalSearchConfig: jest.fn(() => searchConfig),
     };
 });
 
-jest.mock('../../localization/resolve-language-versions', () => ({
+jest.mock('@navno-app/lib/localization/resolve-language-versions', () => ({
     getLanguageVersions: () => [],
 }));
 

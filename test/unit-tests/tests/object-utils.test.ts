@@ -1,4 +1,4 @@
-import { getNestedValues } from './object-utils';
+import { getNestedValues } from '@navno-app/lib/utils/object-utils';
 
 const testObj = {
     foo: 'bar',

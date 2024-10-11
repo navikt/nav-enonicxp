@@ -69,3 +69,4 @@ node_modules/
 /coverage/
 /test/.xp-image/navno.jar
 /test/.xp-image/navno-testdata.jar
+/test/unit-tests/coverage/

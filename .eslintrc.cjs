@@ -116,6 +116,15 @@ module.exports = {
                 'no-restricted-imports': 'off',
             },
         },
+        {
+            'files': [
+                'test/unit-tests/**/*.*',
+            ],
+            'rules': {
+                'no-console': 'off',
+                'no-restricted-imports': 'off',
+            },
+        },
     ],
     'settings': {
         'import/parsers': {
@@ -123,7 +132,7 @@ module.exports = {
         },
         'import/resolver': {
             'typescript': {
-                'project': ['tsconfig.json'],
+                'project': ['tsconfig.json', 'test/unit-tests/tsconfig.json'],
             },
         },
     },

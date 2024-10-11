@@ -1,6 +1,6 @@
-import { LayersRepoData } from '../../lib/localization/layers-data';
 import { xpMocks } from './xp-mocks';
-import { CONTENT_LOCALE_DEFAULT } from '../../lib/constants';
+import { LayersRepoData } from '@navno-app/lib/localization/layers-data';
+import { CONTENT_LOCALE_DEFAULT } from '@navno-app/lib/constants';
 
 const { server, TEST_SERVER_ENGLISH_PROJECT_ID } = xpMocks;
 
@@ -44,7 +44,7 @@ const layersData: LayersRepoData = {
     locales: [CONTENT_LOCALE_DEFAULT, 'en'],
 };
 
-jest.mock('../../lib/localization/layers-data', () => ({
+jest.mock('@navno-app/lib/localization/layers-data', () => ({
     getLayersData: (): LayersRepoData => layersData,
     isValidLocale: (locale?: string) => locale && layersData.localeToRepoIdMap[locale],
 }));

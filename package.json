@@ -2,7 +2,7 @@
     "name": "navno-enonicxp",
     "version": "1.0.0",
     "scripts": {
-        "test": "jest",
+        "test": "npm run test --workspace=test",
         "build": "npm-run-all lint babel",
         "lint": "eslint ./src/main/resources --ext=ts --quiet && tsc --noemit",
         "babel": "babel src/main/resources --out-dir=build/resources/main --no-copy-ignored --extensions \".ts\""
@@ -15,8 +15,11 @@
     "bugs": {
         "url": "https://github.com/navikt/nav-enonicxp/issues"
     },
-    "type": "module",
     "homepage": "https://github.com/navikt/nav-enonicxp#readme",
+    "type": "module",
+    "workspaces": [
+        "test"
+    ],
     "devDependencies": {
         "@anders-nom/babel-plugin-import-graphql-string": "2.8.1-12",
         "@babel/cli": "7.25.7",
