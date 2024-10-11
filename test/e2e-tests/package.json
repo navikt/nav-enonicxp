@@ -7,7 +7,7 @@
         "build-xp-image": "docker buildx build .xp-image -t navno_tests",
         "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules --no-warnings\" jest",
         "prepare-and-test": "npm-run-all build-test-data-app copy-jars build-xp-image test",
-        "prepare-and-test-gha": "npm-run-all copy-jars build-xp-image test"
+        "prepare-gha": "npm-run-all copy-jars build-xp-image"
     },
     "type": "module",
     "devDependencies": {

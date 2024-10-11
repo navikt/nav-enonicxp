@@ -27,5 +27,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.buildArtifact }}
-      - name: Run e2e tests
-        run: npm run prepare-and-test-gha --workspace=test/e2e-tests
+      - name: Build test assets
+        run: npm run prepare-gha --workspace=test/e2e-tests
+      - name: Run tests
+        run: npm run test --workspace=test/e2e-tests
