@@ -117,9 +117,7 @@ module.exports = {
             },
         },
         {
-            'files': [
-                'test/unit-tests/**/*.*',
-            ],
+            'files': ['test/**/*.*'],
             'rules': {
                 'no-console': 'off',
                 'no-restricted-imports': 'off',
@@ -132,7 +130,12 @@ module.exports = {
         },
         'import/resolver': {
             'typescript': {
-                'project': ['tsconfig.json', 'test/unit-tests/tsconfig.json'],
+                'project': [
+                    'tsconfig.json',
+                    'test/unit-tests/tsconfig.json',
+                    'test/e2e-tests/tsconfig.json',
+                    'test/e2e-tests/.xp-test-data-app/tsconfig.json',
+                ],
             },
         },
     },
