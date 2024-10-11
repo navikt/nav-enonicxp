@@ -10,7 +10,7 @@
         "moduleResolution": "node",
         "noEmit": true,
         "baseUrl": "./src/main/resources",
-        "types": ["@item-enonic-types/global", "@types/jest"],
+        "types": ["@item-enonic-types/global"],
         "paths": {
             "@xp-types/*": ["../../../.xp-codegen/*"],
             "/lib/cache": ["../../../node_modules/@item-enonic-types/lib-cache"],

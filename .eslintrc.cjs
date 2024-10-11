@@ -72,10 +72,6 @@ module.exports = {
                         'group': ['?types/xp-libs/*'],
                         'message': 'xp-libs patches should not be imported directly (use /lib/xp/*)',
                     },
-                    {
-                        'group': ['*__test*'],
-                        'message': 'Test modules should not be imported outside of tests',
-                    },
                 ],
             },
         ],
@@ -120,17 +116,6 @@ module.exports = {
                 'no-restricted-imports': 'off',
             },
         },
-        {
-            'files': [
-                '*.test.ts',
-                'src/main/resources/__test/**/*.*',
-                'test/tests/**/*.*',
-            ],
-            'rules': {
-                'no-console': 'off',
-                'no-restricted-imports': 'off',
-            },
-        },
     ],
     'settings': {
         'import/parsers': {
@@ -138,10 +123,7 @@ module.exports = {
         },
         'import/resolver': {
             'typescript': {
-                'project': [
-                    'tsconfig.json',
-                    'test/tests/tsconfig.json',
-                ],
+                'project': ['tsconfig.json'],
             },
         },
     },
