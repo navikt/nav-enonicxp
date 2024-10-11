@@ -15,9 +15,9 @@ jobs:
       # Should use the current prod version
       xpVersion: "7.14.4"
 
-  tests:
-    name: Run tests
-    uses: ./.github/workflows/.run-tests.yml
+  e2e-tests:
+    name: Run e2e tests
+    uses: ./.github/workflows/.run-e2e-tests.yml
     needs: build
     permissions:
       contents: read

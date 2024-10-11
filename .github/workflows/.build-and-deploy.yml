@@ -30,7 +30,7 @@ jobs:
 
   e2e-tests:
     name: Run e2e tests
-    uses: ./.github/workflows/.run-tests.yml
+    uses: ./.github/workflows/.run-e2e-tests.yml
     needs: build-app
     permissions:
       contents: read

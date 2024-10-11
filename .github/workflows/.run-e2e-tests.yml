@@ -1,4 +1,4 @@
-name: Run tests
+name: Run e2e tests
 on:
   workflow_call:
     inputs:
@@ -27,7 +27,5 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.buildArtifact }}
-      - name: Run unit tests
-        run: npm run test --workspace=test/unit-tests
       - name: Run e2e tests
         run: npm run prepare-and-test-gha --workspace=test/e2e-tests

@@ -40,11 +40,11 @@ jobs:
       - name: Install node.js dependencies
         run: npm ci
       - name: Run unit tests
-        run: npm run test
+        run: npm run test --workspace=test/unit-tests
       - name: Build application
         run: ./gradlew build -PxpVersion=${{ inputs.xpVersion }}
       - name: Build e2e test data
-        run: ./gradlew build -p=e2e-tests/.xp-test-data-app -PxpVersion=${{ inputs.xpVersion }}
+        run: ./gradlew build -p=test/e2e-tests/.xp-test-data-app -PxpVersion=${{ inputs.xpVersion }}
       - name: Upload jar files
         uses: actions/upload-artifact@v4
         id: artifact-upload
@@ -52,6 +52,6 @@ jobs:
           name: ${{ env.buildArtifact }}
           path: |
             build/libs/navno.jar
-            e2e-tests/.xp-test-data-app/build/libs/navno-testdata.jar
+            test/e2e-tests/.xp-test-data-app/build/libs/navno-testdata.jar
           overwrite: 'true'
           retention-days: 1
