@@ -2,7 +2,7 @@
     "name": "navno-enonicxp",
     "version": "1.0.0",
     "scripts": {
-        "test": "npm run test --workspace=test",
+        "test": "npm run test --prefix test",
         "build": "npm-run-all lint babel",
         "lint": "eslint ./src/main/resources --ext=ts --quiet && tsc --noemit",
         "babel": "babel src/main/resources --out-dir=build/resources/main --no-copy-ignored --extensions \".ts\""

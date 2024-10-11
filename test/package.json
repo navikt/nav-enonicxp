@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "scripts": {
         "test": "npm-run-all -p test:*",
-        "test:e2e": "npm run test --workspace e2e-tests",
+        "test:e2e": "npm run prepare-and-test --workspace e2e-tests",
         "test:unit": "npm run test --workspace unit-tests"
     },
     "type": "module",

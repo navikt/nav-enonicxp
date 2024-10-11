@@ -41,6 +41,8 @@ const jestConfig: JestConfigWithTsJest = {
         '^/lib/(.*)': '<rootDir>/.mocks/modules/lib/$1',
     },
 
+    testMatch: ['<rootDir>/**/*.test.ts'],
+
     setupFiles: ['./jest-setup.ts'],
 };
 

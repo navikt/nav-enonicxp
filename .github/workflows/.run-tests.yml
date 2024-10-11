@@ -1,4 +1,4 @@
-name: Run end-to-end tests
+name: Run tests
 on:
   workflow_call:
     inputs:
@@ -7,8 +7,8 @@ on:
         type: string
 
 jobs:
-  e2e-tests:
-    name: Run end-to-end tests
+  tests:
+    name: Run tests
     permissions:
       contents: read
     runs-on: ubuntu-latest
@@ -20,20 +20,14 @@ jobs:
         with:
           node-version: 22
           cache: 'npm'
-          cache-dependency-path: e2e-tests/package-lock.json
+          cache-dependency-path: '**/package-lock.json'
       - name: Install node.js dependencies
-        working-directory: e2e-tests
         run: npm ci
       - name: Download jar files
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.buildArtifact }}
-      - name: Copy jar files to test image
-        working-directory: e2e-tests
-        run: npm run copy-jars
-      - name: Build test image
-        working-directory: e2e-tests
-        run: npm run build-xp-image
-      - name: Run tests
-        working-directory: e2e-tests
-        run: npm run test
+      - name: Run unit tests
+        run: npm run test --workspace=test/unit-tests
+      - name: Run e2e tests
+        run: npm run prepare-and-test-gha --workspace=test/e2e-tests
