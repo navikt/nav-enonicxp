@@ -4,5 +4,8 @@
     "scripts": {
         "test": "jest"
     },
-    "type": "module"
+    "type": "module",
+    "devDependencies": {
+        "@enonic/mock-xp": "1.0.0"
+    }
 }

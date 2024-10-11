@@ -5,7 +5,7 @@
         "build": "npm-run-all swc swc-constants",
         "lint": "eslint ./src/main/resources --ext=ts --quiet && tsc -p tsconfig.json --noemit",
         "swc": "cd src/main && swc resources --out-dir ../../build/resources/main --strip-leading-paths --config-file ../../.swcrc",
-        "swc-constants": "swc ../../src/main/resources/lib/constants.ts --out-file ./build/resources/main/constants.js --config-file .swcrc"
+        "swc-constants": "swc ../../../src/main/resources/lib/constants.ts --out-file ./build/resources/main/constants.js --config-file .swcrc"
     },
     "type": "module",
     "devDependencies": {

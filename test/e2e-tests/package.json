@@ -3,8 +3,8 @@
     "version": "1.0.0",
     "scripts": {
         "build": "npm-run-all build-test-data-app copy-jars build-xp-image",
-        "build-test-data-app": "../gradlew build -p=.xp-test-data-app",
-        "copy-jars": "cp ../build/libs/navno.jar .xp-image && cp ./.xp-test-data-app/build/libs/navno-testdata.jar .xp-image",
+        "build-test-data-app": "../../gradlew build -p=.xp-test-data-app",
+        "copy-jars": "cp ../../build/libs/navno.jar .xp-image && cp ./.xp-test-data-app/build/libs/navno-testdata.jar .xp-image",
         "build-xp-image": "docker buildx build .xp-image -t navno_tests",
         "run-tests": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules --no-warnings\" jest",
         "test": "npm-run-all build run-tests"

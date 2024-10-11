@@ -12,15 +12,14 @@
         "types": ["@types/jest"],
         "paths": {
             "@navno-app/*": ["src/main/resources/lib/*"],
-            "@test-data/*": ["test/.xp-test-data-app/src/main/resources/*"],
-            "@test-utils/*": ["test/tests/.utils/*"]
+            "@test-data/*": ["test/e2e-tests/.xp-test-data-app/src/main/resources/*"],
+            "@test-utils/*": ["test/e2e-tests/.utils/*"]
         }
     },
     "include": [
         "./**/*.ts",
-        "../.xp-test-data-app/src/main/resources/**/*.ts",
+        ".xp-test-data-app/src/main/resources/**/*.ts",
         "../../src/main/resources/**/*.ts",
         "./tsconfig.json"
-    ],
-    "exclude": ["node_modules"]
+    ]
 }
