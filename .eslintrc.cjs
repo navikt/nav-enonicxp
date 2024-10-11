@@ -124,7 +124,7 @@ module.exports = {
             'files': [
                 '*.test.ts',
                 'src/main/resources/__test/**/*.*',
-                'e2e-tests/tests/**/*.*',
+                'test/tests/**/*.*',
             ],
             'rules': {
                 'no-console': 'off',
@@ -140,7 +140,7 @@ module.exports = {
             'typescript': {
                 'project': [
                     'tsconfig.json',
-                    'e2e-tests/tests/tsconfig.json',
+                    'test/tests/tsconfig.json',
                 ],
             },
         },
