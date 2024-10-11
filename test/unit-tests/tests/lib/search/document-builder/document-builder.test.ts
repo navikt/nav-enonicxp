@@ -1,7 +1,7 @@
-import { xpMocks } from '../.mocks/xp-mocks';
 import { SearchConfigV2 } from '@xp-types/site/content-types';
 import { ContentNode } from '@navno-app/types/content-types/content-config';
 import { buildExternalSearchDocument } from '@navno-app/lib/search/document-builder/document-builder';
+import { xpMocks } from '../../../../.mocks/xp-mocks';
 
 const { libContentMock, libNodeMock, server } = xpMocks;
 

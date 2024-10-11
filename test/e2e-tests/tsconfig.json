@@ -1,4 +1,5 @@
 {
+    "$schema": "https://json.schemastore.org/tsconfig",
     "compilerOptions": {
         "resolveJsonModule": true,
         "target": "es2022",

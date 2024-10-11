@@ -1,9 +1,9 @@
-import { xpMocks } from '../.mocks/xp-mocks';
 import {
     getCustomPathFromContent,
     hasInvalidCustomPath,
     hasValidCustomPath,
 } from '@navno-app/lib/paths/custom-paths/custom-path-utils';
+import { xpMocks } from '../../../../.mocks/xp-mocks';
 
 const { libContentMock } = xpMocks;
 
