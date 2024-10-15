@@ -6,6 +6,7 @@ import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 type ContentTreeEntry = {
     id: string;
     path: string;
+    name: string;
     displayName: string;
 };
 
@@ -13,6 +14,7 @@ const transformToContentTreeEntry = (content: Content): ContentTreeEntry => {
     return {
         id: content._id,
         path: stripPathPrefix(content._path),
+        name: content._name,
         displayName: content.displayName,
     };
 };
