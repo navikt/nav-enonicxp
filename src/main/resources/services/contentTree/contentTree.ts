@@ -1,6 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { getNavnoContentPath } from '../../lib/paths/path-utils';
+import { getNavnoContentPath, stripPathPrefix } from '../../lib/paths/path-utils';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 
 type ContentTreeEntry = {
@@ -12,7 +12,7 @@ type ContentTreeEntry = {
 const transformToContentTreeEntry = (content: Content): ContentTreeEntry => {
     return {
         id: content._id,
-        path: content._path,
+        path: stripPathPrefix(content._path),
         displayName: content.displayName,
     };
 };
