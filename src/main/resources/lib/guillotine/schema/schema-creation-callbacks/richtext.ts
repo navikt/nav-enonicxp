@@ -45,7 +45,9 @@ const resolvePublicPathsInLinks = (processedHtml: string, links?: Link[]) => {
         const internalPath = stripPathPrefix(targetContent._path);
         const publicPath = getPublicPath(targetContent, localeFromContext);
 
-        return html.replace(new RegExp(`href="${internalPath}`, 'g'), `href="${publicPath}`);
+        return html.replace(new RegExp(`href="${internalPath}(["?#])`, 'g'), (match) =>
+            match.replace(internalPath, publicPath)
+        );
     }, processedHtml);
 };
 
