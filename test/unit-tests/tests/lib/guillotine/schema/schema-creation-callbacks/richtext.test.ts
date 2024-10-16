@@ -83,7 +83,7 @@ describe('Guillotine richtext resolver', () => {
         );
     });
 
-    test('Should resolve link to custom path including anchor', () => {
+    test('Should resolve link to custom path with anchor', () => {
         const params = createParams();
         richTextCallback({} as any, params);
 
@@ -102,6 +102,28 @@ describe('Guillotine richtext resolver', () => {
 
         expect(result).toBe(
             `<p>Hello world! <a href="${contentWithCustomPath.data.customPath}#my-anchor">Link to content with custom path with anchor</a></p>`
+        );
+    });
+
+    test('Should resolve link to custom path with parameter', () => {
+        const params = createParams();
+        richTextCallback({} as any, params);
+
+        const result = params.fields.processedHtml.resolve!({
+            source: {
+                processedHtml: `<p>Hello world! <a href="${contentWithCustomPath._path}?foo=bar">Link to content with custom path with anchor</a></p>`,
+                links: [
+                    {
+                        contentId: contentWithCustomPath._id,
+                    },
+                ],
+            },
+            args: {},
+            context: {},
+        });
+
+        expect(result).toBe(
+            `<p>Hello world! <a href="${contentWithCustomPath.data.customPath}?foo=bar">Link to content with custom path with anchor</a></p>`
         );
     });
 
