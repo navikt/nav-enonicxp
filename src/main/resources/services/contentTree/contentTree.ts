@@ -20,7 +20,7 @@ const transformToContentTreeEntry = (content: Content): ContentTreeEntry => {
 };
 
 const getContentTreeChildren = (path: string) => {
-    const children = contentLib.getChildren({ key: getNavnoContentPath(path) }).hits;
+    const children = contentLib.getChildren({ key: getNavnoContentPath(path), count: 1000 }).hits;
 
     return children.map(transformToContentTreeEntry);
 };
@@ -67,7 +67,7 @@ export const get = (req: XP.Request) => {
     return {
         status: 200,
         body: {
-            content: parentContent,
+            current: transformToContentTreeEntry(parentContent),
             children: getContentTreeChildren(path),
         },
         contentType: 'application/json',
