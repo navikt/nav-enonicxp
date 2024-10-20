@@ -80,9 +80,15 @@ const transformToLogEntry = (content: Content) => {
 };
 
 const persistResult = (result: UnpublishResult, startTs: number, resultType: string) => {
-    const unpublished = result.unpublished.map(transformToLogEntry);
+    const unpublished = result.unpublished.map((entry) => ({
+        ...transformToLogEntry(entry.content),
+        childrenIds: entry.childrenIds,
+    }));
+    const failed = result.failed.map((entry) => ({
+        ...transformToLogEntry(entry.content),
+        error: entry.error,
+    }));
     const skipped = result.skipped.map(transformToLogEntry);
-    const failed = result.failed.map(transformToLogEntry);
 
     const repoConnection = getRepoConnection({
         repoId: SEARCH_REPO_ID, // Use the old search repo because cba to create a new repo just for this :D
@@ -131,8 +137,8 @@ const hasNewerDescendants = (content: Content, timestamp: string): boolean => {
 type UnpublishResult = {
     totalFound: number;
     skipped: Content[];
-    failed: Content[];
-    unpublished: Content[];
+    failed: { content: Content; error: string }[];
+    unpublished: { content: Content; childrenIds: string[] }[];
 };
 
 const findAndUnpublishOldContent = (query: QueryDsl, timestamp: string): UnpublishResult => {
@@ -157,7 +163,7 @@ const findAndUnpublishOldContent = (query: QueryDsl, timestamp: string): Unpubli
     logger.info(`Found ${matchingContent.total} matching content`);
 
     const contentToUnpublish: Content[] = [];
-    const skippedContent: Content[] = [];
+    const skippedContent: UnpublishResult['skipped'] = [];
 
     matchingContent.hits.forEach((content) => {
         if (hasNewerDescendants(content, timestamp)) {
@@ -170,8 +176,8 @@ const findAndUnpublishOldContent = (query: QueryDsl, timestamp: string): Unpubli
         }
     });
 
-    const unpublishedContent: Content[] = [];
-    const failedContent: Content[] = [];
+    const unpublishedContent: UnpublishResult['unpublished'] = [];
+    const failedContent: UnpublishResult['failed'] = [];
 
     runInContext({ branch: 'draft', asAdmin: true }, () =>
         contentToUnpublish.forEach((content) => {
@@ -180,13 +186,17 @@ const findAndUnpublishOldContent = (query: QueryDsl, timestamp: string): Unpubli
                     keys: [content._id],
                 });
 
-                logger.info(
-                    `Unpublished result for ${content._id} / ${content._path} - ${unpublishResult}`
+                contentLib.archive({ content: content._id });
+
+                unpublishedContent.push({
+                    content,
+                    childrenIds: unpublishResult.filter((id) => id !== content._id),
+                });
+            } catch (e: any) {
+                logger.error(
+                    `Failed to unpublish/archive ${content._id} / ${content._path} - ${e}`
                 );
-                unpublishedContent.push(content);
-            } catch (e) {
-                logger.error(`Failed to unpublish ${content._id} / ${content._path} - ${e}`);
-                failedContent.push(content);
+                failedContent.push({ content, error: e.toString() });
             }
         })
     );
