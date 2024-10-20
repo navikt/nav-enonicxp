@@ -9,7 +9,6 @@ import { MainArticle } from '@xp-types/site/content-types';
 import { getRepoConnection } from '../utils/repo-utils';
 import { runInContext } from '../context/run-in-context';
 import { queryAllLayersToRepoIdBuckets } from '../localization/layers-repo-utils/query-all-layers';
-import { runInLocaleContext } from '../localization/locale-context';
 
 const ONE_YEAR_MS = 1000 * 3600 * 24 * 365;
 const TWO_YEARS_MS = ONE_YEAR_MS * 2;
@@ -72,7 +71,7 @@ type ContentDataSimple = Pick<
     '_id' | '_path' | 'createdTime' | 'modifiedTime' | 'type'
 > & {
     subType?: MainArticle['contentType'];
-    locale: string;
+    repoId: string;
     error?: string;
     childrenIds?: string[];
 };
@@ -84,13 +83,13 @@ type ArchiveResult = {
     archived: ContentDataSimple[];
 };
 
-const simplifyContent = (content: Content, locale: string): ContentDataSimple => {
+const simplifyContent = (content: Content, repoId: string): ContentDataSimple => {
     const { _id, _path, createdTime, modifiedTime, type, data } = content;
 
     return {
         _id,
         _path,
-        locale,
+        repoId,
         createdTime,
         modifiedTime,
         type,
@@ -191,7 +190,7 @@ const unpublishAndArchiveContents = (
 };
 
 const findAndArchiveOldContent = (query: QueryDsl, timestamp: string): ArchiveResult => {
-    const matchingContent = queryAllLayersToRepoIdBuckets({
+    const foundContents = queryAllLayersToRepoIdBuckets({
         branch: 'master',
         state: 'localized',
         resolveContent: true,
@@ -221,12 +220,12 @@ const findAndArchiveOldContent = (query: QueryDsl, timestamp: string): ArchiveRe
         failed: [],
     };
 
-    Object.entries(matchingContent).forEach(([locale, contents]) => {
-        logger.info(`Found ${contents.length} matching content for locale ${locale}`);
+    Object.entries(foundContents).forEach(([repoId, contents]) => {
+        logger.info(`Found ${contents.length} matching content in repo ${repoId}`);
 
-        const contentsSimple = contents.map((content) => simplifyContent(content, locale));
+        const contentsSimple = contents.map((content) => simplifyContent(content, repoId));
 
-        const layerResult = runInLocaleContext({ locale, asAdmin: true }, () =>
+        const layerResult = runInContext({ repository: repoId, asAdmin: true }, () =>
             unpublishAndArchiveContents(contentsSimple, timestamp)
         );
 
