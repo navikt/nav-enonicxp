@@ -12,7 +12,7 @@ import { externalSearchUpdateAll } from '../lib/search/update-all';
 import { URLS } from '../lib/constants';
 import { fetchAndUpdateOfficeInfo } from '../lib/office-pages/_legacy-office-information/legacy-office-update';
 import { runSchedulerCleanup } from '../lib/scheduling/schedule-cleanup';
-import { unpublishOldNews } from '../lib/scheduling/unpublish-old-news';
+import { archiveOldNews } from '../lib/scheduling/archive-old-news';
 
 type ActionsMap = Record<string, { description: string; callback: () => any }>;
 
@@ -49,8 +49,8 @@ const validActions: ActionsMap = {
         callback: runSchedulerCleanup,
     },
     oldNewsUnpublish: {
-        description: 'Avpubliser gamle nyheter',
-        callback: unpublishOldNews,
+        description: 'Avpubliser og arkiver gamle nyheter/pressemeldinger',
+        callback: archiveOldNews,
     },
     ...(!!URLS.SEARCH_API_URL && {
         updateAllSearchNodesExternal: {
