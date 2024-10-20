@@ -2,7 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { QueryDsl } from '/lib/xp/node';
 import { createOrUpdateSchedule } from './schedule-job';
-import { APP_DESCRIPTOR, SEARCH_REPO_ID } from '../constants';
+import { APP_DESCRIPTOR, SEARCH_REPO_ID, URLS } from '../constants';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { logger } from '../utils/logging';
 import { MainArticle } from '@xp-types/site/content-types';
@@ -110,9 +110,18 @@ const persistResult = (result: ArchiveResult, startTs: number, resultType: strin
 
     const now = new Date().toISOString();
 
+    const logEntryName = `archived-${resultType}-${now}`;
+    const logEntryDataToolboxUrl = [
+        URLS.PORTAL_ADMIN_ORIGIN,
+        '/admin/tool/systems.rcd.enonic.datatoolbox/data-toolbox#node?repo=',
+        SEARCH_REPO_ID,
+        '&branch=master&path=',
+        encodeURIComponent(`${LOG_DIR_PATH}/${logEntryName}`),
+    ].join('');
+
     repoConnection.create({
         _parentPath: LOG_DIR_PATH,
-        _name: `archived-${resultType}-${now}`,
+        _name: logEntryName,
         summary: {
             started: new Date(startTs).toISOString(),
             finished: now,
@@ -126,8 +135,14 @@ const persistResult = (result: ArchiveResult, startTs: number, resultType: strin
         failed: result.failed,
         archived: result.archived,
     });
+
+    logger.info(
+        `Archiving result for ${logEntryName}: Found ${result.totalFound} | Archived ${result.archived.length} | Skipped ${result.skipped.length} | Failed ${result.failed.length} - Full results: ${logEntryDataToolboxUrl}`
+    );
 };
 
+// Unpublishing a content will also unpublish all its descendants. If there are any descendants
+// which are newer than the cut-off timestamp that was set, we don't want to run the unpublish.
 const hasNewerDescendants = (content: ContentDataSimple | Content, timestamp: string): boolean => {
     const children = contentLib.getChildren({ key: content._id, count: 1000 });
 
@@ -189,13 +204,13 @@ const unpublishAndArchiveContents = (
     };
 };
 
-const findAndArchiveOldContent = (query: QueryDsl, timestamp: string): ArchiveResult => {
+const findAndArchiveOldContent = (query: QueryDsl, maxAge: string): ArchiveResult => {
     const foundContents = queryAllLayersToRepoIdBuckets({
         branch: 'master',
         state: 'localized',
         resolveContent: true,
         queryParams: {
-            count: 10,
+            count: 5000,
             sort: 'modifiedTime DESC',
             query: {
                 boolean: {
@@ -203,7 +218,7 @@ const findAndArchiveOldContent = (query: QueryDsl, timestamp: string): ArchiveRe
                         {
                             range: {
                                 field: 'modifiedTime',
-                                lt: timestamp,
+                                lt: maxAge,
                             },
                         },
                         query,
@@ -221,15 +236,15 @@ const findAndArchiveOldContent = (query: QueryDsl, timestamp: string): ArchiveRe
     };
 
     Object.entries(foundContents).forEach(([repoId, contents]) => {
-        logger.info(`Found ${contents.length} matching content in repo ${repoId}`);
+        logger.info(`Found ${contents.length} content for archiving in repo ${repoId}`);
 
         const contentsSimple = contents.map((content) => simplifyContent(content, repoId));
 
         const layerResult = runInContext({ repository: repoId, asAdmin: true }, () =>
-            unpublishAndArchiveContents(contentsSimple, timestamp)
+            unpublishAndArchiveContents(contentsSimple, maxAge)
         );
 
-        result.totalFound += layerResult.totalFound;
+        result.totalFound += contents.length;
         result.skipped.push(...layerResult.skipped);
         result.failed.push(...layerResult.failed);
         result.archived.push(...layerResult.archived);
@@ -257,6 +272,7 @@ export const archiveOldNews = () =>
         persistResult(newsResult, started, 'news');
     });
 
+// TODO: activate this after running an initial (large) job on existing content
 export const activateArchiveNewsSchedule = () => {
     createOrUpdateSchedule({
         jobName: 'archive-old-news',
