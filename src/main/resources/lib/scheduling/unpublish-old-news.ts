@@ -1,21 +1,22 @@
 import * as contentLib from '/lib/xp/content';
-import { ContentsResult } from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { QueryDsl } from '/lib/xp/node';
 import { createOrUpdateSchedule } from './schedule-job';
-import { APP_DESCRIPTOR, CONTENT_LOCALE_DEFAULT, SEARCH_REPO_ID } from '../constants';
+import { APP_DESCRIPTOR, SEARCH_REPO_ID } from '../constants';
 import { batchedContentQuery } from '../utils/batched-query';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { logger } from '../utils/logging';
-import { runInLocaleContext } from '../localization/locale-context';
 import { MainArticle } from '@xp-types/site/content-types';
 import { getRepoConnection } from '../utils/repo-utils';
+import { runInContext } from '../context/run-in-context';
 
 const ONE_YEAR_MS = 1000 * 3600 * 24 * 365;
 const TWO_YEARS_MS = ONE_YEAR_MS * 2;
 
 const LOG_DIR = 'old-news-unpublished';
+const LOG_DIR_PATH = `/${LOG_DIR}`;
 
-const pressemeldingerRule = (): QueryDsl => ({
+const pressReleasesQuery = (): QueryDsl => ({
     boolean: {
         must: [
             {
@@ -30,72 +31,58 @@ const pressemeldingerRule = (): QueryDsl => ({
                     value: 'pressRelease' satisfies MainArticle['contentType'],
                 },
             },
-            {
-                range: {
-                    field: 'modifiedTime',
-                    lt: new Date(Date.now() - TWO_YEARS_MS).toISOString(),
-                },
-            },
         ],
     },
 });
 
-const nyheterRule = (): QueryDsl => ({
+const newsQuery = (): QueryDsl => ({
     boolean: {
-        must: [
-            {
-                range: {
-                    field: 'modifiedTime',
-                    lt: new Date(Date.now() - ONE_YEAR_MS).toISOString(),
-                },
-            },
+        should: [
             {
                 boolean: {
-                    should: [
+                    must: [
                         {
-                            boolean: {
-                                must: [
-                                    {
-                                        term: {
-                                            field: 'type',
-                                            value: 'no.nav.navno:main-article' satisfies ContentDescriptor,
-                                        },
-                                    },
-                                    {
-                                        term: {
-                                            field: 'data.contentType',
-                                            value: 'news' satisfies MainArticle['contentType'],
-                                        },
-                                    },
-                                ],
+                            term: {
+                                field: 'type',
+                                value: 'no.nav.navno:main-article' satisfies ContentDescriptor,
                             },
                         },
                         {
                             term: {
-                                field: 'type',
-                                value: 'no.nav.navno:current-topic-page' satisfies ContentDescriptor,
+                                field: 'data.contentType',
+                                value: 'news' satisfies MainArticle['contentType'],
                             },
                         },
                     ],
                 },
             },
+            {
+                term: {
+                    field: 'type',
+                    value: 'no.nav.navno:current-topic-page' satisfies ContentDescriptor,
+                },
+            },
         ],
     },
 });
 
-const persistLogs = (result: ContentsResult) => {
-    const transformedHits = result.hits.map((content) => {
-        const { _id, _path, createdTime, modifiedTime, type, data } = content;
+const transformToLogEntry = (content: Content) => {
+    const { _id, _path, createdTime, modifiedTime, type, data } = content;
 
-        return {
-            _id,
-            _path,
-            createdTime,
-            modifiedTime,
-            type,
-            subType: data.contentType,
-        };
-    });
+    return {
+        _id,
+        _path,
+        createdTime,
+        modifiedTime,
+        type,
+        subType: data.contentType,
+    };
+};
+
+const persistResult = (result: UnpublishResult, startTs: number, resultType: string) => {
+    const unpublished = result.unpublished.map(transformToLogEntry);
+    const skipped = result.skipped.map(transformToLogEntry);
+    const failed = result.failed.map(transformToLogEntry);
 
     const repoConnection = getRepoConnection({
         repoId: SEARCH_REPO_ID, // Use the old search repo because cba to create a new repo just for this :D
@@ -103,55 +90,132 @@ const persistLogs = (result: ContentsResult) => {
         branch: 'master',
     });
 
-    const parentDir = `/${LOG_DIR}`;
-
-    if (!repoConnection.exists(parentDir)) {
+    if (!repoConnection.exists(LOG_DIR_PATH)) {
         repoConnection.create({ _parentPath: '/', _name: LOG_DIR });
     }
 
     const now = new Date().toISOString();
 
     repoConnection.create({
-        _parentPath: parentDir,
-        _name: `unpublished-${now}`,
+        _parentPath: LOG_DIR_PATH,
+        _name: `unpublished-${resultType}-${now}`,
         summary: {
-            ts: now,
-            total: result.total,
+            started: new Date(startTs).toISOString(),
+            finished: now,
+            type: resultType,
+            totalFound: result.totalFound,
+            totalSkipped: result.skipped.length,
+            totalFailed: result.failed.length,
+            totalUnpublished: result.unpublished.length,
         },
-        unpublished: transformedHits,
+        skipped,
+        failed,
+        unpublished,
     });
 };
 
-export const unpublishOldNews = () =>
-    runInLocaleContext({ locale: CONTENT_LOCALE_DEFAULT, asAdmin: true, branch: 'master' }, () => {
-        const matchingContent = batchedContentQuery({
-            count: 5000,
-            sort: 'modifiedTime DESC',
-            query: {
-                boolean: {
-                    should: [pressemeldingerRule(), nyheterRule()],
-                },
+const hasNewerDescendants = (content: Content, timestamp: string): boolean => {
+    if (!content.hasChildren) {
+        return false;
+    }
+
+    const children = contentLib.getChildren({ key: content._id, count: 1000 });
+
+    return children.hits.some(
+        (child) =>
+            (child.modifiedTime || child.createdTime) > timestamp ||
+            hasNewerDescendants(child, timestamp)
+    );
+};
+
+type UnpublishResult = {
+    totalFound: number;
+    skipped: Content[];
+    failed: Content[];
+    unpublished: Content[];
+};
+
+const findAndUnpublishOldContent = (query: QueryDsl, timestamp: string): UnpublishResult => {
+    const matchingContent = batchedContentQuery({
+        count: 10,
+        sort: 'modifiedTime DESC',
+        query: {
+            boolean: {
+                must: [
+                    {
+                        range: {
+                            field: 'modifiedTime',
+                            lt: timestamp,
+                        },
+                    },
+                    query,
+                ],
             },
-        });
+        },
+    });
 
-        logger.info(`Found ${matchingContent.total} content total`);
+    logger.info(`Found ${matchingContent.total} matching content`);
 
-        const idsToUnpublish = matchingContent.hits.map((hit) => hit._id);
+    const contentToUnpublish: Content[] = [];
+    const skippedContent: Content[] = [];
 
-        matchingContent.hits.forEach((content) => {
-            const children = contentLib.getChildren({ key: content._id });
-            if (children.total > 0) {
-                logger.info(`Found ${children.total} for ${content._path}`);
+    matchingContent.hits.forEach((content) => {
+        if (hasNewerDescendants(content, timestamp)) {
+            logger.error(
+                `Content ${content._id} / ${content._path} has newer descendants, skipping unpublish`
+            );
+            skippedContent.push(content);
+        } else {
+            contentToUnpublish.push(content);
+        }
+    });
+
+    const unpublishedContent: Content[] = [];
+    const failedContent: Content[] = [];
+
+    runInContext({ branch: 'draft', asAdmin: true }, () =>
+        contentToUnpublish.forEach((content) => {
+            try {
+                const unpublishResult = contentLib.unpublish({
+                    keys: [content._id],
+                });
+
+                logger.info(
+                    `Unpublished result for ${content._id} / ${content._path} - ${unpublishResult}`
+                );
+                unpublishedContent.push(content);
+            } catch (e) {
+                logger.error(`Failed to unpublish ${content._id} / ${content._path} - ${e}`);
+                failedContent.push(content);
             }
-        });
+        })
+    );
 
-        // const unpublished = contentLib.unpublish({
-        //     keys: idsToUnpublish,
-        // });
+    return {
+        totalFound: matchingContent.total,
+        skipped: skippedContent,
+        failed: failedContent,
+        unpublished: unpublishedContent,
+    };
+};
 
-        // logger.info(`Unpublished: ${unpublished}`);
+export const unpublishOldNews = () =>
+    runInContext({ asAdmin: true }, () => {
+        const started = Date.now();
 
-        persistLogs(matchingContent);
+        const pressReleasesResult = findAndUnpublishOldContent(
+            pressReleasesQuery(),
+            new Date(started - ONE_YEAR_MS).toISOString()
+        );
+
+        persistResult(pressReleasesResult, started, 'pressReleases');
+
+        const newsResult = findAndUnpublishOldContent(
+            newsQuery(),
+            new Date(started - TWO_YEARS_MS).toISOString()
+        );
+
+        persistResult(newsResult, started, 'news');
     });
 
 export const activateUnpublishOldNewsSchedule = () => {

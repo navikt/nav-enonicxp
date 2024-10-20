@@ -40,8 +40,8 @@ if (app.config.env !== 'test') {
 }
 
 activateLayersEventListeners();
-activateCacheEventListeners();
-activateContentListItemUnpublishedListener();
+// activateCacheEventListeners();
+// activateContentListItemUnpublishedListener();
 activateCustomPathNodeListeners();
 activateExternalSearchIndexEventHandlers();
 activateContentUpdateListener();
