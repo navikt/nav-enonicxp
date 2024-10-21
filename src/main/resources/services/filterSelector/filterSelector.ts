@@ -1,6 +1,6 @@
 import * as portalLib from '/lib/xp/portal';
 import { Content } from '/lib/xp/content';
-import { getRepoConnection } from '../../lib/utils/repo-utils';
+import { getRepoConnection } from '../../lib/repos/repo-utils';
 import { getComponentConfig } from '../../lib/utils/component-utils';
 import { FiltersMenu } from '@xp-types/site/parts/filters-menu';
 import { logger } from '../../lib/utils/logging';

@@ -2,7 +2,7 @@ import { getExternalSearchConfig } from './config';
 import { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
 import { forceArray } from '../utils/array-utils';
-import { getRepoConnection } from '../utils/repo-utils';
+import { getRepoConnection } from '../repos/repo-utils';
 import { queryAllLayersToRepoIdBuckets } from '../localization/layers-repo-utils/query-all-layers';
 import { buildExternalSearchDocument, SearchDocument } from './document-builder/document-builder';
 import { getLayersData } from '../localization/layers-data';

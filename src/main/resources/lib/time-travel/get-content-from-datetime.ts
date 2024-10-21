@@ -4,7 +4,7 @@ import { runInContext } from '../context/run-in-context';
 import { runInTimeTravelContext } from './run-with-time-travel';
 import { runSitecontentGuillotineQuery } from '../guillotine/queries/run-sitecontent-query';
 import { logger } from '../utils/logging';
-import { getRepoConnection } from '../utils/repo-utils';
+import { getRepoConnection } from '../repos/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { SitecontentResponse } from '../../services/sitecontent/common/content-response';
 import { getLayersMigrationArchivedContentRef } from './layers-migration-refs';

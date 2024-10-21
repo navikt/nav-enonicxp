@@ -8,7 +8,7 @@ import {
     contentTypesInOverviewPages,
     contentTypesWithDeepReferences,
 } from '../contenttype-lists';
-import { getRepoConnection } from '../utils/repo-utils';
+import { getRepoConnection } from '../repos/repo-utils';
 import { APP_DESCRIPTOR } from '../constants';
 import { ContentDescriptor, ContentNode } from '../../types/content-types/content-config';
 import { getParentPath } from '../paths/path-utils';

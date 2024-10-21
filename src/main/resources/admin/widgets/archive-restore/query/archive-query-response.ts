@@ -1,4 +1,4 @@
-import { getRepoConnection } from '../../../../lib/utils/repo-utils';
+import { getRepoConnection } from '../../../../lib/repos/repo-utils';
 import thymeleafLib from '/lib/thymeleaf';
 import { sanitize } from '/lib/xp/common';
 import { Content } from '/lib/xp/content';

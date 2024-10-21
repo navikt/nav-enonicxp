@@ -1,6 +1,6 @@
 import { QueryDsl, RangeDslExpression } from '/lib/xp/node';
 import { UserKey } from '/lib/xp/auditlog';
-import { getRepoConnection } from '../../../../../lib/utils/repo-utils';
+import { getRepoConnection } from '../../../../../lib/repos/repo-utils';
 import { AuditLogArchived, AuditLogPublished, AuditLogUnpublished } from '../types';
 import { Dayjs } from '/assets/dayjs/1.11.9/dayjs.min.js';
 import { forceArray } from '../../../../../lib/utils/array-utils';

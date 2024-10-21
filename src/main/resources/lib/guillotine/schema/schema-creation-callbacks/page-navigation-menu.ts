@@ -1,6 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { getRepoConnection } from '../../../utils/repo-utils';
+import { getRepoConnection } from '../../../repos/repo-utils';
 import { RepoConnection } from '/lib/xp/node';
 import * as contextLib from '/lib/xp/context';
 import graphQlLib from '/lib/graphql';

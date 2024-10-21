@@ -6,7 +6,7 @@ import { getLayersData } from '../../lib/localization/layers-data';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { CONTENT_ROOT_REPO_ID } from '../../lib/constants';
 import { UnpublishExpiredContent } from '@xp-types/tasks/unpublish-expired-content';
-import { getRepoConnection } from '../../lib/utils/repo-utils';
+import { getRepoConnection } from '../../lib/repos/repo-utils';
 import { deleteExternalSearchDocumentForContent } from '../../lib/search/update-one';
 import { getISONowWithoutMS } from '../../lib/utils/datetime-utils';
 

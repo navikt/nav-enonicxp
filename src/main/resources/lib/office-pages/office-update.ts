@@ -2,7 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { HttpRequestParams, request } from '/lib/http-client';
 import * as commonLib from '/lib/xp/common';
-import { isDraftAndMasterSameVersion } from '../utils/repo-utils';
+import { isDraftAndMasterSameVersion } from '../repos/repo-utils';
 import { OfficePage as OfficePageData } from '@xp-types/site/content-types/office-page';
 import { parseJsonToArray } from '../utils/array-utils';
 import { NavNoDescriptor } from '../../types/common';

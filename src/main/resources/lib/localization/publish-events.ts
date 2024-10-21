@@ -1,7 +1,7 @@
 import * as eventLib from '/lib/xp/event';
 import { EnonicEvent, EnonicEventData } from '/lib/xp/event';
 import { Content } from '/lib/xp/content';
-import { getRepoConnection } from '../utils/repo-utils';
+import { getRepoConnection } from '../repos/repo-utils';
 import { logger } from '../utils/logging';
 import { isContentLocalized } from './locale-utils';
 import { CONTENT_REPO_PREFIX, CONTENT_ROOT_REPO_ID } from '../constants';
@@ -121,7 +121,7 @@ const propagatePublishEventsToLayers = (event: EnonicEvent) => {
             state: 'nonlocalized',
         });
 
-        nonlocalized.forEach(({ repoId, locale }) => {
+        nonlocalized.forEach(({ repoId }) => {
             if (repoId === CONTENT_ROOT_REPO_ID) {
                 return;
             }

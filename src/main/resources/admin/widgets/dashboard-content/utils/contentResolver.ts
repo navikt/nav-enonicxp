@@ -2,7 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { ContentLogData, DashboardContentInfo } from './types';
 import dayjs from '/assets/dayjs/1.11.9/dayjs.min.js';
-import { getContentProjectIdFromRepoId, getRepoConnection } from '../../../../lib/utils/repo-utils';
+import { getContentProjectIdFromRepoId, getRepoConnection } from '../../../../lib/repos/repo-utils';
 import { fixDateFormat } from '../../../../lib/utils/datetime-utils';
 import { APP_DESCRIPTOR } from '../../../../lib/constants';
 import { stripPathPrefix } from '../../../../lib/paths/path-utils';
@@ -29,7 +29,8 @@ const contentTypeNameMap = contentTypesToShow.reduce<Record<string, string>>((ac
     return acc;
 }, {});
 
-export const layerStr = (repo: string) => (repo !== 'default' ? ` [${repo.replace('navno-', '')}]` : '');
+export const layerStr = (repo: string) =>
+    repo !== 'default' ? ` [${repo.replace('navno-', '')}]` : '';
 
 const transformToContentData = (
     contentWithLog: ContentWithLog,
