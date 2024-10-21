@@ -1,4 +1,4 @@
-import { getRepoConnection } from '../utils/repo-utils';
+import { getRepoConnection } from '../repos/repo-utils';
 import { Content } from '/lib/xp/content';
 import { APP_DESCRIPTOR } from '../constants';
 import { createOrUpdateSchedule } from './schedule-job';

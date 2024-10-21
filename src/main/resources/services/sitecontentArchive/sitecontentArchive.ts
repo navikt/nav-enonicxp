@@ -5,7 +5,7 @@ import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { SITECONTENT_404_MSG_PREFIX } from '../../lib/constants';
 import { forceArray } from '../../lib/utils/array-utils';
-import { getRepoConnection } from '../../lib/utils/repo-utils';
+import { getRepoConnection } from '../../lib/repos/repo-utils';
 import { getNodeVersions, getContentVersionFromTime } from '../../lib/utils/version-utils';
 import { runInTimeTravelContext } from '../../lib/time-travel/run-with-time-travel';
 import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-sitecontent-query';

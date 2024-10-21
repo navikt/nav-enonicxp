@@ -97,7 +97,7 @@ export const CONTENT_ROOT_REPO_ID = `${CONTENT_REPO_PREFIX}.${CONTENT_ROOT_PROJE
 
 export const CONTENT_LOCALE_DEFAULT = 'no';
 
-export const SEARCH_REPO_ID = 'nav.no.search';
+export const MISC_REPO_ID = 'nav.no.misc';
 export const NAVNO_ROOT_PATH = '/www.nav.no';
 export const NAVNO_NODE_ROOT_PATH = `/content${NAVNO_ROOT_PATH}`;
 export const REDIRECTS_PATH = '/redirects';

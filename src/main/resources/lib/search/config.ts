@@ -4,10 +4,10 @@ import { RepoConnection } from '/lib/xp/node';
 import { logger } from '../utils/logging';
 import { runInContext } from '../context/run-in-context';
 import { forceArray } from '../utils/array-utils';
-import { getRepoConnection } from '../utils/repo-utils';
+import { getRepoConnection } from '../repos/repo-utils';
 import { CONTENT_ROOT_REPO_ID } from '../constants';
 import { isMainDatanode } from '../cluster-utils/main-datanode';
-import { getSearchRepoConnection, SEARCH_REPO_CONFIG_NODE } from './utils';
+import { getMiscRepoConnection } from '../repos/misc-repo';
 
 type SearchConfig = Content<'no.nav.navno:search-config-v2'>;
 type PersistedSearchConfig = { config?: SearchConfig };
@@ -15,7 +15,8 @@ type KeysConfig = Partial<
     Pick<SearchConfig['data']['defaultKeys'], 'titleKey' | 'ingressKey' | 'textKey'>
 >;
 
-const SEARCH_CONFIG_KEY = `/${SEARCH_REPO_CONFIG_NODE}`;
+const SEARCH_CONFIG_NODE = 'externalConfig';
+const SEARCH_CONFIG_NODE_PATH = `/${SEARCH_CONFIG_NODE}`;
 
 let searchConfig: SearchConfig | null = null;
 
@@ -57,9 +58,14 @@ const validateConfigs = (config: SearchConfig) => {
 };
 
 const persistValidConfig = (config: SearchConfig, repo: RepoConnection) => {
+    if (!repo.exists(SEARCH_CONFIG_NODE_PATH)) {
+        repo.create({ _parentPath: '/', _name: SEARCH_CONFIG_NODE });
+        logger.info(`Created search config node at ${SEARCH_CONFIG_NODE}`);
+    }
+
     try {
         repo.modify<PersistedSearchConfig>({
-            key: SEARCH_CONFIG_KEY,
+            key: SEARCH_CONFIG_NODE_PATH,
             editor: (node) => ({
                 ...node,
                 config,
@@ -71,7 +77,7 @@ const persistValidConfig = (config: SearchConfig, repo: RepoConnection) => {
 };
 
 const getLastValidConfig = (repo: RepoConnection) => {
-    const configNode = repo.get<PersistedSearchConfig>(SEARCH_CONFIG_KEY);
+    const configNode = repo.get<PersistedSearchConfig>(SEARCH_CONFIG_NODE_PATH);
     if (!configNode?.config) {
         logger.critical(`No valid search config found in repo!`);
         return null;
@@ -82,7 +88,7 @@ const getLastValidConfig = (repo: RepoConnection) => {
 
 // Returns true if the latest config is valid
 export const revalidateExternalSearchConfigCache = () => {
-    const searchRepoConnection = getSearchRepoConnection();
+    const searchRepoConnection = getMiscRepoConnection();
 
     const searchConfigHits = runInContext(
         { branch: 'master' },

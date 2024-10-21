@@ -2,13 +2,13 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { QueryDsl } from '/lib/xp/node';
 import { createOrUpdateSchedule } from './schedule-job';
-import { APP_DESCRIPTOR, SEARCH_REPO_ID, URLS } from '../constants';
+import { APP_DESCRIPTOR, MISC_REPO_ID, URLS } from '../constants';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { logger } from '../utils/logging';
 import { MainArticle } from '@xp-types/site/content-types';
-import { getRepoConnection } from '../utils/repo-utils';
 import { runInContext } from '../context/run-in-context';
 import { queryAllLayersToRepoIdBuckets } from '../localization/layers-repo-utils/query-all-layers';
+import { getMiscRepoConnection } from '../repos/misc-repo';
 
 const ONE_YEAR_MS = 1000 * 3600 * 24 * 365;
 const TWO_YEARS_MS = ONE_YEAR_MS * 2;
@@ -16,7 +16,7 @@ const TWO_YEARS_MS = ONE_YEAR_MS * 2;
 const LOG_DIR = 'old-news-archived';
 const LOG_DIR_PATH = `/${LOG_DIR}`;
 
-const pressReleasesQuery = (): QueryDsl => ({
+const pressReleasesQuery: QueryDsl = {
     boolean: {
         must: [
             {
@@ -33,9 +33,9 @@ const pressReleasesQuery = (): QueryDsl => ({
             },
         ],
     },
-});
+};
 
-const newsQuery = (): QueryDsl => ({
+const newsQuery: QueryDsl = {
     boolean: {
         should: [
             {
@@ -64,7 +64,7 @@ const newsQuery = (): QueryDsl => ({
             },
         ],
     },
-});
+};
 
 type ContentDataSimple = Pick<
     Content,
@@ -78,7 +78,6 @@ type ContentDataSimple = Pick<
 
 type ArchiveResult = {
     totalFound: number;
-    skipped: ContentDataSimple[];
     failed: ContentDataSimple[];
     archived: ContentDataSimple[];
 };
@@ -98,11 +97,7 @@ const simplifyContent = (content: Content, repoId: string): ContentDataSimple =>
 };
 
 const persistResult = (result: ArchiveResult, startTs: number, resultType: string) => {
-    const repoConnection = getRepoConnection({
-        repoId: SEARCH_REPO_ID, // Use the old search repo because cba to create a new repo just for this :D
-        asAdmin: true,
-        branch: 'master',
-    });
+    const repoConnection = getMiscRepoConnection();
 
     if (!repoConnection.exists(LOG_DIR_PATH)) {
         repoConnection.create({ _parentPath: '/', _name: LOG_DIR });
@@ -114,7 +109,7 @@ const persistResult = (result: ArchiveResult, startTs: number, resultType: strin
     const logEntryDataToolboxUrl = [
         URLS.PORTAL_ADMIN_ORIGIN,
         '/admin/tool/systems.rcd.enonic.datatoolbox/data-toolbox#node?repo=',
-        SEARCH_REPO_ID,
+        MISC_REPO_ID,
         '&branch=master&path=',
         encodeURIComponent(`${LOG_DIR_PATH}/${logEntryName}`),
     ].join('');
@@ -127,17 +122,15 @@ const persistResult = (result: ArchiveResult, startTs: number, resultType: strin
             finished: now,
             type: resultType,
             totalFound: result.totalFound,
-            totalSkipped: result.skipped.length,
             totalFailed: result.failed.length,
-            totalUnpublished: result.archived.length,
+            totalArchived: result.archived.length,
         },
-        skipped: result.skipped,
         failed: result.failed,
         archived: result.archived,
     });
 
     logger.info(
-        `Archiving result for ${logEntryName}: Found ${result.totalFound} | Archived ${result.archived.length} | Skipped ${result.skipped.length} | Failed ${result.failed.length} - Full results: ${logEntryDataToolboxUrl}`
+        `Archiving result for ${logEntryName}: Total contents found ${result.totalFound} | Success count ${result.archived.length} | Failed count ${result.failed.length} - Full results: ${logEntryDataToolboxUrl}`
     );
 };
 
@@ -155,24 +148,25 @@ const hasNewerDescendants = (content: ContentDataSimple | Content, timestamp: st
 
 const unpublishAndArchiveContents = (
     contents: ContentDataSimple[],
-    timestamp: string
+    cutoffTs: string
 ): ArchiveResult => {
     const contentToUnpublish: ContentDataSimple[] = [];
-    const skippedContent: ArchiveResult['skipped'] = [];
+    const archivedContent: ArchiveResult['archived'] = [];
+    const failedContent: ArchiveResult['failed'] = [];
 
     contents.forEach((content) => {
-        if (hasNewerDescendants(content, timestamp)) {
+        if (hasNewerDescendants(content, cutoffTs)) {
             logger.error(
                 `Content ${content._id} / ${content._path} has newer descendants, skipping unpublish`
             );
-            skippedContent.push(content);
+            failedContent.push({
+                ...content,
+                error: 'Content has children newer than the specified cutoff timestamp',
+            });
         } else {
             contentToUnpublish.push(content);
         }
     });
-
-    const archivedContent: ArchiveResult['archived'] = [];
-    const failedContent: ArchiveResult['failed'] = [];
 
     runInContext({ branch: 'draft', asAdmin: true }, () =>
         contentToUnpublish.forEach((content) => {
@@ -198,13 +192,12 @@ const unpublishAndArchiveContents = (
 
     return {
         totalFound: contents.length,
-        skipped: skippedContent,
         failed: failedContent,
         archived: archivedContent,
     };
 };
 
-const findAndArchiveOldContent = (query: QueryDsl, maxAge: string): ArchiveResult => {
+const findAndArchiveOldContent = (query: QueryDsl, cutoffTs: string): ArchiveResult => {
     const foundContents = queryAllLayersToRepoIdBuckets({
         branch: 'master',
         state: 'localized',
@@ -218,7 +211,7 @@ const findAndArchiveOldContent = (query: QueryDsl, maxAge: string): ArchiveResul
                         {
                             range: {
                                 field: 'modifiedTime',
-                                lt: maxAge,
+                                lt: cutoffTs,
                             },
                         },
                         query,
@@ -230,7 +223,6 @@ const findAndArchiveOldContent = (query: QueryDsl, maxAge: string): ArchiveResul
 
     const result: ArchiveResult = {
         totalFound: 0,
-        skipped: [],
         archived: [],
         failed: [],
     };
@@ -241,11 +233,10 @@ const findAndArchiveOldContent = (query: QueryDsl, maxAge: string): ArchiveResul
         const contentsSimple = contents.map((content) => simplifyContent(content, repoId));
 
         const layerResult = runInContext({ repository: repoId, asAdmin: true }, () =>
-            unpublishAndArchiveContents(contentsSimple, maxAge)
+            unpublishAndArchiveContents(contentsSimple, cutoffTs)
         );
 
         result.totalFound += contents.length;
-        result.skipped.push(...layerResult.skipped);
         result.failed.push(...layerResult.failed);
         result.archived.push(...layerResult.archived);
     });
@@ -258,14 +249,14 @@ export const archiveOldNews = () =>
         const started = Date.now();
 
         const pressReleasesResult = findAndArchiveOldContent(
-            pressReleasesQuery(),
+            pressReleasesQuery,
             new Date(started - ONE_YEAR_MS).toISOString()
         );
 
         persistResult(pressReleasesResult, started, 'pressReleases');
 
         const newsResult = findAndArchiveOldContent(
-            newsQuery(),
+            newsQuery,
             new Date(started - TWO_YEARS_MS).toISOString()
         );
 

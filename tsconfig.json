@@ -45,5 +45,6 @@
             "/assets/dayjs/1.11.9/plugin/utc.js": ["../../../node_modules/dayjs/plugin/utc"]
         }
     },
-    "include": ["src/main/resources/**/*.ts", ".xp-codegen/**/*.ts", "global.d.ts"]
+    "include": ["src/main/resources/**/*.ts", ".xp-codegen/**/*.ts", "global.d.ts"],
+    "exclude": ["src/main/resources/types/xp-libs/lib-*"]
 }
