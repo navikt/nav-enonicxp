@@ -43,8 +43,8 @@ activateLayersEventListeners();
 // TODO: reactivate these after running the big archive job
 // activateCacheEventListeners();
 // activateContentListItemUnpublishedListener();
+// activateExternalSearchIndexEventHandlers();
 activateCustomPathNodeListeners();
-activateExternalSearchIndexEventHandlers();
 activateContentUpdateListener();
 activateSchedulerCleanupSchedule();
 
