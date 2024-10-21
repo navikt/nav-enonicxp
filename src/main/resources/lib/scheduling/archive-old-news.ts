@@ -9,6 +9,7 @@ import { MainArticle } from '@xp-types/site/content-types';
 import { runInContext } from '../context/run-in-context';
 import { queryAllLayersToRepoIdBuckets } from '../localization/layers-repo-utils/query-all-layers';
 import { getMiscRepoConnection } from '../repos/misc-repo';
+import { getRepoConnection } from '../repos/repo-utils';
 
 const ONE_YEAR_MS = 1000 * 3600 * 24 * 365;
 const TWO_YEARS_MS = ONE_YEAR_MS * 2;
@@ -198,10 +199,10 @@ const unpublishAndArchiveContents = (
 };
 
 const findAndArchiveOldContent = (query: QueryDsl, cutoffTs: string): ArchiveResult => {
-    const foundContents = queryAllLayersToRepoIdBuckets({
+    const hitsPerRepo = queryAllLayersToRepoIdBuckets({
         branch: 'master',
         state: 'localized',
-        resolveContent: true,
+        resolveContent: false,
         queryParams: {
             count: 5000,
             sort: 'modifiedTime DESC',
@@ -227,16 +228,25 @@ const findAndArchiveOldContent = (query: QueryDsl, cutoffTs: string): ArchiveRes
         failed: [],
     };
 
-    Object.entries(foundContents).forEach(([repoId, contents]) => {
-        logger.info(`Found ${contents.length} content for archiving in repo ${repoId}`);
+    Object.entries(hitsPerRepo).forEach(([repoId, hits]) => {
+        const layerRepo = getRepoConnection({ repoId, branch: 'master', asAdmin: true });
 
-        const contentsSimple = contents.map((content) => simplifyContent(content, repoId));
+        logger.info(`Found ${hits.length} contents for archiving in repo ${repoId}`);
+
+        const contents = hits.reduce<ContentDataSimple[]>((acc, contentId) => {
+            const contentNode = layerRepo.get<Content>(contentId);
+            if (contentNode) {
+                acc.push(simplifyContent(contentNode, repoId));
+            }
+
+            return acc;
+        }, []);
 
         const layerResult = runInContext({ repository: repoId, asAdmin: true }, () =>
-            unpublishAndArchiveContents(contentsSimple, cutoffTs)
+            unpublishAndArchiveContents(contents, cutoffTs)
         );
 
-        result.totalFound += contents.length;
+        result.totalFound += hits.length;
         result.failed.push(...layerResult.failed);
         result.archived.push(...layerResult.archived);
     });
