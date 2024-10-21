@@ -366,7 +366,7 @@ const deleteStaleOfficePages = (
     const deletedIds: string[] = [];
 
     existingOfficePages.forEach((existingOffice) => {
-        const { enhetNr } = existingOffice.data.officeNorgData.data;
+        const enhetNr = existingOffice.data.officeNorgData?.data?.enhetNr;
 
         if (!validOfficeEnhetsNr.includes(enhetNr)) {
             const deletedId = deleteContent(existingOffice._id);
