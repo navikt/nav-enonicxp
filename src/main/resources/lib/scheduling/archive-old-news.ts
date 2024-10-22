@@ -74,9 +74,9 @@ type ContentDataSimple = Pick<
 > & {
     subType?: MainArticle['contentType'];
     repoId: string;
-    error?: string;
-    childrenIds?: string[];
-    references?: ContentDataSimple[];
+    errors: string[];
+    archivedChildren: string[];
+    references: ContentDataSimple[];
 };
 
 type ArchiveResult = {
@@ -96,6 +96,9 @@ const simplifyContent = (content: Content, repoId: string): ContentDataSimple =>
         modifiedTime,
         type,
         subType: data.contentType,
+        errors: [],
+        references: [],
+        archivedChildren: [],
     };
 };
 
@@ -157,11 +160,11 @@ const getRelevantReferences = (content: ContentDataSimple, repoId: string) => {
     }).run();
 
     if (!references) {
-        return undefined;
+        return [];
     }
 
     return references.reduce<ContentDataSimple[]>((acc, refContent) => {
-        // References from content-lists are automatically fixed by an event handler
+        // References from content-lists are automatically fixed by an event handler on unpublish
         if (refContent.type !== 'no.nav.navno:content-list') {
             acc.push(simplifyContent(refContent, repoId));
         }
@@ -175,45 +178,51 @@ const unpublishAndArchiveContents = (
     repoId: string,
     cutoffTs: string
 ): ArchiveResult => {
-    const contentToUnpublish: ContentDataSimple[] = [];
-    const archivedContent: ArchiveResult['archived'] = [];
-    const failedContent: ArchiveResult['failed'] = [];
+    const contentToArchive: ContentDataSimple[] = [];
+    const archivedContent: ContentDataSimple[] = [];
+    const failedContent: ContentDataSimple[] = [];
 
     contents.forEach((content) => {
+        const contentFinal: ContentDataSimple = {
+            ...content,
+            references: getRelevantReferences(content, repoId),
+        };
+
         if (hasNewerDescendants(content, cutoffTs)) {
-            logger.error(
-                `Content ${content._id} / ${content._path} has newer descendants, skipping unpublish`
+            contentFinal.errors.push(
+                'Innholdet har under-innhold som er nyere enn tidsavgrensingen for arkivering'
             );
-            failedContent.push({
-                ...content,
-                error: 'Content has children newer than the specified cutoff timestamp',
-            });
+        }
+
+        if (contentFinal.references.length > 0) {
+            contentFinal.errors.push('Innholdet har innkommende avhengigheter');
+        }
+
+        if (contentFinal.errors.length > 0) {
+            failedContent.push(contentFinal);
         } else {
-            contentToUnpublish.push({
-                ...content,
-                references: getRelevantReferences(content, repoId),
-            });
+            contentToArchive.push(contentFinal);
         }
     });
 
     runInContext({ branch: 'draft', asAdmin: true }, () =>
-        contentToUnpublish.forEach((content) => {
+        contentToArchive.forEach((content) => {
             try {
-                const unpublishResult = contentLib.unpublish({
+                contentLib.unpublish({
                     keys: [content._id],
                 });
 
-                contentLib.archive({ content: content._id });
+                const archiveResult = contentLib.archive({ content: content._id });
 
                 archivedContent.push({
                     ...content,
-                    childrenIds: unpublishResult.filter((id) => id !== content._id),
+                    archivedChildren: archiveResult.filter((id) => id !== content._id),
                 });
             } catch (e: any) {
                 logger.error(
                     `Failed to unpublish/archive ${content._id} / ${content._path} - ${e}`
                 );
-                failedContent.push({ ...content, error: e.toString() });
+                failedContent.push({ ...content, errors: [e.toString()] });
             }
         })
     );
