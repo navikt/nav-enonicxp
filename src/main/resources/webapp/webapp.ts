@@ -12,7 +12,7 @@ import { externalSearchUpdateAll } from '../lib/search/update-all';
 import { URLS } from '../lib/constants';
 import { fetchAndUpdateOfficeInfo } from '../lib/office-pages/_legacy-office-information/legacy-office-update';
 import { runSchedulerCleanup } from '../lib/scheduling/schedule-cleanup';
-import { archiveOldNews } from '../lib/scheduling/archive-old-news';
+import { archiveOldNews } from '../lib/archiving/archive-old-news';
 
 type ActionsMap = Record<string, { description: string; callback: () => any }>;
 

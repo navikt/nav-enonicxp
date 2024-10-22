@@ -1,84 +1,25 @@
+import { QueryDsl } from '/lib/xp/node';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { QueryDsl } from '/lib/xp/node';
-import { createOrUpdateSchedule } from './schedule-job';
-import { APP_DESCRIPTOR, MISC_REPO_ID, URLS } from '../constants';
-import { ContentDescriptor } from '../../types/content-types/content-config';
-import { logger } from '../utils/logging';
-import { MainArticle } from '@xp-types/site/content-types';
-import { runInContext } from '../context/run-in-context';
 import { queryAllLayersToRepoIdBuckets } from '../localization/layers-repo-utils/query-all-layers';
-import { getMiscRepoConnection } from '../repos/misc-repo';
 import { getRepoConnection } from '../repos/repo-utils';
+import { logger } from '../utils/logging';
+import { runInContext } from '../context/run-in-context';
+import { MISC_REPO_ID, URLS } from '../constants';
+import { buildEditorPath } from '../paths/editor-path';
+import { getMiscRepoConnection } from '../repos/misc-repo';
 import { ReferencesFinder } from '../reference-search/references-finder';
+import { MainArticle } from '@xp-types/site/content-types';
+import { ContentDescriptor } from '../../types/content-types/content-config';
 import { CONTENT_TYPES_WITH_CONTENT_LISTS } from '../contentlists/remove-unpublished';
-
-const ONE_YEAR_MS = 1000 * 3600 * 24 * 365;
-const TWO_YEARS_MS = ONE_YEAR_MS * 2;
-
-const LOG_DIR = 'old-news-archived';
-const LOG_DIR_PATH = `/${LOG_DIR}`;
-
-const contentTypeReferencesToIgnore: ReadonlySet<ContentDescriptor> = new Set(
-    CONTENT_TYPES_WITH_CONTENT_LISTS
-);
-
-const pressReleasesQuery: QueryDsl = {
-    boolean: {
-        must: [
-            {
-                term: {
-                    field: 'type',
-                    value: 'no.nav.navno:main-article' satisfies ContentDescriptor,
-                },
-            },
-            {
-                term: {
-                    field: 'data.contentType',
-                    value: 'pressRelease' satisfies MainArticle['contentType'],
-                },
-            },
-        ],
-    },
-};
-
-const newsQuery: QueryDsl = {
-    boolean: {
-        should: [
-            {
-                boolean: {
-                    must: [
-                        {
-                            term: {
-                                field: 'type',
-                                value: 'no.nav.navno:main-article' satisfies ContentDescriptor,
-                            },
-                        },
-                        {
-                            term: {
-                                field: 'data.contentType',
-                                value: 'news' satisfies MainArticle['contentType'],
-                            },
-                        },
-                    ],
-                },
-            },
-            {
-                term: {
-                    field: 'type',
-                    value: 'no.nav.navno:current-topic-page' satisfies ContentDescriptor,
-                },
-            },
-        ],
-    },
-};
 
 type ContentDataSimple = Pick<
     Content,
-    '_id' | '_path' | 'createdTime' | 'modifiedTime' | 'type'
+    '_id' | '_path' | 'createdTime' | 'modifiedTime' | 'type' | 'displayName'
 > & {
     subType?: MainArticle['contentType'];
     repoId: string;
+    editorUrl: string;
     errors: string[];
     archivedChildren: string[];
     references: ContentDataSimple[];
@@ -90,8 +31,15 @@ type ArchiveResult = {
     archived: ContentDataSimple[];
 };
 
+const LOG_DIR = 'old-news-archived';
+const LOG_DIR_PATH = `/${LOG_DIR}`;
+
+const contentTypeReferencesToIgnore: ReadonlySet<ContentDescriptor> = new Set(
+    CONTENT_TYPES_WITH_CONTENT_LISTS
+);
+
 const simplifyContent = (content: Content, repoId: string): ContentDataSimple => {
-    const { _id, _path, createdTime, modifiedTime, type, data } = content;
+    const { _id, _path, createdTime, modifiedTime, type, data, displayName } = content;
 
     return {
         _id,
@@ -101,13 +49,15 @@ const simplifyContent = (content: Content, repoId: string): ContentDataSimple =>
         modifiedTime,
         type,
         subType: data.contentType,
+        displayName,
+        editorUrl: `${URLS.PORTAL_ADMIN_ORIGIN}${buildEditorPath(_id, repoId)}`,
         errors: [],
         references: [],
         archivedChildren: [],
     };
 };
 
-const persistResult = (result: ArchiveResult, startTs: number, resultType: string) => {
+const persistResultLogs = (result: ArchiveResult, startTs: string, resultType: string) => {
     const repoConnection = getMiscRepoConnection();
 
     if (!repoConnection.exists(LOG_DIR_PATH)) {
@@ -129,7 +79,7 @@ const persistResult = (result: ArchiveResult, startTs: number, resultType: strin
         _parentPath: LOG_DIR_PATH,
         _name: logEntryName,
         summary: {
-            started: new Date(startTs).toISOString(),
+            started: startTs,
             finished: now,
             type: resultType,
             totalFound: result.totalFound,
@@ -240,7 +190,17 @@ const unpublishAndArchiveContents = (
     };
 };
 
-const findAndArchiveOldContent = (query: QueryDsl, cutoffTs: string): ArchiveResult => {
+export const findAndArchiveOldContent = ({
+    query,
+    maxAgeMs,
+    jobName,
+}: {
+    query: QueryDsl;
+    maxAgeMs: number;
+    jobName: string;
+}) => {
+    const cutoffTs = new Date(maxAgeMs).toISOString();
+
     const hitsPerRepo = queryAllLayersToRepoIdBuckets({
         branch: 'master',
         state: 'localized',
@@ -273,7 +233,7 @@ const findAndArchiveOldContent = (query: QueryDsl, cutoffTs: string): ArchiveRes
     Object.entries(hitsPerRepo).forEach(([repoId, hits]) => {
         const layerRepo = getRepoConnection({ repoId, branch: 'master', asAdmin: true });
 
-        logger.info(`Found ${hits.length} contents for archiving in repo ${repoId}`);
+        logger.info(`Found ${hits.length} contents in repo ${repoId} for archiving job ${jobName}`);
 
         const contents = hits.reduce<ContentDataSimple[]>((acc, contentId) => {
             const contentNode = layerRepo.get<Content>(contentId);
@@ -293,38 +253,5 @@ const findAndArchiveOldContent = (query: QueryDsl, cutoffTs: string): ArchiveRes
         result.archived.push(...layerResult.archived);
     });
 
-    return result;
-};
-
-export const archiveOldNews = () =>
-    runInContext({ asAdmin: true }, () => {
-        const started = Date.now();
-
-        const pressReleasesResult = findAndArchiveOldContent(
-            pressReleasesQuery,
-            new Date(started - TWO_YEARS_MS).toISOString()
-        );
-
-        persistResult(pressReleasesResult, started, 'pressReleases');
-
-        const newsResult = findAndArchiveOldContent(
-            newsQuery,
-            new Date(started - ONE_YEAR_MS).toISOString()
-        );
-
-        persistResult(newsResult, started, 'news');
-    });
-
-// TODO: activate this after running an initial (large) job on existing content
-export const activateArchiveNewsSchedule = () => {
-    createOrUpdateSchedule({
-        jobName: 'archive-old-news',
-        jobSchedule: {
-            type: 'CRON',
-            value: '7 * * * 1',
-            timeZone: 'GMT+2:00',
-        },
-        taskDescriptor: `${APP_DESCRIPTOR}:archive-old-news`,
-        taskConfig: {},
-    });
+    persistResultLogs(result, cutoffTs, jobName);
 };
