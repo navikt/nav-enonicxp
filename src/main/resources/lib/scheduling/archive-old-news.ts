@@ -10,6 +10,7 @@ import { runInContext } from '../context/run-in-context';
 import { queryAllLayersToRepoIdBuckets } from '../localization/layers-repo-utils/query-all-layers';
 import { getMiscRepoConnection } from '../repos/misc-repo';
 import { getRepoConnection } from '../repos/repo-utils';
+import { ReferencesFinder } from '../reference-search/references-finder';
 
 const ONE_YEAR_MS = 1000 * 3600 * 24 * 365;
 const TWO_YEARS_MS = ONE_YEAR_MS * 2;
@@ -75,6 +76,7 @@ type ContentDataSimple = Pick<
     repoId: string;
     error?: string;
     childrenIds?: string[];
+    references?: ContentDataSimple[];
 };
 
 type ArchiveResult = {
@@ -147,8 +149,30 @@ const hasNewerDescendants = (content: ContentDataSimple | Content, timestamp: st
     );
 };
 
+const getRelevantReferences = (content: ContentDataSimple, repoId: string) => {
+    const references = new ReferencesFinder({
+        contentId: content._id,
+        repoId,
+        logErrorsOnly: true,
+    }).run();
+
+    if (!references) {
+        return undefined;
+    }
+
+    return references.reduce<ContentDataSimple[]>((acc, refContent) => {
+        // References from content-lists are automatically fixed by an event handler
+        if (refContent.type !== 'no.nav.navno:content-list') {
+            acc.push(simplifyContent(refContent, repoId));
+        }
+
+        return acc;
+    }, []);
+};
+
 const unpublishAndArchiveContents = (
     contents: ContentDataSimple[],
+    repoId: string,
     cutoffTs: string
 ): ArchiveResult => {
     const contentToUnpublish: ContentDataSimple[] = [];
@@ -165,7 +189,10 @@ const unpublishAndArchiveContents = (
                 error: 'Content has children newer than the specified cutoff timestamp',
             });
         } else {
-            contentToUnpublish.push(content);
+            contentToUnpublish.push({
+                ...content,
+                references: getRelevantReferences(content, repoId),
+            });
         }
     });
 
@@ -243,7 +270,7 @@ const findAndArchiveOldContent = (query: QueryDsl, cutoffTs: string): ArchiveRes
         }, []);
 
         const layerResult = runInContext({ repository: repoId, asAdmin: true }, () =>
-            unpublishAndArchiveContents(contents, cutoffTs)
+            unpublishAndArchiveContents(contents, repoId, cutoffTs)
         );
 
         result.totalFound += hits.length;
@@ -260,14 +287,14 @@ export const archiveOldNews = () =>
 
         const pressReleasesResult = findAndArchiveOldContent(
             pressReleasesQuery,
-            new Date(started - ONE_YEAR_MS).toISOString()
+            new Date(started - TWO_YEARS_MS).toISOString()
         );
 
         persistResult(pressReleasesResult, started, 'pressReleases');
 
         const newsResult = findAndArchiveOldContent(
             newsQuery,
-            new Date(started - TWO_YEARS_MS).toISOString()
+            new Date(started - ONE_YEAR_MS).toISOString()
         );
 
         persistResult(newsResult, started, 'news');
