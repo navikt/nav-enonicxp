@@ -1,7 +1,7 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { getNavnoContentPath, stripPathPrefix } from '../../lib/paths/path-utils';
-import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
+import { getNavnoContentPath, stripPathPrefix } from '../../../lib/paths/path-utils';
+import { validateServiceSecretHeader } from '../../../lib/utils/auth-utils';
 
 type ContentTreeEntry = {
     id: string;
@@ -29,7 +29,7 @@ type Params = Partial<{
     path: string;
 }>;
 
-export const get = (req: XP.Request) => {
+export const externalArchiveContentTreeGet = (req: XP.Request) => {
     if (!validateServiceSecretHeader(req)) {
         return {
             status: 401,
