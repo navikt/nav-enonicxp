@@ -74,7 +74,6 @@ export const archiveOldNews = () =>
         });
     });
 
-// TODO: activate this after running an initial (large) job on existing content
 export const activateArchiveNewsSchedule = () => {
     createOrUpdateSchedule({
         jobName: 'archive-old-news',
