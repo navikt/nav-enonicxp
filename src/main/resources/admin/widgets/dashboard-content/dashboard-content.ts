@@ -9,7 +9,7 @@ import { NON_LOCALIZED_QUERY_FILTER } from '../../../lib/localization/layers-rep
 import { contentTypesRenderedByEditorFrontend } from '../../../lib/contenttype-lists';
 import dayjs from '/assets/dayjs/1.11.9/dayjs.min.js';
 import utc from '/assets/dayjs/1.11.9/plugin/utc.js';
-import { getContentProjectIdFromRepoId, getRepoConnection } from '../../../lib/utils/repo-utils';
+import { getContentProjectIdFromRepoId, getRepoConnection } from '../../../lib/repos/repo-utils';
 import { notNullOrUndefined } from '../../../lib/utils/mixed-bag-of-utils';
 import { DashboardContentInfo } from './utils/types';
 import { ContentDescriptor } from '../../../types/content-types/content-config';

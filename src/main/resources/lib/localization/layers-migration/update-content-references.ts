@@ -2,7 +2,7 @@ import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { logger } from '../../utils/logging';
 import { ContentMigrationParams } from './migrate-content-to-layer';
-import { getRepoConnection, isDraftAndMasterSameVersion } from '../../utils/repo-utils';
+import { getRepoConnection, isDraftAndMasterSameVersion } from '../../repos/repo-utils';
 import { getLayersData } from '../layers-data';
 import { RepoBranch } from '../../../types/common';
 import { modifyContentNode } from './modify-content-node';

@@ -4,7 +4,7 @@ import { CreationCallback } from '../../utils/creation-callback-utils';
 import { getLocaleFromContext } from '../../../localization/locale-context';
 import { getPublicPath } from '../../../paths/public-path';
 import { logger } from '../../../utils/logging';
-import { getRepoConnection } from '../../../utils/repo-utils';
+import { getRepoConnection } from '../../../repos/repo-utils';
 import { Content } from '/lib/xp/content';
 import { forceArray } from '../../../utils/array-utils';
 

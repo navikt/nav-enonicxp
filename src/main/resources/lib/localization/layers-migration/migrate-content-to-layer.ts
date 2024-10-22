@@ -4,7 +4,7 @@ import {
     getContentProjectIdFromRepoId,
     getRepoConnection,
     isDraftAndMasterSameVersion,
-} from '../../utils/repo-utils';
+} from '../../repos/repo-utils';
 import { logger } from '../../utils/logging';
 import { RepoBranch } from '../../../types/common';
 import { updateContentReferences } from './update-content-references';

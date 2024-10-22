@@ -3,7 +3,7 @@ import { Content } from '/lib/xp/content';
 import { logger } from '../../utils/logging';
 import { runInLocaleContext } from '../locale-context';
 import { getLayersData } from '../layers-data';
-import { getRepoConnection } from '../../utils/repo-utils';
+import { getRepoConnection } from '../../repos/repo-utils';
 import { insertLayerMigrationData } from './migration-data';
 
 type ArchiveMigratedContentParams = {

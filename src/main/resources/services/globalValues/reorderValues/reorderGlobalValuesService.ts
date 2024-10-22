@@ -1,4 +1,4 @@
-import { getRepoConnection } from '../../../lib/utils/repo-utils';
+import { getRepoConnection } from '../../../lib/repos/repo-utils';
 import { gvServiceInvalidRequestResponse } from '../utils';
 import { getGlobalValueSet } from '../../../lib/global-values/global-value-utils';
 import { logger } from '../../../lib/utils/logging';

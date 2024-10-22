@@ -1,6 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { getRepoConnection } from '../../utils/repo-utils';
+import { getRepoConnection } from '../../repos/repo-utils';
 import { logger } from '../../utils/logging';
 import { runInLocaleContext } from '../locale-context';
 import { ModifyNodeParams } from '/lib/xp/node';

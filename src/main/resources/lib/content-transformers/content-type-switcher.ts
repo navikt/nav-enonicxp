@@ -1,7 +1,7 @@
 import { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
 import { getLayersData } from '../localization/layers-data';
-import { getRepoConnection } from '../utils/repo-utils';
+import { getRepoConnection } from '../repos/repo-utils';
 import { isContentLocalized } from '../localization/locale-utils';
 import { ModifyNodeParams } from '/lib/xp/node';
 import { ContentDescriptor } from '../../types/content-types/content-config';

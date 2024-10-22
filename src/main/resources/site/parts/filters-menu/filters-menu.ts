@@ -1,5 +1,5 @@
 import * as portalLib from '/lib/xp/portal';
-import { getRepoConnection } from '../../../lib/utils/repo-utils';
+import { getRepoConnection } from '../../../lib/repos/repo-utils';
 import { componentPreviewController } from '../../../lib/controllers/component-preview-controller';
 import { generateUUID, isUUID } from '../../../lib/utils/uuid';
 import { getComponentConfigByPath } from '../../../lib/utils/component-utils';
