@@ -41,7 +41,7 @@ const isPublishedOrPrepublished = (contentId: string) => {
     }
 };
 
-export const removeUnpublishedFromContentList = (
+const removeUnpublishedFromContentList = (
     contentList: Content<ContentTypesWithContentLists>
 ): number => {
     let numRemoved = 0;
