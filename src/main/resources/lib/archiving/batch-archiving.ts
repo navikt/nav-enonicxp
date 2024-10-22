@@ -199,7 +199,7 @@ export const findAndArchiveOldContent = ({
     maxAgeMs: number;
     jobName: string;
 }) => {
-    const cutoffTs = new Date(maxAgeMs).toISOString();
+    const cutoffTs = new Date(Date.now() - maxAgeMs).toISOString();
 
     const hitsPerRepo = queryAllLayersToRepoIdBuckets({
         branch: 'master',

@@ -4,7 +4,7 @@ import { APP_DESCRIPTOR } from '../constants';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { MainArticle } from '@xp-types/site/content-types';
 import { runInContext } from '../context/run-in-context';
-import { findAndArchiveOldContent } from './archive-utils';
+import { findAndArchiveOldContent } from './batch-archiving';
 
 const ONE_YEAR_MS = 1000 * 3600 * 24 * 365;
 const TWO_YEARS_MS = ONE_YEAR_MS * 2;
