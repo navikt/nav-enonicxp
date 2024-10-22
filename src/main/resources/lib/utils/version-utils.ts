@@ -16,7 +16,7 @@ const MAX_VERSIONS_COUNT_TO_RETRIEVE = 2000;
 export const getNodeKey = (contentRef: string) =>
     contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
 
-type VersionHistoryReference = NodeVersion & { locale: string };
+export type VersionHistoryReference = NodeVersion & { locale: string };
 
 type GetNodeVersionsParams = {
     nodeKey: string;
