@@ -31,7 +31,7 @@ type ArchiveResult = {
     archived: ContentDataSimple[];
 };
 
-const LOG_DIR = 'old-news-archived';
+const LOG_DIR = 'batch-archiving-logs';
 const LOG_DIR_PATH = `/${LOG_DIR}`;
 
 const contentTypeReferencesToIgnore: ReadonlySet<ContentDescriptor> = new Set(
@@ -91,12 +91,10 @@ const persistResultLogs = (result: ArchiveResult, startTs: string, jobName: stri
     });
 
     logger.info(
-        `Archiving result for ${logEntryName}: Total contents found ${result.totalFound} | Success count ${result.archived.length} | Failed count ${result.failed.length} - Full results: ${logEntryDataToolboxUrl}`
+        `Batch archiving result for ${logEntryName}: Total contents found ${result.totalFound} | Success count ${result.archived.length} | Failed count ${result.failed.length} - Full results: ${logEntryDataToolboxUrl}`
     );
 };
 
-// Unpublishing a content will also unpublish all its descendants. If there are any descendants
-// which are newer than the cut-off timestamp that was set, we don't want to run the unpublish.
 const hasNewerDescendants = (content: ContentDataSimple | Content, timestamp: string): boolean => {
     const children = contentLib.getChildren({ key: content._id, count: 1000 });
 
@@ -144,12 +142,15 @@ const unpublishAndArchiveContents = (
             references: getRelevantReferences(content, repoId),
         };
 
+        // Unpublishing a content will also unpublish all its descendants. If there are any descendants
+        // which are newer than the cut-off timestamp that was set, we don't want to unpublish
         if (hasNewerDescendants(content, cutoffTs)) {
             contentFinal.errors.push(
                 'Innholdet har under-innhold som er nyere enn tidsavgrensingen for arkivering'
             );
         }
 
+        // If the content has inbound references, don't unpublish as it may lead to broken links etc
         if (contentFinal.references.length > 0) {
             contentFinal.errors.push('Innholdet har innkommende avhengigheter');
         }

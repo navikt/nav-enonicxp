@@ -22,6 +22,7 @@ import { activateContentUpdateListener } from './lib/contentUpdate/content-updat
 import { activateExternalSearchIndexEventHandlers } from './lib/search/event-handlers';
 import { initializeMainDatanodeSelection } from './lib/cluster-utils/main-datanode';
 import { activateSchedulerCleanupSchedule } from './lib/scheduling/schedule-cleanup';
+import { activateArchiveNewsSchedule } from './lib/archiving/archive-old-news';
 
 updateClusterInfo();
 initLayersData();
@@ -44,6 +45,7 @@ activateLayersEventListeners();
 // activateCacheEventListeners();
 // activateContentListItemUnpublishedListener();
 // activateExternalSearchIndexEventHandlers();
+// activateArchiveNewsSchedule()
 activateCustomPathNodeListeners();
 activateContentUpdateListener();
 activateSchedulerCleanupSchedule();
