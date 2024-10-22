@@ -44,20 +44,20 @@ const simplifyContent = (content: Content, repoId: string): ContentDataSimple =>
     return {
         _id,
         _path,
-        repoId,
+        displayName,
+        editorUrl: `${URLS.PORTAL_ADMIN_ORIGIN}${buildEditorPath(_id, repoId)}`,
         createdTime,
         modifiedTime,
         type,
         subType: data.contentType,
-        displayName,
-        editorUrl: `${URLS.PORTAL_ADMIN_ORIGIN}${buildEditorPath(_id, repoId)}`,
+        repoId,
         errors: [],
         references: [],
         archivedChildren: [],
     };
 };
 
-const persistResultLogs = (result: ArchiveResult, startTs: string, resultType: string) => {
+const persistResultLogs = (result: ArchiveResult, startTs: string, jobName: string) => {
     const repoConnection = getMiscRepoConnection();
 
     if (!repoConnection.exists(LOG_DIR_PATH)) {
@@ -66,7 +66,7 @@ const persistResultLogs = (result: ArchiveResult, startTs: string, resultType: s
 
     const now = new Date().toISOString();
 
-    const logEntryName = `archived-${resultType}-${now}`;
+    const logEntryName = `archived-${jobName}-${now}`;
     const logEntryDataToolboxUrl = [
         URLS.PORTAL_ADMIN_ORIGIN,
         '/admin/tool/systems.rcd.enonic.datatoolbox/data-toolbox#node?repo=',
@@ -81,7 +81,7 @@ const persistResultLogs = (result: ArchiveResult, startTs: string, resultType: s
         summary: {
             started: startTs,
             finished: now,
-            type: resultType,
+            jobName,
             totalFound: result.totalFound,
             totalFailed: result.failed.length,
             totalArchived: result.archived.length,
