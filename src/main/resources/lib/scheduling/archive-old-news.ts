@@ -11,12 +11,17 @@ import { queryAllLayersToRepoIdBuckets } from '../localization/layers-repo-utils
 import { getMiscRepoConnection } from '../repos/misc-repo';
 import { getRepoConnection } from '../repos/repo-utils';
 import { ReferencesFinder } from '../reference-search/references-finder';
+import { CONTENT_TYPES_WITH_CONTENT_LISTS } from '../contentlists/remove-unpublished';
 
 const ONE_YEAR_MS = 1000 * 3600 * 24 * 365;
 const TWO_YEARS_MS = ONE_YEAR_MS * 2;
 
 const LOG_DIR = 'old-news-archived';
 const LOG_DIR_PATH = `/${LOG_DIR}`;
+
+const contentTypeReferencesToIgnore: ReadonlySet<ContentDescriptor> = new Set(
+    CONTENT_TYPES_WITH_CONTENT_LISTS
+);
 
 const pressReleasesQuery: QueryDsl = {
     boolean: {
@@ -164,8 +169,9 @@ const getRelevantReferences = (content: ContentDataSimple, repoId: string) => {
     }
 
     return references.reduce<ContentDataSimple[]>((acc, refContent) => {
-        // References from content-lists are automatically fixed by an event handler on unpublish
-        if (refContent.type !== 'no.nav.navno:content-list') {
+        // References from certain content types are automatically fixed by an event handler on unpublish
+        // and can safely be ignored
+        if (!contentTypeReferencesToIgnore.has(refContent.type)) {
             acc.push(simplifyContent(refContent, repoId));
         }
 
