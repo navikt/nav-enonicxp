@@ -20,7 +20,7 @@ export const externalArchiveContentIconGet = (req: XP.Request) => {
             status: 404,
             contentType: 'application/json',
             body: {
-                msg: `No icon found for conten type ${type}`,
+                msg: `No icon found for specified content type ${type}`,
             },
         };
     }
