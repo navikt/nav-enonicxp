@@ -96,8 +96,8 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
             }
 
             let status = 'Ny';
-            const modifiedLocalTime = dayjsDateTime(draftContent.modifiedTime);
-            const tsLocalTime = dayjsDateTime(draftContent._ts);
+            const draftModifiedTime = dayjsDateTime(draftContent.modifiedTime);
+            const draftTs = dayjsDateTime(draftContent._ts);
 
             if (masterContent?.publish?.first && masterContent?.publish?.from) {
                 // Innholdet ER publisert, eventuelt endret etterpå
@@ -111,7 +111,7 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
             } else if (draftContent?.archivedTime) {
                 // Arkivert, skal ikke vises her
                 return undefined;
-            } else if (tsLocalTime > modifiedLocalTime) {
+            } else if (dayjs(draftTs).isAfter(dayjs(draftModifiedTime))) {
                 // Hvis avpublisert er større enn endret, skal den fjernes fra Under arbeid
                 return undefined;
             } else if (draftContent?.publish?.first) {
@@ -126,12 +126,11 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
 
             const projectId = getContentProjectIdFromRepoId(hit.repoId);
             const contentTypeInfo = contentInfo.find((el) => el.type === draftContent.type);
-            const dateFinal = dayjs(modifiedLocalTime).format('DD.MM.YYYY - HH:mm:ss');
+            const dateFinal = dayjs(draftModifiedTime).format('DD.MM.YYYY - HH:mm:ss');
 
             return {
                 displayName: draftContent.displayName + layerStr(projectId),
                 contentType: contentTypeInfo ? contentTypeInfo.name : '',
-                modifiedTimeRaw: modifiedLocalTime,
                 modifiedTime: dateFinal,
                 status,
                 title: draftContent._path.replace('/content/www.nav.no/', ''),

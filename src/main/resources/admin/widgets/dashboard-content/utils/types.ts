@@ -52,7 +52,6 @@ export type AuditLogEntry = AuditLogPublished | AuditLogUnpublished | AuditLogAr
 export type DashboardContentInfo = {
     displayName: string;
     contentType: string;
-    modifiedTimeRaw: string;
     modifiedTime: string;
     status: string;
     title: string;
