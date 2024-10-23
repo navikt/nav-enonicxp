@@ -11,10 +11,6 @@ type ContentTreeEntry = {
     displayName: string;
     type: ContentDescriptor;
     numChildren: number;
-    icon?: {
-        data: string;
-        mimeType: string;
-    };
 };
 
 const transformToContentTreeEntry = (content: Content): ContentTreeEntry => {
