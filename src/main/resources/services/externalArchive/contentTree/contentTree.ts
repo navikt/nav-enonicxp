@@ -1,11 +1,8 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import * as ioLib from '/lib/xp/io';
 import { getNavnoContentPath, stripPathPrefix } from '../../../lib/paths/path-utils';
 import { validateServiceSecretHeader } from '../../../lib/utils/auth-utils';
 import { ContentDescriptor } from '../../../types/content-types/content-config';
-import { logger } from '../../../lib/utils/logging';
-import cacheLib from '/lib/cache';
 
 type ContentTreeEntry = {
     id: string;
@@ -20,40 +17,11 @@ type ContentTreeEntry = {
     };
 };
 
-const MAX_CHILDREN = 1000;
-
-const iconsCache = cacheLib.newCache({ size: 100, expire: 3600 * 24 });
-
-const getIcon = (type: ContentDescriptor) =>
-    iconsCache.get(type, () => {
-        const icon = contentLib.getType(type)?.icon;
-
-        if (!icon) {
-            return undefined;
-        }
-
-        try {
-            return {
-                data: ioLib.readText(icon.data),
-                mimeType: icon.mimeType,
-            };
-        } catch (e) {
-            logger.error(`Failed to read icon data stream - ${e}`);
-            return undefined;
-        }
-    });
-
 const transformToContentTreeEntry = (content: Content): ContentTreeEntry => {
     const childrenResult = contentLib.getChildren({
         key: content._id,
         count: 0,
     });
-
-    if (childrenResult.total > MAX_CHILDREN) {
-        logger.critical(
-            `Found more than the max allowed ${MAX_CHILDREN} for content ${content._id}`
-        );
-    }
 
     return {
         id: content._id,
@@ -62,7 +30,6 @@ const transformToContentTreeEntry = (content: Content): ContentTreeEntry => {
         displayName: content.displayName,
         type: content.type,
         numChildren: childrenResult.total,
-        icon: getIcon(content.type),
     };
 };
 
