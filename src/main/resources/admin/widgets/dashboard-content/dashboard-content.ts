@@ -126,12 +126,12 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
 
             const projectId = getContentProjectIdFromRepoId(hit.repoId);
             const contentTypeInfo = contentInfo.find((el) => el.type === draftContent.type);
-            const dateFinal = dayjs(draftModifiedTime).format('DD.MM.YYYY - HH:mm:ss');
 
             return {
                 displayName: draftContent.displayName + layerStr(projectId),
                 contentType: contentTypeInfo ? contentTypeInfo.name : '',
-                modifiedTime: dateFinal,
+                modifiedTimeRaw: draftModifiedTime,
+                modifiedTime: dayjs(draftModifiedTime).format('DD.MM.YYYY - HH:mm:ss'),
                 status,
                 title: draftContent._path.replace('/content/www.nav.no/', ''),
                 url: `/admin/tool/com.enonic.app.contentstudio/main/${projectId}/edit/${draftContent._id}`,
