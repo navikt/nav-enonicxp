@@ -6,8 +6,8 @@ import { runSitecontentGuillotineQuery } from '../../../lib/guillotine/queries/r
 
 type Response = {
     contentRaw: Content;
+    contentRenderProps?: Record<string, unknown>;
     versions: VersionHistoryReference[];
-    contentForRender?: Record<string, unknown>;
 };
 
 export const externalArchiveContentGet = (req: XP.Request) => {
@@ -29,7 +29,7 @@ export const externalArchiveContentGet = (req: XP.Request) => {
         };
     }
 
-    const contentForRender = runSitecontentGuillotineQuery(contentRaw, 'draft') ?? undefined;
+    const contentRenderProps = runSitecontentGuillotineQuery(contentRaw, 'draft') ?? undefined;
 
     const versions = getPublishedVersionRefs(contentRaw._id, locale);
 
@@ -38,7 +38,7 @@ export const externalArchiveContentGet = (req: XP.Request) => {
         contentType: 'application/json',
         body: {
             contentRaw,
-            contentForRender,
+            contentRenderProps,
             versions,
         } satisfies Response,
     };
