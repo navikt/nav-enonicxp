@@ -26,15 +26,10 @@ const enhetTypesToImport: ReadonlySet<string> = new Set(['ALS', 'OKONOMI', 'OPPF
 const enhetNrToImport: ReadonlySet<string> = new Set([
     '4534', // [KONTROLL] NAV Registerforvaltning
     '4700', // [HMS] Styringsenheten for NAV Hjelpemidler og tilrettelegging
-    '4701', // [HMS] Øst-Viken
-    '4706', // [HMS] Vest-Viken
-    '4711', // [HMS] Rogaland
     '4712', // [HMS] Vestland-Bergen
     '4714', // [HMS] Vestland-Førde
-    '4715', // [HMS] Møre og Romsdal
     '4716', // [HMS] Trøndalag
     '4718', // [HMS] Nordland
-    '4719', // [HMS] Troms og Finnmark
 ]);
 
 const shouldImportOffice = (enhet: OfficeInformation['enhet']) => {
