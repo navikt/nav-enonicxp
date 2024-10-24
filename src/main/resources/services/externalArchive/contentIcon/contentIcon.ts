@@ -1,4 +1,14 @@
 import * as contentLib from '/lib/xp/content';
+import { logger } from '../../../lib/utils/logging';
+import { ContentDescriptor } from '../../../types/content-types/content-config';
+
+const DEFAULT_ICON_TYPE: ContentDescriptor = 'base:folder';
+
+const defaultIcon = contentLib.getType(DEFAULT_ICON_TYPE)?.icon;
+
+if (!defaultIcon) {
+    logger.critical(`No icon found for specified default type ${DEFAULT_ICON_TYPE}`);
+}
 
 export const externalArchiveContentIconGet = (req: XP.Request) => {
     const { type } = req.params;
@@ -13,7 +23,19 @@ export const externalArchiveContentIconGet = (req: XP.Request) => {
         };
     }
 
-    const icon = contentLib.getType(type)?.icon;
+    const typeData = contentLib.getType(type);
+
+    if (!typeData) {
+        return {
+            status: 400,
+            contentType: 'application/json',
+            body: {
+                msg: `Type "${type}" is not valid`,
+            },
+        };
+    }
+
+    const icon = typeData.icon || defaultIcon;
 
     if (!icon) {
         return {
