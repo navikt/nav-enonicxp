@@ -3,15 +3,33 @@ import { Content } from '/lib/xp/content';
 import { getPublishedVersionRefs, VersionHistoryReference } from '../../../lib/utils/version-utils';
 import { runInLocaleContext } from '../../../lib/localization/locale-context';
 import { runSitecontentGuillotineQuery } from '../../../lib/guillotine/queries/run-sitecontent-query';
+import { getLayersData, isValidLocale } from '../../../lib/localization/layers-data';
+import { runInTimeTravelContext } from '../../../lib/time-travel/run-with-time-travel';
 
 type Response = {
     contentRaw: Content;
+    contentRenderProps?: Record<string, unknown>;
     versions: VersionHistoryReference[];
-    contentForRender?: Record<string, unknown>;
+};
+
+const resolveCurrentContent = (content: Content) => {
+    return runSitecontentGuillotineQuery(content, 'draft');
+};
+
+const resolveVersionContent = (content: Content, locale: string) => {
+    return runInTimeTravelContext(
+        {
+            dateTime: content.modifiedTime || content.createdTime,
+            repoId: getLayersData().localeToRepoIdMap[locale],
+            branch: 'master',
+            baseContentKey: content._id,
+        },
+        () => runSitecontentGuillotineQuery(content, 'draft')
+    );
 };
 
 export const externalArchiveContentGet = (req: XP.Request) => {
-    const { id, locale } = req.params;
+    const { id, locale, versionId } = req.params;
 
     if (!id || !locale) {
         return {
@@ -22,14 +40,25 @@ export const externalArchiveContentGet = (req: XP.Request) => {
         };
     }
 
-    const contentRaw = runInLocaleContext({ locale }, () => contentLib.get({ key: id }));
+    if (!isValidLocale(locale)) {
+        return {
+            status: 400,
+            body: {
+                msg: `Invalid locale specified: ${locale}`,
+            },
+        };
+    }
+
+    const contentRaw = runInLocaleContext({ locale }, () => contentLib.get({ key: id, versionId }));
     if (!contentRaw) {
         return {
             status: 404,
         };
     }
 
-    const contentForRender = runSitecontentGuillotineQuery(contentRaw, 'draft') ?? undefined;
+    const resolvedContent = versionId
+        ? resolveVersionContent(contentRaw, locale)
+        : resolveCurrentContent(contentRaw);
 
     const versions = getPublishedVersionRefs(contentRaw._id, locale);
 
@@ -38,7 +67,7 @@ export const externalArchiveContentGet = (req: XP.Request) => {
         contentType: 'application/json',
         body: {
             contentRaw,
-            contentForRender,
+            contentRenderProps: resolvedContent ?? undefined,
             versions,
         } satisfies Response,
     };

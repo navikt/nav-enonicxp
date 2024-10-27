@@ -2,6 +2,7 @@ import { getServiceRequestSubPath } from '../service-utils';
 import { externalArchiveContentTreeGet } from './contentTree/contentTree';
 import { externalArchiveContentGet } from './content/content';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
+import { externalArchiveContentIconGet } from './contentIcon/contentIcon';
 
 const getRequestHandler = (req: XP.Request) => {
     const subPath = getServiceRequestSubPath(req);
@@ -11,6 +12,8 @@ const getRequestHandler = (req: XP.Request) => {
             return externalArchiveContentTreeGet;
         case 'content':
             return externalArchiveContentGet;
+        case 'contentIcon':
+            return externalArchiveContentIconGet;
         default:
             return null;
     }
