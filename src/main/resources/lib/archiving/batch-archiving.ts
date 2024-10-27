@@ -57,7 +57,12 @@ const simplifyContent = (content: Content, repoId: string): ContentDataSimple =>
     };
 };
 
-const persistResultLogs = (result: ArchiveResult, startTs: string, jobName: string) => {
+const persistResultLogs = (
+    result: ArchiveResult,
+    startTs: string,
+    jobName: string,
+    query: QueryDsl
+) => {
     const repoConnection = getMiscRepoConnection();
 
     if (!repoConnection.exists(LOG_DIR_PATH)) {
@@ -82,6 +87,7 @@ const persistResultLogs = (result: ArchiveResult, startTs: string, jobName: stri
             started: startTs,
             finished: now,
             jobName,
+            query: JSON.stringify(query),
             totalFound: result.totalFound,
             totalFailed: result.failed.length,
             totalArchived: result.archived.length,
@@ -254,5 +260,5 @@ export const findAndArchiveOldContent = ({
         result.archived.push(...layerResult.archived);
     });
 
-    persistResultLogs(result, cutoffTs, jobName);
+    persistResultLogs(result, cutoffTs, jobName, query);
 };
