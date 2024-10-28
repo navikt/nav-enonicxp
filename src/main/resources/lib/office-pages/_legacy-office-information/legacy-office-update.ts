@@ -29,7 +29,6 @@ const enhetNrToImport: ReadonlySet<string> = new Set([
     '4712', // [HMS] Vestland-Bergen
     '4714', // [HMS] Vestland-Førde
     '4716', // [HMS] Trøndalag
-    '4718', // [HMS] Nordland
 ]);
 
 const shouldImportOffice = (enhet: OfficeInformation['enhet']) => {
