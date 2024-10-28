@@ -8,11 +8,12 @@ import * as contentLib from '/lib/xp/content';
 import * as nodeLib from '/lib/xp/node';
 import * as contextLib from '/lib/xp/context';
 import { RepoConnection } from '/lib/xp/node';
-import { getNodeKey, getContentVersionFromTime } from '../utils/version-utils';
+import { getContentVersionFromTime } from '../utils/version-utils';
 import { runInContext } from '../context/run-in-context';
 import { logger } from '../utils/logging';
 import { contentLibGetStandard, nodeLibConnectStandard } from './standard-functions';
 import { getTimeTravelContext } from './run-with-time-travel';
+import { getContentNodeKey } from '../utils/content-utils';
 
 let timeTravelHooksEnabled = false;
 
@@ -62,7 +63,7 @@ export const hookLibsWithTimeTravel = () => {
         } = timeTravelContext;
 
         const requestedVersion = getContentVersionFromTime({
-            nodeKey: getNodeKey(key),
+            nodeKey: getContentNodeKey(key),
             repoId: timeTravelRepoId,
             branch: timeTravelBranch,
             unixTime: timeTravelTargetUnixTime,
