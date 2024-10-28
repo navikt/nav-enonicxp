@@ -94,7 +94,7 @@ const filterNonModifiedVersions = (
 };
 
 // Used by the version history selector in the frontend and the external archive
-export const getPublishedVersions = (contentKey: string, locale: string) => {
+export const getPublishedAndModifiedVersions = (contentKey: string, locale: string) => {
     const nodeKey = getContentNodeKey(contentKey);
     const repoId = getLayersData().localeToRepoIdMap[locale];
     const repo = nodeLibConnectStandard({ branch: 'master', repoId });

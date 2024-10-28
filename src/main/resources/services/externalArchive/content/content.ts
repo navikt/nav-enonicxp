@@ -5,7 +5,7 @@ import { runSitecontentGuillotineQuery } from '../../../lib/guillotine/queries/r
 import { getLayersData, isValidLocale } from '../../../lib/localization/layers-data';
 import { runInTimeTravelContext } from '../../../lib/time-travel/run-with-time-travel';
 import {
-    getPublishedVersions,
+    getPublishedAndModifiedVersions,
     VersionReferenceEnriched,
 } from '../../../lib/time-travel/get-published-versions';
 
@@ -63,7 +63,7 @@ export const externalArchiveContentGet = (req: XP.Request) => {
         ? resolveVersionContent(contentRaw, locale)
         : resolveCurrentContent(contentRaw);
 
-    const versions = getPublishedVersions(contentRaw._id, locale);
+    const versions = getPublishedAndModifiedVersions(contentRaw._id, locale);
 
     return {
         status: 200,
