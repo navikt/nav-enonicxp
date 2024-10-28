@@ -1,6 +1,9 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { getPublishedVersionRefs, VersionHistoryReference } from '../../../lib/utils/version-utils';
+import {
+    getPublishedVersionRefs,
+    VersionReferenceEnriched,
+} from '../../../lib/utils/version-utils';
 import { runInLocaleContext } from '../../../lib/localization/locale-context';
 import { runSitecontentGuillotineQuery } from '../../../lib/guillotine/queries/run-sitecontent-query';
 import { getLayersData, isValidLocale } from '../../../lib/localization/layers-data';
@@ -9,7 +12,7 @@ import { runInTimeTravelContext } from '../../../lib/time-travel/run-with-time-t
 type Response = {
     contentRaw: Content;
     contentRenderProps?: Record<string, unknown>;
-    versions: VersionHistoryReference[];
+    versions: VersionReferenceEnriched[];
 };
 
 const resolveCurrentContent = (content: Content) => {
