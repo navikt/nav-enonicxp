@@ -8,6 +8,7 @@ import { getLayersMigrationArchivedContentRef } from './layers-migration-refs';
 import { getNodeVersions, GetNodeVersionsParams } from '../utils/version-utils';
 import { getContentNodeKey } from '../utils/content-utils';
 import { logger } from '../utils/logging';
+import { getRepoConnection } from '../utils/repo-utils';
 
 export type VersionReferenceEnriched = NodeVersion & { locale: string } & Pick<
         Content,
@@ -68,9 +69,12 @@ const getPreLayersMigrationVersions = ({
         (version) => version.nodePath.startsWith('/content') && version.timestamp < migrationTs
     );
 
+    const archivedRepo = getRepoConnection({ branch: 'master', repoId: archivedRepoId });
     const locale = getLayersData().repoIdToLocaleMap[archivedRepoId];
 
-    return preMigrationVersions.map((version) => enrichVersionReference(repo, version, locale));
+    return preMigrationVersions.map((version) =>
+        enrichVersionReference(archivedRepo, version, locale)
+    );
 };
 
 const sortByTimestamp = (a: VersionReferenceEnriched, b: VersionReferenceEnriched) =>
