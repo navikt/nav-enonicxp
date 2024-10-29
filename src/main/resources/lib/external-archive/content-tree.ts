@@ -16,6 +16,7 @@ type ContentTreeEntry = {
     name: string;
     displayName: string;
     type: ContentDescriptor;
+    locale: string;
     numChildren: number;
     isLocalized: boolean;
     hasLocalizedDescendants: boolean;
@@ -45,7 +46,11 @@ const hasLocalizedDescendants = (content: Content, repo: RepoConnection) => {
     return result.total > 0;
 };
 
-const transformToContentTreeEntry = (content: Content, repo: RepoConnection): ContentTreeEntry => {
+const transformToContentTreeEntry = (
+    content: Content,
+    repo: RepoConnection,
+    locale: string
+): ContentTreeEntry => {
     const childrenResult = repo.findChildren({
         parentKey: content._id,
         countOnly: true,
@@ -57,13 +62,18 @@ const transformToContentTreeEntry = (content: Content, repo: RepoConnection): Co
         name: content._name,
         displayName: content.displayName,
         type: content.type,
+        locale,
         numChildren: childrenResult.total,
         isLocalized: isContentLocalized(content),
         hasLocalizedDescendants: hasLocalizedDescendants(content, repo),
     };
 };
 
-const getContentChildren = (parentContent: Content, repo: RepoConnection): ContentTreeEntry[] => {
+const getContentChildren = (
+    parentContent: Content,
+    repo: RepoConnection,
+    locale: string
+): ContentTreeEntry[] => {
     const { hits, total } = repo.findChildren({
         parentKey: parentContent._id,
         count: MAX_CHILDREN_COUNT,
@@ -79,7 +89,7 @@ const getContentChildren = (parentContent: Content, repo: RepoConnection): Conte
     const childContents = hits.reduce<ContentTreeEntry[]>((acc, { id }) => {
         const content = getLastPublishedContentVersion(id, repo);
         if (content) {
-            acc.push(transformToContentTreeEntry(content, repo));
+            acc.push(transformToContentTreeEntry(content, repo, locale));
         }
 
         return acc;
@@ -112,7 +122,7 @@ export const buildExternalArchiveContentTreeLevel = (
     }
 
     return {
-        current: transformToContentTreeEntry(content, repo),
-        children: getContentChildren(content, repo),
+        current: transformToContentTreeEntry(content, repo, locale),
+        children: getContentChildren(content, repo, locale),
     };
 };
