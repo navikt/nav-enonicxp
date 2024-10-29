@@ -1,6 +1,4 @@
-import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { runInLocaleContext } from '../../../lib/localization/locale-context';
 import { runSitecontentGuillotineQuery } from '../../../lib/guillotine/queries/run-sitecontent-query';
 import { getLayersData, isValidLocale } from '../../../lib/localization/layers-data';
 import { runInTimeTravelContext } from '../../../lib/time-travel/run-with-time-travel';
@@ -8,6 +6,10 @@ import {
     getPublishedAndModifiedVersions,
     VersionReferenceEnriched,
 } from '../../../lib/time-travel/get-published-versions';
+import { getLastPublishedContentVersion } from '../../../lib/external-archive/last-published-content';
+import { getRepoConnection } from '../../../lib/utils/repo-utils';
+import { RepoConnection } from '/lib/xp/node';
+import { transformRepoContentNode } from '../../../lib/utils/content-utils';
 
 type Response = {
     contentRaw: Content;
@@ -31,6 +33,11 @@ const resolveVersionContent = (content: Content, locale: string) => {
     );
 };
 
+const getRequestedContentVersion = (contentId: string, versionId: string, repo: RepoConnection) => {
+    const contentNode = repo.get<Content>({ key: contentId, versionId });
+    return contentNode ? transformRepoContentNode(contentNode) : null;
+};
+
 export const externalArchiveContentGet = (req: XP.Request) => {
     const { id, locale, versionId } = req.params;
 
@@ -52,7 +59,16 @@ export const externalArchiveContentGet = (req: XP.Request) => {
         };
     }
 
-    const contentRaw = runInLocaleContext({ locale }, () => contentLib.get({ key: id, versionId }));
+    const repo = getRepoConnection({
+        repoId: getLayersData().localeToRepoIdMap[locale],
+        branch: 'draft',
+        asAdmin: true,
+    });
+
+    const contentRaw = versionId
+        ? getRequestedContentVersion(id, versionId, repo)
+        : getLastPublishedContentVersion(id, repo);
+
     if (!contentRaw) {
         return {
             status: 404,

@@ -3,12 +3,12 @@ import { NAVNO_NODE_ROOT_PATH } from '../constants';
 import { Content } from '/lib/xp/content';
 import { RepoConnection } from '/lib/xp/node';
 import { NON_LOCALIZED_QUERY_FILTER } from '../localization/layers-repo-utils/localization-state-filters';
-import { stripPathPrefix } from '../paths/path-utils';
+import { stripPathPrefix, stripTrailingSlash } from '../paths/path-utils';
 import { isContentLocalized } from '../localization/locale-utils';
 import { logger } from '../utils/logging';
-import { forceArray } from '../utils/array-utils';
 import { getRepoConnection } from '../utils/repo-utils';
 import { getLayersData } from '../localization/layers-data';
+import { getLastPublishedContentVersion } from './last-published-content';
 
 type ContentTreeEntry = {
     id: string;
@@ -24,7 +24,7 @@ type ContentTreeEntry = {
 // TODO: implement pagination with smaller chunks
 const MAX_CHILDREN_COUNT = 1000;
 
-const getFullNodePath = (path: string) => `${NAVNO_NODE_ROOT_PATH}${path.replace(/\/$/, '')}`;
+const getFullNodePath = (path: string) => `${NAVNO_NODE_ROOT_PATH}${stripTrailingSlash(path)}`;
 
 const hasLocalizedDescendants = (content: Content, repo: RepoConnection) => {
     const result = repo.query({
@@ -63,42 +63,53 @@ const transformToContentTreeEntry = (content: Content, repo: RepoConnection): Co
     };
 };
 
-const getContentTreeChildren = (
-    parentContent: Content,
-    repo: RepoConnection
-): ContentTreeEntry[] => {
-    const findChildrenResult = repo.findChildren({
+const getContentChildren = (parentContent: Content, repo: RepoConnection): ContentTreeEntry[] => {
+    const { hits, total } = repo.findChildren({
         parentKey: parentContent._id,
         count: MAX_CHILDREN_COUNT,
     });
 
-    if (findChildrenResult.total > MAX_CHILDREN_COUNT) {
-        logger.error(
-            `Found ${findChildrenResult.total} children count exceeds the maximum ${MAX_CHILDREN_COUNT}!`
-        );
+    if (total > MAX_CHILDREN_COUNT) {
+        logger.error(`Found ${total} children count exceeds the maximum ${MAX_CHILDREN_COUNT}!`);
     }
 
-    const ids = findChildrenResult.hits.map((hit) => hit.id);
+    const childContents = hits.reduce<ContentTreeEntry[]>((acc, { id }) => {
+        const content = getLastPublishedContentVersion(id, repo);
+        if (content) {
+            acc.push(transformToContentTreeEntry(content, repo));
+        }
 
-    const childContents = repo.get<Content>(ids);
+        return acc;
+    }, []);
 
-    return forceArray(childContents).map((content) => transformToContentTreeEntry(content, repo));
+    return childContents;
 };
 
-export const getContentTreeData = (path: string, locale: string) => {
+export const buildExternalArchiveContentTreeLevel = (
+    path: string,
+    locale: string,
+    fromXpArchive: boolean
+) => {
     const repo = getRepoConnection({
         repoId: getLayersData().localeToRepoIdMap[locale],
         branch: 'draft',
         asAdmin: true,
     });
 
-    const content = repo.get<Content>(getFullNodePath(path));
+    // TODO: implement this somehow :D
+    if (fromXpArchive) {
+        return null;
+    }
+
+    const nodePath = getFullNodePath(path);
+
+    const content = getLastPublishedContentVersion(nodePath, repo);
     if (!content) {
         return null;
     }
 
     return {
         current: transformToContentTreeEntry(content, repo),
-        children: getContentTreeChildren(content, repo),
+        children: getContentChildren(content, repo),
     };
 };

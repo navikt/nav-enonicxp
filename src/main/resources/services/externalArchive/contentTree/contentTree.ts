@@ -1,10 +1,11 @@
 import { validateServiceSecretHeader } from '../../../lib/utils/auth-utils';
 import { isValidLocale } from '../../../lib/localization/layers-data';
-import { getContentTreeData } from '../../../lib/external-archive/content-tree';
+import { buildExternalArchiveContentTreeLevel } from '../../../lib/external-archive/content-tree';
 
 type Params = Partial<{
     path: string;
     locale: string;
+    fromArchive?: 'true';
 }>;
 
 export const externalArchiveContentTreeGet = (req: XP.Request) => {
@@ -18,7 +19,7 @@ export const externalArchiveContentTreeGet = (req: XP.Request) => {
         };
     }
 
-    const { path, locale } = req.params as Params;
+    const { path, locale, fromArchive } = req.params as Params;
 
     if (!path) {
         return {
@@ -34,13 +35,17 @@ export const externalArchiveContentTreeGet = (req: XP.Request) => {
         return {
             status: 400,
             body: {
-                message: `Locale ${locale} is not valid`,
+                message: 'Locale not specified or invalid',
             },
             contentType: 'application/json',
         };
     }
 
-    const contentTreeData = getContentTreeData(path, locale);
+    const contentTreeData = buildExternalArchiveContentTreeLevel(
+        path,
+        locale,
+        fromArchive === 'true'
+    );
 
     if (!contentTreeData) {
         return {
