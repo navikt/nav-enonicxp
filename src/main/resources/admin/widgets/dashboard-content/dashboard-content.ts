@@ -111,16 +111,13 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
             } else if (draftContent?.archivedTime) {
                 // Arkivert, skal ikke vises her
                 return undefined;
-            } else if (dayjs(draftTs).isAfter(dayjs(draftModifiedTime))) {
-                // Hvis avpublisert er større enn endret, skal den fjernes fra Under arbeid
-                return undefined;
             } else if (draftContent?.publish?.first) {
                 // Avpublisert, eventuelt endret etterpå
-                if (draftContent?.workflow?.state === 'IN_PROGRESS') {
-                    status = 'Endret';
-                } else {
+                if (dayjs(draftTs).isAfter(dayjs(draftModifiedTime))) {
                     // Avpublisert, skal ikke vises her
                     return undefined;
+                } else {
+                    status = 'Endret';
                 }
             }
 
