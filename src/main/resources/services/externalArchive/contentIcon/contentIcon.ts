@@ -1,8 +1,7 @@
 import * as contentLib from '/lib/xp/content';
 import { logger } from '../../../lib/utils/logging';
-import { ContentDescriptor } from '../../../types/content-types/content-config';
 
-const DEFAULT_ICON_TYPE: ContentDescriptor = 'base:folder';
+const DEFAULT_ICON_TYPE = 'base:structured';
 
 const defaultIcon = contentLib.getType(DEFAULT_ICON_TYPE)?.icon;
 
