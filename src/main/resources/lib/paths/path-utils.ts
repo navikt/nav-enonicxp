@@ -34,5 +34,3 @@ export const isWellFormedContentRef = (contentRef: string) => {
         return false;
     }
 };
-
-export const getNavnoContentPath = (path: string) => `${NAVNO_ROOT_PATH}${path}`;
