@@ -68,5 +68,5 @@ export const transformRepoContentNode = (node: RepoNode<Content>): Content => {
         ...content
     } = node;
 
-    return content;
+    return { ...content, childOrder: _childOrder };
 };

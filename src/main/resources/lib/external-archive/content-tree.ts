@@ -67,6 +67,9 @@ const getContentChildren = (parentContent: Content, repo: RepoConnection): Conte
     const { hits, total } = repo.findChildren({
         parentKey: parentContent._id,
         count: MAX_CHILDREN_COUNT,
+        // According to docs it should inherit the childOrder automatically if this is not set,
+        // but that does not seem to be the case, so we have to set it ourselves
+        childOrder: parentContent.childOrder,
     });
 
     if (total > MAX_CHILDREN_COUNT) {
