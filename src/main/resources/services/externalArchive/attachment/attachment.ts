@@ -9,7 +9,7 @@ export const externalArchiveAttachmentService = (req: XP.Request) => {
             status: 400,
             contentType: 'application/json',
             body: {
-                msg: 'Parameters id and locale are required',
+                msg: 'Parameters id, versionId and locale are required',
             },
         };
     }
