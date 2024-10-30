@@ -8,7 +8,7 @@ import { isContentLocalized } from '../localization/locale-utils';
 import { logger } from '../utils/logging';
 import { getRepoConnection } from '../utils/repo-utils';
 import { getLayersData } from '../localization/layers-data';
-import { getLastPublishedContentVersion } from './content';
+import { getLastPublishedContentVersion } from './get-content';
 
 type ContentTreeEntry = {
     id: string;
