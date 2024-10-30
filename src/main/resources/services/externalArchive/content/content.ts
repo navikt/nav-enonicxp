@@ -6,7 +6,7 @@ import {
     getPublishedAndModifiedVersions,
     VersionReferenceEnriched,
 } from '../../../lib/time-travel/get-published-versions';
-import { getContentForExternalArchive } from '../../../lib/external-archive/content';
+import { getContentForExternalArchive } from '../../../lib/external-archive/get-content';
 
 type Response = {
     contentRaw: Content;

@@ -42,7 +42,6 @@ export const externalArchiveAttachmentService = (req: XP.Request) => {
     }
 
     const { attachment } = content;
-
     if (!attachment) {
         return {
             status: 404,

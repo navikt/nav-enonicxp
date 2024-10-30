@@ -56,24 +56,3 @@ export const isContentAwaitingPrepublish = (
 // If the content ref is a path, ensure it has the /content prefix
 export const getContentNodeKey = (contentRef: string) =>
     contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
-
-export const transformRepoContentNode = (node: RepoNode<Content>): Content => {
-    const {
-        _childOrder,
-        _indexConfig,
-        _inheritsPermissions,
-        _permissions,
-        _state,
-        _nodeType,
-        attachment,
-        ...content
-    } = node;
-
-    const transformedContent: Content = { ...content, childOrder: _childOrder };
-
-    if (attachment) {
-        transformedContent.attachments = { [attachment.name]: attachment };
-    }
-
-    return transformedContent;
-};

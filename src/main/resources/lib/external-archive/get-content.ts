@@ -1,12 +1,12 @@
 import { getRepoConnection } from '../utils/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { Content } from '/lib/xp/content';
-import { transformRepoContentNode } from '../utils/content-utils';
+import { RepoNode } from '/lib/xp/node';
 
-type Props = {
-    contentId: string;
-    versionId?: string;
-    locale: string;
+const transformRepoContentNode = (node: RepoNode<Content>): Content => {
+    const { _indexConfig, _inheritsPermissions, _permissions, ...content } = node;
+
+    return content;
 };
 
 const getContentVersion = (contentId: string, versionId: string, locale: string) => {
@@ -62,7 +62,15 @@ export const getLastPublishedContentVersion = (
     return transformRepoContentNode(contentNode);
 };
 
-export const getContentForExternalArchive = ({ contentId, versionId, locale }: Props) => {
+export const getContentForExternalArchive = ({
+    contentId,
+    versionId,
+    locale,
+}: {
+    contentId: string;
+    versionId?: string;
+    locale: string;
+}): Content | null => {
     return versionId
         ? getContentVersion(contentId, versionId, locale)
         : getLastPublishedContentVersion(contentId, locale);
