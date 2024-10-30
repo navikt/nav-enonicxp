@@ -65,8 +65,15 @@ export const transformRepoContentNode = (node: RepoNode<Content>): Content => {
         _permissions,
         _state,
         _nodeType,
+        attachment,
         ...content
     } = node;
 
-    return { ...content, childOrder: _childOrder };
+    const transformedContent: Content = { ...content, childOrder: _childOrder };
+
+    if (attachment) {
+        transformedContent.attachments = { [attachment.name]: attachment };
+    }
+
+    return transformedContent;
 };
