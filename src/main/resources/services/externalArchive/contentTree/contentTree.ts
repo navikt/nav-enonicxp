@@ -1,6 +1,6 @@
 import { validateServiceSecretHeader } from '../../../lib/utils/auth-utils';
 import { isValidLocale } from '../../../lib/localization/layers-data';
-import { buildExternalArchiveContentTreeLevel } from '../../../lib/external-archive/content-tree';
+import { buildExternalArchiveNavigationLevel } from '../../../lib/external-archive/navigation-tree';
 
 type Params = Partial<{
     path: string;
@@ -41,13 +41,13 @@ export const externalArchiveContentTreeService = (req: XP.Request) => {
         };
     }
 
-    const contentTreeData = buildExternalArchiveContentTreeLevel(
+    const navigationLevelData = buildExternalArchiveNavigationLevel(
         path,
         locale,
         fromArchive === 'true'
     );
 
-    if (!contentTreeData) {
+    if (!navigationLevelData) {
         return {
             status: 404,
             body: {
@@ -59,7 +59,7 @@ export const externalArchiveContentTreeService = (req: XP.Request) => {
 
     return {
         status: 200,
-        body: contentTreeData,
+        body: navigationLevelData,
         contentType: 'application/json',
     };
 };

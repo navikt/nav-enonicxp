@@ -19,8 +19,18 @@ export type Content<ContentType extends ContentDescriptor = ContentDescriptor> =
     ContentDataMapper<ContentType> &
         Omit<ContentOriginal, 'data' | 'type' | 'page' | 'fragment' | 'inherit'> & {
             inherit?: Array<'CONTENT' | 'PARENT' | 'NAME' | 'SORT'>; // This field is incorrectly defined in the original type
-            archivedTime?: string; // This field is missing in the original type
-        };
+            archivedTime?: string; // Archive related fields are missing in the original type
+            archivedBy?: string;
+        } & (
+            | {
+                  originalParentPath: string;
+                  originalName: string;
+              }
+            | {
+                  originalParentPath: undefined;
+                  originalName: undefined;
+              }
+        );
 
 export declare function get<ContentType extends ContentDescriptor = ContentDescriptor>(
     params: GetContentParams

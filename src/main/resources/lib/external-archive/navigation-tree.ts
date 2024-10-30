@@ -9,6 +9,7 @@ import { logger } from '../utils/logging';
 import { getRepoConnection } from '../utils/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { getLastPublishedContentVersion } from './get-content';
+import { ArchiveContentTree } from './navigation-tree-archive';
 
 type ContentTreeEntry = {
     id: string;
@@ -96,17 +97,18 @@ const getContentChildren = (
     }, []);
 };
 
-export const buildExternalArchiveContentTreeLevel = (
-    path: string,
+export const buildExternalArchiveNavigationLevel = (
+    parentPath: string,
     locale: string,
     fromXpArchive: boolean
 ) => {
     // TODO: implement this somehow :D
     if (fromXpArchive) {
-        return null;
+        const contentTree = new ArchiveContentTree(locale).build();
+        return contentTree;
     }
 
-    const nodePath = getFullNodePath(path);
+    const nodePath = getFullNodePath(parentPath);
 
     const content = getLastPublishedContentVersion(nodePath, locale);
     if (!content) {
