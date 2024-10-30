@@ -57,6 +57,10 @@ export const externalArchiveContentService = (req: XP.Request) => {
     if (!contentRaw) {
         return {
             status: 404,
+            contentType: 'application/json',
+            body: {
+                msg: `Content not found for ${id}/${locale}/${versionId}`,
+            },
         };
     }
 

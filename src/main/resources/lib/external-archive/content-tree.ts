@@ -87,7 +87,7 @@ const getContentChildren = (
     }
 
     return hits.reduce<ContentTreeEntry[]>((acc, { id }) => {
-        const content = getLastPublishedContentVersion(id, repo);
+        const content = getLastPublishedContentVersion(id, locale);
         if (content) {
             acc.push(transformToContentTreeEntry(content, repo, locale));
         }
@@ -101,12 +101,6 @@ export const buildExternalArchiveContentTreeLevel = (
     locale: string,
     fromXpArchive: boolean
 ) => {
-    const repo = getRepoConnection({
-        repoId: getLayersData().localeToRepoIdMap[locale],
-        branch: 'draft',
-        asAdmin: true,
-    });
-
     // TODO: implement this somehow :D
     if (fromXpArchive) {
         return null;
@@ -114,10 +108,16 @@ export const buildExternalArchiveContentTreeLevel = (
 
     const nodePath = getFullNodePath(path);
 
-    const content = getLastPublishedContentVersion(nodePath, repo);
+    const content = getLastPublishedContentVersion(nodePath, locale);
     if (!content) {
         return null;
     }
+
+    const repo = getRepoConnection({
+        repoId: getLayersData().localeToRepoIdMap[locale],
+        branch: 'draft',
+        asAdmin: true,
+    });
 
     return {
         current: transformToContentTreeEntry(content, repo, locale),
