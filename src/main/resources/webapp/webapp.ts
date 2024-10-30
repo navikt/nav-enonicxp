@@ -50,7 +50,10 @@ const validActions: ActionsMap = {
     },
     oldNewsUnpublish: {
         description: 'Avpubliser og arkiver gamle nyheter/pressemeldinger',
-        callback: archiveOldNews,
+        callback: () => {
+            archiveOldNews();
+            removeUnpublishedFromAllContentLists();
+        },
     },
     ...(!!URLS.SEARCH_API_URL && {
         updateAllSearchNodesExternal: {
