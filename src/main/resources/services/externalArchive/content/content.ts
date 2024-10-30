@@ -7,7 +7,7 @@ import {
     VersionReferenceEnriched,
 } from '../../../lib/time-travel/get-published-versions';
 import { getLastPublishedContentVersion } from '../../../lib/external-archive/last-published-content';
-import { getRepoConnection } from '../../../lib/utils/repo-utils';
+import { getRepoConnection } from '../../../lib/repos/repo-utils';
 import { RepoConnection } from '/lib/xp/node';
 import { transformRepoContentNode } from '../../../lib/utils/content-utils';
 

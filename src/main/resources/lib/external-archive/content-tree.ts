@@ -6,7 +6,7 @@ import { NON_LOCALIZED_QUERY_FILTER } from '../localization/layers-repo-utils/lo
 import { stripPathPrefix, stripTrailingSlash } from '../paths/path-utils';
 import { isContentLocalized } from '../localization/locale-utils';
 import { logger } from '../utils/logging';
-import { getRepoConnection } from '../utils/repo-utils';
+import { getRepoConnection } from '../repos/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { getLastPublishedContentVersion } from './last-published-content';
 
