@@ -1,5 +1,8 @@
+import * as contentLib from '/lib/xp/content';
 import { ContentNode } from '../../../../types/content-types/content-config';
 import { getSearchDocumentContentType, SearchDocumentContentType } from './content-type';
+import { logger } from '../../../utils/logging';
+import { forceArray } from '../../../utils/array-utils';
 
 export type SearchDocumentMetatag =
     | 'nyhet'
@@ -18,6 +21,55 @@ const informationTypes: ReadonlySet<SearchDocumentContentType> = new Set([
     'oversikt',
     'andre',
 ]);
+
+let pressContentIdsToWatchForUpdates: Set<string> = new Set([]);
+let pressNewsArticles: Set<string> = new Set([]);
+
+// If a contentId arg is set, only update if it matches a content id we're watching
+export const updateSearchMetatagsPressNews = (contentId?: string) => {
+    if (contentId && !pressContentIdsToWatchForUpdates.has(contentId)) {
+        return;
+    }
+    updatePressNewsSets();
+};
+
+const updatePressNewsSets = () => {
+    const pressLandingPages = contentLib.query({
+        count: 10,
+        contentTypes: ['no.nav.navno:press-landing-page'],
+        filters: {
+            exists: {
+                field: 'data.pressNews',
+            },
+        },
+    });
+
+    if (pressLandingPages.total > 10) {
+        logger.critical(`Why are there ${pressLandingPages.total} press landing pages?!`);
+    }
+
+    const pressLandingPageIds = pressLandingPages.hits.map((hit) => hit._id);
+    const newsListIds = pressLandingPages.hits.map((hit) => hit.data.pressNews);
+
+    const newsLists = contentLib.query({
+        count: newsListIds.length,
+        contentTypes: ['no.nav.navno:content-list'],
+        filters: {
+            ids: {
+                values: newsListIds,
+            },
+        },
+    });
+
+    const newsArticleIds = newsLists.hits.map((hit) => forceArray(hit.data.sectionContents)).flat();
+
+    pressContentIdsToWatchForUpdates = new Set([
+        ...pressLandingPageIds,
+        ...newsListIds,
+        ...newsArticleIds,
+    ]);
+    pressNewsArticles = new Set(newsArticleIds);
+};
 
 const isInformation = (content: ContentNode) =>
     informationTypes.has(getSearchDocumentContentType(content));
@@ -46,7 +98,8 @@ const pressePaths = [
 
 const isPresse = (content: ContentNode) =>
     isPressemelding(content) ||
-    (isNyhet(content) && pressePaths.some((path) => content._path.startsWith(path)));
+    (isNyhet(content) && pressePaths.some((path) => content._path.startsWith(path))) ||
+    pressNewsArticles.has(content._id);
 
 export const getSearchDocumentMetatags = (content: ContentNode) => {
     const metaTags: SearchDocumentMetatag[] = [];
