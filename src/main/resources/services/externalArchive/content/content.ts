@@ -7,6 +7,7 @@ import {
     VersionReferenceEnriched,
 } from '../../../lib/time-travel/get-published-versions';
 import { getContentForExternalArchive } from '../../../lib/external-archive/get-content';
+import { runInLocaleContext } from '../../../lib/localization/locale-context';
 
 type Response = {
     contentRaw: Content;
@@ -14,8 +15,10 @@ type Response = {
     versions: VersionReferenceEnriched[];
 };
 
-const resolveCurrentContent = (content: Content) => {
-    return runSitecontentGuillotineQuery(content, 'draft');
+const resolveCurrentContent = (content: Content, locale: string) => {
+    return runInLocaleContext({ locale, branch: 'master' }, () =>
+        runSitecontentGuillotineQuery(content, 'draft')
+    );
 };
 
 const resolveVersionContent = (content: Content, locale: string) => {
@@ -66,7 +69,7 @@ export const externalArchiveContentService = (req: XP.Request) => {
 
     const resolvedContent = versionId
         ? resolveVersionContent(contentRaw, locale)
-        : resolveCurrentContent(contentRaw);
+        : resolveCurrentContent(contentRaw, locale);
 
     const versions = getPublishedAndModifiedVersions(contentRaw._id, locale);
 

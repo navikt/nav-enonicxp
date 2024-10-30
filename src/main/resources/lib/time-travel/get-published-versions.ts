@@ -1,4 +1,4 @@
-import { NodeVersion, RepoConnection } from '/lib/xp/node';
+import { NodeVersion } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { nodeLibConnectStandard } from './standard-functions';
 import { contentTypesWithCustomEditor } from '../contenttype-lists';
@@ -6,7 +6,6 @@ import { ContentDescriptor } from '../../types/content-types/content-config';
 import { getLayersData } from '../localization/layers-data';
 import { getLayersMigrationArchivedContentRef } from './layers-migration-refs';
 import { getNodeVersions, GetNodeVersionsParams } from '../utils/version-utils';
-import { getContentNodeKey } from '../utils/content-utils';
 import { logger } from '../utils/logging';
 import { getRepoConnection } from '../utils/repo-utils';
 
@@ -22,12 +21,15 @@ const contentTypesWithAllVersionsNeeded: ReadonlySet<ContentDescriptor> = new Se
     contentTypesWithCustomEditor
 );
 
-const enrichVersionReference = (
-    repo: RepoConnection,
-    version: NodeVersion,
-    locale: string
-): VersionReferenceEnriched => {
+const enrichVersionReference = (version: NodeVersion, locale: string): VersionReferenceEnriched => {
     const { nodeId, versionId } = version;
+
+    const repo = getRepoConnection({
+        branch: 'draft',
+        repoId: getLayersData().localeToRepoIdMap[locale],
+        asAdmin: true,
+    });
+
     const content = repo.get<Content>({ key: nodeId, versionId });
 
     if (!content) {
@@ -69,12 +71,9 @@ const getPreLayersMigrationVersions = ({
         (version) => version.nodePath.startsWith('/content') && version.timestamp < migrationTs
     );
 
-    const archivedRepo = getRepoConnection({ branch: 'master', repoId: archivedRepoId });
     const locale = getLayersData().repoIdToLocaleMap[archivedRepoId];
 
-    return preMigrationVersions.map((version) =>
-        enrichVersionReference(archivedRepo, version, locale)
-    );
+    return preMigrationVersions.map((version) => enrichVersionReference(version, locale));
 };
 
 const sortByTimestamp = (a: VersionReferenceEnriched, b: VersionReferenceEnriched) =>
@@ -98,19 +97,17 @@ const filterNonModifiedVersions = (
 };
 
 // Used by the version history selector in the frontend and the external archive
-export const getPublishedAndModifiedVersions = (contentKey: string, locale: string) => {
-    const nodeKey = getContentNodeKey(contentKey);
+export const getPublishedAndModifiedVersions = (contentId: string, locale: string) => {
     const repoId = getLayersData().localeToRepoIdMap[locale];
-    const repo = nodeLibConnectStandard({ branch: 'master', repoId });
 
     const params: GetNodeVersionsParams = {
-        nodeKey,
+        nodeKey: contentId,
         repoId,
         branch: 'master',
     };
 
     const normalVersions = getNodeVersions(params).map((version) =>
-        enrichVersionReference(repo, version, locale)
+        enrichVersionReference(version, locale)
     );
 
     const preLayersMigrationVersions = getPreLayersMigrationVersions(params);
