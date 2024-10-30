@@ -34,7 +34,7 @@ export const getLastPublishedContentVersion = (
 
     const publishedContent = masterRepo.get<Content>(contentKey);
     if (publishedContent) {
-        return publishedContent;
+        return transformRepoContentNode(publishedContent);
     }
 
     // If the content is not published, we try to find the last version which was published/committed
@@ -45,10 +45,6 @@ export const getLastPublishedContentVersion = (
     });
 
     const versions = draftRepo.findVersions({ key: contentKey, count: 1000 });
-
-    if (versions.total === 0) {
-        return null;
-    }
 
     const lastPublishedVersion = versions.hits.find((version) => !!version.commitId);
     if (!lastPublishedVersion) {
