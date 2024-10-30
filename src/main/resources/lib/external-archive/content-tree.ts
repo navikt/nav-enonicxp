@@ -8,7 +8,7 @@ import { isContentLocalized } from '../localization/locale-utils';
 import { logger } from '../utils/logging';
 import { getRepoConnection } from '../utils/repo-utils';
 import { getLayersData } from '../localization/layers-data';
-import { getLastPublishedContentVersion } from './last-published-content';
+import { getLastPublishedContentVersion } from './content';
 
 type ContentTreeEntry = {
     id: string;
@@ -86,7 +86,7 @@ const getContentChildren = (
         logger.error(`Found ${total} children count exceeds the maximum ${MAX_CHILDREN_COUNT}!`);
     }
 
-    const childContents = hits.reduce<ContentTreeEntry[]>((acc, { id }) => {
+    return hits.reduce<ContentTreeEntry[]>((acc, { id }) => {
         const content = getLastPublishedContentVersion(id, repo);
         if (content) {
             acc.push(transformToContentTreeEntry(content, repo, locale));
@@ -94,8 +94,6 @@ const getContentChildren = (
 
         return acc;
     }, []);
-
-    return childContents;
 };
 
 export const buildExternalArchiveContentTreeLevel = (

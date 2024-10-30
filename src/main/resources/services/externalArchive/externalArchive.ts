@@ -1,19 +1,22 @@
 import { getServiceRequestSubPath } from '../service-utils';
-import { externalArchiveContentTreeGet } from './contentTree/contentTree';
-import { externalArchiveContentGet } from './content/content';
+import { externalArchiveContentTreeService } from './contentTree/contentTree';
+import { externalArchiveContentService } from './content/content';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
-import { externalArchiveContentIconGet } from './contentIcon/contentIcon';
+import { externalArchiveContentIconService } from './contentIcon/contentIcon';
+import { externalArchiveAttachmentService } from './attachment/attachment';
 
 const getRequestHandler = (req: XP.Request) => {
     const subPath = getServiceRequestSubPath(req);
 
     switch (subPath) {
         case 'contentTree':
-            return externalArchiveContentTreeGet;
+            return externalArchiveContentTreeService;
         case 'content':
-            return externalArchiveContentGet;
+            return externalArchiveContentService;
         case 'contentIcon':
-            return externalArchiveContentIconGet;
+            return externalArchiveContentIconService;
+        case 'attachment':
+            return externalArchiveAttachmentService;
         default:
             return null;
     }
