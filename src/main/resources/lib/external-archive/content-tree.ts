@@ -8,7 +8,7 @@ import { isContentLocalized } from '../localization/locale-utils';
 import { logger } from '../utils/logging';
 import { getRepoConnection } from '../utils/repo-utils';
 import { getLayersData } from '../localization/layers-data';
-import { getLastPublishedContentVersion } from './last-published-content';
+import { getLastPublishedContentVersion } from './content';
 
 type ContentTreeEntry = {
     id: string;
@@ -86,16 +86,14 @@ const getContentChildren = (
         logger.error(`Found ${total} children count exceeds the maximum ${MAX_CHILDREN_COUNT}!`);
     }
 
-    const childContents = hits.reduce<ContentTreeEntry[]>((acc, { id }) => {
-        const content = getLastPublishedContentVersion(id, repo);
+    return hits.reduce<ContentTreeEntry[]>((acc, { id }) => {
+        const content = getLastPublishedContentVersion(id, locale);
         if (content) {
             acc.push(transformToContentTreeEntry(content, repo, locale));
         }
 
         return acc;
     }, []);
-
-    return childContents;
 };
 
 export const buildExternalArchiveContentTreeLevel = (
@@ -103,12 +101,6 @@ export const buildExternalArchiveContentTreeLevel = (
     locale: string,
     fromXpArchive: boolean
 ) => {
-    const repo = getRepoConnection({
-        repoId: getLayersData().localeToRepoIdMap[locale],
-        branch: 'draft',
-        asAdmin: true,
-    });
-
     // TODO: implement this somehow :D
     if (fromXpArchive) {
         return null;
@@ -116,10 +108,16 @@ export const buildExternalArchiveContentTreeLevel = (
 
     const nodePath = getFullNodePath(path);
 
-    const content = getLastPublishedContentVersion(nodePath, repo);
+    const content = getLastPublishedContentVersion(nodePath, locale);
     if (!content) {
         return null;
     }
+
+    const repo = getRepoConnection({
+        repoId: getLayersData().localeToRepoIdMap[locale],
+        branch: 'draft',
+        asAdmin: true,
+    });
 
     return {
         current: transformToContentTreeEntry(content, repo, locale),

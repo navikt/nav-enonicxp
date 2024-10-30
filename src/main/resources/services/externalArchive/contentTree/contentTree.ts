@@ -8,7 +8,7 @@ type Params = Partial<{
     fromArchive?: 'true';
 }>;
 
-export const externalArchiveContentTreeGet = (req: XP.Request) => {
+export const externalArchiveContentTreeService = (req: XP.Request) => {
     if (!validateServiceSecretHeader(req)) {
         return {
             status: 401,

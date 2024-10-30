@@ -6,10 +6,7 @@ import {
     getPublishedAndModifiedVersions,
     VersionReferenceEnriched,
 } from '../../../lib/time-travel/get-published-versions';
-import { getLastPublishedContentVersion } from '../../../lib/external-archive/last-published-content';
-import { getRepoConnection } from '../../../lib/utils/repo-utils';
-import { RepoConnection } from '/lib/xp/node';
-import { transformRepoContentNode } from '../../../lib/utils/content-utils';
+import { getContentForExternalArchive } from '../../../lib/external-archive/content';
 
 type Response = {
     contentRaw: Content;
@@ -33,17 +30,13 @@ const resolveVersionContent = (content: Content, locale: string) => {
     );
 };
 
-const getRequestedContentVersion = (contentId: string, versionId: string, repo: RepoConnection) => {
-    const contentNode = repo.get<Content>({ key: contentId, versionId });
-    return contentNode ? transformRepoContentNode(contentNode) : null;
-};
-
-export const externalArchiveContentGet = (req: XP.Request) => {
+export const externalArchiveContentService = (req: XP.Request) => {
     const { id, locale, versionId } = req.params;
 
     if (!id || !locale) {
         return {
             status: 400,
+            contentType: 'application/json',
             body: {
                 msg: 'Parameters id and locale are required',
             },
@@ -53,25 +46,21 @@ export const externalArchiveContentGet = (req: XP.Request) => {
     if (!isValidLocale(locale)) {
         return {
             status: 400,
+            contentType: 'application/json',
             body: {
                 msg: `Invalid locale specified: ${locale}`,
             },
         };
     }
 
-    const repo = getRepoConnection({
-        repoId: getLayersData().localeToRepoIdMap[locale],
-        branch: 'draft',
-        asAdmin: true,
-    });
-
-    const contentRaw = versionId
-        ? getRequestedContentVersion(id, versionId, repo)
-        : getLastPublishedContentVersion(id, repo);
-
+    const contentRaw = getContentForExternalArchive({ contentId: id, versionId, locale });
     if (!contentRaw) {
         return {
             status: 404,
+            contentType: 'application/json',
+            body: {
+                msg: `Content not found for ${id}/${locale}/${versionId}`,
+            },
         };
     }
 
