@@ -52,3 +52,21 @@ export const isContentAwaitingPrepublish = (
     const isoNow = getISONowWithoutMS();
     return publishFrom ? publishFrom > isoNow : false;
 };
+
+// If the content ref is a path, ensure it has the /content prefix
+export const getContentNodeKey = (contentRef: string) =>
+    contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
+
+export const transformRepoContentNode = (node: RepoNode<Content>): Content => {
+    const {
+        _childOrder,
+        _indexConfig,
+        _inheritsPermissions,
+        _permissions,
+        _state,
+        _nodeType,
+        ...content
+    } = node;
+
+    return { ...content, childOrder: _childOrder };
+};

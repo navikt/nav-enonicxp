@@ -1,41 +1,11 @@
-import * as contentLib from '/lib/xp/content';
-import { Content } from '/lib/xp/content';
-import { getNavnoContentPath, stripPathPrefix } from '../../../lib/paths/path-utils';
 import { validateServiceSecretHeader } from '../../../lib/utils/auth-utils';
-import { ContentDescriptor } from '../../../types/content-types/content-config';
-
-type ContentTreeEntry = {
-    id: string;
-    path: string;
-    name: string;
-    displayName: string;
-    type: ContentDescriptor;
-    numChildren: number;
-};
-
-const transformToContentTreeEntry = (content: Content): ContentTreeEntry => {
-    const childrenResult = contentLib.getChildren({
-        key: content._id,
-        count: 0,
-    });
-
-    return {
-        id: content._id,
-        path: stripPathPrefix(content._path),
-        name: content._name,
-        displayName: content.displayName,
-        type: content.type,
-        numChildren: childrenResult.total,
-    };
-};
-
-const getContentTreeChildren = (path: string) => {
-    const children = contentLib.getChildren({ key: getNavnoContentPath(path), count: 1000 }).hits;
-    return children.map(transformToContentTreeEntry);
-};
+import { isValidLocale } from '../../../lib/localization/layers-data';
+import { buildExternalArchiveContentTreeLevel } from '../../../lib/external-archive/content-tree';
 
 type Params = Partial<{
     path: string;
+    locale: string;
+    fromArchive?: 'true';
 }>;
 
 export const externalArchiveContentTreeGet = (req: XP.Request) => {
@@ -49,7 +19,7 @@ export const externalArchiveContentTreeGet = (req: XP.Request) => {
         };
     }
 
-    const { path } = req.params as Params;
+    const { path, locale, fromArchive } = req.params as Params;
 
     if (!path) {
         return {
@@ -61,13 +31,27 @@ export const externalArchiveContentTreeGet = (req: XP.Request) => {
         };
     }
 
-    const parentContent = contentLib.get({ key: getNavnoContentPath(path) });
+    if (!isValidLocale(locale)) {
+        return {
+            status: 400,
+            body: {
+                message: 'Locale not specified or invalid',
+            },
+            contentType: 'application/json',
+        };
+    }
 
-    if (!parentContent) {
+    const contentTreeData = buildExternalArchiveContentTreeLevel(
+        path,
+        locale,
+        fromArchive === 'true'
+    );
+
+    if (!contentTreeData) {
         return {
             status: 404,
             body: {
-                message: `Not found: ${path}`,
+                message: `Not found: ${path} in ${locale}`,
             },
             contentType: 'application/json',
         };
@@ -75,10 +59,7 @@ export const externalArchiveContentTreeGet = (req: XP.Request) => {
 
     return {
         status: 200,
-        body: {
-            current: transformToContentTreeEntry(parentContent),
-            children: getContentTreeChildren(path),
-        },
+        body: contentTreeData,
         contentType: 'application/json',
     };
 };

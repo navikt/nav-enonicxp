@@ -3,12 +3,12 @@ import { getRepoConnection } from '../repos/repo-utils';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
-import { getNodeKey } from './version-utils';
 import { htmlAreaComponentPaths, htmlAreaDataPaths } from './htmlarea-utils';
 import { runInContext } from '../context/run-in-context';
 import { logger } from './logging';
 import { forceArray, removeDuplicates } from './array-utils';
 import { getNestedValues } from './object-utils';
+import { getContentNodeKey } from './content-utils';
 
 const htmlFragmentMacroPrefix = 'html-fragment fragmentId="';
 
@@ -21,7 +21,7 @@ const getContentNode = (contentRef: string, branch: RepoBranch) => {
         branch: branch || context.branch,
     });
 
-    return repo.get<Content>(getNodeKey(contentRef));
+    return repo.get<Content>(getContentNodeKey(contentRef));
 };
 
 const getFragmentIdsFromHtmlArea = (htmlAreaString: string): string[] => {

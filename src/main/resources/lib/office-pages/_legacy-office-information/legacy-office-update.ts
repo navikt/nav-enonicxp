@@ -25,11 +25,9 @@ const enhetTypesToImport: ReadonlySet<string> = new Set(['ALS', 'OKONOMI', 'OPPF
 // Always import these even if not in the set of types
 const enhetNrToImport: ReadonlySet<string> = new Set([
     '4534', // [KONTROLL] NAV Registerforvaltning
-    '4700', // [HMS] Styringsenheten for NAV Hjelpemidler og tilrettelegging
     '4712', // [HMS] Vestland-Bergen
     '4714', // [HMS] Vestland-Førde
     '4716', // [HMS] Trøndalag
-    '4718', // [HMS] Nordland
 ]);
 
 const shouldImportOffice = (enhet: OfficeInformation['enhet']) => {

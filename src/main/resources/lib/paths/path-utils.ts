@@ -24,6 +24,8 @@ export const stripRedirectsPathPrefix = (path: string) => path.replace(redirects
 
 export const stripLeadingAndTrailingSlash = (path: string) => path.replace(/(^\/)|(\/$)/, '');
 
+export const stripTrailingSlash = (path: string) => path.replace(/\/$/, '');
+
 export const isWellFormedContentRef = (contentRef: string) => {
     try {
         // This will throw if the key is malformed (invalid characters etc)
@@ -34,5 +36,3 @@ export const isWellFormedContentRef = (contentRef: string) => {
         return false;
     }
 };
-
-export const getNavnoContentPath = (path: string) => `${NAVNO_ROOT_PATH}${path}`;
