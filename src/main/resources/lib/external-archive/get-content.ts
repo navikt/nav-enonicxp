@@ -4,9 +4,9 @@ import { Content } from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
 
 const transformRepoContentNode = (node: RepoNode<Content>): Content => {
-    const { _indexConfig, _inheritsPermissions, _permissions, ...content } = node;
+    const { _indexConfig, _inheritsPermissions, _permissions, _childOrder, ...content } = node;
 
-    return content;
+    return { ...content, childOrder: _childOrder };
 };
 
 const getContentVersion = (contentId: string, versionId: string, locale: string) => {
