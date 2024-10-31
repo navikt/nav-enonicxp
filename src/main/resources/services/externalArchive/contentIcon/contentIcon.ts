@@ -9,7 +9,7 @@ if (!defaultIcon) {
     logger.critical(`No icon found for specified default type ${DEFAULT_ICON_TYPE}`);
 }
 
-export const externalArchiveContentIconGet = (req: XP.Request) => {
+export const externalArchiveContentIconService = (req: XP.Request) => {
     const { type } = req.params;
 
     if (!type) {

@@ -96,8 +96,8 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
             }
 
             let status = 'Ny';
-            const modifiedLocalTime = dayjsDateTime(draftContent.modifiedTime);
-            const tsLocalTime = dayjsDateTime(draftContent._ts);
+            const draftModifiedTime = dayjsDateTime(draftContent.modifiedTime);
+            const draftTs = dayjsDateTime(draftContent._ts);
 
             if (masterContent?.publish?.first && masterContent?.publish?.from) {
                 // Innholdet ER publisert, eventuelt endret etterpå
@@ -111,28 +111,24 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
             } else if (draftContent?.archivedTime) {
                 // Arkivert, skal ikke vises her
                 return undefined;
-            } else if (tsLocalTime > modifiedLocalTime) {
-                // Hvis avpublisert er større enn endret, skal den fjernes fra Under arbeid
-                return undefined;
             } else if (draftContent?.publish?.first) {
                 // Avpublisert, eventuelt endret etterpå
-                if (draftContent?.workflow?.state === 'IN_PROGRESS') {
-                    status = 'Endret';
-                } else {
+                if (dayjs(draftTs).isAfter(dayjs(draftModifiedTime))) {
                     // Avpublisert, skal ikke vises her
                     return undefined;
+                } else {
+                    status = 'Endret';
                 }
             }
 
             const projectId = getContentProjectIdFromRepoId(hit.repoId);
             const contentTypeInfo = contentInfo.find((el) => el.type === draftContent.type);
-            const dateFinal = dayjs(modifiedLocalTime).format('DD.MM.YYYY - HH:mm:ss');
 
             return {
                 displayName: draftContent.displayName + layerStr(projectId),
                 contentType: contentTypeInfo ? contentTypeInfo.name : '',
-                modifiedTimeRaw: modifiedLocalTime,
-                modifiedTime: dateFinal,
+                modifiedTimeRaw: draftModifiedTime,
+                modifiedTime: dayjs(draftModifiedTime).format('DD.MM.YYYY - HH:mm:ss'),
                 status,
                 title: draftContent._path.replace('/content/www.nav.no/', ''),
                 url: `/admin/tool/com.enonic.app.contentstudio/main/${projectId}/edit/${draftContent._id}`,

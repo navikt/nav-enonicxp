@@ -17,7 +17,6 @@ import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { getPublicPath } from '../../lib/paths/public-path';
 import { parseJsonToArray } from '../../lib/utils/array-utils';
 import { getLayersMultiConnection } from '../../lib/localization/layers-repo-utils/layers-repo-connection';
-import { transformRepoContentNode } from '../../lib/utils/content-utils';
 
 type Branch = 'published' | 'unpublished' | 'archived';
 
@@ -102,6 +101,20 @@ const getNodeHitsFromQuery = ({ query, branch, types, requestId }: RunQueryParam
     return result;
 };
 
+const transformRepoNode = (node: RepoNode<Content>): Content => {
+    const {
+        _childOrder,
+        _indexConfig,
+        _inheritsPermissions,
+        _permissions,
+        _state,
+        _nodeType,
+        ...content
+    } = node;
+
+    return content;
+};
+
 const runArchiveQuery = (nodeHitsBuckets: RepoIdNodeIdBuckets) => {
     const { repoIdToLocaleMap } = getLayersData();
 
@@ -120,8 +133,8 @@ const runArchiveQuery = (nodeHitsBuckets: RepoIdNodeIdBuckets) => {
             }
 
             const hits = Array.isArray(result)
-                ? result.map(transformRepoContentNode)
-                : [transformRepoContentNode(result)];
+                ? result.map(transformRepoNode)
+                : [transformRepoNode(result)];
 
             const hitsWithRepoIds = hits.map((content) => {
                 return {

@@ -9,7 +9,7 @@ import { COMPONENT_APP_KEY } from '../constants';
 export const isMedia = (content: Content): content is Content<MediaDescriptor> =>
     content.type.startsWith('media:');
 
-export const isArchivedContentNode = (content: RepoNode<Content>) =>
+export const isArchivedContentNode = (content: RepoNode<Content> | Content) =>
     content._path.startsWith('/archive');
 
 export const applyModifiedData = <ContentType extends ContentDescriptor>(
@@ -56,17 +56,3 @@ export const isContentAwaitingPrepublish = (
 // If the content ref is a path, ensure it has the /content prefix
 export const getContentNodeKey = (contentRef: string) =>
     contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
-
-export const transformRepoContentNode = (node: RepoNode<Content>): Content => {
-    const {
-        _childOrder,
-        _indexConfig,
-        _inheritsPermissions,
-        _permissions,
-        _state,
-        _nodeType,
-        ...content
-    } = node;
-
-    return { ...content, childOrder: _childOrder };
-};
