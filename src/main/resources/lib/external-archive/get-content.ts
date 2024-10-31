@@ -2,6 +2,7 @@ import { getRepoConnection } from '../utils/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { Content } from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
+import { isArchivedContentNode } from '../utils/content-utils';
 
 const transformRepoContentNode = (node: RepoNode<Content>): Content => {
     const { _indexConfig, _inheritsPermissions, _permissions, _childOrder, ...content } = node;
@@ -70,8 +71,21 @@ export const getContentForExternalArchive = ({
     contentId: string;
     versionId?: string;
     locale: string;
-}): Content | null => {
-    return versionId
+}): { content: Content | null; isArchived: boolean } => {
+    const latestContent = getRepoConnection({
+        branch: 'draft',
+        repoId: getLayersData().localeToRepoIdMap[locale],
+        asAdmin: true,
+    }).get<Content>(contentId);
+
+    const isArchived = !!(latestContent && isArchivedContentNode(latestContent));
+
+    const contentRequested = versionId
         ? getContentVersion(contentId, versionId, locale)
         : getLastPublishedContentVersion(contentId, locale);
+
+    return {
+        content: contentRequested,
+        isArchived,
+    };
 };

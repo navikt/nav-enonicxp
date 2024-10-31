@@ -8,7 +8,6 @@ import {
 } from '../../../lib/time-travel/get-published-versions';
 import { getContentForExternalArchive } from '../../../lib/external-archive/get-content';
 import { runInLocaleContext } from '../../../lib/localization/locale-context';
-import { isArchivedContentNode } from '../../../lib/utils/content-utils';
 import { getArchivedContent } from '../../../lib/external-archive/get-archived-content';
 
 type Response = {
@@ -23,7 +22,8 @@ const resolveCurrentContent = (content: Content, locale: string) => {
     );
 };
 
-const resolveVersionContent = (content: Content, locale: string) => {
+// Ensures all references versions are resolves to the same timestamp as the specified content
+const resolveToContentTimestamp = (content: Content, locale: string) => {
     return runInTimeTravelContext(
         {
             dateTime: content.modifiedTime || content.createdTime,
@@ -35,18 +35,22 @@ const resolveVersionContent = (content: Content, locale: string) => {
     );
 };
 
-const getContentRenderProps = (content: Content, locale: string, versionId?: string) => {
-    if (isArchivedContentNode(content)) {
-        const repoId = getLayersData().localeToRepoIdMap[locale];
+const getContentRenderProps = (
+    content: Content,
+    locale: string,
+    resolveToTs: boolean,
+    isArchived: boolean
+) => {
+    if (isArchived) {
         return getArchivedContent(
             content._id,
-            repoId,
+            getLayersData().localeToRepoIdMap[locale],
             content.archivedTime || content.modifiedTime || content.createdTime
         );
     }
 
-    return versionId
-        ? resolveVersionContent(content, locale)
+    return resolveToTs
+        ? resolveToContentTimestamp(content, locale)
         : resolveCurrentContent(content, locale);
 };
 
@@ -73,8 +77,12 @@ export const externalArchiveContentService = (req: XP.Request) => {
         };
     }
 
-    const contentRaw = getContentForExternalArchive({ contentId: id, versionId, locale });
-    if (!contentRaw) {
+    const { content, isArchived } = getContentForExternalArchive({
+        contentId: id,
+        versionId,
+        locale,
+    });
+    if (!content) {
         return {
             status: 404,
             contentType: 'application/json',
@@ -84,15 +92,15 @@ export const externalArchiveContentService = (req: XP.Request) => {
         };
     }
 
-    const contentRenderProps = getContentRenderProps(contentRaw, locale);
+    const contentRenderProps = getContentRenderProps(content, locale, !!versionId, isArchived);
 
-    const versions = getPublishedAndModifiedVersions(contentRaw._id, locale);
+    const versions = getPublishedAndModifiedVersions(content._id, locale);
 
     return {
         status: 200,
         contentType: 'application/json',
         body: {
-            contentRaw,
+            contentRaw: content,
             contentRenderProps,
             versions,
         } satisfies Response,
