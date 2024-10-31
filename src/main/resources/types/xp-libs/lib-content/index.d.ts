@@ -27,8 +27,8 @@ export type Content<ContentType extends ContentDescriptor = ContentDescriptor> =
                   originalName: string;
               }
             | {
-                  originalParentPath: undefined;
-                  originalName: undefined;
+                  originalParentPath?: undefined;
+                  originalName?: undefined;
               }
         );
 
