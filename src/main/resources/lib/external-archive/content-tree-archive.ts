@@ -43,7 +43,8 @@ class ArchiveContentTree {
 
     public build() {
         const start = Date.now();
-        this.processContentBatch(0);
+        this.processContentBatch();
+        this.updateChildrenCount();
         const durationSec = (Date.now() - start) / 1000;
 
         const numEntries = Object.values(this.pathMap).length;
@@ -59,7 +60,7 @@ class ArchiveContentTree {
         return this.pathMap[path] ?? null;
     }
 
-    public getContentTreeList() {
+    public getContentNodeList() {
         return (
             Object.values(this.pathMap)
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -72,7 +73,7 @@ class ArchiveContentTree {
         return this.rootNode;
     }
 
-    private processContentBatch(start: number) {
+    private processContentBatch(start: number = 0) {
         const parentContentBatch = this.repoConnection.query({
             start,
             count: this.BATCH_COUNT,
@@ -131,18 +132,30 @@ class ArchiveContentTree {
         const pathSegments = stripLeadingAndTrailingSlash(path).split('/');
         const treeNode = this.getOrCreateTreeNode(pathSegments, 0);
 
+        // If there are multiple archived contents which had the same "live" path
+        // we need to create a new unique path for this content
         if (!treeNode.content.isEmpty) {
-            const newPath = `${path}/${content._id}`;
-            logger.info(
-                `Tree node with path ${path} already exists. Retrying with new path ${newPath} for ${content._id} [${this.locale}].`
-            );
-            this.addToContentTree(content, newPath);
+            this.addToContentTree(content, `${path}/${content._id}`);
             return;
         }
 
-        treeNode.content = transformToContentTreeEntry(content, this.repoConnection, this.locale);
+        treeNode.content = this.transformToContentTreeEntry(content, path);
 
         this.processChildren(treeNode, content);
+    }
+
+    private transformToContentTreeEntry(content: RepoNode<Content>, path: string) {
+        // Use the "virtual" path in our content tree structure instead of the XP archive path
+        const contentWithVirtualPath = {
+            ...content,
+            _path: path,
+        };
+
+        return transformToContentTreeEntry(
+            contentWithVirtualPath,
+            this.repoConnection,
+            this.locale
+        );
     }
 
     // Traverses the tree until it hits the target path, and returns the node for that path
@@ -215,14 +228,18 @@ class ArchiveContentTree {
             displayName: name,
             type: 'base:folder',
             locale: this.locale,
-            numChildren: 1,
+            numChildren: 0,
             isLocalized: true,
             hasLocalizedDescendants: true,
             isEmpty: true,
         };
     }
 
-    private updateChildrenCount() {}
+    private updateChildrenCount() {
+        Object.values(this.pathMap).forEach((entry) => {
+            entry.content.numChildren = Object.keys(entry.children).length;
+        });
+    }
 }
 
 export const ArchiveContentTrees: Record<string, ArchiveContentTree> = {};

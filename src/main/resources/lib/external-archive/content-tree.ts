@@ -45,12 +45,33 @@ const getLiveContentChildren = (
     }, []);
 };
 
-const getArchiveContentChildren = (archiveTreeNode: ArchiveTreeNode | null): ContentTreeEntry[] => {
+const injectArchiveChildren = (
+    liveContentChildren: ContentTreeEntry[],
+    archiveTreeNode: ArchiveTreeNode | null
+): ContentTreeEntry[] => {
     if (!archiveTreeNode) {
-        return [];
+        return liveContentChildren;
     }
 
-    return Object.values(archiveTreeNode.children).map((child) => child.content);
+    const allChildren = [...liveContentChildren];
+
+    Object.values(archiveTreeNode.children).forEach((archiveChild) => {
+        const liveChild = allChildren.find((liveChild) => liveChild.path === archiveChild.path);
+
+        const archiveContent = archiveChild.content;
+
+        if (liveChild) {
+            if (archiveContent.isEmpty) {
+                liveChild.numChildren += archiveContent.numChildren;
+            } else {
+                allChildren.push({ ...archiveContent, numChildren: 0 });
+            }
+        } else {
+            allChildren.push(archiveContent);
+        }
+    });
+
+    return allChildren;
 };
 
 type ArchiveContentTreeLevelData = {
@@ -71,7 +92,7 @@ export const buildExternalArchiveContentTreeLevel = (
 
         return {
             current: archiveNode.content,
-            children: getArchiveContentChildren(archiveNode),
+            children: injectArchiveChildren([], archiveNode),
         };
     }
 
@@ -90,13 +111,13 @@ export const buildExternalArchiveContentTreeLevel = (
         asAdmin: true,
     });
 
+    const liveContentChildren = getLiveContentChildren(liveContent, repo, locale);
+    const allChildren = injectArchiveChildren(liveContentChildren, archiveTreeNode);
+
     return {
         current: liveContent
             ? transformToContentTreeEntry(liveContent, repo, locale)
             : archiveTreeNode?.content,
-        children: [
-            ...getLiveContentChildren(liveContent, repo, locale),
-            ...getArchiveContentChildren(archiveTreeNode),
-        ],
+        children: allChildren,
     };
 };
