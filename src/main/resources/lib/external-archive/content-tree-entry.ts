@@ -15,6 +15,7 @@ export type ContentTreeEntry = {
     numChildren: number;
     isLocalized: boolean;
     hasLocalizedDescendants: boolean;
+    isEmpty?: boolean;
 };
 
 const hasLocalizedDescendants = (content: Content, repo: RepoConnection) => {

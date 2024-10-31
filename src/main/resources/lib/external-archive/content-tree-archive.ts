@@ -10,7 +10,7 @@ import { ContentTreeEntry, transformToContentTreeEntry } from './content-tree-en
 type ArchiveTreeNode = {
     path: string;
     name: string;
-    content?: ContentTreeEntry;
+    content: ContentTreeEntry;
     children: Record<string, ArchiveTreeNode>;
 };
 
@@ -28,9 +28,12 @@ export class ArchiveContentTree {
             asAdmin: true,
             repoId: getLayersData().localeToRepoIdMap[locale],
         });
+
+        const rootNodeName = `archive-root-node-${locale}`;
         this.rootNode = {
             path: '/',
-            name: `archive-root-node-${locale}`,
+            name: rootNodeName,
+            content: this.createEmptyContentTreeEntry('/', rootNodeName),
             children: {},
         };
     }
@@ -38,9 +41,9 @@ export class ArchiveContentTree {
     public build() {
         const start = Date.now();
         this.processContentBatch(0);
-        const duration = Math.round((Date.now() - start) / 1000);
+        const durationSec = (Date.now() - start) / 1000;
         logger.info(
-            `Finished building archive content tree for "${this.locale}" in ${duration} seconds`
+            `Finished building archive content tree for "${this.locale}" in ${durationSec} seconds`
         );
         return this.rootNode;
     }
@@ -49,16 +52,10 @@ export class ArchiveContentTree {
         const parentContentBatch = this.repoConnection.query({
             start,
             count: this.BATCH_COUNT,
-            filters: { boolean: { mustNot: NON_LOCALIZED_QUERY_FILTER } },
-            query: {
+            filters: {
                 boolean: {
+                    mustNot: NON_LOCALIZED_QUERY_FILTER,
                     must: [
-                        {
-                            like: {
-                                field: '_path',
-                                value: '/archive/*',
-                            },
-                        },
                         {
                             exists: {
                                 field: 'originalParentPath',
@@ -67,6 +64,18 @@ export class ArchiveContentTree {
                         {
                             exists: {
                                 field: 'originalName',
+                            },
+                        },
+                    ],
+                },
+            },
+            query: {
+                boolean: {
+                    must: [
+                        {
+                            like: {
+                                field: '_path',
+                                value: '/archive/*',
                             },
                         },
                     ],
@@ -84,7 +93,7 @@ export class ArchiveContentTree {
             }
 
             const originalPath = `${content.originalParentPath}/${content.originalName}`;
-            this.updateContentTreeNode(content, stripPathPrefix(originalPath));
+            this.addToContentTree(content, stripPathPrefix(originalPath));
         });
 
         const nextStart = start + this.BATCH_COUNT;
@@ -94,15 +103,16 @@ export class ArchiveContentTree {
         }
     }
 
-    private updateContentTreeNode(content: RepoNode<Content>, path: string) {
+    private addToContentTree(content: RepoNode<Content>, path: string) {
         const pathSegments = stripLeadingAndTrailingSlash(path).split('/');
         const treeNode = this.getOrCreateTreeNode(pathSegments, 0);
 
         if (treeNode.content) {
+            const newPath = `${path}/${content._id}`;
             logger.info(
-                `Content with path ${path} already exists. Retrying with new path for ${content._id} [${this.locale}].`
+                `Content with path ${path} already exists. Retrying with new path ${newPath} for ${content._id} [${this.locale}].`
             );
-            this.updateContentTreeNode(content, `${path}/${content._id}`);
+            this.addToContentTree(content, newPath);
             return;
         }
 
@@ -126,6 +136,7 @@ export class ArchiveContentTree {
                 path: currentPath,
                 name: currentSegment,
                 children: {},
+                content: this.createEmptyContentTreeEntry(currentPath, currentSegment),
             };
         }
 
@@ -137,10 +148,30 @@ export class ArchiveContentTree {
             : this.getOrCreateTreeNode(pathSegments, nextSegmentIndex, currentNode);
     }
 
-    private processChildren(parentTreeNode: ArchiveTreeNode, parentContentNode: RepoNode<Content>) {
+    private createEmptyContentTreeEntry(path: string, name: string): ContentTreeEntry {
+        return {
+            id: 'empty-node',
+            path,
+            name,
+            displayName: name,
+            type: 'base:folder',
+            locale: this.locale,
+            numChildren: 1,
+            isLocalized: true,
+            hasLocalizedDescendants: true,
+            isEmpty: true,
+        };
+    }
+
+    private processChildren(
+        parentTreeNode: ArchiveTreeNode,
+        parentContentNode: RepoNode<Content>,
+        start = 0
+    ) {
         const children = this.repoConnection.findChildren({
             parentKey: parentContentNode._id,
-            count: 1000,
+            start,
+            count: this.BATCH_COUNT,
         });
 
         children.hits.forEach(({ id }) => {
@@ -154,7 +185,13 @@ export class ArchiveContentTree {
 
             const path = `${parentTreeNode.path}/${childContent._name}`;
 
-            this.updateContentTreeNode(childContent, path);
+            this.addToContentTree(childContent, path);
         });
+
+        const nextStart = start + this.BATCH_COUNT;
+
+        if (children.total > nextStart) {
+            this.processChildren(parentTreeNode, parentContentNode, nextStart);
+        }
     }
 }
