@@ -16,7 +16,7 @@ export type ArchiveTreeNode = {
 };
 
 class ArchiveContentTree {
-    private readonly BATCH_COUNT = 100;
+    private readonly BATCH_COUNT = 1000;
 
     private readonly locale: string;
     private readonly repoConnection: RepoConnection;
@@ -120,11 +120,11 @@ class ArchiveContentTree {
             this.addToContentTree(content, stripPathPrefix(originalPath));
         });
 
-        // const nextStart = start + this.BATCH_COUNT;
-        //
-        // if (parentContentBatch.total > nextStart) {
-        //     this.processContentBatch(nextStart);
-        // }
+        const nextStart = start + this.BATCH_COUNT;
+
+        if (parentContentBatch.total > nextStart) {
+            this.processContentBatch(nextStart);
+        }
     }
 
     private addToContentTree(content: RepoNode<Content>, path: string) {
