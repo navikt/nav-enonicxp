@@ -1,5 +1,5 @@
 import { RepoConnection, RepoNode } from '/lib/xp/node';
-import { stripPathPrefix } from '../paths/path-utils';
+import { stripLeadingAndTrailingSlash, stripPathPrefix } from '../paths/path-utils';
 import { logger } from '../utils/logging';
 import { Content } from '/lib/xp/content';
 import { getRepoConnection } from '../utils/repo-utils';
@@ -38,7 +38,7 @@ export class ArchiveContentTree {
         this.rootNode = {
             path: '/',
             name: `archive-root-node-${locale}`,
-            displayName: `Archive root node for ${locale}`,
+            displayName: `Archive root node for locale "${locale}"`,
             contents: [],
             children: {},
         };
@@ -99,7 +99,7 @@ export class ArchiveContentTree {
     }
 
     private updateContentTreeNode(content: RepoNode<Content>, path: string) {
-        const pathSegments = path.split('/');
+        const pathSegments = stripLeadingAndTrailingSlash(path).split('/');
         const treeNode = this.getOrCreateTreeNode(pathSegments, 0);
 
         treeNode.contents.push({
@@ -114,6 +114,34 @@ export class ArchiveContentTree {
         }
 
         this.processChildren(treeNode, content);
+    }
+
+    // Traverses the tree until it hits the target path, and returns the node for that path
+    // Creates any missing nodes along the way.
+    private getOrCreateTreeNode(
+        pathSegments: string[],
+        currentSegmentIndex: number,
+        parentNode = this.rootNode
+    ): ContentTreeNode {
+        const currentSegment = pathSegments[currentSegmentIndex];
+
+        if (!parentNode.children[currentSegment]) {
+            const currentPath = `/${pathSegments.slice(0, currentSegmentIndex + 1).join('/')}`;
+            parentNode.children[currentSegment] = {
+                path: currentPath,
+                name: currentSegment,
+                displayName: '',
+                children: {},
+                contents: [],
+            };
+        }
+
+        const currentNode = parentNode.children[currentSegment];
+        const nextSegmentIndex = currentSegmentIndex + 1;
+
+        return nextSegmentIndex === pathSegments.length
+            ? currentNode
+            : this.getOrCreateTreeNode(pathSegments, nextSegmentIndex, currentNode);
     }
 
     private processChildren(parentTreeNode: ContentTreeNode, parentContentNode: RepoNode<Content>) {
@@ -135,33 +163,5 @@ export class ArchiveContentTree {
 
             this.updateContentTreeNode(childContent, path);
         });
-    }
-
-    // Traverses the tree until it hits the target path, and returns the node for that path
-    // Creates any missing nodes along the way.
-    private getOrCreateTreeNode(
-        pathSegments: string[],
-        currentSegmentIndex: number,
-        parentNode = this.rootNode
-    ): ContentTreeNode {
-        const currentSegment = pathSegments[currentSegmentIndex];
-
-        if (!parentNode.children[currentSegment]) {
-            const currentPath = `/${pathSegments.slice(0, currentSegmentIndex).join('/')}`;
-            parentNode.children[currentSegment] = {
-                path: currentPath,
-                name: currentSegment,
-                displayName: '',
-                children: {},
-                contents: [],
-            };
-        }
-
-        const currentNode = parentNode.children[currentSegment];
-        const nextSegmentIndex = currentSegmentIndex + 1;
-
-        return nextSegmentIndex === pathSegments.length
-            ? currentNode
-            : this.getOrCreateTreeNode(pathSegments, nextSegmentIndex, currentNode);
     }
 }
