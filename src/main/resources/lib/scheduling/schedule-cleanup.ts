@@ -1,4 +1,4 @@
-import { getRepoConnection } from '../utils/repo-utils';
+import { getRepoConnection } from '../repos/repo-utils';
 import { batchedNodeQuery } from '../utils/batched-query';
 import { logger } from '../utils/logging';
 import { createOrUpdateSchedule } from './schedule-job';

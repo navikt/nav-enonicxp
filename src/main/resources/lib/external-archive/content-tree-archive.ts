@@ -2,7 +2,7 @@ import { RepoConnection, RepoNode } from '/lib/xp/node';
 import { stripLeadingAndTrailingSlash, stripPathPrefix } from '../paths/path-utils';
 import { logger } from '../utils/logging';
 import { Content } from '/lib/xp/content';
-import { getRepoConnection } from '../utils/repo-utils';
+import { getRepoConnection } from '../repos/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { NON_LOCALIZED_QUERY_FILTER } from '../localization/layers-repo-utils/localization-state-filters';
 import { ContentTreeEntry, transformToContentTreeEntry } from './content-tree-entry';

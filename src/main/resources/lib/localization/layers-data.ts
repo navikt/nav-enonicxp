@@ -2,7 +2,7 @@ import * as projectLib from '/lib/xp/project';
 import { Project } from '/lib/xp/project';
 import * as eventLib from '/lib/xp/event';
 import { EnonicEvent } from '/lib/xp/event';
-import { getRepoConnection } from '../utils/repo-utils';
+import { getRepoConnection } from '../repos/repo-utils';
 import { ConnectParams } from '/lib/xp/node';
 import { runInContext } from '../context/run-in-context';
 import { logger } from '../utils/logging';

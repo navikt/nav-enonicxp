@@ -1,4 +1,4 @@
-import { getRepoConnection } from '../utils/repo-utils';
+import { getRepoConnection } from '../repos/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { Content } from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';

@@ -1,4 +1,4 @@
-import { getRepoConnection } from '../utils/repo-utils';
+import { getRepoConnection } from '../repos/repo-utils';
 import { logger } from '../utils/logging';
 import { getContentVersionFromTime, getNodeVersions } from '../utils/version-utils';
 import { getUnixTimeFromDateTimeString } from '../utils/datetime-utils';

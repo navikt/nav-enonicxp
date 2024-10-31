@@ -1,5 +1,5 @@
 import cacheLib from '/lib/cache';
-import { getRepoConnection } from '../utils/repo-utils';
+import { getRepoConnection } from '../repos/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { Content } from '/lib/xp/content';
 import { CONTENT_ROOT_REPO_ID, NAVNO_NODE_ROOT_PATH } from '../constants';

@@ -2,7 +2,7 @@ import * as portalLib from '/lib/xp/portal';
 import { Content } from '/lib/xp/portal';
 import { frontendProxy } from './frontend-proxy';
 import { logger } from '../utils/logging';
-import { getRepoConnection } from '../utils/repo-utils';
+import { getRepoConnection } from '../repos/repo-utils';
 import {
     formIntermediateStepGenerateCustomPath,
     formIntermediateStepValidateCustomPath,

@@ -13,7 +13,7 @@ import {
     isDeferringCacheInvalidation,
 } from './invalidate-event-defer';
 import { customListenerType } from '../utils/events';
-import { getRepoConnection } from '../utils/repo-utils';
+import { getRepoConnection } from '../repos/repo-utils';
 import { isContentLocalized } from '../localization/locale-utils';
 import { scheduleContactInformationInvalidation } from './invalidate-special-content-types';
 import { NAVNO_NODE_ROOT_PATH } from '../constants';

@@ -7,7 +7,7 @@ import { getLayersData } from '../localization/layers-data';
 import { getLayersMigrationArchivedContentRef } from './layers-migration-refs';
 import { getNodeVersions, GetNodeVersionsParams } from '../utils/version-utils';
 import { logger } from '../utils/logging';
-import { getRepoConnection } from '../utils/repo-utils';
+import { getRepoConnection } from '../repos/repo-utils';
 
 export type VersionReferenceEnriched = NodeVersion & { locale: string } & Pick<
         Content,

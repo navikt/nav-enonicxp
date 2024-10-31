@@ -1,7 +1,7 @@
 import { Content } from '/lib/xp/content';
 import { NodeComponent } from '../../../../types/components/component-node';
 import { ContentNode } from '../../../../types/content-types/content-config';
-import { getRepoConnection } from '../../../utils/repo-utils';
+import { getRepoConnection } from '../../../repos/repo-utils';
 import { getLayersData } from '../../../localization/layers-data';
 import { CONTENT_ROOT_REPO_ID } from '../../../constants';
 import { forceArray } from '../../../utils/array-utils';

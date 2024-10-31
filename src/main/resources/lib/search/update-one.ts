@@ -2,7 +2,7 @@ import * as taskLib from '/lib/xp/task';
 import { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
 import { generateSearchDocumentId } from './utils';
-import { getRepoConnection } from '../utils/repo-utils';
+import { getRepoConnection } from '../repos/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { searchApiPostDocuments } from './api-handlers/post-document';
 import { searchApiDeleteDocument } from './api-handlers/delete-document';

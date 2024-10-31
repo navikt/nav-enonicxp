@@ -1,7 +1,7 @@
 import { Content } from '/lib/xp/content';
 import { CONTENT_STUDIO_PATH_PREFIX } from '../constants';
 import { getLayersData } from '../localization/layers-data';
-import { getContentProjectIdFromRepoId } from '../utils/repo-utils';
+import { getContentProjectIdFromRepoId } from '../repos/repo-utils';
 import { forceArray } from '../utils/array-utils';
 import { runInLocaleContext } from '../localization/locale-context';
 import { isContentLocalized } from '../localization/locale-utils';

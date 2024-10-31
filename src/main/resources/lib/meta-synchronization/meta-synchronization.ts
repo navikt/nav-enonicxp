@@ -1,6 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { getRepoConnection } from '../utils/repo-utils';
+import { getRepoConnection } from '../repos/repo-utils';
 import { runInContext } from '../context/run-in-context';
 import { CONTENT_ROOT_REPO_ID } from '../constants';
 import { logger } from '../utils/logging';

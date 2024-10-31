@@ -11,7 +11,7 @@ import { isMainDatanode } from '../cluster-utils/main-datanode';
 
 type ContentTypesWithContentLists = NavNoDescriptor<'content-list'> | NavNoDescriptor<'page-list'>;
 
-const CONTENT_TYPES_WITH_CONTENT_LISTS: ContentTypesWithContentLists[] = [
+export const CONTENT_TYPES_WITH_CONTENT_LISTS: ContentTypesWithContentLists[] = [
     'no.nav.navno:content-list',
     'no.nav.navno:page-list',
 ];
@@ -41,7 +41,7 @@ const isPublishedOrPrepublished = (contentId: string) => {
     }
 };
 
-export const removeUnpublishedFromContentList = (
+const removeUnpublishedFromContentList = (
     contentList: Content<ContentTypesWithContentLists>
 ): number => {
     let numRemoved = 0;

@@ -3,7 +3,7 @@ import { Content } from '/lib/xp/content';
 import { RepoConnection } from '/lib/xp/node';
 import { stripTrailingSlash } from '../paths/path-utils';
 import { logger } from '../utils/logging';
-import { getRepoConnection } from '../utils/repo-utils';
+import { getRepoConnection } from '../repos/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { getLastPublishedContentVersion } from './get-content';
 import { ArchiveContentTrees, ArchiveTreeNode } from './content-tree-archive';

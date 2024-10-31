@@ -15,7 +15,7 @@ import { activateContentListItemUnpublishedListener } from './lib/contentlists/r
 import { activateCustomPathNodeListeners } from './lib/paths/custom-paths/custom-path-event-listeners';
 import { createOfficeFetchSchedule } from './lib/office-pages/office-tasks';
 import { hookLibsWithTimeTravel } from './lib/time-travel/time-travel-hooks';
-import { initSearchRepo } from './lib/search/search-repo';
+import { initMiscRepo } from './lib/repos/misc-repo';
 import { initLayersData } from './lib/localization/layers-data';
 import { activateLayersEventListeners } from './lib/localization/publish-events';
 import { activateContentUpdateListener } from './lib/contentUpdate/content-update-listener';
@@ -23,6 +23,7 @@ import { activateExternalSearchIndexEventHandlers } from './lib/search/event-han
 import { initializeMainDatanodeSelection } from './lib/cluster-utils/main-datanode';
 import { activateSchedulerCleanupSchedule } from './lib/scheduling/schedule-cleanup';
 import { initArchiveContentTrees } from './lib/external-archive/content-tree-archive';
+import { activateArchiveNewsSchedule } from './lib/archiving/archive-old-news';
 
 updateClusterInfo();
 initLayersData();
@@ -31,7 +32,7 @@ hookLibsWithTimeTravel();
 if (clusterLib.isMaster()) {
     log.info('Running master only init scripts');
     initializeMainDatanodeSelection();
-    initSearchRepo();
+    initMiscRepo();
 }
 
 if (app.config.env !== 'test') {
@@ -41,10 +42,13 @@ if (app.config.env !== 'test') {
 }
 
 activateLayersEventListeners();
+// TODO: reactivate these after running the big archive job
 activateCacheEventListeners();
 activateContentListItemUnpublishedListener();
-activateCustomPathNodeListeners();
 activateExternalSearchIndexEventHandlers();
+// activateArchiveNewsSchedule()
+
+activateCustomPathNodeListeners();
 activateContentUpdateListener();
 activateSchedulerCleanupSchedule();
 initArchiveContentTrees();
