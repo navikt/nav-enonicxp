@@ -43,10 +43,11 @@ if (app.config.env !== 'test') {
 
 activateLayersEventListeners();
 // TODO: reactivate these after running the big archive job
-// activateCacheEventListeners();
-// activateContentListItemUnpublishedListener();
-// activateExternalSearchIndexEventHandlers();
+activateCacheEventListeners();
+activateContentListItemUnpublishedListener();
+activateExternalSearchIndexEventHandlers();
 // activateArchiveNewsSchedule()
+
 activateCustomPathNodeListeners();
 activateContentUpdateListener();
 activateSchedulerCleanupSchedule();
