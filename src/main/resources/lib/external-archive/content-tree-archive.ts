@@ -269,7 +269,7 @@ export const initArchiveContentTrees = () => {
         jobName: 'refresh-archive-content-trees',
         jobSchedule: {
             type: 'CRON',
-            value: '*/2 * * * *',
+            value: '0 7 * * *',
             timeZone: 'GMT+2:00',
         },
         taskDescriptor: `${APP_DESCRIPTOR}:refresh-archive-content-trees`,
