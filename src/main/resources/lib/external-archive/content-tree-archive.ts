@@ -91,6 +91,11 @@ class ArchiveContentTree {
                                 field: 'originalName',
                             },
                         },
+                        {
+                            exists: {
+                                field: 'publish.first',
+                            },
+                        },
                     ],
                 },
             },
