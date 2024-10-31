@@ -5,28 +5,21 @@ import { Content } from '/lib/xp/content';
 import { getRepoConnection } from '../utils/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { NON_LOCALIZED_QUERY_FILTER } from '../localization/layers-repo-utils/localization-state-filters';
+import { ContentTreeEntry, transformToContentTreeEntry } from './content-tree-entry';
 
-type ContentRef = {
-    id: string;
-    name: string;
-    displayName: string;
-    ts: string;
-};
-
-type ContentTreeNode = {
+type ArchiveTreeNode = {
     path: string;
     name: string;
-    displayName: string;
-    contents: ContentRef[];
-    children: Record<string, ContentTreeNode>;
+    content?: ContentTreeEntry;
+    children: Record<string, ArchiveTreeNode>;
 };
 
 export class ArchiveContentTree {
-    private readonly BATCH_COUNT = 100;
+    private readonly BATCH_COUNT = 1000;
 
     private readonly locale: string;
     private readonly repoConnection: RepoConnection;
-    private readonly rootNode: ContentTreeNode;
+    private readonly rootNode: ArchiveTreeNode;
 
     constructor(locale: string) {
         this.locale = locale;
@@ -38,14 +31,17 @@ export class ArchiveContentTree {
         this.rootNode = {
             path: '/',
             name: `archive-root-node-${locale}`,
-            displayName: `Archive root node for locale "${locale}"`,
-            contents: [],
             children: {},
         };
     }
 
     public build() {
+        const start = Date.now();
         this.processContentBatch(0);
+        const duration = Math.round((Date.now() - start) / 1000);
+        logger.info(
+            `Finished building archive content tree for "${this.locale}" in ${duration} seconds`
+        );
         return this.rootNode;
     }
 
@@ -91,27 +87,26 @@ export class ArchiveContentTree {
             this.updateContentTreeNode(content, stripPathPrefix(originalPath));
         });
 
-        // const nextStart = start + this.BATCH_COUNT;
-        //
-        // if (parentContentBatch.total > nextStart) {
-        //     this.processContentBatch(nextStart);
-        // }
+        const nextStart = start + this.BATCH_COUNT;
+
+        if (parentContentBatch.total > nextStart) {
+            this.processContentBatch(nextStart);
+        }
     }
 
     private updateContentTreeNode(content: RepoNode<Content>, path: string) {
         const pathSegments = stripLeadingAndTrailingSlash(path).split('/');
         const treeNode = this.getOrCreateTreeNode(pathSegments, 0);
 
-        treeNode.contents.push({
-            id: content._id,
-            name: content._name,
-            displayName: content.displayName,
-            ts: content._ts,
-        });
-
-        if (!treeNode.displayName) {
-            treeNode.displayName = content.displayName;
+        if (treeNode.content) {
+            logger.info(
+                `Content with path ${path} already exists. Retrying with new path for ${content._id} [${this.locale}].`
+            );
+            this.updateContentTreeNode(content, `${path}/${content._id}`);
+            return;
         }
+
+        treeNode.content = transformToContentTreeEntry(content, this.repoConnection, this.locale);
 
         this.processChildren(treeNode, content);
     }
@@ -122,7 +117,7 @@ export class ArchiveContentTree {
         pathSegments: string[],
         currentSegmentIndex: number,
         parentNode = this.rootNode
-    ): ContentTreeNode {
+    ): ArchiveTreeNode {
         const currentSegment = pathSegments[currentSegmentIndex];
 
         if (!parentNode.children[currentSegment]) {
@@ -130,9 +125,7 @@ export class ArchiveContentTree {
             parentNode.children[currentSegment] = {
                 path: currentPath,
                 name: currentSegment,
-                displayName: '',
                 children: {},
-                contents: [],
             };
         }
 
@@ -144,7 +137,7 @@ export class ArchiveContentTree {
             : this.getOrCreateTreeNode(pathSegments, nextSegmentIndex, currentNode);
     }
 
-    private processChildren(parentTreeNode: ContentTreeNode, parentContentNode: RepoNode<Content>) {
+    private processChildren(parentTreeNode: ArchiveTreeNode, parentContentNode: RepoNode<Content>) {
         const children = this.repoConnection.findChildren({
             parentKey: parentContentNode._id,
             count: 1000,
