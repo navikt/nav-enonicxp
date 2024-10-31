@@ -7,6 +7,8 @@ import { getLayersData } from '../localization/layers-data';
 import { NON_LOCALIZED_QUERY_FILTER } from '../localization/layers-repo-utils/localization-state-filters';
 import { ContentTreeEntry, transformToContentTreeEntry } from './content-tree-entry';
 import { generateUUID } from '../utils/uuid';
+import { createOrUpdateSchedule } from '../scheduling/schedule-job';
+import { APP_DESCRIPTOR } from '../constants';
 
 export type ArchiveTreeNode = {
     path: string;
@@ -15,6 +17,8 @@ export type ArchiveTreeNode = {
     children: Record<string, ArchiveTreeNode>;
 };
 
+// Builds a tree structure for archived content, matching the original structure of the content.
+// Used for navigating the archive in the external archive frontend.
 class ArchiveContentTree {
     private readonly BATCH_COUNT = 1000;
 
@@ -249,10 +253,26 @@ class ArchiveContentTree {
 
 export const ArchiveContentTrees: Record<string, ArchiveContentTree> = {};
 
-export const initArchiveContentTrees = () => {
+export const refreshArchiveContentTrees = () => {
     const { locales } = getLayersData();
-    logger.info(`Initializing archive content trees for locales: ${locales}`);
+    logger.info(`Building archive content trees for locales: ${locales}`);
     locales.forEach((locale) => {
         ArchiveContentTrees[locale] = new ArchiveContentTree(locale).build();
+    });
+};
+
+// This performs a full refresh once per day.
+// TODO:  Ideally it should update on archive events.
+export const initArchiveContentTrees = () => {
+    refreshArchiveContentTrees();
+    createOrUpdateSchedule({
+        jobName: 'refresh-archive-content-trees',
+        jobSchedule: {
+            type: 'CRON',
+            value: '*/2 * * * *',
+            timeZone: 'GMT+2:00',
+        },
+        taskDescriptor: `${APP_DESCRIPTOR}:refresh-archive-content-trees`,
+        taskConfig: {},
     });
 };
