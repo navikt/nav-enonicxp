@@ -6,7 +6,7 @@ import { logger } from '../utils/logging';
 import { getRepoConnection } from '../utils/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { getLastPublishedContentVersion } from './get-content';
-import { ArchiveContentTree } from './content-tree-archive';
+import { ArchiveContentTrees, ArchiveTreeNode } from './content-tree-archive';
 import { ContentTreeEntry, transformToContentTreeEntry } from './content-tree-entry';
 
 // TODO: implement pagination with smaller chunks
@@ -14,11 +14,15 @@ const MAX_CHILDREN_COUNT = 1000;
 
 const getFullNodePath = (path: string) => `${NAVNO_NODE_ROOT_PATH}${stripTrailingSlash(path)}`;
 
-const getContentChildren = (
-    parentContent: Content,
+const getLiveContentChildren = (
+    parentContent: Content | null,
     repo: RepoConnection,
     locale: string
 ): ContentTreeEntry[] => {
+    if (!parentContent) {
+        return [];
+    }
+
     const { hits, total } = repo.findChildren({
         parentKey: parentContent._id,
         count: MAX_CHILDREN_COUNT,
@@ -41,21 +45,42 @@ const getContentChildren = (
     }, []);
 };
 
+const getArchiveContentChildren = (archiveTreeNode: ArchiveTreeNode | null): ContentTreeEntry[] => {
+    if (!archiveTreeNode) {
+        return [];
+    }
+
+    return Object.values(archiveTreeNode.children).map((child) => child.content);
+};
+
+type ArchiveContentTreeLevelData = {
+    current?: ContentTreeEntry;
+    children: ContentTreeEntry[];
+};
+
 export const buildExternalArchiveContentTreeLevel = (
     parentPath: string,
     locale: string,
     fromXpArchive: boolean
-) => {
-    // TODO: implement this somehow :D
+): ArchiveContentTreeLevelData | null => {
     if (fromXpArchive) {
-        const contentTree = new ArchiveContentTree(locale).build();
-        return contentTree;
+        const archiveNode = ArchiveContentTrees[locale]?.getContentTreeEntry(parentPath);
+        if (!archiveNode) {
+            return null;
+        }
+
+        return {
+            current: archiveNode.content,
+            children: getArchiveContentChildren(archiveNode),
+        };
     }
 
     const nodePath = getFullNodePath(parentPath);
 
-    const content = getLastPublishedContentVersion(nodePath, locale);
-    if (!content) {
+    const liveContent = getLastPublishedContentVersion(nodePath, locale);
+    const archiveTreeNode = ArchiveContentTrees[locale]?.getContentTreeEntry(parentPath);
+
+    if (!liveContent && !archiveTreeNode) {
         return null;
     }
 
@@ -66,7 +91,12 @@ export const buildExternalArchiveContentTreeLevel = (
     });
 
     return {
-        current: transformToContentTreeEntry(content, repo, locale),
-        children: getContentChildren(content, repo, locale),
+        current: liveContent
+            ? transformToContentTreeEntry(liveContent, repo, locale)
+            : archiveTreeNode?.content,
+        children: [
+            ...getLiveContentChildren(liveContent, repo, locale),
+            ...getArchiveContentChildren(archiveTreeNode),
+        ],
     };
 };

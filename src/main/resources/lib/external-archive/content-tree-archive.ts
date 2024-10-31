@@ -6,20 +6,22 @@ import { getRepoConnection } from '../utils/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { NON_LOCALIZED_QUERY_FILTER } from '../localization/layers-repo-utils/localization-state-filters';
 import { ContentTreeEntry, transformToContentTreeEntry } from './content-tree-entry';
+import { generateUUID } from '../utils/uuid';
 
-type ArchiveTreeNode = {
+export type ArchiveTreeNode = {
     path: string;
     name: string;
     content: ContentTreeEntry;
     children: Record<string, ArchiveTreeNode>;
 };
 
-export class ArchiveContentTree {
-    private readonly BATCH_COUNT = 1000;
+class ArchiveContentTree {
+    private readonly BATCH_COUNT = 100;
 
     private readonly locale: string;
     private readonly repoConnection: RepoConnection;
     private readonly rootNode: ArchiveTreeNode;
+    private readonly pathMap: Record<string, ArchiveTreeNode> = {};
 
     constructor(locale: string) {
         this.locale = locale;
@@ -36,15 +38,37 @@ export class ArchiveContentTree {
             content: this.createEmptyContentTreeEntry('/', rootNodeName),
             children: {},
         };
+        this.pathMap['/'] = this.rootNode;
     }
 
     public build() {
         const start = Date.now();
         this.processContentBatch(0);
         const durationSec = (Date.now() - start) / 1000;
+
+        const numEntries = Object.values(this.pathMap).length;
+
         logger.info(
-            `Finished building archive content tree for "${this.locale}" in ${durationSec} seconds`
+            `Finished building archive content tree with ${numEntries} entries for "${this.locale}" in ${durationSec} seconds`
         );
+
+        return this;
+    }
+
+    public getContentTreeEntry(path: string): ArchiveTreeNode | null {
+        return this.pathMap[path] ?? null;
+    }
+
+    public getContentTreeList() {
+        return (
+            Object.values(this.pathMap)
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                .map(({ children, ...entry }) => entry)
+                .sort((a, b) => (a.path > b.path ? 1 : -1))
+        );
+    }
+
+    public getContentTree() {
         return this.rootNode;
     }
 
@@ -96,21 +120,21 @@ export class ArchiveContentTree {
             this.addToContentTree(content, stripPathPrefix(originalPath));
         });
 
-        const nextStart = start + this.BATCH_COUNT;
-
-        if (parentContentBatch.total > nextStart) {
-            this.processContentBatch(nextStart);
-        }
+        // const nextStart = start + this.BATCH_COUNT;
+        //
+        // if (parentContentBatch.total > nextStart) {
+        //     this.processContentBatch(nextStart);
+        // }
     }
 
     private addToContentTree(content: RepoNode<Content>, path: string) {
         const pathSegments = stripLeadingAndTrailingSlash(path).split('/');
         const treeNode = this.getOrCreateTreeNode(pathSegments, 0);
 
-        if (treeNode.content) {
+        if (!treeNode.content.isEmpty) {
             const newPath = `${path}/${content._id}`;
             logger.info(
-                `Content with path ${path} already exists. Retrying with new path ${newPath} for ${content._id} [${this.locale}].`
+                `Tree node with path ${path} already exists. Retrying with new path ${newPath} for ${content._id} [${this.locale}].`
             );
             this.addToContentTree(content, newPath);
             return;
@@ -132,35 +156,23 @@ export class ArchiveContentTree {
 
         if (!parentNode.children[currentSegment]) {
             const currentPath = `/${pathSegments.slice(0, currentSegmentIndex + 1).join('/')}`;
-            parentNode.children[currentSegment] = {
+            const newNode = {
                 path: currentPath,
                 name: currentSegment,
                 children: {},
                 content: this.createEmptyContentTreeEntry(currentPath, currentSegment),
             };
+            parentNode.children[currentSegment] = newNode;
+            this.pathMap[currentPath] = newNode;
         }
 
         const currentNode = parentNode.children[currentSegment];
+
         const nextSegmentIndex = currentSegmentIndex + 1;
 
         return nextSegmentIndex === pathSegments.length
             ? currentNode
             : this.getOrCreateTreeNode(pathSegments, nextSegmentIndex, currentNode);
-    }
-
-    private createEmptyContentTreeEntry(path: string, name: string): ContentTreeEntry {
-        return {
-            id: 'empty-node',
-            path,
-            name,
-            displayName: name,
-            type: 'base:folder',
-            locale: this.locale,
-            numChildren: 1,
-            isLocalized: true,
-            hasLocalizedDescendants: true,
-            isEmpty: true,
-        };
     }
 
     private processChildren(
@@ -194,4 +206,30 @@ export class ArchiveContentTree {
             this.processChildren(parentTreeNode, parentContentNode, nextStart);
         }
     }
+
+    private createEmptyContentTreeEntry(path: string, name: string): ContentTreeEntry {
+        return {
+            id: `empty-node-${generateUUID()}`,
+            path,
+            name,
+            displayName: name,
+            type: 'base:folder',
+            locale: this.locale,
+            numChildren: 1,
+            isLocalized: true,
+            hasLocalizedDescendants: true,
+            isEmpty: true,
+        };
+    }
+
+    private updateChildrenCount() {}
 }
+
+export const ArchiveContentTrees: Record<string, ArchiveContentTree> = {};
+
+export const initArchiveContentTrees = () => {
+    const { locales } = getLayersData();
+    locales.forEach((locale) => {
+        ArchiveContentTrees[locale] = new ArchiveContentTree(locale).build();
+    });
+};

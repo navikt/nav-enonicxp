@@ -1,4 +1,6 @@
 /// <reference path="types/global.d.ts" />
+import { initArchiveContentTrees } from './lib/external-archive/content-tree-archive';
+
 log.info('Started running main');
 
 import './lib/polyfills';
@@ -46,6 +48,7 @@ activateCustomPathNodeListeners();
 activateExternalSearchIndexEventHandlers();
 activateContentUpdateListener();
 activateSchedulerCleanupSchedule();
+initArchiveContentTrees();
 
 // This is somewhat annoying for local development, as it will run a fairly heavy task and spam
 // the logs when generating the sitemap. This happens on every redeploy of the app.
