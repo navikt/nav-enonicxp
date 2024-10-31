@@ -1,6 +1,4 @@
 /// <reference path="types/global.d.ts" />
-import { initArchiveContentTrees } from './lib/external-archive/content-tree-archive';
-
 log.info('Started running main');
 
 import './lib/polyfills';
@@ -24,6 +22,7 @@ import { activateContentUpdateListener } from './lib/contentUpdate/content-updat
 import { activateExternalSearchIndexEventHandlers } from './lib/search/event-handlers';
 import { initializeMainDatanodeSelection } from './lib/cluster-utils/main-datanode';
 import { activateSchedulerCleanupSchedule } from './lib/scheduling/schedule-cleanup';
+import { initArchiveContentTrees } from './lib/external-archive/content-tree-archive';
 
 updateClusterInfo();
 initLayersData();

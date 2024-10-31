@@ -22,7 +22,7 @@ const resolveCurrentContent = (content: Content, locale: string) => {
     );
 };
 
-// Ensures all references versions are resolves to the same timestamp as the specified content
+// Ensures all referenced contents are resolved to versions matching the timestamp of the specified content
 const resolveToContentTimestamp = (content: Content, locale: string) => {
     return runInTimeTravelContext(
         {
