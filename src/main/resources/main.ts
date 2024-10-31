@@ -22,6 +22,7 @@ import { activateContentUpdateListener } from './lib/contentUpdate/content-updat
 import { activateExternalSearchIndexEventHandlers } from './lib/search/event-handlers';
 import { initializeMainDatanodeSelection } from './lib/cluster-utils/main-datanode';
 import { activateSchedulerCleanupSchedule } from './lib/scheduling/schedule-cleanup';
+import { initArchiveContentTrees } from './lib/external-archive/content-tree-archive';
 
 updateClusterInfo();
 initLayersData();
@@ -46,6 +47,7 @@ activateCustomPathNodeListeners();
 activateExternalSearchIndexEventHandlers();
 activateContentUpdateListener();
 activateSchedulerCleanupSchedule();
+initArchiveContentTrees();
 
 // This is somewhat annoying for local development, as it will run a fairly heavy task and spam
 // the logs when generating the sitemap. This happens on every redeploy of the app.

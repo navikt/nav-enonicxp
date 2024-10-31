@@ -9,7 +9,7 @@ import { COMPONENT_APP_KEY } from '../constants';
 export const isMedia = (content: Content): content is Content<MediaDescriptor> =>
     content.type.startsWith('media:');
 
-export const isArchivedContentNode = (content: RepoNode<Content>) =>
+export const isArchivedContentNode = (content: RepoNode<Content> | Content) =>
     content._path.startsWith('/archive');
 
 export const applyModifiedData = <ContentType extends ContentDescriptor>(

@@ -41,13 +41,13 @@ export const externalArchiveContentTreeService = (req: XP.Request) => {
         };
     }
 
-    const contentTreeData = buildExternalArchiveContentTreeLevel(
+    const contentTreeLevelData = buildExternalArchiveContentTreeLevel(
         path,
         locale,
         fromArchive === 'true'
     );
 
-    if (!contentTreeData) {
+    if (!contentTreeLevelData) {
         return {
             status: 404,
             body: {
@@ -59,7 +59,7 @@ export const externalArchiveContentTreeService = (req: XP.Request) => {
 
     return {
         status: 200,
-        body: contentTreeData,
+        body: contentTreeLevelData,
         contentType: 'application/json',
     };
 };
