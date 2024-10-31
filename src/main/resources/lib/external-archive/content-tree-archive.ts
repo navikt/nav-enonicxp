@@ -35,7 +35,7 @@ class ArchiveContentTree {
         this.rootNode = {
             path: '/',
             name: rootNodeName,
-            content: this.createEmptyContentTreeEntry('/', rootNodeName),
+            content: this.buildEmptyContentTreeEntry('/', rootNodeName),
             children: {},
         };
         this.pathMap['/'] = this.rootNode;
@@ -173,7 +173,7 @@ class ArchiveContentTree {
                 path: currentPath,
                 name: currentSegment,
                 children: {},
-                content: this.createEmptyContentTreeEntry(currentPath, currentSegment),
+                content: this.buildEmptyContentTreeEntry(currentPath, currentSegment),
             };
             parentNode.children[currentSegment] = newNode;
             this.pathMap[currentPath] = newNode;
@@ -220,7 +220,7 @@ class ArchiveContentTree {
         }
     }
 
-    private createEmptyContentTreeEntry(path: string, name: string): ContentTreeEntry {
+    private buildEmptyContentTreeEntry(path: string, name: string): ContentTreeEntry {
         return {
             id: `empty-node-${generateUUID()}`,
             path,
@@ -246,6 +246,7 @@ export const ArchiveContentTrees: Record<string, ArchiveContentTree> = {};
 
 export const initArchiveContentTrees = () => {
     const { locales } = getLayersData();
+    logger.info(`Initializing archive content trees for locales: ${locales}`);
     locales.forEach((locale) => {
         ArchiveContentTrees[locale] = new ArchiveContentTree(locale).build();
     });

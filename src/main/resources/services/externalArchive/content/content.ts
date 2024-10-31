@@ -8,15 +8,17 @@ import {
 } from '../../../lib/time-travel/get-published-versions';
 import { getContentForExternalArchive } from '../../../lib/external-archive/get-content';
 import { runInLocaleContext } from '../../../lib/localization/locale-context';
+import { isArchivedContentNode } from '../../../lib/utils/content-utils';
+import { getArchivedContent } from '../../../lib/external-archive/get-archived-content';
 
 type Response = {
     contentRaw: Content;
-    contentRenderProps?: Record<string, unknown>;
+    contentRenderProps?: Record<string, unknown> | null;
     versions: VersionReferenceEnriched[];
 };
 
 const resolveCurrentContent = (content: Content, locale: string) => {
-    return runInLocaleContext({ locale, branch: 'master' }, () =>
+    return runInLocaleContext({ locale, branch: 'draft', asAdmin: true }, () =>
         runSitecontentGuillotineQuery(content, 'draft')
     );
 };
@@ -31,6 +33,21 @@ const resolveVersionContent = (content: Content, locale: string) => {
         },
         () => runSitecontentGuillotineQuery(content, 'draft')
     );
+};
+
+const getContentRenderProps = (content: Content, locale: string, versionId?: string) => {
+    if (isArchivedContentNode(content)) {
+        const repoId = getLayersData().localeToRepoIdMap[locale];
+        return getArchivedContent(
+            content._id,
+            repoId,
+            content.archivedTime || content.modifiedTime || content.createdTime
+        );
+    }
+
+    return versionId
+        ? resolveVersionContent(content, locale)
+        : resolveCurrentContent(content, locale);
 };
 
 export const externalArchiveContentService = (req: XP.Request) => {
@@ -67,9 +84,7 @@ export const externalArchiveContentService = (req: XP.Request) => {
         };
     }
 
-    const resolvedContent = versionId
-        ? resolveVersionContent(contentRaw, locale)
-        : resolveCurrentContent(contentRaw, locale);
+    const contentRenderProps = getContentRenderProps(contentRaw, locale);
 
     const versions = getPublishedAndModifiedVersions(contentRaw._id, locale);
 
@@ -78,7 +93,7 @@ export const externalArchiveContentService = (req: XP.Request) => {
         contentType: 'application/json',
         body: {
             contentRaw,
-            contentRenderProps: resolvedContent ?? undefined,
+            contentRenderProps,
             versions,
         } satisfies Response,
     };
