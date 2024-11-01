@@ -137,13 +137,11 @@ const getResult = ({
                 `Eksempel på gyldig url: ${examplePath}`
             );
         }
-    } else {
-        if (!validateCustomPathForContentAudience(content, suggestedPath)) {
-            return generateErrorHit(
-                `Feil: "${suggestedPath}" er ikke en gyldig url for denne målgruppen`,
-                `Url må starte med "${getExpectedCustomPathAudiencePrefix(content)}"`
-            );
-        }
+    } else if (!validateCustomPathForContentAudience(content, suggestedPath)) {
+        return generateErrorHit(
+            `Feil: "${suggestedPath}" er ikke en gyldig url for denne målgruppen`,
+            `Url må starte med "${getExpectedCustomPathAudiencePrefix(content)}"`
+        );
     }
 
     return {
