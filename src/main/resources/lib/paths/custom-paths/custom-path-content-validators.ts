@@ -14,7 +14,7 @@ const audienceSegmentMap: Record<string, string> = {
 
 type Audience = AudienceMixin['audience']['_selected'];
 
-export const getSingleAudienceFromContent = (content: Content<any>): Audience | null => {
+const getSingleAudienceFromContent = (content: Content<any>): Audience | null => {
     const audience = content.data?.audience as
         | ArrayOrSingle<Audience>
         | AudienceMixin['audience']
