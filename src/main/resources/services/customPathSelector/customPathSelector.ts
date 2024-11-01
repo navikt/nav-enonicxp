@@ -12,11 +12,12 @@ import { runInContext } from '../../lib/context/run-in-context';
 import {
     formIntermediateStepGenerateCustomPath,
     formIntermediateStepValidateCustomPath,
-} from '../../lib/paths/custom-paths/custom-path-special-types';
+    getExpectedCustomPathAudiencePrefix,
+    validateCustomPathForContentAudience,
+} from '../../lib/paths/custom-paths/custom-path-content-validators';
 import { RepoBranch } from '../../types/common';
 import { customSelectorParseSelectedIdsFromReq } from '../service-utils';
-
-type SpecialUrlType = 'formIntermediateStep';
+import { Content } from '/lib/xp/content';
 
 // Returns an error message to the editor with an intentionally invalid id (customPath id must start with '/')
 const generateErrorHit = (displayName: string, description: string) => ({
@@ -63,9 +64,11 @@ const findExistingContentsWithCustomPath = (suggestedCustomPath: string, branch:
 const getResult = ({
     query,
     currentSelection,
+    content,
 }: {
     query?: string;
     currentSelection?: string;
+    content: Content;
 }): XP.CustomSelectorServiceResponseHit => {
     const suggestedPath = query || currentSelection;
 
@@ -126,6 +129,21 @@ const getResult = ({
         };
     }
 
+    if (content.type === 'no.nav.navno:form-intermediate-step') {
+        if (!formIntermediateStepValidateCustomPath(suggestedPath, content)) {
+            const examplePath = formIntermediateStepGenerateCustomPath(content);
+            return generateErrorHit(
+                `Feil: "${suggestedPath}" er ikke en gyldig url for mellomsteg`,
+                `Eksempel på gyldig url: ${examplePath}`
+            );
+        }
+    } else if (!validateCustomPathForContentAudience(content, suggestedPath)) {
+        return generateErrorHit(
+            `Feil: "${suggestedPath}" er ikke en gyldig url for denne målgruppen`,
+            `Url må starte med "${getExpectedCustomPathAudiencePrefix(content)}"`
+        );
+    }
+
     return {
         id: suggestedPath,
         displayName: suggestedPath,
@@ -133,47 +151,12 @@ const getResult = ({
     };
 };
 
-const validateFormIntermediateStepResult = (result: XP.CustomSelectorServiceResponseHit) => {
+export const get = (
+    req: XP.Request<XP.CustomSelectorServiceParams>
+): XP.CustomSelectorServiceResponse => {
     const content = portalLib.getContent();
 
-    if (content?.type !== 'no.nav.navno:form-intermediate-step') {
-        logger.error(
-            `Selector was called with formIntermediateStep-parameter for a different content type on ${content?._path}`
-        );
-        return result;
-    }
-
-    if (formIntermediateStepValidateCustomPath(result.id, content)) {
-        return result;
-    }
-
-    const examplePath = formIntermediateStepGenerateCustomPath(content);
-
-    return generateErrorHit(
-        `Feil: "${result.id}" er ikke en gyldig url for mellomsteg`,
-        `Eksempel på gyldig url: ${examplePath}`
-    );
-};
-
-const validateResult = (
-    result: XP.CustomSelectorServiceResponseHit,
-    type?: SpecialUrlType
-): XP.CustomSelectorServiceResponseHit => {
-    if (type === 'formIntermediateStep') {
-        return validateFormIntermediateStepResult(result);
-    }
-
-    return result;
-};
-
-type CustomParams = {
-    type: SpecialUrlType;
-};
-
-export const get = (
-    req: XP.Request<XP.CustomSelectorServiceParams & CustomParams>
-): XP.CustomSelectorServiceResponse => {
-    if (!portalLib.getContent()) {
+    if (!content) {
         return {
             status: 200,
             body: {
@@ -190,20 +173,18 @@ export const get = (
         };
     }
 
-    const { query, type } = req.params;
+    const { query } = req.params;
 
     const currentSelection = customSelectorParseSelectedIdsFromReq(req)[0];
 
-    const result = getResult({ query, currentSelection });
-
-    const validatedResult = validateResult(result, type);
+    const result = getResult({ query, currentSelection, content });
 
     return {
         status: 200,
         body: {
             total: 1,
             count: 1,
-            hits: [validatedResult],
+            hits: [result],
         },
         contentType: 'application/json',
     };
