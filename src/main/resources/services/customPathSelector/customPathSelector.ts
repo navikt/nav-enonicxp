@@ -79,6 +79,14 @@ const getResult = ({
         );
     }
 
+    const masterContentPaths = findExistingContentsWithCustomPath(suggestedPath, 'master');
+    if (masterContentPaths) {
+        return generateErrorHit(
+            `Feil: "${suggestedPath}" er allerede i bruk som kort-url på publisert innhold`,
+            `"${masterContentPaths}" bruker denne kort-url'en`
+        );
+    }
+
     const draftContentPaths = findExistingContentsWithCustomPath(suggestedPath, 'draft');
     if (draftContentPaths) {
         return generateErrorHit(
@@ -87,11 +95,18 @@ const getResult = ({
         );
     }
 
-    const masterContentPaths = findExistingContentsWithCustomPath(suggestedPath, 'master');
-    if (masterContentPaths) {
+    if (content.type === 'no.nav.navno:form-intermediate-step') {
+        if (!formIntermediateStepValidateCustomPath(suggestedPath, content)) {
+            const examplePath = formIntermediateStepGenerateCustomPath(content);
+            return generateErrorHit(
+                `Feil: "${suggestedPath}" er ikke en gyldig url for mellomsteg`,
+                `Eksempel på gyldig url: ${examplePath}`
+            );
+        }
+    } else if (!validateCustomPathForContentAudience(content, suggestedPath)) {
         return generateErrorHit(
-            `Feil: "${suggestedPath}" er allerede i bruk som kort-url på publisert innhold`,
-            `"${masterContentPaths}" bruker denne kort-url'en`
+            `Feil: "${suggestedPath}" er ikke en gyldig url for denne målgruppen`,
+            `Url må starte med "${getExpectedCustomPathAudiencePrefix(content)}"`
         );
     }
 
@@ -127,21 +142,6 @@ const getResult = ({
             description: `Advarsel: ${suggestedPath} er i bruk som redirect url - redirect vil overstyres av kort-url`,
             icon: customSelectorWarningIcon,
         };
-    }
-
-    if (content.type === 'no.nav.navno:form-intermediate-step') {
-        if (!formIntermediateStepValidateCustomPath(suggestedPath, content)) {
-            const examplePath = formIntermediateStepGenerateCustomPath(content);
-            return generateErrorHit(
-                `Feil: "${suggestedPath}" er ikke en gyldig url for mellomsteg`,
-                `Eksempel på gyldig url: ${examplePath}`
-            );
-        }
-    } else if (!validateCustomPathForContentAudience(content, suggestedPath)) {
-        return generateErrorHit(
-            `Feil: "${suggestedPath}" er ikke en gyldig url for denne målgruppen`,
-            `Url må starte med "${getExpectedCustomPathAudiencePrefix(content)}"`
-        );
     }
 
     return {
