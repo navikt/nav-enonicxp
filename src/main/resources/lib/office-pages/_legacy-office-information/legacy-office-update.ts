@@ -27,7 +27,6 @@ const enhetNrToImport: ReadonlySet<string> = new Set([
     '4534', // [KONTROLL] NAV Registerforvaltning
     '4712', // [HMS] Vestland-Bergen
     '4714', // [HMS] Vestland-Førde
-    '4716', // [HMS] Trøndalag
 ]);
 
 const shouldImportOffice = (enhet: OfficeInformation['enhet']) => {
