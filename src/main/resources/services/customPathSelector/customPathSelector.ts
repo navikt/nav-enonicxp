@@ -13,7 +13,6 @@ import {
     formIntermediateStepGenerateCustomPath,
     formIntermediateStepValidateCustomPath,
     getExpectedCustomPathAudiencePrefix,
-    getSingleAudienceFromContent,
     validateCustomPathForContentAudience,
 } from '../../lib/paths/custom-paths/custom-path-content-validators';
 import { RepoBranch } from '../../types/common';
@@ -65,9 +64,11 @@ const findExistingContentsWithCustomPath = (suggestedCustomPath: string, branch:
 const getResult = ({
     query,
     currentSelection,
+    content,
 }: {
     query?: string;
     currentSelection?: string;
+    content: Content;
 }): XP.CustomSelectorServiceResponseHit => {
     const suggestedPath = query || currentSelection;
 
@@ -128,47 +129,28 @@ const getResult = ({
         };
     }
 
+    if (content.type === 'no.nav.navno:form-intermediate-step') {
+        if (!formIntermediateStepValidateCustomPath(suggestedPath, content)) {
+            const examplePath = formIntermediateStepGenerateCustomPath(content);
+            return generateErrorHit(
+                `Feil: "${suggestedPath}" er ikke en gyldig url for mellomsteg`,
+                `Eksempel på gyldig url: ${examplePath}`
+            );
+        }
+    } else {
+        if (!validateCustomPathForContentAudience(content, suggestedPath)) {
+            return generateErrorHit(
+                `Feil: "${suggestedPath}" er ikke en gyldig url for denne målgruppen`,
+                `Url må starte med "${getExpectedCustomPathAudiencePrefix(content)}"`
+            );
+        }
+    }
+
     return {
         id: suggestedPath,
         displayName: suggestedPath,
         description: `Denne siden vil kunne nåes på nav.no${suggestedPath}`,
     };
-};
-
-const validateFormIntermediateStepResult = (
-    content: Content<'no.nav.navno:form-intermediate-step'>,
-    result: XP.CustomSelectorServiceResponseHit
-) => {
-    if (formIntermediateStepValidateCustomPath(result.id, content)) {
-        return result;
-    }
-
-    const examplePath = formIntermediateStepGenerateCustomPath(content);
-
-    return generateErrorHit(
-        `Feil: "${result.id}" er ikke en gyldig url for mellomsteg`,
-        `Eksempel på gyldig url: ${examplePath}`
-    );
-};
-
-const validateResult = (
-    content: Content,
-    result: XP.CustomSelectorServiceResponseHit
-): XP.CustomSelectorServiceResponseHit => {
-    const { type } = content;
-
-    if (type === 'no.nav.navno:form-intermediate-step') {
-        return validateFormIntermediateStepResult(content, result);
-    }
-
-    if (!validateCustomPathForContentAudience(content, result.id)) {
-        return generateErrorHit(
-            `Feil: "${result.id}" er ikke en gyldig url for innhold med målgruppe ${getSingleAudienceFromContent(content)}`,
-            `Url må starte med ${getExpectedCustomPathAudiencePrefix(content)}`
-        );
-    }
-
-    return result;
 };
 
 export const get = (
@@ -197,16 +179,14 @@ export const get = (
 
     const currentSelection = customSelectorParseSelectedIdsFromReq(req)[0];
 
-    const result = getResult({ query, currentSelection });
-
-    const validatedResult = validateResult(content, result);
+    const result = getResult({ query, currentSelection, content });
 
     return {
         status: 200,
         body: {
             total: 1,
             count: 1,
-            hits: [validatedResult],
+            hits: [result],
         },
         contentType: 'application/json',
     };
