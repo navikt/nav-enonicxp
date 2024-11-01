@@ -6,7 +6,7 @@ import { getRepoConnection } from '../repos/repo-utils';
 import {
     formIntermediateStepGenerateCustomPath,
     formIntermediateStepValidateCustomPath,
-} from '../paths/custom-paths/custom-path-special-types';
+} from '../paths/custom-paths/custom-path-content-validators';
 
 const insertCustomPath = (req: XP.Request) => {
     const content = portalLib.getContent();

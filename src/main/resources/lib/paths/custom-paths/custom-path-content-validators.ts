@@ -2,6 +2,8 @@ import { Content } from '/lib/xp/content';
 import { getContentFromCustomPath, isValidCustomPath } from './custom-path-utils';
 import { logger } from '../../utils/logging';
 import { sanitize } from '/lib/xp/common';
+import { Audience as AudienceMixin } from '@xp-types/site/mixins/audience';
+import { ArrayOrSingle } from '../../../types/util-types';
 
 export const FORM_INTERMEDIATE_STEP_CUSTOM_PATH_PREFIX = '/start';
 
@@ -10,13 +12,43 @@ const audienceSegmentMap: Record<string, string> = {
     provider: 'samarbeidspartner',
 } as const;
 
-const getAudienceSegmentWithSlash = (content: Content<'no.nav.navno:form-intermediate-step'>) => {
-    const audienceSelected = content.data.audience?._selected;
+type Audience = AudienceMixin['audience']['_selected'];
 
-    const audienceSegment = audienceSelected && audienceSegmentMap[audienceSelected];
+export const getSingleAudienceFromContent = (content: Content<any>): Audience | null => {
+    const audience = content.data?.audience as
+        | ArrayOrSingle<Audience>
+        | AudienceMixin['audience']
+        | undefined;
+    if (!audience) {
+        return null;
+    }
+
+    if (typeof audience === 'string') {
+        return audience;
+    }
+
+    if (Array.isArray(audience)) {
+        return audience.length === 1 ? audience[0] : null;
+    }
+
+    return typeof audience._selected === 'string' ? audience._selected : null;
+};
+
+export const getExpectedCustomPathAudiencePrefix = (content: Content) => {
+    const audience = getSingleAudienceFromContent(content);
+    const audienceSegment = audience && audienceSegmentMap[audience];
+
     return audienceSegment ? `/${audienceSegment}` : '';
 };
 
+export const validateCustomPathForContentAudience = (content: Content, customPath: string) => {
+    return (
+        isValidCustomPath(customPath) &&
+        customPath.startsWith(getExpectedCustomPathAudiencePrefix(content))
+    );
+};
+
+// The form-intermediate-step content type is a special case wherw we want the customPath to begin with "/start"
 export const formIntermediateStepValidateCustomPath = (
     customPath: string,
     content: Content<'no.nav.navno:form-intermediate-step'>
@@ -25,7 +57,7 @@ export const formIntermediateStepValidateCustomPath = (
         return false;
     }
 
-    const audienceSegment = getAudienceSegmentWithSlash(content);
+    const audienceSegment = getExpectedCustomPathAudiencePrefix(content);
 
     const isValid = new RegExp(
         `${FORM_INTERMEDIATE_STEP_CUSTOM_PATH_PREFIX}${audienceSegment}/(?!unnamed).+`
@@ -37,7 +69,7 @@ export const formIntermediateStepValidateCustomPath = (
 export const formIntermediateStepGenerateCustomPath = (
     content: Content<'no.nav.navno:form-intermediate-step'>
 ) => {
-    const audienceSegment = getAudienceSegmentWithSlash(content);
+    const audienceSegment = getExpectedCustomPathAudiencePrefix(content);
 
     const suggestedPath = `${FORM_INTERMEDIATE_STEP_CUSTOM_PATH_PREFIX}${audienceSegment}/${sanitize(
         content._name

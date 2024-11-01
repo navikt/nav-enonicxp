@@ -12,11 +12,13 @@ import { runInContext } from '../../lib/context/run-in-context';
 import {
     formIntermediateStepGenerateCustomPath,
     formIntermediateStepValidateCustomPath,
-} from '../../lib/paths/custom-paths/custom-path-special-types';
+    getExpectedCustomPathAudiencePrefix,
+    getSingleAudienceFromContent,
+    validateCustomPathForContentAudience,
+} from '../../lib/paths/custom-paths/custom-path-content-validators';
 import { RepoBranch } from '../../types/common';
 import { customSelectorParseSelectedIdsFromReq } from '../service-utils';
-
-type SpecialUrlType = 'formIntermediateStep';
+import { Content } from '/lib/xp/content';
 
 // Returns an error message to the editor with an intentionally invalid id (customPath id must start with '/')
 const generateErrorHit = (displayName: string, description: string) => ({
@@ -133,16 +135,10 @@ const getResult = ({
     };
 };
 
-const validateFormIntermediateStepResult = (result: XP.CustomSelectorServiceResponseHit) => {
-    const content = portalLib.getContent();
-
-    if (content?.type !== 'no.nav.navno:form-intermediate-step') {
-        logger.error(
-            `Selector was called with formIntermediateStep-parameter for a different content type on ${content?._path}`
-        );
-        return result;
-    }
-
+const validateFormIntermediateStepResult = (
+    content: Content<'no.nav.navno:form-intermediate-step'>,
+    result: XP.CustomSelectorServiceResponseHit
+) => {
     if (formIntermediateStepValidateCustomPath(result.id, content)) {
         return result;
     }
@@ -156,24 +152,31 @@ const validateFormIntermediateStepResult = (result: XP.CustomSelectorServiceResp
 };
 
 const validateResult = (
-    result: XP.CustomSelectorServiceResponseHit,
-    type?: SpecialUrlType
+    content: Content,
+    result: XP.CustomSelectorServiceResponseHit
 ): XP.CustomSelectorServiceResponseHit => {
-    if (type === 'formIntermediateStep') {
-        return validateFormIntermediateStepResult(result);
+    const { type } = content;
+
+    if (type === 'no.nav.navno:form-intermediate-step') {
+        return validateFormIntermediateStepResult(content, result);
+    }
+
+    if (!validateCustomPathForContentAudience(content, result.id)) {
+        return generateErrorHit(
+            `Feil: "${result.id}" er ikke en gyldig url for innhold med målgruppe ${getSingleAudienceFromContent(content)}`,
+            `Url må starte med ${getExpectedCustomPathAudiencePrefix(content)}`
+        );
     }
 
     return result;
 };
 
-type CustomParams = {
-    type: SpecialUrlType;
-};
-
 export const get = (
-    req: XP.Request<XP.CustomSelectorServiceParams & CustomParams>
+    req: XP.Request<XP.CustomSelectorServiceParams>
 ): XP.CustomSelectorServiceResponse => {
-    if (!portalLib.getContent()) {
+    const content = portalLib.getContent();
+
+    if (!content) {
         return {
             status: 200,
             body: {
@@ -190,13 +193,13 @@ export const get = (
         };
     }
 
-    const { query, type } = req.params;
+    const { query } = req.params;
 
     const currentSelection = customSelectorParseSelectedIdsFromReq(req)[0];
 
     const result = getResult({ query, currentSelection });
 
-    const validatedResult = validateResult(result, type);
+    const validatedResult = validateResult(content, result);
 
     return {
         status: 200,
