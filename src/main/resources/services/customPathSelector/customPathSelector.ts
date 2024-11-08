@@ -20,8 +20,8 @@ import { customSelectorParseSelectedIdsFromReq } from '../service-utils';
 import { Content } from '/lib/xp/content';
 
 // Returns an error message to the editor with an intentionally invalid id (customPath id must start with '/')
-const generateErrorHit = (displayName: string, description: string) => ({
-    id: `error-${Date.now()}`,
+const generateErrorHit = (displayName: string, description: string, suggestedPath?: string) => ({
+    id: suggestedPath || `error-${Date.now()}`,
     displayName,
     description,
     icon: customSelectorErrorIcon,
@@ -106,7 +106,8 @@ const getResult = ({
     } else if (!validateCustomPathForContentAudience(content, suggestedPath)) {
         return generateErrorHit(
             `Feil: "${suggestedPath}" er ikke en gyldig url for denne målgruppen`,
-            `Url må starte med "${getExpectedCustomPathAudiencePrefix(content)}"`
+            `Url må starte med "${getExpectedCustomPathAudiencePrefix(content)}"`,
+            suggestedPath
         );
     }
 
