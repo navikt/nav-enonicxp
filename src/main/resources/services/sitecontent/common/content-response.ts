@@ -4,6 +4,7 @@ import { runInLocaleContext } from '../../../lib/localization/locale-context';
 import { runSitecontentGuillotineQuery } from '../../../lib/guillotine/queries/run-sitecontent-query';
 import { getModifiedTimeIncludingFragments } from '../../../lib/utils/fragment-utils';
 import { getLanguageVersions } from '../../../lib/localization/resolve-language-versions';
+import { replaceNAVwithNav } from '../../../lib/utils/string-utils';
 
 // Ensure something vaguely sane is returned from the service :)
 // TODO: Replace this after we get our Guillotine response better typed
@@ -41,7 +42,14 @@ export const sitecontentContentResponse = ({
                 baseContentLocale: locale,
             });
             queryResult.contentLayer = locale;
+            const start = Date.now();
+            const replacedResult = replaceNAVwithNav(queryResult);
+            const end = Date.now();
 
-            return queryResult;
+            log.info(
+                `NAVREPLACEMENT ${baseContent.data.customPath}: Time to replace NAV with Nav: ${end - start}ms`
+            );
+
+            return replacedResult;
         }
     );
