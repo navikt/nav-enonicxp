@@ -65,6 +65,42 @@ const destructureConfig = (component: GuillotineComponent) => {
     };
 };
 
+const replaceSingleString = (str: string): string => {
+    const replacements: [string, RegExp, string][] = [
+        ['NAV Hjelpemiddelsentral', /NAV Hjelpemiddelsentral/g, 'Nav hjelpemiddelsentral'],
+        ['NAV Hjelpemidler', /NAV Hjelpemidler/g, 'Nav hjelpemidler'],
+        ['NAV', /NAV/g, 'Nav'],
+    ];
+
+    return replacements.reduce(
+        (acc, [search, regexp, replace]) =>
+            str.includes(search) ? acc.replace(regexp, replace) : acc,
+        str
+    );
+};
+
+// This is a temporary replacement function as part of the NAV => Nav process
+// To be removed when we have completely run the script as part 2.
+const replaceNAVwithNav = (obj: any): any => {
+    if (typeof obj === 'string') {
+        return replaceSingleString(obj);
+    }
+
+    if (!obj || typeof obj !== 'object') return obj;
+
+    if (Array.isArray(obj)) {
+        return obj.map((item) => replaceNAVwithNav(item));
+    }
+
+    // Reduce to construct a new object with replaced values
+    return Object.keys(obj).reduce((acc, key) => {
+        const value = obj[key];
+        acc[key] =
+            typeof value === 'string' ? replaceSingleString(value) : replaceNAVwithNav(value);
+        return acc;
+    }, {} as any);
+};
+
 // Component data in the components-array is stored in type-specific sub-objects
 // Move this data down to the base object, to match the XP page-object structure
 export const destructureComponent = (component: GuillotineComponent) => {
@@ -79,7 +115,7 @@ export const destructureComponent = (component: GuillotineComponent) => {
         ...rest,
     };
 
-    const config = destructureConfig(destructuredComponent);
+    const config = replaceNAVwithNav(destructureConfig(destructuredComponent));
 
     return {
         ...destructuredComponent,
