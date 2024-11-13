@@ -6,6 +6,7 @@ import { getFromLocalCache } from '../../lib/cache/local-cache';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { getLayersData } from '../../lib/localization/layers-data';
 import { buildCacheKeyForReqContext } from '../../lib/cache/utils';
+import { replaceNAVwithNav } from '../../lib/utils/string-utils';
 
 const CACHE_KEY = 'decorator-menu-cache';
 const MENU_PATH = '/www.nav.no/dekorator-meny/';
@@ -94,8 +95,10 @@ export const get = (req: XP.Request) => {
             getMenuItemChildren(menuContent._id)
         );
 
+        const replacedNAVwithNav = replaceNAVwithNav(menu);
+
         return {
-            body: menu,
+            body: replacedNAVwithNav,
             contentType: 'application/json',
         };
     } catch (e) {
