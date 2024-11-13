@@ -18,6 +18,7 @@ const isProtected = (key?: string) => {
         'path',
         'type',
         'language',
+        'formNumbers',
         'mediaUrl',
         '_childOrderValue',
         'descriptor',
@@ -53,7 +54,7 @@ export const replaceNAVwithNav = (element: any, key?: string): any => {
     if (typeof element !== 'object') return element;
 
     if (Array.isArray(element)) {
-        return element.map((item) => replaceNAVwithNav(item, key));
+        return !isProtected(key) ? element.map((item) => replaceNAVwithNav(item, key)) : element;
     }
 
     // Reduce to construct a new object with replaced values
