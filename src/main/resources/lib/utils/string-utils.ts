@@ -32,6 +32,7 @@ const replaceSingleString = (str: string): string => {
     const replacements: [string, RegExp, string][] = [
         ['NAV Hjelpemiddelsentral', /NAV Hjelpemiddelsentral/g, 'Nav hjelpemiddelsentral'],
         ['NAV Hjelpemidler', /NAV Hjelpemidler/g, 'Nav hjelpemidler'],
+        ['NAV Klageinstans', /NAV Klageinstans/g, 'Nav klageinstans'],
         ['NAV', /NAV/g, 'Nav'],
     ];
 

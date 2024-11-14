@@ -33,6 +33,7 @@ import {
     buildSearchDocumentOfficeIngress,
 } from './field-resolvers/ingress';
 import { getSearchNodeHref } from './field-resolvers/href';
+import { replaceNAVwithNav } from '../../utils/string-utils';
 
 type SearchConfig = Content<'no.nav.navno:search-config-v2'>;
 type KeysConfig = Partial<SearchConfig['data']['defaultKeys']>;
@@ -236,8 +237,10 @@ export const buildExternalSearchDocument = (
         return null;
     }
 
+    const replacedNAVwithNav = replaceNAVwithNav(content);
+
     return new ExternalSearchDocumentBuilder(
-        content,
+        replacedNAVwithNav,
         locale,
         searchConfig,
         contentGroupConfig.groupKeys
