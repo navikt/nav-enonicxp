@@ -237,10 +237,10 @@ export const buildExternalSearchDocument = (
         return null;
     }
 
-    const replacedNAVwithNav = replaceNAVwithNav(content);
+    // const replacedNAVwithNav = replaceNAVwithNav(content);
 
     return new ExternalSearchDocumentBuilder(
-        replacedNAVwithNav,
+        content,
         locale,
         searchConfig,
         contentGroupConfig.groupKeys
