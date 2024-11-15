@@ -237,9 +237,7 @@ export const buildExternalSearchDocument = (
         return null;
     }
 
-    logger.info(`Building search document for ${content._id} / ${locale}`);
     const replacedNAVwithNav = replaceNAVwithNav(content);
-    logger.info(JSON.stringify(replacedNAVwithNav));
 
     return new ExternalSearchDocumentBuilder(
         replacedNAVwithNav,
