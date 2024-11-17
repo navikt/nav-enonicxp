@@ -30,9 +30,9 @@ const isProtected = (key?: string) => {
 
 const replaceSingleString = (str: string): string => {
     const replacements: [string, RegExp, string][] = [
-        ['NAV Hjelpemiddelsentral', /NAV Hjelpemiddelsentral/g, 'Nav hjelpemiddelsentral'],
-        ['NAV Hjelpemidler', /NAV Hjelpemidler/g, 'Nav hjelpemidler'],
-        ['NAV Klageinstans', /NAV Klageinstans/g, 'Nav klageinstans'],
+        ['Hjelpemiddelsentral', /Hjelpemiddelsentral/g, 'hjelpemiddelsentral'],
+        ['Hjelpemidler', /Hjelpemidler/g, 'hjelpemidler'],
+        ['Klageinstans', /Klageinstans/g, 'klageinstans'],
         ['NAV', /NAV/g, 'Nav'],
     ];
 
