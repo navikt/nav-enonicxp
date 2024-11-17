@@ -33,6 +33,7 @@ import {
     buildSearchDocumentOfficeIngress,
 } from './field-resolvers/ingress';
 import { getSearchNodeHref } from './field-resolvers/href';
+import { replaceNAVwithNav } from '../../utils/string-utils';
 
 type SearchConfig = Content<'no.nav.navno:search-config-v2'>;
 type KeysConfig = Partial<SearchConfig['data']['defaultKeys']>;
@@ -92,11 +93,14 @@ class ExternalSearchDocumentBuilder {
 
         const publishedTime = content.publish?.from || content.createdTime;
 
+        const replacedTitle = replaceNAVwithNav(title);
+        const replacedIngress = replaceNAVwithNav(this.getIngress());
+
         return {
             id: generateSearchDocumentId(content._id, locale),
             href,
-            title,
-            ingress: this.getIngress(),
+            title: replacedTitle,
+            ingress: replacedIngress,
             text: this.getText(),
             metadata: {
                 audience: getSearchDocumentAudience(content),

@@ -124,6 +124,11 @@ export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
     logger.info('Finished job to publish layer content to master!');
 };
 
+// "projects" is a flat array, but each project could theoretically
+// have other projects as parents, creating a deep tree structure.
+// This is why we need to recursively call this function in order
+// to catch all parent/child relationships.
+// (nav.no projects all have "default" as parent)
 const populateWithChildLayers = (
     projects: readonly Project[],
     localeToRepoIdMap: LocaleToRepoIdMap,
