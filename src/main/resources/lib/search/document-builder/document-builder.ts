@@ -93,11 +93,14 @@ class ExternalSearchDocumentBuilder {
 
         const publishedTime = content.publish?.from || content.createdTime;
 
+        const replacedTitle = replaceNAVwithNav(title);
+        const replacedIngress = replaceNAVwithNav(this.getIngress());
+
         return {
             id: generateSearchDocumentId(content._id, locale),
             href,
-            title,
-            ingress: this.getIngress(),
+            title: replacedTitle,
+            ingress: replacedIngress,
             text: this.getText(),
             metadata: {
                 audience: getSearchDocumentAudience(content),
@@ -237,10 +240,8 @@ export const buildExternalSearchDocument = (
         return null;
     }
 
-    const replacedNAVwithNav = replaceNAVwithNav(content);
-
     return new ExternalSearchDocumentBuilder(
-        replacedNAVwithNav,
+        content,
         locale,
         searchConfig,
         contentGroupConfig.groupKeys
