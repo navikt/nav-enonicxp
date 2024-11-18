@@ -43,11 +43,13 @@ const replaceSingleString = (str: string): string => {
         ['NAV', /NAV/g, 'Nav'],
     ];
 
-    return replacements.reduce(
-        (acc, [search, regexp, replace]) =>
-            str.includes(search) ? acc.replace(regexp, replace) : acc,
-        str
-    );
+    return replacements.reduce((acc, [search, regexp, replace]) => {
+        if (str.includes(search) && !str.includes('attachment')) {
+            return acc.replace(regexp, replace);
+        } else {
+            return acc;
+        }
+    }, str);
 };
 
 // This is a temporary replacement function as part of the NAV => Nav process
