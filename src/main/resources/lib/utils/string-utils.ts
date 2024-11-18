@@ -36,20 +36,26 @@ const isProtected = (key?: string) => {
 };
 
 const replaceSingleString = (str: string): string => {
-    const replacements: [string, RegExp, string][] = [
+    const orgReplacements: [string, RegExp, string][] = [
         ['NAV Hjelpemiddelsentral', /NAV Hjelpemiddelsentral/g, 'Nav hjelpemiddelsentral'],
         ['NAV Hjelpemidler', /NAV Hjelpemidler/g, 'Nav hjelpemidler'],
         ['NAV Klageinstans', /NAV Klageinstans/g, 'Nav klageinstans'],
-        ['NAV', /NAV/g, 'Nav'],
     ];
 
-    return replacements.reduce((acc, [search, regexp, replace]) => {
-        if (str.includes(search) && !str.includes('attachment')) {
-            return acc.replace(regexp, replace);
-        } else {
+    const orgresult = orgReplacements.reduce((acc, [search, regexp, replace]) => {
+        if (!str.includes(search) || str.includes('http')) {
             return acc;
         }
+
+        return acc.replace(regexp, replace);
     }, str);
+
+    const finalReplacement = orgresult.replace(
+        /(<a\b[^>]*href="[^"]*NAV[^"]*"[^>]*>[^<]*<\/a>)|NAV/g,
+        (match, anchorTag) => anchorTag || 'Nav'
+    );
+
+    return finalReplacement;
 };
 
 // This is a temporary replacement function as part of the NAV => Nav process
