@@ -24,6 +24,11 @@ const isProtected = (key?: string) => {
         'descriptor',
         'anchorId',
         'externalUrl',
+        'externalProductUrl',
+        'canonicalUrl',
+        'urlscope',
+        'moreNewsUrl',
+        'url',
     ]);
 
     return protectedKeys.has(key);
