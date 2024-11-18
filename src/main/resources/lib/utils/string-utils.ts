@@ -23,6 +23,7 @@ const isProtected = (key?: string) => {
         '_childOrderValue',
         'descriptor',
         'anchorId',
+        'externalUrl',
     ]);
 
     return protectedKeys.has(key);
