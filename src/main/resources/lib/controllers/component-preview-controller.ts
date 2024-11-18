@@ -9,6 +9,7 @@ import {
 } from '../guillotine/utils/process-components';
 import { runGuillotineContentQuery } from '../guillotine/queries/run-content-query';
 import { Content } from '/lib/xp/portal';
+import { replaceNAVwithNav } from '../utils/string-utils';
 
 const fallbackResponse = {
     contentType: 'text/html',
@@ -98,8 +99,8 @@ export const componentPreviewController = (_: XP.Request) => {
             url: `${URLS.FRONTEND_ORIGIN}/api/component-preview`,
             method: 'POST',
             body: JSON.stringify({
-                props: componentProps,
-                contentProps: getContentProps(),
+                props: replaceNAVwithNav(componentProps),
+                contentProps: replaceNAVwithNav(getContentProps()),
             }),
             contentType: 'application/json',
             headers: {
