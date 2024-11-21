@@ -14,7 +14,7 @@ import { notNullOrUndefined } from '../../../lib/utils/mixed-bag-of-utils';
 import { DashboardContentInfo } from './utils/types';
 import { ContentDescriptor } from '../../../types/content-types/content-config';
 import { dashboardContentBuildPublishLists } from './utils/buildPublishLists';
-import { layerStr } from './utils/contentResolver';
+import { layerStr, NUM_ENTRIES_TO_DISPLAY } from './utils/contentResolver';
 
 const view = resolve('./dashboard-content.html');
 
@@ -48,9 +48,10 @@ const dayjsDateTime = (datetime?: string) => {
 // Hent brukers endringer av innhold (bare lokalisert innhold av "våre" innholdsyper)
 const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
     const repos = getLayersMultiConnection('draft');
+
     return repos
         .query({
-            count: 5,
+            count: 50,
             filters: {
                 boolean: {
                     mustNot: NON_LOCALIZED_QUERY_FILTER,
@@ -134,7 +135,8 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
                 url: `/admin/tool/com.enonic.app.contentstudio/main/${projectId}/edit/${draftContent._id}`,
             };
         })
-        .filter(notNullOrUndefined);
+        .filter(notNullOrUndefined)
+        .slice(0, NUM_ENTRIES_TO_DISPLAY);
 };
 
 const getUsersLastContent = () => {
