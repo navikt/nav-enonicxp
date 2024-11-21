@@ -14,7 +14,7 @@ type ContentWithLog = {
     log: ContentLogData;
 };
 
-const NUM_ENTRIES_TO_DISPLAY = 5;
+export const NUM_ENTRIES_TO_DISPLAY = 5;
 
 const contentTypesToShow = [
     ...contentTypesRenderedByEditorFrontend,
