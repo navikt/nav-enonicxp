@@ -52,6 +52,8 @@ const shouldIncludeContent = (
         return false;
     }
 
+    let isParentLess = false;
+
     // some man-article content has been converted to redirects (to new content types, ie. "guide-page" etc).
     // while some chapters (child node content) have also been converted to redirects, some are still left behind, resulting i 404.
     // Make sure these aren't included.
@@ -64,7 +66,7 @@ const shouldIncludeContent = (
                 log.info(
                     `This chapter has no viewable main-article parent. Skipping main-article-chapter ${content._id}`
                 );
-                return;
+                isParentLess = true;
             }
         });
     }
@@ -73,6 +75,7 @@ const shouldIncludeContent = (
         contentTypesInSitemapSet.has(content.type) &&
         !content.data?.externalProductUrl &&
         !content.data?.noindex &&
+        !isParentLess &&
         isContentLocalized(content)
     );
 };
