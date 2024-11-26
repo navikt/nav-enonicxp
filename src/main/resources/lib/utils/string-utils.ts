@@ -43,7 +43,7 @@ const replaceSingleString = (str: string): string => {
     ];
 
     const orgresult = orgReplacements.reduce((acc, [search, regexp, replace]) => {
-        if (!str.includes(search) || str.includes('href=')) {
+        if (!str.includes(search)) {
             return acc;
         }
 
@@ -51,7 +51,7 @@ const replaceSingleString = (str: string): string => {
     }, str);
 
     const finalReplacement = orgresult.replace(
-        /(<a\b[^>]*href="[^"]*NAV[^"]*"[^>]*>[^<]*<\/a>)|NAV/g,
+        /(<a\b[^>]*href="[^"]*NAV[^"]*"[^>]*>[^<]*<\/a>)|NAV(?![^<]*>)/g,
         (match, anchorTag) => anchorTag || 'Nav'
     );
 
