@@ -43,7 +43,7 @@ const replaceSingleString = (str: string): string => {
     ];
 
     const orgresult = orgReplacements.reduce((acc, [search, regexp, replace]) => {
-        if (!str.includes(search) || str.includes('http')) {
+        if (!str.includes(search) || str.includes('href=')) {
             return acc;
         }
 
