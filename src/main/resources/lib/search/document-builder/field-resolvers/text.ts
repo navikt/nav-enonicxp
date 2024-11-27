@@ -83,16 +83,16 @@ const resolveFragmentMacrosInPart = (component: NodeComponent, locale: string): 
 
     const html = component.part.config?.['no-nav-navno']['html-area']?.html;
 
+    if (!html) {
+        return component;
+    }
+
     const replacedHtml = html.replace(
         /\[html-fragment\s+fragmentId="([0-9a-fA-F-]+).*?"\/\]/g,
         (_, fragmentId) => getHtmlInFragment(fragmentId, locale)
     );
 
-    log.info('replacedHtml');
-    log.info(JSON.stringify(replacedHtml));
-
     component.part.config['no-nav-navno']['html-area'].html = replacedHtml;
-
     return component;
 };
 
@@ -101,7 +101,8 @@ const getHtmlInFragment = (fragmentId: string, locale: string) => {
     if (!fragment) {
         return '';
     }
-    const html = forceArray(fragment.components).map((component) => {
+
+    const fragmentHtmlList = forceArray(fragment.components).map((component) => {
         if (!isHtmlAreaPart(component)) {
             return '';
         }
@@ -109,17 +110,14 @@ const getHtmlInFragment = (fragmentId: string, locale: string) => {
         return component.part.config?.['no-nav-navno']?.['html-area']?.html;
     });
 
-    return html.join('');
+    return fragmentHtmlList.join('');
 };
 
 const getFragment = (fragmentId: string, locale: string) => {
-    log.info(`getFragment for fragmentId: ${fragmentId}, locale: ${locale}`);
-    const fragment = getRepoConnection({
+    return getRepoConnection({
         branch: 'master',
         repoId: getLayersData().localeToRepoIdMap[locale] || CONTENT_ROOT_REPO_ID,
     }).get<Content>({ key: fragmentId });
-
-    return fragment;
 };
 
 const getComponentFieldValues = (
@@ -176,7 +174,6 @@ export const getSearchDocumentTextSegments = (content: ContentNode, fieldKeys: s
 
     // For component fields, we need to ensure the final order of values are consistent
     // with their original order in the components array
-    log.info(JSON.stringify(content.components));
     const componentsFieldValues = forceArray(content.components)
         .map((component) => getComponentFieldValues(component, content, componentsFieldKeys))
         .flat();
