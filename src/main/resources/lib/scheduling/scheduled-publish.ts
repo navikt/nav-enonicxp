@@ -50,7 +50,7 @@ export const scheduleCacheInvalidation = ({
     time: string;
     masterOnly?: boolean;
 }) => {
-    const scheduleResult = createOrUpdateSchedule<PrepublishCacheWipe>({
+    createOrUpdateSchedule<PrepublishCacheWipe>({
         jobName,
         jobSchedule: {
             type: 'ONE_TIME',
@@ -64,14 +64,6 @@ export const scheduleCacheInvalidation = ({
         },
         masterOnly,
     });
-
-    if (scheduleResult?.name !== jobName) {
-        logger.error(
-            `Failed to schedule job for jobName ${jobName} with id ${id} in ${repoId}: ${JSON.stringify(scheduleResult)}`
-        );
-    } else {
-        logger.info(`Scheduled job for ${jobName} with id ${id} in ${repoId}`);
-    }
 };
 
 export const scheduleUnpublish = ({
