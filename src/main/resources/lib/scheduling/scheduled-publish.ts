@@ -113,6 +113,7 @@ export const handleScheduledPublish = (nodeData: NodeEventData, eventType: strin
     }
 
     if (isContentAwaitingPrepublish(contentNode)) {
+        logger.info(`Content ${id} awaiting prepublish`);
         scheduleCacheInvalidation({
             jobName: getPrepublishJobName(id, repo),
             id,
