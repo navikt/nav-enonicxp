@@ -70,7 +70,7 @@ export const createOrUpdateSchedule = <
 
         if (scheduleResult?.name !== jobName) {
             logger.error(
-                `Failed to schedule job for jobName ${jobName} with id ${id} in ${repoId}: ${JSON.stringify(scheduleResult)}`
+                `Failed to schedule job for jobName ${jobName}: ${JSON.stringify(scheduleResult)}`
             );
         } else {
             logger.info(`Scheduler job created: ${jobName} in ${repoId}`);
