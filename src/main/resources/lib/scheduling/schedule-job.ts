@@ -73,7 +73,7 @@ export const createOrUpdateSchedule = <
                 `Failed to schedule job for jobName ${jobName}: ${JSON.stringify(scheduleResult)}`
             );
         } else {
-            logger.info(`Scheduler job created: ${jobName} in ${repoId}`);
+            logger.info(`Scheduler job created: ${jobName}`);
         }
 
         return scheduleResult;
