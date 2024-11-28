@@ -59,14 +59,23 @@ export const createOrUpdateSchedule = <
                 });
             } else if (onScheduleExistsAction === 'overwrite') {
                 logger.info(`Removing existing job: ${jobName}`);
-                schedulerLib.delete({ name: jobName });
+                return schedulerLib.delete({ name: jobName });
             } else {
                 logger.info(`Job already exists, aborting - ${jobName}`);
                 return;
             }
         }
 
-        logger.info(`Scheduler job created: ${jobName}`);
-        return schedulerLib.create<typeof taskConfig>(jobParams);
+        const scheduleResult = schedulerLib.create<typeof taskConfig>(jobParams);
+
+        if (scheduleResult?.name !== jobName) {
+            logger.error(
+                `Failed to schedule job for jobName ${jobName}: ${JSON.stringify(scheduleResult)}`
+            );
+        } else {
+            logger.info(`Scheduler job created: ${jobName}`);
+        }
+
+        return scheduleResult;
     });
 };
