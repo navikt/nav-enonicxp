@@ -16,6 +16,7 @@ const getContentNode = (node: NodeEventData) => {
     });
 
     const content = repo.get<Content>(node.id);
+
     if (!content) {
         logger.info(`Content for ${node.id} not found in repo ${node.repo}!`);
         return null;
