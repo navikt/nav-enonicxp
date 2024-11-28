@@ -59,7 +59,7 @@ export const createOrUpdateSchedule = <
                 });
             } else if (onScheduleExistsAction === 'overwrite') {
                 logger.info(`Removing existing job: ${jobName}`);
-                return schedulerLib.delete({ name: jobName });
+                schedulerLib.delete({ name: jobName });
             } else {
                 logger.info(`Job already exists, aborting - ${jobName}`);
                 return;
