@@ -6,6 +6,7 @@ import { CONTENT_ROOT_REPO_ID, URLS } from '../constants';
 import { getLayersData } from '../localization/layers-data';
 import { getExternalSearchConfig, revalidateExternalSearchConfigCache } from './config';
 import { updateExternalSearchDocumentForContent } from './update-one';
+import { updateExternalSearchDocumentsForAllReferences } from './update-references';
 import { isMainDatanode } from '../cluster-utils/main-datanode';
 import { updateSearchMetatagsPressNews } from './document-builder/field-resolvers/metatags';
 
@@ -17,6 +18,7 @@ const runSearchDocumentUpdateTask = (contentId: string, repoId: string) => {
         func: () => {
             try {
                 updateExternalSearchDocumentForContent(contentId, repoId);
+                updateExternalSearchDocumentsForAllReferences(contentId, repoId);
             } catch (e) {
                 logger.critical(
                     `Error while running search index update for ${contentId} in ${repoId} - ${e}`
