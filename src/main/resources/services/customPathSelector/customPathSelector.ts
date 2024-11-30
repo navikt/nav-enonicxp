@@ -20,14 +20,27 @@ import { customSelectorParseSelectedIdsFromReq } from '../service-utils';
 import { Content } from '/lib/xp/content';
 
 // Returns an error message to the editor with an intentionally invalid id (customPath id must start with '/')
-const generateErrorHit = (displayName: string, description: string) => ({
+const generateErrorHit = (
+    displayName: string,
+    description: string
+): XP.CustomSelectorServiceResponseHit => ({
     id: `error-${Date.now()}`,
     displayName,
     description,
     icon: customSelectorErrorIcon,
 });
 
-const verifyIngressOwner = (path: string) => {
+const generateWarningHit = (
+    selectedPath: string,
+    description: string
+): XP.CustomSelectorServiceResponseHit => ({
+    id: selectedPath,
+    displayName: selectedPath,
+    description,
+    icon: customSelectorWarningIcon,
+});
+
+const isXpFrontendIngress = (path: string) => {
     try {
         const response = httpClient.request({
             method: 'HEAD',
@@ -59,6 +72,22 @@ const findExistingContentsWithCustomPath = (suggestedCustomPath: string, branch:
     }
 
     return otherContentsWithCustomPath.map((content) => content._path).join(', ');
+};
+
+const isAwaitingAudienceSelection = (content: Content) => {
+    const hasAudienceInput = contentLib.getType(content.type)?.form.some((formItem) => {
+        return (
+            formItem.name === 'audience' ||
+            (formItem.formItemType === 'Layout' &&
+                formItem.items.some((item) => item.name === 'audience'))
+        );
+    });
+
+    if (!hasAudienceInput) {
+        return false;
+    }
+
+    return typeof (content.data.audience?._selected || content.data.audience) !== 'string';
 };
 
 const getResult = ({
@@ -110,38 +139,38 @@ const getResult = ({
         );
     }
 
+    if (isAwaitingAudienceSelection(content)) {
+        return generateWarningHit(
+            suggestedPath,
+            'Husk at valgt målgruppe påvirker hvilken kort-url som skal benyttes!'
+        );
+    }
+
     const contentWithInternalPath = runInContext({ branch: 'master' }, () =>
         contentLib.get({ key: `${NAVNO_ROOT_PATH}${suggestedPath}` })
     );
     if (contentWithInternalPath) {
-        return {
-            id: suggestedPath,
-            displayName: suggestedPath,
-            description: `Advarsel: ${suggestedPath} er allerede i bruk som vanlig url for "${contentWithInternalPath.displayName}" - denne vil overstyres av kort-url`,
-            icon: customSelectorWarningIcon,
-        };
+        return generateWarningHit(
+            suggestedPath,
+            `Advarsel: ${suggestedPath} er allerede i bruk som vanlig url for "${contentWithInternalPath.displayName}" - denne vil overstyres av kort-url`
+        );
     }
 
-    const ingressIsOurs = verifyIngressOwner(suggestedPath);
-    if (!ingressIsOurs) {
-        return {
-            id: suggestedPath,
-            displayName: suggestedPath,
-            description: `"${suggestedPath}" tilhører en annen app på nav.no - Det krever en teknisk endring for å bruke denne url'en`,
-            icon: customSelectorWarningIcon,
-        };
+    if (!isXpFrontendIngress(suggestedPath)) {
+        return generateWarningHit(
+            suggestedPath,
+            `"${suggestedPath}" tilhører en annen app på nav.no - Det krever en teknisk endring for å bruke denne url'en`
+        );
     }
 
     const redirectContent = runInContext({ branch: 'master' }, () =>
         contentLib.get({ key: `${REDIRECTS_ROOT_PATH}${suggestedPath}` })
     );
     if (redirectContent && redirectContent.type !== 'base:folder') {
-        return {
-            id: suggestedPath,
-            displayName: suggestedPath,
-            description: `Advarsel: ${suggestedPath} er i bruk som redirect url - redirect vil overstyres av kort-url`,
-            icon: customSelectorWarningIcon,
-        };
+        return generateWarningHit(
+            suggestedPath,
+            `Advarsel: ${suggestedPath} er i bruk som redirect url - redirect vil overstyres av kort-url`
+        );
     }
 
     return {
