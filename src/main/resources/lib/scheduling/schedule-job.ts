@@ -36,7 +36,10 @@ export const createOrUpdateSchedule = <
     );
 
     if (masterOnly && !clusterLib.isMaster()) {
+        logger.info(`Not master node, skipping scheduling of job: ${jobName}`);
         return;
+    } else {
+        logger.info(`Is master node, scheduling job: ${jobName}`);
     }
 
     const jobParams = {
