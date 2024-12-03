@@ -31,6 +31,10 @@ export const createOrUpdateSchedule = <
     user = SUPER_USER_PRINCIPAL,
     onScheduleExistsAction = 'modify',
 }: Props<TaskConfig>) => {
+    logger.info(
+        `Running createOrUpdateSchedule for jobName: ${jobName} and taskConfig: ${JSON.stringify(taskConfig)}`
+    );
+
     if (masterOnly && !clusterLib.isMaster()) {
         return;
     }
@@ -61,19 +65,21 @@ export const createOrUpdateSchedule = <
                 logger.info(`Removing existing job: ${jobName}`);
                 schedulerLib.delete({ name: jobName });
             } else {
-                logger.info(`Job already exists, aborting - ${jobName}`);
+                logger.info(`Job already exists, aborting: ${jobName}`);
                 return;
             }
         }
 
         const scheduleResult = schedulerLib.create<typeof taskConfig>(jobParams);
 
+        logger.info(
+            `Scheduler job created for jobName ${jobName}. Result: ${JSON.stringify(scheduleResult)}`
+        );
+
         if (scheduleResult?.name !== jobName) {
             logger.error(
                 `Failed to schedule job for jobName ${jobName}: ${JSON.stringify(scheduleResult)}`
             );
-        } else {
-            logger.info(`Scheduler job created: ${jobName}`);
         }
 
         return scheduleResult;

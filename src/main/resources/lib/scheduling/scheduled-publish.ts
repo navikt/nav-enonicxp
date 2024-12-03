@@ -50,6 +50,7 @@ export const scheduleCacheInvalidation = ({
     time: string;
     masterOnly?: boolean;
 }) => {
+    logger.info(`scheduleCacheInvalidation for ${id} in ${repoId} at ${time}`);
     createOrUpdateSchedule<PrepublishCacheWipe>({
         jobName,
         jobSchedule: {
