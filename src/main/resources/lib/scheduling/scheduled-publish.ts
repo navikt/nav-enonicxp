@@ -50,7 +50,6 @@ export const scheduleCacheInvalidation = ({
     time: string;
     masterOnly?: boolean;
 }) => {
-    logger.info(`scheduleCacheInvalidation for ${id} in ${repoId} at ${time}`);
     createOrUpdateSchedule<PrepublishCacheWipe>({
         jobName,
         jobSchedule: {
@@ -114,7 +113,6 @@ export const handleScheduledPublish = (nodeData: NodeEventData, eventType: strin
     }
 
     if (isContentAwaitingPrepublish(contentNode)) {
-        logger.info(`Content ${id} awaiting prepublish`);
         scheduleCacheInvalidation({
             jobName: getPrepublishJobName(id, repo),
             id,
