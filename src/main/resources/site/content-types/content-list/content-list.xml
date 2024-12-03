@@ -28,6 +28,7 @@
                         <allowContentType>${app}:themed-article-page</allowContentType>
                         <allowContentType>${app}:overview</allowContentType>
                         <allowContentType>${app}:forms-overview</allowContentType>
+                        <allowContentType>${app}:office-page</allowContentType>
                     </config>
                 </input>
             </items>
