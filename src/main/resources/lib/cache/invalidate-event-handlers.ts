@@ -24,22 +24,16 @@ import { draftCacheClearOnUpdate } from './draft-cache';
 let hasSetupListeners = false;
 
 const nodeListenerCallback = (event: EnonicEvent) => {
-    logger.info(`nodeListenerCallback: Received cache-invalidation event.`);
     if (isDeferringCacheInvalidation()) {
-        logger.info('Cache invalidation is deferred - skipping cache invalidation');
         return;
     }
 
     event.data.nodes.forEach((node) => {
         if (node.branch !== 'master') {
-            logger.info(
-                `Skipping cache invalidation for non-master branch ${node.branch} on ${node.id}`
-            );
             return;
         }
 
         if (!node.path.startsWith(NAVNO_NODE_ROOT_PATH)) {
-            logger.info(`Skipping cache invalidation for non-NAV content ${node.id}`);
             return;
         }
 
@@ -57,13 +51,11 @@ const nodeListenerCallback = (event: EnonicEvent) => {
         }).get<Content>(node.id);
 
         if (!content || !isContentLocalized(content)) {
-            logger.info(`No content found for ${node.id} in ${node.repo} or not localized`);
             return;
         }
 
         const isPrepublished = handleScheduledPublish(node, event.type);
         if (isPrepublished) {
-            logger.info(`Skipping cache invalidation for prepublished content ${node.id}`);
             return;
         }
 

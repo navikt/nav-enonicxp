@@ -31,10 +31,6 @@ export const createOrUpdateSchedule = <
     user = SUPER_USER_PRINCIPAL,
     onScheduleExistsAction = 'modify',
 }: Props<TaskConfig>) => {
-    logger.info(
-        `Running createOrUpdateSchedule for jobName: ${jobName} and taskConfig: ${JSON.stringify(taskConfig)}`
-    );
-
     if (masterOnly && !clusterLib.isMaster()) {
         logger.info(`Not master node, skipping scheduling of job: ${jobName}`);
         return;
@@ -58,12 +54,19 @@ export const createOrUpdateSchedule = <
         if (existingJob) {
             if (onScheduleExistsAction === 'modify') {
                 logger.info(`Scheduler job updated: ${jobName}`);
-                return schedulerLib.modify<typeof taskConfig>({
-                    name: jobName,
-                    editor: (prevJobParams) => {
-                        return { ...prevJobParams, ...jobParams };
-                    },
-                });
+                try {
+                    return schedulerLib.modify<typeof taskConfig>({
+                        name: jobName,
+                        editor: (prevJobParams) => {
+                            return { ...prevJobParams, ...jobParams };
+                        },
+                    });
+                } catch (e) {
+                    logger.error(
+                        `Failed to modify job for jobName ${jobName}: ${JSON.stringify(e)}`
+                    );
+                    return;
+                }
             } else if (onScheduleExistsAction === 'overwrite') {
                 logger.info(`Removing existing job: ${jobName}`);
                 schedulerLib.delete({ name: jobName });
@@ -75,9 +78,7 @@ export const createOrUpdateSchedule = <
 
         try {
             const scheduleResult = schedulerLib.create<typeof taskConfig>(jobParams);
-            logger.info(
-                `Scheduler job created for jobName ${jobName}. Result: ${JSON.stringify(scheduleResult)}`
-            );
+            logger.info(`Scheduler job created for jobName ${jobName}.`);
             return scheduleResult;
         } catch (e) {
             logger.error(`Failed to schedule job for jobName ${jobName}: ${JSON.stringify(e)}`);
