@@ -70,18 +70,15 @@ export const createOrUpdateSchedule = <
             }
         }
 
-        const scheduleResult = schedulerLib.create<typeof taskConfig>(jobParams);
-
-        logger.info(
-            `Scheduler job created for jobName ${jobName}. Result: ${JSON.stringify(scheduleResult)}`
-        );
-
-        if (scheduleResult?.name !== jobName) {
-            logger.error(
-                `Failed to schedule job for jobName ${jobName}: ${JSON.stringify(scheduleResult)}`
+        try {
+            const scheduleResult = schedulerLib.create<typeof taskConfig>(jobParams);
+            logger.info(
+                `Scheduler job created for jobName ${jobName}. Result: ${JSON.stringify(scheduleResult)}`
             );
+            return scheduleResult;
+        } catch (e) {
+            logger.error(`Failed to schedule job for jobName ${jobName}: ${JSON.stringify(e)}`);
+            return;
         }
-
-        return scheduleResult;
     });
 };
