@@ -15,6 +15,8 @@ import { customListenerType } from '../utils/events';
 import { forceArray, iterableToArray } from '../utils/array-utils';
 import { clusterInfo } from '../cluster-utils/cluster-api';
 import { isMainDatanode } from '../cluster-utils/main-datanode';
+import { getParentPath } from '../paths/path-utils';
+import { runInContext } from '../context/run-in-context';
 
 const MAX_COUNT = 50000;
 const EVENT_TYPE_SITEMAP_GENERATED = 'sitemap-generated';
@@ -42,14 +44,41 @@ let sitemapEntriesMap = new Map<string, SitemapEntry>();
 
 const contentTypesInSitemapSet: ReadonlySet<string> = new Set(contentTypesInSitemap);
 
-const shouldIncludeContent = (content: Content<any> | null): content is Content =>
-    !!(
-        content &&
+const shouldIncludeContent = (
+    content: Content<any> | null,
+    repoId?: string
+): content is Content => {
+    if (!content) {
+        return false;
+    }
+
+    let isParentLess = false;
+
+    // some man-article content has been converted to redirects (to new content types, ie. "guide-page" etc).
+    // while some chapters (child node content) have also been converted to redirects, some are still left behind, resulting i 404.
+    // Make sure these aren't included.
+    if (content.type === 'no.nav.navno:main-article-chapter') {
+        const parentPath = getParentPath(content._path);
+
+        runInContext({ repository: repoId, branch: 'master' }, () => {
+            const parentContent = contentLib.get({ key: parentPath });
+            if (parentContent && parentContent.type !== 'no.nav.navno:main-article') {
+                log.info(
+                    `This chapter has no viewable main-article parent. Skipping main-article-chapter ${content._id}`
+                );
+                isParentLess = true;
+            }
+        });
+    }
+
+    return !!(
         contentTypesInSitemapSet.has(content.type) &&
         !content.data?.externalProductUrl &&
         !content.data?.noindex &&
+        !isParentLess &&
         isContentLocalized(content)
     );
+};
 
 const getKey = (contentId: string, locale: string) => `${contentId}-${locale}`;
 
@@ -177,6 +206,10 @@ const generateSitemapEntries = (): SitemapEntry[] => {
         const locale = getLayersData().repoIdToLocaleMap[repoId];
 
         contents.forEach((content) => {
+            if (!shouldIncludeContent(content)) {
+                return;
+            }
+
             const entry = buildSitemapEntry(content, locale, false);
             sitemapEntries.push(entry);
         });
