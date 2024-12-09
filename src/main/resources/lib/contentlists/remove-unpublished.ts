@@ -56,8 +56,6 @@ const removeUnpublishedFromContentList = (
                 repoId: context.repository,
             });
 
-            log.info(`Start pruning content list ${contentList._id}`);
-
             const shouldPushChanges = isDraftAndMasterSameVersion(
                 contentList._id,
                 context.repository
@@ -69,7 +67,6 @@ const removeUnpublishedFromContentList = (
                     const sectionContents = forceArray(content.data?.sectionContents);
 
                     if (sectionContents.length === 0) {
-                        log.info('sectionContents is empty, skipping');
                         return content;
                     }
 
@@ -99,7 +96,7 @@ const removeUnpublishedFromContentList = (
                 });
             } else {
                 log.info(
-                    'Removed unpublished content from content list, but draft and master are out of sync, so not pushing changes.'
+                    `Removed unpublished content from content list ${contentList._id}, but draft and master are out of sync, so not pushing changes.`
                 );
             }
         });
