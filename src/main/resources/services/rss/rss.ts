@@ -3,6 +3,7 @@ import { getContentList } from '../../lib/contentlists/contentlists';
 import { notNullOrUndefined } from '../../lib/utils/mixed-bag-of-utils';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
 import { forceArray } from '../../lib/utils/array-utils';
+import { replaceNAVwithNav } from '../../lib/utils/string-utils';
 
 // Urls to content lists to include in the RSS-feed
 const contentLists = [
@@ -40,8 +41,10 @@ export const get = () => {
             }
         });
     });
+
+    const replacedNAVwithNav = replaceNAVwithNav(rssFeed);
     return {
-        body: rssFeed,
+        body: replacedNAVwithNav,
         contentType: 'application/json',
     };
 };

@@ -12,6 +12,7 @@ import {
     findContentsWithFragmentMacro,
 } from '../../lib/reference-search/fragment-references-resolvers';
 import { ReferencesFinder } from '../../lib/reference-search/references-finder';
+import { isValidBranch } from '../../lib/context/branches';
 
 type ReqParams = Partial<{
     contentId: string;
@@ -47,7 +48,7 @@ const getResolversForContentType = (
 };
 
 export const get = (req: XP.Request) => {
-    const { contentId, locale } = req.params as ReqParams;
+    const { contentId, locale, branch = 'draft' } = req.params as ReqParams;
 
     if (!contentId) {
         return {
@@ -69,7 +70,17 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const content = runInLocaleContext({ locale, branch: 'draft', asAdmin: true }, () => {
+    if (!isValidBranch(branch)) {
+        return {
+            status: 400,
+            body: {
+                result: 'error',
+                message: `Parameter "branch" must be a valid branch name (got ${branch})`,
+            },
+        };
+    }
+
+    const content = runInLocaleContext({ locale, branch, asAdmin: true }, () => {
         return contentLib.get({ key: contentId });
     });
 

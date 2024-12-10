@@ -9,7 +9,7 @@
 		<property name="width" value="large"/>
 		<property name="height" value="full"/>
 		<property name="style" value="custom"/>
-		<property name="order" value="-2"/>
+		<property name="order" value="-1"/>
 	</config>
 </widget>
 

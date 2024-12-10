@@ -14,4 +14,4 @@ export type ProductCardMicro = {
      */
     targetPage?: string;
   }>;
-}
+};

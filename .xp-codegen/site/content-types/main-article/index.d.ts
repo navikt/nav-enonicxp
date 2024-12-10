@@ -224,4 +224,4 @@ export type MainArticle = {
    * Nøkkelord (internt søk)
    */
   keywords?: Array<string> | string;
-}
+};

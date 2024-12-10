@@ -4,4 +4,4 @@ export type PreviewOnly = {
    * Viser publisert innhold kun under nav.no/utkast/
    */
   previewOnly: boolean;
-}
+};

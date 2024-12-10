@@ -370,4 +370,24 @@ export type OfficePage = {
           };
         };
       };
-}
+
+  /**
+   * Sidebeskrivelse for søk og sosiale medier
+   */
+  metaDescription?: string;
+
+  /**
+   * Canonical url - NB! Skal bare legges inn av hovedredaktør/administrator
+   */
+  canonicalUrl?: string;
+
+  /**
+   * Skal ikke vises i søk
+   */
+  noindex: boolean;
+
+  /**
+   * Ikke vis "tilfeldige" utdrag (snippets) i Google-søk
+   */
+  nosnippet: boolean;
+};

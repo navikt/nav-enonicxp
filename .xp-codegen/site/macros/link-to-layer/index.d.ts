@@ -29,4 +29,4 @@ export type LinkToLayer = {
    * Anker
    */
   anchorId?: string;
-}
+};

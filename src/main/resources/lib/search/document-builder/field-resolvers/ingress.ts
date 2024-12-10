@@ -1,3 +1,4 @@
+import { logger } from '../../../utils/logging';
 import { OfficeContent } from '../../../office-pages/types';
 import { forceArray, removeDuplicatesFilter } from '../../../utils/array-utils';
 import { capitalize } from '../../../utils/string-utils';
@@ -7,12 +8,26 @@ const INGRESS_MAX_LENGTH = 500;
 const DEFAULT_OFFICE_INGRESS = 'Kontorinformasjon';
 
 export const buildSearchDocumentOfficeIngress = (content: OfficeContent) => {
-    const isLocalOffice = content.type === 'no.nav.navno:office-branch';
-    if (!isLocalOffice) {
+    // Legacy offices
+    if (content.type === 'no.nav.navno:office-information') {
         return DEFAULT_OFFICE_INGRESS;
     }
 
-    const poststeder = forceArray(content.data.brukerkontakt?.publikumsmottak)
+    const officeData = content.data.officeNorgData?.data;
+
+    if (!officeData) {
+        logger.warning(
+            `Build search document for office ingress: Could not find office data for ${content._id}`
+        );
+        return '';
+    }
+
+    // HMS (Hjelpemiddelsentral)
+    if (officeData.type === 'HMS') {
+        return officeData.navn; // i.e "NAV Hjelpemiddelsentral i Oslo"
+    }
+
+    const poststeder = forceArray(officeData.brukerkontakt?.publikumsmottak)
         .filter(
             (mottak) =>
                 mottak.besoeksadresse?.type === 'stedsadresse' && !!mottak.besoeksadresse.poststed
@@ -34,6 +49,6 @@ export const buildSearchDocumentOfficeIngress = (content: OfficeContent) => {
 
 const withoutTable = (text: string) => text.split('<table')[0];
 
-export const buildSearchDocumentIngress = (ingressTextRaw?: string) => {
+export const buildSearchDocumentIngress = (ingressTextRaw?: string | null) => {
     return ingressTextRaw ? withoutTable(ingressTextRaw).slice(0, INGRESS_MAX_LENGTH) : '';
 };

@@ -60,51 +60,6 @@ const getPreviewOnlyResponse = ({ content, requestedPath, isPreview }: Args) => 
     );
 };
 
-// Note: There are legacy office pages still in effect that also have the
-// content type office-information. As long as the enhetNr doesn't match up
-// with any office-branch content, the next function will pass by these
-// office pages.
-const getOfficeInfoRedirect = ({ content }: Args) => {
-    if (content.type !== 'no.nav.navno:office-information') {
-        return null;
-    }
-
-    const { enhetNr } = content.data.enhet;
-
-    const foundOfficeContent = contentLib.query({
-        start: 0,
-        count: 1,
-        contentTypes: ['no.nav.navno:office-branch'],
-        filters: {
-            boolean: {
-                must: {
-                    hasValue: {
-                        field: 'data.enhetNr',
-                        values: [enhetNr],
-                    },
-                },
-            },
-        },
-    });
-
-    if (foundOfficeContent.hits.length === 0) {
-        return null;
-    }
-
-    // Try and use the new office branch name, but fall back to the old name if it
-    // will return a 404 after redirect.
-    const office = foundOfficeContent.hits[0];
-
-    return nullableResponse(
-        transformToRedirect({
-            content,
-            target: office._path,
-            type: 'internal',
-            isPermanent: true,
-        })
-    );
-};
-
 const getLocaleRedirect = ({ content, locale, branch }: Args) => {
     const localeTarget = getContentLocaleRedirectTarget(content);
     if (!localeTarget || localeTarget === locale) {
@@ -154,10 +109,5 @@ const getCustomPathRedirect = ({ content, requestedPath, branch, locale }: Args)
 // The NullableResponse may itself contain a null-value, indicating that the special response
 // should be 404
 export const sitecontentSpecialResponse = (args: Args): NullableResponse | null => {
-    return (
-        getPreviewOnlyResponse(args) ||
-        getOfficeInfoRedirect(args) ||
-        getLocaleRedirect(args) ||
-        getCustomPathRedirect(args)
-    );
+    return getPreviewOnlyResponse(args) || getLocaleRedirect(args) || getCustomPathRedirect(args);
 };

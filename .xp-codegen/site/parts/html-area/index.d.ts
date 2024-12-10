@@ -34,4 +34,4 @@ export type HtmlArea = {
    * Velg visning
    */
   renderOnAuthState: "always" | "loggedIn" | "loggedOut";
-}
+};

@@ -19,4 +19,4 @@ export type Accordion = {
      */
     html: string;
   }>;
-}
+};

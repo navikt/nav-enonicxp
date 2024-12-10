@@ -4,4 +4,4 @@ export type Saksbehandlingstid = {
    * Velg saksbehandlingstid
    */
   key: string;
-}
+};

@@ -1,3 +1,4 @@
+import { Content } from '/lib/xp/content';
 import thymeleafLib from '/lib/thymeleaf';
 import * as authLib from '/lib/xp/auth';
 import { UserKey } from '/lib/xp/auditlog';
@@ -8,12 +9,12 @@ import { NON_LOCALIZED_QUERY_FILTER } from '../../../lib/localization/layers-rep
 import { contentTypesRenderedByEditorFrontend } from '../../../lib/contenttype-lists';
 import dayjs from '/assets/dayjs/1.11.9/dayjs.min.js';
 import utc from '/assets/dayjs/1.11.9/plugin/utc.js';
-import { getContentProjectIdFromRepoId, getRepoConnection } from '../../../lib/utils/repo-utils';
+import { getContentProjectIdFromRepoId, getRepoConnection } from '../../../lib/repos/repo-utils';
 import { notNullOrUndefined } from '../../../lib/utils/mixed-bag-of-utils';
 import { DashboardContentInfo } from './utils/types';
 import { ContentDescriptor } from '../../../types/content-types/content-config';
 import { dashboardContentBuildPublishLists } from './utils/buildPublishLists';
-import { Content } from '/lib/xp/content';
+import { layerStr, NUM_ENTRIES_TO_DISPLAY } from './utils/contentResolver';
 
 const view = resolve('./dashboard-content.html');
 
@@ -32,8 +33,6 @@ const contentInfo = contentTypesToShow.map((contentType) => {
     };
 });
 
-const layerStr = (repo: string) => (repo !== 'default' ? ` [${repo.replace('navno-', '')}]` : '');
-
 // Lag dayjs-dato - Kan være på Elastic-format (yyyy-mm-ddThh:mm:ss.mmmmmmZ)
 const dayjsDateTime = (datetime?: string) => {
     const localDate =
@@ -49,9 +48,10 @@ const dayjsDateTime = (datetime?: string) => {
 // Hent brukers endringer av innhold (bare lokalisert innhold av "våre" innholdsyper)
 const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
     const repos = getLayersMultiConnection('draft');
+
     return repos
         .query({
-            count: 5000,
+            count: 50,
             filters: {
                 boolean: {
                     mustNot: NON_LOCALIZED_QUERY_FILTER,
@@ -71,6 +71,12 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
                     ],
                 },
             },
+            sort: [
+                {
+                    field: 'modifiedTime',
+                    direction: 'DESC',
+                },
+            ],
         })
         .hits.map((hit): DashboardContentInfo | undefined => {
             const draftContent = getRepoConnection({
@@ -89,7 +95,11 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
             if (!draftContent.displayName) {
                 draftContent.displayName = 'Uten tittel';
             }
+
             let status = 'Ny';
+            const draftModifiedTime = dayjsDateTime(draftContent.modifiedTime);
+            const draftTs = dayjsDateTime(draftContent._ts);
+
             if (masterContent?.publish?.first && masterContent?.publish?.from) {
                 // Innholdet ER publisert, eventuelt endret etterpå
                 if (draftContent?._versionKey !== masterContent?._versionKey) {
@@ -104,33 +114,29 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
                 return undefined;
             } else if (draftContent?.publish?.first) {
                 // Avpublisert, eventuelt endret etterpå
-                if (draftContent?.workflow?.state === 'IN_PROGRESS') {
-                    status = 'Endret';
-                } else {
+                if (dayjs(draftTs).isAfter(dayjs(draftModifiedTime))) {
                     // Avpublisert, skal ikke vises her
                     return undefined;
+                } else {
+                    status = 'Endret';
                 }
             }
 
-            const modifiedLocalTime = dayjsDateTime(draftContent.modifiedTime);
             const projectId = getContentProjectIdFromRepoId(hit.repoId);
-            const layer = layerStr(projectId);
             const contentTypeInfo = contentInfo.find((el) => el.type === draftContent.type);
-            const dateFinal = dayjs(modifiedLocalTime).format('DD.MM.YYYY - HH:mm:ss');
 
             return {
-                displayName: draftContent.displayName + layer,
+                displayName: draftContent.displayName + layerStr(projectId),
                 contentType: contentTypeInfo ? contentTypeInfo.name : '',
-                modifiedTimeRaw: modifiedLocalTime,
-                modifiedTime: dateFinal,
+                modifiedTimeRaw: draftModifiedTime,
+                modifiedTime: dayjs(draftModifiedTime).format('DD.MM.YYYY - HH:mm:ss'),
                 status,
                 title: draftContent._path.replace('/content/www.nav.no/', ''),
                 url: `/admin/tool/com.enonic.app.contentstudio/main/${projectId}/edit/${draftContent._id}`,
             };
         })
         .filter(notNullOrUndefined)
-        .sort((a, b) => (a.modifiedTimeRaw > b.modifiedTimeRaw ? -1 : 1))
-        .slice(0, 5);
+        .slice(0, NUM_ENTRIES_TO_DISPLAY);
 };
 
 const getUsersLastContent = () => {
@@ -140,9 +146,7 @@ const getUsersLastContent = () => {
     }
 
     const { published, prePublished, unPublished } = dashboardContentBuildPublishLists(user);
-
-    // TODO: this needs to be optimized before enabling
-    const modified: DashboardContentInfo[] = []; // getUsersModifications(user);
+    const modified: DashboardContentInfo[] = getUsersModifications(user);
 
     return {
         body: thymeleafLib.render(view, {

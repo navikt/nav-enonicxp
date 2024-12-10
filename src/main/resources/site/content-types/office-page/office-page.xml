@@ -310,5 +310,6 @@
                 </option>
             </options>
         </option-set>
+        <mixin name="seo"/>
     </form>
 </content-type>

@@ -7,6 +7,7 @@ import { getLayersData } from '../localization/layers-data';
 import { getExternalSearchConfig, revalidateExternalSearchConfigCache } from './config';
 import { updateExternalSearchDocumentForContent } from './update-one';
 import { isMainDatanode } from '../cluster-utils/main-datanode';
+import { updateSearchMetatagsPressNews } from './document-builder/field-resolvers/metatags';
 
 let isActive = false;
 
@@ -46,14 +47,11 @@ export const activateExternalSearchIndexEventHandlers = () => {
     isActive = true;
 
     revalidateExternalSearchConfigCache();
+    updateSearchMetatagsPressNews();
 
     eventLib.listener({
         type: '(node.pushed|node.deleted)',
         callback: (event) => {
-            if (!isMainDatanode()) {
-                return;
-            }
-
             const searchConfig = getExternalSearchConfig();
             if (!searchConfig) {
                 logger.critical(`No search config found - could not run event handler!`);
@@ -61,7 +59,13 @@ export const activateExternalSearchIndexEventHandlers = () => {
             }
 
             event.data.nodes.forEach((nodeData) => {
-                if (nodeData.branch !== 'master' || !nodeData.path.startsWith(CONTENT_ROOT_PATH)) {
+                const { repoIdToLocaleMap } = getLayersData();
+
+                if (
+                    nodeData.branch !== 'master' ||
+                    !nodeData.path.startsWith(CONTENT_ROOT_PATH) ||
+                    !repoIdToLocaleMap[nodeData.repo]
+                ) {
                     return;
                 }
 
@@ -70,10 +74,9 @@ export const activateExternalSearchIndexEventHandlers = () => {
                     return;
                 }
 
-                const { repoIdToLocaleMap } = getLayersData();
+                updateSearchMetatagsPressNews(nodeData.id);
 
-                // Only nodes from a content repo should be indexed
-                if (!repoIdToLocaleMap[nodeData.repo]) {
+                if (!isMainDatanode()) {
                     return;
                 }
 

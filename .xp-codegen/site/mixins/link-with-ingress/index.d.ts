@@ -49,4 +49,4 @@ export type LinkWithIngress = {
    * Ingress
    */
   ingress?: string;
-}
+};

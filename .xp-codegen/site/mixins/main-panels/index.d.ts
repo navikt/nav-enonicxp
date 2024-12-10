@@ -9,4 +9,4 @@ export type MainPanels = {
    * Velg innhold
    */
   tableContents?: Array<string> | string;
-}
+};

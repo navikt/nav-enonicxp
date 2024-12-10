@@ -2,11 +2,11 @@ import * as portalLib from '/lib/xp/portal';
 import { Content } from '/lib/xp/portal';
 import { frontendProxy } from './frontend-proxy';
 import { logger } from '../utils/logging';
-import { getRepoConnection } from '../utils/repo-utils';
+import { getRepoConnection } from '../repos/repo-utils';
 import {
     formIntermediateStepGenerateCustomPath,
     formIntermediateStepValidateCustomPath,
-} from '../paths/custom-paths/custom-path-special-types';
+} from '../paths/custom-paths/custom-path-content-validators';
 
 const insertCustomPath = (req: XP.Request) => {
     const content = portalLib.getContent();

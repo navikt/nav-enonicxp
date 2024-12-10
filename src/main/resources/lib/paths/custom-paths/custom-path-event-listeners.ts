@@ -6,7 +6,7 @@ import { hasInvalidCustomPath, hasValidCustomPath } from './custom-path-utils';
 import { logger } from '../../utils/logging';
 import { getLayersData } from '../../localization/layers-data';
 import { isContentLocalized } from '../../localization/locale-utils';
-import { getRepoConnection } from '../../utils/repo-utils';
+import { getRepoConnection } from '../../repos/repo-utils';
 import { isMainDatanode } from '../../cluster-utils/main-datanode';
 
 const removeCustomPath = (contentId: string, repoConnection: RepoConnection) => {

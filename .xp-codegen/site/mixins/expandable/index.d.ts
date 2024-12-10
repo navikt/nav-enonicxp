@@ -14,4 +14,4 @@ export type Expandable = {
    * Anker-id på utvidbart panel
    */
   expandableAnchorId?: string;
-}
+};

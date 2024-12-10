@@ -1,54 +1,23 @@
-// Build dependencies
-buildscript {
-    // Internal dependencies
-    if (project.hasProperty('build-inside-firewall')) {
-        repositories {
-            maven {
-                url "https://maven.adeo.no/nexus/content/groups/public/"
-            }
-            maven {
-                url "https://maven.adeo.no/nexus/content/repositories/m2internal/"
-            }
-        }
-        dependencies {
-            classpath "gradle.plugin.com.enonic.gradle:xp-gradle-plugin:3.4.0"
-        }
-    }
-}
-
-// Build plugins
 plugins {
-    id 'com.enonic.xp.app' version '3.4.0'
-    id "com.github.node-gradle.node" version '7.0.0'
-    id 'java'
-    id 'no.item.xp.codegen' version '2.3.0'
+    id 'com.enonic.xp.app' version '3.5.2'
+    id "com.github.node-gradle.node" version '7.1.0'
+    id 'no.item.xp.codegen' version '2.6.2'
 }
-node {
-    version = '18.18.0'
-}
-apply plugin: "com.enonic.xp.app"
 
-// App config
+repositories {
+    mavenLocal()
+    mavenCentral()
+    xp.enonicRepo()
+}
+
+node {
+    version = '22.8.0'
+}
+
 app {
     name = project.appName
     displayName = 'Nav.no - XP 2021'
     systemVersion = "${xpVersion}"
-}
-
-// Project dependencies
-repositories {
-    // External dependencies
-    if (!project.hasProperty('build-inside-firewall')) {
-        mavenLocal()
-        mavenCentral()
-        xp.enonicRepo()
-    }
-
-    mavenLocal()
-
-    maven {
-        url "https://maven.adeo.no/nexus/content/groups/public"
-    }
 }
 
 dependencies {
@@ -82,16 +51,14 @@ dependencies {
     webjar "org.webjars.npm:dayjs:1.11.9"
 }
 
-// Tasks
-task babelJs(type: NpmTask, dependsOn: 'npmInstall') {
+tasks.register('babelJs', NpmTask) {
+    dependsOn 'npmInstall'
     dependsOn(generateTypeScript)
     dependsOn(processResources)
 
     args = ['run', 'build']
-
-    inputs.dir 'src/main/resources'
-    outputs.dir "$buildDir/resources/main"
 }
+
 
 jar.dependsOn(babelJs)
 processResources.dependsOn(generateTypeScript)

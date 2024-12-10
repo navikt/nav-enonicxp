@@ -1,0 +1,33 @@
+name: Run e2e tests
+on:
+  workflow_call:
+    inputs:
+      buildArtifact:
+        required: true
+        type: string
+
+jobs:
+  tests:
+    name: Run tests
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Setup node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+      - name: Install node.js dependencies
+        run: npm ci
+      - name: Download jar files
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.buildArtifact }}
+      - name: Build test assets
+        run: npm run prepare-gha --workspace=test/e2e-tests
+      - name: Run tests
+        run: npm run test --workspace=test/e2e-tests

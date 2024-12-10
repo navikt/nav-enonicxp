@@ -1,4 +1,4 @@
-import { QueryNodeParams } from '/lib/xp/node';
+import { QueryNodeParams, QueryDsl } from '/lib/xp/node';
 import { batchedMultiRepoNodeQuery } from '../../utils/batched-query';
 import { RepoBranch } from '../../../types/common';
 import { insertLocalizationStateFilter, LocalizationState } from './localization-state-filters';
@@ -14,14 +14,31 @@ import { getLayersMultiConnection } from './layers-repo-connection';
 type Args<ResolveContent = boolean> = {
     branch: RepoBranch;
     state: LocalizationState;
-    queryParams: QueryNodeParams & { query?: string };
+    queryParams: QueryNodeParams;
     resolveContent: ResolveContent;
 };
 
-const ARCHIVE_EXCLUDED = '_path NOT LIKE "/archive/*"';
+const ARCHIVE_EXCLUDED_STRING_QUERY = '_path NOT LIKE "/archive/*"';
 
-const insertArchiveExcludedQueryString = (query?: string) =>
-    query ? `${ARCHIVE_EXCLUDED} AND (${query})` : ARCHIVE_EXCLUDED;
+const insertArchiveExcludedQueryString = (query?: string | QueryDsl) => {
+    if (!query) {
+        return ARCHIVE_EXCLUDED_STRING_QUERY;
+    }
+
+    return typeof query === 'string'
+        ? `${ARCHIVE_EXCLUDED_STRING_QUERY} AND (${query})`
+        : {
+              boolean: {
+                  must: query,
+                  mustNot: {
+                      like: {
+                          field: '_path',
+                          value: '/archive/*',
+                      },
+                  },
+              },
+          };
+};
 
 export function queryAllLayersToRepoIdBuckets(args: Args<false>): RepoIdNodeIdBuckets;
 export function queryAllLayersToRepoIdBuckets(args: Args<true>): RepoIdContentBuckets;

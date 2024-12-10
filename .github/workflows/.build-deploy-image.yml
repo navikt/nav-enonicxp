@@ -1,0 +1,49 @@
+name: Build image for deploy
+on:
+  workflow_call:
+    inputs:
+      buildArtifact:
+        required: true
+        type: string
+      imageSuffix:
+        required: true
+        type: string
+      xpVersion:
+        required: true
+        type: string
+    secrets:
+      NAIS_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+    outputs:
+      image:
+        description: "Docker image tag"
+        value: ${{ jobs.build.outputs.image }}
+
+jobs:
+  build:
+    name: Build deploy image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      image: ${{ steps.docker-push.outputs.image }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Download app jar
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.buildArtifact }}
+      - name: Copy app jar
+        run: cp build/libs/navno.jar .nais-deploy-job
+      - name: Build and push docker image
+        uses: nais/docker-build-push@v0
+        id: docker-push
+        with:
+          team: personbruker
+          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
+          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+          docker_context: .nais-deploy-job
+          image_suffix: ${{ inputs.imagename }}
+          build_args: appFileName=navno.jar

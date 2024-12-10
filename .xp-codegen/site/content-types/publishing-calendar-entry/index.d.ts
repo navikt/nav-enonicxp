@@ -9,4 +9,9 @@ export type PublishingCalendarEntry = {
    * Dato for publisering
    */
   date: string;
-}
+
+  /**
+   * Lenke til relevant innhold
+   */
+  link?: string;
+};

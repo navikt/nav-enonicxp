@@ -1,7 +1,7 @@
 import { isUUID } from '../../../lib/utils/uuid';
-import { getPublishedVersionRefs } from '../../../lib/utils/version-utils';
 import { logger } from '../../../lib/utils/logging';
 import { getLayersData } from '../../../lib/localization/layers-data';
+import { getPublishedAndModifiedVersions } from '../../../lib/time-travel/get-published-versions';
 
 export const publishedVersionsReqHandler = (req: XP.Request) => {
     const { id, locale } = req.params;
@@ -26,7 +26,7 @@ export const publishedVersionsReqHandler = (req: XP.Request) => {
         };
     }
 
-    const publishedVersionTimestamps = getPublishedVersionRefs(id, locale).map(
+    const publishedVersionTimestamps = getPublishedAndModifiedVersions(id, locale).map(
         (version) => version.timestamp
     );
 

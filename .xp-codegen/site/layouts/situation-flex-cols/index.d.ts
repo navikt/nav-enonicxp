@@ -34,4 +34,4 @@ export type SituationFlexCols = {
      */
     color: string;
   };
-}
+};

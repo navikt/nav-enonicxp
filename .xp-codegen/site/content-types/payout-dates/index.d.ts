@@ -69,4 +69,4 @@ export type PayoutDates = {
      */
     dec: number;
   };
-}
+};

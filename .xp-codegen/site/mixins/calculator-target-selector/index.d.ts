@@ -4,4 +4,4 @@ export type CalculatorTargetSelector = {
    * Velg kalkulator
    */
   targetCalculator?: string;
-}
+};

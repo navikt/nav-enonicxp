@@ -29,7 +29,7 @@ import {
     SetRootPermissionsParams,
 } from '@enonic-types/lib-node';
 
-import { Content } from '/lib/xp/content';
+import { Content, Attachment } from '/lib/xp/content';
 import { NodeComponent } from '../../components/component-node';
 
 type ContentNodeData<ContentData extends Content> = Omit<
@@ -47,7 +47,9 @@ export declare type CreatedNode<Data> = NodePropertiesOnCreate & NodeData<Data>;
 
 export declare type ModifiedNode<Data> = NodePropertiesOnModify & NodeData<Data>;
 
-export declare type RepoNode<Data> = NodePropertiesOnRead & NodeData<Data>;
+// attachment property is missing from enonic-types. Remove it from here if it ever gets implemented.
+export declare type RepoNode<Data> = NodePropertiesOnRead &
+    NodeData<Data> & { attachment?: Attachment & { binary: string } };
 
 export declare type CreateNodeParams<NodeData = UnknownData> = NodePropertiesOnCreate & NodeData;
 

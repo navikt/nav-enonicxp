@@ -113,4 +113,4 @@ export type Calculator = {
    * Tekst for beregingsresultat
    */
   summaryText?: string;
-}
+};

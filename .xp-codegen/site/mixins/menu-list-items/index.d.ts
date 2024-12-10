@@ -114,4 +114,4 @@ export type MenuListItems = {
       link?: Array<string> | string;
     };
   };
-}
+};

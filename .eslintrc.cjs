@@ -20,18 +20,14 @@ module.exports = {
     ],
     'plugins': ['prettier', '@typescript-eslint', 'import'],
     'parser': '@typescript-eslint/parser',
-    'parserOptions': {
-        'ecmaVersion': 2020,
-        'project': './tsconfig.json',
-        'tsconfigRootDir': './',
-    },
     'rules': {
         '@typescript-eslint/ban-ts-comment': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/no-unused-vars': [
             'warn',
             {
-                'varsIgnorePattern': '^_',
+                'varsIgnorePattern': '^_$',
+                'argsIgnorePattern': '^_$',
             },
         ],
         '@typescript-eslint/no-var-requires': 'off',
@@ -76,10 +72,6 @@ module.exports = {
                     {
                         'group': ['?types/xp-libs/*'],
                         'message': 'xp-libs patches should not be imported directly (use /lib/xp/*)',
-                    },
-                    {
-                        'group': ['*__test*'],
-                        'message': 'Test modules should not be imported outside of tests',
                     },
                 ],
             },
@@ -126,7 +118,7 @@ module.exports = {
             },
         },
         {
-            'files': ['*.test.ts', 'src/main/resources/__test/**/*.*'],
+            'files': ['test/**/*.*'],
             'rules': {
                 'no-console': 'off',
                 'no-restricted-imports': 'off',
@@ -138,7 +130,14 @@ module.exports = {
             '@typescript-eslint/parser': ['.ts'],
         },
         'import/resolver': {
-            'typescript': {},
+            'typescript': {
+                'project': [
+                    'tsconfig.json',
+                    'test/unit-tests/tsconfig.json',
+                    'test/e2e-tests/tsconfig.json',
+                    'test/e2e-tests/.xp-test-data-app/tsconfig.json',
+                ],
+            },
         },
     },
 };

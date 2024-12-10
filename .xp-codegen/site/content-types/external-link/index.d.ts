@@ -24,4 +24,4 @@ export type ExternalLink = {
    * Nøkkelord (internt søk)
    */
   keywords?: Array<string> | string;
-}
+};

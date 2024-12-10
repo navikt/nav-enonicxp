@@ -39,6 +39,8 @@ const NEWS_AND_PRESS_RELEASES_QUERY_SEGMENT = `type LIKE '${APP_DESCRIPTOR}:main
 
 const EXCLUDED_IF_OLD_QUERY_SEGMENT = `(${STATISTIKK_QUERY_SEGMENT}) OR (${NEWS_AND_PRESS_RELEASES_QUERY_SEGMENT})`;
 
+const ignoredPaths = new Set(['/admin']);
+
 // Prevent concurrent queries
 let isRunning = false;
 const waitUntilFinished = (msToWait = 60000) => {
@@ -117,7 +119,9 @@ const getPathsToRender = (isTest?: boolean) => {
         query: `_path LIKE '${REDIRECTS_NODE_PATH}*'`,
     }).hits.map((content) => stripRedirectsPathPrefix(content._path));
 
-    return removeDuplicates([...contentPaths, ...redirectPaths]);
+    const allPaths = removeDuplicates([...contentPaths, ...redirectPaths]);
+    const filteredPaths = allPaths.filter((path) => !ignoredPaths.has(path));
+    return filteredPaths;
 };
 
 const getFromCache = (isTest: boolean) => {

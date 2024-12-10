@@ -64,4 +64,4 @@ export type SectionWithHeader = {
      */
     width?: number;
   };
-}
+};

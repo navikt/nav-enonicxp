@@ -29,4 +29,4 @@ export type PublishingCalendar = {
    * Nøkkelord (internt søk)
    */
   keywords?: Array<string> | string;
-}
+};

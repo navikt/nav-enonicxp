@@ -109,4 +109,4 @@ export type Overview = {
    * (tomt felt, skal ikke brukes)
    */
   allProducts?: string;
-}
+};

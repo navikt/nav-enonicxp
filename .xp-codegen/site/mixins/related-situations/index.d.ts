@@ -4,4 +4,4 @@ export type RelatedSituations = {
    * Situasjoner
    */
   relatedSituations?: Array<string> | string;
-}
+};

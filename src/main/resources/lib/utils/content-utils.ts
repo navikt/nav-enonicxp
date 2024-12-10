@@ -2,13 +2,14 @@ import * as contextLib from '/lib/xp/context';
 import { Content } from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
 import { ContentDescriptor, MediaDescriptor } from '../../types/content-types/content-config';
+import { getISONowWithoutMS } from './datetime-utils';
 import { logger } from './logging';
 import { COMPONENT_APP_KEY } from '../constants';
 
 export const isMedia = (content: Content): content is Content<MediaDescriptor> =>
     content.type.startsWith('media:');
 
-export const isArchivedContentNode = (content: RepoNode<Content>) =>
+export const isArchivedContentNode = (content: RepoNode<Content> | Content) =>
     content._path.startsWith('/archive');
 
 export const applyModifiedData = <ContentType extends ContentDescriptor>(
@@ -48,5 +49,10 @@ export const isContentAwaitingPrepublish = (
     content: Content<any>
 ): content is Content & { publish: { from: string } } => {
     const publishFrom = content.publish?.from;
-    return publishFrom ? publishFrom > new Date().toISOString() : false;
+    const isoNow = getISONowWithoutMS();
+    return publishFrom ? publishFrom > isoNow : false;
 };
+
+// If the content ref is a path, ensure it has the /content prefix
+export const getContentNodeKey = (contentRef: string) =>
+    contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');

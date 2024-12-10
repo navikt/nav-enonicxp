@@ -14,4 +14,4 @@ export type UnpublishExpiredContent = {
    * Repo id
    */
   repoId?: string;
-}
+};

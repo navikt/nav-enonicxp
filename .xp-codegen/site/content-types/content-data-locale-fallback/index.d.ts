@@ -49,4 +49,4 @@ export type ContentDataLocaleFallback = {
    * Må være en gyldig NoQL query string
    */
   contentQuery: string;
-}
+};

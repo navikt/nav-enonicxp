@@ -19,4 +19,4 @@ export type DynamicHeader = {
    * Velg visning
    */
   renderOnAuthState: "always" | "loggedIn" | "loggedOut";
-}
+};

@@ -1,34 +1,29 @@
 import * as contentLib from '/lib/xp/content';
-import cacheLib from '/lib/cache';
 import { APP_DESCRIPTOR } from '../../lib/constants';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
+import { buildCacheKeyForReqContext } from '../../lib/cache/utils';
+import { getFromLocalCache } from '../../lib/cache/local-cache';
 
-const tenMinutes = 600;
+const getOffices = () => {
+    const officeInfoContent = contentLib.query({
+        start: 0,
+        count: 1000,
+        contentTypes: [`${APP_DESCRIPTOR}:office-page`],
+        query: '_path LIKE "/content/www.nav.no/kontor/*"',
+    }).hits;
 
-const cache = cacheLib.newCache({
-    size: 1,
-    expire: tenMinutes,
-});
+    return officeInfoContent.map((content) => ({
+        path: stripPathPrefix(content._path),
+        enhetNr: content.data.officeNorgData?.data?.enhetNr,
+    }));
+};
 
-const getOfficeInfo = () =>
-    cache.get('officeInfo', () => {
-        const officeInfoContent = contentLib.query({
-            start: 0,
-            count: 1000,
-            contentTypes: [`${APP_DESCRIPTOR}:office-branch`],
-            query: '_path LIKE "/content/www.nav.no/kontor/*"',
-        }).hits;
+export const get = (req: XP.Request) => {
+    const offices = getFromLocalCache(buildCacheKeyForReqContext(req, 'office-info'), getOffices);
 
-        return officeInfoContent.map((content) => ({
-            path: stripPathPrefix(content._path),
-            enhetNr: content.data.enhetNr,
-        }));
-    });
-
-export const get = () => {
     return {
         status: 200,
         contentType: 'application/json',
-        body: { offices: getOfficeInfo() },
+        body: { offices },
     };
 };

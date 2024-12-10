@@ -1,6 +1,6 @@
 import * as taskLib from '/lib/xp/task';
 import thymeleafLib from '/lib/thymeleaf';
-import { runOfficeBranchFetchTask } from '../lib/office-pages/office-branch-tasks';
+import { runOfficeFetchTask } from '../lib/office-pages/office-tasks';
 import { runInContext } from '../lib/context/run-in-context';
 import { frontendInvalidateAllAsync } from '../lib/cache/frontend-cache';
 import { requestSitemapUpdate } from '../lib/sitemap/sitemap';
@@ -12,6 +12,7 @@ import { externalSearchUpdateAll } from '../lib/search/update-all';
 import { URLS } from '../lib/constants';
 import { fetchAndUpdateOfficeInfo } from '../lib/office-pages/_legacy-office-information/legacy-office-update';
 import { runSchedulerCleanup } from '../lib/scheduling/schedule-cleanup';
+import { archiveOldNews } from '../lib/archiving/archive-old-news';
 
 type ActionsMap = Record<string, { description: string; callback: () => any }>;
 
@@ -19,9 +20,9 @@ const view = resolve('webapp.html');
 
 const validActions: ActionsMap = {
     norg: {
-        description: 'Oppdater kontor-info fra norg',
+        description: 'Oppdater kontor fra norg',
         callback: () => {
-            runOfficeBranchFetchTask();
+            runOfficeFetchTask();
             fetchAndUpdateOfficeInfo();
         },
     },
@@ -45,8 +46,12 @@ const validActions: ActionsMap = {
     },
     schedulerCleanup: {
         description: 'Fjern expired scheduler jobs (kjøres normalt automatisk hver morgen)',
-        callback: () => runSchedulerCleanup(),
+        callback: runSchedulerCleanup,
     },
+    // oldNewsUnpublish: {
+    //     description: 'Avpubliser og arkiver gamle nyheter/pressemeldinger',
+    //     callback: archiveOldNews,
+    // },
     ...(!!URLS.SEARCH_API_URL && {
         updateAllSearchNodesExternal: {
             description: 'Oppdater alle dokumenter for eksternt søk',

@@ -9,4 +9,4 @@ export type ContentList = {
    * Velg innholdsliste
    */
   target: string;
-}
+};

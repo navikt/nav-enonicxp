@@ -92,11 +92,11 @@ export type FormDetails = {
                   _selected: "internal";
 
                   /**
-                   * Lenke til mellomsteg
+                   * Intern lenke til skjema/mellomsteg
                    */
                   internal: {
                     /**
-                     * Velg mellomsteg
+                     * Velg skjema eller mellomsteg
                      */
                     target: string;
                   };
@@ -108,7 +108,7 @@ export type FormDetails = {
                   _selected: "external";
 
                   /**
-                   * Direkte lenke til skjema
+                   * Ekstern lenke til skjema
                    */
                   external: {
                     /**
@@ -148,11 +148,11 @@ export type FormDetails = {
                   _selected: "internal";
 
                   /**
-                   * Lenke til mellomsteg
+                   * Intern lenke til skjema/mellomsteg
                    */
                   internal: {
                     /**
-                     * Velg mellomsteg
+                     * Velg skjema eller mellomsteg
                      */
                     target: string;
                   };
@@ -164,7 +164,7 @@ export type FormDetails = {
                   _selected: "external";
 
                   /**
-                   * Direkte lenke til skjema
+                   * Ekstern lenke til skjema
                    */
                   external: {
                     /**
@@ -209,11 +209,11 @@ export type FormDetails = {
                   _selected: "internal";
 
                   /**
-                   * Lenke til mellomsteg
+                   * Intern lenke til skjema/mellomsteg
                    */
                   internal: {
                     /**
-                     * Velg mellomsteg
+                     * Velg skjema eller mellomsteg
                      */
                     target: string;
                   };
@@ -225,7 +225,7 @@ export type FormDetails = {
                   _selected: "external";
 
                   /**
-                   * Direkte lenke til skjema
+                   * Ekstern lenke til skjema
                    */
                   external: {
                     /**
@@ -238,4 +238,4 @@ export type FormDetails = {
         };
       }
   >;
-}
+};

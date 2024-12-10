@@ -7,7 +7,7 @@ import { createOrUpdateSchedule } from '../../scheduling/schedule-job';
 import { OfficeInformation } from '@xp-types/site/content-types/office-information';
 import { NavNoDescriptor } from '../../../types/common';
 import { logger } from '../../utils/logging';
-import { CONTENT_ROOT_REPO_ID, URLS } from '../../constants';
+import { CONTENT_ROOT_REPO_ID, NORG2_CONSUMER_ID, URLS } from '../../constants';
 import { createObjectChecksum } from '../../utils/object-utils';
 import { runInContext } from '../../context/run-in-context';
 import { UpdateOfficeInfo } from '@xp-types/tasks/update-office-info';
@@ -20,14 +20,19 @@ const parentPath = '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer';
 const officeInfoUpdateTaskDescriptor = 'no.nav.navno:update-office-info';
 const fiveMinutes = 5 * 60 * 1000;
 
-const enhetTypesToImport: ReadonlySet<string> = new Set([
-    'ALS',
-    'HMS',
-    'KONTROLL',
-    'LOKAL',
-    'OKONOMI',
-    'OPPFUTLAND',
+const enhetTypesToImport: ReadonlySet<string> = new Set(['ALS', 'OKONOMI', 'OPPFUTLAND']);
+
+// Always import these even if not in the set of types
+const enhetNrToImport: ReadonlySet<string> = new Set([
+    '4534', // [KONTROLL] NAV Registerforvaltning
 ]);
+
+const shouldImportOffice = (enhet: OfficeInformation['enhet']) => {
+    return (
+        enhet.status?.toLowerCase() !== 'nedlagt' &&
+        (enhetTypesToImport.has(enhet.type) || enhetNrToImport.has(enhet.enhetNr))
+    );
+};
 
 // If non-office information content already exists on the path for an office, delete it
 // (the main purpose of this is to get rid of redirects in the event of an office changing name
@@ -73,14 +78,14 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
     officeInformationUpdated.forEach((updatedOfficeData) => {
         const { enhet } = updatedOfficeData;
 
-        // ignore closed offices and include only selected types
-        if (enhet.status === 'Nedlagt' || !enhetTypesToImport.has(enhet.type)) {
+        if (!shouldImportOffice(enhet)) {
             return;
         }
 
         officesInNorg[enhet.enhetId] = true;
 
         const updatedName = commonLib.sanitize(enhet.navn);
+
         deleteIfContentExists(updatedName);
 
         const existingOffice = existingOffices.find(
@@ -198,8 +203,7 @@ const fetchOfficeInfo = () => {
             url: URLS.NORG_LEGACY_OFFICE_INFORMATION_API_URL,
             method: 'GET',
             headers: {
-                'x-nav-apiKey': app.config.norg2ApiKey,
-                consumerId: app.config.norg2ConsumerId,
+                consumerId: NORG2_CONSUMER_ID,
             },
         });
 
@@ -282,7 +286,7 @@ export const startOfficeInfoPeriodicUpdateSchedule = () => {
         jobDescription: 'Updates legacy office information from norg2 every hour',
         jobSchedule: {
             type: 'CRON',
-            value: '15 * * * *',
+            value: '*/10 * * * *',
             timeZone: 'GMT+2:00',
         },
         taskDescriptor: officeInfoUpdateTaskDescriptor,

@@ -14,4 +14,4 @@ export type PrepublishCacheWipe = {
    * Repo id
    */
   repoId?: string;
-}
+};

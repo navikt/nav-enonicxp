@@ -4,4 +4,4 @@ export type Taxonomy = {
    * Kategori
    */
   taxonomy?: Array<"insurance" | "measures" | "service" | "rights" | "assistive_tools" | "benefits" | "employee_benefits" | "refund"> | "insurance" | "measures" | "service" | "rights" | "assistive_tools" | "benefits" | "employee_benefits" | "refund";
-}
+};

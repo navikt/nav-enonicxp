@@ -9,4 +9,4 @@ export type LinkInternal = {
    * Lenketekst (hvis tom vil tittel på innholdet vises)
    */
   text?: string;
-}
+};

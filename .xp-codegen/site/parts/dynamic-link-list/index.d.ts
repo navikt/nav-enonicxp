@@ -119,4 +119,4 @@ export type DynamicLinkList = {
    * Velg visning
    */
   renderOnAuthState: "always" | "loggedIn" | "loggedOut";
-}
+};

@@ -2,14 +2,14 @@ import * as taskLib from '/lib/xp/task';
 import { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
 import { generateSearchDocumentId } from './utils';
-import { getRepoConnection } from '../utils/repo-utils';
+import { getRepoConnection } from '../repos/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { searchApiPostDocuments } from './api-handlers/post-document';
 import { searchApiDeleteDocument } from './api-handlers/delete-document';
 import { buildExternalSearchDocument } from './document-builder/document-builder';
 import { isContentLocalized } from '../localization/locale-utils';
 
-const deleteExternalSearchDocumentForContent = (contentId: string, locale: string) => {
+export const deleteExternalSearchDocumentForContent = (contentId: string, locale: string) => {
     const id = generateSearchDocumentId(contentId, locale);
 
     taskLib.executeFunction({

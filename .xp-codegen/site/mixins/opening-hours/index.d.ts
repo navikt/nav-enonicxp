@@ -198,4 +198,4 @@ export type OpeningHours = {
           }>;
         };
       };
-}
+};

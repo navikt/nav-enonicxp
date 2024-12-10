@@ -14,4 +14,4 @@ export type Calculator = {
    * Velg filtre
    */
   filters?: Array<string> | string;
-}
+};

@@ -25,7 +25,6 @@
                     <occurrences minimum="1" maximum="1"/>
                     <config>
                         <service>customPathSelector</service>
-                        <param value="type">formIntermediateStep</param>
                     </config>
                 </input>
             </items>

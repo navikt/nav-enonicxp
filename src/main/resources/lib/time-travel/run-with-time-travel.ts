@@ -3,8 +3,9 @@ import { generateUUID } from '../utils/uuid';
 import { RepoBranch } from '../../types/common';
 import { logger } from '../utils/logging';
 import { runInContext } from '../context/run-in-context';
-import { getNodeKey, getTargetUnixTime } from '../utils/version-utils';
+import { getTargetUnixTime } from '../utils/version-utils';
 import { getUnixTimeFromDateTimeString } from '../utils/datetime-utils';
+import { getContentNodeKey } from '../utils/content-utils';
 
 type TimeTravelOptions = {
     dateTime: string;
@@ -62,7 +63,7 @@ export const runInTimeTravelContext = <CallbackReturn>(
 
     const sessionId = generateUUID();
 
-    const baseNodeKey = getNodeKey(baseContentKey);
+    const baseNodeKey = getContentNodeKey(baseContentKey);
     const requestedUnixTime = getUnixTimeFromDateTimeString(dateTime);
 
     const targetUnixTime = getTargetUnixTime({

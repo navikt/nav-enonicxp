@@ -4,4 +4,4 @@ export type InfoBoks = {
    * Deprecated - bruk Varselboks
    */
   infoBoks: string;
-}
+};

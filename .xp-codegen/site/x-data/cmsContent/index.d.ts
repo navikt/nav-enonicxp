@@ -14,4 +14,4 @@ export type CmsContent = {
    * Content Home
    */
   contentHome?: Array<string> | string;
-}
+};

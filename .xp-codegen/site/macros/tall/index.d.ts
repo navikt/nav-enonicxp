@@ -9,4 +9,4 @@ export type Tall = {
    * Desimaler
    */
   decimals?: number;
-}
+};

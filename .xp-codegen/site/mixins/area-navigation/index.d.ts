@@ -4,4 +4,4 @@ export type AreaNavigation = {
    * Velg utgående navigasjonlenker
    */
   navigationRefs?: Array<string> | string;
-}
+};

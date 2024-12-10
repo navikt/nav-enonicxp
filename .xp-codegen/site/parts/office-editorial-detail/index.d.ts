@@ -4,4 +4,4 @@ export type OfficeEditorialDetail = {
    * Velg detaljinformasjon
    */
   detailType: "serviceInformation" | "socialHelpLinks" | "socialHelpPostalInformation" | "socialHelpPayoutInformation";
-}
+};

@@ -50,6 +50,9 @@ enonic project deploy
 ## Server config docs
 [See confluence pages](https://confluence.adeo.no/display/ATOM/Servere)
 
+## Cache docs
+https://github.com/navikt/nav-enonicxp/wiki/Caching
+
 ## Deploy
 
 -   **dev/dev2(q6):** Run deploy-to-(dev|dev2/q6) workflow dispatch

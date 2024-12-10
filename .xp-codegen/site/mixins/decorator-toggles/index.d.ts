@@ -9,4 +9,4 @@ export type DecoratorToggles = {
    * Chatbot Frida
    */
   chatbotToggle: boolean;
-}
+};

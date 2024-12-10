@@ -4,4 +4,4 @@ export type AuthRenderOption = {
    * Velg visning
    */
   renderOnAuthState: "always" | "loggedIn" | "loggedOut";
-}
+};

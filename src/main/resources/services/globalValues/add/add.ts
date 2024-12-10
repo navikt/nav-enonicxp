@@ -1,4 +1,4 @@
-import { getRepoConnection } from '../../../lib/utils/repo-utils';
+import { getRepoConnection } from '../../../lib/repos/repo-utils';
 import { generateUUID } from '../../../lib/utils/uuid';
 import {
     gvServiceInvalidRequestResponse,

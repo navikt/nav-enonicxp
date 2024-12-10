@@ -4,4 +4,4 @@ export type IconSelector = {
    * Velg ikon
    */
   icon?: string;
-}
+};

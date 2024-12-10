@@ -4,4 +4,4 @@ export type ExternalProductUrl = {
    * Videresend alle besøk til annen url:
    */
   externalProductUrl?: string;
-}
+};

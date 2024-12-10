@@ -124,4 +124,4 @@ export type SectionPage = {
    * Nøkkelord (internt søk)
    */
   keywords?: Array<string> | string;
-}
+};
