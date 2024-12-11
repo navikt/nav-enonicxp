@@ -66,18 +66,69 @@ const isFormDetailsPart = (
 ): component is NodeComponent<'part', 'form-details'> =>
     component.type === 'part' && component.part?.descriptor === 'no.nav.navno:form-details';
 
+const isHtmlAreaPart = (
+    component: NodeComponent
+): component is NodeComponent<'part', 'html-area'> => {
+    return component.type === 'part' && component.part?.descriptor === 'no.nav.navno:html-area';
+};
+
+const resolveFragmentMacrosInPart = (component: NodeComponent, locale: string): NodeComponent => {
+    if (!isHtmlAreaPart(component)) {
+        return component;
+    }
+
+    if (!component.part.config?.['no-nav-navno']['html-area']?.html) {
+        return component;
+    }
+
+    const html = component.part.config?.['no-nav-navno']['html-area']?.html;
+
+    if (!html) {
+        return component;
+    }
+
+    const replacedHtml = html.replace(
+        /\[html-fragment\s+fragmentId="([0-9a-fA-F-]+).*?"\/\]/g,
+        (_, fragmentId) => getHtmlInFragment(fragmentId, locale)
+    );
+
+    component.part.config['no-nav-navno']['html-area'].html = replacedHtml;
+    return component;
+};
+
+const getHtmlInFragment = (fragmentId: string, locale: string) => {
+    const fragment = getFragment(fragmentId, locale);
+    if (!fragment) {
+        return '';
+    }
+
+    const fragmentHtmlList = forceArray(fragment.components).map((component) => {
+        if (!isHtmlAreaPart(component)) {
+            return '';
+        }
+
+        return component.part.config?.['no-nav-navno']?.['html-area']?.html;
+    });
+
+    return fragmentHtmlList.join('');
+};
+
+const getFragment = (fragmentId: string, locale: string) => {
+    return getRepoConnection({
+        branch: 'master',
+        repoId: getLayersData().localeToRepoIdMap[locale] || CONTENT_ROOT_REPO_ID,
+    }).get<Content>({ key: fragmentId });
+};
+
 const getComponentFieldValues = (
     component: NodeComponent,
     content: ContentNode,
     fieldKeys: string[]
 ): string[] => {
-    if (component.type === 'fragment') {
-        const locale = content.language || getLayersData().defaultLocale;
+    const locale = content.language || getLayersData().defaultLocale;
 
-        const fragment = getRepoConnection({
-            branch: 'master',
-            repoId: getLayersData().localeToRepoIdMap[locale] || CONTENT_ROOT_REPO_ID,
-        }).get<Content>({ key: component.fragment.id });
+    if (component.type === 'fragment') {
+        const fragment = getFragment(component.fragment.id, locale);
 
         return forceArray(fragment?.components)
             .map((fragmentComponent) => getFieldValues(fragmentComponent, fieldKeys))
@@ -104,7 +155,9 @@ const getComponentFieldValues = (
         return formDetailsResolved || [];
     }
 
-    return getFieldValues(component, fieldKeys);
+    const componentWithResolvedFragments = resolveFragmentMacrosInPart(component, locale);
+
+    return getFieldValues(componentWithResolvedFragments, fieldKeys);
 };
 
 export const getSearchDocumentTextSegments = (content: ContentNode, fieldKeys: string[]) => {

@@ -16,11 +16,6 @@ export type SectionWithHeader = {
   hideFromInternalNavigation: boolean;
 
   /**
-   * Toggle "kopier lenke" knapp
-   */
-  toggleCopyButton: boolean;
-
-  /**
    * Ikon
    */
   icon?: {
