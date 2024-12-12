@@ -136,13 +136,11 @@ const runArchiveQuery = (nodeHitsBuckets: RepoIdNodeIdBuckets) => {
                 ? result.map(transformRepoNode)
                 : [transformRepoNode(result)];
 
-            const hitsWithRepoIds = hits.map((content) => {
-                return {
-                    ...content,
-                    layerLocale: locale,
-                    publicPath: getPublicPath(content, locale),
-                };
-            });
+            const hitsWithRepoIds = hits.map((content) => ({
+                ...content,
+                layerLocale: locale,
+                publicPath: getPublicPath(content, locale),
+            }));
 
             return [...acc, ...hitsWithRepoIds];
         },
@@ -242,7 +240,6 @@ export const get = (req: XP.Request) => {
     }
 
     const { branch, requestId, query, types, batch = 0 } = req.params;
-
     if (!requestId) {
         logger.info('No request id specified');
         return {
