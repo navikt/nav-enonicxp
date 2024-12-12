@@ -4,7 +4,7 @@ import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { runInContext } from '../../lib/context/run-in-context';
 import { ContentDescriptor } from '../../types/content-types/content-config';
-import { batchedContentQuery, batchedMultiRepoNodeQuery } from '../../lib/utils/batched-query';
+import { batchedContentQuery } from '../../lib/utils/batched-query';
 import { contentTypesInDataQuery } from '../../lib/contenttype-lists';
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
@@ -16,8 +16,8 @@ import { getLayersData } from '../../lib/localization/layers-data';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { getPublicPath } from '../../lib/paths/public-path';
 import { parseJsonToArray } from '../../lib/utils/array-utils';
-import { getLayersMultiConnection } from '../../lib/localization/layers-repo-utils/layers-repo-connection';
 import { Branch, RunQueryParams, ContentWithLocaleData } from './types';
+import { getNodeHitsFromQuery } from './queryBuilder';
 
 const RESPONSE_BATCH_SIZE = 1000;
 
@@ -34,61 +34,6 @@ const contentIdsCache = cacheLib.newCache({
     size: 10,
     expire: 600,
 });
-
-const buildQuery = (queryStrings: (string | undefined)[]) =>
-    queryStrings.filter(Boolean).join(' AND ');
-
-const getNodeHitsFromQuery = ({ query, branch, types, requestId }: RunQueryParams) => {
-    const repoBranch = branch === 'published' ? 'master' : 'draft';
-
-    const repoConnection = getLayersMultiConnection(repoBranch);
-
-    const result = batchedMultiRepoNodeQuery({
-        repo: repoConnection,
-        queryParams: {
-            query:
-                buildQuery([
-                    query,
-                    `_path LIKE ${branch === 'archived' ? '"/archive/*"' : '"/content/*"'}`,
-                ]) || undefined,
-            start: 0,
-            count: 100000,
-            filters: {
-                boolean: {
-                    ...(types && {
-                        must: {
-                            hasValue: {
-                                field: 'type',
-                                values: types,
-                            },
-                        },
-                    }),
-                    mustNot: [
-                        {
-                            hasValue: {
-                                field: 'inherit',
-                                values: ['CONTENT'],
-                            },
-                        },
-                        ...(branch === 'unpublished'
-                            ? [
-                                  {
-                                      exists: {
-                                          field: 'publish.from',
-                                      },
-                                  },
-                              ]
-                            : []),
-                    ],
-                },
-            },
-        },
-    }).hits;
-
-    logger.info(`Data query: Total hits for request ${requestId}: ${result.length}`);
-
-    return result;
-};
 
 const transformRepoNode = (node: RepoNode<Content>): Content => {
     const {
