@@ -1,4 +1,4 @@
-import { ContentDescriptor } from '../../types/content-types/content-config';
+import { ContentDescriptor } from '../../../types/content-types/content-config';
 import { Content } from '/lib/xp/content';
 
 export type Branch = 'published' | 'unpublished' | 'archived';

@@ -16,8 +16,8 @@ import { getLayersData } from '../../lib/localization/layers-data';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { getPublicPath } from '../../lib/paths/public-path';
 import { parseJsonToArray } from '../../lib/utils/array-utils';
-import { Branch, RunQueryParams, ContentWithLocaleData } from './types';
-import { getNodeHitsFromQuery } from './queryBuilder';
+import { Branch, RunQueryParams, ContentWithLocaleData } from './utils/types';
+import { getNodeHitsFromQuery } from './utils/queryBuilder';
 
 const RESPONSE_BATCH_SIZE = 1000;
 

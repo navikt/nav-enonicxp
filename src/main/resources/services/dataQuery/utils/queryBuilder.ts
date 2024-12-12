@@ -1,7 +1,7 @@
-import { getLayersMultiConnection } from '../../lib/localization/layers-repo-utils/layers-repo-connection';
+import { getLayersMultiConnection } from '../../../lib/localization/layers-repo-utils/layers-repo-connection';
 import { RunQueryParams } from './types';
-import { batchedMultiRepoNodeQuery } from '../../lib/utils/batched-query';
-import { logger } from '../../lib/utils/logging';
+import { batchedMultiRepoNodeQuery } from '../../../lib/utils/batched-query';
+import { logger } from '../../../lib/utils/logging';
 
 const buildQuery = (queryStrings: (string | undefined)[]) =>
     queryStrings.filter(Boolean).join(' AND ');
