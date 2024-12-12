@@ -17,18 +17,7 @@ import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { getPublicPath } from '../../lib/paths/public-path';
 import { parseJsonToArray } from '../../lib/utils/array-utils';
 import { getLayersMultiConnection } from '../../lib/localization/layers-repo-utils/layers-repo-connection';
-
-type Branch = 'published' | 'unpublished' | 'archived';
-
-type RunQueryParams = {
-    requestId: string;
-    branch: Branch;
-    query?: string;
-    batch: number;
-    types?: ContentDescriptor[];
-};
-
-type ContentWithLocaleData = Content & { layerLocale: string; publicPath: string };
+import { Branch, RunQueryParams, ContentWithLocaleData } from './types';
 
 const RESPONSE_BATCH_SIZE = 1000;
 
