@@ -4,14 +4,14 @@ import { logger } from '../../../lib/utils/logging';
 export const externalArchiveSearchService = (req: XP.Request) => {
     try {
         const { query } = req.params;
-        const requestId = `archive-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const requestId: string = `archive-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
         const result = runQuery({
             requestId,
             query: query || '_path LIKE "/archive/*"',
             branch: 'archived',
             batch: 0,
-            types: ['base:folder'], // adjust types as needed
+            // types: ['base:folder'], // adjust types as needed
         });
 
         return {
