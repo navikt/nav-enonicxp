@@ -13,7 +13,7 @@ export const externalArchiveSearchService = (req: XP.Request) => {
 
         const result = runQuery({
             requestId,
-            query: query || '_path LIKE "*"', // TODO fjern?
+            query,
             branch: 'archived',
             batch: 0,
         });
