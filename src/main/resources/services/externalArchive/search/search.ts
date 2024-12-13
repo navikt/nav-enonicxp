@@ -9,7 +9,7 @@ type SimpleHit = {
 export const externalArchiveSearchService = (req: XP.Request) => {
     try {
         const { query } = req.params;
-        const requestId = `archive-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const requestId = `archive-${Date.now()}}`;
 
         const result = runQuery({
             requestId,
