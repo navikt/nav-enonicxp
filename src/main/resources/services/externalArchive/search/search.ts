@@ -29,7 +29,6 @@ export const externalArchiveSearchService = (req: XP.Request) => {
             status: 200,
             contentType: 'application/json',
             body: {
-                query,
                 total: result.total,
                 hits: simpleHits,
                 hasMore: result.hasMore,
