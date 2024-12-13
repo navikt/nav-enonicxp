@@ -9,12 +9,12 @@ type SimpleHit = {
 export const externalArchiveSearchService = (req: XP.Request) => {
     try {
         const { query } = req.params;
-        const requestId = `archive-${Date.now()}}`;
+        const requestId = `archive-${Date.now()}`;
 
         const result = runQuery({
             requestId,
             query,
-            branch: 'archived',
+            branch: 'published',
             batch: 0,
         });
 
