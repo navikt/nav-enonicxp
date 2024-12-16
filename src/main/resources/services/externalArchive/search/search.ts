@@ -4,6 +4,7 @@ import { logger } from '../../../lib/utils/logging';
 type SimpleHit = {
     _id: string;
     displayName: string;
+    type: string;
 };
 
 export const externalArchiveSearchService = (req: XP.Request) => {
@@ -22,6 +23,7 @@ export const externalArchiveSearchService = (req: XP.Request) => {
             (hit): SimpleHit => ({
                 _id: hit._id,
                 displayName: hit.displayName,
+                type: hit.type,
             })
         );
 
@@ -32,6 +34,7 @@ export const externalArchiveSearchService = (req: XP.Request) => {
                 total: result.total,
                 hits: simpleHits,
                 hasMore: result.hasMore,
+                query: query,
             },
         };
     } catch (e) {
