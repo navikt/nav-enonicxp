@@ -3,6 +3,8 @@ import { logger } from '../../../lib/utils/logging';
 
 type SimpleHit = {
     _id: string;
+    _path: string;
+    layerLocale: string;
     displayName: string;
     type: string;
 };
@@ -22,6 +24,8 @@ export const externalArchiveSearchService = (req: XP.Request) => {
         const simpleHits = result.hits.map(
             (hit): SimpleHit => ({
                 _id: hit._id,
+                _path: hit._path,
+                layerLocale: hit.layerLocale,
                 displayName: hit.displayName,
                 type: hit.type,
             })
