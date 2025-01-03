@@ -19,6 +19,12 @@ export const externalArchiveSearchService = (req: XP.Request) => {
             query: `displayName LIKE "*${query}*"`,
             branch: 'published',
             batch: 0,
+            types: [
+                'no.nav.navno:content-page-with-sidemenus',
+                'no.nav.navno:themed-article-page',
+                'no.nav.navno:situation-page',
+                'no.nav.navno:guide-page',
+            ],
         });
 
         const simpleHits = result.hits.map(
