@@ -88,12 +88,14 @@ const removeUnpublishedFromContentList = (
             });
 
             if (shouldPushChanges) {
+                /*
                 repoConnection.commit({ keys: contentList._id });
                 repoConnection.push({
                     key: contentList._id,
                     target: 'master',
                     includeChildren: false,
                 });
+                */
             } else {
                 log.info(
                     `Removed unpublished content from content list ${contentList._id}, but draft and master are out of sync, so not pushing changes.`
