@@ -93,6 +93,7 @@ const removeUnpublishedFromContentList = (
                     key: contentList._id,
                     target: 'master',
                     includeChildren: false,
+                    resolve: false,
                 });
             } else {
                 log.info(
