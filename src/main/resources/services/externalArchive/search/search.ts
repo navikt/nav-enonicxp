@@ -1,5 +1,6 @@
 import { runQuery } from '../../../services/dataQuery/utils/queryRunners';
 import { logger } from '../../../lib/utils/logging';
+import { ContentDescriptor } from '../../../types/content-types/content-config';
 
 type SimpleHit = {
     _id: string;
@@ -11,24 +12,32 @@ type SimpleHit = {
 
 export const externalArchiveSearchService = (req: XP.Request) => {
     try {
-        const { query } = req.params;
+        const { query, searchType } = req.params;
         const requestId = `archive-${Date.now()}`;
+
+        const curatedTypes: ContentDescriptor[] = [
+            'no.nav.navno:content-page-with-sidemenus',
+            'no.nav.navno:themed-article-page',
+            'no.nav.navno:situation-page',
+            'no.nav.navno:guide-page',
+            'no.nav.navno:main-article',
+            'no.nav.navno:current-topic-page',
+            'no.nav.navno:external-link',
+            'no.nav.navno:internal-link',
+        ];
+
+        const excludeTypes = ` AND NOT type IN (${curatedTypes.map((t) => `"${t}"`).join(',')})`;
 
         const result = runQuery({
             requestId,
-            query: `displayName LIKE "*${query}*"`,
+            query: `displayName LIKE "*${query}*"${searchType === 'other' ? excludeTypes : ''}`,
             notExistsFilter: [
                 { notExists: { field: 'x.no-nav-navno.previewOnly.previewOnly' } },
                 { notExists: { field: 'data.externalProductUrl' } },
             ],
             branch: 'published',
             batch: 0,
-            types: [
-                'no.nav.navno:content-page-with-sidemenus',
-                'no.nav.navno:themed-article-page',
-                'no.nav.navno:situation-page',
-                'no.nav.navno:guide-page',
-            ],
+            ...(searchType === 'curated' ? { types: curatedTypes } : {}),
         });
 
         const simpleHits = result.hits.map(
