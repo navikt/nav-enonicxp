@@ -8,6 +8,7 @@ import { getLayersData } from '../localization/layers-data';
 import { getLastPublishedContentVersion } from './get-content';
 import { ArchiveContentTrees, ArchiveTreeNode } from './content-tree-archive';
 import { ContentTreeEntry, transformToContentTreeEntry } from './content-tree-entry';
+import { isContentPreviewOrUsingExternalProductUrl } from '../utils/content-utils';
 
 // TODO: implement pagination with smaller chunks
 const MAX_CHILDREN_COUNT = 1000;
@@ -37,7 +38,7 @@ const getLiveContentChildren = (
 
     return hits.reduce<ContentTreeEntry[]>((acc, { id }) => {
         const content = getLastPublishedContentVersion(id, locale);
-        if (content) {
+        if (content && !isContentPreviewOrUsingExternalProductUrl(content)) {
             acc.push(transformToContentTreeEntry(content, repo, locale));
         }
 
