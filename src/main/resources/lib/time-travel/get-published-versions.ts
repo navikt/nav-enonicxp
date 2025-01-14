@@ -13,7 +13,6 @@ import { isContentPreviewOnly } from '../utils/content-utils';
 export type VersionReferenceEnriched = NodeVersion & {
     locale: string;
     isPreviewOrForward?: boolean;
-    forwardsTo?: string;
 } & Pick<Content, 'displayName' | 'modifiedTime' | 'type'>;
 
 // Due to a previously existing bug, content types with a custom editor has not always set its
@@ -43,7 +42,6 @@ const enrichVersionReference = (version: NodeVersion, locale: string): VersionRe
         locale,
         displayName: content?.displayName || 'Error: displayName was not set',
         modifiedTime: content?.modifiedTime || content?.createdTime,
-        forwardsTo: content?.data.externalProductUrl,
         isPreviewOrForward: content
             ? isContentPreviewOnly(content) || !!content.data.externalProductUrl
             : false,
