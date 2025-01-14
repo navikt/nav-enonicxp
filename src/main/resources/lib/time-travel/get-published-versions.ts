@@ -8,11 +8,12 @@ import { getLayersMigrationArchivedContentRef } from './layers-migration-refs';
 import { getNodeVersions, GetNodeVersionsParams } from '../utils/version-utils';
 import { logger } from '../utils/logging';
 import { getRepoConnection } from '../repos/repo-utils';
+import { isContentPreviewOrUsingExternalProductUrl } from '../utils/content-utils';
 
-export type VersionReferenceEnriched = NodeVersion & { locale: string } & Pick<
-        Content,
-        'displayName' | 'modifiedTime' | 'type'
-    >;
+export type VersionReferenceEnriched = NodeVersion & {
+    locale: string;
+    isPreviewOrForward?: boolean;
+} & Pick<Content, 'displayName' | 'modifiedTime' | 'type'>;
 
 // Due to a previously existing bug, content types with a custom editor has not always set its
 // modifiedTime field correctly. We always need to include all versions for these types.
@@ -41,6 +42,7 @@ const enrichVersionReference = (version: NodeVersion, locale: string): VersionRe
         locale,
         displayName: content?.displayName || 'Error: displayName was not set',
         modifiedTime: content?.modifiedTime || content?.createdTime,
+        isPreviewOrForward: content ? isContentPreviewOrUsingExternalProductUrl(content) : false,
         type: content?.type || 'base:folder',
     };
 };

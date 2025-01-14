@@ -6,7 +6,13 @@ import { logger } from '../../../lib/utils/logging';
 const buildQuery = (queryStrings: (string | undefined)[]) =>
     queryStrings.filter(Boolean).join(' AND ');
 
-export const getNodeHitsFromQuery = ({ query, branch, types, requestId }: RunQueryParams) => {
+export const getNodeHitsFromQuery = ({
+    query,
+    branch,
+    types,
+    requestId,
+    notExistsFilter,
+}: RunQueryParams) => {
     const repoBranch = branch === 'published' ? 'master' : 'draft';
 
     const repoConnection = getLayersMultiConnection(repoBranch);
@@ -38,6 +44,7 @@ export const getNodeHitsFromQuery = ({ query, branch, types, requestId }: RunQue
                                 values: ['CONTENT'],
                             },
                         },
+                        ...(notExistsFilter || []),
                         ...(branch === 'unpublished'
                             ? [
                                   {
