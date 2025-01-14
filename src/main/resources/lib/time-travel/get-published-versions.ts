@@ -45,7 +45,7 @@ const enrichVersionReference = (version: NodeVersion, locale: string): VersionRe
         modifiedTime: content?.modifiedTime || content?.createdTime,
         forwardsTo: content?.data.externalProductUrl,
         isPreviewOrForward: content
-            ? (isContentPreviewOnly(content) ?? !!content.data.externalProductUrl)
+            ? isContentPreviewOnly(content) || !!content.data.externalProductUrl
             : false,
         type: content?.type || 'base:folder',
     };
