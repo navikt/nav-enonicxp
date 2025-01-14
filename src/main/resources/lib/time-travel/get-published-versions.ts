@@ -8,7 +8,7 @@ import { getLayersMigrationArchivedContentRef } from './layers-migration-refs';
 import { getNodeVersions, GetNodeVersionsParams } from '../utils/version-utils';
 import { logger } from '../utils/logging';
 import { getRepoConnection } from '../repos/repo-utils';
-import { isContentPreviewOnly } from '../utils/content-utils';
+import { isContentPreviewOrUsingExternalProductUrl } from '../utils/content-utils';
 
 export type VersionReferenceEnriched = NodeVersion & {
     locale: string;
@@ -42,9 +42,7 @@ const enrichVersionReference = (version: NodeVersion, locale: string): VersionRe
         locale,
         displayName: content?.displayName || 'Error: displayName was not set',
         modifiedTime: content?.modifiedTime || content?.createdTime,
-        isPreviewOrForward: content
-            ? isContentPreviewOnly(content) || !!content.data.externalProductUrl
-            : false,
+        isPreviewOrForward: content ? isContentPreviewOrUsingExternalProductUrl(content) : false,
         type: content?.type || 'base:folder',
     };
 };

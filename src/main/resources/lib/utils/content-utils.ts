@@ -37,6 +37,14 @@ export const isContentPreviewOnly = (content: Content) => {
     return !!content.x?.[COMPONENT_APP_KEY]?.previewOnly?.previewOnly;
 };
 
+const isContentUsingExternalProductUrl = (content: Content) => {
+    return !!content.data.externalProductUrl;
+};
+
+export const isContentPreviewOrUsingExternalProductUrl = (content: Content) => {
+    return isContentPreviewOnly(content) || isContentUsingExternalProductUrl(content);
+};
+
 export const getContentLocaleRedirectTarget = (content: Content) => {
     return content.x?.[COMPONENT_APP_KEY]?.redirectToLayer?.locale as string | undefined;
 };
