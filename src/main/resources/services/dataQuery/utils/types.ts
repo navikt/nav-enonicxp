@@ -1,5 +1,5 @@
 import { ContentDescriptor } from '../../../types/content-types/content-config';
-import { Content } from '/lib/xp/content';
+import { Content, NotExistsFilter } from '/lib/xp/content';
 
 export type Branch = 'published' | 'unpublished' | 'archived';
 
@@ -9,6 +9,7 @@ export type RunQueryParams = {
     query?: string;
     batch: number;
     types?: ContentDescriptor[];
+    notExistsFilter?: NotExistsFilter[];
 };
 
 export type ContentWithLocaleData = Content & { layerLocale: string; publicPath: string };
