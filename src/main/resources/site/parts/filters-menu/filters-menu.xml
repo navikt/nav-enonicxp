@@ -31,4 +31,7 @@
         </item-set>
         <mixin name="expandable"/>
     </form>
+    <config>
+        <allow-on-content-type>none</allow-on-content-type>
+    </config>
 </part>
