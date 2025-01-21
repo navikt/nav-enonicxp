@@ -94,10 +94,9 @@ export const externalArchiveContentService = (req: XP.Request) => {
 
     const contentRenderProps = getContentRenderProps(content, locale, !!versionId, isArchived);
 
-    const versions = getPublishedAndModifiedVersions(content._id, locale);
-    // .filter(
-    //     (v) => !v.isPreviewOrForward
-    // );
+    const versions = getPublishedAndModifiedVersions(content._id, locale).filter(
+        (v) => !v.isPreviewOrForward
+    );
 
     return {
         status: 200,
