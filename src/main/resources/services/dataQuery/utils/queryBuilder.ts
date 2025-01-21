@@ -17,6 +17,20 @@ export const getNodeHitsFromQuery = ({
 
     const repoConnection = getLayersMultiConnection(repoBranch);
 
+    const mustFilter = [
+        ...(notExistsFilter || []),
+        ...(types
+            ? [
+                  {
+                      hasValue: {
+                          field: 'type',
+                          values: types,
+                      },
+                  },
+              ]
+            : []),
+    ];
+
     const result = batchedMultiRepoNodeQuery({
         repo: repoConnection,
         queryParams: {
@@ -29,14 +43,7 @@ export const getNodeHitsFromQuery = ({
             count: 100000,
             filters: {
                 boolean: {
-                    ...(types && {
-                        must: {
-                            hasValue: {
-                                field: 'type',
-                                values: types,
-                            },
-                        },
-                    }),
+                    must: mustFilter,
                     mustNot: [
                         {
                             hasValue: {
@@ -44,7 +51,6 @@ export const getNodeHitsFromQuery = ({
                                 values: ['CONTENT'],
                             },
                         },
-                        ...(notExistsFilter || []),
                         ...(branch === 'unpublished'
                             ? [
                                   {
