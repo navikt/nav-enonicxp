@@ -87,12 +87,12 @@ export const getContentForExternalArchive = ({
         ? getContentVersion(contentId, versionId, locale)
         : getLastPublishedContentVersion(contentId, locale);
 
-    if (contentRequested && isContentPreviewOrUsingExternalProductUrl(contentRequested)) {
-        return {
-            content: null,
-            isArchived,
-        };
-    }
+    // if (contentRequested && isContentPreviewOrUsingExternalProductUrl(contentRequested)) {
+    //     return {
+    //         content: null,
+    //         isArchived,
+    //     };
+    // }
 
     return {
         content: contentRequested,
