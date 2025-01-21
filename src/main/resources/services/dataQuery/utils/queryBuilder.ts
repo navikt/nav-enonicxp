@@ -44,7 +44,6 @@ export const getNodeHitsFromQuery = ({
                                 values: ['CONTENT'],
                             },
                         },
-                        ...(notExistsFilter || []),
                         ...(branch === 'unpublished'
                             ? [
                                   {
@@ -55,6 +54,7 @@ export const getNodeHitsFromQuery = ({
                               ]
                             : []),
                     ],
+                    must: [...(notExistsFilter || [])],
                 },
             },
         },

@@ -14,9 +14,4 @@ export type HeaderWithAnchor = {
    * Ikke vis under innhold
    */
   hideFromInternalNavigation: boolean;
-
-  /**
-   * Toggle "kopier lenke" knapp
-   */
-  toggleCopyButton: boolean;
 };
