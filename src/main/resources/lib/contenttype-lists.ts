@@ -142,5 +142,6 @@ export const contentTypesWithCustomEditor = [
 
 export const contentTypesWithFormDetails = [
     `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
+    `${APP_DESCRIPTOR}:themed-article-page`,
     `${APP_DESCRIPTOR}:guide-page`,
 ] as const satisfies ContentTypeList;
