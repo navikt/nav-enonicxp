@@ -1,4 +1,5 @@
 import { ContentPageWithSidemenus } from '@xp-types/site/content-types/content-page-with-sidemenus';
+import { ThemedArticlePage } from '@xp-types/site/content-types/themed-article-page';
 import { Content } from '/lib/xp/content';
 import { contentTypesWithFormDetails } from '../../contenttype-lists';
 
@@ -10,7 +11,8 @@ export type ProductDataInFormsOverviewItem = Pick<
     ContentWithFormDetails['data'],
     'title' | 'sortTitle' | 'illustration' | 'area' | 'ingress'
 > &
-    Pick<ContentPageWithSidemenus, 'taxonomy'>;
+    Pick<ContentPageWithSidemenus, 'taxonomy'> &
+    Pick<ThemedArticlePage, 'taxonomy'>;
 
 export type FormDetailsMap = Record<string, Content<'no.nav.navno:form-details'>>;
 
