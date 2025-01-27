@@ -1,0 +1,5 @@
+<module>
+    <services>
+        <service interface="com.enonic.xp.validation.ContentValidator" implementation="com.example.validator.CustomValidator" />
+    </services>
+</module>
