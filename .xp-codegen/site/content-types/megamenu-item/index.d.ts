@@ -14,4 +14,9 @@ export type MegamenuItem = {
    * Ekspander underelementer
    */
   flatten: boolean;
+
+  /**
+   * Hendelse-ID for frontend
+   */
+  frontendEventID?: string;
 };

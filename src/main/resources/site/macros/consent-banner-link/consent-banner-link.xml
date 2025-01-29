@@ -1,5 +1,5 @@
 <macro>
-    <display-name>~Lenke for å åpne chatbot Frida</display-name>
+    <display-name>~Lenke for å åpne cookie-banner</display-name>
     <form>
         <input name="text" type="TextLine">
             <label>Lenketekst</label>
