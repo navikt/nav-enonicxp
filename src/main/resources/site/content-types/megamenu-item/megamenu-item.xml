@@ -16,9 +16,9 @@
             <label>Ekspander underelementer</label>
             <help-text>Viser underelementer uten undermeny på mobil. Gjelder kun dersom dette elementet har underelementer.</help-text>
         </input>
-        <input name="specialID" type="TextLine">
-            <label>Spesiell ID</label>
-            <help-text>Legg inn spesiell ID som dekoratøren skal reagere på, feks med egen javascript-oppførsel. Må avtales med utvikler.</help-text>
+        <input name="frontendEventID" type="TextLine">
+            <label>Hendelses-ID for frontend</label>
+            <help-text>Legg inn en avtalt ID som dekoratøren skal reagere på, feks med egen javascript-oppførsel. Må avtales med utvikler.</help-text>
         </input>
     </form>
 </content-type>

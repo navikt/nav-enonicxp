@@ -16,7 +16,7 @@ export type MegamenuItem = {
   flatten: boolean;
 
   /**
-   * Spesiell ID
+   * Hendelses-ID for frontend
    */
-  specialID?: string;
+  frontendEventID?: string;
 };
