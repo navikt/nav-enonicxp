@@ -1,0 +1,42 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Seksjon for snarveier på forside for privatperson</display-name>
+    <description>Til bruk på forside for privatperson</description>
+    <form>
+        <input name="title" type="TextLine">
+            <label>Tittel på seksjon</label>
+        </input>
+        <item-set name="shortcuts">
+            <label>Velg snarveier</label>
+            <occurrences minimum="0" maximum="0"/>
+            <items>
+                <input name="customTitle" type="TextLine">
+                    <label>Tittel på snarvei</label>
+                    <help-text>Hvis denne er blank vil tittel på innholdet vises</help-text>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+
+                <input name="target" type="ContentSelector">
+                    <label>Velg innhold</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <showStatus>true</showStatus>
+                        <allowContentType>${app}:external-link</allowContentType>
+                        <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
+                        <allowContentType>${app}:situation-page</allowContentType>
+                        <allowContentType>${app}:guide-page</allowContentType>
+                        <allowContentType>${app}:tools-page</allowContentType>
+                        <allowContentType>${app}:themed-article-page</allowContentType>
+                        <allowContentType>${app}:overview</allowContentType>
+                        <allowContentType>${app}:forms-overview</allowContentType>
+                        <allowContentType>${app}:page-list</allowContentType>
+                    </config>
+                </input>
+            </items>
+        </item-set>
+    </form>
+    <config>
+        <allow-on-content-type>${app}:front-page</allow-on-content-type>
+        <allow-on-content-type>${app}:front-page-nested</allow-on-content-type>
+        <allow-on-content-type>portal:page-template</allow-on-content-type>
+    </config>
+</part>

@@ -16,6 +16,7 @@ export type FiltersMenu = import("./filters-menu").FiltersMenu;
 export type FormDetails = import("./form-details").FormDetails;
 export type FrontpageContact = import("./frontpage-contact").FrontpageContact;
 export type FrontpageCurrentTopics = import("./frontpage-current-topics").FrontpageCurrentTopics;
+export type FrontpagePersonShortcuts = import("./frontpage-person-shortcuts").FrontpagePersonShortcuts;
 export type FrontpageShortcuts = import("./frontpage-shortcuts").FrontpageShortcuts;
 export type HtmlArea = import("./html-area").HtmlArea;
 export type LinkLists = import("./link-lists").LinkLists;
@@ -64,6 +65,7 @@ declare global {
     "no.nav.navno:form-details": FormDetails;
     "no.nav.navno:frontpage-contact": FrontpageContact;
     "no.nav.navno:frontpage-current-topics": FrontpageCurrentTopics;
+    "no.nav.navno:frontpage-person-shortcuts": FrontpagePersonShortcuts;
     "no.nav.navno:frontpage-shortcuts": FrontpageShortcuts;
     "no.nav.navno:html-area": HtmlArea;
     "no.nav.navno:link-lists": LinkLists;
