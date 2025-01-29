@@ -2,7 +2,7 @@
     <display-name>~Lenke for å åpne cookie-banner</display-name>
     <form>
         <input name="text" type="TextLine">
-            <label>Lenke-tekst</label>
+            <label>Lenketekst</label>
             <occurrences minimum="1" maximum="1"/>
         </input>
         <input name="presentation" type="RadioButton">
