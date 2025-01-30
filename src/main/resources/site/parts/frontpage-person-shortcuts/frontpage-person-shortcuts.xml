@@ -14,21 +14,12 @@
                     <help-text>Hvis denne er blank vil tittel på innholdet vises</help-text>
                     <occurrences minimum="0" maximum="1"/>
                 </input>
-
                 <input name="target" type="ContentSelector">
                     <label>Velg innhold</label>
                     <occurrences minimum="1" maximum="1"/>
                     <config>
                         <showStatus>true</showStatus>
                         <allowContentType>${app}:external-link</allowContentType>
-                        <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
-                        <allowContentType>${app}:situation-page</allowContentType>
-                        <allowContentType>${app}:guide-page</allowContentType>
-                        <allowContentType>${app}:tools-page</allowContentType>
-                        <allowContentType>${app}:themed-article-page</allowContentType>
-                        <allowContentType>${app}:overview</allowContentType>
-                        <allowContentType>${app}:forms-overview</allowContentType>
-                        <allowContentType>${app}:page-list</allowContentType>
                     </config>
                 </input>
             </items>

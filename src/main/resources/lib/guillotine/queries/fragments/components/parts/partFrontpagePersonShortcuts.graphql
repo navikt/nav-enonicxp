@@ -1,3 +1,5 @@
+#import "../../mixins/animatedIconsTargetFragment.graphql"
+
 fragment partFrontpagePersonShortcuts on Part_no_nav_navno_frontpage_person_shortcuts {
     title
     shortcuts {
