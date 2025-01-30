@@ -1,18 +1,17 @@
-import { ContentPageWithSidemenus } from '@xp-types/site/content-types/content-page-with-sidemenus';
-import { ThemedArticlePage } from '@xp-types/site/content-types/themed-article-page';
 import { Content } from '/lib/xp/content';
-import { contentTypesWithFormDetails } from '../../contenttype-lists';
+import { contentTypesWithFormDetails, contentTypesWithTaxonomy } from '../../contenttype-lists';
 
 type ContentTypeWithFormDetails = (typeof contentTypesWithFormDetails)[number];
+type ContentTypeWithTaxonomy = (typeof contentTypesWithTaxonomy)[number];
 
 export type ContentWithFormDetails = Content<ContentTypeWithFormDetails>;
+export type ContentWithTaxonomy = Content<ContentTypeWithTaxonomy>;
 
 export type ProductDataInFormsOverviewItem = Pick<
     ContentWithFormDetails['data'],
     'title' | 'sortTitle' | 'illustration' | 'area' | 'ingress'
 > &
-    Pick<ContentPageWithSidemenus, 'taxonomy'> &
-    Pick<ThemedArticlePage, 'taxonomy'>;
+    Pick<ContentWithTaxonomy['data'], 'taxonomy'>;
 
 export type FormDetailsMap = Record<string, Content<'no.nav.navno:form-details'>>;
 

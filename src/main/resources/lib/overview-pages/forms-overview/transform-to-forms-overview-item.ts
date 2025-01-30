@@ -5,9 +5,10 @@ import striptags from '/assets/striptags/3.1.1/src/striptags';
 import { getPublicPath } from '../../paths/public-path';
 import {
     ContentWithFormDetails,
+    ContentWithTaxonomy,
     FormDetailsListItem,
     FormDetailsMap,
-    ProductDataInFormsOverviewItem,
+    ProductDataInFormsOverviewItem
 } from './types';
 import { FormDetailsSelector } from '@xp-types/site/mixins/form-details-selector';
 import { ContentPageWithSidemenus } from '@xp-types/site/content-types/content-page-with-sidemenus';
@@ -66,7 +67,7 @@ export const getFormsOverviewListItemTransformer =
             anchorId: sanitize(sortTitle),
             illustration: content.data.illustration,
             area: forceArray(content.data.area),
-            taxonomy: forceArray((content as ContentWithMissingMixins).data.taxonomy),
+            taxonomy: forceArray((content as ContentWithTaxonomy).data.taxonomy),
             formDetailsPaths: formDetailsContents.map((formDetails) =>
                 getPublicPath(formDetails, overviewPageLanguage)
             ),
