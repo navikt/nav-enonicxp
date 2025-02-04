@@ -10,8 +10,9 @@ export type ContentWithTaxonomy = Content<ContentTypeWithTaxonomy>;
 export type ProductDataInFormsOverviewItem = Pick<
     ContentWithFormDetails['data'],
     'title' | 'sortTitle' | 'illustration' | 'area' | 'ingress'
-> &
-    Pick<ContentWithTaxonomy['data'], 'taxonomy'>;
+>;
+
+export type Taxonomy = Pick<ContentWithTaxonomy['data'], 'taxonomy'> | null;
 
 export type FormDetailsMap = Record<string, Content<'no.nav.navno:form-details'>>;
 
@@ -25,4 +26,5 @@ export type FormDetailsListItem = {
     url: string | null;
     type: ContentTypeWithFormDetails;
     targetLanguage: string;
+    taxonomy: Taxonomy;
 } & Required<ProductDataInFormsOverviewItem>;
