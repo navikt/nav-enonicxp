@@ -20,6 +20,7 @@
                     <config>
                         <showStatus>true</showStatus>
                         <allowContentType>${app}:overview</allowContentType>
+                        <allowContentType>${app}:forms-overview</allowContentType>
                     </config>
                 </input>
             </items>
