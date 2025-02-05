@@ -19,7 +19,7 @@
                     <occurrences minimum="1" maximum="1"/>
                     <config>
                         <showStatus>true</showStatus>
-                        <allowContentType>${app}:external-link</allowContentType>
+                        <allowContentType>${app}:overview</allowContentType>
                     </config>
                 </input>
             </items>
