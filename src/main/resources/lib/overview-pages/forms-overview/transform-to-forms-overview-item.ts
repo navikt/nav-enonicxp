@@ -5,7 +5,6 @@ import striptags from '/assets/striptags/3.1.1/src/striptags';
 import { getPublicPath } from '../../paths/public-path';
 import {
     ContentWithFormDetails,
-    ContentWithTaxonomy,
     FormDetailsListItem,
     FormDetailsMap,
     ProductDataInFormsOverviewItem,
@@ -40,9 +39,7 @@ const getTaxonomy = (content: ContentWithFormDetails) => {
     if (content.type === 'no.nav.navno:guide-page') {
         return null;
     }
-    const taxonomy = forceArray(content.data.taxonomy) as Taxonomy;
-
-    return taxonomy;
+    return forceArray(content.data.taxonomy) as Taxonomy;
 };
 
 export const getFormsOverviewListItemTransformer =
