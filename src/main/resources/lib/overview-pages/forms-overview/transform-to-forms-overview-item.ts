@@ -8,6 +8,7 @@ import {
     FormDetailsListItem,
     FormDetailsMap,
     ProductDataInFormsOverviewItem,
+    Taxonomy,
 } from './types';
 import { FormDetailsSelector } from '@xp-types/site/mixins/form-details-selector';
 import { ContentPageWithSidemenus } from '@xp-types/site/content-types/content-page-with-sidemenus';
@@ -34,6 +35,13 @@ const getUrl = (content: ContentWithFormDetails) => {
     return getPublicPath(content, content.language || getLayersData().defaultLocale);
 };
 
+const getTaxonomy = (content: ContentWithFormDetails) => {
+    if (content.type === 'no.nav.navno:guide-page') {
+        return null;
+    }
+    return forceArray(content.data.taxonomy) as Taxonomy;
+};
+
 export const getFormsOverviewListItemTransformer =
     (formDetailsMap: FormDetailsMap, overviewPageLanguage: string) =>
     (content: ContentWithFormDetails): FormDetailsListItem | null => {
@@ -55,6 +63,8 @@ export const getFormsOverviewListItemTransformer =
         const title = content.data.title || content.displayName;
         const sortTitle = content.data.sortTitle || title;
 
+        const taxonomy: Taxonomy = getTaxonomy(content) ?? null;
+
         return {
             title,
             sortTitle,
@@ -66,7 +76,7 @@ export const getFormsOverviewListItemTransformer =
             anchorId: sanitize(sortTitle),
             illustration: content.data.illustration,
             area: forceArray(content.data.area),
-            taxonomy: forceArray((content as ContentWithMissingMixins).data.taxonomy),
+            taxonomy,
             formDetailsPaths: formDetailsContents.map((formDetails) =>
                 getPublicPath(formDetails, overviewPageLanguage)
             ),
