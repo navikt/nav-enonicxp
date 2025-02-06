@@ -29,11 +29,19 @@ const getContentNode = (node: NodeEventData) => {
     return content;
 };
 
-export const getPrepublishJobName = (contentId: string, repoId: string, suffix?: string) =>
-    `prepublish-invalidate-${contentId}-${repoId}${suffix ? `-${suffix}` : ''}`;
+const getCoreJobName = (contentId: string, repoId?: string, suffix?: string) => {
+    const repoSlug = repoId ? `-${repoId}` : '';
+    const suffixSlug = suffix ? `-${suffix}` : '';
+    return `${contentId}${repoSlug}${suffixSlug}`;
+};
 
-export const getUnpublishJobName = (contentId: string, repoId: string, suffix?: string) =>
-    `unpublish-${contentId}-${repoId}${suffix ? `-${suffix}` : ''}`;
+export const getPrepublishJobName = (contentId: string, repoId?: string, suffix?: string) => {
+    return `prepublish-invalidate-${getCoreJobName(contentId, repoId, suffix)}`;
+};
+
+export const getUnpublishJobName = (contentId: string, repoId?: string, suffix?: string) => {
+    return `unpublish-${getCoreJobName(contentId, repoId, suffix)}`;
+};
 
 export const scheduleCacheInvalidation = ({
     jobName,
