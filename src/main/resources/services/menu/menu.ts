@@ -19,6 +19,7 @@ type MenuItem = {
     path: string;
     id: string;
     displayLock?: boolean;
+    frontendEventID?: string;
     flatten?: boolean;
     isMyPageMenu?: boolean;
     hasChildren: boolean;
@@ -50,6 +51,7 @@ const menuItemContentTransformer = (menuItem: MenuItemContent, locale: string): 
         displayName: menuItem.displayName,
         path: getTargetPath(menuItem, locale),
         displayLock: menuItem.data.displayLock,
+        frontendEventID: menuItem.data.frontendEventID,
         flatten: menuItem.data.flatten,
         isMyPageMenu: menuItem._path.includes(MY_PAGE_MENY_PATH_SEGMENT) || undefined,
         id: menuItem._id,

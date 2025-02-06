@@ -32,6 +32,10 @@ fragment macros on Macro {
             text
             presentation
         }
+        consent_banner_link {
+            text
+            presentation
+        }
         chevron_link_external {
             text
             url
