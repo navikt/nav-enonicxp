@@ -5,9 +5,14 @@ fragment partFrontpagePersonShortcuts on Part_no_nav_navno_frontpage_person_shor
         target {
             _path
             displayName
-            ... on no_nav_navno_ExternalLink {
+            ... on no_nav_navno_Overview {
                 data {
-                    url
+                    title
+                }
+            }
+            ... on no_nav_navno_FormsOverview {
+                data {
+                    title
                 }
             }
         }
