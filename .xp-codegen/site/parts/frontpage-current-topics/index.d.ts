@@ -64,4 +64,14 @@ export type FrontpageCurrentTopics = {
           text: string;
         };
       };
+
+  /**
+   * Overstyr bakgrunnsfarge
+   */
+  bgColor?: string;
+
+  /**
+   * Overstyr farge på kortene
+   */
+  itemColor?: string;
 };

@@ -31,7 +31,7 @@ export type FrontpageShortcuts = {
   bgColor?: string;
 
   /**
-   * Overstyr farge på farge på snarveiene
+   * Overstyr farge på snarveiene
    */
   itemColor?: string;
 
