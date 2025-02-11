@@ -93,7 +93,7 @@ export const get = (req: XP.Request) => {
         taskLib.executeFunction({
             description: actionToRun.description,
             func: () => {
-                runInContext({ branch: 'master', asAdmin: true }, actionToRun.callback);
+                runInContext({ branch: 'main', asAdmin: true }, actionToRun.callback);
             },
         });
     }

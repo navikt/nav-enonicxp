@@ -9,7 +9,7 @@ export const getSearchDocumentLanguageRefs = (content: ContentNode) => {
     const languageVersions = getLanguageVersions({
         baseContent: content,
         baseContentLocale: content.language || getLayersData().defaultLocale,
-        branch: 'master',
+        branch: 'main',
     });
 
     return languageVersions.map((version) => getSearchDocumentLanguage(version.language));

@@ -40,7 +40,7 @@ const validateKeysConfig = (keys: KeysConfig, repo: RepoConnection) => {
 };
 
 const validateConfigs = (config: SearchConfig) => {
-    const repo = getRepoConnection({ branch: 'master', repoId: CONTENT_ROOT_REPO_ID });
+    const repo = getRepoConnection({ branch: 'main', repoId: CONTENT_ROOT_REPO_ID });
 
     const defaultIsValid = validateKeysConfig(config.data.defaultKeys, repo);
 
@@ -91,7 +91,7 @@ export const revalidateExternalSearchConfigCache = () => {
     const searchRepoConnection = getMiscRepoConnection();
 
     const searchConfigHits = runInContext(
-        { branch: 'master' },
+        { branch: 'main' },
         () =>
             contentLib.query({
                 start: 0,

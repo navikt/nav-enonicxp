@@ -11,7 +11,7 @@ export const updateExternalSearchDocumentsForAllReferences = (
     // Search for all references to this content and update each
     const contentReferenceFinder = new ReferencesFinder({
         contentId,
-        branch: 'master',
+        branch: 'main',
         repoId,
         withDeepSearch: true,
         timeout: REFERENCE_SEARCH_TIMEOUT_MS,

@@ -11,7 +11,7 @@ export const run = (params: PrepublishCacheWipe) => {
     );
 
     invalidateCacheForNode({
-        node: { id, path, branch: 'master', repo: repoId },
+        node: { id, path, branch: 'main', repo: repoId },
         eventType: 'node.pushed',
         timestamp: Date.now(),
         isRunningClusterWide: false,

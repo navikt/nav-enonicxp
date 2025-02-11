@@ -32,7 +32,7 @@ export const getLastPublishedContentVersion = (
 
     const masterRepo = getRepoConnection({
         repoId,
-        branch: 'master',
+        branch: 'main',
         asAdmin: true,
     });
 

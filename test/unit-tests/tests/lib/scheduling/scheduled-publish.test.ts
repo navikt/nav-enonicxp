@@ -16,14 +16,14 @@ libContentMock.publish({
 });
 
 describe('Scheduled publishing event handler', () => {
-    const repo = libNodeMock.connect({ repoId: server.context.repository, branch: 'master' });
+    const repo = libNodeMock.connect({ repoId: server.context.repository, branch: 'main' });
 
     test('Should not schedule anything for published content', () => {
         const contentData = repo.get(content._id) as ContentNode;
 
         const isScheduled = handleScheduledPublish(
             {
-                branch: 'master',
+                branch: 'main',
                 path: contentData._path,
                 id: contentData._id,
                 repo: server.context.repository,
@@ -47,7 +47,7 @@ describe('Scheduled publishing event handler', () => {
 
         const isScheduled = handleScheduledPublish(
             {
-                branch: 'master',
+                branch: 'main',
                 path: contentData._path,
                 id: contentData._id,
                 repo: server.context.repository,

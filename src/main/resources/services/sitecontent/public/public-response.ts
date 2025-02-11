@@ -18,12 +18,12 @@ const _sitecontentPublicResponse = ({
 }): SitecontentResponse => {
     const target = findTargetContentAndLocale({
         path: idOrPath,
-        branch: 'master',
+        branch: 'main',
     });
 
     // If the content was not found, return any applicable redirect fallback for the requested path
     if (!target) {
-        return sitecontentNotFoundRedirect({ pathRequested: idOrPath, branch: 'master' });
+        return sitecontentNotFoundRedirect({ pathRequested: idOrPath, branch: 'main' });
     }
 
     const { content, locale } = target;
@@ -32,7 +32,7 @@ const _sitecontentPublicResponse = ({
     const specialResponse = sitecontentSpecialResponse({
         content,
         locale,
-        branch: 'master',
+        branch: 'main',
         requestedPath: idOrPath,
         isPreview,
     });
@@ -41,11 +41,11 @@ const _sitecontentPublicResponse = ({
         return (
             specialResponse.response ||
             // If the special response is null, we also want to check for any applicable redirect
-            sitecontentNotFoundRedirect({ pathRequested: idOrPath, branch: 'master' })
+            sitecontentNotFoundRedirect({ pathRequested: idOrPath, branch: 'main' })
         );
     }
 
-    return sitecontentContentResponse({ baseContent: content, branch: 'master', locale });
+    return sitecontentContentResponse({ baseContent: content, branch: 'main', locale });
 };
 
 export const sitecontentPublicResponse = ({

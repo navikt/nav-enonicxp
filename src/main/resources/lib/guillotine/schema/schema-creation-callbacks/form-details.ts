@@ -8,7 +8,7 @@ export const formDetailsCallback: CreationCallback = (context, params) => {
     params.fields.data.resolve = (env) => {
         const contentId = env.source._id;
 
-        return runInContext({ branch: 'master' }, () => {
+        return runInContext({ branch: 'main' }, () => {
             const alerts = contentLib.query({
                 count: 10,
                 contentTypes: ['no.nav.navno:alert-in-context'],

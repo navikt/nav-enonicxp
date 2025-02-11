@@ -209,7 +209,7 @@ export const findAndArchiveOldContent = ({
     const cutoffTs = new Date(Date.now() - maxAgeMs).toISOString();
 
     const hitsPerRepo = queryAllLayersToRepoIdBuckets({
-        branch: 'master',
+        branch: 'main',
         state: 'localized',
         resolveContent: false,
         queryParams: {
@@ -238,7 +238,7 @@ export const findAndArchiveOldContent = ({
     };
 
     Object.entries(hitsPerRepo).forEach(([repoId, hits]) => {
-        const layerRepo = getRepoConnection({ repoId, branch: 'master', asAdmin: true });
+        const layerRepo = getRepoConnection({ repoId, branch: 'main', asAdmin: true });
 
         logger.info(`Found ${hits.length} contents in repo ${repoId} for archiving job ${jobName}`);
 

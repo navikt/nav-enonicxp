@@ -56,7 +56,7 @@ https://github.com/navikt/nav-enonicxp/wiki/Caching
 ## Deploy
 
 -   **dev/dev2(q6):** Run deploy-to-(dev|dev2/q6) workflow dispatch
--   **P:** Make a PR between master and your feature branch **\*** and create a release at <br />
+-   **P:** Make a PR between main and your feature branch **\*** and create a release at <br />
     https://github.com/navikt/nav-enonicxp/releases <br />
     **Obs:** Release must be formatted as **vX.X.X** (e.g v1.2.1)
 

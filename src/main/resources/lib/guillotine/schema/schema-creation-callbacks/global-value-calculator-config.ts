@@ -25,7 +25,7 @@ export const globalValueCalculatorConfigCallback: CreationCallback = (context, p
                 return null;
             }
 
-            const value = runInContext({ branch: 'master' }, () =>
+            const value = runInContext({ branch: 'main' }, () =>
                 getGlobalNumberValue(gvKey, contentId)
             );
             if (value === null) {

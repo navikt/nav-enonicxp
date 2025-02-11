@@ -110,7 +110,7 @@ const getResult = ({
         );
     }
 
-    const contentWithInternalPath = runInContext({ branch: 'master' }, () =>
+    const contentWithInternalPath = runInContext({ branch: 'main' }, () =>
         contentLib.get({ key: `${NAVNO_ROOT_PATH}${suggestedPath}` })
     );
     if (contentWithInternalPath) {
@@ -132,7 +132,7 @@ const getResult = ({
         };
     }
 
-    const redirectContent = runInContext({ branch: 'master' }, () =>
+    const redirectContent = runInContext({ branch: 'main' }, () =>
         contentLib.get({ key: `${REDIRECTS_ROOT_PATH}${suggestedPath}` })
     );
     if (redirectContent && redirectContent.type !== 'base:folder') {

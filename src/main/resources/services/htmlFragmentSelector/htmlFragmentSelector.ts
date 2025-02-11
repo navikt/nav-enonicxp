@@ -63,7 +63,7 @@ export const get = (req: XP.CustomSelectorServiceRequest) => {
     const { query } = req.params;
     const ids = customSelectorParseSelectedIdsFromReq(req);
 
-    const hits = runInContext({ branch: 'master' }, () =>
+    const hits = runInContext({ branch: 'main' }, () =>
         ids.length > 0 ? getSelectedHits(ids) : getHitsFromQuery(query)
     );
 

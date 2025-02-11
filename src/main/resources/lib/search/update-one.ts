@@ -25,7 +25,7 @@ export const updateExternalSearchDocumentForContent = (contentId: string, repoId
         return;
     }
 
-    const repo = getRepoConnection({ repoId, branch: 'master', asAdmin: true });
+    const repo = getRepoConnection({ repoId, branch: 'main', asAdmin: true });
 
     const content = repo.get<Content>(contentId);
     if (!content || !isContentLocalized(content)) {

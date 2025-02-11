@@ -11,7 +11,7 @@ const ONE_MONTH_MS = 30 * 24 * 60 * 60 * 1000;
 export const runSchedulerCleanup = (dryRun?: boolean) => {
     const repoConnection = getRepoConnection({
         repoId: 'system.scheduler',
-        branch: 'master',
+        branch: 'main',
         asAdmin: true,
     });
 

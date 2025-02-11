@@ -175,7 +175,7 @@ const buildOfficeBranchPageWithEditorialContent = (contentQueryResult: any) => {
     }
 
     const officeEditorialQueryParams: BaseQueryParams = {
-        branch: 'master',
+        branch: 'main',
         throwOnErrors: true,
         params: {
             ref: officeEditorialPageContent._id,

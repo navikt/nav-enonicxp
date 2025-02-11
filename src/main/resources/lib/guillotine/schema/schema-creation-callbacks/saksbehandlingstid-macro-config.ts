@@ -28,7 +28,7 @@ export const saksbehandlingstidMacroCallback: CreationCallback = (context, param
                 return null;
             }
 
-            const caseTimeData = runInContext({ branch: 'master' }, () =>
+            const caseTimeData = runInContext({ branch: 'main' }, () =>
                 getGlobalCaseTime(gvKey, contentId)
             );
 

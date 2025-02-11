@@ -91,7 +91,7 @@ jest.mock('@navno-app/lib/localization/resolve-language-versions', () => ({
 
 describe('Document builder for external search api', () => {
     const repoConnection = libNodeMock.connect({
-        branch: 'master',
+        branch: 'main',
         repoId: server.context.repository,
     });
 

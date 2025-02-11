@@ -105,7 +105,7 @@ export const getPublishedAndModifiedVersions = (contentId: string, locale: strin
     const params: GetNodeVersionsParams = {
         nodeKey: contentId,
         repoId,
-        branch: 'master',
+        branch: 'main',
     };
 
     const normalVersions = getNodeVersions(params).map((version) =>

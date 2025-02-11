@@ -38,7 +38,7 @@ const createMiscRepo = () => {
 export const getMiscRepoConnection = () =>
     getRepoConnection({
         repoId: MISC_REPO_ID,
-        branch: 'master',
+        branch: 'main',
         asAdmin: true,
     });
 

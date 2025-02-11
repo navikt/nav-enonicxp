@@ -87,7 +87,7 @@ _references = "d3a6050e-6d68-47bd-8933-72a3a045140f"
 
 
 ### Case 2 - Finn endringer fra bruker/redaktør
-Finn alle artikler som er endret av en bestemt bruker i master, siste endrede øverst.
+Finn alle artikler som er endret av en bestemt bruker i main, siste endrede øverst.
 
 1. Finn brukerid via **Users/Brukeradministrasjon**
 2. **Data toolbox** > **Node search** :

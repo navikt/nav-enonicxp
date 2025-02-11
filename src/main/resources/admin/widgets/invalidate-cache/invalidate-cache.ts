@@ -19,7 +19,7 @@ export const get = (req: XP.Request) => {
     const { repoIdToLocaleMap } = getLayersData();
     const locale = repoIdToLocaleMap[repository];
 
-    const content = runInLocaleContext({ locale, branch: 'master' }, () =>
+    const content = runInLocaleContext({ locale, branch: 'main' }, () =>
         contentLib.get({ key: contentId })
     );
 

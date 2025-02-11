@@ -44,7 +44,7 @@ export const get = (req: XP.Request) => {
         data: {
             id: content._id,
             path: content._path,
-            branch: 'master',
+            branch: 'main',
             repo: localeToRepoIdMap[locale],
         },
     });

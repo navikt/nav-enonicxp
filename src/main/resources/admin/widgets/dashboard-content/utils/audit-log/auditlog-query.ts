@@ -34,7 +34,7 @@ export const getAuditLogEntries = <Type extends AuditLogQueryType>({
 }: AuditLogQueryProps<Type>): Array<ReturnTypeMap[Type]> => {
     const repoConnection = getRepoConnection({
         repoId: AUDITLOG_REPO_ID,
-        branch: 'master',
+        branch: 'main',
         asAdmin: true,
     });
 

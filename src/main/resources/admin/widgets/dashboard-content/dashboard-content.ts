@@ -84,7 +84,7 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
                 repoId: hit.repoId,
             }).get<Content>(hit.id);
             const masterContent = getRepoConnection({
-                branch: 'master',
+                branch: 'main',
                 repoId: hit.repoId,
             }).get<Content>(hit.id);
 

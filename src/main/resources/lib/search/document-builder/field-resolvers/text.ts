@@ -115,7 +115,7 @@ const getHtmlInFragment = (fragmentId: string, locale: string) => {
 
 const getFragment = (fragmentId: string, locale: string) => {
     return getRepoConnection({
-        branch: 'master',
+        branch: 'main',
         repoId: getLayersData().localeToRepoIdMap[locale] || CONTENT_ROOT_REPO_ID,
     }).get<Content>({ key: fragmentId });
 };

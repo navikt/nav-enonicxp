@@ -23,7 +23,7 @@ export const getContentProjectIdFromRepoId = (repoId: string) =>
 
 export const isDraftAndMasterSameVersion = (contentId: string, repoId: string) => {
     const draftContent = getRepoConnection({ branch: 'draft', repoId }).get(contentId);
-    const masterContent = getRepoConnection({ branch: 'master', repoId }).get(contentId);
+    const masterContent = getRepoConnection({ branch: 'main', repoId }).get(contentId);
 
     return draftContent?._versionKey === masterContent?._versionKey;
 };

@@ -54,7 +54,7 @@ const findChangedPaths = (contentId: string, repoId: string, path: string) => {
     const previousVersion = getNodeVersions({
         nodeKey: contentId,
         repoId: repoId,
-        branch: 'master',
+        branch: 'main',
     })?.[1];
 
     if (!previousVersion) {

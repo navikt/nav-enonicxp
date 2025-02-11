@@ -20,7 +20,7 @@ export const CONTENT_TYPES_WITH_CONTENT_LISTS: ContentTypesWithContentLists[] = 
 
 const isPublishedOrPrepublished = (contentId: string) => {
     try {
-        const masterContent = runInContext({ branch: 'master' }, () =>
+        const masterContent = runInContext({ branch: 'main' }, () =>
             contentLib.get({ key: contentId })
         );
         if (masterContent) {
@@ -110,7 +110,7 @@ const removeUnpublishedFromContentList = (
 };
 
 export const removeUnpublishedFromAllContentLists = () => {
-    const contentLists = runInContext({ branch: 'master' }, () =>
+    const contentLists = runInContext({ branch: 'main' }, () =>
         contentLib.query({
             count: 2000,
             contentTypes: CONTENT_TYPES_WITH_CONTENT_LISTS,
@@ -130,7 +130,7 @@ export const removeUnpublishedFromAllContentLists = () => {
 };
 
 const removeUnpublishedContentFromContentLists = (contentId: string, repoId: string) => {
-    runInContext({ branch: 'master', repository: repoId }, () =>
+    runInContext({ branch: 'main', repository: repoId }, () =>
         contentLib
             .query({
                 count: 2000,

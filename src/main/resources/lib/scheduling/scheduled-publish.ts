@@ -12,7 +12,7 @@ import { isContentAwaitingPrepublish } from '../utils/content-utils';
 const getContentNode = (node: NodeEventData) => {
     const repo = getRepoConnection({
         repoId: node.repo,
-        branch: 'master',
+        branch: 'main',
     });
 
     const content = repo.get<Content>(node.id);

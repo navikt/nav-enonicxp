@@ -38,7 +38,7 @@ const getSituationsLayout = (
 };
 
 const getRelevantSituationPages = (areaPageNodeContent: AreaPageContent) =>
-    runInContext({ branch: 'master' }, () => {
+    runInContext({ branch: 'main' }, () => {
         const { area, audience } = areaPageNodeContent.data;
 
         const selectedAudience = audience?._selected;

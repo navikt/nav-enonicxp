@@ -57,7 +57,7 @@ const pushToMasterIfContentIsPublishedInRootRepo = ({ id, repo, branch }: NodeDa
 
     const rootContentMaster = getRepoConnection({
         repoId: CONTENT_ROOT_REPO_ID,
-        branch: 'master',
+        branch: 'main',
         asAdmin: true,
     }).get(id);
 
@@ -73,7 +73,7 @@ const pushToMasterIfContentIsPublishedInRootRepo = ({ id, repo, branch }: NodeDa
 
     const layerContentMaster = getRepoConnection({
         repoId: repo,
-        branch: 'master',
+        branch: 'main',
         asAdmin: true,
     }).get(id);
 
@@ -130,7 +130,7 @@ const propagatePublishEventsToLayers = (event: EnonicEvent) => {
                 pushToMaster(id, repoId);
             } else if (event.type === 'node.deleted') {
                 const result = getRepoConnection({
-                    branch: 'master',
+                    branch: 'main',
                     repoId,
                     asAdmin: true,
                 }).delete(id);

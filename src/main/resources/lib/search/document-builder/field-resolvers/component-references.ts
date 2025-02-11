@@ -30,7 +30,7 @@ export const getSearchDocumentProductDetails = (
     const locale = content.language || getLayersData().defaultLocale;
 
     const detailContent = getRepoConnection({
-        branch: 'master',
+        branch: 'main',
         repoId: getLayersData().localeToRepoIdMap[locale] || CONTENT_ROOT_REPO_ID,
     }).get<Content>({ key: detailId });
     if (!detailContent || detailContent.type !== 'no.nav.navno:product-details') {
@@ -68,7 +68,7 @@ export const getSearchDocumentFormDetails = (
     const locale = content.language || getLayersData().defaultLocale;
 
     const formContent = getRepoConnection({
-        branch: 'master',
+        branch: 'main',
         repoId: getLayersData().localeToRepoIdMap[locale] || CONTENT_ROOT_REPO_ID,
     }).get<Content>({ key: targetFormDetails });
     if (!formContent || formContent.type !== 'no.nav.navno:form-details') {

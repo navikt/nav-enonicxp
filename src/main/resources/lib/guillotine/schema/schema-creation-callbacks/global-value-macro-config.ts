@@ -22,7 +22,7 @@ export const globalValueMacroConfigCallback: CreationCallback = (context, params
                 return null;
             }
 
-            const value = runInContext({ branch: 'master' }, () =>
+            const value = runInContext({ branch: 'main' }, () =>
                 getGlobalNumberValue(gvKey, contentId)
             );
 
@@ -45,7 +45,7 @@ export const globalValueWithMathMacroConfigCallback: CreationCallback = (context
         resolve: (env) => {
             const keys = forceArray(env.source.keys);
 
-            const variables = runInContext({ branch: 'master' }, () =>
+            const variables = runInContext({ branch: 'main' }, () =>
                 keys.reduce((acc, key) => {
                     const { gvKey, contentId } = getGvKeyAndContentIdFromUniqueKey(key);
                     if (!gvKey || !contentId) {

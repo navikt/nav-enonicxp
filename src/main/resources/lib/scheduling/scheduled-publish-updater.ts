@@ -57,7 +57,7 @@ const scheduleUnpublishTasks = () => {
             query: 'publish.to LIKE "*"',
         },
         resolveContent: true,
-        branch: 'master',
+        branch: 'main',
         state: 'localized',
     });
 

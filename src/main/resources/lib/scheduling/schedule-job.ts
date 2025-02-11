@@ -48,7 +48,7 @@ export const createOrUpdateSchedule = <
         enabled: enabled,
     };
 
-    return runInContext({ branch: 'master', asAdmin: true }, () => {
+    return runInContext({ branch: 'main', asAdmin: true }, () => {
         const existingJob = schedulerLib.get({ name: jobName });
 
         if (existingJob) {

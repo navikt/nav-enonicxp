@@ -41,7 +41,7 @@ const makeErrorHit = (id: string, displayName: string, description: string): Sel
     );
 
 const getSelectedHit = (selectedId: string, detailType: ProductDetailsType, locale: string) => {
-    const publishedContent = runInLocaleContext({ branch: 'master', locale }, () =>
+    const publishedContent = runInLocaleContext({ branch: 'main', locale }, () =>
         contentLib.get({ key: selectedId })
     );
 
@@ -85,7 +85,7 @@ const getHitsFromQuery = (
     locale: string,
     query?: string
 ): SelectorHit[] => {
-    const { hits } = runInLocaleContext({ branch: 'master', locale }, () =>
+    const { hits } = runInLocaleContext({ branch: 'main', locale }, () =>
         contentLib.query({
             count: 1000,
             contentTypes: ['no.nav.navno:product-details'],

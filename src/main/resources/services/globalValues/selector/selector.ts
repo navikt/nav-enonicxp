@@ -111,7 +111,7 @@ export const globalValueSelectorService = (req: XP.Request) => {
 
     const withDescription = req.params.withDescription === 'true';
 
-    const hits = runInContext({ branch: 'master' }, () =>
+    const hits = runInContext({ branch: 'main' }, () =>
         ids.length > 0
             ? getHitsFromSelectedIds(ids, withDescription)
             : getHitsFromQuery(contentType, query, withDescription)

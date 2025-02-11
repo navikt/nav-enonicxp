@@ -60,7 +60,7 @@ const shouldIncludeContent = (
     if (content.type === 'no.nav.navno:main-article-chapter') {
         const parentPath = getParentPath(content._path);
 
-        runInContext({ repository: repoId, branch: 'master' }, () => {
+        runInContext({ repository: repoId, branch: 'main' }, () => {
             const parentContent = contentLib.get({ key: parentPath });
             if (parentContent && parentContent.type !== 'no.nav.navno:main-article') {
                 log.info(
@@ -161,7 +161,7 @@ const buildSitemapEntry = (
 };
 
 const updateSitemapEntry = (contentId: string, locale: string) =>
-    runInLocaleContext({ branch: 'master', locale }, () => {
+    runInLocaleContext({ branch: 'main', locale }, () => {
         const content = contentLib.get({ key: contentId });
         const key = getKey(contentId, locale);
 
@@ -174,7 +174,7 @@ const updateSitemapEntry = (contentId: string, locale: string) =>
 
 const generateSitemapEntries = (): SitemapEntry[] => {
     const repoIdContentBuckets = queryAllLayersToRepoIdBuckets({
-        branch: 'master',
+        branch: 'main',
         state: 'localized',
         resolveContent: true,
         queryParams: {

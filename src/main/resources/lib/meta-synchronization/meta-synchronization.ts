@@ -99,7 +99,7 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
     const versions = getNodeVersions({
         nodeKey: content._id,
         repoId: CONTENT_ROOT_REPO_ID,
-        branch: 'master',
+        branch: 'main',
     });
     const previousVersionId = versions[1]?.versionId;
     const previousContentVersion =
@@ -131,7 +131,7 @@ const syncToAllOtherLayers = (content: DynamicPageContent) => {
         // Get the draft and master repo and content in order to check
         // for versionKey later.
         const draftRepo = getRepoConnection({ repoId, branch: 'draft', asAdmin: true });
-        const masterRepo = getRepoConnection({ repoId, branch: 'master', asAdmin: true });
+        const masterRepo = getRepoConnection({ repoId, branch: 'main', asAdmin: true });
         const draftContent = draftRepo.get<DynamicPageContent>({ key: content._id });
         const masterContent = masterRepo.get<DynamicPageContent>({ key: content._id });
 

@@ -7,7 +7,7 @@ const view = resolve('./dashboard.html');
 const announcementsPath = '/www.nav.no/admin/announcement';
 
 const dashboardInfo = () => {
-    const content = runInContext({ branch: 'master' }, () =>
+    const content = runInContext({ branch: 'main' }, () =>
         contentLib.get({ key: announcementsPath })
     );
 

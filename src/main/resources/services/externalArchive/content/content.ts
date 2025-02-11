@@ -28,7 +28,7 @@ const resolveToContentTimestamp = (content: Content, locale: string) => {
         {
             dateTime: content.modifiedTime || content.createdTime,
             repoId: getLayersData().localeToRepoIdMap[locale],
-            branch: 'master',
+            branch: 'main',
             baseContentKey: content._id,
         },
         () => runSitecontentGuillotineQuery(content, 'draft')

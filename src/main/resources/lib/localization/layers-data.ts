@@ -65,7 +65,7 @@ export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
     refreshLayersData();
 
     const nodeIdsInRootRepoMaster = batchedNodeQuery({
-        repoParams: { repoId: CONTENT_ROOT_REPO_ID, branch: 'master' },
+        repoParams: { repoId: CONTENT_ROOT_REPO_ID, branch: 'main' },
         queryParams: contentOnlyQueryParams,
     }).hits.map((hit) => hit.id);
 
@@ -77,7 +77,7 @@ export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
         }
 
         const existingNodesSet = batchedNodeQuery({
-            repoParams: { repoId: repoId, branch: 'master' },
+            repoParams: { repoId: repoId, branch: 'main' },
             queryParams: contentOnlyQueryParams,
         }).hits.reduce<Record<string, true>>((acc, hit) => {
             acc[hit.id] = true;
@@ -185,7 +185,7 @@ const refreshLayersData = () => {
         return { ...acc, [repoId]: locale };
     }, {} as RepoIdToLocaleMap);
     data.sources.master = localeToRepoIdMapEntries.map(([_, repoId]) => {
-        return { repoId, branch: 'master', principals: ['role:system.admin'] };
+        return { repoId, branch: 'main', principals: ['role:system.admin'] };
     });
     data.sources.draft = localeToRepoIdMapEntries.map(([_, repoId]) => {
         return { repoId, branch: 'draft', principals: ['role:system.admin'] };

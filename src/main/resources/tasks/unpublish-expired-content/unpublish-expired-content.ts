@@ -17,7 +17,7 @@ export const run = (params: UnpublishExpiredContent) => {
 
     logger.info(`Running task for unpublishing expired content - ${contentInfo}`);
 
-    const repo = getRepoConnection({ repoId, branch: 'master' });
+    const repo = getRepoConnection({ repoId, branch: 'main' });
 
     const content = repo.get<Content>({ key: id });
     if (!content) {

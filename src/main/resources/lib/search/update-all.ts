@@ -19,7 +19,7 @@ const getValidContentTypes = (searchConfig: Content<'no.nav.navno:search-config-
 
 const getContentToIndex = (contentTypes: string[]) => {
     return queryAllLayersToRepoIdBuckets({
-        branch: 'master',
+        branch: 'main',
         state: 'localized',
         resolveContent: false,
         queryParams: {
@@ -41,7 +41,7 @@ const getContentToIndex = (contentTypes: string[]) => {
 };
 
 const sendToSearchApi = (repoId: string, contentIds: string[]) => {
-    const repo = getRepoConnection({ repoId, branch: 'master', asAdmin: true });
+    const repo = getRepoConnection({ repoId, branch: 'main', asAdmin: true });
     const locale = getLayersData().repoIdToLocaleMap[repoId];
 
     if (!locale) {

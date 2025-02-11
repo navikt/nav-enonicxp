@@ -115,7 +115,7 @@ const migrateBranch = (params: ContentMigrationParams, branch: RepoBranch) => {
     }
 
     const targetRepoMaster = getRepoConnection({
-        branch: 'master',
+        branch: 'main',
         repoId: targetRepoId,
         asAdmin: true,
     });

@@ -64,7 +64,7 @@ const getPathsToRender = (isTest?: boolean) => {
     const query = `(${CONTENT_QUERY_SEGMENT}) AND NOT publish.to < instant('${sixHoursFromNow}') AND NOT (modifiedTime < instant('${oneYearAgo}') AND (${EXCLUDED_IF_OLD_QUERY_SEGMENT}))`;
 
     const localeContentBuckets = queryAllLayersToRepoIdBuckets({
-        branch: 'master',
+        branch: 'main',
         state: 'localized',
         resolveContent: true,
         queryParams: {

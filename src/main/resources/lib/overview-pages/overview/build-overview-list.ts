@@ -53,7 +53,7 @@ export const buildOverviewList = (overviewContent: Content<'no.nav.navno:overvie
 
     const locale = language || getLayersData().defaultLocale;
 
-    const overviewList = runInContext({ branch: 'master' }, () => {
+    const overviewList = runInContext({ branch: 'main' }, () => {
         const localizedContent = getLocalizedContentWithFallbackData({
             contents: listContents,
             localeFallbackIds: forceArray(localeFallback),

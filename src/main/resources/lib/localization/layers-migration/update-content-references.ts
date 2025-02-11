@@ -93,7 +93,7 @@ const updateContentReferencesInLocaleLayer = (
     const contentReferencesFinder = new ReferencesFinder({
         contentId: sourceId,
         repoId: repoToUpdate,
-        branch: 'master',
+        branch: 'main',
         withDeepSearch: false,
         logErrorsOnly: true,
     });
@@ -123,7 +123,7 @@ const updateContentReferencesInLocaleLayer = (
         }
 
         const contentNodeMaster = getRepoConnection({
-            branch: 'master',
+            branch: 'main',
             repoId: repoToUpdate,
             asAdmin: true,
         }).get<Content>(refContentId);

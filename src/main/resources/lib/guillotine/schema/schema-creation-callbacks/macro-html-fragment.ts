@@ -34,7 +34,7 @@ export const macroHtmlFragmentCallback: CreationCallback = (context, params) => 
 
             const key = getKeyWithoutMacroDescription(fragmentId);
 
-            const fragmentContent = runInContext({ branch: 'master' }, () =>
+            const fragmentContent = runInContext({ branch: 'main' }, () =>
                 contentLib.get({ key })
             );
             if (!fragmentContent) {

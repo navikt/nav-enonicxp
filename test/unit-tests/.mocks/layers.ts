@@ -19,12 +19,12 @@ const layersData: LayersRepoData = {
         master: [
             {
                 repoId: server.context.repository,
-                branch: 'master',
+                branch: 'main',
                 principals: ['role:system.admin'],
             },
             {
                 repoId: englishRepoId,
-                branch: 'master',
+                branch: 'main',
                 principals: ['role:system.admin'],
             },
         ],
