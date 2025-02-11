@@ -21,7 +21,8 @@ const cache = cacheLib.newCache({ size: 2, expire: 600 });
 // Limited selection of content types for testing purposes
 // (we don't want to build all 17000+ pages on every deploy while testing :)
 const testContentTypes: ContentDescriptor[] = [
-    'no.nav.navno:dynamic-page',
+    'no.nav.navno:front-page',
+    'no.nav.navno:area-page',
     'no.nav.navno:content-page-with-sidemenus',
     'no.nav.navno:situation-page',
 ];
