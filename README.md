@@ -712,3 +712,4 @@ go to portal-admin of the environment you wish to restart:
 
 Then just use the Applications link ({baseurl}/admin/tool/com.enonic.xp.app.applications/main). When
 you select the app you will see buttons on the top of the page for stopping and starting the app.
+
