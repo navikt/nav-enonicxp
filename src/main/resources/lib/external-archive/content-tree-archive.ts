@@ -107,12 +107,6 @@ class ArchiveContentTree {
                                 field: 'publish.first',
                             },
                         },
-                        {
-                            hasValue: {
-                                field: 'language',
-                                values: [this.locale],
-                            },
-                        },
                     ],
                 },
             },
