@@ -6,6 +6,7 @@ import {
     isArchivedContentNode,
     isContentPreviewOrUsingExternalProductUrl,
 } from '../utils/content-utils';
+import { logger } from '../utils/logging';
 
 const transformRepoContentNode = (node: RepoNode<Content>): Content => {
     const { _indexConfig, _inheritsPermissions, _permissions, _childOrder, ...content } = node;

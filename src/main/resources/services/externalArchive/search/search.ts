@@ -50,12 +50,34 @@ export const externalArchiveSearchService = (req: XP.Request) => {
             })
         );
 
+        // check unpublished in case published earlier versions
+        const draftresult = runQuery({
+            requestId,
+            query: `displayName LIKE "*${query}*"${searchType === 'other' ? excludeTypes : ''}`,
+            notExistsFilter: [
+                { notExists: { field: 'x.no-nav-navno.previewOnly.previewOnly' } },
+                { notExists: { field: 'data.externalProductUrl' } },
+            ],
+            branch: 'unpublished',
+            batch: 0,
+            ...(searchType === 'curated' ? { types: curatedTypes } : {}),
+        });
+        const draftHits = draftresult.hits.map(
+            (hit): SimpleHit => ({
+                _id: hit._id,
+                _path: hit._path,
+                layerLocale: hit.layerLocale,
+                displayName: hit.displayName,
+                type: hit.type,
+            })
+        );
+
         return {
             status: 200,
             contentType: 'application/json',
             body: {
                 total: result.total,
-                hits: simpleHits,
+                hits: [...simpleHits, ...draftHits],
                 hasMore: result.hasMore,
                 query: query,
             },
