@@ -1,7 +1,6 @@
 import { runQuery } from '../../../services/dataQuery/utils/queryRunners';
 import { logger } from '../../../lib/utils/logging';
 import { ContentDescriptor } from '../../../types/content-types/content-config';
-import { archive } from '@enonic-types/lib-content';
 
 type SimpleHit = {
     _id: string;
