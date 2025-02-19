@@ -1,6 +1,7 @@
 import { runQuery } from '../../../services/dataQuery/utils/queryRunners';
 import { logger } from '../../../lib/utils/logging';
 import { ContentDescriptor } from '../../../types/content-types/content-config';
+import { archive } from '@enonic-types/lib-content';
 
 type SimpleHit = {
     _id: string;
@@ -53,15 +54,16 @@ export const externalArchiveSearchService = (req: XP.Request) => {
         // check unpublished in case published earlier versions
         const draftresult = runQuery({
             requestId,
-            query: `displayName LIKE "*${query}*"${searchType === 'other' ? excludeTypes : ''}`,
+            query: `displayName LIKE "*${query}*"`,
             notExistsFilter: [
                 { notExists: { field: 'x.no-nav-navno.previewOnly.previewOnly' } },
                 { notExists: { field: 'data.externalProductUrl' } },
             ],
             branch: 'unpublished',
             batch: 0,
-            ...(searchType === 'curated' ? { types: curatedTypes } : {}),
+            // ...(searchType === 'curated' ? { types: curatedTypes } : {}),
         });
+
         const draftHits = draftresult.hits.map(
             (hit): SimpleHit => ({
                 _id: hit._id,
@@ -77,7 +79,7 @@ export const externalArchiveSearchService = (req: XP.Request) => {
             contentType: 'application/json',
             body: {
                 total: result.total,
-                hits: [...simpleHits, ...draftHits],
+                hits: draftHits,
                 hasMore: result.hasMore,
                 query: query,
             },
