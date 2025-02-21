@@ -7,6 +7,33 @@ const INGRESS_MAX_LENGTH = 500;
 
 const DEFAULT_OFFICE_INGRESS = 'Kontorinformasjon';
 
+const getStedsnavn = (publikumsmottak: any) => {
+    if (!publikumsmottak || publikumsmottak.length === 0) {
+        return [DEFAULT_OFFICE_INGRESS];
+    }
+
+    // For offices with only one publikumsmottak, the stedsnavn
+    // will not be actively used and may contain strange texts
+    // (ie "Lesja, inngang ved postkontoret rundt hjørnet").
+    // In these cases, use the postal city.
+    if (publikumsmottak.length === 1) {
+        return [capitalize(publikumsmottak[0].besoeksadresse?.poststed ?? '')];
+    }
+
+    // For offices with multiple publikumsmottak, try stedsnavn and then poststed if
+    // stedsnavn doesn't exist. This makes the display match the tagline on the office page,
+    // and in these cases the stedsnavn field in Norg is already cleaned since it's
+    // used in the tabs for the office page.
+    return forceArray(publikumsmottak)
+        .filter(
+            (mottak) =>
+                mottak.besoeksadresse?.type === 'stedsadresse' && !!mottak.besoeksadresse.poststed
+        )
+        .map((mottak) => capitalize(mottak.stedsnavn ?? mottak.besoeksadresse?.poststed ?? ''))
+        .filter(removeDuplicatesFilter())
+        .filter((navn) => !!navn);
+};
+
 export const buildSearchDocumentOfficeIngress = (content: OfficeContent) => {
     // Legacy offices
     if (content.type === 'no.nav.navno:office-information') {
@@ -27,24 +54,18 @@ export const buildSearchDocumentOfficeIngress = (content: OfficeContent) => {
         return officeData.navn; // i.e "NAV Hjelpemiddelsentral i Oslo"
     }
 
-    const poststeder = forceArray(officeData.brukerkontakt?.publikumsmottak)
-        .filter(
-            (mottak) =>
-                mottak.besoeksadresse?.type === 'stedsadresse' && !!mottak.besoeksadresse.poststed
-        )
-        .map((mottak) => capitalize(mottak.besoeksadresse?.poststed as string))
-        .filter(removeDuplicatesFilter());
+    const steder = getStedsnavn(officeData.brukerkontakt?.publikumsmottak);
 
-    if (poststeder.length === 0) {
+    if (steder.length === 0) {
         return DEFAULT_OFFICE_INGRESS;
     }
 
-    const poststederStr =
-        poststeder.length === 1
-            ? poststeder[0]
-            : `${poststeder.slice(0, -1).join(', ')} og ${poststeder.slice(-1)}`;
+    const stedAsSentence =
+        steder.length === 1
+            ? steder[0]
+            : `${steder.slice(0, -1).join(', ')} og ${steder.slice(-1)}`;
 
-    return `Lokalkontor i ${poststederStr}`;
+    return `Lokalkontor i ${stedAsSentence}`;
 };
 
 const withoutTable = (text: string) => text.split('<table')[0];
