@@ -29,6 +29,8 @@ const getContentNode = (node: NodeEventData) => {
     return content;
 };
 
+// Some old jobs do not have repoId in the name, so this has to be optional
+// when building the node name for the job.
 const getCoreJobName = (contentId: string, repoId?: string, suffix?: string) => {
     const repoSlug = repoId ? `-${repoId}` : '';
     const suffixSlug = suffix ? `-${suffix}` : '';
