@@ -156,12 +156,6 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const testJob = getScheduledJob(
-        'prepublish-invalidate-4c2a7264-e733-4223-a875-62c927fc162c-com.enonic.cms.default'
-    );
-
-    log.info(`testJob: ${JSON.stringify(testJob)}`);
-
     const clusterInfoResponse = requestClusterInfo();
 
     const contentLists = getFromLocalCache(
