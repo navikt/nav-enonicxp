@@ -1,0 +1,20 @@
+fragment partFrontpagePersonShortcuts on Part_no_nav_navno_frontpage_person_shortcuts {
+    title
+    shortcuts {
+        customTitle
+        target {
+            _path
+            displayName
+            ... on no_nav_navno_Overview {
+                data {
+                    title
+                }
+            }
+            ... on no_nav_navno_FormsOverview {
+                data {
+                    title
+                }
+            }
+        }
+    }
+}

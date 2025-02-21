@@ -1,1 +1,3 @@
 .xp-codegen/**/*.*
+*.yaml
+*.yml

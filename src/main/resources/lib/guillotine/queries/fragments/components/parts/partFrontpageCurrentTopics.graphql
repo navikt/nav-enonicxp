@@ -3,6 +3,8 @@
 
 fragment partFrontpageCurrentTopics on Part_no_nav_navno_frontpage_current_topics {
     title
+    bgColor
+    itemColor
     contentList {
         ...contentListShortMixin
     }

@@ -49,7 +49,7 @@
             </config>
         </input>
         <input name="itemColor" type="CustomSelector">
-            <label>Overstyr farge på farge på snarveiene</label>
+            <label>Overstyr farge på snarveiene</label>
             <help-text>Velg fra designsystemets fargepalett, eller en egendefinert hex-code, f.eks. #0451ff</help-text>
             <occurrences minimum="0" maximum="1"/>
             <config>

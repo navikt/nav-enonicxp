@@ -113,7 +113,9 @@ export const buildExternalArchiveContentTreeLevel = (
     });
 
     const liveContentChildren = getLiveContentChildren(liveContent, repo, locale);
-    const allChildren = injectArchiveChildren(liveContentChildren, archiveTreeNode);
+    const allChildren = injectArchiveChildren(liveContentChildren, archiveTreeNode).filter(
+        (child) => child.isLocalized || child.hasLocalizedDescendants
+    );
 
     return {
         current: liveContent

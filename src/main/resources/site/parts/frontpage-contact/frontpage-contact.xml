@@ -1,5 +1,5 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>Seksjon for kontakt-informasjon</display-name>
+    <display-name>Seksjon for kontaktinformasjon</display-name>
     <description>Til bruk på forsider</description>
     <form>
         <input type="TextLine" name="title">
@@ -13,7 +13,7 @@
                 <input name="sharedContactInformation" type="ContentSelector">
                     <occurrences minimum="0" maximum="0"/>
                     <label>Hent tekster fra delte åpningstider</label>
-                    <help-text>Dette vil overstyre eventuelle spesielle åpningstider som du har lagt til nedenfor.</help-text>
+                    <help-text>Dette vil overstyre eventuelle spesielle åpningstider du har lagt til nedenfor.</help-text>
                     <config>
                         <allowContentType>${app}:contact-information</allowContentType>
                     </config>

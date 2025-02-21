@@ -268,6 +268,11 @@ export type ThemedArticlePage = {
   rates?: string;
 
   /**
+   * Velg alle detaljer som skal brukes på denne siden
+   */
+  formDetailsTargets?: Array<string> | string;
+
+  /**
    * Vis kapittelnavigasjon i hver innholdsseksjon
    */
   showSubsectionNavigation: boolean;
