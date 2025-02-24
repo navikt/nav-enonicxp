@@ -1,5 +1,5 @@
 import { logger } from '../../../utils/logging';
-import { OfficeContent } from '../../../office-pages/types';
+import { OfficeContent, OfficePage } from '../../../office-pages/types';
 import { forceArray, removeDuplicatesFilter } from '../../../utils/array-utils';
 import { capitalize } from '../../../utils/string-utils';
 
@@ -7,7 +7,11 @@ const INGRESS_MAX_LENGTH = 500;
 
 const DEFAULT_OFFICE_INGRESS = 'Kontorinformasjon';
 
-const getStedsnavn = (publikumsmottak: any) => {
+type Publikumsmottak = NonNullable<
+    OfficePage['data']['officeNorgData']['data']['brukerkontakt']
+>['publikumsmottak'];
+
+const getStedsnavn = (publikumsmottak: Publikumsmottak) => {
     if (!publikumsmottak || publikumsmottak.length === 0) {
         return [DEFAULT_OFFICE_INGRESS];
     }
@@ -29,7 +33,9 @@ const getStedsnavn = (publikumsmottak: any) => {
             (mottak) =>
                 mottak.besoeksadresse?.type === 'stedsadresse' && !!mottak.besoeksadresse.poststed
         )
-        .map((mottak) => capitalize(mottak.stedsnavn ?? mottak.besoeksadresse?.poststed ?? ''))
+        .map((mottak) =>
+            capitalize(mottak.stedsbeskrivelse ?? mottak.besoeksadresse?.poststed ?? '')
+        )
         .filter(removeDuplicatesFilter())
         .filter((navn) => !!navn);
 };
