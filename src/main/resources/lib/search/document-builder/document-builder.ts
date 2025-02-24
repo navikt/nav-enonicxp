@@ -27,7 +27,7 @@ import {
     getSearchDocumentLanguage,
     getSearchDocumentLanguageRefs,
 } from './field-resolvers/language';
-import { isOfficeContent, isOfficePage } from '../../office-pages/types';
+import { isOfficeContent } from '../../office-pages/types';
 import {
     buildSearchDocumentIngress,
     buildSearchDocumentOfficeIngress,

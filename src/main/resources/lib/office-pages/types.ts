@@ -13,6 +13,3 @@ const OFFICE_PAGE_TYPES = [
 
 export const isOfficeContent = (content: Content): content is OfficeContent =>
     OFFICE_PAGE_TYPES.includes((content as OfficeContent).type);
-
-export const isOfficePage = (content: Content): content is OfficePage =>
-    content.type === 'no.nav.navno:office-page';
