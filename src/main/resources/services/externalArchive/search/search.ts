@@ -24,6 +24,9 @@ export const externalArchiveSearchService = (req: XP.Request) => {
             'no.nav.navno:current-topic-page',
             'no.nav.navno:external-link',
             'no.nav.navno:internal-link',
+            'no.nav.navno:product-details',
+            'no.nav.navno:global-case-time-set',
+            'no.nav.navno:payout-dates',
         ];
 
         const excludeTypes = ` AND NOT type IN (${curatedTypes.map((t) => `"${t}"`).join(',')})`;
