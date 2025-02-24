@@ -110,7 +110,7 @@ class ExternalSearchDocumentBuilder {
                 type: getSearchDocumentContentType(content),
                 createdAt: publishedTime,
                 lastUpdated: content.modifiedTime || publishedTime,
-                keywords: this.getKeywords(content),
+                keywords: forceArray(content.data.keywords),
                 languageRefs: getSearchDocumentLanguageRefs(content),
             },
         };
@@ -175,22 +175,6 @@ class ExternalSearchDocumentBuilder {
                   this.getFirstMatchingFieldValue('ingressKey') ||
                       this.getFirstMatchingFieldValue('textKey')
               );
-    }
-
-    private getKeywords(content: ContentNode): string[] {
-        if (isOfficePage(content)) {
-            const poststeder = forceArray(
-                content.data.officeNorgData.data.brukerkontakt?.publikumsmottak
-            ).map((mottak) => mottak.besoeksadresse?.poststed);
-
-            const adresser = forceArray(
-                content.data.officeNorgData.data.brukerkontakt?.publikumsmottak
-            ).map((mottak) => mottak.besoeksadresse?.gatenavn);
-
-            return [...poststeder, ...adresser].filter((item): item is string => !!item);
-        }
-
-        return forceArray(content.data.keywords);
     }
 
     private getText(): string {
