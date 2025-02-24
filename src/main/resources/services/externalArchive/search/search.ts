@@ -1,4 +1,4 @@
-import { runQuery } from '../../../services/dataQuery/utils/queryRunners';
+import { runExternalArchiveQuery } from '../../../services/dataQuery/utils/queryRunners';
 import { logger } from '../../../lib/utils/logging';
 import { ContentDescriptor } from '../../../types/content-types/content-config';
 
@@ -28,16 +28,14 @@ export const externalArchiveSearchService = (req: XP.Request) => {
 
         const excludeTypes = ` AND NOT type IN (${curatedTypes.map((t) => `"${t}"`).join(',')})`;
 
-        const result = runQuery({
+        const result = runExternalArchiveQuery({
             requestId,
             query: `displayName LIKE "*${query}*"${searchType === 'other' ? excludeTypes : ''}`,
             notExistsFilter: [
                 { notExists: { field: 'x.no-nav-navno.previewOnly.previewOnly' } },
                 { notExists: { field: 'data.externalProductUrl' } },
             ],
-            branch: 'published',
-            batch: 0,
-            ...(searchType === 'curated' ? { types: curatedTypes } : {}),
+            types: searchType === 'curated' ? curatedTypes : [],
         });
 
         const simpleHits = result.hits.map(
