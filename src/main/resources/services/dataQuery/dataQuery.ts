@@ -4,16 +4,11 @@ import { contentTypesInDataQuery } from '../../lib/contenttype-lists';
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { parseJsonToArray } from '../../lib/utils/array-utils';
-import { Branch } from './utils/types';
+import { PublishStatus, publishStatuses } from './utils/types';
 import { runQuery } from './utils/queryRunners';
 
-const validBranches: { [key in Branch]: boolean } = {
-    published: true,
-    unpublished: true,
-    archived: true,
-};
-
-const branchIsValid = (branch: string): branch is Branch => validBranches[branch as Branch];
+const publishStatusIsValid = (status: string): status is PublishStatus =>
+    publishStatuses.includes(status as PublishStatus);
 
 let rejectUntilTime = 0;
 const timeoutPeriodMs = 1000 * 60 * 5;
@@ -42,7 +37,7 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const { branch, requestId, query, types, batch = 0 } = req.params;
+    const { branch: publishStatus, requestId, query, types, batch = 0 } = req.params;
     if (!requestId) {
         logger.info('No request id specified');
         return {
@@ -54,14 +49,12 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    if (!branch || !branchIsValid(branch)) {
-        logger.info(`Invalid branch specified: ${branch}`);
+    if (!publishStatus || !publishStatusIsValid(publishStatus)) {
+        logger.info(`Invalid publish status specified: ${publishStatus}`);
         return {
             status: 400,
             body: {
-                message: `Invalid or missing parameter "branch" - must be one of ${Object.keys(
-                    validBranches
-                ).join(', ')}`,
+                message: `Invalid or missing parameter "branch" - must be one of ${publishStatuses.join(', ')}`,
             },
             contentType: 'application/json',
         };
@@ -83,14 +76,16 @@ export const get = (req: XP.Request) => {
     try {
         logger.info(`Data query: running query for request id ${requestId}, batch ${batch}`);
 
-        const result = runInContext({ branch: branch === 'published' ? 'master' : 'draft' }, () =>
-            runQuery({
-                requestId,
-                query,
-                branch,
-                batch: Number(batch),
-                types: typesParsed,
-            })
+        const result = runInContext(
+            { branch: publishStatus === 'published' ? 'master' : 'draft' },
+            () =>
+                runQuery({
+                    requestId,
+                    query,
+                    publishStatus,
+                    batch: Number(batch),
+                    types: typesParsed,
+                })
         );
 
         logger.info(
@@ -101,7 +96,7 @@ export const get = (req: XP.Request) => {
             status: 200,
             body: {
                 requestId,
-                branch,
+                branch: publishStatus,
                 ...(query && { query }),
                 ...(typesParsed.length > 0 && { types: typesParsed }),
                 total: result.total,
