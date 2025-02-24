@@ -6,9 +6,9 @@ import { getLayersData } from '../../../lib/localization/layers-data';
 import { runInLocaleContext } from '../../../lib/localization/locale-context';
 import { getPublicPath } from '../../../lib/paths/public-path';
 import { getRepoConnection } from '../../../lib/repos/repo-utils';
-import { RunQueryParams, ContentWithLocaleData } from './types';
+import { RunQueryParams, RunExternalArchiveQueryParams, ContentWithLocaleData } from './types';
 import { batchedContentQuery } from '../../../lib/utils/batched-query';
-import { getNodeHitsFromQuery } from './queryBuilder';
+import { getNodeHitsFromQuery, getNodeHitsFromExternalArchiveQuery } from './queryBuilder';
 import { Content } from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
 import cacheLib from '/lib/cache';
@@ -102,7 +102,7 @@ const runContentQuery = (nodeHitsBuckets: RepoIdNodeIdBuckets) => {
 };
 
 export const runQuery = (params: RunQueryParams) => {
-    const { requestId, batch, branch } = params;
+    const { requestId, batch, publishStatus } = params;
 
     const nodeHits = contentIdsCache.get(requestId, () => getNodeHitsFromQuery(params));
 
@@ -113,7 +113,9 @@ export const runQuery = (params: RunQueryParams) => {
     const nodeHitsBuckets = sortMultiRepoNodeHitsToBuckets({ hits: nodeHitsBatch });
 
     const contentHits =
-        branch === 'archived' ? runArchiveQuery(nodeHitsBuckets) : runContentQuery(nodeHitsBuckets);
+        publishStatus === 'archived'
+            ? runArchiveQuery(nodeHitsBuckets)
+            : runContentQuery(nodeHitsBuckets);
 
     if (contentHits.length !== nodeHitsBatch.length) {
         const diff = nodeHitsBatch.filter(
@@ -130,5 +132,49 @@ export const runQuery = (params: RunQueryParams) => {
         hits: contentHits,
         total: nodeHits.length,
         hasMore: nodeHits.length > end,
+    };
+};
+
+export const runExternalArchiveQuery = (params: RunExternalArchiveQueryParams) => {
+    const { requestId, batch = 0 } = params;
+
+    const { masterNodeHits, draftNodeHits } = contentIdsCache.get(requestId, () =>
+        getNodeHitsFromExternalArchiveQuery(params)
+    );
+    const masterNodeHitsBuckets = sortMultiRepoNodeHitsToBuckets({ hits: masterNodeHits });
+    const draftNodeHitsBuckets = sortMultiRepoNodeHitsToBuckets({ hits: draftNodeHits });
+
+    const masterContentHits = runContentQuery(masterNodeHitsBuckets);
+    const draftContentHits = runArchiveQuery(draftNodeHitsBuckets);
+
+    if (masterContentHits.length !== masterNodeHits.length) {
+        const diff = masterNodeHits.filter(
+            (node) => !masterContentHits.find((hit) => hit._id === node.id)
+        );
+        logger.warning(
+            `Data query: missing results from master content query for ${
+                diff.length
+            } ids: ${JSON.stringify(diff)}`
+        );
+    }
+
+    if (draftContentHits.length !== draftNodeHits.length) {
+        const diff = draftNodeHits.filter(
+            (node) => !draftContentHits.find((hit) => hit._id === node.id)
+        );
+        logger.warning(
+            `Data query: missing results from master content query for ${
+                diff.length
+            } ids: ${JSON.stringify(diff)}`
+        );
+    }
+
+    const contentHits = [...masterContentHits, ...draftContentHits];
+    const nodeHits = [...masterNodeHits, ...draftNodeHits];
+
+    return {
+        hits: contentHits,
+        total: nodeHits.length,
+        hasMore: false,
     };
 };
