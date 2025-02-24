@@ -11,22 +11,22 @@ type Publikumsmottak = NonNullable<
     OfficePage['data']['officeNorgData']['data']['brukerkontakt']
 >['publikumsmottak'];
 
-const getStedsnavn = (publikumsmottak: Publikumsmottak) => {
+const getSted = (publikumsmottak: Publikumsmottak) => {
     if (!publikumsmottak || publikumsmottak.length === 0) {
         return [DEFAULT_OFFICE_INGRESS];
     }
 
-    // For offices with only one publikumsmottak, the stedsnavn
+    // For offices with only one publikumsmottak, the 'stedsbeskrivelse' key
     // will not be actively used and may contain strange texts
-    // (ie "Lesja, inngang ved postkontoret rundt hjørnet").
+    // (ie "Andeby torg, inngang ved postkontoret rundt hjørnet").
     // In these cases, use the postal city.
     if (publikumsmottak.length === 1) {
         return [capitalize(publikumsmottak[0].besoeksadresse?.poststed ?? '')];
     }
 
-    // For offices with multiple publikumsmottak, try stedsnavn and then poststed if
-    // stedsnavn doesn't exist. This makes the display match the tagline on the office page,
-    // and in these cases the stedsnavn field in Norg is already cleaned since it's
+    // For offices with multiple publikumsmottak, try stedsbeskrivelse and then poststed if
+    // stedsbeskrivelse doesn't exist. This makes the display match the tagline on the office page,
+    // and in these cases the stedsbeskrivelse field in Norg is already cleaned since it's
     // used in the tabs for the office page.
     return forceArray(publikumsmottak)
         .filter(
@@ -60,7 +60,7 @@ export const buildSearchDocumentOfficeIngress = (content: OfficeContent) => {
         return officeData.navn; // i.e "NAV Hjelpemiddelsentral i Oslo"
     }
 
-    const steder = getStedsnavn(officeData.brukerkontakt?.publikumsmottak);
+    const steder = getSted(officeData.brukerkontakt?.publikumsmottak);
 
     if (steder.length === 0) {
         return DEFAULT_OFFICE_INGRESS;
