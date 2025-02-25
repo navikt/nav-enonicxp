@@ -31,16 +31,16 @@ const ONE_YEAR_MS = 1000 * 3600 * 24 * 365;
 const SIX_HOURS_MS = 1000 * 3600 * 6;
 
 const REDIRECTS_NODE_PATH = `/content${REDIRECTS_ROOT_PATH}/`;
+const INNBOKS_NODE_PATH = `/content${NAVNO_ROOT_PATH}/person/kontakt-oss/gi-beskjed-innbokser/`;
+const ADMIN_NODE_PATH = `/content${NAVNO_ROOT_PATH}/admin/`;
 const STATISTIKK_NODE_PATH = `/content${NAVNO_ROOT_PATH}/no/nav-og-samfunn/statistikk/`;
 const KUNNSKAP_NODE_PATH = `/content${NAVNO_ROOT_PATH}/no/nav-og-samfunn/kunnskap/`;
 
-const CONTENT_QUERY_SEGMENT = `_path LIKE '/content${NAVNO_ROOT_PATH}/*' AND _path NOT LIKE '${REDIRECTS_NODE_PATH}*'`;
+const CONTENT_QUERY_SEGMENT = `_path LIKE '/content${NAVNO_ROOT_PATH}/*' AND _path NOT LIKE '${REDIRECTS_NODE_PATH}*' AND _path NOT LIKE '${INNBOKS_NODE_PATH}*' AND _path NOT LIKE '${ADMIN_NODE_PATH}*'`;
 const STATISTIKK_QUERY_SEGMENT = `type LIKE '${APP_DESCRIPTOR}:large-table' OR ((_path LIKE '${STATISTIKK_NODE_PATH}*' OR _path LIKE '${KUNNSKAP_NODE_PATH}*') AND type LIKE '${APP_DESCRIPTOR}:main-article*')`;
 const NEWS_AND_PRESS_RELEASES_QUERY_SEGMENT = `type LIKE '${APP_DESCRIPTOR}:main-article*' AND (data.contentType='news' OR data.contentType='pressRelease')`;
 
 const EXCLUDED_IF_OLD_QUERY_SEGMENT = `(${STATISTIKK_QUERY_SEGMENT}) OR (${NEWS_AND_PRESS_RELEASES_QUERY_SEGMENT})`;
-
-const ignoredPaths = new Set(['/admin']);
 
 // Prevent concurrent queries
 let isRunning = false;
@@ -120,9 +120,7 @@ const getPathsToRender = (isTest?: boolean) => {
         query: `_path LIKE '${REDIRECTS_NODE_PATH}*'`,
     }).hits.map((content) => stripRedirectsPathPrefix(content._path));
 
-    const allPaths = removeDuplicates([...contentPaths, ...redirectPaths]);
-    const filteredPaths = allPaths.filter((path) => !ignoredPaths.has(path));
-    return filteredPaths;
+    return removeDuplicates([...contentPaths, ...redirectPaths]);
 };
 
 const getFromCache = (isTest: boolean) => {
