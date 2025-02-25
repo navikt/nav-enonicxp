@@ -26,7 +26,6 @@ jobs:
     permissions:
       contents: write
       id-token: write
-    if: "!contains(github.event.head_commit.modified, 'README.md')"
     steps:
       - name: Generate unique tag name
         run: echo "TAG_NAME=$(date +%s)" >> $GITHUB_ENV
