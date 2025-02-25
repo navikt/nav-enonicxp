@@ -46,8 +46,12 @@ const isContentUsingExternalProductUrl = (content: Content) => {
     return !!content.data.externalProductUrl;
 };
 
-export const isContentPreviewOrUsingExternalProductUrl = (content: Content) => {
-    return isContentPreviewOnly(content) || isContentUsingExternalProductUrl(content);
+export const isExcludedFromExternalArchive = (content: Content) => {
+    return (
+        isContentPreviewOnly(content) ||
+        isContentUsingExternalProductUrl(content) ||
+        isContentNoIndex(content)
+    );
 };
 
 export const getContentLocaleRedirectTarget = (content: Content) => {

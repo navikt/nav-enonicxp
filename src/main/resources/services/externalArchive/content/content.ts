@@ -11,7 +11,7 @@ import { runInLocaleContext } from '../../../lib/localization/locale-context';
 import { getArchivedContent } from '../../../lib/external-archive/get-archived-content';
 
 type Response = {
-    contentRaw: Content & { originalContentTypeName: string | undefined };
+    contentRaw: Content & { locale: string; originalContentTypeName: string | undefined };
     contentRenderProps?: Record<string, unknown> | null;
     versions: VersionReferenceEnriched[];
 };
@@ -96,7 +96,7 @@ export const externalArchiveContentService = (req: XP.Request) => {
     const contentRenderProps = getContentRenderProps(content, locale, !!versionId, isArchived);
 
     const versions = getPublishedAndModifiedVersions(content._id, locale).filter(
-        (v) => !v.isPreviewOrForward
+        (v) => !v.shouldExclude
     );
 
     const originalContentTypeName = getOriginalContentTypeName(content, versions);
@@ -105,7 +105,7 @@ export const externalArchiveContentService = (req: XP.Request) => {
         status: 200,
         contentType: 'application/json',
         body: {
-            contentRaw: { ...content, originalContentTypeName },
+            contentRaw: { ...content, originalContentTypeName, locale },
             contentRenderProps,
             versions,
         } satisfies Response,
