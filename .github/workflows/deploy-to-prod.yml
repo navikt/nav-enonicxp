@@ -20,7 +20,7 @@ jobs:
       NAIS_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
 
   tag:
-    if: contains(github.head_ref, 'release-') && contains(github.base_ref, 'main') && github.event.action == 'closed' && github.event.pull_request.merged == true
+    if: contains(github.base_ref, 'main') && github.event.action == 'closed' && github.event.pull_request.merged == true
     needs: deploy
     runs-on: ubuntu-latest
     outputs:
