@@ -27,14 +27,19 @@ jobs:
       contents: write
       id-token: write
     steps:
-      - name: Generate unique tag name
-        run: echo "TAG_NAME=$(date +%s)" >> $GITHUB_ENV
+      - name: Generate release tag
+        run: |
+          if [[ "${{ github.head_ref }}" != "" ]]; then
+            echo "TAG_NAME=pr-${{ github.head_ref }}" >> $GITHUB_ENV
+          else
+            echo "TAG_NAME=release-${{ github.ref_name }}" >> $GITHUB_ENV
+          fi
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           target_commitish: main
-          tag_name: release/prod@${{ env.TAG_NAME }} # Generates a unique tag using timestamp
-          name: Release ${{ github.head_ref }}
+          tag_name: ${{ env.TAG_NAME }}
+          name: "Release for ${{ env.TAG_NAME }}"
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }} # This is a PAT with repo permissions
