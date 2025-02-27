@@ -18,7 +18,6 @@ export type RunExternalArchiveQueryParams = {
     batch?: number;
     query: string;
     types: ContentDescriptor[];
-    notExistsFilter: NotExistsFilter[];
 };
 
 export type ContentWithLocaleData = Content & { layerLocale: string; publicPath: string };

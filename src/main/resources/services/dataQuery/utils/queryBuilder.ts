@@ -76,7 +76,6 @@ export const getNodeHitsFromExternalArchiveQuery = ({
     query,
     types,
     requestId,
-    notExistsFilter,
 }: RunExternalArchiveQueryParams) => {
     const getQueryParams = (branch: RepoBranch) => {
         return {
@@ -86,7 +85,7 @@ export const getNodeHitsFromExternalArchiveQuery = ({
             filters: {
                 boolean: {
                     must: [
-                        ...notExistsFilter,
+                        { notExists: { field: 'data.externalProductUrl' } },
                         {
                             hasValue: {
                                 field: 'type',
@@ -100,6 +99,15 @@ export const getNodeHitsFromExternalArchiveQuery = ({
                             hasValue: {
                                 field: 'inherit',
                                 values: ['CONTENT'],
+                            },
+                        },
+                    ],
+                    should: [
+                        {
+                            notExists: { field: 'x.no-nav-navno.previewOnly.previewOnly' },
+                            hasValue: {
+                                field: 'x.no-nav-navno.previewOnly.previewOnly',
+                                values: ['false'],
                             },
                         },
                     ],
