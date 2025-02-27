@@ -15,7 +15,6 @@ export type RunQueryParams = {
 
 export type RunExternalArchiveQueryParams = {
     requestId: string;
-    batch?: number;
     query: string;
     types: ContentDescriptor[];
 };

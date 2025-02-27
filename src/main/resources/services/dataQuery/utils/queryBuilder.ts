@@ -3,6 +3,8 @@ import { RunQueryParams, RunExternalArchiveQueryParams } from './types';
 import { batchedMultiRepoNodeQuery } from '../../../lib/utils/batched-query';
 import { logger } from '../../../lib/utils/logging';
 import { RepoBranch } from '../../../types/common';
+import * as nodeLib from '/lib/xp/node';
+import { getLayersData } from '../../../lib/localization/layers-data';
 
 const buildQuery = (queryStrings: (string | undefined)[]) =>
     queryStrings.filter(Boolean).join(' AND ');
@@ -133,4 +135,65 @@ export const getNodeHitsFromExternalArchiveQuery = ({
     );
 
     return { masterNodeHits, draftNodeHits };
+};
+
+export const multigetNodeHitsFromExternalArchiveQuery = ({
+    query,
+    types,
+    requestId,
+}: RunExternalArchiveQueryParams) => {
+    const getQueryParams = (branch: RepoBranch) => {
+        return {
+            query: buildQuery([query]),
+            start: 0,
+            count: 100000,
+            filters: {
+                boolean: {
+                    must: [
+                        { notExists: { field: 'data.externalProductUrl' } },
+                        {
+                            hasValue: {
+                                field: 'type',
+                                values: types,
+                            },
+                        },
+                        ...(branch === 'draft' ? [{ exists: { field: 'publish.first' } }] : []),
+                    ],
+                    mustNot: [
+                        {
+                            hasValue: {
+                                field: 'inherit',
+                                values: ['CONTENT'],
+                            },
+                        },
+                    ],
+                    should: [
+                        {
+                            notExists: { field: 'x.no-nav-navno.previewOnly.previewOnly' },
+                            hasValue: {
+                                field: 'x.no-nav-navno.previewOnly.previewOnly',
+                                values: ['false'],
+                            },
+                        },
+                    ],
+                },
+            },
+        };
+    };
+
+    const layerDataDraft = getLayersData().sources['draft'];
+    const masterDataDraft = getLayersData().sources['master'];
+
+    const repoConnection = nodeLib.multiRepoConnect({
+        sources: [...layerDataDraft, ...masterDataDraft],
+    });
+
+    const nodeHits = batchedMultiRepoNodeQuery({
+        repo: repoConnection,
+        queryParams: getQueryParams('draft'),
+    }).hits;
+
+    logger.info(`Data query: Total hits for request ${requestId}: ${nodeHits.length}`);
+
+    return nodeHits;
 };

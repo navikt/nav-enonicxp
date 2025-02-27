@@ -8,7 +8,11 @@ import { getPublicPath } from '../../../lib/paths/public-path';
 import { getRepoConnection } from '../../../lib/repos/repo-utils';
 import { RunQueryParams, RunExternalArchiveQueryParams, ContentWithLocaleData } from './types';
 import { batchedContentQuery } from '../../../lib/utils/batched-query';
-import { getNodeHitsFromQuery, getNodeHitsFromExternalArchiveQuery } from './queryBuilder';
+import {
+    getNodeHitsFromQuery,
+    getNodeHitsFromExternalArchiveQuery,
+    multigetNodeHitsFromExternalArchiveQuery,
+} from './queryBuilder';
 import { Content } from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
 import cacheLib from '/lib/cache';
@@ -136,42 +140,22 @@ export const runQuery = (params: RunQueryParams) => {
 };
 
 export const runExternalArchiveQuery = (params: RunExternalArchiveQueryParams) => {
-    const { requestId, batch = 0 } = params;
+    const { requestId } = params;
 
-    const { masterNodeHits, draftNodeHits } = contentIdsCache.get(requestId, () =>
-        getNodeHitsFromExternalArchiveQuery(params)
+    const nodeHits = contentIdsCache.get(requestId, () =>
+        multigetNodeHitsFromExternalArchiveQuery(params)
     );
-    const masterNodeHitsBuckets = sortMultiRepoNodeHitsToBuckets({ hits: masterNodeHits });
-    const draftNodeHitsBuckets = sortMultiRepoNodeHitsToBuckets({ hits: draftNodeHits });
+    const nodeHitsBuckets = sortMultiRepoNodeHitsToBuckets({ hits: nodeHits });
 
-    const masterContentHits = runContentQuery(masterNodeHitsBuckets);
-    const draftContentHits = runArchiveQuery(draftNodeHitsBuckets);
-
-    if (masterContentHits.length !== masterNodeHits.length) {
-        const diff = masterNodeHits.filter(
-            (node) => !masterContentHits.find((hit) => hit._id === node.id)
-        );
+    const contentHits = runContentQuery(nodeHitsBuckets);
+    if (contentHits.length !== nodeHits.length) {
+        const diff = nodeHits.filter((node) => !contentHits.find((hit) => hit._id === node.id));
         logger.warning(
             `Data query: missing results from master content query for ${
                 diff.length
             } ids: ${JSON.stringify(diff)}`
         );
     }
-
-    if (draftContentHits.length !== draftNodeHits.length) {
-        const diff = draftNodeHits.filter(
-            (node) => !draftContentHits.find((hit) => hit._id === node.id)
-        );
-        logger.warning(
-            `Data query: missing results from master content query for ${
-                diff.length
-            } ids: ${JSON.stringify(diff)}`
-        );
-    }
-
-    const contentHits = [...masterContentHits, ...draftContentHits];
-    const nodeHits = [...masterNodeHits, ...draftNodeHits];
-
     return {
         hits: contentHits,
         total: nodeHits.length,
