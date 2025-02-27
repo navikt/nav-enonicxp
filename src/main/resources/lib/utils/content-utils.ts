@@ -47,7 +47,11 @@ const isContentUsingExternalProductUrl = (content: Content) => {
 };
 
 export const isExcludedFromExternalArchive = (content: Content) => {
-    return isContentPreviewOnly(content) || isContentUsingExternalProductUrl(content);
+    return (
+        isContentPreviewOnly(content) ||
+        isContentUsingExternalProductUrl(content) ||
+        content.data.customPath.includes('utkast')
+    );
 };
 
 export const getContentLocaleRedirectTarget = (content: Content) => {
