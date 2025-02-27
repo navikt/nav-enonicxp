@@ -83,7 +83,14 @@ class ArchiveContentTree {
             count: this.BATCH_COUNT,
             filters: {
                 boolean: {
-                    mustNot: NON_LOCALIZED_QUERY_FILTER,
+                    mustNot: [
+                        ...NON_LOCALIZED_QUERY_FILTER,
+                        {
+                            exists: {
+                                field: 'data._layerMigration',
+                            },
+                        },
+                    ],
                     must: [
                         {
                             exists: {

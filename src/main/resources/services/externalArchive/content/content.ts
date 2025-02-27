@@ -1,4 +1,4 @@
-import { Content } from '/lib/xp/content';
+import { Content, getType } from '/lib/xp/content';
 import { runSitecontentGuillotineQuery } from '../../../lib/guillotine/queries/run-sitecontent-query';
 import { getLayersData, isValidLocale } from '../../../lib/localization/layers-data';
 import { runInTimeTravelContext } from '../../../lib/time-travel/run-with-time-travel';
@@ -11,7 +11,7 @@ import { runInLocaleContext } from '../../../lib/localization/locale-context';
 import { getArchivedContent } from '../../../lib/external-archive/get-archived-content';
 
 type Response = {
-    contentRaw: Content;
+    contentRaw: Content & { locale: string; originalContentTypeName: string | undefined };
     contentRenderProps?: Record<string, unknown> | null;
     versions: VersionReferenceEnriched[];
 };
@@ -82,6 +82,7 @@ export const externalArchiveContentService = (req: XP.Request) => {
         versionId,
         locale,
     });
+
     if (!content) {
         return {
             status: 404,
@@ -94,15 +95,31 @@ export const externalArchiveContentService = (req: XP.Request) => {
 
     const contentRenderProps = getContentRenderProps(content, locale, !!versionId, isArchived);
 
-    const versions = getPublishedAndModifiedVersions(content._id, locale);
+    const versions = getPublishedAndModifiedVersions(content._id, locale).filter(
+        (v) => !v.shouldExclude
+    );
+
+    const originalContentTypeName = getOriginalContentTypeName(content, versions);
 
     return {
         status: 200,
         contentType: 'application/json',
         body: {
-            contentRaw: content,
+            contentRaw: { ...content, originalContentTypeName, locale },
             contentRenderProps,
             versions,
         } satisfies Response,
     };
+};
+
+const getOriginalContentTypeName = (
+    content: Content,
+    versions: VersionReferenceEnriched[]
+): string | undefined => {
+    const linkArray = ['no.nav.navno:external-link', 'no.nav.navno:internal-link'];
+    if (!linkArray.includes(content.type)) {
+        return undefined;
+    }
+    const versionType = versions.find((v) => !linkArray.includes(v.type))?.type;
+    return versionType && getType(versionType)?.displayName;
 };

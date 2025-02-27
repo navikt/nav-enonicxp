@@ -16,6 +16,7 @@ const getContentNode = (node: NodeEventData) => {
     });
 
     const content = repo.get<Content>(node.id);
+
     if (!content) {
         logger.info(`Content for ${node.id} not found in repo ${node.repo}!`);
         return null;
@@ -28,11 +29,21 @@ const getContentNode = (node: NodeEventData) => {
     return content;
 };
 
-export const getPrepublishJobName = (contentId: string, repoId: string, suffix?: string) =>
-    `prepublish-invalidate-${contentId}-${repoId}${suffix ? `-${suffix}` : ''}`;
+// Some old jobs do not have repoId in the name, so this has to be optional
+// when building the node name for the job.
+const getCoreJobName = (contentId: string, repoId?: string, suffix?: string) => {
+    const repoSlug = repoId ? `-${repoId}` : '';
+    const suffixSlug = suffix ? `-${suffix}` : '';
+    return `${contentId}${repoSlug}${suffixSlug}`;
+};
 
-export const getUnpublishJobName = (contentId: string, repoId: string, suffix?: string) =>
-    `unpublish-${contentId}-${repoId}${suffix ? `-${suffix}` : ''}`;
+export const getPrepublishJobName = (contentId: string, repoId?: string, suffix?: string) => {
+    return `prepublish-invalidate-${getCoreJobName(contentId, repoId, suffix)}`;
+};
+
+export const getUnpublishJobName = (contentId: string, repoId?: string, suffix?: string) => {
+    return `unpublish-${getCoreJobName(contentId, repoId, suffix)}`;
+};
 
 export const scheduleCacheInvalidation = ({
     jobName,

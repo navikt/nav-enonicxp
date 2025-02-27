@@ -45,6 +45,13 @@ type SiteInfo = {
 
 const isFuture = (dateTime?: string) => dateTime && Date.now() < new Date(dateTime).getTime();
 
+const getScheduledJob = (jobName: string) => {
+    return runInContext({ asAdmin: true }, () => {
+        const scheduledJob = schedulerLib.get({ name: jobName });
+        return scheduledJob;
+    });
+};
+
 // TODO: support for content from layers
 const getPublishInfo = (content: Content): PublishInfo => {
     const publish: PublishInfo = {
@@ -52,18 +59,22 @@ const getPublishInfo = (content: Content): PublishInfo => {
     };
 
     if (isFuture(publish.from)) {
-        const scheduledJob = schedulerLib.get({
-            name: getPrepublishJobName(content._id, CONTENT_ROOT_REPO_ID),
-        });
+        const jobName = getPrepublishJobName(content._id);
+        const jobNameWithRepo = getPrepublishJobName(content._id, CONTENT_ROOT_REPO_ID);
+
+        const scheduledJob = getScheduledJob(jobNameWithRepo) || getScheduledJob(jobName);
+
         if (scheduledJob) {
             publish.scheduledFrom = scheduledJob.schedule.value;
         }
     }
 
     if (isFuture(publish.to)) {
-        const scheduledJob = schedulerLib.get({
-            name: getUnpublishJobName(content._id, CONTENT_ROOT_REPO_ID),
-        });
+        const jobName = getUnpublishJobName(content._id);
+        const jobNameWithRepo = getUnpublishJobName(content._id, CONTENT_ROOT_REPO_ID);
+
+        const scheduledJob = getScheduledJob(jobNameWithRepo) || getScheduledJob(jobName);
+
         if (scheduledJob) {
             publish.scheduledTo = scheduledJob.schedule.value;
         }

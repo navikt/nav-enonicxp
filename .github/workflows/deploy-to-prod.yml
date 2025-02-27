@@ -1,12 +1,12 @@
 name: Deploy to prod
 on:
-  release:
-    types: [released]
+  push:
+    branches:
+      - main
 
 jobs:
   deploy:
     name: Deploy to prod
-    if: github.event.release.target_commitish == 'master'
     uses: ./.github/workflows/.build-and-deploy.yml
     permissions:
       contents: read
@@ -18,3 +18,45 @@ jobs:
       xpVersion: '7.14.4'
     secrets:
       NAIS_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+
+  tag:
+    needs: deploy
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    steps:
+      - name: Extract branch tag
+        id: tag
+        run: |
+          BRANCH=${{ github.head_ref }}
+          TAG="${BRANCH//release-/""}"
+          echo $TAG
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+  release:
+    name: Create a new release
+    needs:
+      - tag
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    env:
+      TAG: ${{ needs.TAG.outputs.tag }}
+    steps:
+      - name: Generate release tag
+        run: |
+          if [[ "${{ github.head_ref }}" != "" ]]; then
+            echo "TAG_NAME=pr-${{ github.head_ref }}" >> $GITHUB_ENV
+          else
+            echo "TAG_NAME=release-${{ github.ref_name }}" >> $GITHUB_ENV
+          fi
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          target_commitish: main
+          tag_name: ${{ env.TAG_NAME }}
+          name: "Release for ${{ env.TAG_NAME }}"
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }} # This is a PAT with repo permissions

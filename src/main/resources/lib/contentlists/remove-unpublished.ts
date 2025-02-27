@@ -1,4 +1,5 @@
 import * as contentLib from '/lib/xp/content';
+import * as contextLib from '/lib/xp/context';
 import { Content } from '/lib/xp/content';
 import * as eventLib from '/lib/xp/event';
 import { runInContext } from '../context/run-in-context';
@@ -8,6 +9,7 @@ import { forceArray } from '../utils/array-utils';
 import { CONTENT_REPO_PREFIX } from '../constants';
 import { NavNoDescriptor } from '../../types/common';
 import { isMainDatanode } from '../cluster-utils/main-datanode';
+import { getRepoConnection, isDraftAndMasterSameVersion } from '../repos/repo-utils';
 
 type ContentTypesWithContentLists = NavNoDescriptor<'content-list'> | NavNoDescriptor<'page-list'>;
 
@@ -47,10 +49,20 @@ const removeUnpublishedFromContentList = (
     let numRemoved = 0;
 
     try {
-        runInContext({ branch: 'draft', asAdmin: true }, () =>
-            contentLib.modify<ContentTypesWithContentLists>({
+        runInContext({ branch: 'draft', asAdmin: true }, () => {
+            const context = contextLib.get();
+            const repoConnection = getRepoConnection({
+                branch: 'draft',
+                repoId: context.repository,
+            });
+
+            const shouldPushChanges = isDraftAndMasterSameVersion(
+                contentList._id,
+                context.repository
+            );
+
+            repoConnection.modify<Content>({
                 key: contentList._id,
-                requireValid: false,
                 editor: (content) => {
                     const sectionContents = forceArray(content.data?.sectionContents);
 
@@ -73,8 +85,22 @@ const removeUnpublishedFromContentList = (
 
                     return content;
                 },
-            })
-        );
+            });
+
+            if (shouldPushChanges) {
+                repoConnection.commit({ keys: contentList._id });
+                repoConnection.push({
+                    key: contentList._id,
+                    target: 'master',
+                    includeChildren: false,
+                    resolve: false,
+                });
+            } else {
+                log.info(
+                    `Removed unpublished content from content list ${contentList._id}, but draft and master are out of sync, so not pushing changes.`
+                );
+            }
+        });
     } catch (e) {
         logger.error(`Error while modifying ${contentList._id} - ${e}`);
         return 0;

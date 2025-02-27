@@ -4,6 +4,7 @@ import { externalArchiveContentService } from './content/content';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { externalArchiveContentIconService } from './contentIcon/contentIcon';
 import { externalArchiveAttachmentService } from './attachment/attachment';
+import { externalArchiveSearchService } from './search/search';
 
 const getRequestHandler = (req: XP.Request) => {
     const subPath = getServiceRequestSubPath(req);
@@ -17,6 +18,8 @@ const getRequestHandler = (req: XP.Request) => {
             return externalArchiveContentIconService;
         case 'attachment':
             return externalArchiveAttachmentService;
+        case 'search':
+            return externalArchiveSearchService;
         default:
             return null;
     }

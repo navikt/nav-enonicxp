@@ -37,6 +37,23 @@ export const isContentPreviewOnly = (content: Content) => {
     return !!content.x?.[COMPONENT_APP_KEY]?.previewOnly?.previewOnly;
 };
 
+const isContentUsingExternalProductUrl = (content: Content) => {
+    const hasExternalProductUrl = content.data.externalProductUrl;
+    if (!hasExternalProductUrl) return false;
+    if (content.data.customPath) {
+        return `https://www.nav.no${content.data.customPath}` !== content.data.externalProductUrl;
+    }
+    return !!content.data.externalProductUrl;
+};
+
+export const isExcludedFromExternalArchive = (content: Content) => {
+    return (
+        isContentPreviewOnly(content) ||
+        isContentUsingExternalProductUrl(content) ||
+        isContentNoIndex(content)
+    );
+};
+
 export const getContentLocaleRedirectTarget = (content: Content) => {
     return content.x?.[COMPONENT_APP_KEY]?.redirectToLayer?.locale as string | undefined;
 };

@@ -2,7 +2,7 @@ import { getRepoConnection } from '../repos/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { Content } from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
-import { isArchivedContentNode } from '../utils/content-utils';
+import { isArchivedContentNode, isExcludedFromExternalArchive } from '../utils/content-utils';
 
 const transformRepoContentNode = (node: RepoNode<Content>): Content => {
     const { _indexConfig, _inheritsPermissions, _permissions, _childOrder, ...content } = node;
@@ -83,6 +83,13 @@ export const getContentForExternalArchive = ({
     const contentRequested = versionId
         ? getContentVersion(contentId, versionId, locale)
         : getLastPublishedContentVersion(contentId, locale);
+
+    if (contentRequested && isExcludedFromExternalArchive(contentRequested)) {
+        return {
+            content: null,
+            isArchived,
+        };
+    }
 
     return {
         content: contentRequested,
