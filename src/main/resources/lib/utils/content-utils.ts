@@ -47,11 +47,7 @@ const isContentUsingExternalProductUrl = (content: Content) => {
 };
 
 export const isExcludedFromExternalArchive = (content: Content) => {
-    return (
-        isContentPreviewOnly(content) ||
-        isContentUsingExternalProductUrl(content) ||
-        isContentNoIndex(content)
-    );
+    return isContentPreviewOnly(content) || isContentUsingExternalProductUrl(content);
 };
 
 export const getContentLocaleRedirectTarget = (content: Content) => {
