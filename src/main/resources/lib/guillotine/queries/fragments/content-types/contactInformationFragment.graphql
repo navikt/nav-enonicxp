@@ -9,6 +9,7 @@ fragment contentContactInformation on no_nav_navno_ContactInformation {
                 title
                 text
                 alertText
+                hideMoreLink
                 regularOpeningHours {
                     hours {
                         dayName
