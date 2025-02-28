@@ -130,17 +130,7 @@ export const getNodeHitsFromExternalArchiveQuery = ({
         queryParams: getQueryParams('draft'),
     }).hits;
 
-    type ResultAndRepo = nodeLib.NodeQueryResultHit & {
-        repoId: string;
-        branch: string;
-    };
-
-    function onlyUnique(value: ResultAndRepo, index: number, array: ResultAndRepo[]) {
-        return array.indexOf(value) === index;
-    }
-
-    // usage example:
-    const uniqueNodeHits = nodeHits.filter(onlyUnique);
+    const uniqueNodeHits = [...new Map(nodeHits.map((node) => [node.id, node])).values()];
 
     logger.info(`Data query: Total hits for request ${requestId}: ${uniqueNodeHits.length}`);
 
