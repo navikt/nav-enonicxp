@@ -130,8 +130,10 @@ export const getNodeHitsFromExternalArchiveQuery = ({
         queryParams: getQueryParams('draft'),
     }).hits;
 
-    const uniqueNodeHits = [...new Map(nodeHits.map((node) => [node.id, node])).values()];
-
+    const uniqueNodeHits = nodeHits.filter(
+        (nodeHit, index, nodehitslist) =>
+            index === nodehitslist.findIndex((t) => t.id === nodeHit.id)
+    );
     logger.info(`Data query: Total hits for request ${requestId}: ${uniqueNodeHits.length}`);
 
     return uniqueNodeHits;
