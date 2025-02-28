@@ -118,69 +118,6 @@ export const getNodeHitsFromExternalArchiveQuery = ({
         };
     };
 
-    const masterRepoConnection = getLayersMultiConnection('master');
-    const masterNodeHits = batchedMultiRepoNodeQuery({
-        repo: masterRepoConnection,
-        queryParams: getQueryParams('master'),
-    }).hits;
-
-    const draftRepoConnection = getLayersMultiConnection('draft');
-    const draftNodeHits = batchedMultiRepoNodeQuery({
-        repo: draftRepoConnection,
-        queryParams: getQueryParams('draft'),
-    }).hits;
-
-    logger.info(
-        `Data query: Total hits for request ${requestId}: ${masterNodeHits.length + draftNodeHits.length}`
-    );
-
-    return { masterNodeHits, draftNodeHits };
-};
-
-export const multigetNodeHitsFromExternalArchiveQuery = ({
-    query,
-    types,
-    requestId,
-}: RunExternalArchiveQueryParams) => {
-    const getQueryParams = (branch: RepoBranch) => {
-        return {
-            query: buildQuery([query]),
-            start: 0,
-            count: 100000,
-            filters: {
-                boolean: {
-                    must: [
-                        { notExists: { field: 'data.externalProductUrl' } },
-                        {
-                            hasValue: {
-                                field: 'type',
-                                values: types,
-                            },
-                        },
-                        ...(branch === 'draft' ? [{ exists: { field: 'publish.first' } }] : []),
-                    ],
-                    mustNot: [
-                        {
-                            hasValue: {
-                                field: 'inherit',
-                                values: ['CONTENT'],
-                            },
-                        },
-                    ],
-                    should: [
-                        {
-                            notExists: { field: 'x.no-nav-navno.previewOnly.previewOnly' },
-                            hasValue: {
-                                field: 'x.no-nav-navno.previewOnly.previewOnly',
-                                values: ['false'],
-                            },
-                        },
-                    ],
-                },
-            },
-        };
-    };
-
     const layerDataDraft = getLayersData().sources['draft'];
     const masterDataDraft = getLayersData().sources['master'];
 
@@ -193,7 +130,19 @@ export const multigetNodeHitsFromExternalArchiveQuery = ({
         queryParams: getQueryParams('draft'),
     }).hits;
 
-    logger.info(`Data query: Total hits for request ${requestId}: ${nodeHits.length}`);
+    type ResultAndRepo = nodeLib.NodeQueryResultHit & {
+        repoId: string;
+        branch: string;
+    };
 
-    return nodeHits;
+    function onlyUnique(value: ResultAndRepo, index: number, array: ResultAndRepo[]) {
+        return array.indexOf(value) === index;
+    }
+
+    // usage example:
+    const uniqueNodeHits = nodeHits.filter(onlyUnique);
+
+    logger.info(`Data query: Total hits for request ${requestId}: ${uniqueNodeHits.length}`);
+
+    return uniqueNodeHits;
 };

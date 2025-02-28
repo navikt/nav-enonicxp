@@ -8,11 +8,7 @@ import { getPublicPath } from '../../../lib/paths/public-path';
 import { getRepoConnection } from '../../../lib/repos/repo-utils';
 import { RunQueryParams, RunExternalArchiveQueryParams, ContentWithLocaleData } from './types';
 import { batchedContentQuery } from '../../../lib/utils/batched-query';
-import {
-    getNodeHitsFromQuery,
-    getNodeHitsFromExternalArchiveQuery,
-    multigetNodeHitsFromExternalArchiveQuery,
-} from './queryBuilder';
+import { getNodeHitsFromQuery, getNodeHitsFromExternalArchiveQuery } from './queryBuilder';
 import { Content } from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
 import cacheLib from '/lib/cache';
@@ -143,7 +139,7 @@ export const runExternalArchiveQuery = (params: RunExternalArchiveQueryParams) =
     const { requestId } = params;
 
     const nodeHits = contentIdsCache.get(requestId, () =>
-        multigetNodeHitsFromExternalArchiveQuery(params)
+        getNodeHitsFromExternalArchiveQuery(params)
     );
 
     const { repoIdToLocaleMap } = getLayersData();
