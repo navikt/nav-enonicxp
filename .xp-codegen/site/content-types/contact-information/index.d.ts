@@ -291,6 +291,11 @@ export type ContactInformation = {
           alertText?: string;
 
           /**
+           * Ikke vis lenken "Flere telefonnummer og tastevalg"
+           */
+          hideMoreLink: boolean;
+
+          /**
            * Ordinære åpningstider
            */
           regularOpeningHours?: {
