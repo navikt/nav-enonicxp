@@ -34,10 +34,6 @@ export const externalArchiveSearchService = (req: XP.Request) => {
         const result = runExternalArchiveQuery({
             requestId,
             query: `displayName LIKE "*${query}*"${searchType === 'other' ? excludeTypes : ''}`,
-            notExistsFilter: [
-                { notExists: { field: 'x.no-nav-navno.previewOnly.previewOnly' } },
-                { notExists: { field: 'data.externalProductUrl' } },
-            ],
             types: searchType === 'curated' ? curatedTypes : [],
         });
 

@@ -136,42 +136,39 @@ export const runQuery = (params: RunQueryParams) => {
 };
 
 export const runExternalArchiveQuery = (params: RunExternalArchiveQueryParams) => {
-    const { requestId, batch = 0 } = params;
+    const { requestId } = params;
 
-    const { masterNodeHits, draftNodeHits } = contentIdsCache.get(requestId, () =>
+    const nodeHits = contentIdsCache.get(requestId, () =>
         getNodeHitsFromExternalArchiveQuery(params)
     );
-    const masterNodeHitsBuckets = sortMultiRepoNodeHitsToBuckets({ hits: masterNodeHits });
-    const draftNodeHitsBuckets = sortMultiRepoNodeHitsToBuckets({ hits: draftNodeHits });
 
-    const masterContentHits = runContentQuery(masterNodeHitsBuckets);
-    const draftContentHits = runArchiveQuery(draftNodeHitsBuckets);
+    const { repoIdToLocaleMap } = getLayersData();
+    const contentHits = nodeHits.reduce<ContentWithLocaleData[]>((contents, node) => {
+        const locale = repoIdToLocaleMap[node.repoId];
+        const repo = getRepoConnection({
+            repoId: node.repoId,
+            branch: node.branch,
+        });
+        const result = repo.get<RepoNode<Content>>(node.id);
+        if (!result) return contents;
+        const contentNode = transformRepoNode(result);
+        const contentWithRepoIds = {
+            ...contentNode,
+            layerLocale: locale,
+            publicPath: getPublicPath(contentNode, locale),
+        };
 
-    if (masterContentHits.length !== masterNodeHits.length) {
-        const diff = masterNodeHits.filter(
-            (node) => !masterContentHits.find((hit) => hit._id === node.id)
-        );
+        return [...contents, contentWithRepoIds];
+    }, []);
+
+    if (contentHits.length !== nodeHits.length) {
+        const diff = nodeHits.filter((node) => !contentHits.find((hit) => hit._id === node.id));
         logger.warning(
             `Data query: missing results from master content query for ${
                 diff.length
             } ids: ${JSON.stringify(diff)}`
         );
     }
-
-    if (draftContentHits.length !== draftNodeHits.length) {
-        const diff = draftNodeHits.filter(
-            (node) => !draftContentHits.find((hit) => hit._id === node.id)
-        );
-        logger.warning(
-            `Data query: missing results from master content query for ${
-                diff.length
-            } ids: ${JSON.stringify(diff)}`
-        );
-    }
-
-    const contentHits = [...masterContentHits, ...draftContentHits];
-    const nodeHits = [...masterNodeHits, ...draftNodeHits];
-
     return {
         hits: contentHits,
         total: nodeHits.length,
