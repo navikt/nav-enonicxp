@@ -9,6 +9,10 @@
         <field-set>
             <label>Tittel og ingress</label>
             <items>
+                <input type="TextLine" name="textAboveTitle">
+                    <label>Tekst over tittel</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
                 <mixin name="page-header"/>
                 <mixin name="ingress-required" />
                 <input type="CheckBox" name="hideIngress">
