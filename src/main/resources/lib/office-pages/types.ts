@@ -13,3 +13,7 @@ const OFFICE_PAGE_TYPES = [
 
 export const isOfficeContent = (content: Content): content is OfficeContent =>
     OFFICE_PAGE_TYPES.includes((content as OfficeContent).type);
+
+export type Publikumsmottak = NonNullable<
+    OfficePage['data']['officeNorgData']['data']['brukerkontakt']
+>['publikumsmottak'];

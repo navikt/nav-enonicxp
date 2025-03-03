@@ -1,5 +1,5 @@
 import { logger } from '../../../utils/logging';
-import { OfficeContent, OfficePage } from '../../../office-pages/types';
+import { OfficeContent, Publikumsmottak } from '../../../office-pages/types';
 import { forceArray, removeDuplicatesFilter } from '../../../utils/array-utils';
 import { capitalize } from '../../../utils/string-utils';
 
@@ -7,32 +7,23 @@ const INGRESS_MAX_LENGTH = 500;
 
 const DEFAULT_OFFICE_INGRESS = 'Kontorinformasjon';
 
-type Publikumsmottak = NonNullable<
-    OfficePage['data']['officeNorgData']['data']['brukerkontakt']
->['publikumsmottak'];
-
 const getSted = (publikumsmottak: Publikumsmottak) => {
     if (!publikumsmottak || publikumsmottak.length === 0) {
         return [DEFAULT_OFFICE_INGRESS];
     }
 
     // For offices with only one publikumsmottak, the 'stedsbeskrivelse' key
-    // will not be actively used and may contain strange texts
-    // (ie "Andeby torg, inngang ved postkontoret rundt hjørnet").
-    // In these cases, use the postal city.
+    // is not actively used has therefore has not been cleaned by editors in NORG.
+    // It may contain strange texts in NORG (ie "Andeby torg, inngang ved postkontoret rundt hjørnet").
+    // This is why we use poststed when only 1 publikumsmottak.
     if (publikumsmottak.length === 1) {
         return [capitalize(publikumsmottak[0].besoeksadresse?.poststed ?? '')];
     }
 
-    // For offices with multiple publikumsmottak, try stedsbeskrivelse and then poststed if
-    // stedsbeskrivelse doesn't exist. This makes the display match the tagline on the office page,
-    // and in these cases the stedsbeskrivelse field in Norg is already cleaned since it's
-    // used in the tabs for the office page.
+    // For offices with multiple publikumsmottak, the stedsbeskrivelse has been cleaned by editors
+    // as it is used in the tabs at the top of an office page.
     return forceArray(publikumsmottak)
-        .filter(
-            (mottak) =>
-                mottak.besoeksadresse?.type === 'stedsadresse' && !!mottak.besoeksadresse.poststed
-        )
+        .filter((mottak) => mottak.besoeksadresse?.type === 'stedsadresse')
         .map((mottak) =>
             capitalize(mottak.stedsbeskrivelse ?? mottak.besoeksadresse?.poststed ?? '')
         )
