@@ -19,44 +19,22 @@ jobs:
     secrets:
       NAIS_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
 
-  tag:
-    needs: deploy
-    runs-on: ubuntu-latest
-    outputs:
-      tag: ${{ steps.tag.outputs.tag }}
-    steps:
-      - name: Extract branch tag
-        id: tag
-        run: |
-          BRANCH=${{ github.head_ref }}
-          TAG="${BRANCH//release-/""}"
-          echo $TAG
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-
   release:
     name: Create a new release
-    needs:
-      - tag
+    needs: deploy
     runs-on: ubuntu-latest
     permissions:
       contents: write
       id-token: write
-    env:
-      TAG: ${{ needs.TAG.outputs.tag }}
     steps:
-      - name: Generate release tag
-        run: |
-          if [[ "${{ github.head_ref }}" != "" ]]; then
-            echo "TAG_NAME=pr-${{ github.head_ref }}" >> $GITHUB_ENV
-          else
-            echo "TAG_NAME=release-${{ github.ref_name }}" >> $GITHUB_ENV
-          fi
+      - name: Generate unique tag name
+        run: echo "TAG_NAME=$(date +%s)" >> $GITHUB_ENV
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           target_commitish: main
-          tag_name: ${{ env.TAG_NAME }}
-          name: "Release for ${{ env.TAG_NAME }}"
+          tag_name: release/prod@${{ env.TAG_NAME }} # Generates a unique tag using timestamp
+          name: Release ${{ github.ref_name }}
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }} # This is a PAT with repo permissions
