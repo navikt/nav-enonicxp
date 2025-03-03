@@ -71,7 +71,7 @@
                                 Når avviksfeltet er i bruk, vises ikke "Åpent nå/Stengt nå"-teksten. Brukes feks ved midlertidige tekniske problemer.
                             </help-text>
                         </input>
-                        <input name="hideMoreLink" type="Checkbox">
+                        <input name="hideMoreLink" type="CheckBox">
                             <label>Ikke vis lenken "Flere telefonnummer og tastevalg"</label>
                             <default>unchecked</default>
                         </input>
