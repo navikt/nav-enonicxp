@@ -40,7 +40,6 @@ fragment partComponentContactOption on Part_no_nav_navno_contact_option {
                 ...richText
             }
             phoneNumber
-            hideMoreLink
             sharedContactInformation {
                 ...contentContactInformation
             }
