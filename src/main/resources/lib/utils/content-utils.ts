@@ -50,7 +50,7 @@ export const isExcludedFromExternalArchive = (content: Content) => {
     return (
         isContentPreviewOnly(content) ||
         isContentUsingExternalProductUrl(content) ||
-        isContentNoIndex(content)
+        content.data?.customPath?.includes('utkast')
     );
 };
 
