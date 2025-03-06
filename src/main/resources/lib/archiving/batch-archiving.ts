@@ -57,12 +57,7 @@ const simplifyContent = (content: Content, repoId: string): ContentDataSimple =>
     };
 };
 
-const persistResultLogs = (
-    result: ArchiveResult,
-    startTs: string,
-    jobName: string,
-    query: QueryDsl
-) => {
+const persistResultLogs = (result: ArchiveResult, jobName: string, query: QueryDsl) => {
     const repoConnection = getMiscRepoConnection();
 
     if (!repoConnection.exists(LOG_DIR_PATH)) {
@@ -84,7 +79,6 @@ const persistResultLogs = (
         _parentPath: LOG_DIR_PATH,
         _name: logEntryName,
         summary: {
-            started: startTs,
             finished: now,
             jobName,
             query: JSON.stringify(query),
@@ -260,5 +254,5 @@ export const findAndArchiveOldContent = ({
         result.archived.push(...layerResult.archived);
     });
 
-    persistResultLogs(result, cutoffTs, jobName, query);
+    persistResultLogs(result, jobName, query);
 };
