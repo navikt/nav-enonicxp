@@ -35,6 +35,18 @@ const resolveToContentTimestamp = (content: Content, locale: string) => {
     );
 };
 
+const resolveToContentTimestampDraftbranch = (content: Content, locale: string) => {
+    return runInTimeTravelContext(
+        {
+            dateTime: content.modifiedTime || content.createdTime,
+            repoId: getLayersData().localeToRepoIdMap[locale],
+            branch: 'draft',
+            baseContentKey: content._id,
+        },
+        () => runSitecontentGuillotineQuery(content, 'draft')
+    );
+};
+
 const getContentRenderProps = (
     content: Content,
     locale: string,
@@ -50,7 +62,8 @@ const getContentRenderProps = (
     }
 
     return resolveToTs
-        ? resolveToContentTimestamp(content, locale)
+        ? resolveToContentTimestamp(content, locale) ||
+              resolveToContentTimestampDraftbranch(content, locale)
         : resolveCurrentContent(content, locale);
 };
 
