@@ -15,8 +15,8 @@ export type RunQueryParams = {
 
 export type RunExternalArchiveQueryParams = {
     requestId: string;
-    query: string;
-    types: ContentDescriptor[];
+    displayName: string;
+    searchType?: string;
 };
 
 export type ContentWithLocaleData = Content & { layerLocale: string; publicPath: string };

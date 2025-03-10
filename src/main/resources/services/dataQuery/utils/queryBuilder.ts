@@ -2,9 +2,9 @@ import { getLayersMultiConnection } from '../../../lib/localization/layers-repo-
 import { RunQueryParams, RunExternalArchiveQueryParams } from './types';
 import { batchedMultiRepoNodeQuery } from '../../../lib/utils/batched-query';
 import { logger } from '../../../lib/utils/logging';
-import { RepoBranch } from '../../../types/common';
 import * as nodeLib from '/lib/xp/node';
 import { getLayersData } from '../../../lib/localization/layers-data';
+import { ContentDescriptor } from '../../../types/content-types/content-config';
 
 const buildQuery = (queryStrings: (string | undefined)[]) =>
     queryStrings.filter(Boolean).join(' AND ');
@@ -74,14 +74,35 @@ export const getNodeHitsFromQuery = ({
     return result;
 };
 
+const curatedTypes: ContentDescriptor[] = [
+    'no.nav.navno:content-page-with-sidemenus',
+    'no.nav.navno:themed-article-page',
+    'no.nav.navno:situation-page',
+    'no.nav.navno:guide-page',
+    'no.nav.navno:main-article',
+    'no.nav.navno:current-topic-page',
+    'no.nav.navno:external-link',
+    'no.nav.navno:internal-link',
+    'no.nav.navno:product-details',
+    'no.nav.navno:global-case-time-set',
+    'no.nav.navno:payout-dates',
+];
+
 export const getNodeHitsFromExternalArchiveQuery = ({
-    query,
-    types,
+    displayName,
+    searchType,
     requestId,
 }: RunExternalArchiveQueryParams) => {
-    const getQueryParams = (branch: RepoBranch) => {
+    const types = searchType === 'curated' ? curatedTypes : [];
+    const query = `displayName LIKE "*${displayName}*"`;
+    const getQueryParams = (): nodeLib.QueryNodeParams => {
         return {
-            query: buildQuery([query]),
+            query: buildQuery([
+                query,
+                searchType === 'other'
+                    ? `NOT type IN (${curatedTypes.map((t) => `"${t}"`).join(',')})`
+                    : undefined,
+            ]),
             start: 0,
             count: 100000,
             filters: {
@@ -94,7 +115,7 @@ export const getNodeHitsFromExternalArchiveQuery = ({
                                 values: types,
                             },
                         },
-                        ...(branch === 'draft' ? [{ exists: { field: 'publish.first' } }] : []),
+                        { exists: { field: 'publish.first' } },
                     ],
                     mustNot: [
                         {
@@ -127,7 +148,7 @@ export const getNodeHitsFromExternalArchiveQuery = ({
 
     const nodeHits = batchedMultiRepoNodeQuery({
         repo: repoConnection,
-        queryParams: getQueryParams('draft'),
+        queryParams: getQueryParams(),
     }).hits;
 
     const uniqueNodeHits = nodeHits.filter(

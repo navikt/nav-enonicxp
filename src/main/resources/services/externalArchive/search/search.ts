@@ -1,6 +1,5 @@
 import { runExternalArchiveQuery } from '../../../services/dataQuery/utils/queryRunners';
 import { logger } from '../../../lib/utils/logging';
-import { ContentDescriptor } from '../../../types/content-types/content-config';
 
 type SimpleHit = {
     _id: string;
@@ -13,28 +12,22 @@ type SimpleHit = {
 export const externalArchiveSearchService = (req: XP.Request) => {
     try {
         const { query, searchType } = req.params;
+        if (!query) {
+            return {
+                status: 400,
+                contentType: 'application/json',
+                body: {
+                    msg: 'Parameter query is required',
+                },
+            };
+        }
+
         const requestId = `archive-${Date.now()}`;
-
-        const curatedTypes: ContentDescriptor[] = [
-            'no.nav.navno:content-page-with-sidemenus',
-            'no.nav.navno:themed-article-page',
-            'no.nav.navno:situation-page',
-            'no.nav.navno:guide-page',
-            'no.nav.navno:main-article',
-            'no.nav.navno:current-topic-page',
-            'no.nav.navno:external-link',
-            'no.nav.navno:internal-link',
-            'no.nav.navno:product-details',
-            'no.nav.navno:global-case-time-set',
-            'no.nav.navno:payout-dates',
-        ];
-
-        const excludeTypes = ` AND NOT type IN (${curatedTypes.map((t) => `"${t}"`).join(',')})`;
 
         const result = runExternalArchiveQuery({
             requestId,
-            query: `displayName LIKE "*${query}*"${searchType === 'other' ? excludeTypes : ''}`,
-            types: searchType === 'curated' ? curatedTypes : [],
+            displayName: query,
+            searchType,
         });
 
         const simpleHits = result.hits.map(
