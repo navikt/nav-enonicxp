@@ -7,7 +7,6 @@ import { runInContext } from '../context/run-in-context';
 import { findAndArchiveOldContent } from './batch-archiving';
 
 const ONE_YEAR_MS = 1000 * 3600 * 24 * 365;
-const TWO_YEARS_MS = ONE_YEAR_MS * 2;
 
 const MONDAY_0700_CRON = '0 7 * * 1';
 
@@ -65,7 +64,7 @@ export const archiveOldNews = () =>
     runInContext({ asAdmin: true }, () => {
         findAndArchiveOldContent({
             query: pressReleasesQuery,
-            maxAgeMs: TWO_YEARS_MS,
+            maxAgeMs: ONE_YEAR_MS,
             jobName: 'pressReleases',
         });
 
