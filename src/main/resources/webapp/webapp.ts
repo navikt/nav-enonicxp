@@ -48,10 +48,12 @@ const validActions: ActionsMap = {
         description: 'Fjern expired scheduler jobs (kjøres normalt automatisk hver morgen)',
         callback: runSchedulerCleanup,
     },
-    // oldNewsUnpublish: {
-    //     description: 'Avpubliser og arkiver gamle nyheter/pressemeldinger',
-    //     callback: archiveOldNews,
-    // },
+    ...((app.config.env === 'localhost' || app.config.env === 'dev') && {
+        oldNewsUnpublish: {
+            description: 'Avpubliser og arkiver gamle nyheter/pressemeldinger',
+            callback: archiveOldNews,
+        },
+    }),
     ...(!!URLS.SEARCH_API_URL && {
         updateAllSearchNodesExternal: {
             description: 'Oppdater alle dokumenter for eksternt søk',
