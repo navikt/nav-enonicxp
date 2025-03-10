@@ -8,7 +8,7 @@ import { findAndArchiveOldContent } from './batch-archiving';
 
 const ONE_YEAR_MS = 1000 * 3600 * 24 * 365;
 
-const MONDAY_0700_CRON = '0 7 * * 1';
+const MONDAY_0500_CRON = '0 5 * * 1';
 
 const pressReleasesQuery: QueryDsl = {
     boolean: {
@@ -80,7 +80,7 @@ export const activateArchiveNewsSchedule = () => {
         jobName: 'archive-old-news',
         jobSchedule: {
             type: 'CRON',
-            value: MONDAY_0700_CRON,
+            value: MONDAY_0500_CRON,
             timeZone: 'GMT+2:00',
         },
         taskDescriptor: `${APP_DESCRIPTOR}:archive-old-news`,
