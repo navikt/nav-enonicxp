@@ -1,0 +1,112 @@
+<mixin>
+    <form>
+        <field-set>
+            <label>Mellomsteg</label>
+            <items>
+                <input name="stepsHeadline" type="TextLine">
+                    <label>Overskrift til stegene</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <item-set name="steps">
+                    <label>Enkeltsteg</label>
+                    <occurrences minimum="1" maximum="0"/>
+                    <items>
+                        <mixin name="form-intermediate-step-data-action" />
+                        <option-set name="nextStep">
+                            <label>Dette valget sender brukeren videre til:</label>
+                            <occurrences minimum="1" maximum="1" />
+                            <options minimum="1" maximum="1">
+                                <option name="internal">
+                                    <label>Intern lenke til skjema, søknad eller klage</label>
+                                    <help-text>Brukeren skal sendes til dokument som ligger på Enonic XP</help-text>
+                                    <default>true</default>
+                                    <items>
+                                        <input name="internalContent" type="MediaSelector">
+                                            <label>Internt innhold</label>
+                                            <occurrences minimum="1" maximum="1"/>
+                                            <config>
+                                                <allowContentType>media:document</allowContentType>
+                                            </config>
+                                        </input>
+                                    </items>
+                                </option>
+                                <option name="external">
+                                    <label>Ekstern lenke til skjema, søknad eller klage</label>
+                                    <help-text>Brukeren skal sendes til en app eller tjeneste utenfor Enonic XP</help-text>
+                                    <items>
+                                        <input name="externalUrl" type="TextLine">
+                                            <label>Ekstern URL</label>
+                                            <occurrences minimum="0" maximum="1"/>
+                                            <config>
+                                                <regexp>^https?:\/\/.*</regexp>
+                                            </config>
+                                        </input>
+                                    </items>
+                                </option>
+                                <option name="next">
+                                    <label>Nytt steg</label>
+                                    <help-text>Brukeren skal sendes til et nytt steg for nye veivalg</help-text>
+                                    <items>
+                                        <field-set>
+                                            <label>Enkeltsteg</label>
+                                            <items>
+                                                <input name="editorial" type="HtmlArea">
+                                                    <label>Redaksjonelt innhold ovenfor valgene</label>
+                                                    <occurrences minimum="0" maximum="1"/>
+                                                </input>
+                                                <input name="stepsHeadline" type="TextLine">
+                                                    <label>Overskrift til stegene</label>
+                                                    <occurrences minimum="0" maximum="1"/>
+                                                </input>
+                                                <item-set name="steps">
+                                                    <label>Steg</label>
+                                                    <occurrences minimum="1" maximum="0"/>
+                                                    <items>
+                                                        <mixin name="form-intermediate-step-data-action" />
+                                                        <option-set name="nextStep">
+                                                            <label>Dette valget sender brukeren videre til:</label>
+                                                            <occurrences minimum="1" maximum="1" />
+                                                            <options minimum="1" maximum="1">
+                                                                <option name="internal">
+                                                                    <label>Intern lenke til skjema, søknad eller klage</label>
+                                                                    <help-text>Brukeren skal sendes til dokument som ligger på Enonic XP</help-text>
+                                                                    <default>true</default>
+                                                                    <items>
+                                                                        <input name="internalContent" type="MediaSelector">
+                                                                            <label>Internt innhold</label>
+                                                                            <occurrences minimum="1" maximum="1"/>
+                                                                            <config>
+                                                                                <allowContentType>media:document</allowContentType>
+                                                                            </config>
+                                                                        </input>
+                                                                    </items>
+                                                                </option>
+                                                                <option name="external">
+                                                                    <label>Ekstern lenke til skjema, søknad eller klage</label>
+                                                                    <help-text>Brukeren skal sendes til en app eller tjeneste utenfor Enonic XP</help-text>
+                                                                    <items>
+                                                                        <input name="externalUrl" type="TextLine">
+                                                                            <label>Ekstern URL</label>
+                                                                            <occurrences minimum="1" maximum="1"/>
+                                                                            <config>
+                                                                                <regexp>^https?:\/\/.*</regexp>
+                                                                            </config>
+                                                                        </input>
+                                                                    </items>
+                                                                </option>
+                                                            </options>
+                                                        </option-set>
+                                                    </items>
+                                                </item-set>
+                                            </items>
+                                        </field-set>
+                                    </items>
+                                </option>
+                            </options>
+                        </option-set>
+                    </items>
+                </item-set>
+            </items>
+        </field-set>
+    </form>
+</mixin>
