@@ -14,6 +14,7 @@ type Response = {
     contentRaw: Content & { locale: string; originalContentTypeName: string | undefined };
     contentRenderProps?: Record<string, unknown> | null;
     versions: VersionReferenceEnriched[];
+    isArchived: boolean;
 };
 
 const resolveCurrentContent = (content: Content, locale: string) => {
@@ -121,6 +122,7 @@ export const externalArchiveContentService = (req: XP.Request) => {
             contentRaw: { ...content, originalContentTypeName, locale },
             contentRenderProps,
             versions,
+            isArchived,
         } satisfies Response,
     };
 };
