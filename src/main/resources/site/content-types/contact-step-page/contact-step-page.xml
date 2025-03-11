@@ -3,7 +3,6 @@
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
-    <allow-child-content>true</allow-child-content>
     <form>
         <field-set>
             <label>Tittel og ingress</label>
@@ -13,10 +12,16 @@
                     <label>Tekst over tittel</label>
                     <occurrences minimum="0" maximum="1"/>
                 </input>
-                <mixin name="illustration"/>
                 <input type="HtmlArea" name="html">
                     <label>Ingress</label>
+                    <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <include>Undo Redo Bold</include>
+                        <exclude>JustifyBlock JustifyLeft JustifyCenter JustifyRight Outdent Indent Anchor Table</exclude>
+                        <allowHeadings>normal h2 h3 h4</allowHeadings>
+                    </config>
                 </input>
+                <mixin name="illustration"/>
             </items>
         </field-set>
         <field-set>

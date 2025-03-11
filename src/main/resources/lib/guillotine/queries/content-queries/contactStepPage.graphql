@@ -1,11 +1,9 @@
 #import "../fragments/contentCommonWithPageFragment.graphql"
-#import "../fragments/content-types/formIntermediateStepFragment.graphql"
 
-query formIntermediateStepQuery($ref: ID!) {
+query ContactStepQuery($ref: ID!) {
     guillotine {
         get(key: $ref) {
             ...contentCommonWithPage
-            ...contentIntermediateStep
         }
     }
 }
