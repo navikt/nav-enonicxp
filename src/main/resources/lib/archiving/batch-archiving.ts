@@ -15,7 +15,7 @@ import { CONTENT_TYPES_WITH_CONTENT_LISTS } from '../contentlists/remove-unpubli
 
 type ContentDataSimple = Pick<
     Content,
-    '_id' | '_path' | 'createdTime' | 'modifiedTime' | 'type' | 'displayName'
+    '_id' | '_path' | 'createdTime' | 'modifiedTime' | 'type' | 'displayName' | 'publish'
 > & {
     subType?: MainArticle['contentType'];
     repoId: string;
@@ -39,7 +39,7 @@ const contentTypeReferencesToIgnore: ReadonlySet<ContentDescriptor> = new Set(
 );
 
 const simplifyContent = (content: Content, repoId: string): ContentDataSimple => {
-    const { _id, _path, createdTime, modifiedTime, type, data, displayName } = content;
+    const { _id, _path, createdTime, modifiedTime, type, data, displayName, publish } = content;
 
     return {
         _id,
@@ -48,6 +48,7 @@ const simplifyContent = (content: Content, repoId: string): ContentDataSimple =>
         editorUrl: `${URLS.PORTAL_ADMIN_ORIGIN}${buildEditorPath(_id, repoId)}`,
         createdTime,
         modifiedTime,
+        publish,
         type,
         subType: data.contentType,
         repoId,
@@ -100,7 +101,7 @@ const hasNewerDescendants = (content: ContentDataSimple | Content, timestamp: st
 
     return children.hits.some(
         (child) =>
-            (child.modifiedTime || child.createdTime) > timestamp ||
+            (child.publish?.from || child.createdTime) > timestamp ||
             hasNewerDescendants(child, timestamp)
     );
 };
@@ -211,13 +212,13 @@ export const findAndArchiveOldContent = ({
         resolveContent: false,
         queryParams: {
             count: 5000,
-            sort: 'modifiedTime DESC',
+            sort: 'publish.first DESC',
             query: {
                 boolean: {
                     must: [
                         {
                             range: {
-                                field: 'modifiedTime',
+                                field: 'publish.first',
                                 lt: cutoffTs,
                             },
                         },
