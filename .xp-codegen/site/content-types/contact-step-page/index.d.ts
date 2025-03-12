@@ -21,14 +21,14 @@ export type ContactStepPage = {
   textAboveTitle?: string;
 
   /**
-   * Ingress
-   */
-  html?: string;
-
-  /**
    * Velg piktogram
    */
   illustration: string;
+
+  /**
+   * Ingress
+   */
+  html?: string;
 
   /**
    * Må begynne med '/start/[målgruppe dersom ikke privatperson]'
