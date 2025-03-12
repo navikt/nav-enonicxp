@@ -1,10 +1,26 @@
 #import "../mixins/animatedIconsTargetFragment.graphql"
+#import "../contentCommonFragment.graphql"
 
 fragment contactStepPage on no_nav_navno_ContactStepPage {
     dataAsJson
     data {
         illustration {
             ...animatedIconsTargetMixin
+        }
+        steps {
+            label
+            explanation
+            nextStep {
+                _selected
+                internal {
+                    internalContent {
+                        ...contentCommon
+                    }
+                }
+                external {
+                    externalUrl
+                }
+            }
         }
     }
 }
