@@ -1,0 +1,10 @@
+#import "../mixins/animatedIconsTargetFragment.graphql"
+
+fragment contactStepPage on no_nav_navno_ContactStepPage {
+    dataAsJson
+    data {
+        illustration {
+            ...animatedIconsTargetMixin
+        }
+    }
+}

@@ -36,11 +36,6 @@ export type ContactStepPage = {
   customPath: string;
 
   /**
-   * Redaksjonelt innhold ovenfor valgene
-   */
-  editorial?: string;
-
-  /**
    * Overskrift til stegene
    */
   stepsHeadline?: string;
