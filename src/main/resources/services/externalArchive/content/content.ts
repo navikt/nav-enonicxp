@@ -38,14 +38,15 @@ const resolveToContentTimestamp = (content: Content, locale: string) => {
 const getContentRenderProps = (
     content: Content,
     locale: string,
-    resolveToTs: boolean,
+    versionId: string | undefined,
     isArchived: boolean
 ) => {
+    const resolveToTs = !!versionId;
     if (isArchived) {
         return getArchivedContentForExternalArchive(
             content._id,
             getLayersData().localeToRepoIdMap[locale],
-            content.archivedTime || content.modifiedTime || content.createdTime
+            versionId
         );
     }
 
@@ -93,7 +94,7 @@ export const externalArchiveContentService = (req: XP.Request) => {
         };
     }
 
-    const contentRenderProps = getContentRenderProps(content, locale, !!versionId, isArchived);
+    const contentRenderProps = getContentRenderProps(content, locale, versionId, isArchived);
 
     const versions = getPublishedAndModifiedVersions(content._id, locale).filter(
         (v) => !v.shouldExclude

@@ -143,6 +143,8 @@ export const getArchivedContentForExternalArchive = (
 
     const preArchivedVersions = getPreArchivedVersions(archivedNode._id, repoId);
 
+    logger.info(`prearchivedVersions ${preArchivedVersions.map((v) => ` vid ${v.versionId} `)}`);
+
     const thing = versionId
         ? preArchivedVersions.find((v) => v.versionId === versionId)
         : undefined;
