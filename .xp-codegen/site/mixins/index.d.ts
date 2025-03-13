@@ -6,7 +6,6 @@ export type Audience = import("./audience").Audience;
 export type AuthRenderOption = import("./auth-render-option").AuthRenderOption;
 export type CalculatorTargetSelector = import("./calculator-target-selector").CalculatorTargetSelector;
 export type ColorPicker = import("./color-picker").ColorPicker;
-export type ContactStepData = import("./contact-step-data").ContactStepData;
 export type ContentList = import("./content-list").ContentList;
 export type CustomPathSelector = import("./custom-path-selector").CustomPathSelector;
 export type CustomPathSelectorRequired = import("./custom-path-selector-required").CustomPathSelectorRequired;

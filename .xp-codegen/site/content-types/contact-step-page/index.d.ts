@@ -36,16 +36,19 @@ export type ContactStepPage = {
   customPath: string;
 
   /**
-   * Overskrift til stegene
+   * Overskrift
    */
-  stepsHeadline?: string;
+  linksHeading?: string;
 
   /**
-   * Enkeltsteg
+   * Undertittel
    */
-  steps: Array<{
+  linksSubHeadline?: string;
+
+
+  links: Array<{
     /**
-     * Tittel på valget
+     * Tittel
      */
     label: string;
 
@@ -54,15 +57,8 @@ export type ContactStepPage = {
      */
     explanation?: string;
 
-    /**
-     * Informasjon om språk
-     */
-    languageDisclaimer?: string;
 
-    /**
-     * Dette valget sender brukeren videre til:
-     */
-    nextStep:
+    link:
       | {
           /**
            * Selected
@@ -70,13 +66,13 @@ export type ContactStepPage = {
           _selected: "internal";
 
           /**
-           * Intern lenke til skjema, søknad eller klage
+           * Intern lenke
            */
           internal: {
             /**
-             * Internt innhold
+             * Intern lenke
              */
-            internalContent: string;
+            internalContent?: string;
           };
         }
       | {
@@ -86,91 +82,13 @@ export type ContactStepPage = {
           _selected: "external";
 
           /**
-           * Ekstern lenke til skjema, søknad eller klage
+           * Ekstern lenke
            */
           external: {
             /**
              * Ekstern URL
              */
             externalUrl?: string;
-          };
-        }
-      | {
-          /**
-           * Selected
-           */
-          _selected: "next";
-
-          /**
-           * Nytt steg
-           */
-          next: {
-            /**
-             * Redaksjonelt innhold ovenfor valgene
-             */
-            editorial?: string;
-
-            /**
-             * Overskrift til stegene
-             */
-            stepsHeadline?: string;
-
-            /**
-             * Steg
-             */
-            steps: Array<{
-              /**
-               * Tittel på valget
-               */
-              label: string;
-
-              /**
-               * Ekstra forklaring
-               */
-              explanation?: string;
-
-              /**
-               * Informasjon om språk
-               */
-              languageDisclaimer?: string;
-
-              /**
-               * Dette valget sender brukeren videre til:
-               */
-              nextStep:
-                | {
-                    /**
-                     * Selected
-                     */
-                    _selected: "internal";
-
-                    /**
-                     * Intern lenke til skjema, søknad eller klage
-                     */
-                    internal: {
-                      /**
-                       * Internt innhold
-                       */
-                      internalContent: string;
-                    };
-                  }
-                | {
-                    /**
-                     * Selected
-                     */
-                    _selected: "external";
-
-                    /**
-                     * Ekstern lenke til skjema, søknad eller klage
-                     */
-                    external: {
-                      /**
-                       * Ekstern URL
-                       */
-                      externalUrl: string;
-                    };
-                  };
-            }>;
           };
         };
   }>;
