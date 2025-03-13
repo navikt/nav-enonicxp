@@ -8,12 +8,6 @@ fragment contactStepPage on no_nav_navno_ContactStepPage {
         illustration {
             ...animatedIconsTargetMixin
         }
-        link {
-            _selected
-            internal {
-                text
-                target {
-                    ...internalLinkTargetMixin
         links {
             label
             explanation
@@ -26,6 +20,15 @@ fragment contactStepPage on no_nav_navno_ContactStepPage {
                 }
                 external {
                     externalUrl
+                }
+            }
+        }
+        link {
+            _selected
+            internal {
+                text
+                target {
+                    ...internalLinkTargetMixin
                 }
             }
         }

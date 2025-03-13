@@ -37,7 +37,7 @@
                 </input>
             </items>
         </field-set>
-        <mixin name="link" />
+
         <field-set>
             <label>Lenker</label>
             <items>
@@ -94,6 +94,12 @@
                         </option-set>
                     </items>
                 </item-set>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Tilbakelenke</label>
+            <items>
+                <mixin name="link" />
             </items>
         </field-set>
     </form>
