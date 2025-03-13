@@ -1,10 +1,20 @@
 #import "../mixins/animatedIconsTargetFragment.graphql"
+#import "../mixins/internalLinkTargetFragment.graphql"
 
 fragment contactStepPage on no_nav_navno_ContactStepPage {
     dataAsJson
     data {
         illustration {
             ...animatedIconsTargetMixin
+        }
+        link {
+            _selected
+            internal {
+                text
+                target {
+                    ...internalLinkTargetMixin
+                }
+            }
         }
     }
 }

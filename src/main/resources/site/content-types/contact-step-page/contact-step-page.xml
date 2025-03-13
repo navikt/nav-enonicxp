@@ -36,6 +36,8 @@
                 </input>
             </items>
         </field-set>
-        <mixin name="contact-step-data"/>
+        <mixin name="contact-step-data" />
+<!--        <mixin name="link-internal" />-->
+        <mixin name="link" />
     </form>
 </content-type>
