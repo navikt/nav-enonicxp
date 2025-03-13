@@ -82,7 +82,7 @@ export const getArchivedContent = (idOrArchivedPath: string, repoId: string, tim
               unixTime: getUnixTimeFromDateTimeString(time),
               repoId,
               branch: 'draft',
-              getOldestIfNotFound: false,
+              getOldestIfNotFound: true,
           })
         : preArchivedVersions[0];
     if (!requestedVersion) {
