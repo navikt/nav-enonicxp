@@ -82,7 +82,7 @@ export const getArchivedContent = (idOrArchivedPath: string, repoId: string, tim
               unixTime: getUnixTimeFromDateTimeString(time),
               repoId,
               branch: 'draft',
-              getOldestIfNotFound: true,
+              getOldestIfNotFound: false,
           })
         : preArchivedVersions[0];
     if (!requestedVersion) {
@@ -153,7 +153,7 @@ export const getArchivedContentForExternalArchive = (
               unixTime: getUnixTimeFromDateTimeString(thing?.timestamp),
               repoId,
               branch: 'draft',
-              getOldestIfNotFound: true,
+              getOldestIfNotFound: false,
           })
         : preArchivedVersions[0];
     if (!requestedVersion) {
