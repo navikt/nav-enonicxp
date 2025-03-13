@@ -46,7 +46,7 @@ export type ContactStepPage = {
   linksSubHeadline?: string;
 
 
-  steps: Array<{
+  links: Array<{
     /**
      * Tittel
      */
@@ -58,7 +58,7 @@ export type ContactStepPage = {
     explanation?: string;
 
 
-    nextStep:
+    link:
       | {
           /**
            * Selected

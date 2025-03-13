@@ -48,7 +48,7 @@
                     <label>Undertittel</label>
                     <occurrences minimum="0" maximum="1" />
                 </input>
-                <item-set name="steps">
+                <item-set name="links">
                     <occurrences minimum="1" maximum="0" />
                     <items>
                         <input name="label" type="TextLine">
@@ -59,7 +59,7 @@
                             <label>Ekstra forklaring</label>
                             <occurrences minimum="0" maximum="1" />
                         </input>
-                        <option-set name="nextStep">
+                        <option-set name="link">
                             <occurrences minimum="1" maximum="1" />
                             <options minimum="1" maximum="1">
                                 <option name="internal">
