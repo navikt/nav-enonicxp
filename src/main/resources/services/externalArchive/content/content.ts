@@ -1,4 +1,4 @@
-import { Content, getType } from '/lib/xp/content';
+import { Content, getType, get } from '/lib/xp/content';
 import { runSitecontentGuillotineQuery } from '../../../lib/guillotine/queries/run-sitecontent-query';
 import { getLayersData, isValidLocale } from '../../../lib/localization/layers-data';
 import { runInTimeTravelContext } from '../../../lib/time-travel/run-with-time-travel';
@@ -9,7 +9,6 @@ import {
 import { getContentForExternalArchive } from '../../../lib/external-archive/get-content';
 import { runInLocaleContext } from '../../../lib/localization/locale-context';
 import { getArchivedContent } from '../../../lib/external-archive/get-archived-content';
-import { getUnixTimeFromDateTimeString } from '../../../lib/utils/datetime-utils';
 
 type Response = {
     contentRaw: Content & { locale: string; originalContentTypeName: string | undefined };
@@ -52,20 +51,17 @@ const resolveToContentTimestampDraftbranch = (content: Content, locale: string) 
 const getContentRenderProps = (
     content: Content,
     locale: string,
-    resolveToTs: boolean,
+    versionId: string | undefined,
     isArchived: boolean
 ) => {
+    const resolveToTs: boolean = !!versionId;
     if (isArchived) {
+        if (versionId) {
+            return get({ key: content._id, versionId: versionId });
+        }
         const time = content.archivedTime || content.modifiedTime || content.createdTime;
-        const migrationToXpTime = new Date(2019, 11, 3).getTime();
-        const isMigratedToXpContent: boolean =
-            getUnixTimeFromDateTimeString(time) < migrationToXpTime;
-        return getArchivedContent(
-            content._id,
-            getLayersData().localeToRepoIdMap[locale],
-            time,
-            isMigratedToXpContent
-        );
+
+        return getArchivedContent(content._id, getLayersData().localeToRepoIdMap[locale], time);
     }
 
     return resolveToTs
@@ -113,7 +109,7 @@ export const externalArchiveContentService = (req: XP.Request) => {
         };
     }
 
-    const contentRenderProps = getContentRenderProps(content, locale, !!versionId, isArchived);
+    const contentRenderProps = getContentRenderProps(content, locale, versionId, isArchived);
 
     const versions = getPublishedAndModifiedVersions(content._id, locale).filter(
         (v) => !v.shouldExclude
