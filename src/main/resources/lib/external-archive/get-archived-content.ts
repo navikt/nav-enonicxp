@@ -147,10 +147,14 @@ export const getArchivedContentForExternalArchive = (
         ? preArchivedVersions.find((v) => v.versionId === versionId)
         : undefined;
 
-    const requestedVersion = versionId
+    logger.info(
+        `Getting content from timestamp ${thing?.timestamp} and versionId ${thing?.versionId}`
+    );
+
+    const requestedVersion = thing
         ? getContentVersionFromTime({
               nodeKey: contentRef,
-              unixTime: getUnixTimeFromDateTimeString(thing?.timestamp),
+              unixTime: getUnixTimeFromDateTimeString(thing.timestamp),
               repoId,
               branch: 'draft',
               getOldestIfNotFound: false,
@@ -162,6 +166,9 @@ export const getArchivedContentForExternalArchive = (
         );
         return null;
     }
+    logger.info(
+        `Requested version returns with id ${requestedVersion.nodeId}, versionId ${requestedVersion.versionId} and timestamp ${requestedVersion.timestamp}`
+    );
 
     const requestedContent = contentLib.get({
         key: requestedVersion.nodeId,

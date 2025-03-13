@@ -82,6 +82,9 @@ export const getContentVersionFromTime = ({
     if (!length) {
         return null;
     }
+    logger.info(
+        `Versions retrieved have ${contentVersions.map((v) => `versionId${v.versionId} and timestamp ${v.timestamp}`)}`
+    );
 
     // Return the newest version which is equal to or older than the requested time
     const foundVersion = contentVersions.find((version) => {
