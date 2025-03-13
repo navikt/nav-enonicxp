@@ -93,7 +93,6 @@ export const getNodeHitsFromExternalArchiveQuery = ({
     searchType,
     requestId,
 }: RunExternalArchiveQueryParams) => {
-    const types = searchType === 'curated' ? curatedTypes : [];
     const query = `displayName LIKE "*${displayName}*"`;
     const getQueryParams = (): nodeLib.QueryNodeParams => {
         return {
@@ -109,13 +108,17 @@ export const getNodeHitsFromExternalArchiveQuery = ({
                 boolean: {
                     must: [
                         { notExists: { field: 'data.externalProductUrl' } },
-                        {
-                            hasValue: {
-                                field: 'type',
-                                values: types,
-                            },
-                        },
                         { exists: { field: 'publish.first' } },
+                        ...(searchType === 'curated'
+                            ? [
+                                  {
+                                      hasValue: {
+                                          field: 'type',
+                                          values: curatedTypes,
+                                      },
+                                  },
+                              ]
+                            : []),
                     ],
                     mustNot: [
                         {
@@ -139,11 +142,8 @@ export const getNodeHitsFromExternalArchiveQuery = ({
         };
     };
 
-    const layerDataDraft = getLayersData().sources['draft'];
-    const masterDataDraft = getLayersData().sources['master'];
-
     const repoConnection = nodeLib.multiRepoConnect({
-        sources: [...layerDataDraft, ...masterDataDraft],
+        sources: [...getLayersData().sources.draft, ...getLayersData().sources.master],
     });
 
     const nodeHits = batchedMultiRepoNodeQuery({

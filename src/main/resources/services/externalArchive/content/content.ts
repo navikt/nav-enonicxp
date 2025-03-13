@@ -9,6 +9,7 @@ import {
 import { getContentForExternalArchive } from '../../../lib/external-archive/get-content';
 import { runInLocaleContext } from '../../../lib/localization/locale-context';
 import { getArchivedContent } from '../../../lib/external-archive/get-archived-content';
+import { getUnixTimeFromDateTimeString } from '../../../lib/utils/datetime-utils';
 
 type Response = {
     contentRaw: Content & { locale: string; originalContentTypeName: string | undefined };
@@ -55,10 +56,15 @@ const getContentRenderProps = (
     isArchived: boolean
 ) => {
     if (isArchived) {
+        const time = content.archivedTime || content.modifiedTime || content.createdTime;
+        const migrationToXpTime = new Date(2019, 11, 3).getTime();
+        const isMigratedToXpContent: boolean =
+            getUnixTimeFromDateTimeString(time) < migrationToXpTime;
         return getArchivedContent(
             content._id,
             getLayersData().localeToRepoIdMap[locale],
-            content.archivedTime || content.modifiedTime || content.createdTime
+            time,
+            isMigratedToXpContent
         );
     }
 

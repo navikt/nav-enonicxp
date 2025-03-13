@@ -63,7 +63,12 @@ const getPreArchivedVersions = (contentId: string, repoId: string) => {
     }).filter((version) => version.nodePath.startsWith('/content'));
 };
 
-export const getArchivedContent = (idOrArchivedPath: string, repoId: string, time?: string) => {
+export const getArchivedContent = (
+    idOrArchivedPath: string,
+    repoId: string,
+    time?: string,
+    getOldestIfNotFound: boolean = false
+) => {
     const contentRef = getArchivedContentRef(idOrArchivedPath);
 
     const repoConnection = getRepoConnection({ branch: 'draft', repoId });
@@ -82,7 +87,7 @@ export const getArchivedContent = (idOrArchivedPath: string, repoId: string, tim
               unixTime: getUnixTimeFromDateTimeString(time),
               repoId,
               branch: 'draft',
-              getOldestIfNotFound: false,
+              getOldestIfNotFound,
           })
         : preArchivedVersions[0];
     if (!requestedVersion) {
