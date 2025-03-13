@@ -125,3 +125,74 @@ export const getArchivedContent = (idOrArchivedPath: string, repoId: string, tim
         page: getPageTemplate(content) || content.page,
     };
 };
+
+export const getArchivedContentForExternalArchive = (
+    idOrArchivedPath: string,
+    repoId: string,
+    versionId?: string
+) => {
+    const contentRef = getArchivedContentRef(idOrArchivedPath);
+
+    const repoConnection = getRepoConnection({ branch: 'draft', repoId });
+
+    const archivedNode = repoConnection.get(contentRef);
+    if (!archivedNode) {
+        logger.info(`Archived node not found - ${contentRef} in repo ${repoId}`);
+        return null;
+    }
+
+    const preArchivedVersions = getPreArchivedVersions(archivedNode._id, repoId);
+
+    const thing = versionId
+        ? preArchivedVersions.find((v) => v.versionId === versionId)
+        : undefined;
+
+    const requestedVersion = versionId
+        ? getContentVersionFromTime({
+              nodeKey: contentRef,
+              unixTime: getUnixTimeFromDateTimeString(thing?.timestamp),
+              repoId,
+              branch: 'draft',
+              getOldestIfNotFound: true,
+          })
+        : preArchivedVersions[0];
+    if (!requestedVersion) {
+        logger.info(
+            `No live version found for content - ${contentRef} in repo ${repoId} (time: ${thing?.timestamp})`
+        );
+        return null;
+    }
+
+    const requestedContent = contentLib.get({
+        key: requestedVersion.nodeId,
+        versionId: requestedVersion.versionId,
+    });
+    if (!requestedContent) {
+        logger.info(
+            `Could not retrieve version content - ${requestedVersion.nodeId} / ${requestedVersion.versionId} in repo ${repoId}`
+        );
+        return null;
+    }
+
+    const content = runInTimeTravelContext(
+        {
+            baseContentKey: requestedVersion.nodeId,
+            dateTime: requestedContent.modifiedTime || requestedContent.createdTime,
+            branch: 'draft',
+            repoId,
+        },
+        () => {
+            return runSitecontentGuillotineQuery(requestedContent, 'draft');
+        }
+    );
+
+    if (!content) {
+        logger.info(`No result from guillotine query - ${contentRef} in repo ${repoId}`);
+        return null;
+    }
+
+    return {
+        ...content,
+        page: getPageTemplate(content) || content.page,
+    };
+};
