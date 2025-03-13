@@ -36,10 +36,14 @@ const resolveToContentTimestamp = (content: Content, locale: string) => {
     );
 };
 
-const resolveToContentTimestampDraftbranch = (content: Content, locale: string) => {
+const resolveToContentTimestampDraftbranch = (
+    content: Content,
+    locale: string,
+    overrideDatetime?: string
+) => {
     return runInTimeTravelContext(
         {
-            dateTime: content.modifiedTime || content.createdTime,
+            dateTime: overrideDatetime || content.modifiedTime || content.createdTime,
             repoId: getLayersData().localeToRepoIdMap[locale],
             branch: 'draft',
             baseContentKey: content._id,
@@ -56,12 +60,8 @@ const getContentRenderProps = (
 ) => {
     const resolveToTs: boolean = !!versionId;
     if (isArchived) {
-        if (versionId) {
-            return get({ key: content._id, versionId: versionId });
-        }
-        const time = content.archivedTime || content.modifiedTime || content.createdTime;
-
-        return getArchivedContent(content._id, getLayersData().localeToRepoIdMap[locale], time);
+        return resolveToContentTimestampDraftbranch(content, locale, content.archivedTime);
+        // return getArchivedContent(content._id, getLayersData().localeToRepoIdMap[locale]);
     }
 
     return resolveToTs
