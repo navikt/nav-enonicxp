@@ -8,6 +8,7 @@ export type Calculator = import("./calculator").Calculator;
 export type Cms2xp_page = import("./cms2xp_page").Cms2xp_page;
 export type Cms2xp_section = import("./cms2xp_section").Cms2xp_section;
 export type ContactInformation = import("./contact-information").ContactInformation;
+export type ContactStepPage = import("./contact-step-page").ContactStepPage;
 export type ContentDataLocaleFallback = import("./content-data-locale-fallback").ContentDataLocaleFallback;
 export type ContentList = import("./content-list").ContentList;
 export type ContentPageWithSidemenus = import("./content-page-with-sidemenus").ContentPageWithSidemenus;
@@ -66,6 +67,7 @@ declare global {
       "no.nav.navno:cms2xp_page": Cms2xp_page;
       "no.nav.navno:cms2xp_section": Cms2xp_section;
       "no.nav.navno:contact-information": ContactInformation;
+      "no.nav.navno:contact-step-page": ContactStepPage;
       "no.nav.navno:content-data-locale-fallback": ContentDataLocaleFallback;
       "no.nav.navno:content-list": ContentList;
       "no.nav.navno:content-page-with-sidemenus": ContentPageWithSidemenus;

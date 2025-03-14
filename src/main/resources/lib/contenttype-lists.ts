@@ -32,6 +32,7 @@ export const dynamicPageContentTypes = [
     `${APP_DESCRIPTOR}:area-page`,
     `${APP_DESCRIPTOR}:press-landing-page`,
     `${APP_DESCRIPTOR}:forms-overview`,
+    `${APP_DESCRIPTOR}:contact-step-page`,
 ] as const satisfies ContentTypeList;
 
 export const linkContentTypes = [

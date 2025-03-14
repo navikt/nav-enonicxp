@@ -19,6 +19,7 @@ export type FormDetailsSelector = import("./form-details-selector").FormDetailsS
 export type FormIntermediateStepData = import("./form-intermediate-step-data").FormIntermediateStepData;
 export type FormIntermediateStepDataAction = import("./form-intermediate-step-data-action").FormIntermediateStepDataAction;
 export type HeaderWithAnchor = import("./header-with-anchor").HeaderWithAnchor;
+export type HtmlArea = import("./html-area").HtmlArea;
 export type IconSelector = import("./icon-selector").IconSelector;
 export type Illustration = import("./illustration").Illustration;
 export type Ingress = import("./ingress").Ingress;
