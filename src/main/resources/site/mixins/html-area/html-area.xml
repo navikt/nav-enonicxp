@@ -3,7 +3,7 @@
     <form>
         <input name="html" type="HtmlArea">
             <label>Ingress</label>
-            <occurrences minimum="1" maximum="1"/>
+            <occurrences minimum="0" maximum="1"/>
             <config>
                 <service>htmlFragmentSelector</service>
                 <include>Undo Redo Bold</include>
