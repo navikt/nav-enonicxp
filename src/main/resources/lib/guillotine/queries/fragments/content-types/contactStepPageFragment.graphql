@@ -1,6 +1,7 @@
 #import "../mixins/animatedIconsTargetFragment.graphql"
 #import "../mixins/internalLinkTargetFragment.graphql"
 #import "../contentCommonFragment.graphql"
+#import "../richText/richTextFragment.graphql"
 
 fragment contactStepPage on no_nav_navno_ContactStepPage {
     dataAsJson
@@ -31,6 +32,9 @@ fragment contactStepPage on no_nav_navno_ContactStepPage {
                     ...internalLinkTargetMixin
                 }
             }
+        }
+        html(processHtml: { type: server }) {
+            ...richText
         }
     }
 }

@@ -1,0 +1,17 @@
+<mixin>
+    <display-name>Html Area</display-name>
+    <form>
+        <input name="html" type="HtmlArea">
+            <label>Ingress</label>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <service>htmlFragmentSelector</service>
+                <include>Undo Redo Bold</include>
+                <exclude>JustifyBlock JustifyLeft JustifyCenter JustifyRight Outdent Indent
+                    Anchor Table
+                </exclude>
+                <allowHeadings>normal h2 h3 h4</allowHeadings>
+            </config>
+        </input>
+    </form>
+</mixin>
