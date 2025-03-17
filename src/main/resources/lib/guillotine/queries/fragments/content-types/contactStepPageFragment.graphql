@@ -9,29 +9,18 @@ fragment contactStepPage on no_nav_navno_ContactStepPage {
         illustration {
             ...animatedIconsTargetMixin
         }
-        links {
-            label
-            explanation
-            link {
-                _selected
-                internal {
-                    internalContent {
-                        ...contentCommon
-                    }
-                }
-                external {
-                    externalUrl
-                }
+        linkPanels {
+            target {
+                ...internalLinkTargetMixin
             }
+            text
+            ingress
         }
-        link {
-            _selected
-            internal {
-                text
-                target {
-                    ...internalLinkTargetMixin
-                }
+        backLink {
+            target {
+                ...internalLinkTargetMixin
             }
+            text
         }
         html(processHtml: { type: server }) {
             ...richText

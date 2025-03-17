@@ -38,103 +38,43 @@ export type ContactStepPage = {
   /**
    * Overskrift
    */
-  linksHeading?: string;
+  linkPanelsHeading?: string;
 
   /**
    * Undertittel
    */
-  linksSubHeadline?: string;
+  linkPanelsSubHeading?: string;
 
 
-  links: Array<{
+  linkPanels: Array<{
     /**
-     * Tittel
+     * Innhold det skal lenkes til
      */
-    label: string;
+    target: string;
 
     /**
-     * Ekstra forklaring
+     * Lenketekst (hvis tom vil tittel på innholdet vises)
      */
-    explanation?: string;
+    text?: string;
 
-
-    link:
-      | {
-          /**
-           * Selected
-           */
-          _selected: "internal";
-
-          /**
-           * Intern lenke
-           */
-          internal: {
-            /**
-             * Intern lenke
-             */
-            internalContent?: string;
-          };
-        }
-      | {
-          /**
-           * Selected
-           */
-          _selected: "external";
-
-          /**
-           * Ekstern lenke
-           */
-          external: {
-            /**
-             * Ekstern URL
-             */
-            externalUrl?: string;
-          };
-        };
+    /**
+     * Ingress
+     */
+    ingress?: string;
   }>;
 
+  /**
+   * Tilbakelenke
+   */
+  backLink: {
+    /**
+     * Innhold det skal lenkes til
+     */
+    target: string;
 
-  link:
-    | {
-        /**
-         * Selected
-         */
-        _selected: "internal";
-
-        /**
-         * Intern lenke
-         */
-        internal: {
-          /**
-           * Innhold det skal lenkes til
-           */
-          target: string;
-
-          /**
-           * Lenketekst (hvis tom vil tittel på innholdet vises)
-           */
-          text?: string;
-        };
-      }
-    | {
-        /**
-         * Selected
-         */
-        _selected: "external";
-
-        /**
-         * Ekstern lenke
-         */
-        external: {
-          /**
-           * URL
-           */
-          url: string;
-
-          /**
-           * Lenketekst
-           */
-          text: string;
-        };
-      };
+    /**
+     * Lenketekst (hvis tom vil tittel på innholdet vises)
+     */
+    text?: string;
+  };
 };
