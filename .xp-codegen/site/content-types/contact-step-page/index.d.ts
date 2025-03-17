@@ -38,25 +38,15 @@ export type ContactStepPage = {
   /**
    * Overskrift
    */
-  linksHeading?: string;
+  linkPanelsHeading?: string;
 
   /**
    * Undertittel
    */
-  linksSubHeadline?: string;
+  linkPanelsSubHeading?: string;
 
 
-  links: Array<{
-    /**
-     * Tittel
-     */
-    label: string;
-
-    /**
-     * Ekstra forklaring
-     */
-    explanation?: string;
-
+  linkPanels: Array<{
 
     link:
       | {
@@ -70,9 +60,14 @@ export type ContactStepPage = {
            */
           internal: {
             /**
-             * Intern lenke
+             * Innhold det skal lenkes til
              */
-            internalContent?: string;
+            target: string;
+
+            /**
+             * Lenketekst (hvis tom vil tittel på innholdet vises)
+             */
+            text?: string;
           };
         }
       | {
@@ -86,11 +81,21 @@ export type ContactStepPage = {
            */
           external: {
             /**
-             * Ekstern URL
+             * URL
              */
-            externalUrl?: string;
+            url: string;
+
+            /**
+             * Lenketekst
+             */
+            text: string;
           };
         };
+
+    /**
+     * Ingress
+     */
+    ingress?: string;
   }>;
 
 
