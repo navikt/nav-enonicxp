@@ -1,33 +1,120 @@
 import { queryAllLayersToRepoIdBuckets } from '../localization/layers-repo-utils/query-all-layers';
 import { getRepoConnection } from '../repos/repo-utils';
-import { ContentDescriptor } from '../../types/content-types/content-config';
 import * as nodeLib from '/lib/xp/node';
-import { Content } from '/lib/xp/content';
+
+import { ContentDescriptor } from '../../types/content-types/content-config';
 import { logger } from '../utils/logging';
 
-type ContentDataSimple = Pick<
-    Content,
-    '_id' | '_path' | 'createdTime' | 'modifiedTime' | 'type' | 'displayName'
-> & {
-    repoId: string;
-    errors: string[];
+const fieldKeysToSearch = ['displayName', 'ingress', 'html', 'text', 'html', 'pressCall', 'body', 'explanation'];
+const inputFields: string[] = [
+    "adkomstbeskrivelse",
+    "adresse",
+    "adresseTilleggsnavn",
+    "alertText",
+    "allProducts",
+    "altText",
+    "areasHeader",
+    "beskrivelse",
+    "body",
+    "caption",
+    "chatAlertText",
+    "chatIngress",
+    "contactUsAlertText",
+    "contactUsIngress",
+    "content",
+    "customCategory",
+    "dag",
+    "description",
+    "editorial",
+    "epost",
+    "explanation",
+    "externalProductUrl",
+    "fact",
+    "faksnummer",
+    "formNumbers",
+    "fra",
+    "frontendEventID",
+    "gatenavn",
+    "habilitetskontor",
+    "header",
+    "html",
+    "husbokstav",
+    "husnummer",
+    "informasjonUtbetalinger",
+    "ingress",
+    "ingressKey",
+    "ingressOverride",
+    "kanalstrategi",
+    "kommentar",
+    "label",
+    "languageDisclaimer",
+    "lenke",
+    "lenketekst",
+    "linkText",
+    "longTitle",
+    "margin",
+    "maxShortcutsCount",
+    "mediaId",
+    "moreNewsUrl",
+    "name",
+    "navn",
+    "norwegianTitle",
+    "oppgavebehandler",
+    "orgNivaa",
+    "orgNrTilKommunaltNavKontor",
+    "organisasjonsnummer",
+    "originaltitle",
+    "overordnetEnhet",
+    "papirsoeknadInformasjon",
+    "period",
+    "phoneNumber",
+    "postboksanlegg",
+    "postboksnummer",
+    "postnummer",
+    "poststed",
+    "pressCall",
+    "skriftspraak",
+    "sortOrder",
+    "sortTitle",
+    "sosialeTjenester",
+    "spesielleOpplysninger",
+    "status",
+    "stedsbeskrivelse",
+    "stengt",
+    "subtitles",
+    "summaryText",
+    "telefonnummerKommentar",
+    "text",
+    "textKey",
+    "til",
+    "title",
+    "titleKey",
+    "underTitle",
+    "value",
+    "variableName",
+    "ytterligereInformasjon"
+  ];
+const replaceNAVToNav = (str: string) => {
+    return str.replace(/\bNAV\b/g, 'Nav');
 };
 
-const fieldKeysToSearch = ['ingress', 'html', 'text', 'html', 'pressCall', 'body'];
+const mutateKeys = (obj: any) => {
+    for (const key in obj) {
+        if (fieldKeysToSearch.includes(key) && typeof obj[key] === 'string') {
+            obj[key] = replaceNAVToNav(obj[key]);
+        } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+            if (Array.isArray(obj[key])) {
+                obj[key].forEach((item) => mutateKeys(item));
+            } else {
+                mutateKeys(obj[key]);
+            }
+        }
+    }
+};
 
-const simplifyContent = (content: Content, repoId: string): ContentDataSimple => {
-    const { _id, _path, createdTime, modifiedTime, type, data, displayName } = content;
-
-    return {
-        _id,
-        _path,
-        displayName,
-        createdTime,
-        modifiedTime,
-        type,
-        repoId,
-        errors: [],
-    };
+const NAVToNavEditor = (node: nodeLib.RepoNode<any>) => {
+    mutateKeys(node);
+    return node;
 };
 
 type NAVToNavResult = {
@@ -35,24 +122,6 @@ type NAVToNavResult = {
     converted: number;
     failed: number;
 };
-function replaceNavInFields(obj: any, fieldKeysToSearch: string[]): any {
-    if (Array.isArray(obj)) {
-        return obj.map((item) => replaceNavInFields(item, fieldKeysToSearch));
-    } else if (typeof obj === 'object' && obj !== null) {
-        const newObj: any = {};
-        for (const key in obj) {
-            if (Object.prototype.hasOwnProperty.call(obj, key)) {
-                if (fieldKeysToSearch.includes(key) && typeof obj[key] === 'string') {
-                    newObj[key] = obj[key].replace(/\bNAV\b/g, 'Nav');
-                } else {
-                    newObj[key] = replaceNavInFields(obj[key], fieldKeysToSearch);
-                }
-            }
-        }
-        return newObj;
-    }
-    return obj;
-}
 
 export const convertNAVToNav = () => {
     const hitsPerRepo = queryAllLayersToRepoIdBuckets({
@@ -94,23 +163,10 @@ export const convertNAVToNav = () => {
 
         const limitedHits = hits.slice(0, 5);
 
-        logger.info(`Found ${limitedHits.length} contents in repo ${repoId}.`);
-
         limitedHits.forEach((contentId) => {
             layerRepo.modify({
                 key: contentId,
-                editor: (node) => {
-                    const newNode = JSON.parse(JSON.stringify(node));
-                    const replaced = replaceNavInFields(newNode, fieldKeysToSearch);
-                    log.info('original node');
-                    log.info(JSON.stringify(newNode));
-                    log.info('replaced node');
-                    log.info(JSON.stringify(replaced));
-                    //node.data = replaced.data;
-                    //node.displayName = replaced.displayName;
-                    //node.components = replaced.components;
-                    return node;
-                },
+                editor: NAVToNavEditor,
             });
         });
     });
