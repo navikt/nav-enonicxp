@@ -47,50 +47,15 @@ export type ContactStepPage = {
 
 
   linkPanels: Array<{
+    /**
+     * Innhold det skal lenkes til
+     */
+    target: string;
 
-    link:
-      | {
-          /**
-           * Selected
-           */
-          _selected: "internal";
-
-          /**
-           * Intern lenke
-           */
-          internal: {
-            /**
-             * Innhold det skal lenkes til
-             */
-            target: string;
-
-            /**
-             * Lenketekst (hvis tom vil tittel på innholdet vises)
-             */
-            text?: string;
-          };
-        }
-      | {
-          /**
-           * Selected
-           */
-          _selected: "external";
-
-          /**
-           * Ekstern lenke
-           */
-          external: {
-            /**
-             * URL
-             */
-            url: string;
-
-            /**
-             * Lenketekst
-             */
-            text: string;
-          };
-        };
+    /**
+     * Lenketekst (hvis tom vil tittel på innholdet vises)
+     */
+    text?: string;
 
     /**
      * Ingress
@@ -98,48 +63,18 @@ export type ContactStepPage = {
     ingress?: string;
   }>;
 
+  /**
+   * Tilbakelenke
+   */
+  backLink: {
+    /**
+     * Innhold det skal lenkes til
+     */
+    target: string;
 
-  link:
-    | {
-        /**
-         * Selected
-         */
-        _selected: "internal";
-
-        /**
-         * Intern lenke
-         */
-        internal: {
-          /**
-           * Innhold det skal lenkes til
-           */
-          target: string;
-
-          /**
-           * Lenketekst (hvis tom vil tittel på innholdet vises)
-           */
-          text?: string;
-        };
-      }
-    | {
-        /**
-         * Selected
-         */
-        _selected: "external";
-
-        /**
-         * Ekstern lenke
-         */
-        external: {
-          /**
-           * URL
-           */
-          url: string;
-
-          /**
-           * Lenketekst
-           */
-          text: string;
-        };
-      };
+    /**
+     * Lenketekst (hvis tom vil tittel på innholdet vises)
+     */
+    text?: string;
+  };
 };

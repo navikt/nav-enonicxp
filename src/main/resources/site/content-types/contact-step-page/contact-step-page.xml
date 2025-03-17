@@ -42,7 +42,11 @@
                 <item-set name="linkPanels">
                     <occurrences minimum="1" maximum="0" />
                     <items>
-                        <mixin name="link-with-ingress" />
+                        <mixin name="link-internal" />
+                        <input type="TextArea" name="ingress">
+                            <label>Ingress</label>
+                            <occurrences minimum="0" maximum="1" />
+                        </input>
                     </items>
                 </item-set>
             </items>
@@ -50,7 +54,13 @@
         <field-set>
             <label>Tilbakelenke</label>
             <items>
-                <mixin name="link" />
+                <item-set name="backLink">
+                    <label>Tilbakelenke</label>
+                    <occurrences minimum="1" maximum="1" />
+                    <items>
+                        <mixin name="link-internal" />
+                    </items>
+                </item-set>
             </items>
         </field-set>
     </form>
