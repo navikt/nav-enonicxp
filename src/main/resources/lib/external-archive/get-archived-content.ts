@@ -81,9 +81,11 @@ export const getArchivedContent = (
 
     const preArchivedVersions = getPreArchivedVersions(archivedNode._id, repoId);
 
-    const contentTime =
-        (versionId && preArchivedVersions.find((v) => v.versionId === versionId)?.timestamp) ||
-        time;
+    const versionNode = versionId
+        ? preArchivedVersions.find((v) => v.versionId === versionId)
+        : undefined;
+
+    const contentTime = versionNode ? versionNode.timestamp : time;
 
     const requestedVersion = contentTime
         ? getContentVersionFromTime({
