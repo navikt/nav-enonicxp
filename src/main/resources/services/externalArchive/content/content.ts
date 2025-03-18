@@ -8,7 +8,7 @@ import {
 } from '../../../lib/time-travel/get-published-versions';
 import { getContentForExternalArchive } from '../../../lib/external-archive/get-content';
 import { runInLocaleContext } from '../../../lib/localization/locale-context';
-import { getArchivedContent } from '../../../lib/external-archive/get-archived-content';
+import { getArchivedContentForExternalArchive } from '../../../lib/external-archive/get-archived-content';
 
 type Response = {
     contentRaw: Content & { locale: string; originalContentTypeName: string | undefined };
@@ -43,10 +43,9 @@ const getContentRenderProps = (
 ) => {
     const resolveToTs = !!versionId;
     if (isArchived) {
-        return getArchivedContent(
+        return getArchivedContentForExternalArchive(
             content._id,
             getLayersData().localeToRepoIdMap[locale],
-            undefined,
             versionId
         );
     }
