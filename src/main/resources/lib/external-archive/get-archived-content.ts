@@ -167,7 +167,7 @@ export const getArchivedContentForExternalArchive = (
         : preArchivedVersions[0];
     if (!requestedVersion) {
         logger.info(
-            `No live version found for content - ${contentRef} in repo ${repoId} (time: ${thing?.timestamp})`
+            `No live version found for content - ${contentRef} in repo ${repoId} (time: ${versionNode?.timestamp})`
         );
         return null;
     }
