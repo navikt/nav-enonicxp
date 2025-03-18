@@ -28,6 +28,28 @@ fragment contentIntermediateStep on no_nav_navno_FormIntermediateStep {
                         languageDisclaimer
                         nextStep {
                             _selected
+                            next {
+                                editorial(processHtml: { type: server }) {
+                                    ...richText
+                                }
+                                stepsHeadline
+                                steps {
+                                    label
+                                    explanation
+                                    languageDisclaimer
+                                    nextStep {
+                                        _selected
+                                        external {
+                                            externalUrl
+                                        }
+                                        internal {
+                                            internalContent {
+                                                ...contentCommon
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                             external {
                                 externalUrl
                             }
