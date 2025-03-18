@@ -63,7 +63,12 @@ const getPreArchivedVersions = (contentId: string, repoId: string) => {
     }).filter((version) => version.nodePath.startsWith('/content'));
 };
 
-export const getArchivedContent = (idOrArchivedPath: string, repoId: string, time?: string) => {
+export const getArchivedContent = (
+    idOrArchivedPath: string,
+    repoId: string,
+    time?: string,
+    versionId?: string
+) => {
     const contentRef = getArchivedContentRef(idOrArchivedPath);
 
     const repoConnection = getRepoConnection({ branch: 'draft', repoId });
@@ -76,10 +81,16 @@ export const getArchivedContent = (idOrArchivedPath: string, repoId: string, tim
 
     const preArchivedVersions = getPreArchivedVersions(archivedNode._id, repoId);
 
-    const requestedVersion = time
+    const versionNode = versionId
+        ? preArchivedVersions.find((v) => v.versionId === versionId)
+        : undefined;
+
+    const contentTime = versionNode ? versionNode.timestamp : time;
+
+    const requestedVersion = contentTime
         ? getContentVersionFromTime({
               nodeKey: contentRef,
-              unixTime: getUnixTimeFromDateTimeString(time),
+              unixTime: getUnixTimeFromDateTimeString(contentTime),
               repoId,
               branch: 'draft',
               getOldestIfNotFound: false,
@@ -87,7 +98,7 @@ export const getArchivedContent = (idOrArchivedPath: string, repoId: string, tim
         : preArchivedVersions[0];
     if (!requestedVersion) {
         logger.info(
-            `No live version found for content - ${contentRef} in repo ${repoId} (time: ${time})`
+            `No live version found for content - ${contentRef} in repo ${repoId} (time: ${contentTime})`
         );
         return null;
     }

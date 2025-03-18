@@ -82,7 +82,6 @@ export const getContentVersionFromTime = ({
     if (!length) {
         return null;
     }
-
     // Return the newest version which is equal to or older than the requested time
     const foundVersion = contentVersions.find((version) => {
         const versionUnixTime = getUnixTimeFromDateTimeString(version.timestamp);
