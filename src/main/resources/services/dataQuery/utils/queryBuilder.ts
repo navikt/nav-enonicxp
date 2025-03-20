@@ -109,7 +109,7 @@ export const getNodeHitsFromExternalArchiveQuery = ({
                             notExists: { field: 'x.no-nav-navno.previewOnly.previewOnly' },
                             hasValue: {
                                 field: 'x.no-nav-navno.previewOnly.previewOnly',
-                                values: ['false'],
+                                values: ['false', {}],
                             },
                         },
                     ],
