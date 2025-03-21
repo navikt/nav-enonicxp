@@ -5,7 +5,7 @@
     <is-final>true</is-final>
     <form>
         <field-set>
-            <label>Tittel og ingress</label>
+            <label>Overskrift og ingress</label>
             <items>
                 <mixin name="page-header" />
                 <input type="TextLine" name="textAboveTitle">

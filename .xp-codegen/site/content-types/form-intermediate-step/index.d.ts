@@ -136,7 +136,7 @@ export type FormIntermediateStep = {
           _selected: "next";
 
           /**
-           * Nytt steg
+           * Nytt steg, nivå 2
            */
           next: {
             /**
@@ -211,7 +211,7 @@ export type FormIntermediateStep = {
                     _selected: "next";
 
                     /**
-                     * Nytt steg
+                     * Nytt steg, nivå 3
                      */
                     next: {
                       /**

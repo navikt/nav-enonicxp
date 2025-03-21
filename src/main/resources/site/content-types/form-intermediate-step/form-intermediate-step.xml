@@ -6,13 +6,12 @@
     <allow-child-content>true</allow-child-content>
     <form>
         <field-set>
-            <label>Piktogram</label>
+            <label>Overskrift</label>
             <items>
                 <mixin name="illustration"/>
             </items>
         </field-set>
         <field-set>
-            <label>Målgruppe</label>
             <items>
                 <mixin name="audience"/>
             </items>
