@@ -3,6 +3,7 @@
 #import "../mixins/animatedIconsTargetFragment.graphql"
 
 fragment contentIntermediateStep on no_nav_navno_FormIntermediateStep {
+    dataAsJson
     data {
         illustration {
             ...animatedIconsTargetMixin
