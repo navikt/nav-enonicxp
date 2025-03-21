@@ -46,6 +46,7 @@ const runArchiveQuery = (nodeHitsBuckets: RepoIdNodeIdBuckets) => {
             const repo = getRepoConnection({
                 repoId,
                 branch: 'draft',
+                asAdmin: true,
             });
 
             const result = repo.get<RepoNode<Content>>(nodeIds);
