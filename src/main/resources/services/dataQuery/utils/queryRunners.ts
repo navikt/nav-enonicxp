@@ -145,6 +145,7 @@ export const runExternalArchiveQuery = (params: RunExternalArchiveQueryParams) =
     const { repoIdToLocaleMap } = getLayersData();
     const contentHits = nodeHits.reduce<ContentWithLocaleData[]>((contents, node) => {
         const locale = repoIdToLocaleMap[node.repoId];
+        logger.info(`Node id ${node.id} with repoId ${node.repoId} is mapped to locale ${locale}`);
         const repo = getRepoConnection({
             repoId: node.repoId,
             branch: node.branch,
