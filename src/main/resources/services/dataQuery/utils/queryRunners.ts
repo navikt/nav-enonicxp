@@ -152,11 +152,7 @@ export const runExternalArchiveQuery = (params: RunExternalArchiveQueryParams) =
             asAdmin: true,
         });
         const result = repo.get<RepoNode<Content>>(node.id);
-        if (!result) {
-            logger.info(`Node id ${node.id} with repoId ${node.repoId} has no result}`);
-
-            return contents;
-        }
+        if (!result) return contents;
         const contentNode = transformRepoNode(result);
         const contentWithRepoIds = {
             ...contentNode,
