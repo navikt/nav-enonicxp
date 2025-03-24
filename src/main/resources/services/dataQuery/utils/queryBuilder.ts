@@ -88,6 +88,7 @@ export const getNodeHitsFromExternalArchiveQuery = ({
                 boolean: {
                     must: [
                         { notExists: { field: 'data.externalProductUrl' } },
+                        { notExists: { field: 'data._layerMigration' } },
                         {
                             hasValue: {
                                 field: 'type',
