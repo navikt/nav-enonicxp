@@ -81,9 +81,10 @@ export type FormIntermediateStepData = {
            */
           next: {
             /**
-             * Tittel
+             * Overstyr
+             * tittel
              */
-            title: string;
+            overrideTitle?: string;
 
             /**
              * Redaksjonelt innhold ovenfor valgene
@@ -169,9 +170,10 @@ export type FormIntermediateStepData = {
                      */
                     next: {
                       /**
-                       * Tittel
+                       * Overstyr
+                       * tittel
                        */
-                      title: string;
+                      overrideTitle?: string;
 
                       /**
                        * Redaksjonelt
