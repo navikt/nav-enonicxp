@@ -81,8 +81,7 @@ export type FormIntermediateStepData = {
            */
           next: {
             /**
-             * Overstyr
-             * tittel
+             * Overstyr tittel
              */
             overrideTitle?: string;
 

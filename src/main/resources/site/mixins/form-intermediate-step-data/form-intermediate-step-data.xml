@@ -59,8 +59,7 @@
                                                 <input
                                                     name="overrideTitle"
                                                     type="TextLine">
-                                                    <label>Overstyr
-                                                        tittel</label>
+                                                    <label>Overstyr tittel</label>
                                                     <occurrences
                                                         minimum="0"
                                                         maximum="1" />
