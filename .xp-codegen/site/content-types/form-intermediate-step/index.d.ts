@@ -119,6 +119,11 @@ export type FormIntermediateStep = {
     languageDisclaimer?: string;
 
     /**
+     * Skjemanummer
+     */
+    formNumberStepData?: string;
+
+    /**
      * Dette valget sender brukeren videre til:
      */
     nextStep:
@@ -194,6 +199,11 @@ export type FormIntermediateStep = {
               languageDisclaimer?: string;
 
               /**
+               * Skjemanummer
+               */
+              formNumberStepData?: string;
+
+              /**
                * Dette valget sender brukeren videre til:
                */
               nextStep:
@@ -267,6 +277,11 @@ export type FormIntermediateStep = {
                          * Informasjon om språk
                          */
                         languageDisclaimer?: string;
+
+                        /**
+                         * Skjemanummer
+                         */
+                        formNumberStepData?: string;
 
                         /**
                          * Dette valget sender brukeren videre til:

@@ -30,6 +30,11 @@ export type FormIntermediateStepData = {
     languageDisclaimer?: string;
 
     /**
+     * Skjemanummer
+     */
+    formNumberStepData?: string;
+
+    /**
      * Dette valget sender brukeren videre til:
      */
     nextStep:
@@ -76,6 +81,11 @@ export type FormIntermediateStepData = {
            */
           next: {
             /**
+             * Tittel
+             */
+            title: string;
+
+            /**
              * Redaksjonelt innhold ovenfor valgene
              */
             editorial?: string;
@@ -105,7 +115,13 @@ export type FormIntermediateStepData = {
               languageDisclaimer?: string;
 
               /**
-               * Dette valget sender brukeren videre til:
+               * Skjemanummer
+               */
+              formNumberStepData?: string;
+
+              /**
+               * Dette valget sender brukeren
+               * videre til:
                */
               nextStep:
                 | {
@@ -115,7 +131,8 @@ export type FormIntermediateStepData = {
                     _selected: "internal";
 
                     /**
-                     * Intern lenke til skjema, søknad eller klage
+                     * Intern lenke til skjema,
+                     * søknad eller klage
                      */
                     internal: {
                       /**
@@ -131,7 +148,8 @@ export type FormIntermediateStepData = {
                     _selected: "external";
 
                     /**
-                     * Ekstern lenke til skjema, søknad eller klage
+                     * Ekstern lenke til skjema,
+                     * søknad eller klage
                      */
                     external: {
                       /**
@@ -151,12 +169,21 @@ export type FormIntermediateStepData = {
                      */
                     next: {
                       /**
-                       * Redaksjonelt innhold ovenfor valgene
+                       * Tittel
+                       */
+                      title: string;
+
+                      /**
+                       * Redaksjonelt
+                       * innhold
+                       * ovenfor
+                       * valgene
                        */
                       editorial?: string;
 
                       /**
-                       * Overskrift til stegene
+                       * Overskrift
+                       * til stegene
                        */
                       stepsHeadline?: string;
 
@@ -180,7 +207,17 @@ export type FormIntermediateStepData = {
                         languageDisclaimer?: string;
 
                         /**
-                         * Dette valget sender brukeren videre til:
+                         * Skjemanummer
+                         */
+                        formNumberStepData?: string;
+
+                        /**
+                         * Dette
+                         * valget
+                         * sender
+                         * brukeren
+                         * videre
+                         * til:
                          */
                         nextStep:
                           | {
@@ -190,11 +227,18 @@ export type FormIntermediateStepData = {
                               _selected: "internal";
 
                               /**
-                               * Intern lenke til skjema, søknad eller klage
+                               * Intern
+                               * lenke
+                               * til
+                               * skjema,
+                               * søknad
+                               * eller
+                               * klage
                                */
                               internal: {
                                 /**
-                                 * Internt innhold
+                                 * Internt
+                                 * innhold
                                  */
                                 internalContent: string;
                               };
@@ -206,11 +250,18 @@ export type FormIntermediateStepData = {
                               _selected: "external";
 
                               /**
-                               * Ekstern lenke til skjema, søknad eller klage
+                               * Ekstern
+                               * lenke
+                               * til
+                               * skjema,
+                               * søknad
+                               * eller
+                               * klage
                                */
                               external: {
                                 /**
-                                 * Ekstern URL
+                                 * Ekstern
+                                 * URL
                                  */
                                 externalUrl: string;
                               };

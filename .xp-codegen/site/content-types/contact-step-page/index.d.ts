@@ -11,11 +11,6 @@ export type ContactStepPage = {
   textAboveTitle?: string;
 
   /**
-   * Skjemanummer
-   */
-  formNumbers?: string;
-
-  /**
    * Tittel for utlisting og sortering
    */
   sortTitle?: string;
