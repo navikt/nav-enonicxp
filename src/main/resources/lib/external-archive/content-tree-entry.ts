@@ -7,6 +7,7 @@ import { NON_LOCALIZED_QUERY_FILTER } from '../localization/layers-repo-utils/lo
 
 export type ContentTreeEntry = {
     id: string;
+    versionId: string;
     path: string;
     name: string;
     displayName: string;
@@ -38,7 +39,7 @@ const hasLocalizedDescendants = (content: Content, repo: RepoConnection) => {
 };
 
 export const transformToContentTreeEntry = (
-    content: Content,
+    content: Content & { versionId: string },
     repo: RepoConnection,
     locale: string
 ): ContentTreeEntry => {
@@ -49,6 +50,7 @@ export const transformToContentTreeEntry = (
 
     return {
         id: content._id,
+        versionId: content.versionId,
         path: stripPathPrefix(content._path),
         name: content._name,
         displayName: content.displayName,

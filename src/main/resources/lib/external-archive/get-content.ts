@@ -4,10 +4,12 @@ import { Content } from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
 import { isArchivedContentNode, isExcludedFromExternalArchive } from '../utils/content-utils';
 
-const transformRepoContentNode = (node: RepoNode<Content>): Content => {
+type ContentWithLatestVersionId = Content & { versionId: string };
+
+const transformRepoContentNode = (node: RepoNode<Content>): ContentWithLatestVersionId => {
     const { _indexConfig, _inheritsPermissions, _permissions, _childOrder, ...content } = node;
 
-    return { ...content, childOrder: _childOrder };
+    return { ...content, childOrder: _childOrder, versionId: node._versionKey };
 };
 
 const getContentVersion = (contentId: string, versionId: string, locale: string) => {
@@ -24,7 +26,7 @@ const getContentVersion = (contentId: string, versionId: string, locale: string)
 export const getLastPublishedContentVersion = (
     contentKey: string,
     locale: string
-): Content | null => {
+): ContentWithLatestVersionId | null => {
     const repoId = getLayersData().localeToRepoIdMap[locale];
 
     const masterRepo = getRepoConnection({
