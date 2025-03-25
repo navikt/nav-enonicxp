@@ -11,7 +11,6 @@ fragment contentIntermediateStep on no_nav_navno_FormIntermediateStep {
         editorial(processHtml: { type: server }) {
             ...richText
         }
-        stepsHeadline
         steps {
             label
             explanation
@@ -20,7 +19,6 @@ fragment contentIntermediateStep on no_nav_navno_FormIntermediateStep {
             nextStep {
                 _selected
                 next {
-                    stepsHeadline
                     steps {
                         label
                         explanation
@@ -29,7 +27,6 @@ fragment contentIntermediateStep on no_nav_navno_FormIntermediateStep {
                         nextStep {
                             _selected
                             next {
-                                stepsHeadline
                                 steps {
                                     label
                                     explanation
