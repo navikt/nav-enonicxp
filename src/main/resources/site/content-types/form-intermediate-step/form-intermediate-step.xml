@@ -8,7 +8,22 @@
         <field-set>
             <label>Overskrift</label>
             <items>
-                <mixin name="header-with-parent" />
+                <input type="TextLine" name="title">
+                    <label>Tittel</label>
+                    <occurrences minimum="0" maximum="1" />
+                </input>
+                <input type="TextLine" name="sortTitle">
+                    <label>Tittel for utlisting og sortering</label>
+                    <occurrences minimum="0" maximum="1" />
+                </input>
+                <!-- Next field is used for editorial guidance only. Not exposed in guillotine to
+                frontend. -->
+                <input type="TextLine" name="norwegianTitle">
+                    <label>Norsk tittel (hvis fremmedspråklig innhold)</label>
+                    <occurrences minimum="0" maximum="1" />
+                    <help-text>Dette er kun ment som hjelp til redaktørene. Vises ikke på nav.no.</help-text>
+                </input>
+                <mixin name="illustration" />
                 <input type="Tag" name="formNumbers">
                     <label>Skjemanummer</label>
                     <occurrences minimum="0" maximum="20" />
@@ -17,7 +32,7 @@
         </field-set>
         <field-set>
             <items>
-                <mixin name="audience"/>
+                <mixin name="audience" />
             </items>
         </field-set>
         <field-set>
@@ -25,13 +40,13 @@
             <items>
                 <input name="customPath" type="CustomSelector">
                     <label>Må begynne med '/start/[målgruppe dersom ikke privatperson]'</label>
-                    <occurrences minimum="1" maximum="1"/>
+                    <occurrences minimum="1" maximum="1" />
                     <config>
                         <service>customPathSelector</service>
                     </config>
                 </input>
             </items>
         </field-set>
-        <mixin name="form-intermediate-step-data"/>
+        <mixin name="form-intermediate-step-data" />
     </form>
 </content-type>
