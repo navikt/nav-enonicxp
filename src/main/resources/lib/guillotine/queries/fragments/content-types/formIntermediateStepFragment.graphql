@@ -20,7 +20,6 @@ fragment contentIntermediateStep on no_nav_navno_FormIntermediateStep {
             nextStep {
                 _selected
                 next {
-                    overrideTitle
                     editorial(processHtml: { type: server }) {
                         ...richText
                     }
@@ -33,7 +32,6 @@ fragment contentIntermediateStep on no_nav_navno_FormIntermediateStep {
                         nextStep {
                             _selected
                             next {
-                                overrideTitle
                                 editorial(processHtml: { type: server }) {
                                     ...richText
                                 }

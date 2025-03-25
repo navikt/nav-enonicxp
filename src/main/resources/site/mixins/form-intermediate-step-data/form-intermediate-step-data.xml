@@ -56,14 +56,6 @@
                                         <field-set>
                                             <label>Enkeltsteg</label>
                                             <items>
-                                                <input
-                                                    name="overrideTitle"
-                                                    type="TextLine">
-                                                    <label>Overstyr tittel</label>
-                                                    <occurrences
-                                                        minimum="0"
-                                                        maximum="1" />
-                                                </input>
                                                 <input name="editorial" type="HtmlArea">
                                                     <label>Redaksjonelt innhold ovenfor valgene</label>
                                                     <occurrences minimum="0" maximum="1" />
@@ -132,15 +124,6 @@
                                                                         <field-set>
                                                                             <label>Enkeltsteg</label>
                                                                             <items>
-                                                                                <input
-                                                                                    name="overrideTitle"
-                                                                                    type="TextLine">
-                                                                                    <label>Overstyr
-                                                                                        tittel</label>
-                                                                                    <occurrences
-                                                                                        minimum="0"
-                                                                                        maximum="1" />
-                                                                                </input>
                                                                                 <input
                                                                                     name="editorial"
                                                                                     type="HtmlArea">
