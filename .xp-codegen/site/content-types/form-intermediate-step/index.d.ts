@@ -6,11 +6,6 @@ export type FormIntermediateStep = {
   title?: string;
 
   /**
-   * Tekst over tittel
-   */
-  textAboveTitle?: string;
-
-  /**
    * Tittel for utlisting og sortering
    */
   sortTitle?: string;
@@ -170,11 +165,6 @@ export type FormIntermediateStep = {
            */
           next: {
             /**
-             * Redaksjonelt innhold ovenfor valgene
-             */
-            editorial?: string;
-
-            /**
              * Overskrift til stegene
              */
             stepsHeadline?: string;
@@ -252,14 +242,6 @@ export type FormIntermediateStep = {
                      * Nytt steg, nivå 3
                      */
                     next: {
-                      /**
-                       * Redaksjonelt
-                       * innhold
-                       * ovenfor
-                       * valgene
-                       */
-                      editorial?: string;
-
                       /**
                        * Overskrift
                        * til stegene
