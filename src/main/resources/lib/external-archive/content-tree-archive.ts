@@ -164,6 +164,7 @@ class ArchiveContentTree {
         // Use the "virtual" path in our content tree structure instead of the XP archive path
         const contentWithVirtualPath = {
             ...content,
+            versionId: content._versionKey,
             _path: path,
         };
 
@@ -239,6 +240,7 @@ class ArchiveContentTree {
     private buildEmptyContentTreeEntry(path: string, name: string): ContentTreeEntry {
         return {
             id: `empty-node-${generateUUID()}`,
+            versionId: `empty-node-${generateUUID()}`,
             path,
             name,
             displayName: name,
