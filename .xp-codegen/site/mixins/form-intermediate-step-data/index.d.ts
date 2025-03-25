@@ -6,11 +6,6 @@ export type FormIntermediateStepData = {
   editorial?: string;
 
   /**
-   * Overskrift til stegene
-   */
-  stepsHeadline?: string;
-
-  /**
    * Enkeltsteg
    */
   steps: Array<{
@@ -28,6 +23,11 @@ export type FormIntermediateStepData = {
      * Informasjon om språk
      */
     languageDisclaimer?: string;
+
+    /**
+     * Skjemanummer
+     */
+    formNumberStepData?: string;
 
     /**
      * Dette valget sender brukeren videre til:
@@ -72,19 +72,9 @@ export type FormIntermediateStepData = {
           _selected: "next";
 
           /**
-           * Nytt steg
+           * Nytt steg, nivå 2
            */
           next: {
-            /**
-             * Redaksjonelt innhold ovenfor valgene
-             */
-            editorial?: string;
-
-            /**
-             * Overskrift til stegene
-             */
-            stepsHeadline?: string;
-
             /**
              * Steg
              */
@@ -105,7 +95,13 @@ export type FormIntermediateStepData = {
               languageDisclaimer?: string;
 
               /**
-               * Dette valget sender brukeren videre til:
+               * Skjemanummer
+               */
+              formNumberStepData?: string;
+
+              /**
+               * Dette valget sender brukeren
+               * videre til:
                */
               nextStep:
                 | {
@@ -115,7 +111,8 @@ export type FormIntermediateStepData = {
                     _selected: "internal";
 
                     /**
-                     * Intern lenke til skjema, søknad eller klage
+                     * Intern lenke til skjema,
+                     * søknad eller klage
                      */
                     internal: {
                       /**
@@ -131,13 +128,106 @@ export type FormIntermediateStepData = {
                     _selected: "external";
 
                     /**
-                     * Ekstern lenke til skjema, søknad eller klage
+                     * Ekstern lenke til skjema,
+                     * søknad eller klage
                      */
                     external: {
                       /**
                        * Ekstern URL
                        */
                       externalUrl: string;
+                    };
+                  }
+                | {
+                    /**
+                     * Selected
+                     */
+                    _selected: "next";
+
+                    /**
+                     * Nytt steg, nivå 3
+                     */
+                    next: {
+                      /**
+                       * Steg
+                       */
+                      steps: Array<{
+                        /**
+                         * Tittel på valget
+                         */
+                        label: string;
+
+                        /**
+                         * Ekstra forklaring
+                         */
+                        explanation?: string;
+
+                        /**
+                         * Informasjon om språk
+                         */
+                        languageDisclaimer?: string;
+
+                        /**
+                         * Skjemanummer
+                         */
+                        formNumberStepData?: string;
+
+                        /**
+                         * Dette
+                         * valget
+                         * sender
+                         * brukeren
+                         * videre
+                         * til:
+                         */
+                        nextStep:
+                          | {
+                              /**
+                               * Selected
+                               */
+                              _selected: "internal";
+
+                              /**
+                               * Intern
+                               * lenke
+                               * til
+                               * skjema,
+                               * søknad
+                               * eller
+                               * klage
+                               */
+                              internal: {
+                                /**
+                                 * Internt
+                                 * innhold
+                                 */
+                                internalContent: string;
+                              };
+                            }
+                          | {
+                              /**
+                               * Selected
+                               */
+                              _selected: "external";
+
+                              /**
+                               * Ekstern
+                               * lenke
+                               * til
+                               * skjema,
+                               * søknad
+                               * eller
+                               * klage
+                               */
+                              external: {
+                                /**
+                                 * Ekstern
+                                 * URL
+                                 */
+                                externalUrl: string;
+                              };
+                            };
+                      }>;
                     };
                   };
             }>;
