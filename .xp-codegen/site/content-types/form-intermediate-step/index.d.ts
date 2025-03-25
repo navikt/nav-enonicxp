@@ -170,6 +170,11 @@ export type FormIntermediateStep = {
            */
           next: {
             /**
+             * Overstyr tittel
+             */
+            overrideTitle?: string;
+
+            /**
              * Redaksjonelt innhold ovenfor valgene
              */
             editorial?: string;
@@ -204,7 +209,8 @@ export type FormIntermediateStep = {
               formNumberStepData?: string;
 
               /**
-               * Dette valget sender brukeren videre til:
+               * Dette valget sender brukeren
+               * videre til:
                */
               nextStep:
                 | {
@@ -214,7 +220,8 @@ export type FormIntermediateStep = {
                     _selected: "internal";
 
                     /**
-                     * Intern lenke til skjema, søknad eller klage
+                     * Intern lenke til skjema,
+                     * søknad eller klage
                      */
                     internal: {
                       /**
@@ -230,7 +237,8 @@ export type FormIntermediateStep = {
                     _selected: "external";
 
                     /**
-                     * Ekstern lenke til skjema, søknad eller klage
+                     * Ekstern lenke til skjema,
+                     * søknad eller klage
                      */
                     external: {
                       /**
@@ -250,12 +258,22 @@ export type FormIntermediateStep = {
                      */
                     next: {
                       /**
-                       * Redaksjonelt innhold ovenfor valgene
+                       * Overstyr
+                       * tittel
+                       */
+                      overrideTitle?: string;
+
+                      /**
+                       * Redaksjonelt
+                       * innhold
+                       * ovenfor
+                       * valgene
                        */
                       editorial?: string;
 
                       /**
-                       * Overskrift til stegene
+                       * Overskrift
+                       * til stegene
                        */
                       stepsHeadline?: string;
 
@@ -284,7 +302,12 @@ export type FormIntermediateStep = {
                         formNumberStepData?: string;
 
                         /**
-                         * Dette valget sender brukeren videre til:
+                         * Dette
+                         * valget
+                         * sender
+                         * brukeren
+                         * videre
+                         * til:
                          */
                         nextStep:
                           | {
@@ -294,11 +317,18 @@ export type FormIntermediateStep = {
                               _selected: "internal";
 
                               /**
-                               * Intern lenke til skjema, søknad eller klage
+                               * Intern
+                               * lenke
+                               * til
+                               * skjema,
+                               * søknad
+                               * eller
+                               * klage
                                */
                               internal: {
                                 /**
-                                 * Internt innhold
+                                 * Internt
+                                 * innhold
                                  */
                                 internalContent: string;
                               };
@@ -310,11 +340,18 @@ export type FormIntermediateStep = {
                               _selected: "external";
 
                               /**
-                               * Ekstern lenke til skjema, søknad eller klage
+                               * Ekstern
+                               * lenke
+                               * til
+                               * skjema,
+                               * søknad
+                               * eller
+                               * klage
                                */
                               external: {
                                 /**
-                                 * Ekstern URL
+                                 * Ekstern
+                                 * URL
                                  */
                                 externalUrl: string;
                               };
