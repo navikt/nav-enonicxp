@@ -44,9 +44,14 @@ export type FormIntermediateStepData = {
            */
           internal: {
             /**
-             * Internt innhold
+             * Eksternt skjema
              */
             internalContent: string;
+
+            /**
+             * Innsendingsmetode (til skjemaer på nav.no/fyllut)
+             */
+            myradiobutton?: "paper" | "digital";
           };
         }
       | {

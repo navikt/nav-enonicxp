@@ -1,0 +1,22 @@
+<content-type>
+    <display-name>Eksternt skjema</display-name>
+    <!-- <description>Lenker ut av nav.no</description> -->
+    <super-type>base:structured</super-type>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set>
+            <items>
+                <input name="formNumbers" type="TextLine">
+                    <label>Skjemanummer</label>
+                    <occurrences minimum="0" maximum="1" />
+                </input>
+                <input name="url" type="TextLine">
+                    <label>URL</label>
+                    <occurrences maximum="1" minimum="1" />
+
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

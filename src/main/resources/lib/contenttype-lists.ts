@@ -38,6 +38,7 @@ export const dynamicPageContentTypes = [
 export const linkContentTypes = [
     `${APP_DESCRIPTOR}:internal-link`,
     `${APP_DESCRIPTOR}:external-link`,
+    `${APP_DESCRIPTOR}:external-form`,
     `${APP_DESCRIPTOR}:url`,
 ] as const satisfies ContentTypeList;
 

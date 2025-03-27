@@ -90,11 +90,6 @@ export type FormIntermediateStep = {
   editorial?: string;
 
   /**
-   * Overskrift til stegene
-   */
-  stepsHeadline?: string;
-
-  /**
    * Enkeltsteg
    */
   steps: Array<{
@@ -133,9 +128,14 @@ export type FormIntermediateStep = {
            */
           internal: {
             /**
-             * Internt innhold
+             * Skjema
              */
             internalContent: string;
+
+            /**
+             * Innsendingsmetode til skjemaer på nav.no/fyllut
+             */
+            myradiobutton?: "paper" | "digital";
           };
         }
       | {
@@ -164,6 +164,11 @@ export type FormIntermediateStep = {
            * Nytt steg, nivå 2
            */
           next: {
+            /**
+             * Redaksjonelt innhold ovenfor valgene
+             */
+            editorial?: string;
+
             /**
              * Overskrift til stegene
              */
@@ -242,12 +247,6 @@ export type FormIntermediateStep = {
                      * Nytt steg, nivå 3
                      */
                     next: {
-                      /**
-                       * Overskrift
-                       * til stegene
-                       */
-                      stepsHeadline?: string;
-
                       /**
                        * Steg
                        */
