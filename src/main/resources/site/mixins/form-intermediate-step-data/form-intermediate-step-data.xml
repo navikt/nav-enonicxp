@@ -22,11 +22,21 @@
                                         Enonic XP</help-text>
                                     <default>true</default>
                                     <items>
-                                        <input name="internalContent" type="MediaSelector">
-                                            <label>Internt innhold</label>
+                                        <input name="internalContent" type="ContentSelector">
+                                            <label>Eksternt skjema</label>
                                             <occurrences minimum="1" maximum="1" />
                                             <config>
-                                                <allowContentType>media:document</allowContentType>
+                                                <allowContentType>${app}:external-form</allowContentType>
+                                            </config>
+                                        </input>
+                                        <input name="submissionMethod" type="RadioButton">
+                                            <label>Innsendingsmetode (til skjemaer på nav.no/fyllut)</label>
+                                            <help-text>Legger til ?sub=paper eller ?sub=digital
+                                                i lenken</help-text>
+                                            <occurrences minimum="0" maximum="1" />
+                                            <config>
+                                                <option value="paper">Papir</option>
+                                                <option value="digital">Digitalt</option>
                                             </config>
                                         </input>
                                     </items>
