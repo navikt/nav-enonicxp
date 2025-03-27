@@ -51,7 +51,7 @@ export type FormIntermediateStepData = {
             /**
              * Innsendingsmetode (til skjemaer på nav.no/fyllut)
              */
-            myradiobutton?: "paper" | "digital";
+            submissionMethod?: "paper" | "digital";
           };
         }
       | {

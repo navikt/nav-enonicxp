@@ -6,6 +6,7 @@
     <allow-child-content>true</allow-child-content>
     <form>
         <field-set>
+            <label>Eksternt skjema</label>
             <items>
                 <input name="formNumbers" type="TextLine">
                     <label>Skjemanummer</label>
