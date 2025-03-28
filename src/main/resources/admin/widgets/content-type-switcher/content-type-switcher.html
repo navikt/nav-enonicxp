@@ -2,7 +2,8 @@
     <form method="get" data-th-action="${serviceUrl}" style="padding: 1rem">
         <div style="margin-bottom: 0.75rem">
             <label for="types">Ny innholdstype:</label><br />
-            <select name="contentType" id="types" style="-webkit-appearance: revert">
+            <select required name="contentType" id="types" style="-webkit-appearance: revert">
+                <option value="" selected>Velg innholdstype</option>
                 <option
                     data-th-each="type : ${types}"
                     data-th-text="${type.displayName}"
