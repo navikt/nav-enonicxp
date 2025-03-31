@@ -5,6 +5,7 @@ import { ContentDescriptor } from '../../../types/content-types/content-config';
 type SimpleHit = {
     _id: string;
     _path: string;
+    language: string | undefined;
     layerLocale: string;
     displayName: string;
     type: string;
@@ -42,6 +43,7 @@ export const externalArchiveSearchService = (req: XP.Request) => {
                 _id: hit._id,
                 _path: hit._path,
                 layerLocale: hit.layerLocale,
+                language: hit.language,
                 displayName: hit.displayName,
                 type: hit.type,
             })
