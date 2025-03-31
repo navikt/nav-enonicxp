@@ -45,7 +45,8 @@ activateLayersEventListeners();
 activateCacheEventListeners();
 activateContentListItemUnpublishedListener();
 activateExternalSearchIndexEventHandlers();
-activateArchiveNewsSchedule();
+// Wait for further discussion on how to handle periodic archiving
+// activateArchiveNewsSchedule();
 
 activateCustomPathNodeListeners();
 activateContentUpdateListener();
