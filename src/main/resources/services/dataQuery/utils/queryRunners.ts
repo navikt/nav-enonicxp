@@ -46,6 +46,7 @@ const runArchiveQuery = (nodeHitsBuckets: RepoIdNodeIdBuckets) => {
             const repo = getRepoConnection({
                 repoId,
                 branch: 'draft',
+                asAdmin: true,
             });
 
             const result = repo.get<RepoNode<Content>>(nodeIds);
@@ -148,6 +149,7 @@ export const runExternalArchiveQuery = (params: RunExternalArchiveQueryParams) =
         const repo = getRepoConnection({
             repoId: node.repoId,
             branch: node.branch,
+            asAdmin: true,
         });
         const result = repo.get<RepoNode<Content>>(node.id);
         if (!result) return contents;
