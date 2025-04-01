@@ -3,6 +3,7 @@
 #import "../mixins/animatedIconsTargetFragment.graphql"
 
 fragment contentIntermediateStep on no_nav_navno_FormIntermediateStep {
+    dataAsJson
     data {
         illustration {
             ...animatedIconsTargetMixin
@@ -10,24 +11,40 @@ fragment contentIntermediateStep on no_nav_navno_FormIntermediateStep {
         editorial(processHtml: { type: server }) {
             ...richText
         }
-        stepsHeadline
         steps {
             label
             explanation
             languageDisclaimer
+            formNumberStepData
             nextStep {
                 _selected
                 next {
-                    editorial(processHtml: { type: server }) {
-                        ...richText
-                    }
-                    stepsHeadline
                     steps {
                         label
                         explanation
                         languageDisclaimer
+                        formNumberStepData
                         nextStep {
                             _selected
+                            next {
+                                steps {
+                                    label
+                                    explanation
+                                    languageDisclaimer
+                                    formNumberStepData
+                                    nextStep {
+                                        _selected
+                                        external {
+                                            externalUrl
+                                        }
+                                        internal {
+                                            internalContent {
+                                                ...contentCommon
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                             external {
                                 externalUrl
                             }
