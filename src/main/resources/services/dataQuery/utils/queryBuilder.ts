@@ -100,6 +100,12 @@ export const getNodeHitsFromExternalArchiveQuery = ({
                     mustNot: [
                         {
                             hasValue: {
+                                field: 'inherit',
+                                values: ['CONTENT'],
+                            },
+                        },
+                        {
+                            hasValue: {
                                 field: 'x.no-nav-navno.previewOnly.previewOnly',
                                 values: ['true'],
                             },
