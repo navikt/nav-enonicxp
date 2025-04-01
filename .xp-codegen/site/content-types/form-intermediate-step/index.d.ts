@@ -90,11 +90,6 @@ export type FormIntermediateStep = {
   editorial?: string;
 
   /**
-   * Overskrift til stegene
-   */
-  stepsHeadline?: string;
-
-  /**
    * Enkeltsteg
    */
   steps: Array<{
@@ -164,11 +159,6 @@ export type FormIntermediateStep = {
            * Nytt steg, nivå 2
            */
           next: {
-            /**
-             * Overskrift til stegene
-             */
-            stepsHeadline?: string;
-
             /**
              * Steg
              */
@@ -242,12 +232,6 @@ export type FormIntermediateStep = {
                      * Nytt steg, nivå 3
                      */
                     next: {
-                      /**
-                       * Overskrift
-                       * til stegene
-                       */
-                      stepsHeadline?: string;
-
                       /**
                        * Steg
                        */

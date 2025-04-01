@@ -68,7 +68,7 @@ export type ContactStepPage = {
   /**
    * Tilbakelenke
    */
-  backLink: {
+  backLink?: {
     /**
      * Innhold det skal lenkes til
      */
