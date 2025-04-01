@@ -35,6 +35,7 @@
                     <occurrences minimum="0" maximum="1" />
                 </input>
                 <item-set name="linkPanels">
+                    <label>Enkeltsteg</label>
                     <occurrences minimum="1" maximum="0" />
                     <items>
                         <mixin name="link-internal" />
@@ -47,11 +48,10 @@
             </items>
         </field-set>
         <field-set>
-            <label>Tilbakelenke</label>
             <items>
                 <item-set name="backLink">
                     <label>Tilbakelenke</label>
-                    <occurrences minimum="1" maximum="1" />
+                    <occurrences minimum="0" maximum="1" />
                     <items>
                         <mixin name="link-internal" />
                     </items>

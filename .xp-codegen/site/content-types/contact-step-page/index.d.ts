@@ -45,7 +45,9 @@ export type ContactStepPage = {
    */
   linkPanelsSubHeading?: string;
 
-
+  /**
+   * Enkeltsteg
+   */
   linkPanels: Array<{
     /**
      * Innhold det skal lenkes til
