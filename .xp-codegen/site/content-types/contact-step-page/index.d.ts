@@ -36,16 +36,6 @@ export type ContactStepPage = {
   customPath: string;
 
   /**
-   * Overskrift
-   */
-  linkPanelsHeading?: string;
-
-  /**
-   * Undertittel
-   */
-  linkPanelsSubHeading?: string;
-
-  /**
    * Enkeltsteg
    */
   linkPanels: Array<{
