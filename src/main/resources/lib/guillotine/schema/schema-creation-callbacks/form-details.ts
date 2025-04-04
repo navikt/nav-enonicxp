@@ -8,6 +8,7 @@ import { CreationCallback } from '../../utils/creation-callback-utils';
 const getAndFormatFormNumberFromUrl = (url: string) => {
     log.info('URL to match: ' + url);
     const regex = /nav(\d{6})/;
+    //TODO match på skjema med bokstav bak
     const match = regex.exec(url);
     log.info(JSON.stringify(match, null, 2));
     if (!match) return null;
