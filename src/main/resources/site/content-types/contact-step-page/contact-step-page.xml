@@ -26,14 +26,6 @@
         <field-set>
             <label>Lenker</label>
             <items>
-                <input name="linkPanelsHeading" type="TextLine">
-                    <label>Overskrift</label>
-                    <occurrences minimum="0" maximum="1" />
-                </input>
-                <input name="linkPanelsSubHeading" type="TextLine">
-                    <label>Undertittel</label>
-                    <occurrences minimum="0" maximum="1" />
-                </input>
                 <item-set name="linkPanels">
                     <label>Enkeltsteg</label>
                     <occurrences minimum="1" maximum="0" />
