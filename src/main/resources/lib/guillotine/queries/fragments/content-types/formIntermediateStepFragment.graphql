@@ -63,7 +63,7 @@ fragment contentIntermediateStep on no_nav_navno_FormIntermediateStep {
                 }
             }
         }
-        html(processHtml: { type: server }) {
+        editorial(processHtml: { type: server }) {
             ...richText
         }
     }

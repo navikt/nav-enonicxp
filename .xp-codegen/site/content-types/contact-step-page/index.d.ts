@@ -28,7 +28,7 @@ export type ContactStepPage = {
   /**
    * Ingress
    */
-  html?: string;
+  editorial?: string;
 
   /**
    * Må begynne med '/start/[målgruppe dersom ikke privatperson]'

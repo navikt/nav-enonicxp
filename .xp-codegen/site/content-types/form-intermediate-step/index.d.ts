@@ -85,7 +85,7 @@ export type FormIntermediateStep = {
   customPath: string;
 
   /**
-   * Redaksjonelt innhold ovenfor valgene
+   * Ingress
    */
   editorial?: string;
 

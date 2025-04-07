@@ -3,5 +3,5 @@ export type HtmlArea = {
   /**
    * Ingress
    */
-  html?: string;
+  editorial?: string;
 };
