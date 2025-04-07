@@ -6,6 +6,11 @@ export type FormIntermediateStep = {
   title?: string;
 
   /**
+   * Tekst over tittel
+   */
+  textAboveTitle?: string;
+
+  /**
    * Tittel for utlisting og sortering
    */
   sortTitle?: string;
