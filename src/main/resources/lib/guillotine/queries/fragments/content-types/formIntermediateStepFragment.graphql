@@ -8,9 +8,6 @@ fragment contentIntermediateStep on no_nav_navno_FormIntermediateStep {
         illustration {
             ...animatedIconsTargetMixin
         }
-        editorial(processHtml: { type: server }) {
-            ...richText
-        }
         steps {
             label
             explanation
@@ -65,6 +62,9 @@ fragment contentIntermediateStep on no_nav_navno_FormIntermediateStep {
                     }
                 }
             }
+        }
+        editorial(processHtml: { type: server }) {
+            ...richText
         }
     }
 }

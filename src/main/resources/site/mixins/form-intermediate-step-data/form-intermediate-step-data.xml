@@ -3,10 +3,7 @@
         <field-set>
             <label>Mellomsteg</label>
             <items>
-                <input name="editorial" type="HtmlArea">
-                    <label>Redaksjonelt innhold ovenfor valgene</label>
-                    <occurrences minimum="0" maximum="1" />
-                </input>
+                <mixin name="html-area" />
                 <item-set name="steps">
                     <label>Enkeltsteg</label>
                     <occurrences minimum="1" maximum="0" />

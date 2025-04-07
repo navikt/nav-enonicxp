@@ -28,22 +28,12 @@ export type ContactStepPage = {
   /**
    * Ingress
    */
-  html?: string;
+  editorial?: string;
 
   /**
    * Må begynne med '/start/[målgruppe dersom ikke privatperson]'
    */
   customPath: string;
-
-  /**
-   * Overskrift
-   */
-  linkPanelsHeading?: string;
-
-  /**
-   * Undertittel
-   */
-  linkPanelsSubHeading?: string;
 
   /**
    * Enkeltsteg
