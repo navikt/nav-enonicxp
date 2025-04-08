@@ -109,15 +109,21 @@
                                                                         til en app eller tjeneste
                                                                         utenfor Enonic XP</help-text>
                                                                     <items>
+                                                                        <input name="formNumber"
+                                                                            type="TextLine">
+                                                                            <label>Skjemanummer</label>
+                                                                            <occurrences minimum="0"
+                                                                                maximum="1" />
+                                                                        </input>
                                                                         <input name="externalUrl"
                                                                             type="TextLine">
                                                                             <label>Ekstern URL</label>
                                                                             <occurrences minimum="1"
                                                                                 maximum="1" />
-                                                                            <config>
+                                                                            <!-- <config>
                                                                                 <regexp>
                                                                                     ^https?:\/\/.*</regexp>
-                                                                            </config>
+                                                                            </config> -->
                                                                         </input>
                                                                     </items>
                                                                 </option>

@@ -143,6 +143,11 @@ export type FormIntermediateStepData = {
                      */
                     external: {
                       /**
+                       * Skjemanummer
+                       */
+                      formNumber?: string;
+
+                      /**
                        * Ekstern URL
                        */
                       externalUrl: string;

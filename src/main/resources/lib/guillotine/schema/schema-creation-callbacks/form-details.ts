@@ -5,6 +5,44 @@ import { forceArray } from '../../../../lib/utils/array-utils';
 
 import { CreationCallback } from '../../utils/creation-callback-utils';
 
+// Helper function to process steps recursively and extract form numbers
+const extractFormNumbersFromSteps = (steps: any): string[] => {
+    const numbers: string[] = [];
+
+    // Handle single step case
+    if (steps && !Array.isArray(steps)) {
+        if (
+            steps.nextStep &&
+            steps.nextStep._selected === 'external' &&
+            steps.nextStep.external.formNumber
+        ) {
+            numbers.push(steps.nextStep.external.formNumber);
+        } else if (steps.nextStep && steps.nextStep._selected === 'next' && steps.nextStep.next) {
+            // Process nested next steps
+            const nestedNumbers = extractFormNumbersFromSteps(steps.nextStep.next.steps);
+            numbers.push(...nestedNumbers);
+        }
+        return numbers;
+    }
+
+    // Handle array of steps
+    forceArray(steps).forEach((step: any) => {
+        if (
+            step.nextStep &&
+            step.nextStep._selected === 'external' &&
+            step.nextStep.external.formNumber
+        ) {
+            numbers.push(step.nextStep.external.formNumber);
+        } else if (step.nextStep && step.nextStep._selected === 'next' && step.nextStep.next) {
+            // Process nested next steps
+            const nestedNumbers = extractFormNumbersFromSteps(step.nextStep.next.steps);
+            numbers.push(...nestedNumbers);
+        }
+    });
+
+    return numbers;
+};
+
 const getFormNumbersFromVariations = (formType: any) => {
     const formNumbers = formType.reduce((acc: any, variation: any) => {
         const { _selected } = variation;
@@ -26,30 +64,11 @@ const getFormNumbersFromVariations = (formType: any) => {
                 });
 
                 if (intermediateStep && intermediateStep.data) {
-                    // Handle single step case
-                    if (
-                        intermediateStep.data.steps &&
-                        intermediateStep.data.steps.nextStep &&
-                        intermediateStep.data.steps.nextStep._selected === 'external' &&
-                        intermediateStep.data.steps.nextStep.external.formNumber
-                    ) {
-                        subFormNumbers.push(
-                            intermediateStep.data.steps.nextStep.external.formNumber
-                        );
-                    }
-
-                    // Handle array of steps case
-                    if (Array.isArray(intermediateStep.data.steps)) {
-                        intermediateStep.data.steps.forEach((step: any) => {
-                            if (
-                                step.nextStep &&
-                                step.nextStep._selected === 'external' &&
-                                step.nextStep.external.formNumber
-                            ) {
-                                subFormNumbers.push(step.nextStep.external.formNumber);
-                            }
-                        });
-                    }
+                    // Extract all form numbers from the steps structure recursively
+                    const formNumbersFromSteps = extractFormNumbersFromSteps(
+                        intermediateStep.data.steps
+                    );
+                    subFormNumbers.push(...formNumbersFromSteps);
                 }
             }
         });
