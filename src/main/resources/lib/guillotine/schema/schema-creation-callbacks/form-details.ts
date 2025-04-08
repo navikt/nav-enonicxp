@@ -9,23 +9,34 @@ const getFormNumbersFromVariations = (formType: any) => {
     const formNumbers = formType.reduce((acc: any, variation: any) => {
         const { _selected } = variation;
 
-        log.info(JSON.stringify(variation, null, 2));
+        // log.info(JSON.stringify(variation, null, 2));
 
         const subFormNumbers = forceArray(variation[_selected].variations).map(
             (variationItem: any) => {
                 if (variationItem.link._selected === 'external') {
+                    log.info('external');
+                    log.info(JSON.stringify(variationItem.link.external.url, null, 2));
                     return variationItem.link.external.url;
                 }
 
                 if (variationItem.link._selected === 'internal') {
+                    log.info('internal');
+                    log.info(JSON.stringify(variationItem.link.internal.target, null, 2));
+
                     // 1. Get the intermediate step object
+                    const intermediateStep = contentLib.get({
+                        key: variationItem.link.internal.target,
+                    });
+
+                    log.info(JSON.stringify(intermediateStep, null, 2));
+
                     // 2. Parse the entire object (if found), looking for URL's
                     // 3. Parse URL's for formNumber extraction.
                 }
             }
         );
 
-        log.info(JSON.stringify(subFormNumbers, null, 2));
+        // log.info(JSON.stringify(subFormNumbers, null, 2));
         return [...acc, ...subFormNumbers];
     }, []);
 
