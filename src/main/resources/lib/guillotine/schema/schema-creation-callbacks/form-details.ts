@@ -30,11 +30,17 @@ const extractFormNumbersFromSteps = (steps: any): string[] => {
     return numbers;
 };
 
+const dedupStrings = (strings: string[]): string[] => {
+    const unique: Record<string, boolean> = {};
+    strings.forEach((str) => {
+        if (str) unique[str] = true;
+    });
+    return Object.keys(unique);
+};
+
 const getFormNumbersFromVariations = (formType: any) => {
     const formNumbers = formType.reduce((acc: any, variation: any) => {
         const { _selected } = variation;
-
-        // log.info(JSON.stringify(variation, null, 2));
 
         const subFormNumbers: any[] = [];
         forceArray(variation[_selected].variations).forEach((variationItem: any) => {
@@ -45,13 +51,11 @@ const getFormNumbersFromVariations = (formType: any) => {
             }
 
             if (variationItem.link._selected === 'internal') {
-                // 1. Get the intermediate step object
                 const intermediateStep = contentLib.get({
                     key: variationItem.link.internal.target,
                 });
 
                 if (intermediateStep && intermediateStep.data) {
-                    // Extract all form numbers from the steps structure recursively
                     const formNumbersFromSteps = extractFormNumbersFromSteps(
                         intermediateStep.data.steps
                     );
@@ -60,7 +64,7 @@ const getFormNumbersFromVariations = (formType: any) => {
             }
         });
 
-        return [...acc, ...subFormNumbers];
+        return dedupStrings([...acc, ...subFormNumbers]);
     }, []);
 
     return formNumbers;
