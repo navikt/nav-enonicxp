@@ -5,17 +5,6 @@ import { forceArray } from '../../../../lib/utils/array-utils';
 
 import { CreationCallback } from '../../utils/creation-callback-utils';
 
-const getAndFormatFormNumberFromUrl = (url: string) => {
-    log.info('URL to match: ' + url);
-    const regex = /nav(\d{6})/;
-    //TODO match på skjema med bokstav bak
-    const match = regex.exec(url);
-    log.info(JSON.stringify(match, null, 2));
-    if (!match) return null;
-    const numbers = match[1];
-    return `NAV ${numbers.slice(0, 2)}-${numbers.slice(2, 4)}.${numbers.slice(4)}`;
-};
-
 const getFormNumbersFromVariations = (formType: any) => {
     const formNumbers = formType.reduce((acc: any, variation: any) => {
         const { _selected } = variation;
@@ -25,7 +14,7 @@ const getFormNumbersFromVariations = (formType: any) => {
         const subFormNumbers = forceArray(variation[_selected].variations).map(
             (variationItem: any) => {
                 if (variationItem.link._selected === 'external') {
-                    return getAndFormatFormNumberFromUrl(variationItem.link.external.url);
+                    return variationItem.link.external.url;
                 }
 
                 if (variationItem.link._selected === 'internal') {

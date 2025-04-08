@@ -169,7 +169,8 @@ export type FormIntermediateStep = {
               languageDisclaimer?: string;
 
               /**
-               * Dette valget sender brukeren videre til:
+               * Dette valget sender brukeren
+               * videre til:
                */
               nextStep:
                 | {
@@ -179,7 +180,8 @@ export type FormIntermediateStep = {
                     _selected: "internal";
 
                     /**
-                     * Intern lenke til skjema, søknad eller klage
+                     * Intern lenke til skjema,
+                     * søknad eller klage
                      */
                     internal: {
                       /**
@@ -195,9 +197,15 @@ export type FormIntermediateStep = {
                     _selected: "external";
 
                     /**
-                     * Ekstern lenke til skjema, søknad eller klage
+                     * Ekstern lenke til skjema,
+                     * søknad eller klage
                      */
                     external: {
+                      /**
+                       * Skjemanummer
+                       */
+                      formNumber: string;
+
                       /**
                        * Ekstern URL
                        */
