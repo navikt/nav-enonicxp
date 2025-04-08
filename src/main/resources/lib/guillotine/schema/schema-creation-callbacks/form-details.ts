@@ -14,9 +14,7 @@ const getFormNumbersFromVariations = (formType: any) => {
         const subFormNumbers = forceArray(variation[_selected].variations).map(
             (variationItem: any) => {
                 if (variationItem.link._selected === 'external') {
-                    log.info('external');
-                    log.info(JSON.stringify(variationItem.link.external.url, null, 2));
-                    return variationItem.link.external.url;
+                    return variationItem.link.external.formNumber;
                 }
 
                 if (variationItem.link._selected === 'internal') {
