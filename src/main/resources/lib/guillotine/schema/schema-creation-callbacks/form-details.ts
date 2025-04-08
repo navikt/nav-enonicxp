@@ -9,33 +9,20 @@ import { CreationCallback } from '../../utils/creation-callback-utils';
 const extractFormNumbersFromSteps = (steps: any): string[] => {
     const numbers: string[] = [];
 
-    // Handle single step case
-    if (steps && !Array.isArray(steps)) {
-        if (
-            steps.nextStep &&
-            steps.nextStep._selected === 'external' &&
-            steps.nextStep.external.formNumber
-        ) {
-            numbers.push(steps.nextStep.external.formNumber);
-        } else if (steps.nextStep && steps.nextStep._selected === 'next' && steps.nextStep.next) {
-            // Process nested next steps
-            const nestedNumbers = extractFormNumbersFromSteps(steps.nextStep.next.steps);
-            numbers.push(...nestedNumbers);
-        }
-        return numbers;
-    }
+    // Convert to array if it's a single object
+    const stepsArray = Array.isArray(steps) ? steps : [steps];
 
-    // Handle array of steps
-    forceArray(steps).forEach((step: any) => {
-        if (
-            step.nextStep &&
-            step.nextStep._selected === 'external' &&
-            step.nextStep.external.formNumber
-        ) {
-            numbers.push(step.nextStep.external.formNumber);
-        } else if (step.nextStep && step.nextStep._selected === 'next' && step.nextStep.next) {
-            // Process nested next steps
-            const nestedNumbers = extractFormNumbersFromSteps(step.nextStep.next.steps);
+    stepsArray.forEach((step) => {
+        // Skip if step doesn't exist
+        if (!step || !step.nextStep) return;
+
+        const { nextStep } = step;
+
+        if (nextStep._selected === 'external' && nextStep.external.formNumber) {
+            numbers.push(nextStep.external.formNumber);
+        } else if (nextStep._selected === 'next' && nextStep.next && nextStep.next.steps) {
+            // Process nested next steps recursively
+            const nestedNumbers = extractFormNumbersFromSteps(nextStep.next.steps);
             numbers.push(...nestedNumbers);
         }
     });
