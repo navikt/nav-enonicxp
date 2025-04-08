@@ -11,52 +11,49 @@ const getFormNumbersFromVariations = (formType: any) => {
 
         // log.info(JSON.stringify(variation, null, 2));
 
-        const subFormNumbers = forceArray(variation[_selected].variations).map(
-            (variationItem: any) => {
-                if (variationItem.link._selected === 'external') {
-                    return variationItem.link.external.formNumber;
+        const subFormNumbers: any[] = [];
+        forceArray(variation[_selected].variations).forEach((variationItem: any) => {
+            if (variationItem.link._selected === 'external') {
+                if (variationItem.link.external.formNumber) {
+                    subFormNumbers.push(variationItem.link.external.formNumber);
                 }
+            }
 
-                if (variationItem.link._selected === 'internal') {
-                    log.info('internal');
-                    log.info(JSON.stringify(variationItem.link.internal.target, null, 2));
+            if (variationItem.link._selected === 'internal') {
+                // 1. Get the intermediate step object
+                const intermediateStep = contentLib.get({
+                    key: variationItem.link.internal.target,
+                });
 
-                    // 1. Get the intermediate step object
-                    const intermediateStep = contentLib.get({
-                        key: variationItem.link.internal.target,
-                    });
-
-                    log.info(JSON.stringify(intermediateStep, null, 2));
-
-                    if (intermediateStep && intermediateStep.data) {
-                        // Handle single step case
-                        if (
-                            intermediateStep.data.steps &&
-                            intermediateStep.data.steps.nextStep &&
-                            intermediateStep.data.steps.nextStep._selected === 'external' &&
+                if (intermediateStep && intermediateStep.data) {
+                    // Handle single step case
+                    if (
+                        intermediateStep.data.steps &&
+                        intermediateStep.data.steps.nextStep &&
+                        intermediateStep.data.steps.nextStep._selected === 'external' &&
+                        intermediateStep.data.steps.nextStep.external.formNumber
+                    ) {
+                        subFormNumbers.push(
                             intermediateStep.data.steps.nextStep.external.formNumber
-                        ) {
-                            return intermediateStep.data.steps.nextStep.external.formNumber;
-                        }
+                        );
+                    }
 
-                        // Handle array of steps case
-                        if (Array.isArray(intermediateStep.data.steps)) {
-                            const formNumbers = intermediateStep.data.steps
-                                .filter(
-                                    (step: any) =>
-                                        step.nextStep && step.nextStep._selected === 'external'
-                                )
-                                .map((step: any) => step.nextStep.external.formNumber)
-                                .filter(Boolean);
-
-                            return formNumbers;
-                        }
+                    // Handle array of steps case
+                    if (Array.isArray(intermediateStep.data.steps)) {
+                        intermediateStep.data.steps.forEach((step: any) => {
+                            if (
+                                step.nextStep &&
+                                step.nextStep._selected === 'external' &&
+                                step.nextStep.external.formNumber
+                            ) {
+                                subFormNumbers.push(step.nextStep.external.formNumber);
+                            }
+                        });
                     }
                 }
             }
-        );
+        });
 
-        // log.info(JSON.stringify(subFormNumbers, null, 2));
         return [...acc, ...subFormNumbers];
     }, []);
 
