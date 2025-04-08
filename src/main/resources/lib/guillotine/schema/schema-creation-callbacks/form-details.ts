@@ -30,8 +30,30 @@ const getFormNumbersFromVariations = (formType: any) => {
 
                     log.info(JSON.stringify(intermediateStep, null, 2));
 
-                    // 2. Parse the entire object (if found), looking for URL's
-                    // 3. Parse URL's for formNumber extraction.
+                    if (intermediateStep && intermediateStep.data) {
+                        // Handle single step case
+                        if (
+                            intermediateStep.data.steps &&
+                            intermediateStep.data.steps.nextStep &&
+                            intermediateStep.data.steps.nextStep._selected === 'external' &&
+                            intermediateStep.data.steps.nextStep.external.formNumber
+                        ) {
+                            return intermediateStep.data.steps.nextStep.external.formNumber;
+                        }
+
+                        // Handle array of steps case
+                        if (Array.isArray(intermediateStep.data.steps)) {
+                            const formNumbers = intermediateStep.data.steps
+                                .filter(
+                                    (step: any) =>
+                                        step.nextStep && step.nextStep._selected === 'external'
+                                )
+                                .map((step: any) => step.nextStep.external.formNumber)
+                                .filter(Boolean);
+
+                            return formNumbers;
+                        }
+                    }
                 }
             }
         );
