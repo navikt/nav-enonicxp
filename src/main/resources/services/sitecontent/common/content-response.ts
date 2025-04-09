@@ -43,7 +43,7 @@ export const sitecontentContentResponse = ({
             });
             queryResult.contentLayer = locale;
             const start = Date.now();
-            const replacedResult = replaceNAVwithNav(queryResult);
+            const replacedResult = queryResult; // replaceNAVwithNav(queryResult);
             const end = Date.now();
 
             log.info(
