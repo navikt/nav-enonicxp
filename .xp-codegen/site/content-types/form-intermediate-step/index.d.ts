@@ -6,11 +6,6 @@ export type FormIntermediateStep = {
   title?: string;
 
   /**
-   * Tekst over tittel
-   */
-  textAboveTitle?: string;
-
-  /**
    * Tittel for utlisting og sortering
    */
   sortTitle?: string;
@@ -200,8 +195,7 @@ export type FormIntermediateStep = {
                     _selected: "internal";
 
                     /**
-                     * Intern lenke til skjema,
-                     * søknad eller klage
+                     * Intern lenke til skjema, søknad eller klage
                      */
                     internal: {
                       /**
@@ -217,8 +211,7 @@ export type FormIntermediateStep = {
                     _selected: "external";
 
                     /**
-                     * Ekstern lenke til skjema,
-                     * søknad eller klage
+                     * Ekstern lenke til skjema, søknad eller klage
                      */
                     external: {
                       /**
@@ -277,18 +270,11 @@ export type FormIntermediateStep = {
                               _selected: "internal";
 
                               /**
-                               * Intern
-                               * lenke
-                               * til
-                               * skjema,
-                               * søknad
-                               * eller
-                               * klage
+                               * Intern lenke til skjema, søknad eller klage
                                */
                               internal: {
                                 /**
-                                 * Internt
-                                 * innhold
+                                 * Internt innhold
                                  */
                                 internalContent: string;
                               };
@@ -300,18 +286,11 @@ export type FormIntermediateStep = {
                               _selected: "external";
 
                               /**
-                               * Ekstern
-                               * lenke
-                               * til
-                               * skjema,
-                               * søknad
-                               * eller
-                               * klage
+                               * Ekstern lenke til skjema, søknad eller klage
                                */
                               external: {
                                 /**
-                                 * Ekstern
-                                 * URL
+                                 * Ekstern URL
                                  */
                                 externalUrl: string;
                               };
