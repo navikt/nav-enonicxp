@@ -14,13 +14,12 @@
                             <occurrences minimum="1" maximum="1" />
                             <options minimum="1" maximum="1">
                                 <option name="internal">
-                                    <label>Intern lenke til skjema, søknad eller klage</label>
-                                    <help-text>Brukeren skal sendes til dokument som ligger på
-                                        Enonic XP</help-text>
+                                    <label><![CDATA[Intern lenke til skjema, søknad eller klage]]></label>
+                                    <help-text><![CDATA[Brukeren skal sendes til dokument som ligger på Enonic XP]]></help-text>
                                     <default>true</default>
                                     <items>
                                         <input name="internalContent" type="MediaSelector">
-                                            <label>Internt innhold</label>
+                                            <label><![CDATA[Internt innhold]]></label>
                                             <occurrences minimum="1" maximum="1" />
                                             <config>
                                                 <allowContentType>media:document</allowContentType>
@@ -29,12 +28,11 @@
                                     </items>
                                 </option>
                                 <option name="external">
-                                    <label>Ekstern lenke til skjema, søknad eller klage</label>
-                                    <help-text>Brukeren skal sendes til en app eller tjeneste
-                                        utenfor Enonic XP</help-text>
+                                    <label><![CDATA[Ekstern lenke til skjema, søknad eller klage]]></label>
+                                    <help-text><![CDATA[Brukeren skal sendes til en app eller tjeneste utenfor Enonic XP]]></help-text>
                                     <items>
                                         <input name="externalUrl" type="TextLine">
-                                            <label>Ekstern URL</label>
+                                            <label><![CDATA[Ekstern URL]]></label>
                                             <occurrences minimum="0" maximum="1" />
                                             <config>
                                                 <regexp>^https?:\/\/.*</regexp>
@@ -44,7 +42,7 @@
                                 </option>
                                 <option name="next">
                                     <label>Nytt steg, nivå 2</label>
-                                    <help-text>Brukeren skal sendes til et nytt steg for nye veivalg</help-text>
+                                    <help-text><![CDATA[Brukeren skal sendes til et nytt steg for nye veivalg]]></help-text>
                                     <items>
                                         <field-set>
                                             <label>Enkeltsteg</label>
@@ -61,17 +59,14 @@
                                                             <occurrences minimum="1" maximum="1" />
                                                             <options minimum="1" maximum="1">
                                                                 <option name="internal">
-                                                                    <label>Intern lenke til skjema,
-                                                                        søknad eller klage</label>
-                                                                    <help-text>Brukeren skal sendes
-                                                                        til dokument som ligger på
-                                                                        Enonic XP</help-text>
+                                                                    <label><![CDATA[Intern lenke til skjema, søknad eller klage]]></label>
+                                                                    <help-text><![CDATA[Brukeren skal sendes til dokument som ligger på Enonic XP]]></help-text>
                                                                     <default>true</default>
                                                                     <items>
                                                                         <input
                                                                             name="internalContent"
                                                                             type="MediaSelector">
-                                                                            <label>Internt innhold</label>
+                                                                            <label><![CDATA[Internt innhold]]></label>
                                                                             <occurrences minimum="1"
                                                                                 maximum="1" />
                                                                             <config>
@@ -82,15 +77,12 @@
                                                                     </items>
                                                                 </option>
                                                                 <option name="external">
-                                                                    <label>Ekstern lenke til skjema,
-                                                                        søknad eller klage</label>
-                                                                    <help-text>Brukeren skal sendes
-                                                                        til en app eller tjeneste
-                                                                        utenfor Enonic XP</help-text>
+                                                                    <label><![CDATA[Ekstern lenke til skjema, søknad eller klage]]></label>
+                                                                    <help-text><![CDATA[Brukeren skal sendes til en app eller tjeneste utenfor Enonic XP]]></help-text>
                                                                     <items>
                                                                         <input name="externalUrl"
                                                                             type="TextLine">
-                                                                            <label>Ekstern URL</label>
+                                                                            <label><![CDATA[Ekstern URL]]></label>
                                                                             <occurrences minimum="1"
                                                                                 maximum="1" />
                                                                             <config>
@@ -102,9 +94,6 @@
                                                                 </option>
                                                                 <option name="next">
                                                                     <label>Nytt steg, nivå 3</label>
-                                                                    <help-text>Brukeren skal sendes
-                                                                        til et nytt steg for nye
-                                                                        veivalg</help-text>
                                                                     <items>
                                                                         <field-set>
                                                                             <label>Enkeltsteg</label>
@@ -134,34 +123,15 @@
                                                                                                 maximum="1">
                                                                                                 <option
                                                                                                     name="internal">
-                                                                                                    <label>
-                                                                                                        Intern
-                                                                                                        lenke
-                                                                                                        til
-                                                                                                        skjema,
-                                                                                                        søknad
-                                                                                                        eller
-                                                                                                        klage</label>
-                                                                                                    <help-text>
-                                                                                                        Brukeren
-                                                                                                        skal
-                                                                                                        sendes
-                                                                                                        til
-                                                                                                        dokument
-                                                                                                        som
-                                                                                                        ligger
-                                                                                                        på
-                                                                                                        Enonic
-                                                                                                        XP</help-text>
+                                                                                                    <label><![CDATA[Intern lenke til skjema, søknad eller klage]]></label>
+                                                                                                    <help-text><![CDATA[Brukeren skal sendes til dokument som ligger på Enonic XP]]></help-text>
                                                                                                     <default>
                                                                                                         true</default>
                                                                                                     <items>
                                                                                                         <input
                                                                                                             name="internalContent"
                                                                                                             type="MediaSelector">
-                                                                                                            <label>
-                                                                                                                Internt
-                                                                                                                innhold</label>
+                                                                                                            <label><![CDATA[Internt innhold]]></label>
                                                                                                             <occurrences
                                                                                                                 minimum="1"
                                                                                                                 maximum="1" />
@@ -174,33 +144,13 @@
                                                                                                 </option>
                                                                                                 <option
                                                                                                     name="external">
-                                                                                                    <label>
-                                                                                                        Ekstern
-                                                                                                        lenke
-                                                                                                        til
-                                                                                                        skjema,
-                                                                                                        søknad
-                                                                                                        eller
-                                                                                                        klage</label>
-                                                                                                    <help-text>
-                                                                                                        Brukeren
-                                                                                                        skal
-                                                                                                        sendes
-                                                                                                        til
-                                                                                                        en
-                                                                                                        app
-                                                                                                        eller
-                                                                                                        tjeneste
-                                                                                                        utenfor
-                                                                                                        Enonic
-                                                                                                        XP</help-text>
+                                                                                                    <label><![CDATA[Ekstern lenke til skjema, søknad eller klage]]></label>
+                                                                                                    <help-text><![CDATA[Brukeren skal sendes til en app eller tjeneste utenfor Enonic XP]]></help-text>
                                                                                                     <items>
                                                                                                         <input
                                                                                                             name="externalUrl"
                                                                                                             type="TextLine">
-                                                                                                            <label>
-                                                                                                                Ekstern
-                                                                                                                URL</label>
+                                                                                                            <label><![CDATA[Ekstern URL]]></label>
                                                                                                             <occurrences
                                                                                                                 minimum="1"
                                                                                                                 maximum="1" />

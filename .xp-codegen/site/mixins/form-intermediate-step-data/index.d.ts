@@ -111,8 +111,7 @@ export type FormIntermediateStepData = {
                     _selected: "internal";
 
                     /**
-                     * Intern lenke til skjema,
-                     * søknad eller klage
+                     * Intern lenke til skjema, søknad eller klage
                      */
                     internal: {
                       /**
@@ -128,8 +127,7 @@ export type FormIntermediateStepData = {
                     _selected: "external";
 
                     /**
-                     * Ekstern lenke til skjema,
-                     * søknad eller klage
+                     * Ekstern lenke til skjema, søknad eller klage
                      */
                     external: {
                       /**
@@ -188,18 +186,11 @@ export type FormIntermediateStepData = {
                               _selected: "internal";
 
                               /**
-                               * Intern
-                               * lenke
-                               * til
-                               * skjema,
-                               * søknad
-                               * eller
-                               * klage
+                               * Intern lenke til skjema, søknad eller klage
                                */
                               internal: {
                                 /**
-                                 * Internt
-                                 * innhold
+                                 * Internt innhold
                                  */
                                 internalContent: string;
                               };
@@ -211,18 +202,11 @@ export type FormIntermediateStepData = {
                               _selected: "external";
 
                               /**
-                               * Ekstern
-                               * lenke
-                               * til
-                               * skjema,
-                               * søknad
-                               * eller
-                               * klage
+                               * Ekstern lenke til skjema, søknad eller klage
                                */
                               external: {
                                 /**
-                                 * Ekstern
-                                 * URL
+                                 * Ekstern URL
                                  */
                                 externalUrl: string;
                               };
