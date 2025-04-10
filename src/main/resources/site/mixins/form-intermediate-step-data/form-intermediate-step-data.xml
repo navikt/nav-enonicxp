@@ -86,6 +86,12 @@
                                                                     <label><![CDATA[Ekstern lenke til skjema, søknad eller klage]]></label>
                                                                     <help-text><![CDATA[Brukeren skal sendes til en app eller tjeneste utenfor Enonic XP]]></help-text>
                                                                     <items>
+                                                                        <input name="formNumber"
+                                                                            type="TextLine">
+                                                                            <label>Skjemanummer</label>
+                                                                            <occurrences minimum="0"
+                                                                                maximum="1" />
+                                                                        </input>
                                                                         <input name="externalUrl"
                                                                             type="TextLine">
                                                                             <label><![CDATA[Ekstern URL]]></label>
@@ -153,6 +159,15 @@
                                                                                                     <label><![CDATA[Ekstern lenke til skjema, søknad eller klage]]></label>
                                                                                                     <help-text><![CDATA[Brukeren skal sendes til en app eller tjeneste utenfor Enonic XP]]></help-text>
                                                                                                     <items>
+                                                                                                        <input
+                                                                                                            name="formNumber"
+                                                                                                            type="TextLine">
+                                                                                                            <label>
+                                                                                                                Skjemanummer</label>
+                                                                                                            <occurrences
+                                                                                                                minimum="0"
+                                                                                                                maximum="1" />
+                                                                                                        </input>
                                                                                                         <input
                                                                                                             name="externalUrl"
                                                                                                             type="TextLine">

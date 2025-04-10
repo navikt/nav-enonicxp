@@ -25,11 +25,6 @@ export type FormIntermediateStepData = {
     languageDisclaimer?: string;
 
     /**
-     * Skjemanummer
-     */
-    formNumberStepData?: string;
-
-    /**
      * Dette valget sender brukeren videre til:
      */
     nextStep:
@@ -100,11 +95,6 @@ export type FormIntermediateStepData = {
               languageDisclaimer?: string;
 
               /**
-               * Skjemanummer
-               */
-              formNumberStepData?: string;
-
-              /**
                * Dette valget sender brukeren
                * videre til:
                */
@@ -135,6 +125,11 @@ export type FormIntermediateStepData = {
                      * Ekstern lenke til skjema, søknad eller klage
                      */
                     external: {
+                      /**
+                       * Skjemanummer
+                       */
+                      formNumber?: string;
+
                       /**
                        * Ekstern URL
                        */
@@ -171,11 +166,6 @@ export type FormIntermediateStepData = {
                         languageDisclaimer?: string;
 
                         /**
-                         * Skjemanummer
-                         */
-                        formNumberStepData?: string;
-
-                        /**
                          * Dette
                          * valget
                          * sender
@@ -210,6 +200,11 @@ export type FormIntermediateStepData = {
                                * Ekstern lenke til skjema, søknad eller klage
                                */
                               external: {
+                                /**
+                                 * Skjemanummer
+                                 */
+                                formNumber?: string;
+
                                 /**
                                  * Ekstern URL
                                  */

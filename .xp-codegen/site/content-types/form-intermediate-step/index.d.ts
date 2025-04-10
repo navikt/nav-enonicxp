@@ -21,11 +21,6 @@ export type FormIntermediateStep = {
   illustration: string;
 
   /**
-   * Skjemanummer
-   */
-  formNumbers?: Array<string> | string;
-
-  /**
    * Målgruppe
    */
   audience:

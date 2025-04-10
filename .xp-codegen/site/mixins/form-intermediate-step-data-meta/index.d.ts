@@ -14,9 +14,4 @@ export type FormIntermediateStepDataMeta = {
    * Informasjon om språk
    */
   languageDisclaimer?: string;
-
-  /**
-   * Skjemanummer
-   */
-  formNumberStepData?: string;
 };

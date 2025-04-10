@@ -11,9 +11,5 @@
         <input name="languageDisclaimer" type="TextArea">
             <label>Informasjon om språk</label>
         </input>
-        <input name="formNumberStepData" type="TextLine">
-            <label>Skjemanummer</label>
-            <occurrences minimum="0" maximum="1" />
-        </input>
     </form>
 </mixin>
