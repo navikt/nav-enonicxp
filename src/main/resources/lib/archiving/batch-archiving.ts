@@ -15,7 +15,7 @@ import { CONTENT_TYPES_WITH_CONTENT_LISTS } from '../contentlists/remove-unpubli
 
 type ContentDataSimple = Pick<
     Content,
-    '_id' | '_path' | 'createdTime' | 'modifiedTime' | 'type' | 'displayName'
+    '_id' | '_path' | 'createdTime' | 'modifiedTime' | 'type' | 'displayName' | 'publish'
 > & {
     subType?: MainArticle['contentType'];
     repoId: string;
@@ -39,7 +39,7 @@ const contentTypeReferencesToIgnore: ReadonlySet<ContentDescriptor> = new Set(
 );
 
 const simplifyContent = (content: Content, repoId: string): ContentDataSimple => {
-    const { _id, _path, createdTime, modifiedTime, type, data, displayName } = content;
+    const { _id, _path, createdTime, modifiedTime, type, data, displayName, publish } = content;
 
     return {
         _id,
@@ -48,6 +48,7 @@ const simplifyContent = (content: Content, repoId: string): ContentDataSimple =>
         editorUrl: `${URLS.PORTAL_ADMIN_ORIGIN}${buildEditorPath(_id, repoId)}`,
         createdTime,
         modifiedTime,
+        publish,
         type,
         subType: data.contentType,
         repoId,
@@ -57,12 +58,7 @@ const simplifyContent = (content: Content, repoId: string): ContentDataSimple =>
     };
 };
 
-const persistResultLogs = (
-    result: ArchiveResult,
-    startTs: string,
-    jobName: string,
-    query: QueryDsl
-) => {
+const persistResultLogs = (result: ArchiveResult, jobName: string, query: QueryDsl) => {
     const repoConnection = getMiscRepoConnection();
 
     if (!repoConnection.exists(LOG_DIR_PATH)) {
@@ -84,7 +80,6 @@ const persistResultLogs = (
         _parentPath: LOG_DIR_PATH,
         _name: logEntryName,
         summary: {
-            started: startTs,
             finished: now,
             jobName,
             query: JSON.stringify(query),
@@ -106,7 +101,7 @@ const hasNewerDescendants = (content: ContentDataSimple | Content, timestamp: st
 
     return children.hits.some(
         (child) =>
-            (child.modifiedTime || child.createdTime) > timestamp ||
+            (child.publish?.from || child.createdTime) > timestamp ||
             hasNewerDescendants(child, timestamp)
     );
 };
@@ -143,18 +138,21 @@ const unpublishAndArchiveContents = (
     const failedContent: ContentDataSimple[] = [];
 
     contents.forEach((content) => {
+        // Change: We want the archiving to be more greedy, so don't check for inbound references.
+        const references: ContentDataSimple[] = []; // getRelevantReferences(content, repoId);
+
         const contentFinal: ContentDataSimple = {
             ...content,
-            references: getRelevantReferences(content, repoId),
+            references,
         };
 
-        // Unpublishing a content will also unpublish all its descendants. If there are any descendants
-        // which are newer than the cut-off timestamp that was set, we don't want to unpublish
-        if (hasNewerDescendants(content, cutoffTs)) {
-            contentFinal.errors.push(
-                'Innholdet har under-innhold som er nyere enn tidsavgrensingen for arkivering'
-            );
-        }
+        // Change: We want the archiving to be more greedy, so don't check for newer
+        // descendants. This might change in the near future, so keep it commented out for now.
+        // if (hasNewerDescendants(content, cutoffTs)) {
+        //     contentFinal.errors.push(
+        //         'Innholdet har under-innhold som er nyere enn tidsavgrensingen for arkivering'
+        //     );
+        // }
 
         // If the content has inbound references, don't unpublish as it may lead to broken links etc
         if (contentFinal.references.length > 0) {
@@ -214,13 +212,13 @@ export const findAndArchiveOldContent = ({
         resolveContent: false,
         queryParams: {
             count: 5000,
-            sort: 'modifiedTime DESC',
+            sort: 'publish.first DESC',
             query: {
                 boolean: {
                     must: [
                         {
                             range: {
-                                field: 'modifiedTime',
+                                field: 'publish.first',
                                 lt: cutoffTs,
                             },
                         },
@@ -260,5 +258,5 @@ export const findAndArchiveOldContent = ({
         result.archived.push(...layerResult.archived);
     });
 
-    persistResultLogs(result, cutoffTs, jobName, query);
+    persistResultLogs(result, jobName, query);
 };

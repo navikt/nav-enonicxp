@@ -9,20 +9,17 @@
         <field-set>
             <label>Skjemadetaljer</label>
             <items>
-                <input name="formNumbers" type="TextLine">
-                    <label>Skjemanummer</label>
-                    <occurrences minimum="0" maximum="0"/>
-                </input>
                 <input name="title" type="TextLine">
                     <label>Tittel</label>
-                    <occurrences minimum="1" maximum="1"/>
+                    <occurrences minimum="1" maximum="1" />
                 </input>
                 <input name="longTitle" type="TextLine">
                     <label>Tittel for søk</label>
-                    <help-text>Benyttes i søketreff og ellers hvor skjemadetaljen vises utenfor kontekst, ved behov for
+                    <help-text>Benyttes i søketreff og ellers hvor skjemadetaljen vises utenfor
+                        kontekst, ved behov for
                         en mer beskrivende tittel
                     </help-text>
-                    <occurrences minimum="0" maximum="1"/>
+                    <occurrences minimum="0" maximum="1" />
                 </input>
                 <input name="ingress" type="HtmlArea">
                     <label>Ingress</label>
@@ -32,7 +29,7 @@
                 </input>
                 <option-set name="audience">
                     <label>Målgruppe</label>
-                    <occurrences minimum="1" maximum="1"/>
+                    <occurrences minimum="1" maximum="1" />
                     <options minimum="1" maximum="0">
                         <option name="person">
                             <label>Privatperson</label>
@@ -43,7 +40,7 @@
                         <option name="provider">
                             <label>Samarbeidspartner</label>
                             <items>
-                                <mixin name="provider-audience"/>
+                                <mixin name="provider-audience" />
                             </items>
                         </option>
                         <option name="other">
@@ -53,8 +50,9 @@
                 </option-set>
                 <option-set name="formType">
                     <label>Variasjoner</label>
-                    <occurrences minimum="1" maximum="0"/>
-                    <help-text>Velg hva slags type variasjon du vil lage - søknad, klage eller ettersendelse. For kun
+                    <occurrences minimum="1" maximum="0" />
+                    <help-text>Velg hva slags type variasjon du vil lage - søknad, klage eller
+                        ettersendelse. For kun
                         redaksjonell tekst kan du la være å fylle inn felter for søknadsvariasjonen.
                     </help-text>
                     <options minimum="1" maximum="1">
@@ -63,14 +61,14 @@
                             <description>Her legger du til søknads- og skjemavariasjoner.</description>
                             <items>
                                 <item-set name="variations">
-                                    <occurrences minimum="0" maximum="0"/>
+                                    <occurrences minimum="0" maximum="0" />
                                     <items>
                                         <input name="label" type="TextLine">
                                             <label>Knappetekst</label>
                                             <help-text>Bør være kort. Alternativt flere korte ord.</help-text>
-                                            <occurrences minimum="1" maximum="1"/>
+                                            <occurrences minimum="1" maximum="1" />
                                         </input>
-                                        <mixin name="form-details-link"/>
+                                        <mixin name="form-details-link" />
                                     </items>
                                 </item-set>
                             </items>
@@ -79,17 +77,17 @@
                             <label>Klage- og ankevariasjoner</label>
                             <items>
                                 <item-set name="variations">
-                                    <occurrences minimum="0" maximum="0"/>
+                                    <occurrences minimum="0" maximum="0" />
                                     <items>
                                         <input name="label" type="TextLine">
                                             <label>Knappetekst</label>
                                             <help-text>Bør være kort. Alternativt flere korte ord.</help-text>
-                                            <occurrences minimum="1" maximum="1"/>
+                                            <occurrences minimum="1" maximum="1" />
                                         </input>
-                                        <mixin name="form-details-link"/>
+                                        <mixin name="form-details-link" />
                                         <input type="ComboBox" name="type">
                                             <label>Klage- eller anketype</label>
-                                            <occurrences minimum="1" maximum="1"/>
+                                            <occurrences minimum="1" maximum="1" />
                                             <config>
                                                 <option value="complaint">
                                                     Klage
@@ -107,14 +105,14 @@
                             <label>Ettersendelse</label>
                             <items>
                                 <item-set name="variations">
-                                    <occurrences minimum="0" maximum="0"/>
+                                    <occurrences minimum="0" maximum="0" />
                                     <items>
                                         <input name="label" type="TextLine">
                                             <label>Knappetekst</label>
                                             <help-text>Bør være kort. Alternativt flere korte ord.</help-text>
-                                            <occurrences minimum="1" maximum="1"/>
+                                            <occurrences minimum="1" maximum="1" />
                                         </input>
-                                        <mixin name="form-details-link"/>
+                                        <mixin name="form-details-link" />
                                     </items>
                                 </item-set>
                             </items>

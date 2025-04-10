@@ -31,6 +31,11 @@ export type FormDetailsLink = {
          */
         external: {
           /**
+           * Skjemanummer
+           */
+          formNumber?: string;
+
+          /**
            * URL
            */
           url: string;
