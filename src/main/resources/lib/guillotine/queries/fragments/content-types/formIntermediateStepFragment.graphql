@@ -12,7 +12,6 @@ fragment contentIntermediateStep on no_nav_navno_FormIntermediateStep {
             label
             explanation
             languageDisclaimer
-            formNumberStepData
             nextStep {
                 _selected
                 next {
@@ -20,7 +19,6 @@ fragment contentIntermediateStep on no_nav_navno_FormIntermediateStep {
                         label
                         explanation
                         languageDisclaimer
-                        formNumberStepData
                         nextStep {
                             _selected
                             next {
@@ -28,7 +26,6 @@ fragment contentIntermediateStep on no_nav_navno_FormIntermediateStep {
                                     label
                                     explanation
                                     languageDisclaimer
-                                    formNumberStepData
                                     nextStep {
                                         _selected
                                         external {
