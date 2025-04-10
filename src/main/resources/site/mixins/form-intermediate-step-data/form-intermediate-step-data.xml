@@ -40,9 +40,9 @@
                                         <input name="externalUrl" type="TextLine">
                                             <label><![CDATA[Ekstern URL]]></label>
                                             <occurrences minimum="0" maximum="1" />
-                                            <config>
+                                            <!-- <config>
                                                 <regexp>^https?:\/\/.*</regexp>
-                                            </config>
+                                            </config> -->
                                         </input>
                                     </items>
                                 </option>
@@ -97,10 +97,10 @@
                                                                             <label><![CDATA[Ekstern URL]]></label>
                                                                             <occurrences minimum="1"
                                                                                 maximum="1" />
-                                                                            <config>
+                                                                            <!-- <config>
                                                                                 <regexp>
                                                                                     ^https?:\/\/.*</regexp>
-                                                                            </config>
+                                                                            </config> -->
                                                                         </input>
                                                                     </items>
                                                                 </option>
@@ -175,10 +175,11 @@
                                                                                                             <occurrences
                                                                                                                 minimum="1"
                                                                                                                 maximum="1" />
+                                                                                                            <!--
                                                                                                             <config>
                                                                                                                 <regexp>
                                                                                                                     ^https?:\/\/.*</regexp>
-                                                                                                            </config>
+                                                                                                            </config> -->
                                                                                                         </input>
                                                                                                     </items>
                                                                                                 </option>
