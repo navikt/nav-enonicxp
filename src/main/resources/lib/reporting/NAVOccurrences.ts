@@ -103,7 +103,14 @@ const hasNAVOccurrences = (obj: any): boolean => {
 
     // Check objects (but only if it's actually an object type)
     if (typeof obj === 'object') {
-        return Object.values(obj).some((value) => hasNAVOccurrences(value));
+        // There are dead content in "topPageContent" which is not availablke
+        // to the editor, but can contain data. Skip this.
+        if (typeof obj?.path === 'string' && obj?.path?.includes('topPageContent')) {
+            return false;
+        }
+        return Object.values(obj).some((value) => {
+            return hasNAVOccurrences(value);
+        });
     }
 
     // For other primitive types (number, boolean, etc.)
