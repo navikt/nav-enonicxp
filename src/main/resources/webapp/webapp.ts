@@ -49,7 +49,7 @@ const validActions: ActionsMap = {
         description: 'Fjern expired scheduler jobs (kjøres normalt automatisk hver morgen)',
         callback: runSchedulerCleanup,
     },
-    NAVToNav: {
+    reportNAVOccurences: {
         description: 'Går igjennom alt publisert innhold og rapporterer NAV-forekomster',
         callback: NAVOccurences,
     },
