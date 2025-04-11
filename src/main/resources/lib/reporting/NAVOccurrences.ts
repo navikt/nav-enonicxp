@@ -1,12 +1,11 @@
+import { Content } from '/lib/xp/content';
+import * as nodeLib from '/lib/xp/node';
 import { queryAllLayersToRepoIdBuckets } from '../localization/layers-repo-utils/query-all-layers';
 import { getRepoConnection } from '../repos/repo-utils';
 import { getMiscRepoConnection } from '../repos/misc-repo';
 import { MISC_REPO_ID, URLS } from '../constants';
 import { buildEditorPath } from '../paths/editor-path';
-import { Content } from '/lib/xp/content';
 import { contentTypesRenderedByPublicFrontend } from '../../lib/contenttype-lists';
-
-import * as nodeLib from '/lib/xp/node';
 
 import { logger } from '../utils/logging';
 
