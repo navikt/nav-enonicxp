@@ -1,0 +1,29 @@
+#import "../mixins/animatedIconsTargetFragment.graphql"
+#import "../mixins/internalLinkTargetFragment.graphql"
+#import "../contentCommonFragment.graphql"
+#import "../richText/richTextFragment.graphql"
+
+fragment contactStepPage on no_nav_navno_ContactStepPage {
+    dataAsJson
+    data {
+        illustration {
+            ...animatedIconsTargetMixin
+        }
+        linkPanels {
+            target {
+                ...internalLinkTargetMixin
+            }
+            text
+            ingress
+        }
+        backLink {
+            target {
+                ...internalLinkTargetMixin
+            }
+            text
+        }
+        html(processHtml: { type: server }) {
+            ...richText
+        }
+    }
+}

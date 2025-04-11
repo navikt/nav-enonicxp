@@ -1,0 +1,67 @@
+<content-type>
+    <display-name>Mellomsteg for kontaktside</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <form>
+        <field-set>
+            <label>Tittel og ingress</label>
+            <items>
+                <mixin name="page-header" />
+                <input type="TextLine" name="textAboveTitle">
+                    <label>Tekst over tittel</label>
+                    <occurrences minimum="0" maximum="1" />
+                </input>
+                <mixin name="illustration" />
+                <mixin name="html-area" />
+            </items>
+        </field-set>
+        <field-set>
+            <label>Kort-url</label>
+            <items>
+                <input name="customPath" type="CustomSelector">
+                    <label>Må begynne med '/start/[målgruppe dersom ikke privatperson]'</label>
+                    <occurrences minimum="1" maximum="1" />
+                    <config>
+                        <service>customPathSelector</service>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Lenker</label>
+            <items>
+                <input name="linkPanelsHeading" type="TextLine">
+                    <label>Overskrift</label>
+                    <occurrences minimum="0" maximum="1" />
+                </input>
+                <input name="linkPanelsSubHeading" type="TextLine">
+                    <label>Undertittel</label>
+                    <occurrences minimum="0" maximum="1" />
+                </input>
+                <item-set name="linkPanels">
+                    <occurrences minimum="1" maximum="0" />
+                    <items>
+                        <mixin name="link-internal" />
+                        <input type="TextArea" name="ingress">
+                            <label>Ingress</label>
+                            <occurrences minimum="0" maximum="1" />
+                        </input>
+                    </items>
+                </item-set>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Tilbakelenke</label>
+            <items>
+                <item-set name="backLink">
+                    <label>Tilbakelenke</label>
+                    <occurrences minimum="1" maximum="1" />
+                    <items>
+                        <mixin name="link-internal" />
+                    </items>
+                </item-set>
+            </items>
+        </field-set>
+    </form>
+</content-type>
