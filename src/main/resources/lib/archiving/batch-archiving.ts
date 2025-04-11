@@ -154,6 +154,12 @@ const unpublishAndArchiveContents = (
         //     );
         // }
 
+        // Content is published and has a publish date that is newer than the cutoff date,
+        // so it should not be unpublished. This is not an error, so don't push to the errors array.
+        if (contentFinal.publish?.from && contentFinal.publish.from > cutoffTs) {
+            return;
+        }
+
         // If the content has inbound references, don't unpublish as it may lead to broken links etc
         if (contentFinal.references.length > 0) {
             contentFinal.errors.push('Innholdet har innkommende avhengigheter');
