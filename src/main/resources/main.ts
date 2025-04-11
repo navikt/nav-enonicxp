@@ -45,8 +45,10 @@ activateLayersEventListeners();
 activateCacheEventListeners();
 activateContentListItemUnpublishedListener();
 activateExternalSearchIndexEventHandlers();
-// Wait for further discussion on how to handle periodic archiving
-// activateArchiveNewsSchedule();
+
+if (app.config.env !== 'p') {
+    activateArchiveNewsSchedule();
+}
 
 activateCustomPathNodeListeners();
 activateContentUpdateListener();
