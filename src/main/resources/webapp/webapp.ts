@@ -12,7 +12,7 @@ import { externalSearchUpdateAll } from '../lib/search/update-all';
 import { URLS } from '../lib/constants';
 import { fetchAndUpdateOfficeInfo } from '../lib/office-pages/_legacy-office-information/legacy-office-update';
 import { runSchedulerCleanup } from '../lib/scheduling/schedule-cleanup';
-import { convertNAVToNav } from '../lib/converting/NAVToNav';
+import { NAVOccurences } from '../lib/reporting/NAVOccurrences';
 import { archiveOldNews } from '../lib/archiving/archive-old-news';
 
 type ActionsMap = Record<string, { description: string; callback: () => any }>;
@@ -50,8 +50,8 @@ const validActions: ActionsMap = {
         callback: runSchedulerCleanup,
     },
     NAVToNav: {
-        description: 'Går igjennom alt publisert innhold og endrer NAV til Nav',
-        callback: convertNAVToNav,
+        description: 'Går igjennom alt publisert innhold og rapporterer NAV-forekomster',
+        callback: NAVOccurences,
     },
     // oldNewsUnpublish: {
     //     description: 'Avpubliser og arkiver gamle nyheter/pressemeldinger',
