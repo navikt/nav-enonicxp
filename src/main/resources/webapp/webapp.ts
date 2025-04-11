@@ -53,10 +53,6 @@ const validActions: ActionsMap = {
         description: 'Går igjennom alt publisert innhold og rapporterer NAV-forekomster',
         callback: NAVOccurences,
     },
-    // oldNewsUnpublish: {
-    //     description: 'Avpubliser og arkiver gamle nyheter/pressemeldinger',
-    //     callback: archiveOldNews,
-    // },
     oldNewsUnpublish: {
         description: 'Avpubliser og arkiver gamle nyheter/pressemeldinger',
         callback: archiveOldNews,
