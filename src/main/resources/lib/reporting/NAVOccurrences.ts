@@ -38,14 +38,14 @@ const simplifyContent = (content: nodeLib.RepoNode<Content>, repoId: string): Co
     const escapedDisplayName = escapeString(displayName);
 
     return {
-        _id,
-        _path,
         displayName: escapedDisplayName,
-        editorUrl: `${URLS.PORTAL_ADMIN_ORIGIN}${buildEditorPath(_id, repoId)}`,
-        createdTime,
-        modifiedTime,
         type,
         repoId,
+        modifiedTime,
+        editorUrl: `${URLS.PORTAL_ADMIN_ORIGIN}${buildEditorPath(_id, repoId)}`,
+        _path,
+        _id,
+        createdTime,
         errors: [],
     };
 };
