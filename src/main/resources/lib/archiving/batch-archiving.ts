@@ -255,12 +255,14 @@ export const findAndArchiveOldContent = ({
             `Found ${hits.length} candidate content in repo ${repoId} for archiving job ${jobName}`
         );
 
+        logger.info(JSON.stringify(hits, null, 2));
+
         const contents = hits.reduce<ContentDataSimple[]>((acc, contentId) => {
             const contentNode = layerRepo.get<Content>(contentId);
             if (contentNode) {
                 acc.push(simplifyContent(contentNode, repoId));
             } else {
-                logger.info(`Content for acrhiving: ${contentId} not found in repo ${repoId}`);
+                logger.info(`Content for archiving: ${contentId} not found in repo ${repoId}`);
             }
 
             return acc;
