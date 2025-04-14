@@ -255,8 +255,6 @@ export const findAndArchiveOldContent = ({
             `Found ${hits.length} candidate content in repo ${repoId} for archiving job ${jobName}`
         );
 
-        logger.info(JSON.stringify(hits, null, 2));
-
         const contents = hits.reduce<ContentDataSimple[]>((acc, contentId) => {
             const contentNode = layerRepo.get<Content>(contentId);
             if (contentNode) {
@@ -272,7 +270,7 @@ export const findAndArchiveOldContent = ({
             unpublishAndArchiveContents(contents, repoId, cutoffTs)
         );
 
-        result.totalFound += hits.length;
+        result.totalFound += contents.length;
         result.failed.push(...layerResult.failed);
         result.skipped.push(...layerResult.skipped);
         result.archived.push(...layerResult.archived);
