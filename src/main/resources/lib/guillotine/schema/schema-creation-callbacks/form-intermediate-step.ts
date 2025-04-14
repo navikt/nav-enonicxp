@@ -33,20 +33,26 @@ const hasEmptyFormNumbers = (steps: Step[]): boolean => {
     });
 };
 
-const updateStepFormNumbers = (step: Step, noStepsMap: Map<string, Step>): Step => {
+const updateStepFormNumbers = (step: Step, defaultLayerStepsMap: Map<string, Step>): Step => {
     if (step.nextStep?._selected === 'external' && !step.nextStep.external?.formNumber) {
-        const noStep = noStepsMap.get(step.label);
-        if (noStep?.nextStep?._selected === 'external' && noStep.nextStep.external?.formNumber) {
+        const defaultLayerStep = defaultLayerStepsMap.get(step.label);
+        if (
+            defaultLayerStep?.nextStep?._selected === 'external' &&
+            defaultLayerStep.nextStep.external?.formNumber
+        ) {
             if (step.nextStep.external) {
-                step.nextStep.external.formNumber = noStep.nextStep.external.formNumber;
+                step.nextStep.external.formNumber = defaultLayerStep.nextStep.external.formNumber;
             }
         }
     }
 
     if (step.nextStep?._selected === 'next' && step.nextStep.next?.steps) {
-        const noStep = noStepsMap.get(step.label);
-        if (noStep?.nextStep?._selected === 'next' && noStep.nextStep.next?.steps) {
-            updateStepFormNumbers(step.nextStep.next.steps, noStepsMap);
+        const defaultLayerStep = defaultLayerStepsMap.get(step.label);
+        if (
+            defaultLayerStep?.nextStep?._selected === 'next' &&
+            defaultLayerStep.nextStep.next?.steps
+        ) {
+            updateStepFormNumbers(step.nextStep.next.steps, defaultLayerStepsMap);
         }
     }
 
@@ -58,16 +64,16 @@ export const formIntermediateStepCallback: CreationCallback = (context, params) 
 
     params.fields.data.resolve = (env) => {
         if (env.source.language !== 'no') {
-            const noContent = runInLocaleContext({ locale: 'no', branch: 'draft' }, () =>
+            const defaultLayerContent = runInLocaleContext({ locale: 'no', branch: 'draft' }, () =>
                 contentLib.get({ key: env.source._id })
             );
 
-            if (noContent?.data?.steps) {
+            if (defaultLayerContent?.data?.steps) {
                 const currentData = env.source.data as ContentData;
 
                 if (hasEmptyFormNumbers(currentData.steps)) {
-                    const noStepsMap = new Map<string, Step>(
-                        (noContent.data.steps as Step[]).map((step) => [step.label, step])
+                    const defaultLayerStepsMap = new Map<string, Step>(
+                        (defaultLayerContent.data.steps as Step[]).map((step) => [step.label, step])
                     );
 
                     contentLib.modify({
@@ -75,7 +81,7 @@ export const formIntermediateStepCallback: CreationCallback = (context, params) 
                         editor: (node) => {
                             const nodeData = node.data as ContentData;
                             nodeData.steps = nodeData.steps.map((step) =>
-                                updateStepFormNumbers(step, noStepsMap)
+                                updateStepFormNumbers(step, defaultLayerStepsMap)
                             );
                             return node;
                         },
