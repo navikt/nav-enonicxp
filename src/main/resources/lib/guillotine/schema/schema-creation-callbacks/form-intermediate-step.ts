@@ -2,7 +2,9 @@ import { CreationCallback } from '../../utils/creation-callback-utils';
 import { insertOriginalContentTypeField } from './common/original-content-type';
 import { runInLocaleContext } from '../../../../lib/localization/locale-context';
 import * as contentLib from '/lib/xp/content';
+import { CONTENT_LOCALE_DEFAULT } from '../../../../lib/constants';
 
+// Type definitions for the form step structure
 type Step = {
     label: string;
     nextStep?: {
@@ -21,21 +23,13 @@ type ContentData = {
     steps: Step[];
 };
 
-const hasEmptyFormNumbers = (steps: Step[]): boolean => {
-    return steps.some((step) => {
-        if (step.nextStep?._selected === 'external' && !step.nextStep.external?.formNumber) {
-            return true;
-        }
-        if (step.nextStep?._selected === 'next' && step.nextStep.next?.steps) {
-            return hasEmptyFormNumbers([step.nextStep.next.steps]);
-        }
-        return false;
-    });
-};
-
+// Update form numbers in the current step by copying from the default language layer
 const updateStepFormNumbers = (step: Step, defaultLayerStepsMap: Map<string, Step>): Step => {
+    // Check if current step is external and missing form number
     if (step.nextStep?._selected === 'external' && !step.nextStep.external?.formNumber) {
+        // Get corresponding step from default language layer
         const defaultLayerStep = defaultLayerStepsMap.get(step.label);
+        // If default language step has a form number, copy it
         if (
             defaultLayerStep?.nextStep?._selected === 'external' &&
             defaultLayerStep.nextStep.external?.formNumber
@@ -46,6 +40,7 @@ const updateStepFormNumbers = (step: Step, defaultLayerStepsMap: Map<string, Ste
         }
     }
 
+    // If current step has nested steps, process them recursively
     if (step.nextStep?._selected === 'next' && step.nextStep.next?.steps) {
         const defaultLayerStep = defaultLayerStepsMap.get(step.label);
         if (
@@ -59,34 +54,36 @@ const updateStepFormNumbers = (step: Step, defaultLayerStepsMap: Map<string, Ste
     return step;
 };
 
+// Main callback that handles form number synchronization
 export const formIntermediateStepCallback: CreationCallback = (context, params) => {
     insertOriginalContentTypeField(params);
 
     params.fields.data.resolve = (env) => {
-        if (env.source.language !== 'no') {
-            const defaultLayerContent = runInLocaleContext({ locale: 'no', branch: 'draft' }, () =>
-                contentLib.get({ key: env.source._id })
+        // Only process non-default language content
+        if (env.source.language !== CONTENT_LOCALE_DEFAULT) {
+            // Get the default language version of the content
+            const defaultLayerContent = runInLocaleContext(
+                { locale: CONTENT_LOCALE_DEFAULT, branch: 'draft' },
+                () => contentLib.get({ key: env.source._id })
             );
 
             if (defaultLayerContent?.data?.steps) {
-                const currentData = env.source.data as ContentData;
+                // Create a map of default language steps for quick lookup
+                const defaultLayerStepsMap = new Map<string, Step>(
+                    (defaultLayerContent.data.steps as Step[]).map((step) => [step.label, step])
+                );
 
-                if (hasEmptyFormNumbers(currentData.steps)) {
-                    const defaultLayerStepsMap = new Map<string, Step>(
-                        (defaultLayerContent.data.steps as Step[]).map((step) => [step.label, step])
-                    );
-
-                    contentLib.modify({
-                        key: env.source._id,
-                        editor: (node) => {
-                            const nodeData = node.data as ContentData;
-                            nodeData.steps = nodeData.steps.map((step) =>
-                                updateStepFormNumbers(step, defaultLayerStepsMap)
-                            );
-                            return node;
-                        },
-                    });
-                }
+                // Update the content with synchronized form numbers
+                contentLib.modify({
+                    key: env.source._id,
+                    editor: (node) => {
+                        const nodeData = node.data as ContentData;
+                        nodeData.steps = (env.source.data as ContentData).steps.map((step) =>
+                            updateStepFormNumbers(step, defaultLayerStepsMap)
+                        );
+                        return node;
+                    },
+                });
             }
         }
 
