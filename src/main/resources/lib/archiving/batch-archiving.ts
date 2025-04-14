@@ -259,6 +259,8 @@ export const findAndArchiveOldContent = ({
             const contentNode = layerRepo.get<Content>(contentId);
             if (contentNode) {
                 acc.push(simplifyContent(contentNode, repoId));
+            } else {
+                logger.info(`Content for acrhiving: ${contentId} not found in repo ${repoId}`);
             }
 
             return acc;
