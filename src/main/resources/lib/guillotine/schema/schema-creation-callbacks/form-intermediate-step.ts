@@ -24,12 +24,8 @@ type ContentData = {
 };
 
 // Update form numbers in the current step by copying from the default language layer
-const updateStepFormNumbers = (step: Step, defaultLayerStepsMap: Map<string, Step>): Step => {
-    // Check if current step is external and missing form number
+const updateStepFormNumbers = (step: Step, defaultLayerStep: Step): Step => {
     if (step.nextStep?._selected === 'external' && !step.nextStep.external?.formNumber) {
-        // Get corresponding step from default language layer
-        const defaultLayerStep = defaultLayerStepsMap.get(step.label);
-        // If default language step has a form number, copy it
         if (
             defaultLayerStep?.nextStep?._selected === 'external' &&
             defaultLayerStep.nextStep.external?.formNumber
@@ -40,14 +36,15 @@ const updateStepFormNumbers = (step: Step, defaultLayerStepsMap: Map<string, Ste
         }
     }
 
-    // If current step has nested steps, process them recursively
     if (step.nextStep?._selected === 'next' && step.nextStep.next?.steps) {
-        const defaultLayerStep = defaultLayerStepsMap.get(step.label);
         if (
             defaultLayerStep?.nextStep?._selected === 'next' &&
             defaultLayerStep.nextStep.next?.steps
         ) {
-            updateStepFormNumbers(step.nextStep.next.steps, defaultLayerStepsMap);
+            step.nextStep.next.steps = updateStepFormNumbers(
+                step.nextStep.next.steps,
+                defaultLayerStep.nextStep.next.steps
+            );
         }
     }
 
@@ -59,27 +56,20 @@ export const formIntermediateStepCallback: CreationCallback = (context, params) 
     insertOriginalContentTypeField(params);
 
     params.fields.data.resolve = (env) => {
-        // Only process non-default language content
         if (env.source.language !== CONTENT_LOCALE_DEFAULT) {
-            // Get the default language version of the content
             const defaultLayerContent = runInLocaleContext(
                 { locale: CONTENT_LOCALE_DEFAULT, branch: 'draft' },
                 () => contentLib.get({ key: env.source._id })
             );
 
             if (defaultLayerContent?.data?.steps) {
-                // Create a map of default language steps for quick lookup
-                const defaultLayerStepsMap = new Map<string, Step>(
-                    (defaultLayerContent.data.steps as Step[]).map((step) => [step.label, step])
-                );
-
-                // Update the content with synchronized form numbers
                 contentLib.modify({
                     key: env.source._id,
                     editor: (node) => {
                         const nodeData = node.data as ContentData;
-                        nodeData.steps = (env.source.data as ContentData).steps.map((step) =>
-                            updateStepFormNumbers(step, defaultLayerStepsMap)
+                        const defaultLayerSteps = defaultLayerContent.data.steps as Step[];
+                        nodeData.steps = nodeData.steps.map((step, index) =>
+                            updateStepFormNumbers(step, defaultLayerSteps[index])
                         );
                         return node;
                     },
