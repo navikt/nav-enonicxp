@@ -8,11 +8,28 @@ export const formIntermediateStepCallback: CreationCallback = (context, params) 
     insertOriginalContentTypeField(params);
 
     params.fields.data.resolve = (env) => {
-        logger.info(`Current layer content: ${JSON.stringify(env.source, null, 2)}`);
+        logger.info(`Current layer content: ${JSON.stringify(env.source.data.steps, null, 2)}`);
 
-        const noContent = runInLocaleContext({ locale: 'no' }, () =>
-            contentLib.get({ key: env.source._id })
-        );
-        logger.info(`Norwegian layer content: ${JSON.stringify(noContent, null, 2)}`);
+        // Modify the actual content
+        contentLib.modify({
+            key: env.source._id,
+            editor: (node) => {
+                if (!node.data.steps) {
+                    node.data.steps = [];
+                }
+                node.data.steps.push({
+                    label: 'Sample Step',
+                    nextStep: {
+                        _selected: 'external',
+                        external: {
+                            externalUrl: 'https://www.nav.no',
+                        },
+                    },
+                });
+                return node;
+            },
+        });
+
+        return env.source.data;
     };
 };
