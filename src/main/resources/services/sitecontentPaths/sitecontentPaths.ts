@@ -145,7 +145,12 @@ const getFromCache = (isTest: boolean) => {
 // This returns a full list of content paths that should be pre-rendered
 // by the failover-instance of the frontend
 export const get = (req: XP.Request) => {
+    logger.info(`Received request to sitecontentPaths`);
     if (!validateServiceSecretHeader(req)) {
+        const isSecretMissing = !req.headers.secret;
+        logger.warning(
+            `Unauthorized request to sitecontentPaths: secrets missing: ${isSecretMissing}`
+        );
         return {
             status: 401,
             body: {
