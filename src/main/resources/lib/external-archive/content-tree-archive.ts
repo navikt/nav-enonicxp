@@ -86,8 +86,9 @@ class ArchiveContentTree {
                     mustNot: [
                         ...NON_LOCALIZED_QUERY_FILTER,
                         {
-                            exists: {
-                                field: 'data._layerMigration',
+                            hasValue: {
+                                field: 'data._layerMigration.locale',
+                                values: ['nn', 'en', 'se'],
                             },
                         },
                     ],
