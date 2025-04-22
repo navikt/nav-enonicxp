@@ -13,7 +13,7 @@ type Step = {
             externalUrl?: string;
         };
         next?: {
-            steps: Step;
+            steps: Step[];
         };
     };
 };
@@ -22,10 +22,14 @@ type ContentData = {
     steps: Step[];
 };
 
-const updateStepFormNumbers = (step: Step, defaultLayerStep: Step): Step => {
+const updateStepFormNumbers = (step: Step, defaultLayerStep: Step | undefined): Step => {
+    if (!defaultLayerStep) {
+        return step;
+    }
+
     if (step.nextStep?._selected === 'external' && !step.nextStep.external?.formNumber) {
         if (
-            defaultLayerStep?.nextStep?._selected === 'external' &&
+            defaultLayerStep.nextStep?._selected === 'external' &&
             defaultLayerStep.nextStep.external?.formNumber
         ) {
             if (step.nextStep.external) {
@@ -36,12 +40,11 @@ const updateStepFormNumbers = (step: Step, defaultLayerStep: Step): Step => {
 
     if (step.nextStep?._selected === 'next' && step.nextStep.next?.steps) {
         if (
-            defaultLayerStep?.nextStep?._selected === 'next' &&
+            defaultLayerStep.nextStep?._selected === 'next' &&
             defaultLayerStep.nextStep.next?.steps
         ) {
-            step.nextStep.next.steps = updateStepFormNumbers(
-                step.nextStep.next.steps,
-                defaultLayerStep.nextStep.next.steps
+            step.nextStep.next.steps = step.nextStep.next.steps.map((currentStep, index) =>
+                updateStepFormNumbers(currentStep, defaultLayerStep.nextStep?.next?.steps?.[index])
             );
         }
     }
