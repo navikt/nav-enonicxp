@@ -3,6 +3,7 @@ import { insertOriginalContentTypeField } from './common/original-content-type';
 import { runInLocaleContext } from '../../../../lib/localization/locale-context';
 import * as contentLib from '/lib/xp/content';
 import { CONTENT_LOCALE_DEFAULT } from '../../../../lib/constants';
+import { forceArray } from '../../../../lib/utils/array-utils';
 
 type Step = {
     label: string;
@@ -43,8 +44,11 @@ const updateStepFormNumbers = (step: Step, defaultLayerStep: Step | undefined): 
             defaultLayerStep.nextStep?._selected === 'next' &&
             defaultLayerStep.nextStep.next?.steps
         ) {
-            step.nextStep.next.steps = step.nextStep.next.steps.map((currentStep, index) =>
-                updateStepFormNumbers(currentStep, defaultLayerStep.nextStep?.next?.steps?.[index])
+            const currentSteps = forceArray(step.nextStep.next.steps);
+            const defaultSteps = forceArray(defaultLayerStep.nextStep.next.steps);
+
+            step.nextStep.next.steps = currentSteps.map((currentStep, index) =>
+                updateStepFormNumbers(currentStep, defaultSteps[index])
             );
         }
     }
