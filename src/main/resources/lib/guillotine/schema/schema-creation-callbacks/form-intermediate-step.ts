@@ -4,7 +4,6 @@ import { runInLocaleContext } from '../../../../lib/localization/locale-context'
 import * as contentLib from '/lib/xp/content';
 import { CONTENT_LOCALE_DEFAULT } from '../../../../lib/constants';
 
-// Type definitions for the form step structure
 type Step = {
     label: string;
     nextStep?: {
@@ -23,7 +22,6 @@ type ContentData = {
     steps: Step[];
 };
 
-// Update form numbers in the current step by copying from the default language layer
 const updateStepFormNumbers = (step: Step, defaultLayerStep: Step): Step => {
     if (step.nextStep?._selected === 'external' && !step.nextStep.external?.formNumber) {
         if (
@@ -51,7 +49,6 @@ const updateStepFormNumbers = (step: Step, defaultLayerStep: Step): Step => {
     return step;
 };
 
-// Main callback that handles form number synchronization
 export const formIntermediateStepCallback: CreationCallback = (context, params) => {
     insertOriginalContentTypeField(params);
 
