@@ -88,7 +88,6 @@ export const getNodeHitsFromExternalArchiveQuery = ({
                 boolean: {
                     must: [
                         { notExists: { field: 'data.externalProductUrl' } },
-                        { notExists: { field: 'data._layerMigration' } },
                         {
                             hasValue: {
                                 field: 'type',
@@ -108,6 +107,12 @@ export const getNodeHitsFromExternalArchiveQuery = ({
                             hasValue: {
                                 field: 'x.no-nav-navno.previewOnly.previewOnly',
                                 values: ['true'],
+                            },
+                        },
+                        {
+                            hasValue: {
+                                field: 'data._layerMigration.locale',
+                                values: ['nn', 'en', 'se'],
                             },
                         },
                     ],
