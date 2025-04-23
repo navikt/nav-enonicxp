@@ -60,12 +60,16 @@ const updateFormNumbersFromDefaultLayer = (
         if (defaultLayerContent?.data?.steps) {
             const needsUpdate = content.data.steps.some((step, index) => {
                 const defaultStep = defaultLayerContent.data.steps[index];
-                return (
+                if (
                     step.nextStep?._selected === 'external' &&
-                    !step.nextStep.external?.formNumber &&
-                    defaultStep.nextStep?._selected === 'external' &&
-                    defaultStep.nextStep.external?.formNumber
-                );
+                    !step.nextStep.external?.formNumber
+                ) {
+                    return (
+                        defaultStep.nextStep?._selected === 'external' &&
+                        defaultStep.nextStep.external?.formNumber
+                    );
+                }
+                return false;
             });
 
             if (needsUpdate) {
@@ -109,10 +113,14 @@ const insertCustomPath = (req: XP.Request) => {
         currentContent.data.customPath,
         currentContent
     );
-
-    const needsFormNumbersUpdate = currentContent.data.steps.some(
-        (step) => step.nextStep?._selected === 'external' && !step.nextStep.external?.formNumber
-    );
+    const needsFormNumbersUpdate = currentContent.data.steps.some((step) => {
+        if (step.nextStep?._selected === 'external') {
+            return (
+                content.language !== CONTENT_LOCALE_DEFAULT && !step.nextStep.external?.formNumber
+            );
+        }
+        return false;
+    });
 
     if (needsCustomPathUpdate || needsFormNumbersUpdate) {
         repo.modify<Content<'no.nav.navno:form-intermediate-step'>>({
