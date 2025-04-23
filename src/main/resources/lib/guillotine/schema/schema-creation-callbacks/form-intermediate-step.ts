@@ -5,19 +5,10 @@ import * as contentLib from '/lib/xp/content';
 import { CONTENT_LOCALE_DEFAULT } from '../../../../lib/constants';
 import { forceArray } from '../../../../lib/utils/array-utils';
 
-type Step = {
-    label: string;
-    nextStep?: {
-        _selected: 'external' | 'next';
-        external?: {
-            formNumber?: string;
-            externalUrl?: string;
-        };
-        next?: {
-            steps: Step[];
-        };
-    };
-};
+import { FormIntermediateStep } from '@xp-types/site/content-types/form-intermediate-step';
+
+// Type definitions for the form step structure
+type Step = FormIntermediateStep['steps'][number];
 
 type ContentData = {
     steps: Step[];
@@ -49,7 +40,7 @@ const updateStepFormNumbers = (step: Step, defaultLayerStep: Step | undefined): 
 
             step.nextStep.next.steps = currentSteps.map((currentStep, index) =>
                 updateStepFormNumbers(currentStep, defaultSteps[index])
-            );
+            ) as typeof step.nextStep.next.steps;
         }
     }
 
