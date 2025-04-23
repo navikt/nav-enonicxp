@@ -40,8 +40,8 @@ const getSituationsLayout = (
 const getRelevantSituationPages = (areaPageNodeContent: AreaPageContent) =>
     runInContext({ branch: 'master' }, () => {
         const { area, audience } = areaPageNodeContent.data;
-
         const selectedAudience = audience?._selected;
+
         if (!selectedAudience) {
             return [];
         }
@@ -101,6 +101,7 @@ const situationCardHasTarget = (
     situationPageTarget: SituationPageContent
 ) => {
     const config = situationCard.part?.config?.['no-nav-navno']?.['areapage-situation-card'];
+
     if (!config) {
         return false;
     }
@@ -167,29 +168,28 @@ const populateSituationsLayout = (req: XP.Request) => {
         logger.error(`Could not get contextual content from request - path: ${req.rawPath}`);
         return;
     }
-
     if (content.type !== 'no.nav.navno:area-page') {
         logger.error(`Invalid type for area page controller - ${content._id}`);
         return;
     }
-
     if (!content.data.area) {
         logger.error(`No area specified for area page - ${content._id}`, true);
         return;
     }
-
     if (!content.data.audience?._selected) {
         logger.error(`No audience specified for area page - ${content._id}`, true);
         return;
     }
+    if (!req.repositoryId) {
+        logger.error(`No repoId for area page - ${content._id}`);
+        return;
+    }
 
     const repo = getRepoConnection({ repoId: req.repositoryId, branch: 'draft' });
-
     const nodeContent = repo.get<AreaPageContent>({ key: content._id });
     if (!nodeContent?.components) {
         return;
     }
-
     const components = forceArray(nodeContent.components);
 
     // If no areapage-situations layout exists on the page, there is nothing to populate
@@ -199,7 +199,6 @@ const populateSituationsLayout = (req: XP.Request) => {
     }
 
     const relevantSituationPages = getRelevantSituationPages(nodeContent);
-
     const situationsRegionPath = `${situationLayout.path}/situations`;
     const situationsRegionComponents = components.filter((component) =>
         component.path.startsWith(situationsRegionPath)

@@ -16,7 +16,7 @@ node {
 
 app {
     name = project.appName
-    displayName = 'Nav.no - XP 2021'
+    displayName = 'Nav.no - Enonic XP'
     systemVersion = "${xpVersion}"
 }
 
