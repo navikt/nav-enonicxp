@@ -36,20 +36,6 @@ const validateContent = (
     return true;
 };
 
-const checkForUpdates = (
-    currentContent: Content<'no.nav.navno:form-intermediate-step'>,
-    content: Content<'no.nav.navno:form-intermediate-step'>
-) => {
-    const needsCustomPathUpdate = !formIntermediateStepValidateCustomPath(
-        currentContent.data.customPath,
-        currentContent
-    );
-
-    const needsFormNumbersUpdate = needsFormNumbersUpdateCheck(currentContent, content);
-
-    return { needsCustomPathUpdate, needsFormNumbersUpdate };
-};
-
 const updateCustomPath = (content: Content<'no.nav.navno:form-intermediate-step'>) => {
     content.data.customPath = formIntermediateStepGenerateCustomPath(content);
 };
@@ -69,10 +55,11 @@ const updateContent = (req: XP.Request) => {
         return;
     }
 
-    const { needsCustomPathUpdate, needsFormNumbersUpdate } = checkForUpdates(
-        currentContent,
-        content
+    const needsCustomPathUpdate = !formIntermediateStepValidateCustomPath(
+        currentContent.data.customPath,
+        currentContent
     );
+    const needsFormNumbersUpdate = needsFormNumbersUpdateCheck(currentContent, content);
 
     if (needsCustomPathUpdate || needsFormNumbersUpdate) {
         repo.modify<Content<'no.nav.navno:form-intermediate-step'>>({
