@@ -85,34 +85,34 @@ const updateCustomPath = (content: Content<'no.nav.navno:form-intermediate-step'
     content.data.customPath = formIntermediateStepGenerateCustomPath(content);
 };
 
-const updateContent = (req: XP.Request) => {
-    const content = portalLib.getContent();
+const validateContent = (
+    content: Content | null,
+    req: XP.Request
+): content is Content<'no.nav.navno:form-intermediate-step'> => {
     if (!content) {
         logger.error(`Could not get contextual content from request path - ${req.rawPath}`);
-        return;
+        return false;
     }
 
     if (content.type !== 'no.nav.navno:form-intermediate-step') {
         logger.error(
             `Invalid type for form-intermediate-step controller - ${content._id} - ${content.type}`
         );
-        return;
+        return false;
     }
 
     if (!content.valid) {
         logger.info(`Content ${content._id} is not valid - skipping updates for now`);
-        return;
+        return false;
     }
 
-    const repo = getRepoConnection({ repoId: req.repositoryId, branch: 'draft' });
-    const currentContent = repo.get<Content<'no.nav.navno:form-intermediate-step'>>({
-        key: content._id,
-    });
+    return true;
+};
 
-    if (!currentContent) {
-        return;
-    }
-
+const checkForUpdates = (
+    currentContent: Content<'no.nav.navno:form-intermediate-step'>,
+    content: Content<'no.nav.navno:form-intermediate-step'>
+) => {
     const needsCustomPathUpdate = !formIntermediateStepValidateCustomPath(
         currentContent.data.customPath,
         currentContent
@@ -125,6 +125,29 @@ const updateContent = (req: XP.Request) => {
         }
         return false;
     });
+
+    return { needsCustomPathUpdate, needsFormNumbersUpdate };
+};
+
+const updateContent = (req: XP.Request) => {
+    const content = portalLib.getContent();
+    if (!validateContent(content, req)) {
+        return;
+    }
+
+    const repo = getRepoConnection({ repoId: req.repositoryId, branch: 'draft' });
+    const currentContent = repo.get<Content<'no.nav.navno:form-intermediate-step'>>({
+        key: content._id,
+    });
+
+    if (!currentContent) {
+        return;
+    }
+
+    const { needsCustomPathUpdate, needsFormNumbersUpdate } = checkForUpdates(
+        currentContent,
+        content
+    );
 
     if (needsCustomPathUpdate || needsFormNumbersUpdate) {
         repo.modify<Content<'no.nav.navno:form-intermediate-step'>>({
