@@ -1,89 +1,14 @@
 import * as portalLib from '/lib/xp/portal';
 import { Content } from '/lib/xp/portal';
-import { frontendProxy } from './frontend-proxy';
-import { logger } from '../utils/logging';
 import { getRepoConnection } from '../repos/repo-utils';
+import { logger } from '../utils/logging';
+import { frontendProxy } from './frontend-proxy';
 import {
-    formIntermediateStepGenerateCustomPath,
     formIntermediateStepValidateCustomPath,
+    formIntermediateStepGenerateCustomPath,
 } from '../paths/custom-paths/custom-path-content-validators';
 import { CONTENT_LOCALE_DEFAULT } from '../constants';
-import { runInLocaleContext } from '../localization/locale-context';
-import * as contentLib from '/lib/xp/content';
-import { forceArray } from '../utils/array-utils';
-import { FormIntermediateStep } from '@xp-types/site/content-types/form-intermediate-step';
-
-type Step = FormIntermediateStep['steps'][number];
-
-const updateStepFormNumbers = (step: Step, defaultLayerStep: Step | undefined): Step => {
-    if (!defaultLayerStep) {
-        return step;
-    }
-
-    if (step.nextStep?._selected === 'external' && !step.nextStep.external?.formNumber) {
-        if (
-            defaultLayerStep.nextStep?._selected === 'external' &&
-            defaultLayerStep.nextStep.external?.formNumber
-        ) {
-            if (step.nextStep.external) {
-                step.nextStep.external.formNumber = defaultLayerStep.nextStep.external.formNumber;
-            }
-        }
-    }
-
-    if (step.nextStep?._selected === 'next' && step.nextStep.next?.steps) {
-        if (
-            defaultLayerStep.nextStep?._selected === 'next' &&
-            defaultLayerStep.nextStep.next?.steps
-        ) {
-            const currentSteps = forceArray(step.nextStep.next.steps);
-            const defaultSteps = forceArray(defaultLayerStep.nextStep.next.steps);
-
-            step.nextStep.next.steps = currentSteps.map((currentStep, index) =>
-                updateStepFormNumbers(currentStep, defaultSteps[index])
-            ) as typeof step.nextStep.next.steps;
-        }
-    }
-
-    return step;
-};
-
-const updateFormNumbersFromDefaultLayer = (
-    content: Content<'no.nav.navno:form-intermediate-step'>
-) => {
-    if (content.language !== CONTENT_LOCALE_DEFAULT) {
-        const defaultLayerContent = runInLocaleContext(
-            { locale: CONTENT_LOCALE_DEFAULT, branch: 'draft' },
-            () => contentLib.get({ key: content._id })
-        );
-
-        if (defaultLayerContent?.data?.steps) {
-            const needsUpdate = content.data.steps.some((step, index) => {
-                const defaultStep = defaultLayerContent.data.steps[index];
-                if (
-                    step.nextStep?._selected === 'external' &&
-                    !step.nextStep.external?.formNumber
-                ) {
-                    return (
-                        defaultStep.nextStep?._selected === 'external' &&
-                        defaultStep.nextStep.external?.formNumber
-                    );
-                }
-                return false;
-            });
-
-            if (needsUpdate) {
-                content.data.steps = content.data.steps.map((step, index) =>
-                    updateStepFormNumbers(step, defaultLayerContent.data.steps[index])
-                );
-            }
-        }
-    }
-};
-
-const updateCustomPath = (content: Content<'no.nav.navno:form-intermediate-step'>) => {
-    content.data.customPath = formIntermediateStepGenerateCustomPath(content);
-};
+import { updateFormNumbersFromDefaultLayer } from './form-intermediate-step-utils/form-intermediate-step-form-numbers';
 
 const validateContent = (
     content: Content | null,
@@ -129,9 +54,13 @@ const checkForUpdates = (
     return { needsCustomPathUpdate, needsFormNumbersUpdate };
 };
 
+const updateCustomPath = (content: Content<'no.nav.navno:form-intermediate-step'>) => {
+    content.data.customPath = formIntermediateStepGenerateCustomPath(content);
+};
+
 const updateContent = (req: XP.Request) => {
     const content = portalLib.getContent();
-    if (!validateContent(content, req)) {
+    if (!content || !validateContent(content, req)) {
         return;
     }
 
@@ -169,7 +98,6 @@ const formIntermediateStepController = (req: XP.Request) => {
     if ((req.mode === 'edit' || req.mode === 'inline') && req.method === 'GET') {
         updateContent(req);
     }
-
     return frontendProxy(req);
 };
 
