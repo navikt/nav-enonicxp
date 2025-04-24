@@ -7,8 +7,10 @@ import {
     formIntermediateStepGenerateCustomPath,
     formIntermediateStepValidateCustomPath,
 } from '../paths/custom-paths/custom-path-content-validators';
-import { CONTENT_LOCALE_DEFAULT } from '../constants';
-import { updateFormNumbersFromDefaultLayer } from './form-intermediate-step-utils/form-intermediate-step-form-numbers';
+import {
+    needsFormNumbersUpdateCheck,
+    updateFormNumbersFromDefaultLayer,
+} from './form-intermediate-step-utils/form-intermediate-step-form-numbers';
 
 const validateContent = (
     content: Content | null,
@@ -42,14 +44,8 @@ const checkForUpdates = (
         currentContent.data.customPath,
         currentContent
     );
-    const needsFormNumbersUpdate = currentContent.data.steps.some((step) => {
-        if (step.nextStep?._selected === 'external') {
-            return (
-                content.language !== CONTENT_LOCALE_DEFAULT && !step.nextStep.external?.formNumber
-            );
-        }
-        return false;
-    });
+
+    const needsFormNumbersUpdate = needsFormNumbersUpdateCheck(currentContent, content);
 
     return { needsCustomPathUpdate, needsFormNumbersUpdate };
 };

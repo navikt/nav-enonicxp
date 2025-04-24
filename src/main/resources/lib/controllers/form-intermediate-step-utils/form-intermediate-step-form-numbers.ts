@@ -7,6 +7,20 @@ import { CONTENT_LOCALE_DEFAULT } from '../../constants';
 
 type Step = FormIntermediateStep['steps'][number];
 
+export const needsFormNumbersUpdateCheck = (
+    currentContent: Content<'no.nav.navno:form-intermediate-step'>,
+    content: Content<'no.nav.navno:form-intermediate-step'>
+): boolean => {
+    return currentContent.data.steps.some((step) => {
+        if (step.nextStep?._selected === 'external') {
+            return (
+                content.language !== CONTENT_LOCALE_DEFAULT && !step.nextStep.external?.formNumber
+            );
+        }
+        return false;
+    });
+};
+
 export const updateStepFormNumbers = (step: Step, defaultLayerStep: Step | undefined): Step => {
     if (!defaultLayerStep) {
         return step;
