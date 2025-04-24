@@ -81,6 +81,10 @@ const updateFormNumbersFromDefaultLayer = (
     }
 };
 
+const updateCustomPath = (content: Content<'no.nav.navno:form-intermediate-step'>) => {
+    content.data.customPath = formIntermediateStepGenerateCustomPath(content);
+};
+
 const updateContent = (req: XP.Request) => {
     const content = portalLib.getContent();
     if (!content) {
@@ -127,7 +131,7 @@ const updateContent = (req: XP.Request) => {
             key: content._id,
             editor: (content) => {
                 if (needsCustomPathUpdate) {
-                    content.data.customPath = formIntermediateStepGenerateCustomPath(content);
+                    updateCustomPath(content);
                 }
                 if (needsFormNumbersUpdate) {
                     updateFormNumbersFromDefaultLayer(content);
