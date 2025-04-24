@@ -1,11 +1,11 @@
 import * as portalLib from '/lib/xp/portal';
 import { Content } from '/lib/xp/portal';
-import { getRepoConnection } from '../repos/repo-utils';
-import { logger } from '../utils/logging';
 import { frontendProxy } from './frontend-proxy';
+import { logger } from '../utils/logging';
+import { getRepoConnection } from '../repos/repo-utils';
 import {
-    formIntermediateStepValidateCustomPath,
     formIntermediateStepGenerateCustomPath,
+    formIntermediateStepValidateCustomPath,
 } from '../paths/custom-paths/custom-path-content-validators';
 import { CONTENT_LOCALE_DEFAULT } from '../constants';
 import { updateFormNumbersFromDefaultLayer } from './form-intermediate-step-utils/form-intermediate-step-form-numbers';
