@@ -81,7 +81,7 @@ const updateFormNumbersFromDefaultLayer = (
     }
 };
 
-const insertCustomPath = (req: XP.Request) => {
+const updateContent = (req: XP.Request) => {
     const content = portalLib.getContent();
     if (!content) {
         logger.error(`Could not get contextual content from request path - ${req.rawPath}`);
@@ -96,7 +96,7 @@ const insertCustomPath = (req: XP.Request) => {
     }
 
     if (!content.valid) {
-        logger.info(`Content ${content._id} is not valid - skipping customPath generation for now`);
+        logger.info(`Content ${content._id} is not valid - skipping updates for now`);
         return;
     }
 
@@ -140,7 +140,7 @@ const insertCustomPath = (req: XP.Request) => {
 
 const formIntermediateStepController = (req: XP.Request) => {
     if ((req.mode === 'edit' || req.mode === 'inline') && req.method === 'GET') {
-        insertCustomPath(req);
+        updateContent(req);
     }
 
     return frontendProxy(req);
