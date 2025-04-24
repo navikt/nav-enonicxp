@@ -3,11 +3,13 @@ import { Component } from '/lib/xp/portal';
 import { getRepoConnection } from '../repos/repo-utils';
 import { Content } from '/lib/xp/content';
 import * as commonLib from '/lib/xp/common';
+import { Request } from '/lib/enonic-types';
 import { NodeComponent } from '../../types/components/component-node';
 import { ArrayOrSingle, PickByFieldType } from '../../types/util-types';
 import { ComponentConfigAll } from '../../types/components/component-config';
 import { COMPONENT_APP_KEY } from '../constants';
 import { forceArray } from './array-utils';
+import {logger} from "./logging";
 
 // TODO: clean up this mess :D
 
@@ -68,12 +70,9 @@ const componentHasUniqueAnchorId = (content: any, currentComponent: Component) =
     }
 
     const currentAnchorId = config.anchorId;
-
     const components = forceArray(content.components);
-
     const isDuplicate = components.some((component) => {
         const config = getComponentConfig(component);
-
         return (
             configHasAnchorId(config) &&
             config.anchorId === currentAnchorId &&
@@ -90,7 +89,7 @@ type StringFieldsExcludingAnchorId<Config> = keyof Omit<
 >;
 
 export const generateAnchorIdField = <Config extends ComponentConfigAll & { anchorId?: string }>(
-    req: XP.Request,
+    req: Request,
     idSourceField: StringFieldsExcludingAnchorId<Config>,
     idSourceDefaultValue?: string
 ) => {
@@ -104,6 +103,10 @@ export const generateAnchorIdField = <Config extends ComponentConfigAll & { anch
         return;
     }
 
+    if (!req.repositoryId || !req.branch) {
+        logger.error(`No repoId or branch - ${contentId}`);
+        return;
+    }
     const repo = getRepoConnection({
         repoId: req.repositoryId,
         branch: req.branch,
@@ -119,7 +122,6 @@ export const generateAnchorIdField = <Config extends ComponentConfigAll & { anch
         key: contentId,
         editor: (content) => {
             const components = forceArray(content.components);
-
             const config = getComponentConfigByPath(component.path, components) as Config;
 
             if (!config) {
@@ -131,7 +133,6 @@ export const generateAnchorIdField = <Config extends ComponentConfigAll & { anch
             }
 
             const fieldValue = config[idSourceField] as unknown as string;
-
             if (fieldValue && fieldValue !== idSourceDefaultValue) {
                 const newId = commonLib.sanitize(fieldValue);
 

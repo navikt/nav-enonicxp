@@ -11,9 +11,10 @@
         "moduleResolution": "node",
         "noEmit": true,
         "baseUrl": "./src/main/resources",
-        "types": ["@item-enonic-types/global"],
+        "types": ["@enonic-types/global"],
         "paths": {
             "@xp-types/*": ["../../../.xp-codegen/*"],
+            "/lib/enonic-types": ["../../../node_modules/@enonic-types/core"],
             "/lib/cache": ["../../../node_modules/@item-enonic-types/lib-cache"],
             "/lib/graphql": ["../../../node_modules/@item-enonic-types/lib-graphql"],
             "/lib/graphql-playground": [

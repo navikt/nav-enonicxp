@@ -49,7 +49,6 @@
         "@eslint/compat": "1.2.8",
         "@eslint/eslintrc": "3.3.1",
         "@eslint/js": "9.25.1",
-        "@item-enonic-types/global": "7.15.0",
         "@item-enonic-types/lib-cache": "2.2.1",
         "@item-enonic-types/lib-graphql": "2.1.0",
         "@item-enonic-types/lib-graphql-playground": "0.0.1",
