@@ -3,7 +3,6 @@ import { Component } from '/lib/xp/portal';
 import { getRepoConnection } from '../repos/repo-utils';
 import { Content } from '/lib/xp/content';
 import * as commonLib from '/lib/xp/common';
-import { Request } from '/lib/enonic-types';
 import { NodeComponent } from '../../types/components/component-node';
 import { ArrayOrSingle, PickByFieldType } from '../../types/util-types';
 import { ComponentConfigAll } from '../../types/components/component-config';
@@ -89,7 +88,7 @@ type StringFieldsExcludingAnchorId<Config> = keyof Omit<
 >;
 
 export const generateAnchorIdField = <Config extends ComponentConfigAll & { anchorId?: string }>(
-    req: Request,
+    req: XP.Request,
     idSourceField: StringFieldsExcludingAnchorId<Config>,
     idSourceDefaultValue?: string
 ) => {

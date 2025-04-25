@@ -1,6 +1,5 @@
 import httpClient from '/lib/http-client';
 import * as portalLib from '/lib/xp/portal';
-import { Request } from "@enonic-types/core";
 import { URLS } from '../constants';
 import { logger } from '../utils/logging';
 import { getLayersData } from '../localization/layers-data';
@@ -43,7 +42,7 @@ const healthCheckDummyResponse = () => {
     };
 };
 
-const getFrontendUrl = (req: Request, path?: string) => {
+const getFrontendUrl = (req: XP.Request, path?: string) => {
     if (!req.branch) {
         return '[Can´t resolve url]';
     }
@@ -59,7 +58,7 @@ const getFrontendUrl = (req: Request, path?: string) => {
 
 // Proxy requests to the frontend application. Normally this will only be used in the portal-admin
 // content studio previews and from the error controller
-export const frontendProxy = (req: Request, path?: string) => {
+export const frontendProxy = (req: XP.Request, path?: string) => {
     if (req.method === 'HEAD') {
         return {
             status: 200,
