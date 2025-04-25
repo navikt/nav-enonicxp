@@ -33,7 +33,7 @@ const mediaResponse = (content: Content) => {
     };
 };
 
-// The legacy health check expects a html-response on /no/person
+// The legacy health check expects an html-response on /no/person
 // "Nyheter" must be part of the response!
 const healthCheckDummyResponse = () => {
     return {
@@ -43,9 +43,6 @@ const healthCheckDummyResponse = () => {
 };
 
 const getFrontendUrl = (req: XP.Request, path?: string) => {
-    if (!req.branch) {
-        return '[Can´t resolve url]';
-    }
     const frontendPath = path || stripPathPrefix(req.rawPath.split(req.branch)[1] || '');
 
     // Archive requests have their own routing under the /archive path segment
@@ -89,9 +86,6 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
     }
 
     const frontendUrl = getFrontendUrl(req, path);
-    if (!req.repositoryId) {
-        return errorResponse(frontendUrl, 500, `RepoId mangler!`);
-    }
 
     try {
         const response = httpClient.request({

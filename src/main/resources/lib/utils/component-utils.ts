@@ -8,7 +8,7 @@ import { ArrayOrSingle, PickByFieldType } from '../../types/util-types';
 import { ComponentConfigAll } from '../../types/components/component-config';
 import { COMPONENT_APP_KEY } from '../constants';
 import { forceArray } from './array-utils';
-import {logger} from "./logging";
+import { logger } from './logging';
 
 // TODO: clean up this mess :D
 
