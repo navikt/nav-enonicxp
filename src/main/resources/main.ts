@@ -46,9 +46,7 @@ activateCacheEventListeners();
 activateContentListItemUnpublishedListener();
 activateExternalSearchIndexEventHandlers();
 
-if (app.config.env !== 'p') {
-    activateArchiveNewsSchedule();
-}
+activateArchiveNewsSchedule();
 
 activateCustomPathNodeListeners();
 activateContentUpdateListener();
