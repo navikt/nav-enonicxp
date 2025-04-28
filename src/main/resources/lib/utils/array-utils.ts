@@ -3,7 +3,7 @@ import { logger } from './logging';
 export const parseJsonToArray = <Type = unknown>(json: string): Type[] | null => {
     try {
         const isStringifiedArray = json.startsWith('[') && json.endsWith(']');
-        return isStringifiedArray ? JSON.parse(json) : forceArray(<Type>json);
+        return isStringifiedArray ? JSON.parse(json) : forceArray(json) as Type[];
     } catch (e) {
         logger.info(`Failed to parse JSON string ${json} - ${e}`);
         return null;
