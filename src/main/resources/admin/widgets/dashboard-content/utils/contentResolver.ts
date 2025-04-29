@@ -1,7 +1,7 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { ContentLogData, DashboardContentInfo } from './types';
-import dayjs from '/assets/dayjs/1.11.9/dayjs.min.js';
+import dayjs from '/assets/dayjs.min.js';
 import { getContentProjectIdFromRepoId, getRepoConnection } from '../../../../lib/repos/repo-utils';
 import { fixDateFormat } from '../../../../lib/utils/datetime-utils';
 import { APP_DESCRIPTOR } from '../../../../lib/constants';
