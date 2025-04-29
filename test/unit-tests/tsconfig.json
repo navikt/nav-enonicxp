@@ -36,10 +36,8 @@
             "/lib/xp/task": ["node_modules/@enonic-types/lib-task"],
             "/lib/xp/value": ["node_modules/@enonic-types/lib-value"],
             "/lib/xp/websocket": ["node_modules/@enonic-types/lib-websocket"],
-            "/assets/html-entities/2.3.3/lib": ["node_modules/html-entities"],
-            "/assets/striptags/3.1.1/src/striptags": ["node_modules/striptags"],
-            "/assets/dayjs/1.11.9/dayjs.min.js": ["node_modules/dayjs"],
-            "/assets/dayjs/1.11.9/plugin/utc.js": ["node_modules/dayjs/plugin/utc"]
+            "/assets/dayjs.min.js": ["node_modules/dayjs"],
+            "/assets/dayjs/plugin/utc.js": ["node_modules/dayjs/plugin/utc"]
         }
     },
     "include": ["./**/*.ts", "../../src/main/resources/**/*.ts", "./tsconfig.json"]
