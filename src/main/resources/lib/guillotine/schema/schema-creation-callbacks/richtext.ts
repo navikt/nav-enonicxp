@@ -1,5 +1,5 @@
 import * as contentLib from '/lib/xp/content';
-import striptags from 'striptags';
+import striptags from '/assets/striptags/3.2.0/src/striptags';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import { getPublicPath } from '../../../paths/public-path';
 import { getLocaleFromContext } from '../../../localization/locale-context';

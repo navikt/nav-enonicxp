@@ -1,7 +1,7 @@
 import macroLib from '/lib/guillotine/macro';
 import { CreationCallback } from '../../utils/creation-callback-utils';
-import { decode } from 'html-entities';
-import striptags from 'striptags';
+import { decode } from '/assets/html-entities/2.5.2/lib';
+import striptags from '/assets/striptags/3.2.0/src/striptags';
 
 export const macroAlertboxCallback: CreationCallback = (context, params) => {
     params.fields.body.resolve = (env) => {
