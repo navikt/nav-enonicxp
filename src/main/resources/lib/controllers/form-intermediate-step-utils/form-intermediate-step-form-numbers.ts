@@ -11,14 +11,18 @@ export const needsFormNumbersUpdateCheck = (
     currentContent: Content<'no.nav.navno:form-intermediate-step'>,
     content: Content<'no.nav.navno:form-intermediate-step'>
 ): boolean => {
-    return forceArray(currentContent.data.steps).some((step) => {
-        if (step.nextStep?._selected === 'external') {
-            return (
-                content.language !== CONTENT_LOCALE_DEFAULT && !step.nextStep.external?.formNumber
-            );
-        }
-        return false;
-    });
+    const steps = forceArray(currentContent.data.steps);
+    const isNonDefaultLanguage = content.language !== CONTENT_LOCALE_DEFAULT;
+
+    return (
+        isNonDefaultLanguage &&
+        steps.some((step) => {
+            if (step.nextStep && step.nextStep._selected === 'external') {
+                return !step.nextStep.external?.formNumber;
+            }
+            return false;
+        })
+    );
 };
 
 export const updateStepFormNumbers = (step: Step, defaultLayerStep: Step | undefined): Step => {
