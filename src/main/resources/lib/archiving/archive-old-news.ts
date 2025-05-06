@@ -8,7 +8,7 @@ import { findAndArchiveOldContent } from './batch-archiving';
 
 const ONE_YEAR_MS = 1000 * 3600 * 24 * 365;
 
-const MONDAY_0500_CRON = '0 5 * * 1';
+const MONDAY_0500_CRON = '0 4 * * 1';
 
 const pressReleasesQuery: QueryDsl = {
     boolean: {

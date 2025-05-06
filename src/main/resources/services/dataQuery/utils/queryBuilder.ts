@@ -88,7 +88,6 @@ export const getNodeHitsFromExternalArchiveQuery = ({
                 boolean: {
                     must: [
                         { notExists: { field: 'data.externalProductUrl' } },
-                        { notExists: { field: 'data._layerMigration' } },
                         {
                             hasValue: {
                                 field: 'type',
@@ -100,8 +99,20 @@ export const getNodeHitsFromExternalArchiveQuery = ({
                     mustNot: [
                         {
                             hasValue: {
+                                field: 'inherit',
+                                values: ['CONTENT'],
+                            },
+                        },
+                        {
+                            hasValue: {
                                 field: 'x.no-nav-navno.previewOnly.previewOnly',
                                 values: ['true'],
+                            },
+                        },
+                        {
+                            hasValue: {
+                                field: 'data._layerMigration.locale',
+                                values: ['nn', 'en', 'se'],
                             },
                         },
                     ],
@@ -124,7 +135,8 @@ export const getNodeHitsFromExternalArchiveQuery = ({
 
     const uniqueNodeHits = nodeHits.filter(
         (nodeHit, index, nodehitslist) =>
-            index === nodehitslist.findIndex((t) => t.id === nodeHit.id)
+            index ===
+            nodehitslist.findIndex((t) => t.id === nodeHit.id && t.repoId === nodeHit.repoId)
     );
     logger.info(`Data query: Total hits for request ${requestId}: ${uniqueNodeHits.length}`);
 

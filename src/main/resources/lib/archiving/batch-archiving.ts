@@ -28,6 +28,7 @@ type ContentDataSimple = Pick<
 type ArchiveResult = {
     totalFound: number;
     failed: ContentDataSimple[];
+    skipped: ContentDataSimple[];
     archived: ContentDataSimple[];
 };
 
@@ -86,13 +87,15 @@ const persistResultLogs = (result: ArchiveResult, jobName: string, query: QueryD
             totalFound: result.totalFound,
             totalFailed: result.failed.length,
             totalArchived: result.archived.length,
+            totalSkipped: result.skipped.length,
         },
         failed: result.failed,
         archived: result.archived,
+        skipped: result.skipped,
     });
 
     logger.info(
-        `Batch archiving result for ${logEntryName}: Total contents found ${result.totalFound} | Success count ${result.archived.length} | Failed count ${result.failed.length} - Full results: ${logEntryDataToolboxUrl}`
+        `Batch archiving result for ${logEntryName}: Total contents found ${result.totalFound} | Success count ${result.archived.length} | Failed count ${result.failed.length} | Protected count ${result.skipped.length} - Full results: ${logEntryDataToolboxUrl}`
     );
 };
 
@@ -136,6 +139,7 @@ const unpublishAndArchiveContents = (
     const contentToArchive: ContentDataSimple[] = [];
     const archivedContent: ContentDataSimple[] = [];
     const failedContent: ContentDataSimple[] = [];
+    const skippedContent: ContentDataSimple[] = [];
 
     contents.forEach((content) => {
         // Change: We want the archiving to be more greedy, so don't check for inbound references.
@@ -153,6 +157,13 @@ const unpublishAndArchiveContents = (
         //         'Innholdet har under-innhold som er nyere enn tidsavgrensingen for arkivering'
         //     );
         // }
+
+        // Content is published and has a publish date that is newer than the cutoff date,
+        // so it should not be unpublished. This is not an error, so don't push to the errors array.
+        if (contentFinal.publish?.from && contentFinal.publish.from > cutoffTs) {
+            skippedContent.push(contentFinal);
+            return;
+        }
 
         // If the content has inbound references, don't unpublish as it may lead to broken links etc
         if (contentFinal.references.length > 0) {
@@ -192,6 +203,7 @@ const unpublishAndArchiveContents = (
         totalFound: contents.length,
         failed: failedContent,
         archived: archivedContent,
+        skipped: skippedContent,
     };
 };
 
@@ -232,18 +244,23 @@ export const findAndArchiveOldContent = ({
     const result: ArchiveResult = {
         totalFound: 0,
         archived: [],
+        skipped: [],
         failed: [],
     };
 
     Object.entries(hitsPerRepo).forEach(([repoId, hits]) => {
         const layerRepo = getRepoConnection({ repoId, branch: 'master', asAdmin: true });
 
-        logger.info(`Found ${hits.length} contents in repo ${repoId} for archiving job ${jobName}`);
+        logger.info(
+            `Found ${hits.length} candidate content in repo ${repoId} for archiving job ${jobName}`
+        );
 
         const contents = hits.reduce<ContentDataSimple[]>((acc, contentId) => {
             const contentNode = layerRepo.get<Content>(contentId);
             if (contentNode) {
                 acc.push(simplifyContent(contentNode, repoId));
+            } else {
+                logger.info(`Content for archiving: ${contentId} not found in repo ${repoId}`);
             }
 
             return acc;
@@ -253,8 +270,9 @@ export const findAndArchiveOldContent = ({
             unpublishAndArchiveContents(contents, repoId, cutoffTs)
         );
 
-        result.totalFound += hits.length;
+        result.totalFound += contents.length;
         result.failed.push(...layerResult.failed);
+        result.skipped.push(...layerResult.skipped);
         result.archived.push(...layerResult.archived);
     });
 
