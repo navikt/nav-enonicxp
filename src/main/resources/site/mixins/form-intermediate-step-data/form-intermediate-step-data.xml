@@ -16,7 +16,7 @@
                                 <option name="internal">
                                     <label><![CDATA[Intern lenke til skjema, søknad eller klage]]></label>
                                     <help-text><![CDATA[Brukeren skal sendes til dokument som ligger på Enonic XP]]></help-text>
-                                    <default>true</default>
+                                    <default>true</default> <!-- TODO: hvorfor default? Fjern? -->
                                     <items>
                                         <input name="internalContent" type="MediaSelector">
                                             <label><![CDATA[Internt innhold]]></label>
