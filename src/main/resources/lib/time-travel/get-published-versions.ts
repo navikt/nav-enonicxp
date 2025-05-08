@@ -42,7 +42,8 @@ const enrichVersionReference = (version: NodeVersion, locale: string): VersionRe
         locale,
         displayName: content?.displayName || 'Error: displayName was not set',
         modifiedTime: content?.modifiedTime || content?.createdTime,
-        excludeFromExternalArchive: content ? isExcludedFromExternalArchive(content) : undefined,
+        excludeFromExternalArchive:
+            (content && isExcludedFromExternalArchive(content)) || undefined,
         type: content?.type || 'base:folder',
     };
 };

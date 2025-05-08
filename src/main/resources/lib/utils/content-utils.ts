@@ -47,11 +47,11 @@ const isContentUsingExternalProductUrl = (content: Content) => {
 };
 
 const isContentContainingUtkast = (content: Content) =>
-    content.data?.customPath?.includes('utkast') || content._path.includes('utkast');
+    !!content.data?.customPath?.includes('utkast') || !!content._path.includes('utkast');
 
 const isContentContainPublishFromDate = (content: Content) => !content.publish?.from;
 
-export const isExcludedFromExternalArchive = (content: Content): boolean => {
+export const isExcludedFromExternalArchive = (content: Content) => {
     return (
         isContentPreviewOnly(content) ||
         isContentUsingExternalProductUrl(content) ||
