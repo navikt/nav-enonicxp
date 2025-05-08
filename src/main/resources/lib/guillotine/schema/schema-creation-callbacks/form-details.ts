@@ -39,7 +39,7 @@ const dedupStrings = (strings: string[]): string[] => {
 };
 
 const getFormNumbersFromVariations = (formType: any) => {
-    const formNumbers = formType.reduce((acc: any, variation: any) => {
+    const formNumbers = forceArray(formType).reduce((acc: any, variation: any) => {
         const { _selected } = variation;
 
         const subFormNumbers: any[] = [];
@@ -64,7 +64,7 @@ const getFormNumbersFromVariations = (formType: any) => {
             }
         });
 
-        return dedupStrings([...acc, ...subFormNumbers]);
+        return [...acc, ...subFormNumbers];
     }, []);
 
     return formNumbers;
@@ -74,7 +74,10 @@ export const formDetailsCallback: CreationCallback = (context, params) => {
     params.fields.data.resolve = (env) => {
         const contentId = env.source._id;
 
-        const formNumbers = getFormNumbersFromVariations(env.source.data.formType);
+        const formNumbers = dedupStrings([
+            ...forceArray(env.source.data.formNumbers),
+            ...getFormNumbersFromVariations(env.source.data.formType),
+        ]);
 
         return runInContext({ branch: 'master' }, () => {
             const alerts = contentLib.query({
