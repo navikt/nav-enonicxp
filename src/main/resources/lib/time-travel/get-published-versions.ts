@@ -12,7 +12,7 @@ import { isExcludedFromExternalArchive } from '../utils/content-utils';
 
 export type VersionReferenceEnriched = NodeVersion & {
     locale: string;
-    shouldExclude?: boolean;
+    excludeFromExternalArchive?: boolean;
 } & Pick<Content, 'displayName' | 'modifiedTime' | 'type'>;
 
 // Due to a previously existing bug, content types with a custom editor has not always set its
@@ -42,7 +42,7 @@ const enrichVersionReference = (version: NodeVersion, locale: string): VersionRe
         locale,
         displayName: content?.displayName || 'Error: displayName was not set',
         modifiedTime: content?.modifiedTime || content?.createdTime,
-        shouldExclude: content ? isExcludedFromExternalArchive(content) : undefined,
+        excludeFromExternalArchive: content ? isExcludedFromExternalArchive(content) : undefined,
         type: content?.type || 'base:folder',
     };
 };
