@@ -1,7 +1,7 @@
 import { getRepoConnection } from '../repos/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { Content } from '/lib/xp/content';
-import { RepoNode } from '/lib/xp/node';
+import { NodeVersion, RepoNode } from '/lib/xp/node';
 import { isArchivedContentNode, isExcludedFromExternalArchive } from '../utils/content-utils';
 
 const transformRepoContentNode = (node: RepoNode<Content>): Content => {
@@ -45,16 +45,18 @@ export const getLastPublishedContentVersion = (
         asAdmin: true,
     });
 
-    const versions = draftRepo.findVersions({ key: contentKey, count: 1000 });
+    // const versions = draftRepo.findVersions({ key: contentKey, count: 1000 });
 
-    const lastPublishedVersion = versions.hits.find((version) => !!version.commitId);
-    if (!lastPublishedVersion) {
+    const activeVersion = draftRepo.getActiveVersion({ key: contentKey });
+
+    // const lastPublishedVersion = versions.hits.find((version: NodeVersion) => !!version.commitId);
+    if (!activeVersion) {
         return null;
     }
 
     const contentNode = draftRepo.get<Content>({
-        key: lastPublishedVersion.nodeId,
-        versionId: lastPublishedVersion.versionId,
+        key: activeVersion.nodeId,
+        versionId: activeVersion.versionId,
     });
     if (!contentNode) {
         return null;
