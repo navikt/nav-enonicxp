@@ -1,8 +1,9 @@
 import { getRepoConnection } from '../repos/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { Content } from '/lib/xp/content';
-import { NodeVersion, RepoNode } from '/lib/xp/node';
+import { NodeVersion, RepoConnection, RepoNode } from '/lib/xp/node';
 import { isArchivedContentNode, isExcludedFromExternalArchive } from '../utils/content-utils';
+import { logger } from '../utils/logging';
 
 const transformRepoContentNode = (node: RepoNode<Content>): Content => {
     const { _indexConfig, _inheritsPermissions, _permissions, _childOrder, ...content } = node;
@@ -45,24 +46,36 @@ export const getLastPublishedContentVersion = (
         asAdmin: true,
     });
 
-    // const versions = draftRepo.findVersions({ key: contentKey, count: 1000 });
+    const versions = draftRepo.findVersions({ key: contentKey, count: 1000 });
 
-    const activeVersion = draftRepo.getActiveVersion({ key: contentKey });
+    const contentNode = getLastPublishedDraftVersion(versions.hits, draftRepo);
 
-    // const lastPublishedVersion = versions.hits.find((version: NodeVersion) => !!version.commitId);
-    if (!activeVersion) {
-        return null;
-    }
-
-    const contentNode = draftRepo.get<Content>({
-        key: activeVersion.nodeId,
-        versionId: activeVersion.versionId,
-    });
     if (!contentNode) {
         return null;
     }
 
     return transformRepoContentNode(contentNode);
+};
+
+const getLastPublishedDraftVersion = (versions: NodeVersion[], draftRepo: RepoConnection) => {
+    // Iterate through each object in the list
+    for (const version of versions) {
+        if (version.commitId) {
+            try {
+                const contentNode = draftRepo.get<Content>({
+                    key: version.nodeId,
+                    versionId: version.versionId,
+                });
+                if (contentNode?.publish?.from) {
+                    return contentNode;
+                }
+            } catch (error) {
+                logger.error(`Error fetching object with versionId ${version.versionId}:`, error);
+            }
+        }
+    }
+
+    return null;
 };
 
 export const getContentForExternalArchive = ({
