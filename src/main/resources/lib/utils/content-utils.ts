@@ -46,13 +46,17 @@ const isContentUsingExternalProductUrl = (content: Content) => {
     return !!content.data.externalProductUrl;
 };
 
+const isContentContainingUtkast = (content: Content) =>
+    content.data?.customPath?.includes('utkast') || content._path.includes('utkast');
+
+const isContentContainPublishFromDate = (content: Content) => !content.publish?.from;
+
 export const isExcludedFromExternalArchive = (content: Content): boolean => {
     return (
         isContentPreviewOnly(content) ||
         isContentUsingExternalProductUrl(content) ||
-        content.data?.customPath?.includes('utkast') ||
-        content._path.includes('utkast') ||
-        !content.publish?.from
+        isContentContainingUtkast(content) ||
+        isContentContainPublishFromDate(content)
     );
 };
 
