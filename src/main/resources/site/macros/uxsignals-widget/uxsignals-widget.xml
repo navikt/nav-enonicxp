@@ -2,9 +2,8 @@
     <display-name>UX Signals widget</display-name>
     <form>
         <input name="embedCode" type="TextLine">
-            <label>Study ID</label>
+            <label>Study ID (feks 'panel-12ab123456'):</label>
             <occurrences minimum="1" maximum="1"/>
-            <help-text>Feks 'panel-12ab123456'</help-text>
         </input>
     </form>
 </macro>
