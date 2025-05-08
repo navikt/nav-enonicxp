@@ -101,7 +101,7 @@ export const externalArchiveContentService = (req: XP.Request) => {
         (v) =>
             !v.excludeFromExternalArchive &&
             content.modifiedTime &&
-            content.modifiedTime <= v.timestamp
+            content.modifiedTime >= v.timestamp
     );
 
     const originalContentTypeName = getOriginalContentTypeName(content, versions);
