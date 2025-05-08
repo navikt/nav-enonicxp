@@ -70,7 +70,7 @@ const getLastPublishedDraftVersion = (versions: NodeVersion[], draftRepo: RepoCo
                     return contentNode;
                 }
             } catch (error) {
-                logger.error(`Error fetching object with versionId ${version.versionId}:`, error);
+                logger.error(`Error fetching object with versionId ${version.versionId}: ${error}`);
             }
         }
     }
