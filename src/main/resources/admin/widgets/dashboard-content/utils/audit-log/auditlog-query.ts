@@ -2,7 +2,7 @@ import { QueryDsl, RangeDslExpression } from '/lib/xp/node';
 import { UserKey } from '/lib/xp/auditlog';
 import { getRepoConnection } from '../../../../../lib/repos/repo-utils';
 import { AuditLogArchived, AuditLogPublished, AuditLogUnpublished } from '../types';
-import { Dayjs } from 'dayjs';
+import { Dayjs } from '/assets/dayjs/1.11.13/dayjs.min.js';
 import { forceArray } from '../../../../../lib/utils/array-utils';
 
 const AUDITLOG_REPO_ID = 'system.auditlog';
