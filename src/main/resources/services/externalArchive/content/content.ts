@@ -98,7 +98,10 @@ export const externalArchiveContentService = (req: XP.Request) => {
     const contentRenderProps = getContentRenderProps(content, locale, versionId, isArchived);
 
     const versions = getPublishedAndModifiedVersions(content._id, locale).filter(
-        (v) => !v.excludeFromExternalArchive
+        (v) =>
+            !v.excludeFromExternalArchive &&
+            content.modifiedTime &&
+            content.modifiedTime <= v.timestamp
     );
 
     const originalContentTypeName = getOriginalContentTypeName(content, versions);
