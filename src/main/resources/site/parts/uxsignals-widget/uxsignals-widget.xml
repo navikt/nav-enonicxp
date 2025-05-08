@@ -4,6 +4,7 @@
         <input name="embedCode" type="TextLine">
             <label>Study ID</label>
             <occurrences minimum="1" maximum="1"/>
+            <help-text>Feks 'panel-12ab123456'</help-text>
         </input>
     </form>
 </part>
