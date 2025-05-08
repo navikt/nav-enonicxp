@@ -46,7 +46,8 @@ activateCacheEventListeners();
 activateContentListItemUnpublishedListener();
 activateExternalSearchIndexEventHandlers();
 
-activateArchiveNewsSchedule();
+// Disable this for now until we found cause if publishing issues
+// activateArchiveNewsSchedule();
 
 activateCustomPathNodeListeners();
 activateContentUpdateListener();
