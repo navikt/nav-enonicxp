@@ -46,7 +46,7 @@ const isContentUsingExternalProductUrl = (content: Content) => {
     return !!content.data.externalProductUrl;
 };
 
-export const isExcludedFromExternalArchive = (content: Content) => {
+export const isExcludedFromExternalArchive = (content: Content): boolean => {
     return (
         isContentPreviewOnly(content) ||
         isContentUsingExternalProductUrl(content) ||
