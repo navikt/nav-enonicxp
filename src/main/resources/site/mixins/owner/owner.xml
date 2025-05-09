@@ -35,7 +35,7 @@
                         <option value="annet">Annet</option>           
                         <option value="arbeidslivssenter">Arbeidslivssenter (ikke bruk)</option>
                         <option value="hjelpemiddelsentralen">Hjelpemiddelsentralen (ikke bruk)</option>
-                        <option value="hjelpemidler_og_tilrettelegging">Hjelpemidler og tilrettelegging styringsenhet (ikke bruk)</option>          
+                        <option value="hjelpemidler_og_tilrettelegging">Hjelpemidler og tilrettelegging (ikke bruk)</option>          
                         <option value="fylke">Fylke (ikke bruk)</option>
                         <option value="kontaktsenteret">Kontaktsenteret (ikke bruk)</option>
                         <option value="min_side">Min Side (ikke bruk)</option>
