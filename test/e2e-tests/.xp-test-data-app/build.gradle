@@ -1,6 +1,6 @@
 plugins {
-    id 'com.enonic.xp.app' version '3.4.0'
-    id "com.github.node-gradle.node" version '7.0.0'
+    id 'com.enonic.xp.app' version '3.6.1'
+    id "com.github.node-gradle.node" version '7.1.0'
 }
 
 repositories {
@@ -16,7 +16,7 @@ app {
 }
 
 node {
-    version = '22.8.0'
+    version = '22.15.0'
 }
 
 dependencies {

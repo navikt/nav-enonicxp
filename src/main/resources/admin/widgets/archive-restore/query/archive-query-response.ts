@@ -32,7 +32,6 @@ const buildQueryString = (query?: string) => {
 
 const queryArchive = ({ query, repoId }: { query?: string; repoId: string }): ArchiveEntry[] => {
     const repo = getRepoConnection({ repoId, branch: 'draft' });
-
     const archivedContentIds = batchedNodeQuery({
         repo,
         queryParams: {
@@ -73,8 +72,7 @@ const queryArchive = ({ query, repoId }: { query?: string; repoId: string }): Ar
 export const archiveQueryResponse = (req: XP.Request) => {
     const { repositoryId } = req;
     const { input } = req.params;
-    const archiveEntries = queryArchive({ query: input, repoId: repositoryId });
-
+    const archiveEntries = repositoryId ? queryArchive({ query: input, repoId: repositoryId }) : [];
     const model = {
         archiveEntries: archiveEntries.length > 0 ? archiveEntries : null,
     };
