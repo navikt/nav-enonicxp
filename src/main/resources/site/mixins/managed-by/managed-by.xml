@@ -7,13 +7,38 @@
                     <label>Velg forvalter</label>
                     <occurrences minimum="0" maximum="99"/>
                     <config>
-                        <option value="po_aap">PO AAP</option>
-                        <option value="po_arbeid">PO Arbeid</option>
-                        <option value="po_familie">PO Familie</option>
-                        <option value="po_helse">PO Helse</option>
-                        <option value="po_pensjon">PO Pensjon</option>
-                        <option value="po_arbeidsgiver">PO Arbeidsgiver</option>
+                        <option value="arbeid_ytelser_styringsenhet">Arbeid og ytelser styringsenhet</option>
+                        <option value="arbeidslivssenter">Arbeidslivssenter</option>
                         <option value="digisos">Digisos</option>
+                        <option value="familie_pensjonsytelser_styringsenhet">Familie- og pensjonsytelser styringsenhet</option>
+                        <option value="fylke">Fylke</option>
+                        <option value="hjelpemiddelsentralen">Hjelpemiddelsentralen</option>
+                        <option value="hjelpemidler_styringsenhet">Hjelpemidler og tilrettelegging styringsenhet</option>
+                        <option value="kjernegruppe_aap">Kjernegrupppe AAP</option>
+                        <option value="kjernegruppe_dagpenger">Kjernegruppe dagpenger</option>
+                        <option value="kjernegruppe_ekspertbistand">Kjernegrupppe ekspertbistand</option>
+                        <option value="kjernegruppe_familie">Kjedrnegruppe familie</option>
+                        <option value="kjernegruppe_hjelpemidler">Kjernegrupppe hjelpemidler</option>
+                        <option value="kjernegruppe_medlemskap">Kjernegrupppe medlemskap</option>
+                        <option value="kjernegruppe_oppfolging">Kjernegruppe oppfølging</option>
+                        <option value="kjernegruppe_ortopediske_hjelpemidler">Kjernegrupppe ortopediske hjelpemidler</option>
+                        <option value="kjernegruppe_pensjon">Kjernegrupppe pensjon</option>
+                        <option value="kjernegruppe_sosiale_tjenester">Kjernegruppe sosiale tjenester</option>
+                        <option value="kjernegruppe_spraktolk">Kjernegruppe språktolk</option>
+                        <option value="kjernegruppe_sykepenger">Kjernegruppe sykepenger</option>
+                        <option value="kjernegruppe_tiltak">Kjernegrupppe tiltak</option>
+                        <option value="kjernegruppe_tiltakspenger">Kjernegruppe tiltakspenger</option>
+                        <option value="kjernegruppe_uforetrygd">Kjernegrupppe uføretrygd</option>
+                        <option value="kjernegruppe_yrkesskade">Kjernegruppe yrkesskade</option>           
+                        <option value="nav_kontaktsenter_styringsenhet">Nav kontaktsenter styringsenhet</option>
+                        <option value="team_minside">Team Min side</option>
+                        <option value="team_navno">Team nav.no</option>
+                        <option value="po_aap">PO AAP (ikke bruk)</option>
+                        <option value="po_arbeid">PO Arbeid (ikke bruk)</option>
+                        <option value="po_familie">PO Familie (ikke bruk)</option>
+                        <option value="po_helse">PO Helse (ikke bruk)</option>
+                        <option value="po_pensjon">PO Pensjon (ikke bruk)</option>
+                        <option value="po_arbeidsgiver">PO Arbeidsgiver (ikke bruk)</option>   
                     </config>
                 </input>
             </items>

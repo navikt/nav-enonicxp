@@ -8,30 +8,42 @@
                     <help-text>Data til intern bruk for å definere eierskap og se innholdsmengde</help-text>
                     <occurrences minimum="1" maximum="99"/>
                     <config>
-                        <option value="ytelsesavdelingen">Ytelsesavdelingen</option>
-                        <option value="arbeids_og_tjenesteavdelingen">Arbeids- og tjenesteavdelingen</option>
-                        <option value="arbeid_og_ytelser_styringsenhet">Ytelsesavdelingen / Arbeid og ytelser
-                            Styringsenhet
-                        </option>
-                        <option value="familie_og_pensjonsytelser_styringsenhet">Ytelsesavdelingen / Familie- og
-                            pensjonsytelser styringsenhet
-                        </option>
-                        <option value="hr_avdelingen">HR-avdelingen</option>
+                        <option value="arbeids_og_tjenesteavdelingen">Arbeidsavdelingen</option>
+                        <option value="arbeidsavdelingen_arbeid_helse">Arbeidsavdelingen / Seksjon for arbeid og helse</option>
+                        <option value="arbeidsavdelingen_arbeidsgivertjenester">Arbeidsavdelingen / Seksjon for arbeidsgivertjenester</option>
+                        <option value="arbeidsavdelingen_arbeidsmarkedstiltak">Arbeidsavdelingen / Seksjon for arbeidsmarkedstiltak</option>
+                        <option value="arbeidsavdelingen_arbeidsoppfolging">Arbeidsavdelingen / Seksjon for arbeidsoppfølging</option>                        
+                        <option value="avdeling for brukeropplevelse">Avdeling for brukeropplevelse</option> 
+                        <option value="hr_avdelingen">Avdeling for mennesker og kommunikasjon</option>
+                        <option value="direktoratet">Direktoratet</option>                
                         <option value="juridisk_avdeling">Juridisk avdeling</option>
-                        <option value="kunnskapsavdelingen">Kunnskapsavdelingen</option>
                         <option value="kommunikasjonsavdelingen">Kommunikasjonsavdelingen</option>
-                        <option value="okonomi">Økonomi</option>
-                        <option value="statistikk">Statistikk</option>
-                        <option value="hjelpemidler_og_tilrettelegging">Hjelpemidler og tilrettelegging</option>
-                        <option value="kontaktsenteret">Kontaktsenteret</option>
-                        <option value="team_personbruker">Team Personbruker</option>
-                        <option value="it_avdelingen">IT-avdelingen</option>
-                        <option value="fylke">Fylke</option>
-                        <option value="hjelpemiddelsentralen">Hjelpemiddelsentralen</option>
-                        <option value="arbeidslivssenter">Arbeidslivssenter</option>
-                        <option value="min_side">Min Side</option>
-                        <option value="direktoratet">Direktoratet</option>
-                        <option value="annet">Annet</option>
+                        <option value="kunnskapsavdelingen">Kunnskapsavdelingen</option>
+                        <option value="statistikk">Kunnskapsavdelingen / Statistikkseksjonen</option>
+                        <option value="klageinstans">NAV klageinstans</option>  
+                        <option value="it_avdelingen">Teknologiavdelingen</option>
+                        <option value="velferdsavdelingen_hjelpemidler">Velferdsavdelingen / Seksjon for hjelpemidler og tilrettelegging</option>
+                        <option value="velferdsavdelingen_sosiale_tjenester">Velferdsavdelingen / Seksjon for sosiale tjenester</option>
+                        <option value="ytelsesavdelingen">Ytelsesavdelingen</option>
+                        <option value="ytelsesavdelingen_arbeidsavklaringspenger">Ytelsesavdelingen / Seksjon for arbeidsavklaringspenger</option>
+                        <option value="ytelsesavdelingen_arbeidsytelser">Ytelsesavdelingen / Seksjon for arbeidsytelser</option>
+                        <option value="ytelsesavdelingen_familieytelser">Ytelsesavdelingen / Seksjon for familieytelser</option>
+                        <option value="ytelsesavdelingen_helseytelser">Ytelsesavdelingen / Seksjon for helseytelser</option>
+                        <option value="ytelsesavdelingen_kontroll">Ytelsesavdelingen / Seksjon for kontroll og internasjonalt</option>
+                        <option value="ytelsesavdelingen_pensjon">Ytelsesavdelingen / Seksjon for pensjon og uføretrygd</option>
+                        <option value="okonomi">Økonomi- og styringsavdelingen</option>                 
+                        <option value="annet">Annet</option>           
+                        <option value="arbeidslivssenter">Arbeidslivssenter (ikke bruk)</option>
+                        <option value="hjelpemiddelsentralen">Hjelpemiddelsentralen (ikke bruk)</option>
+                        <option value="hjelpemidler_og_tilrettelegging">Hjelpemidler og tilrettelegging styringsenhet (ikke bruk)</option>          
+                        <option value="fylke">Fylke (ikke bruk)</option>
+                        <option value="kontaktsenteret">Kontaktsenteret (ikke bruk)</option>
+                        <option value="min_side">Min Side (ikke bruk)</option>
+                        <option value="team_personbruker">Team Personbruker (ikke bruk)</option>
+                        <option value="arbeid_og_ytelser_styringsenhet">Ytelsesavdelingen / Arbeid og ytelser
+                            Styringsenhet (ikke bruk) </option>
+                        <option value="familie_og_pensjonsytelser_styringsenhet">Ytelsesavdelingen / Familie- og
+                            pensjonsytelser styringsenhet (ikke bruk) </option>
                     </config>
                 </input>
             </items>
