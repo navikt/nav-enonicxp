@@ -33,17 +33,17 @@
                         <option value="ytelsesavdelingen_pensjon">Ytelsesavdelingen / Seksjon for pensjon og uføretrygd</option>
                         <option value="okonomi">Økonomi- og styringsavdelingen</option>                 
                         <option value="annet">Annet</option>           
-                        <option value="arbeidslivssenter">Arbeidslivssenter (ikke bruk)</option>
-                        <option value="hjelpemiddelsentralen">Hjelpemiddelsentralen (ikke bruk)</option>
-                        <option value="hjelpemidler_og_tilrettelegging">Hjelpemidler og tilrettelegging (ikke bruk)</option>          
-                        <option value="fylke">Fylke (ikke bruk)</option>
-                        <option value="kontaktsenteret">Kontaktsenteret (ikke bruk)</option>
-                        <option value="min_side">Min Side (ikke bruk)</option>
-                        <option value="team_personbruker">Team Personbruker (ikke bruk)</option>
+                        <option value="arbeidslivssenter">Arbeidslivssenter (IKKE BRUK)</option>
+                        <option value="hjelpemiddelsentralen">Hjelpemiddelsentralen (IKKE BRUK)</option>
+                        <option value="hjelpemidler_og_tilrettelegging">Hjelpemidler og tilrettelegging (IKKE BRUK)</option>          
+                        <option value="fylke">Fylke (IKKE BRUK)</option>
+                        <option value="kontaktsenteret">Kontaktsenteret (IKKE BRUK)</option>
+                        <option value="min_side">Min Side (IKKE BRUK)</option>
+                        <option value="team_personbruker">Team Personbruker (IKKE BRUK)</option>
                         <option value="arbeid_og_ytelser_styringsenhet">Ytelsesavdelingen / Arbeid og ytelser
-                            Styringsenhet (ikke bruk) </option>
+                            Styringsenhet (IKKE BRUK) </option>
                         <option value="familie_og_pensjonsytelser_styringsenhet">Ytelsesavdelingen / Familie- og
-                            pensjonsytelser styringsenhet (ikke bruk) </option>
+                            pensjonsytelser styringsenhet (IKKE BRUK) </option>
                     </config>
                 </input>
             </items>
