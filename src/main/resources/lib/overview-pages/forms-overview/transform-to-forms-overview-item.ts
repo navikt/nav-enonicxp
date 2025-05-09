@@ -89,7 +89,8 @@ export const getFormsOverviewListItemTransformer =
                 )
                 .filter(Boolean),
             formNumbers: formDetailsContents
-                .map((formDetails) => forceArray(formDetails.data.formNumbers))
+                //TODO noe annet enn "as any"?
+                .map((formDetails) => forceArray((formDetails.data as any).formNumbers))
                 .flat(),
         };
     };
