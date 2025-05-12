@@ -49,6 +49,7 @@ import {
 } from './schema-creation-callbacks/common/audience-mixin';
 import { pressLandingPageDataCallback } from './schema-creation-callbacks/press-landing-page-data';
 import { macroLinkToLayerCallback } from './schema-creation-callbacks/macro-link-to-layer';
+import { formIntermediateStepCallback } from './schema-creation-callbacks/form-intermediate-step';
 
 export const schemaCreationCallbacks: Record<string, CreationCallback> = {
     Attachment: attachmentCallback,
@@ -76,6 +77,7 @@ export const schemaCreationCallbacks: Record<string, CreationCallback> = {
     no_nav_navno_PressLandingPage_Data: pressLandingPageDataCallback,
     no_nav_navno_FormDetails_Data: formDetailsDataCallback,
     no_nav_navno_FormDetails: formDetailsCallback,
+    no_nav_navno_FormIntermediateStep: formIntermediateStepCallback,
     Part_no_nav_navno_areapage_situation_card: areapageSituationCardPartCallback,
     Part_no_nav_navno_dynamic_news_list_ContentList: contentListCallback(
         'target',
