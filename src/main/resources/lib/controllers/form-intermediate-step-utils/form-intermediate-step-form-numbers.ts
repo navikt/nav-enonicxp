@@ -68,11 +68,12 @@ export const updateFormNumbersFromDefaultLayer = (
         );
 
         if (defaultLayerContent?.data?.steps) {
-            const needsUpdate = content.data.steps.some((step, index) => {
+            const needsUpdate = content.data.steps.some((currentLayerStep, index) => {
                 const defaultStep = defaultLayerContent.data.steps[index];
 
                 const currentLayerStepHasNoFormNumber =
-                    step.nextStep?._selected === 'external' && !step.nextStep.external?.formNumber;
+                    currentLayerStep.nextStep?._selected === 'external' &&
+                    !currentLayerStep.nextStep.external?.formNumber;
                 const defaultLayerStepHasFormNumber =
                     defaultStep.nextStep?._selected === 'external' &&
                     defaultStep.nextStep.external?.formNumber;
