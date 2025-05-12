@@ -14,20 +14,21 @@ const insertCustomPath = (req: XP.Request) => {
         logger.error(`Could not get contextual content from request path - ${req.rawPath}`);
         return;
     }
-
     if (content.type !== 'no.nav.navno:form-intermediate-step') {
         logger.error(
             `Invalid type for form-intermediate-step controller - ${content._id} - ${content.type}`
         );
         return;
     }
-
     if (!content.valid) {
         logger.info(`Content ${content._id} is not valid - skipping customPath generation for now`);
         return;
     }
-
     if (formIntermediateStepValidateCustomPath(content.data.customPath, content)) {
+        return;
+    }
+    if (!req.repositoryId) {
+        logger.error(`No repoId for form-intermediate-step page - ${content._id}`);
         return;
     }
 

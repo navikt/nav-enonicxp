@@ -1,7 +1,7 @@
 import { Content } from '/lib/xp/content';
 import { sanitize } from '/lib/xp/common';
 import { forceArray } from '../../utils/array-utils';
-import striptags from '/assets/striptags/3.1.1/src/striptags';
+import striptags from '/assets/striptags/3.2.0/src/striptags';
 import { getPublicPath } from '../../paths/public-path';
 import {
     ContentWithFormDetails,
