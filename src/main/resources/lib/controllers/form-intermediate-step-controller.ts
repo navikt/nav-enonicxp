@@ -59,7 +59,10 @@ const updateContent = (req: XP.Request) => {
         currentContent.data.customPath,
         currentContent
     );
-    const needsFormNumbersUpdate = needsFormNumbersUpdateCheck(currentContent, content);
+    const needsFormNumbersUpdate = needsFormNumbersUpdateCheck({
+        currentContent,
+        content,
+    });
 
     if (needsCustomPathUpdate || needsFormNumbersUpdate) {
         repo.modify<Content<'no.nav.navno:form-intermediate-step'>>({

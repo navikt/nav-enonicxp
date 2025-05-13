@@ -7,10 +7,13 @@ import { CONTENT_LOCALE_DEFAULT } from '../../constants';
 
 type Step = FormIntermediateStep['steps'][number];
 
-export const needsFormNumbersUpdateCheck = (
-    currentContent: Content<'no.nav.navno:form-intermediate-step'>,
-    content: Content<'no.nav.navno:form-intermediate-step'>
-): boolean => {
+export const needsFormNumbersUpdateCheck = ({
+    currentContent,
+    content,
+}: {
+    currentContent: Content<'no.nav.navno:form-intermediate-step'>;
+    content: Content<'no.nav.navno:form-intermediate-step'>;
+}): boolean => {
     const steps = forceArray(currentContent.data.steps);
     const isNonDefaultLanguage = content.language !== CONTENT_LOCALE_DEFAULT;
 
