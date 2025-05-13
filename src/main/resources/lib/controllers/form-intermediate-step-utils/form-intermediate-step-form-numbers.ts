@@ -89,29 +89,8 @@ export const updateFormNumbersFromDefaultLayer = (
             () => contentLib.get({ key: content._id })
         );
 
-        if (defaultLayerContent?.data?.steps) {
-            const needsUpdate = content.data.steps.some((currentLayerStep, index) => {
-                const defaultStep = defaultLayerContent.data.steps[index];
-
-                const currentLayerStepHasNoFormNumber =
-                    currentLayerStep.nextStep?._selected === 'external' &&
-                    !currentLayerStep.nextStep.external?.formNumber;
-                const defaultLayerStepHasFormNumber =
-                    defaultStep.nextStep?._selected === 'external' &&
-                    defaultStep.nextStep.external?.formNumber;
-
-                if (currentLayerStepHasNoFormNumber && defaultLayerStepHasFormNumber) {
-                    return true;
-                } else {
-                    return false;
-                }
-            });
-
-            if (needsUpdate) {
-                content.data.steps = content.data.steps.map((step, index) =>
-                    updateStepFormNumbers(step, defaultLayerContent.data.steps[index])
-                );
-            }
-        }
+        content.data.steps = content.data.steps.map((step, index) =>
+            updateStepFormNumbers(step, defaultLayerContent?.data.steps[index])
+        );
     }
 };
