@@ -280,10 +280,10 @@ export const runOfficeInfoUpdateTask = (retry: boolean, scheduledTime?: string) 
     }
 };
 
-export const startOfficeInfoPeriodicUpdateSchedule = () => {
+export const createLegacyOfficeImportSchedule = () => {
     createOrUpdateSchedule<UpdateOfficeInfo>({
-        jobName: 'office_info_norg2_hourly',
-        jobDescription: 'Updates legacy office information from norg2 every hour',
+        jobName: 'legacy_office_import_schedule',
+        jobDescription: 'Imports and updates legacy office information from norg2 every 10 minutes',
         jobSchedule: {
             type: 'CRON',
             value: '*/10 * * * *',
