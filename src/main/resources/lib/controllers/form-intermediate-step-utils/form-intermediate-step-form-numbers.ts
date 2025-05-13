@@ -17,13 +17,32 @@ export const needsFormNumbersUpdateCheck = ({
     const steps = forceArray(currentContent.data.steps);
     const isNonDefaultLanguage = content.language !== CONTENT_LOCALE_DEFAULT;
 
+    const defaultLayerContent = runInLocaleContext(
+        { locale: CONTENT_LOCALE_DEFAULT, branch: 'draft' },
+        () => contentLib.get({ key: content._id })
+    );
+
     return (
         isNonDefaultLanguage &&
-        steps.some((step) => {
-            if (step.nextStep && step.nextStep._selected === 'external') {
-                return !step.nextStep.external?.formNumber;
+        steps.some((currentLayerStep, index) => {
+            const defaultStep = defaultLayerContent?.data?.steps?.[index];
+
+            if (!defaultStep) {
+                return false;
             }
-            return false;
+
+            const currentLayerStepHasNoFormNumber =
+                currentLayerStep.nextStep?._selected === 'external' &&
+                !currentLayerStep.nextStep.external?.formNumber;
+            const defaultLayerStepHasFormNumber =
+                defaultStep.nextStep?._selected === 'external' &&
+                defaultStep.nextStep.external?.formNumber;
+
+            if (currentLayerStepHasNoFormNumber && defaultLayerStepHasFormNumber) {
+                return true;
+            } else {
+                return false;
+            }
         })
     );
 };
