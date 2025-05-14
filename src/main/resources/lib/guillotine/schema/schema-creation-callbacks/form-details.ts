@@ -3,18 +3,15 @@ import graphQlLib from '/lib/graphql';
 import { runInContext } from '../../../../lib/context/run-in-context';
 import { forceArray } from '../../../../lib/utils/array-utils';
 import { FormIntermediateStepData } from '@xp-types/site/mixins/form-intermediate-step-data';
+import { FormDetails } from '@xp-types/site/content-types/form-details';
 
 import { CreationCallback } from '../../utils/creation-callback-utils';
 
-// Helper function to process steps recursively and extract form numbers
 const extractFormNumbersFromSteps = (steps: FormIntermediateStepData['steps']): string[] => {
     const numbers: string[] = [];
-
-    // Convert to array if it's a single object
     const stepsArray = Array.isArray(steps) ? steps : [steps];
 
     stepsArray.forEach((step) => {
-        // Skip if step doesn't exist
         if (!step || !step.nextStep) return;
 
         const { nextStep } = step;
@@ -22,7 +19,6 @@ const extractFormNumbersFromSteps = (steps: FormIntermediateStepData['steps']): 
         if (nextStep._selected === 'external' && nextStep.external.formNumber) {
             numbers.push(nextStep.external.formNumber);
         } else if (nextStep._selected === 'next' && nextStep.next && nextStep.next.steps) {
-            // Process nested next steps recursively
             const nestedNumbers = extractFormNumbersFromSteps(nextStep.next.steps);
             numbers.push(...nestedNumbers);
         }
@@ -39,12 +35,13 @@ const dedupStrings = (strings: string[]): string[] => {
     return Object.keys(unique);
 };
 
-const getFormNumbersFromVariations = (formType: any) => {
-    const formNumbers = forceArray(formType).reduce((acc: any, variation: any) => {
+const getFormNumbersFromVariations = (formType: FormDetails['formType']) => {
+    const formNumbers = forceArray(formType).reduce((acc: string[], variation) => {
         const { _selected } = variation;
+        const selectedVariation = (variation as any)[_selected];
 
-        const subFormNumbers: any[] = [];
-        forceArray(variation[_selected].variations).forEach((variationItem: any) => {
+        const subFormNumbers: string[] = [];
+        forceArray(selectedVariation.variations).forEach((variationItem) => {
             if (variationItem.link._selected === 'external') {
                 if (variationItem.link.external.formNumber) {
                     subFormNumbers.push(variationItem.link.external.formNumber);
