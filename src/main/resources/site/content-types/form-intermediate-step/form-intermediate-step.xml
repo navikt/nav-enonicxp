@@ -6,7 +6,7 @@
     <allow-child-content>true</allow-child-content>
     <form>
         <field-set>
-            <label>Overskrift</label>
+            <label>Piktogram</label>
             <items>
                 <mixin name="illustration" />
             </items>
