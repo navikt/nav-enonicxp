@@ -62,7 +62,7 @@ export type FormIntermediateStepData = {
             /**
              * Ekstern URL
              */
-            externalUrl?: string;
+            externalUrl: string;
           };
         }
       | {
