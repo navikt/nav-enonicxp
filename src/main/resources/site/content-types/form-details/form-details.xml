@@ -10,11 +10,11 @@
             <label>Skjemadetaljer</label>
             <items>
                 <input name="formNumbers" type="TextLine">
-                    <!-- TODO: en help text eller noe? Som forklarer at skjemanummerne (foreløpig)
-                    settes sammen av det som er lagt inn i dette feltet og det som hentes fra
-                    mellomstegene det er lenket til -->
                     <label>Skjemanummer</label>
                     <occurrences minimum="0" maximum="0" />
+                    <help-text>Legacy-felt for skjemanummer. Skjemanummer hentes også automatisk fra
+                        mellomstegene det lenkes til. Unike skjemanummer vises uansett kun én gang.
+                    </help-text>
                 </input>
                 <input name="title" type="TextLine">
                     <label>Tittel</label>
