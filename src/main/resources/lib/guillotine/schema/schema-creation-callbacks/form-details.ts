@@ -2,11 +2,12 @@ import * as contentLib from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
 import { runInContext } from '../../../../lib/context/run-in-context';
 import { forceArray } from '../../../../lib/utils/array-utils';
+import { FormIntermediateStepData } from '@xp-types/site/mixins/form-intermediate-step-data';
 
 import { CreationCallback } from '../../utils/creation-callback-utils';
 
 // Helper function to process steps recursively and extract form numbers
-const extractFormNumbersFromSteps = (steps: any): string[] => {
+const extractFormNumbersFromSteps = (steps: FormIntermediateStepData['steps']): string[] => {
     const numbers: string[] = [];
 
     // Convert to array if it's a single object
