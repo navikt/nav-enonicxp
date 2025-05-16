@@ -65,6 +65,17 @@ https://github.com/navikt/nav-enonicxp/wiki/Caching
 Document describing useful tools to query the database and look for changes in the case of user errors.
 [Enonic XP Tools](tools.md)
 
+## Dependencies
+
+Enonic XP krever at npm-pakker dras inn som webjars. For å dra inn en pakke i js/ts må du bruke avbsolutt path til kildefilen i pakka.
+Det betyr at path til spesifikk versjon må settes opp i kildekoden. For at dette skal fungere som forventet lokalt og i din IDE, må det settes opp en match i tsconfig mellom versjonsspesifikk path i webjar og path i node_modules.
+
+### Rutine ved bumping av dependecies
+1. Sjekk om ønsket versjon finnes som webjar
+2. Oppdater versjon av webjar i `build.gradle`: `webjar "org.webjars.npm:html-entities:2.5.2"`
+3. Oppdater path i ts-fil: `import { decode } from '/assets/html-entities/2.5.2/lib';`
+4. Oppdater tsconfig.json (3 steder: rot, e2e-test og unit-test): `"paths": {"/assets/html-entities/2.5.2/lib": ["../../../node_modules/html-entities"],}`
+
 ## Alerting
 
 Beskrivelse av oppsett for varsling til slack på `#xpnavno-alerts`: [Varsling av alvorlige feil](alerting.md)
