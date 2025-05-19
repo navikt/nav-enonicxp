@@ -1,4 +1,4 @@
-FROM enonic/xp:7.14.4-ubuntu
+FROM enonic/xp:7.15.0-ubuntu
 
 ARG NAVNO_JAR="navno.jar"
 ARG TEST_DATA_JAR="navno-testdata.jar"

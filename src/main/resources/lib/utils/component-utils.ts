@@ -68,12 +68,9 @@ const componentHasUniqueAnchorId = (content: any, currentComponent: Component) =
     }
 
     const currentAnchorId = config.anchorId;
-
     const components = forceArray(content.components);
-
     const isDuplicate = components.some((component) => {
         const config = getComponentConfig(component);
-
         return (
             configHasAnchorId(config) &&
             config.anchorId === currentAnchorId &&
@@ -119,7 +116,6 @@ export const generateAnchorIdField = <Config extends ComponentConfigAll & { anch
         key: contentId,
         editor: (content) => {
             const components = forceArray(content.components);
-
             const config = getComponentConfigByPath(component.path, components) as Config;
 
             if (!config) {
@@ -131,7 +127,6 @@ export const generateAnchorIdField = <Config extends ComponentConfigAll & { anch
             }
 
             const fieldValue = config[idSourceField] as unknown as string;
-
             if (fieldValue && fieldValue !== idSourceDefaultValue) {
                 const newId = commonLib.sanitize(fieldValue);
 

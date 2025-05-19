@@ -1,8 +1,9 @@
 import { getRepoConnection } from '../repos/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { Content } from '/lib/xp/content';
-import { RepoNode } from '/lib/xp/node';
+import { NodeVersion, RepoConnection, RepoNode } from '/lib/xp/node';
 import { isArchivedContentNode, isExcludedFromExternalArchive } from '../utils/content-utils';
+import { logger } from '../utils/logging';
 
 const transformRepoContentNode = (node: RepoNode<Content>): Content => {
     const { _indexConfig, _inheritsPermissions, _permissions, _childOrder, ...content } = node;
@@ -47,20 +48,34 @@ export const getLastPublishedContentVersion = (
 
     const versions = draftRepo.findVersions({ key: contentKey, count: 1000 });
 
-    const lastPublishedVersion = versions.hits.find((version) => !!version.commitId);
-    if (!lastPublishedVersion) {
-        return null;
-    }
+    const contentNode = getLastPublishedDraftVersion(versions.hits, draftRepo);
 
-    const contentNode = draftRepo.get<Content>({
-        key: lastPublishedVersion.nodeId,
-        versionId: lastPublishedVersion.versionId,
-    });
     if (!contentNode) {
         return null;
     }
 
     return transformRepoContentNode(contentNode);
+};
+
+const getLastPublishedDraftVersion = (versions: NodeVersion[], draftRepo: RepoConnection) => {
+    // Iterate through each object in the list
+    for (const version of versions) {
+        if (version.commitId) {
+            try {
+                const contentNode = draftRepo.get<Content>({
+                    key: version.nodeId,
+                    versionId: version.versionId,
+                });
+                if (contentNode?.publish?.from) {
+                    return contentNode;
+                }
+            } catch (error) {
+                logger.error(`Error fetching object with versionId ${version.versionId}: ${error}`);
+            }
+        }
+    }
+
+    return null;
 };
 
 export const getContentForExternalArchive = ({

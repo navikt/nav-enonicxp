@@ -20,14 +20,12 @@ const validateContent = (
         logger.error(`Could not get contextual content from request path - ${req.rawPath}`);
         return false;
     }
-
     if (content.type !== 'no.nav.navno:form-intermediate-step') {
         logger.error(
             `Invalid type for form-intermediate-step controller - ${content._id} - ${content.type}`
         );
         return false;
     }
-
     if (!content.valid) {
         logger.info(`Content ${content._id} is not valid - skipping updates for now`);
         return false;
@@ -43,6 +41,10 @@ const updateCustomPath = (content: Content<'no.nav.navno:form-intermediate-step'
 const updateContent = (req: XP.Request) => {
     const content = portalLib.getContent();
     if (!validateContent(content, req)) {
+        return;
+    }
+    if (!req.repositoryId) {
+        logger.error(`No repoId for form-intermediate-step page - ${content._id}`);
         return;
     }
 
