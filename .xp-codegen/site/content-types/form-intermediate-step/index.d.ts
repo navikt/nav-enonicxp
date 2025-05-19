@@ -126,7 +126,7 @@ export type FormIntermediateStep = {
             /**
              * Ekstern URL
              */
-            externalUrl?: string;
+            externalUrl: string;
           };
         }
       | {
