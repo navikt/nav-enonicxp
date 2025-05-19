@@ -65,14 +65,9 @@ export type FormIntermediateStep = {
   customPath: string;
 
   /**
-   * Redaksjonelt innhold ovenfor valgene
+   * Ingress
    */
   editorial?: string;
-
-  /**
-   * Overskrift til stegene
-   */
-  stepsHeadline?: string;
 
   /**
    * Enkeltsteg
@@ -124,9 +119,14 @@ export type FormIntermediateStep = {
            */
           external: {
             /**
+             * Skjemanummer
+             */
+            formNumber?: string;
+
+            /**
              * Ekstern URL
              */
-            externalUrl?: string;
+            externalUrl: string;
           };
         }
       | {
@@ -136,19 +136,9 @@ export type FormIntermediateStep = {
           _selected: "next";
 
           /**
-           * Nytt steg
+           * Nytt steg, nivå 2
            */
           next: {
-            /**
-             * Redaksjonelt innhold ovenfor valgene
-             */
-            editorial?: string;
-
-            /**
-             * Overskrift til stegene
-             */
-            stepsHeadline?: string;
-
             /**
              * Steg
              */
@@ -169,7 +159,8 @@ export type FormIntermediateStep = {
               languageDisclaimer?: string;
 
               /**
-               * Dette valget sender brukeren videre til:
+               * Dette valget sender brukeren
+               * videre til:
                */
               nextStep:
                 | {
@@ -199,9 +190,92 @@ export type FormIntermediateStep = {
                      */
                     external: {
                       /**
+                       * Skjemanummer
+                       */
+                      formNumber?: string;
+
+                      /**
                        * Ekstern URL
                        */
                       externalUrl: string;
+                    };
+                  }
+                | {
+                    /**
+                     * Selected
+                     */
+                    _selected: "next";
+
+                    /**
+                     * Nytt steg, nivå 3
+                     */
+                    next: {
+                      /**
+                       * Steg
+                       */
+                      steps: Array<{
+                        /**
+                         * Tittel på valget
+                         */
+                        label: string;
+
+                        /**
+                         * Ekstra forklaring
+                         */
+                        explanation?: string;
+
+                        /**
+                         * Informasjon om språk
+                         */
+                        languageDisclaimer?: string;
+
+                        /**
+                         * Dette
+                         * valget
+                         * sender
+                         * brukeren
+                         * videre
+                         * til:
+                         */
+                        nextStep:
+                          | {
+                              /**
+                               * Selected
+                               */
+                              _selected: "internal";
+
+                              /**
+                               * Intern lenke til skjema, søknad eller klage
+                               */
+                              internal: {
+                                /**
+                                 * Internt innhold
+                                 */
+                                internalContent: string;
+                              };
+                            }
+                          | {
+                              /**
+                               * Selected
+                               */
+                              _selected: "external";
+
+                              /**
+                               * Ekstern lenke til skjema, søknad eller klage
+                               */
+                              external: {
+                                /**
+                                 * Skjemanummer
+                                 */
+                                formNumber?: string;
+
+                                /**
+                                 * Ekstern URL
+                                 */
+                                externalUrl: string;
+                              };
+                            };
+                      }>;
                     };
                   };
             }>;
