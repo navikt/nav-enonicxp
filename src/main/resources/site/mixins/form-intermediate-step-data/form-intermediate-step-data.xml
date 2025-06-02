@@ -3,31 +3,23 @@
         <field-set>
             <label>Mellomsteg</label>
             <items>
-                <input name="editorial" type="HtmlArea">
-                    <label>Redaksjonelt innhold ovenfor valgene</label>
-                    <occurrences minimum="0" maximum="1"/>
-                </input>
-                <input name="stepsHeadline" type="TextLine">
-                    <label>Overskrift til stegene</label>
-                    <occurrences minimum="0" maximum="1"/>
-                </input>
+                <mixin name="html-area" />
                 <item-set name="steps">
                     <label>Enkeltsteg</label>
-                    <occurrences minimum="1" maximum="0"/>
+                    <occurrences minimum="1" maximum="0" />
                     <items>
-                        <mixin name="form-intermediate-step-data-action" />
+                        <mixin name="form-intermediate-step-data-meta" />
                         <option-set name="nextStep">
                             <label>Dette valget sender brukeren videre til:</label>
                             <occurrences minimum="1" maximum="1" />
                             <options minimum="1" maximum="1">
                                 <option name="internal">
-                                    <label>Intern lenke til skjema, søknad eller klage</label>
-                                    <help-text>Brukeren skal sendes til dokument som ligger på Enonic XP</help-text>
-                                    <default>true</default>
+                                    <label><![CDATA[Intern lenke til skjema, søknad eller klage]]></label>
+                                    <help-text><![CDATA[Brukeren skal sendes til dokument som ligger på Enonic XP]]></help-text>
                                     <items>
                                         <input name="internalContent" type="MediaSelector">
-                                            <label>Internt innhold</label>
-                                            <occurrences minimum="1" maximum="1"/>
+                                            <label><![CDATA[Internt innhold]]></label>
+                                            <occurrences minimum="1" maximum="1" />
                                             <config>
                                                 <allowContentType>media:document</allowContentType>
                                             </config>
@@ -35,12 +27,18 @@
                                     </items>
                                 </option>
                                 <option name="external">
-                                    <label>Ekstern lenke til skjema, søknad eller klage</label>
-                                    <help-text>Brukeren skal sendes til en app eller tjeneste utenfor Enonic XP</help-text>
+                                    <label><![CDATA[Ekstern lenke til skjema, søknad eller klage]]></label>
+                                    <help-text><![CDATA[Brukeren skal sendes til en app eller tjeneste utenfor Enonic XP]]></help-text>
                                     <items>
+                                        <input name="formNumber"
+                                            type="TextLine">
+                                            <label>Skjemanummer</label>
+                                            <occurrences minimum="0"
+                                                maximum="1" />
+                                        </input>
                                         <input name="externalUrl" type="TextLine">
-                                            <label>Ekstern URL</label>
-                                            <occurrences minimum="0" maximum="1"/>
+                                            <label><![CDATA[Ekstern URL]]></label>
+                                            <occurrences minimum="1" maximum="1" />
                                             <config>
                                                 <regexp>^https?:\/\/.*</regexp>
                                             </config>
@@ -48,54 +46,139 @@
                                     </items>
                                 </option>
                                 <option name="next">
-                                    <label>Nytt steg</label>
-                                    <help-text>Brukeren skal sendes til et nytt steg for nye veivalg</help-text>
+                                    <label>Nytt steg, nivå 2</label>
+                                    <help-text><![CDATA[Brukeren skal sendes til et nytt steg for nye veivalg]]></help-text>
                                     <items>
                                         <field-set>
                                             <label>Enkeltsteg</label>
                                             <items>
-                                                <input name="editorial" type="HtmlArea">
-                                                    <label>Redaksjonelt innhold ovenfor valgene</label>
-                                                    <occurrences minimum="0" maximum="1"/>
-                                                </input>
-                                                <input name="stepsHeadline" type="TextLine">
-                                                    <label>Overskrift til stegene</label>
-                                                    <occurrences minimum="0" maximum="1"/>
-                                                </input>
                                                 <item-set name="steps">
                                                     <label>Steg</label>
-                                                    <occurrences minimum="1" maximum="0"/>
+                                                    <occurrences minimum="1" maximum="0" />
                                                     <items>
-                                                        <mixin name="form-intermediate-step-data-action" />
+                                                        <mixin
+                                                            name="form-intermediate-step-data-meta" />
                                                         <option-set name="nextStep">
-                                                            <label>Dette valget sender brukeren videre til:</label>
+                                                            <label>Dette valget sender brukeren
+                                                                videre til:</label>
                                                             <occurrences minimum="1" maximum="1" />
                                                             <options minimum="1" maximum="1">
                                                                 <option name="internal">
-                                                                    <label>Intern lenke til skjema, søknad eller klage</label>
-                                                                    <help-text>Brukeren skal sendes til dokument som ligger på Enonic XP</help-text>
+                                                                    <label><![CDATA[Intern lenke til skjema, søknad eller klage]]></label>
+                                                                    <help-text><![CDATA[Brukeren skal sendes til dokument som ligger på Enonic XP]]></help-text>
                                                                     <default>true</default>
                                                                     <items>
-                                                                        <input name="internalContent" type="MediaSelector">
-                                                                            <label>Internt innhold</label>
-                                                                            <occurrences minimum="1" maximum="1"/>
+                                                                        <input
+                                                                            name="internalContent"
+                                                                            type="MediaSelector">
+                                                                            <label><![CDATA[Internt innhold]]></label>
+                                                                            <occurrences minimum="1"
+                                                                                maximum="1" />
                                                                             <config>
-                                                                                <allowContentType>media:document</allowContentType>
+                                                                                <allowContentType>
+                                                                                    media:document</allowContentType>
                                                                             </config>
                                                                         </input>
                                                                     </items>
                                                                 </option>
                                                                 <option name="external">
-                                                                    <label>Ekstern lenke til skjema, søknad eller klage</label>
-                                                                    <help-text>Brukeren skal sendes til en app eller tjeneste utenfor Enonic XP</help-text>
+                                                                    <label><![CDATA[Ekstern lenke til skjema, søknad eller klage]]></label>
+                                                                    <help-text><![CDATA[Brukeren skal sendes til en app eller tjeneste utenfor Enonic XP]]></help-text>
                                                                     <items>
-                                                                        <input name="externalUrl" type="TextLine">
-                                                                            <label>Ekstern URL</label>
-                                                                            <occurrences minimum="1" maximum="1"/>
-                                                                            <config>
-                                                                                <regexp>^https?:\/\/.*</regexp>
-                                                                            </config>
+                                                                        <input name="formNumber"
+                                                                            type="TextLine">
+                                                                            <label>Skjemanummer</label>
+                                                                            <occurrences minimum="0"
+                                                                                maximum="1" />
                                                                         </input>
+                                                                        <input name="externalUrl"
+                                                                            type="TextLine">
+                                                                            <label><![CDATA[Ekstern URL]]></label>
+                                                                            <occurrences minimum="1"
+                                                                                maximum="1" />
+                                                                        </input>
+                                                                    </items>
+                                                                </option>
+                                                                <option name="next">
+                                                                    <label>Nytt steg, nivå 3</label>
+                                                                    <items>
+                                                                        <field-set>
+                                                                            <label>Enkeltsteg</label>
+                                                                            <items>
+                                                                                <item-set
+                                                                                    name="steps">
+                                                                                    <label>Steg</label>
+                                                                                    <occurrences
+                                                                                        minimum="1"
+                                                                                        maximum="0" />
+                                                                                    <items>
+                                                                                        <mixin
+                                                                                            name="form-intermediate-step-data-meta" />
+                                                                                        <option-set
+                                                                                            name="nextStep">
+                                                                                            <label>Dette
+                                                                                                valget
+                                                                                                sender
+                                                                                                brukeren
+                                                                                                videre
+                                                                                                til:</label>
+                                                                                            <occurrences
+                                                                                                minimum="1"
+                                                                                                maximum="1" />
+                                                                                            <options
+                                                                                                minimum="1"
+                                                                                                maximum="1">
+                                                                                                <option
+                                                                                                    name="internal">
+                                                                                                    <label><![CDATA[Intern lenke til skjema, søknad eller klage]]></label>
+                                                                                                    <help-text><![CDATA[Brukeren skal sendes til dokument som ligger på Enonic XP]]></help-text>
+                                                                                                    <default>
+                                                                                                        true</default>
+                                                                                                    <items>
+                                                                                                        <input
+                                                                                                            name="internalContent"
+                                                                                                            type="MediaSelector">
+                                                                                                            <label><![CDATA[Internt innhold]]></label>
+                                                                                                            <occurrences
+                                                                                                                minimum="1"
+                                                                                                                maximum="1" />
+                                                                                                            <config>
+                                                                                                                <allowContentType>
+                                                                                                                    media:document</allowContentType>
+                                                                                                            </config>
+                                                                                                        </input>
+                                                                                                    </items>
+                                                                                                </option>
+                                                                                                <option
+                                                                                                    name="external">
+                                                                                                    <label><![CDATA[Ekstern lenke til skjema, søknad eller klage]]></label>
+                                                                                                    <help-text><![CDATA[Brukeren skal sendes til en app eller tjeneste utenfor Enonic XP]]></help-text>
+                                                                                                    <items>
+                                                                                                        <input
+                                                                                                            name="formNumber"
+                                                                                                            type="TextLine">
+                                                                                                            <label>
+                                                                                                                Skjemanummer</label>
+                                                                                                            <occurrences
+                                                                                                                minimum="0"
+                                                                                                                maximum="1" />
+                                                                                                        </input>
+                                                                                                        <input
+                                                                                                            name="externalUrl"
+                                                                                                            type="TextLine">
+                                                                                                            <label><![CDATA[Ekstern URL]]></label>
+                                                                                                            <occurrences
+                                                                                                                minimum="1"
+                                                                                                                maximum="1" />
+                                                                                                        </input>
+                                                                                                    </items>
+                                                                                                </option>
+                                                                                            </options>
+                                                                                        </option-set>
+                                                                                    </items>
+                                                                                </item-set>
+                                                                            </items>
+                                                                        </field-set>
                                                                     </items>
                                                                 </option>
                                                             </options>
