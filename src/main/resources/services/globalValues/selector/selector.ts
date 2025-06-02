@@ -17,6 +17,7 @@ import { forceString } from 'lib/utils/string-utils';
 import {
     customSelectorHitWithLink,
     customSelectorParseSelectedIdsFromReq,
+    CustomSelectorServiceResponseHit,
 } from 'services/service-utils';
 
 type ReqParams = Request['params'] & {
@@ -102,11 +103,11 @@ const getHitsFromSelectedIds = (ids: string[], withDescription?: boolean) =>
                 id: key,
             },
         ];
-    }, []);
+    }, [] as CustomSelectorServiceResponseHit[]);
 
 export const globalValueSelectorService = (req: Request) => {
     const { contentType } = req.params as ReqParams;
-    const query = forceString(req.params.query)
+    const query = forceString(req.params.query);
     const ids = customSelectorParseSelectedIdsFromReq(req);
 
     const withDescription = req.params.withDescription === 'true';

@@ -1,22 +1,26 @@
-import { Request } from '@enonic-types/core';
+import { Request, RequestParams } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import * as portalLib from '/lib/xp/portal';
 import { generateFulltextQuery } from '../../lib/utils/mixed-bag-of-utils';
-import { customSelectorHitWithLink, customSelectorParseSelectedIdsFromReq } from '../service-utils';
+import {
+    customSelectorHitWithLink,
+    customSelectorParseSelectedIdsFromReq,
+    CustomSelectorServiceResponseHit,
+} from '../service-utils';
 import { logger } from 'lib/utils/logging';
 import { ContentDescriptor } from 'types/content-types/content-config';
 import { stripPathPrefix } from 'lib/paths/path-utils';
 import { parseJsonToArray, removeDuplicates } from 'lib/utils/array-utils';
-import { getNestedValues  } from 'lib/utils/object-utils';
+import { getNestedValues } from 'lib/utils/object-utils';
 import { stripLineBreaks } from 'lib/utils/string-utils';
-
-type SelectorHit = XP.CustomSelectorServiceResponseHit;
 
 type ReqParams = {
     contentTypes?: string;
     selectorQuery?: string;
-} & XP.CustomSelectorServiceRequestParams;
+    query?: string;
+    sort?: string;
+} & RequestParams;
 
 const CONTENT_INJECTION_PATTERN = /{(\w|\.|-|,|_| )+}/g;
 
@@ -79,11 +83,7 @@ const transformHit = (content: Content) =>
         content._id
     );
 
-const getHitsFromQuery = (
-    query: string,
-    contentTypes?: ContentDescriptor[],
-    sort?: string
-) => {
+const getHitsFromQuery = (query: string, contentTypes?: ContentDescriptor[], sort?: string) => {
     return contentLib
         .query({
             count: 1000,
@@ -95,14 +95,14 @@ const getHitsFromQuery = (
 };
 
 const getHitsFromIds = (ids: string[]) =>
-    ids.reduce((acc, id) => {
+    ids.reduce<CustomSelectorServiceResponseHit[]>((acc, id) => {
         const content = contentLib.get({ key: id });
         if (!content) {
             return acc;
         }
 
         return [...acc, transformHit(content)];
-    }, [] as SelectorHit[]);
+    }, []);
 
 // This service can be called from a CustomSelector input as a more advanced alternative to
 // the built-in ContentSelector input type. Supports selecting based on custom queries, which
