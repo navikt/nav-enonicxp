@@ -1,8 +1,9 @@
+import { Request } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
-import { APP_DESCRIPTOR } from '../../lib/constants';
-import { stripPathPrefix } from '../../lib/paths/path-utils';
-import { buildCacheKeyForReqContext } from '../../lib/cache/utils';
-import { getFromLocalCache } from '../../lib/cache/local-cache';
+import { APP_DESCRIPTOR } from 'lib/constants';
+import { stripPathPrefix } from 'lib/paths/path-utils';
+import { buildCacheKeyForReqContext } from 'lib/cache/utils';
+import { getFromLocalCache } from 'lib/cache/local-cache';
 
 const getOffices = () => {
     const officeInfoContent = contentLib.query({
@@ -18,7 +19,7 @@ const getOffices = () => {
     }));
 };
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) => {
     const offices = getFromLocalCache(buildCacheKeyForReqContext(req, 'office-info'), getOffices);
 
     return {

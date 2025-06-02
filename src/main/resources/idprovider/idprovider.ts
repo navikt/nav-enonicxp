@@ -1,12 +1,13 @@
+import { Request } from '@enonic-types/core'
 import * as authLib from '/lib/xp/auth';
-import { logger } from '../lib/utils/logging';
-import { LAYERS_ANON_USER, LAYERS_ID_PROVIDER } from '../lib/constants';
+import { logger } from 'lib/utils/logging';
+import { LAYERS_ANON_USER, LAYERS_ID_PROVIDER } from 'lib/constants';
 
 // Allows requests for non-authenticated users to files which should be publically availiable
 //
 // Permissions to view our content layers are restricted to certain user groups only, but we want to
 // bypass this for published files.
-export const autoLogin = (req: XP.Request) => {
+export const autoLogin = (req: Request) => {
     if (!isPublicFileRequest(req)) {
         logger.info(`Unexpected request: ${req.url}`);
         return;
@@ -24,7 +25,7 @@ export const autoLogin = (req: XP.Request) => {
     }
 };
 
-const isPublicFileRequest = (req: XP.Request) =>
+const isPublicFileRequest = (req: Request) =>
     req.mode === 'live' &&
     req.branch === 'master' &&
     req.path.match(/^\/_\/((en|nn|se)\/)?(image|attachment)\//);

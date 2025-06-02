@@ -1,22 +1,26 @@
-import { getRepoConnection } from '../../../lib/repos/repo-utils';
+import { Request } from '@enonic-types/core';
+import { Content } from '/lib/xp/content';
+import { getRepoConnection } from 'lib/repos/repo-utils';
 import {
     insufficientPermissionResponse,
     userIsAdmin,
     validateCurrentUserPermissionForContent,
-} from '../../../lib/utils/auth-utils';
+} from 'lib/utils/auth-utils';
+import { logger } from 'lib/utils/logging';
+import { forceArray } from 'lib/utils/array-utils';
+import { forceString } from 'lib/utils/string-utils';
+import { applyModifiedData } from 'lib/utils/content-utils';
+import { CONTENT_ROOT_REPO_ID } from 'lib/constants';
 import { gvServiceInvalidRequestResponse } from '../utils';
 import {
     getGlobalValueSet,
     getGlobalValueUsage,
-} from '../../../lib/global-values/global-value-utils';
-import { logger } from '../../../lib/utils/logging';
-import { forceArray } from '../../../lib/utils/array-utils';
-import { applyModifiedData } from '../../../lib/utils/content-utils';
-import { CONTENT_ROOT_REPO_ID } from '../../../lib/constants';
-import { Content } from '/lib/xp/content';
+} from 'lib/global-values/global-value-utils';
 
-export const removeGlobalValueItemService = (req: XP.Request) => {
-    const { key, contentId } = req.params;
+export const removeGlobalValueItemService = (req: Request) => {
+    const
+        key = forceString(req.params.key),
+        contentId = forceString(req.params.contentId);
 
     if (!validateCurrentUserPermissionForContent(contentId, 'DELETE')) {
         return insufficientPermissionResponse('DELETE');

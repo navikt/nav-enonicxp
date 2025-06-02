@@ -1,3 +1,4 @@
+import { Request } from '@enonic-types/core'
 import * as portalLib from '/lib/xp/portal';
 import { Content } from '/lib/xp/portal';
 import { frontendProxy } from './frontend-proxy';
@@ -8,7 +9,7 @@ import {
     formIntermediateStepValidateCustomPath,
 } from '../paths/custom-paths/custom-path-content-validators';
 
-const insertCustomPath = (req: XP.Request) => {
+const insertCustomPath = (req: Request) => {
     const content = portalLib.getContent();
     if (!content) {
         logger.error(`Could not get contextual content from request path - ${req.rawPath}`);
@@ -43,7 +44,7 @@ const insertCustomPath = (req: XP.Request) => {
     });
 };
 
-const formIntermediateStepController = (req: XP.Request) => {
+const formIntermediateStepController = (req: Request) => {
     if ((req.mode === 'edit' || req.mode === 'inline') && req.method === 'GET') {
         insertCustomPath(req);
     }

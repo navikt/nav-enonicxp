@@ -1,18 +1,19 @@
+import { Request } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
-import { isValidLocale } from '../../lib/localization/layers-data';
-import { RepoBranch } from '../../types/common';
-import { runInLocaleContext } from '../../lib/localization/locale-context';
-import { ContentDescriptor } from '../../types/content-types/content-config';
+import { isValidLocale } from 'lib/localization/layers-data';
+import { RepoBranch } from 'types/common';
+import { runInLocaleContext } from 'lib/localization/locale-context';
+import { ContentDescriptor } from 'types/content-types/content-config';
 import {
     runCustomReferencesResolvers,
     ReferencesResolversMap,
-} from '../../lib/reference-search/references-finder-custom';
+} from 'lib/reference-search/references-finder-custom';
 import {
     findContentsWithFragmentComponent,
     findContentsWithFragmentMacro,
-} from '../../lib/reference-search/fragment-references-resolvers';
-import { ReferencesFinder } from '../../lib/reference-search/references-finder';
-import { isValidBranch } from '../../lib/context/branches';
+} from 'lib/reference-search/fragment-references-resolvers';
+import { ReferencesFinder } from 'lib/reference-search/references-finder';
+import { isValidBranch } from 'lib/context/branches';
 
 type ReqParams = Partial<{
     contentId: string;
@@ -47,7 +48,7 @@ const getResolversForContentType = (
     }
 };
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) => {
     const { contentId, locale, branch = 'draft' } = req.params as ReqParams;
 
     if (!contentId) {

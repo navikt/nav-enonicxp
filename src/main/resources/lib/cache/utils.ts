@@ -1,3 +1,4 @@
+import { Request } from '@enonic-types/core'
 import { Content } from '/lib/xp/content';
 import { APP_DESCRIPTOR } from '../constants';
 import {
@@ -43,6 +44,6 @@ const ignoredContentTypeSet: ReadonlySet<ContentDescriptor> = new Set([
 export const isPublicRenderedType = (content: Content | null) =>
     content && !isMedia(content) && !ignoredContentTypeSet.has(content.type);
 
-export const buildCacheKeyForReqContext = (req: XP.Request, key: string) => {
+export const buildCacheKeyForReqContext = (req: Request, key: string) => {
     return `${req.repositoryId}:${req.branch}:${key}`;
 };

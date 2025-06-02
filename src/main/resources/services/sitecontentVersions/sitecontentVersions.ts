@@ -1,11 +1,13 @@
-import { isUUID } from '../../lib/utils/uuid';
-import { isValidBranch } from '../../lib/context/branches';
-import { logger } from '../../lib/utils/logging';
-import { sitecontentVersionResolver } from '../../lib/time-travel/get-content-from-datetime';
-import { getServiceRequestSubPath } from '../service-utils';
-import { userIsLoggedIn, validateServiceSecretHeader } from '../../lib/utils/auth-utils';
+import { Request } from '@enonic-types/core';
+import { isUUID } from 'lib/utils/uuid';
+import { isValidBranch } from 'lib/context/branches';
+import { logger } from 'lib/utils/logging';
+import { sitecontentVersionResolver } from 'lib/time-travel/get-content-from-datetime';
+import { getServiceRequestSubPath } from 'services/service-utils';
+import { userIsLoggedIn, validateServiceSecretHeader } from 'lib/utils/auth-utils';
+import { SITECONTENT_404_MSG_PREFIX } from 'lib/constants';
 import { publishedVersionsReqHandler } from './publishedVersions/publishedVersions';
-import { SITECONTENT_404_MSG_PREFIX } from '../../lib/constants';
+import { forceString } from 'lib/utils/string-utils';
 
 const isValidTime = (time?: string): time is string => {
     try {
@@ -16,8 +18,12 @@ const isValidTime = (time?: string): time is string => {
     }
 };
 
-const sitecontentVersionsReqHandler = (req: XP.Request) => {
-    const { id, branch = 'master', time, locale } = req.params;
+const sitecontentVersionsReqHandler = (req: Request) => {
+    const
+        id = forceString(req.params.id),
+        branch = req.params.branch ? forceString(req.params.branch) : "master",
+        time = forceString(req.params.time),
+        locale = forceString(req.params.locale);
 
     if (!id || !isUUID(id)) {
         return {
@@ -100,7 +106,7 @@ const sitecontentVersionsReqHandler = (req: XP.Request) => {
     }
 };
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) => {
     if (!validateServiceSecretHeader(req) && !userIsLoggedIn()) {
         return {
             status: 401,

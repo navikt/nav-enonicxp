@@ -1,4 +1,6 @@
+import { Request } from '@enonic-types/core';
 import { sanitize } from '/lib/xp/common';
+import { forceString } from 'lib/utils/string-utils';
 
 const toHex = (num: number) => {
     const hex = num.toString(16);
@@ -202,8 +204,8 @@ const getHits = (query?: string) => {
     return customColor ? [customColor] : filteredHits;
 };
 
-export const get = (req: XP.CustomSelectorServiceRequest) => {
-    const hits = getHits(req.params.query);
+export const get = (req: Request) => {
+    const hits = getHits(forceString(req.params.query));
 
     return {
         status: 200,

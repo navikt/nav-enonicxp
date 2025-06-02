@@ -1,12 +1,13 @@
-import { isValidBranch } from '../../lib/context/branches';
-import { sitecontentPublicResponse } from './public/public-response';
-import { logger } from '../../lib/utils/logging';
-import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
-import { RepoBranch } from '../../types/common';
-import { SITECONTENT_404_MSG_PREFIX } from '../../lib/constants';
-import { sitecontentDraftResponse } from './draft/draft-response';
+import { Request } from '@enonic-types/core';
+import { isValidBranch } from 'lib/context/branches';
+import { logger } from 'lib/utils/logging';
+import { validateServiceSecretHeader } from 'lib/utils/auth-utils';
+import { RepoBranch } from 'types/common';
+import { SITECONTENT_404_MSG_PREFIX } from 'lib/constants';
+import { isWellFormedContentRef } from 'lib/paths/path-utils';
 import { SitecontentResponse } from './common/content-response';
-import { isWellFormedContentRef } from '../../lib/paths/path-utils';
+import { sitecontentDraftResponse } from './draft/draft-response';
+import { sitecontentPublicResponse } from './public/public-response';
 
 type SiteContentParams = {
     id: string;
@@ -31,7 +32,7 @@ const buildReqSpecificCacheKey = ({
         ? [id, cacheVersionKey, locale, branch, preview].filter(Boolean).join('_')
         : undefined;
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) => {
     if (!validateServiceSecretHeader(req)) {
         return {
             status: 401,

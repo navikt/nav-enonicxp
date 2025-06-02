@@ -1,21 +1,22 @@
-import { getRepoConnection } from '../../../lib/repos/repo-utils';
+import { Request } from '@enonic-types/core';
+import { Content } from '/lib/xp/content';
+import { getRepoConnection } from 'lib/repos/repo-utils';
+import { runInContext } from 'lib/context/run-in-context';
+import { getGlobalValueSet } from 'lib/global-values/global-value-utils';
+import { logger } from 'lib/utils/logging';
+import { GlobalValueItem } from 'lib/global-values/types';
+import { forceArray } from 'lib/utils/array-utils';
+import { applyModifiedData } from 'lib/utils/content-utils';
+import { CONTENT_ROOT_REPO_ID } from 'lib/constants';
 import {
     gvServiceInvalidRequestResponse,
     validateGlobalValueInputAndGetErrorResponse,
 } from '../utils';
-import { runInContext } from '../../../lib/context/run-in-context';
-import { getGlobalValueSet } from '../../../lib/global-values/global-value-utils';
-import { logger } from '../../../lib/utils/logging';
-import { GlobalValueItem } from '../../../lib/global-values/types';
-import { forceArray } from '../../../lib/utils/array-utils';
-import { applyModifiedData } from '../../../lib/utils/content-utils';
-import { CONTENT_ROOT_REPO_ID } from '../../../lib/constants';
-import { Content } from '/lib/xp/content';
 
 const itemNameExists = (valueItems: GlobalValueItem[], itemName: string, key: string) =>
     itemName && valueItems.find((item) => item.itemName === itemName && item.key !== key);
 
-export const modifyGlobalValueItemService = (req: XP.Request) => {
+export const modifyGlobalValueItemService = (req: Request) => {
     const errorResponse = validateGlobalValueInputAndGetErrorResponse(req.params);
     if (errorResponse) {
         return errorResponse;

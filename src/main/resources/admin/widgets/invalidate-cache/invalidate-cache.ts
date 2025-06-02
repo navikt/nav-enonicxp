@@ -1,12 +1,14 @@
+import { Request } from '@enonic-types/core'
 import * as contentLib from '/lib/xp/content';
 import * as portalLib from '/lib/xp/portal';
 import thymeleafLib from '/lib/thymeleaf';
-import { getLayersData } from '../../../lib/localization/layers-data';
-import { runInLocaleContext } from '../../../lib/localization/locale-context';
+import { getLayersData } from 'lib/localization/layers-data';
+import { runInLocaleContext } from 'lib/localization/locale-context';
+import { forceString } from 'lib/utils/string-utils';
 
 const view = resolve('./invalidate-cache.html');
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) => {
     const { contentId, repository } = req.params;
 
     if (!contentId || !repository) {
@@ -17,10 +19,10 @@ export const get = (req: XP.Request) => {
     }
 
     const { repoIdToLocaleMap } = getLayersData();
-    const locale = repoIdToLocaleMap[repository];
+    const locale = repoIdToLocaleMap[forceString(repository)];
 
     const content = runInLocaleContext({ locale, branch: 'master' }, () =>
-        contentLib.get({ key: contentId })
+        contentLib.get({ key: forceString(contentId) })
     );
 
     if (!content) {

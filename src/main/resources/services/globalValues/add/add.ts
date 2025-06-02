@@ -1,26 +1,29 @@
-import { getRepoConnection } from '../../../lib/repos/repo-utils';
-import { generateUUID } from '../../../lib/utils/uuid';
+import { Request } from '@enonic-types/core';
+import { Content } from '/lib/xp/content';
+import { getRepoConnection } from 'lib/repos/repo-utils';
+import { generateUUID } from 'lib/utils/uuid';
+import { runInContext } from 'lib/context/run-in-context';
+import { getGlobalValueSet } from 'lib/global-values/global-value-utils';
+import { logger } from 'lib/utils/logging';
+import { forceArray } from 'lib/utils/array-utils';
+import { applyModifiedData } from 'lib/utils/content-utils';
+import { CONTENT_ROOT_REPO_ID } from 'lib/constants';
+import { forceString } from 'lib/utils/string-utils';
 import {
     gvServiceInvalidRequestResponse,
     validateGlobalValueInputAndGetErrorResponse,
 } from '../utils';
-import { runInContext } from '../../../lib/context/run-in-context';
-import { getGlobalValueSet } from '../../../lib/global-values/global-value-utils';
-import { logger } from '../../../lib/utils/logging';
-import { forceArray } from '../../../lib/utils/array-utils';
-import { applyModifiedData } from '../../../lib/utils/content-utils';
-import { CONTENT_ROOT_REPO_ID } from '../../../lib/constants';
-import { Content } from '/lib/xp/content';
 
 const generateKey = () => `gv_${generateUUID()}`;
 
-export const addGlobalValueItemService = (req: XP.Request) => {
+export const addGlobalValueItemService = (req: Request) => {
     const errorResponse = validateGlobalValueInputAndGetErrorResponse(req.params);
     if (errorResponse) {
         return errorResponse;
     }
 
-    const { contentId, itemName, type } = req.params;
+    const { itemName, type } = req.params;
+    const contentId = forceString(req.params.contentId);
 
     const content = runInContext({ branch: 'draft' }, () => getGlobalValueSet(contentId));
     if (!content || !contentId) {

@@ -1,6 +1,8 @@
+import { Request } from '@enonic-types/core';
 import { Content } from '/lib/xp/content';
 import { gvServiceInvalidRequestResponse } from '../utils';
-import { getGlobalValueUsage } from '../../../lib/global-values/global-value-utils';
+import { getGlobalValueUsage } from 'lib/global-values/global-value-utils';
+import { forceString } from 'lib/utils/string-utils';
 
 const transformToResponseItem = (content: Content) => ({
     id: content._id,
@@ -8,8 +10,10 @@ const transformToResponseItem = (content: Content) => ({
     displayName: content.displayName,
 });
 
-export const getGlobalValueUsageService = (req: XP.Request) => {
-    const { key, contentId } = req.params;
+export const getGlobalValueUsageService = (req: Request) => {
+    const
+        key = forceString(req.params.key),
+        contentId = forceString(req.params.contentId);
 
     if (!key || !contentId) {
         return gvServiceInvalidRequestResponse(

@@ -1,16 +1,17 @@
+import { Request } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
-import { logger } from '../../../lib/utils/logging';
+import { logger } from 'lib/utils/logging';
+import { forceString } from 'lib/utils/string-utils';
 
 const DEFAULT_ICON_TYPE = 'base:structured';
-
 const defaultIcon = contentLib.getType(DEFAULT_ICON_TYPE)?.icon;
 
 if (!defaultIcon) {
     logger.critical(`No icon found for specified default type ${DEFAULT_ICON_TYPE}`);
 }
 
-export const externalArchiveContentIconService = (req: XP.Request) => {
-    const { type } = req.params;
+export const externalArchiveContentIconService = (req: Request) => {
+    const type = forceString(req.params.type);
 
     if (!type) {
         return {

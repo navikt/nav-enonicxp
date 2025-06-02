@@ -1,11 +1,13 @@
-import * as portalLib from '/lib/xp/portal';
-import { getRepoConnection } from '../../../lib/repos/repo-utils';
-import { componentPreviewController } from '../../../lib/controllers/component-preview-controller';
-import { generateUUID, isUUID } from '../../../lib/utils/uuid';
-import { getComponentConfigByPath } from '../../../lib/utils/component-utils';
-import { forceArray } from '../../../lib/utils/array-utils';
-import { ContentNode } from '../../../types/content-types/content-config';
+import { Request } from '@enonic-types/core';
 import { Content } from '/lib/xp/portal';
+import * as portalLib from '/lib/xp/portal';
+import { getRepoConnection } from 'lib/repos/repo-utils';
+import { componentPreviewController } from 'lib/controllers/component-preview-controller';
+import { generateUUID, isUUID } from 'lib/utils/uuid';
+import { getComponentConfigByPath } from 'lib/utils/component-utils';
+import { forceArray } from 'lib/utils/array-utils';
+import { ContentNode } from 'types/content-types/content-config';
+import { forceString } from 'lib/utils/string-utils';
 
 const insertIdIfNotExist = (component: any) => {
     if (!isUUID(component.id)) {
@@ -30,7 +32,7 @@ const generatePersistantIds = (componentPath: string, content: ContentNode) => {
     });
 };
 
-const injectPersistantIds = (req: XP.Request) => {
+const injectPersistantIds = (req: Request) => {
     const contentId = portalLib.getContent()?._id;
     const component = portalLib.getComponent();
 
@@ -39,8 +41,8 @@ const injectPersistantIds = (req: XP.Request) => {
     }
 
     const repo = getRepoConnection({
-        repoId: req.repositoryId,
-        branch: req.branch,
+        repoId: forceString(req.repositoryId),
+        branch: forceString(req.branch),
     });
 
     repo.modify<Content>({
@@ -52,7 +54,7 @@ const injectPersistantIds = (req: XP.Request) => {
     });
 };
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) => {
     if (req.mode === 'edit') {
         injectPersistantIds(req);
     }

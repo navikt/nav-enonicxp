@@ -1,9 +1,11 @@
+import { Request } from '@enonic-types/core';
 import {
     insufficientPermissionResponse,
     validateCurrentUserPermissionForContent,
-} from '../../lib/utils/auth-utils';
-import { validCaseTimeUnits } from '../../lib/global-values/types';
-import { CaseTimeUnit } from '../../types/content-types/global-case-time-set';
+} from 'lib/utils/auth-utils';
+import { validCaseTimeUnits } from 'lib/global-values/types';
+import { CaseTimeUnit } from 'types/content-types/global-case-time-set';
+import { forceString } from 'lib/utils/string-utils';
 
 export type GlobalValueCommonInputParams = {
     key: string;
@@ -44,8 +46,11 @@ const validateCaseTimeParams = ({ value, unit }: Partial<GlobalCaseTimesInputPar
     return null;
 };
 
-export const validateGlobalValueInputAndGetErrorResponse = (params: XP.Request['params']) => {
-    const { contentId, itemName, type } = params;
+export const validateGlobalValueInputAndGetErrorResponse = (params: Request['params']) => {
+    const
+        contentId = forceString(params.contentId),
+        itemName = forceString(params.itemName),
+        type = forceString(params.type);
 
     if (!contentId || !itemName || !type) {
         return gvServiceInvalidRequestResponse(

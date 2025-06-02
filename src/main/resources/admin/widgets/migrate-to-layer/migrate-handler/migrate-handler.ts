@@ -1,13 +1,10 @@
+import { Request, Response } from '@enonic-types/core'
 import * as contentLib from '/lib/xp/content';
-import { migrateContentToLayer } from '../../../../lib/localization/layers-migration/migrate-content-to-layer';
-import { CONTENT_LOCALE_DEFAULT } from '../../../../lib/constants';
+import { migrateContentToLayer } from 'lib/localization/layers-migration/migrate-content-to-layer';
+import { CONTENT_LOCALE_DEFAULT } from 'lib/constants';
+import { forceString } from 'lib/utils/string-utils';
 
-type ResponseBody = {
-    result: 'success' | 'error';
-    message: string;
-};
-
-export const migrateContentToLayerWidgetHandler = (req: XP.Request): XP.Response<ResponseBody> => {
+export const migrateContentToLayerWidgetHandler = (req: Request) => {
     const { sourceId: sourceContentId, targetLocale, targetId: targetContentIdInput } = req.params;
 
     if (!targetLocale) {
@@ -38,7 +35,7 @@ export const migrateContentToLayerWidgetHandler = (req: XP.Request): XP.Response
         };
     }
 
-    const targetContentId = targetContentIdInput.replace(/"/g, '').trim();
+    const targetContentId = forceString(targetContentIdInput).replace(/"/g, '').trim();
     const targetContent = contentLib.get({ key: targetContentId });
 
     if (!targetContent) {
@@ -52,10 +49,10 @@ export const migrateContentToLayerWidgetHandler = (req: XP.Request): XP.Response
     }
 
     const { errorMsgs, statusMsgs } = migrateContentToLayer({
-        sourceId: sourceContentId,
+        sourceId: forceString(sourceContentId),
         sourceLocale: CONTENT_LOCALE_DEFAULT,
         targetId: targetContentId,
-        targetLocale,
+        targetLocale: forceString(targetLocale),
     });
 
     return {

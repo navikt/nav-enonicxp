@@ -1,3 +1,4 @@
+import { Request } from '@enonic-types/core'
 import httpClient from '/lib/http-client';
 import * as portalLib from '/lib/xp/portal';
 import { URLS } from '../constants';
@@ -42,7 +43,10 @@ const healthCheckDummyResponse = () => {
     };
 };
 
-const getFrontendUrl = (req: XP.Request, path?: string) => {
+const getFrontendUrl = (req: Request, path?: string) => {
+    if (!req.branch) {
+        return null;
+    }
     const frontendPath = path || stripPathPrefix(req.rawPath.split(req.branch)[1] || '');
 
     // Archive requests have their own routing under the /archive path segment
@@ -55,7 +59,7 @@ const getFrontendUrl = (req: XP.Request, path?: string) => {
 
 // Proxy requests to the frontend application. Normally this will only be used in the portal-admin
 // content studio previews and from the error controller
-export const frontendProxy = (req: XP.Request, path?: string) => {
+export const frontendProxy = (req: Request, path?: string) => {
     if (req.method === 'HEAD') {
         return {
             status: 200,
@@ -86,6 +90,14 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
     }
 
     const frontendUrl = getFrontendUrl(req, path);
+    if (!frontendUrl) {
+        return errorResponse('N/A', 500, 'No valid frontendUrl');
+    }
+
+    const repositoryId = req.repositoryId;
+    if (!repositoryId) {
+        return errorResponse(frontendUrl, 500, 'No valid repositoryId');
+    }
 
     try {
         const response = httpClient.request({
@@ -101,7 +113,7 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
                 ...req.params,
                 [LOOPBACK_PARAM]: 'true',
                 mode: req.mode,
-                locale: getLayersData().repoIdToLocaleMap[req.repositoryId],
+                locale: getLayersData().repoIdToLocaleMap[repositoryId],
             },
         });
 

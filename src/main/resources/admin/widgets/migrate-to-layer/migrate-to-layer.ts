@@ -1,17 +1,19 @@
+import { Request } from '@enonic-types/core'
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import thymeleafLib from '/lib/thymeleaf';
-import { validateCurrentUserPermissionForContent } from '../../../lib/utils/auth-utils';
+import { validateCurrentUserPermissionForContent } from 'lib/utils/auth-utils';
 import {
     APP_DESCRIPTOR,
     CONTENT_LOCALE_DEFAULT,
     CONTENT_ROOT_REPO_ID,
     URLS,
-} from '../../../lib/constants';
-import { getLayersData } from '../../../lib/localization/layers-data';
-import { getServiceRequestSubPath } from '../../../services/service-utils';
+} from 'lib/constants';
+import { getLayersData } from 'lib/localization/layers-data';
+import { batchedContentQuery } from 'lib/utils/batched-query';
+import { getServiceRequestSubPath } from 'services/service-utils';
+import { forceString } from 'lib/utils/string-utils';
 import { migrateContentToLayerWidgetHandler } from './migrate-handler/migrate-handler';
-import { batchedContentQuery } from '../../../lib/utils/batched-query';
 
 const view = resolve('./migrate-to-layer.html');
 
@@ -44,7 +46,7 @@ const getTargetOptions = (content: Content) => {
 const isApplicableContentType = (content: Content) =>
     content.type.startsWith(APP_DESCRIPTOR) || content.type === 'portal:fragment';
 
-export const widgetResponse = (req: XP.Request) => {
+export const widgetResponse = (req: Request) => {
     const { repositoryId, contextPath } = req;
     const { contentId } = req.params;
 
@@ -55,7 +57,7 @@ export const widgetResponse = (req: XP.Request) => {
         };
     }
 
-    const content = contentLib.get({ key: contentId });
+    const content = contentLib.get({ key: forceString(contentId) });
     if (!content) {
         return {
             body: '<widget>Fant ikke innholdet. Kanskje det allerede er migrert?</widget>',
@@ -63,7 +65,7 @@ export const widgetResponse = (req: XP.Request) => {
         };
     }
 
-    if (!validateCurrentUserPermissionForContent(contentId, 'PUBLISH')) {
+    if (!validateCurrentUserPermissionForContent(forceString(contentId), 'PUBLISH')) {
         return {
             body: '<widget>Tilgangsfeil - Du må ha publiseringstilgang for å flytte dette innholdet til et layer</widget>',
             contentType: 'text/html; charset=UTF-8',
@@ -129,7 +131,7 @@ export const widgetResponse = (req: XP.Request) => {
     };
 };
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) => {
     const subPath = getServiceRequestSubPath(req);
 
     if (subPath === MIGRATE_HANDLER_PATH) {

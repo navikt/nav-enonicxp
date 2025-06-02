@@ -1,3 +1,4 @@
+import { Request } from '@enonic-types/core'
 import * as portalLib from '/lib/xp/portal';
 import httpClient from '/lib/http-client';
 import { URLS } from '../constants';
@@ -86,7 +87,7 @@ const getContentProps = (): Content | null => {
 // This controller fetches component-HTML from the frontend rendered with the
 // supplied props. Used by the content-studio editor.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const componentPreviewController = (_: XP.Request) => {
+export const componentPreviewController = (_: Request) => {
     const componentProps = getComponentProps();
 
     if (!componentProps) {

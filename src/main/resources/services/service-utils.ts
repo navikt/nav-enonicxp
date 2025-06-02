@@ -1,11 +1,16 @@
+import { Request } from '@enonic-types/core';
+import { buildEditorPathFromContext } from 'lib/paths/editor-path';
+import { stripLeadingAndTrailingSlash } from 'lib/paths/path-utils';
 import { customSelectorEditIcon } from './custom-selector-icons';
-import { buildEditorPathFromContext } from '../lib/paths/editor-path';
-import { stripLeadingAndTrailingSlash } from '../lib/paths/path-utils';
 
-const getServiceName = (req: XP.Request) => req.contextPath.split('/').slice(-1)[0];
+const getServiceName = (contextPath: string) => contextPath.split('/').slice(-1)[0];
 
-export const getServiceRequestSubPath = (req: XP.Request) =>
-    stripLeadingAndTrailingSlash(req.path.split(getServiceName(req)).slice(-1)[0]);
+export const getServiceRequestSubPath = (req: Request) => {
+    if (!req.contextPath) {
+        return null;
+    }
+    return stripLeadingAndTrailingSlash(req.path.split(getServiceName(req.contextPath)).slice(-1)[0]);
+}
 
 // We can't use target or onclick to make the link open in a new tab, as content studio removes
 // these attributes when parsing the dom elements from the customselector icon. We set a classname
@@ -31,7 +36,7 @@ export const customSelectorHitWithLink = (
     };
 };
 
-export const customSelectorParseSelectedIdsFromReq = (req: XP.Request): string[] => {
+export const customSelectorParseSelectedIdsFromReq = (req: Request): string[] => {
     const { ids } = req.params;
     if (!ids) {
         return [];

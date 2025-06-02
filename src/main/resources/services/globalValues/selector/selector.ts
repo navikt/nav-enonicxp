@@ -1,3 +1,4 @@
+import { Request } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import {
@@ -5,21 +6,20 @@ import {
     getGlobalValueSet,
     getGlobalValueUniqueKey,
     getGvKeyAndContentIdFromUniqueKey,
-} from '../../../lib/global-values/global-value-utils';
-import { appendMacroDescriptionToKey } from '../../../lib/utils/component-utils';
-import { generateFulltextQuery } from '../../../lib/utils/mixed-bag-of-utils';
-import { runInContext } from '../../../lib/context/run-in-context';
-import { GlobalValueItem, GlobalValueContentDescriptor } from '../../../lib/global-values/types';
-import { buildGlobalValuePreviewString } from '../../../lib/global-values/macro-preview';
+} from 'lib/global-values/global-value-utils';
+import { appendMacroDescriptionToKey } from 'lib/utils/component-utils';
+import { generateFulltextQuery } from 'lib/utils/mixed-bag-of-utils';
+import { runInContext } from 'lib/context/run-in-context';
+import { GlobalValueItem, GlobalValueContentDescriptor } from 'lib/global-values/types';
+import { buildGlobalValuePreviewString } from 'lib/global-values/macro-preview';
+import { forceArray } from 'lib/utils/array-utils';
+import { forceString } from 'lib/utils/string-utils';
 import {
     customSelectorHitWithLink,
     customSelectorParseSelectedIdsFromReq,
-} from '../../service-utils';
-import { forceArray } from '../../../lib/utils/array-utils';
+} from 'services/service-utils';
 
-type Hit = XP.CustomSelectorServiceResponseHit;
-
-type ReqParams = XP.Request['params'] & {
+type ReqParams = Request['params'] & {
     contentType: GlobalValueContentDescriptor;
 };
 
@@ -27,7 +27,7 @@ const hitFromValueItem = (
     valueItem: GlobalValueItem,
     content: Content,
     withDescription?: boolean
-): Hit => {
+) => {
     const displayName = `${content.displayName} - ${valueItem.itemName}`;
     const key = getGlobalValueUniqueKey(valueItem.key, content._id);
 
@@ -102,11 +102,11 @@ const getHitsFromSelectedIds = (ids: string[], withDescription?: boolean) =>
                 id: key,
             },
         ];
-    }, [] as Hit[]);
+    }, []);
 
-export const globalValueSelectorService = (req: XP.Request) => {
-    const { query, contentType } = req.params as ReqParams;
-
+export const globalValueSelectorService = (req: Request) => {
+    const { contentType } = req.params as ReqParams;
+    const query = forceString(req.params.query)
     const ids = customSelectorParseSelectedIdsFromReq(req);
 
     const withDescription = req.params.withDescription === 'true';

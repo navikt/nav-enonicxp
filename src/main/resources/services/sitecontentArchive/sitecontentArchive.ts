@@ -1,11 +1,13 @@
-import { getLayersData } from '../../lib/localization/layers-data';
-import { logger } from '../../lib/utils/logging';
-import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
-import { SITECONTENT_404_MSG_PREFIX } from '../../lib/constants';
-import { runInContext } from '../../lib/context/run-in-context';
-import { getArchivedContent } from '../../lib/external-archive/get-archived-content';
+import { Request } from '@enonic-types/core';
+import { getLayersData } from 'lib/localization/layers-data';
+import { logger } from 'lib/utils/logging';
+import { validateServiceSecretHeader } from 'lib/utils/auth-utils';
+import { SITECONTENT_404_MSG_PREFIX } from 'lib/constants';
+import { runInContext } from 'lib/context/run-in-context';
+import { getArchivedContent } from 'lib/external-archive/get-archived-content';
+import { forceString } from 'lib/utils/string-utils';
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) => {
     if (!validateServiceSecretHeader(req)) {
         return {
             status: 401,
@@ -16,7 +18,11 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const { id: idOrArchivedPath, locale, time } = req.params;
+    const
+        idOrArchivedPath= forceString(req.params.idOrArchivedPath),
+        locale = forceString(req.params.locale),
+        time = forceString(req.params.time);
+
     if (!idOrArchivedPath) {
         return {
             status: 400,

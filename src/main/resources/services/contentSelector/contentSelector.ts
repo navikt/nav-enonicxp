@@ -1,14 +1,15 @@
+import { Request } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import * as portalLib from '/lib/xp/portal';
 import { generateFulltextQuery } from '../../lib/utils/mixed-bag-of-utils';
 import { customSelectorHitWithLink, customSelectorParseSelectedIdsFromReq } from '../service-utils';
-import { logger } from '../../lib/utils/logging';
-import { ContentDescriptor } from '../../types/content-types/content-config';
-import { stripPathPrefix } from '../../lib/paths/path-utils';
-import { parseJsonToArray, removeDuplicates } from '../../lib/utils/array-utils';
-import { getNestedValues } from '../../lib/utils/object-utils';
-import { stripLineBreaks } from '../../lib/utils/string-utils';
+import { logger } from 'lib/utils/logging';
+import { ContentDescriptor } from 'types/content-types/content-config';
+import { stripPathPrefix } from 'lib/paths/path-utils';
+import { parseJsonToArray, removeDuplicates } from 'lib/utils/array-utils';
+import { getNestedValues  } from 'lib/utils/object-utils';
+import { stripLineBreaks } from 'lib/utils/string-utils';
 
 type SelectorHit = XP.CustomSelectorServiceResponseHit;
 
@@ -68,7 +69,7 @@ const buildQuery = (userInput?: string, selectorInput?: string) => {
     return [userQuery, selectorQuery].filter(Boolean).join(' AND ');
 };
 
-const transformHit = (content: Content): SelectorHit =>
+const transformHit = (content: Content) =>
     customSelectorHitWithLink(
         {
             id: content._id,
@@ -82,7 +83,7 @@ const getHitsFromQuery = (
     query: string,
     contentTypes?: ContentDescriptor[],
     sort?: string
-): SelectorHit[] => {
+) => {
     return contentLib
         .query({
             count: 1000,
@@ -121,7 +122,7 @@ const getHitsFromIds = (ids: string[]) =>
 //     </config>
 // </input>
 //
-export const get = (req: XP.Request) => {
+export const get = (req: Request) => {
     const {
         query: userQuery,
         contentTypes: contentTypesJson,

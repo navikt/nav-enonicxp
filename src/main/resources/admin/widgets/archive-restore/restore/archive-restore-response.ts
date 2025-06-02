@@ -1,8 +1,10 @@
+import { Request } from '@enonic-types/core'
 import * as contentLib from '/lib/xp/content';
 import thymeleafLib from '/lib/thymeleaf';
-import { runInContext } from '../../../../lib/context/run-in-context';
-import { logger } from '../../../../lib/utils/logging';
-import { getParentPath } from '../../../../lib/paths/path-utils';
+import { runInContext } from 'lib/context/run-in-context';
+import { logger } from 'lib/utils/logging';
+import { getParentPath } from 'lib/paths/path-utils';
+import { forceString } from 'lib/utils/string-utils';
 
 const view = resolve('./archive-restore-response.html');
 
@@ -58,9 +60,8 @@ const restoreFromArchive = (
         }
     });
 
-export const archiveRestoreResponse = (req: XP.Request) => {
+export const archiveRestoreResponse = (req: Request) => {
     const { contentId, selectedContent } = req.params;
-
     if (!selectedContent || !contentId) {
         return {
             body: '<span>Ingen innhold valgt</span>',
@@ -68,8 +69,7 @@ export const archiveRestoreResponse = (req: XP.Request) => {
         };
     }
 
-    const { success, message } = restoreFromArchive(selectedContent, contentId);
-
+    const { success, message } = restoreFromArchive(forceString(selectedContent), forceString(contentId));
     const model = {
         success,
         message,

@@ -1,14 +1,15 @@
+import { Request } from '@enonic-types/core'
 import * as portalLib from '/lib/xp/portal';
 import { getRepoConnection } from '../repos/repo-utils';
 import { RepoNode } from '/lib/xp/node';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { frontendProxy } from './frontend-proxy';
-import { logger } from '../utils/logging';
-import { NodeComponent } from '../../types/components/component-node';
+import { NodeComponent } from 'types/components/component-node';
 import { runInContext } from '../context/run-in-context';
+import { logger } from '../utils/logging';
 import { forceArray } from '../utils/array-utils';
 import { applyModifiedData } from '../utils/content-utils';
+import { frontendProxy } from './frontend-proxy';
 
 type AreaPageContent = Content<'no.nav.navno:area-page'>;
 type AreaPageRepoNode = RepoNode<Content<'no.nav.navno:area-page'>>;
@@ -162,7 +163,7 @@ const validateRegionComponents = (
 
 // If an areapage-situations layout is present on the page, populate
 // it with situation cards appropriate for the page.
-const populateSituationsLayout = (req: XP.Request) => {
+const populateSituationsLayout = (req: Request) => {
     const content = portalLib.getContent();
     if (!content) {
         logger.error(`Could not get contextual content from request - path: ${req.rawPath}`);
@@ -230,7 +231,7 @@ const populateSituationsLayout = (req: XP.Request) => {
     });
 };
 
-const areaPageController = (req: XP.Request) => {
+const areaPageController = (req: Request) => {
     if ((req.mode === 'edit' || req.mode === 'inline') && req.method === 'GET') {
         populateSituationsLayout(req);
     }

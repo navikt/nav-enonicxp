@@ -1,4 +1,8 @@
+import { forceArray } from './array-utils';
+
 export const stripLineBreaks = (str: string) => str.replace(/\r?\n|\r/g, '');
+
+export const forceString = (arrayOrNot?: string | string[] | null | undefined) => forceArray(arrayOrNot)[0];
 
 export const capitalize = (str: string) =>
     str
@@ -50,12 +54,10 @@ const replaceSingleString = (str: string): string => {
         return acc.replace(regexp, replace);
     }, str);
 
-    const finalReplacement = orgresult.replace(
+    return orgresult.replace(
         /(<a\b[^>]*href="[^"]*NAV[^"]*"[^>]*>[^<]*<\/a>)|NAV(?![^<]*>)/g,
         (match, anchorTag) => anchorTag || 'Nav'
     );
-
-    return finalReplacement;
 };
 
 // This is a temporary replacement function as part of the NAV => Nav process

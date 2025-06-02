@@ -1,3 +1,4 @@
+import { Request } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
 import * as portalLib from '/lib/xp/portal';
 import { Content } from '/lib/xp/content';
@@ -10,8 +11,6 @@ import { ProductDetails } from '@xp-types/site/content-types';
 
 type ProductDetailsType = ProductDetails['detailType'];
 type ProductDetailsContentType = Content<'no.nav.navno:product-details'>;
-type SelectorHit = XP.CustomSelectorServiceResponseHit;
-
 type SelectorParams = {
     detailType: ProductDetailsType;
 };
@@ -19,7 +18,7 @@ type SelectorParams = {
 const makeDescription = (content: Content) =>
     `[${content.language}] ${stripPathPrefix(content._path)}`;
 
-const transformHit = (content: ProductDetailsContentType): SelectorHit =>
+const transformHit = (content: ProductDetailsContentType) =>
     customSelectorHitWithLink(
         {
             id: content._id,
@@ -29,7 +28,7 @@ const transformHit = (content: ProductDetailsContentType): SelectorHit =>
         content._id
     );
 
-const makeErrorHit = (id: string, displayName: string, description: string): SelectorHit =>
+const makeErrorHit = (id: string, displayName: string, description: string) =>
     customSelectorHitWithLink(
         {
             id,
@@ -84,7 +83,7 @@ const getHitsFromQuery = (
     detailType: ProductDetailsType,
     locale: string,
     query?: string
-): SelectorHit[] => {
+) => {
     const { hits } = runInLocaleContext({ branch: 'master', locale }, () =>
         contentLib.query({
             count: 1000,
@@ -106,7 +105,7 @@ const getHitsFromQuery = (
     return hits.map(transformHit);
 };
 
-const selectorHandler = (req: XP.Request<XP.CustomSelectorServiceParams & SelectorParams>) => {
+const selectorHandler = (req: Request<XP.CustomSelectorServiceParams & SelectorParams>) => {
     const { detailType, query } = req.params;
     if (!detailType) {
         return {
@@ -138,6 +137,6 @@ const selectorHandler = (req: XP.Request<XP.CustomSelectorServiceParams & Select
     };
 };
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) => {
     return selectorHandler(req);
 };

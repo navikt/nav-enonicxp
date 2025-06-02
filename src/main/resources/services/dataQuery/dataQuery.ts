@@ -1,9 +1,11 @@
-import { runInContext } from '../../lib/context/run-in-context';
-import { ContentDescriptor } from '../../types/content-types/content-config';
-import { contentTypesInDataQuery } from '../../lib/contenttype-lists';
-import { logger } from '../../lib/utils/logging';
-import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
-import { parseJsonToArray } from '../../lib/utils/array-utils';
+import { Request } from '@enonic-types/core';
+import { runInContext } from 'lib/context/run-in-context';
+import { ContentDescriptor } from 'types/content-types/content-config';
+import { contentTypesInDataQuery } from 'lib/contenttype-lists';
+import { logger } from 'lib/utils/logging';
+import { validateServiceSecretHeader } from 'lib/utils/auth-utils';
+import { parseJsonToArray } from 'lib/utils/array-utils';
+import { forceString } from 'lib/utils/string-utils';
 import { PublishStatus, publishStatuses } from './utils/types';
 import { runQuery } from './utils/queryRunners';
 
@@ -13,7 +15,7 @@ const publishStatusIsValid = (status: string): status is PublishStatus =>
 let rejectUntilTime = 0;
 const timeoutPeriodMs = 1000 * 60 * 5;
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) => {
     if (!validateServiceSecretHeader(req)) {
         return {
             status: 401,
@@ -37,7 +39,13 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const { branch: publishStatus, requestId, query, types, batch = 0 } = req.params;
+    const
+        batch = forceString(req.params.batch) || 0,
+        types = forceString(req.params.types),
+        publishStatus = forceString(req.params.publishStatus),
+        requestId = forceString(req.params.requestId),
+        query = forceString(req.params.query);
+
     if (!requestId) {
         logger.info('No request id specified');
         return {

@@ -1,7 +1,9 @@
+import { Request } from '@enonic-types/core'
 import thymeleafLib from '/lib/thymeleaf';
-import { URLS } from '../../../lib/constants';
-import { validateCurrentUserPermissionForContent } from '../../../lib/utils/auth-utils';
-import { getServiceRequestSubPath } from '../../../services/service-utils';
+import { URLS } from 'lib/constants';
+import { forceString } from 'lib/utils/string-utils';
+import { validateCurrentUserPermissionForContent } from 'lib/utils/auth-utils';
+import { getServiceRequestSubPath } from 'services/service-utils';
 import { archiveQueryResponse } from './query/archive-query-response';
 import { archiveRestoreResponse } from './restore/archive-restore-response';
 
@@ -10,7 +12,7 @@ const view = resolve('./archive-restore.html');
 const QUERY_PATH = 'query';
 const RESTORE_PATH = 'restore';
 
-const widgetResponse = (req: XP.Request) => {
+const widgetResponse = (req: Request) => {
     const { contextPath } = req;
     const { contentId } = req.params;
 
@@ -25,7 +27,7 @@ const widgetResponse = (req: XP.Request) => {
         };
     }
 
-    if (!validateCurrentUserPermissionForContent(contentId, 'PUBLISH')) {
+    if (!validateCurrentUserPermissionForContent(forceString(contentId), 'PUBLISH')) {
         return {
             body: '<widget>Tilgangsfeil - Velg et innhold der du har publiseringstilgang.</widget>',
             contentType: 'text/html; charset=UTF-8',
@@ -44,7 +46,7 @@ const widgetResponse = (req: XP.Request) => {
     };
 };
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) => {
     const subPath = getServiceRequestSubPath(req);
 
     if (subPath === QUERY_PATH) {

@@ -1,14 +1,16 @@
+import { Request } from '@enonic-types/core';
 import { Content, getType } from '/lib/xp/content';
-import { runSitecontentGuillotineQuery } from '../../../lib/guillotine/queries/run-sitecontent-query';
-import { getLayersData, isValidLocale } from '../../../lib/localization/layers-data';
-import { runInTimeTravelContext } from '../../../lib/time-travel/run-with-time-travel';
+import { runSitecontentGuillotineQuery } from 'lib/guillotine/queries/run-sitecontent-query';
+import { getLayersData, isValidLocale } from 'lib/localization/layers-data';
+import { runInTimeTravelContext } from 'lib/time-travel/run-with-time-travel';
 import {
     getPublishedAndModifiedVersions,
     VersionReferenceEnriched,
-} from '../../../lib/time-travel/get-published-versions';
-import { getContentForExternalArchive } from '../../../lib/external-archive/get-content';
-import { runInLocaleContext } from '../../../lib/localization/locale-context';
-import { getArchivedContent } from '../../../lib/external-archive/get-archived-content';
+} from 'lib/time-travel/get-published-versions';
+import { getContentForExternalArchive } from 'lib/external-archive/get-content';
+import { runInLocaleContext } from 'lib/localization/locale-context';
+import { getArchivedContent } from 'lib/external-archive/get-archived-content';
+import { forceString } from '../../../lib/utils/string-utils';
 
 type Response = {
     contentRaw: Content & { locale: string; originalContentTypeName: string | undefined };
@@ -56,8 +58,10 @@ const getContentRenderProps = (
         : resolveCurrentContent(content, locale);
 };
 
-export const externalArchiveContentService = (req: XP.Request) => {
-    const { id, locale, versionId } = req.params;
+export const externalArchiveContentService = (req: Request) => {
+    const id = forceString(req.params.id);
+    const versionId = forceString(req.params.versionId);
+    const locale = forceString(req.params.locale);
 
     if (!id || !locale) {
         return {
