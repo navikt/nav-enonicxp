@@ -1,0 +1,7 @@
+<widget>
+  <display-name>Forhåndsvisning</display-name>
+  <description>Forhåndsvisning av arkivinnhold</description>
+  <interfaces>
+    <interface>contentstudio.liveview</interface>
+  </interfaces>
+</widget>
