@@ -2,7 +2,7 @@
     <form>
         <option-set name="link">
             <label>Lenke til skjema</label>
-            <occurrences minimum="1" maximum="1"/>
+            <occurrences minimum="1" maximum="1" />
             <expanded>true</expanded>
             <options minimum="1" maximum="1">
                 <option name="internal">
@@ -10,7 +10,7 @@
                     <items>
                         <input name="target" type="ContentSelector">
                             <label>Velg skjema eller mellomsteg</label>
-                            <occurrences minimum="1" maximum="1"/>
+                            <occurrences minimum="1" maximum="1" />
                             <config>
                                 <allowContentType>no.nav.navno:form-intermediate-step</allowContentType>
                                 <allowContentType>media:document</allowContentType>
@@ -22,10 +22,14 @@
                 <option name="external">
                     <label>Ekstern lenke til skjema</label>
                     <items>
+                        <input name="formNumber" type="TextLine">
+                            <label>Skjemanummer</label>
+                            <occurrences minimum="0" maximum="1" />
+                        </input>
                         <input name="url" type="TextLine">
                             <label>URL</label>
                             <default>https://www.nav.no/</default>
-                            <occurrences minimum="1" maximum="1"/>
+                            <occurrences minimum="1" maximum="1" />
                             <config>
                                 <regexp>^https?:\/\/.*</regexp>
                             </config>

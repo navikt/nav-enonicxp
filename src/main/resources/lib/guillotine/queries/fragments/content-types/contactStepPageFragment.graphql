@@ -22,7 +22,7 @@ fragment contactStepPage on no_nav_navno_ContactStepPage {
             }
             text
         }
-        html(processHtml: { type: server }) {
+        editorial(processHtml: { type: server }) {
             ...richText
         }
     }

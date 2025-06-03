@@ -1,7 +1,7 @@
 <mixin>
     <display-name>Html Area</display-name>
     <form>
-        <input name="html" type="HtmlArea">
+        <input name="editorial" type="HtmlArea">
             <label>Ingress</label>
             <occurrences minimum="0" maximum="1"/>
             <config>

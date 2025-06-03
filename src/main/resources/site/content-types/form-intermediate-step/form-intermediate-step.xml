@@ -8,13 +8,12 @@
         <field-set>
             <label>Piktogram</label>
             <items>
-                <mixin name="illustration"/>
+                <mixin name="illustration" />
             </items>
         </field-set>
         <field-set>
-            <label>Målgruppe</label>
             <items>
-                <mixin name="audience"/>
+                <mixin name="audience" />
             </items>
         </field-set>
         <field-set>
@@ -22,13 +21,13 @@
             <items>
                 <input name="customPath" type="CustomSelector">
                     <label>Må begynne med '/start/[målgruppe dersom ikke privatperson]'</label>
-                    <occurrences minimum="1" maximum="1"/>
+                    <occurrences minimum="1" maximum="1" />
                     <config>
                         <service>customPathSelector</service>
                     </config>
                 </input>
             </items>
         </field-set>
-        <mixin name="form-intermediate-step-data"/>
+        <mixin name="form-intermediate-step-data" />
     </form>
 </content-type>
