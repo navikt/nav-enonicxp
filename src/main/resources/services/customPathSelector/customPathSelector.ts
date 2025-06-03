@@ -70,7 +70,7 @@ const getResult = ({
     query?: string;
     currentSelection?: string;
     content: Content;
-}): XP.CustomSelectorServiceResponseHit => {
+}) => {
     const suggestedPath = query || currentSelection;
 
     if (!isValidCustomPath(suggestedPath)) {
@@ -152,9 +152,7 @@ const getResult = ({
     };
 };
 
-export const get = (
-    req: Request<XP.CustomSelectorServiceParams>
-) => {
+export const get = (req: Request) => {
     const content = portalLib.getContent();
 
     if (!content) {
@@ -174,7 +172,7 @@ export const get = (
         };
     }
 
-    const { query } = req.params;
+    const query = req.params.query as string;
 
     const currentSelection = customSelectorParseSelectedIdsFromReq(req)[0];
 

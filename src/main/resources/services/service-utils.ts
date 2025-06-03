@@ -5,12 +5,24 @@ import { customSelectorEditIcon } from './custom-selector-icons';
 
 const getServiceName = (contextPath: string) => contextPath.split('/').slice(-1)[0];
 
+export type CustomSelectorServiceResponseHit = {
+    id: string;
+    displayName: string;
+    description?: string;
+    icon?: {
+        data: string;
+        type: string;
+    };
+};
+
 export const getServiceRequestSubPath = (req: Request) => {
     if (!req.contextPath) {
         return null;
     }
-    return stripLeadingAndTrailingSlash(req.path.split(getServiceName(req.contextPath)).slice(-1)[0]);
-}
+    return stripLeadingAndTrailingSlash(
+        req.path.split(getServiceName(req.contextPath)).slice(-1)[0]
+    );
+};
 
 // We can't use target or onclick to make the link open in a new tab, as content studio removes
 // these attributes when parsing the dom elements from the customselector icon. We set a classname
@@ -22,9 +34,9 @@ const iconWithLink = (href: string, iconData: string) => {
 // Injects a link in the optional icon field of a customselector hit object
 // (this is almost certainly not an intended usage, but it works :D)
 export const customSelectorHitWithLink = (
-    hit: XP.CustomSelectorServiceResponseHit,
+    hit: CustomSelectorServiceResponseHit,
     contentId: string
-): XP.CustomSelectorServiceResponseHit => {
+): CustomSelectorServiceResponseHit => {
     const editorPath = buildEditorPathFromContext(contentId);
 
     return {

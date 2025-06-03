@@ -10,10 +10,17 @@ import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { ProductDetails } from '@xp-types/site/content-types';
 
 type ProductDetailsType = ProductDetails['detailType'];
+const PRODUCT_DETAIL_TYPES = [
+    'rates',
+    'payout_dates',
+    'processing_times',
+] as const satisfies readonly ProductDetailsType[];
+
+function isProductDetailsType(value: string | string[]): value is ProductDetailsType {
+    return PRODUCT_DETAIL_TYPES.includes(value as ProductDetailsType);
+}
+
 type ProductDetailsContentType = Content<'no.nav.navno:product-details'>;
-type SelectorParams = {
-    detailType: ProductDetailsType;
-};
 
 const makeDescription = (content: Content) =>
     `[${content.language}] ${stripPathPrefix(content._path)}`;
@@ -79,11 +86,7 @@ const getSelectedHit = (selectedId: string, detailType: ProductDetailsType, loca
     return transformHit(publishedContent);
 };
 
-const getHitsFromQuery = (
-    detailType: ProductDetailsType,
-    locale: string,
-    query?: string
-) => {
+const getHitsFromQuery = (detailType: ProductDetailsType, locale: string, query?: string) => {
     const { hits } = runInLocaleContext({ branch: 'master', locale }, () =>
         contentLib.query({
             count: 1000,
@@ -105,9 +108,9 @@ const getHitsFromQuery = (
     return hits.map(transformHit);
 };
 
-const selectorHandler = (req: Request<XP.CustomSelectorServiceParams & SelectorParams>) => {
+const selectorHandler = (req: Request) => {
     const { detailType, query } = req.params;
-    if (!detailType) {
+    if (!detailType || !isProductDetailsType(detailType) || typeof query !== 'string') {
         return {
             status: 400,
         };
