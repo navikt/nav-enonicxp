@@ -6,6 +6,11 @@ metadata:
   labels:
     team: personbruker
 spec:
+  observability:
+    logging:
+      destinations:
+        - id: elastic
+        - id: loki
   image: {{ image }}
   env:
     - name: XP_INSTALL_API
