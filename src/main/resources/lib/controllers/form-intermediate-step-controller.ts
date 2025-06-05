@@ -39,7 +39,7 @@ const updateCustomPath = (content: Content<'no.nav.navno:form-intermediate-step'
     content.data.customPath = formIntermediateStepGenerateCustomPath(content);
 };
 
-const updateContent = (req: XP.Request) => {
+const updateContent = (req: Request) => {
     const content = portalLib.getContent();
     if (!validateContent(content, req)) {
         return;
