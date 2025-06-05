@@ -1,3 +1,4 @@
+import { Request, Response } from '@enonic-types/core';
 import { getLayersData } from '../../lib/localization/layers-data';
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
@@ -5,7 +6,7 @@ import { SITECONTENT_404_MSG_PREFIX } from '../../lib/constants';
 import { runInContext } from '../../lib/context/run-in-context';
 import { getArchivedContent } from '../../lib/external-archive/get-archived-content';
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) : Response => {
     if (!validateServiceSecretHeader(req)) {
         return {
             status: 401,
@@ -16,7 +17,11 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const { id: idOrArchivedPath, locale, time } = req.params;
+    const
+        idOrArchivedPath= req.params.id as string,
+        locale = req.params.locale as string,
+        time = req.params.time as string;
+
     if (!idOrArchivedPath) {
         return {
             status: 400,

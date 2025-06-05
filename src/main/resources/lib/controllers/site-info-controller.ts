@@ -1,3 +1,4 @@
+import { Request } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import * as schedulerLib from '/lib/xp/scheduler';
@@ -149,7 +150,7 @@ const getContentLists = (): ContentLists => {
     };
 };
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) => {
     if (req.method !== 'GET') {
         return {
             status: 200,

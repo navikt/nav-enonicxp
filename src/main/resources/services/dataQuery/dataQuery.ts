@@ -1,3 +1,4 @@
+import { Request, Response } from '@enonic-types/core';
 import { runInContext } from '../../lib/context/run-in-context';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { contentTypesInDataQuery } from '../../lib/contenttype-lists';
@@ -13,7 +14,7 @@ const publishStatusIsValid = (status: string): status is PublishStatus =>
 let rejectUntilTime = 0;
 const timeoutPeriodMs = 1000 * 60 * 5;
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) : Response => {
     if (!validateServiceSecretHeader(req)) {
         return {
             status: 401,
@@ -37,7 +38,13 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const { branch: publishStatus, requestId, query, types, batch = 0 } = req.params;
+    const
+        batch = req.params.batch as string || 0,
+        types = req.params.types as string,
+        publishStatus = req.params.branch as string,
+        requestId = req.params.requestId as string,
+        query = req.params.query as string;
+
     if (!requestId) {
         logger.info('No request id specified');
         return {

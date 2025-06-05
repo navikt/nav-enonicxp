@@ -1,3 +1,4 @@
+import { Request } from '@enonic-types/core';
 import cacheLib from '/lib/cache';
 import * as taskLib from '/lib/xp/task';
 import { batchedContentQuery } from '../../lib/utils/batched-query';
@@ -121,11 +122,9 @@ const getPathsToRender = (isTest?: boolean) => {
         query: `_path LIKE '${REDIRECTS_NODE_PATH}*'`,
     }).hits.map((content) => stripRedirectsPathPrefix(content._path));
 
-    const filteredPaths = removeDuplicates([...contentPaths, ...redirectPaths]).filter(
+    return removeDuplicates([...contentPaths, ...redirectPaths]).filter(
         (path) => !manualExcludedPaths.has(path)
     );
-
-    return filteredPaths;
 };
 
 const getFromCache = (isTest: boolean) => {
@@ -144,7 +143,7 @@ const getFromCache = (isTest: boolean) => {
 
 // This returns a full list of content paths that should be pre-rendered
 // by the failover-instance of the frontend
-export const get = (req: XP.Request) => {
+export const get = (req: Request) => {
     if (!validateServiceSecretHeader(req)) {
         return {
             status: 401,

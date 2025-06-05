@@ -1,4 +1,6 @@
+import { Request, Response } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
 import * as portalLib from '/lib/xp/portal';
 import {
@@ -17,7 +19,6 @@ import {
 } from '../../lib/paths/custom-paths/custom-path-content-validators';
 import { RepoBranch } from '../../types/common';
 import { customSelectorParseSelectedIdsFromReq } from '../service-utils';
-import { Content } from '/lib/xp/content';
 
 // Returns an error message to the editor with an intentionally invalid id (customPath id must start with '/')
 const generateErrorHit = (displayName: string, description: string) => ({
@@ -69,7 +70,7 @@ const getResult = ({
     query?: string;
     currentSelection?: string;
     content: Content;
-}): XP.CustomSelectorServiceResponseHit => {
+}) => {
     const suggestedPath = query || currentSelection;
 
     if (!isValidCustomPath(suggestedPath)) {
@@ -151,9 +152,7 @@ const getResult = ({
     };
 };
 
-export const get = (
-    req: XP.Request<XP.CustomSelectorServiceParams>
-): XP.CustomSelectorServiceResponse => {
+export const get = (req: Request) : Response => {
     const content = portalLib.getContent();
 
     if (!content) {
@@ -173,10 +172,8 @@ export const get = (
         };
     }
 
-    const { query } = req.params;
-
+    const query = req.params.query as string;
     const currentSelection = customSelectorParseSelectedIdsFromReq(req)[0];
-
     const result = getResult({ query, currentSelection, content });
 
     return {

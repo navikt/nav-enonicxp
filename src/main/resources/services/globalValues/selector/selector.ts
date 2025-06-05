@@ -1,3 +1,4 @@
+import { Request, Response } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import {
@@ -11,15 +12,14 @@ import { generateFulltextQuery } from '../../../lib/utils/mixed-bag-of-utils';
 import { runInContext } from '../../../lib/context/run-in-context';
 import { GlobalValueItem, GlobalValueContentDescriptor } from '../../../lib/global-values/types';
 import { buildGlobalValuePreviewString } from '../../../lib/global-values/macro-preview';
+import { forceArray } from '../../../lib/utils/array-utils';
 import {
     customSelectorHitWithLink,
     customSelectorParseSelectedIdsFromReq,
+    CustomSelectorServiceResponseHit,
 } from '../../service-utils';
-import { forceArray } from '../../../lib/utils/array-utils';
 
-type Hit = XP.CustomSelectorServiceResponseHit;
-
-type ReqParams = XP.Request['params'] & {
+type ReqParams = Request['params'] & {
     contentType: GlobalValueContentDescriptor;
 };
 
@@ -27,7 +27,7 @@ const hitFromValueItem = (
     valueItem: GlobalValueItem,
     content: Content,
     withDescription?: boolean
-): Hit => {
+) => {
     const displayName = `${content.displayName} - ${valueItem.itemName}`;
     const key = getGlobalValueUniqueKey(valueItem.key, content._id);
 
@@ -102,15 +102,13 @@ const getHitsFromSelectedIds = (ids: string[], withDescription?: boolean) =>
                 id: key,
             },
         ];
-    }, [] as Hit[]);
+    }, [] as CustomSelectorServiceResponseHit[]);
 
-export const globalValueSelectorService = (req: XP.Request) => {
-    const { query, contentType } = req.params as ReqParams;
-
+export const globalValueSelectorService = (req: Request) : Response => {
+    const { contentType } = req.params as ReqParams;
+    const query = req.params.query as string;
     const ids = customSelectorParseSelectedIdsFromReq(req);
-
     const withDescription = req.params.withDescription === 'true';
-
     const hits = runInContext({ branch: 'master' }, () =>
         ids.length > 0
             ? getHitsFromSelectedIds(ids, withDescription)
