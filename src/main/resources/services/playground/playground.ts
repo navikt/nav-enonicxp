@@ -109,7 +109,7 @@ export const webSocketEvent = (event: WebSocketEvent<any>) => {
         case 'close':
             cancelSubscription(event.session.id);
             break;
-        case 'message':
+        case 'message': {
             const message = event.message ? JSON.parse(event.message) : "";
             switch (message.type) {
                 case 'connection_init':
@@ -128,6 +128,7 @@ export const webSocketEvent = (event: WebSocketEvent<any>) => {
                     break;
             }
             break;
+        }
         case 'error':
             logger.warning('Session [' + event.session.id + '] error: ' + event.error);
             break;
