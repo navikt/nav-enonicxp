@@ -1,6 +1,6 @@
 import { Request } from '@enonic-types/core';
-import { getGlobalValueSet } from 'lib/global-values/global-value-utils';
-import { forceArray } from 'lib/utils/array-utils';
+import { getGlobalValueSet } from '../../../lib/global-values/global-value-utils';
+import { forceArray } from '../../../lib/utils/array-utils';
 import { gvServiceInvalidRequestResponse } from '../utils';
 
 export const getGlobalValueSetService = (req: Request) => {

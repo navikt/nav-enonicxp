@@ -2,9 +2,9 @@ import { Request, Response } from '@enonic-types/core';
 import {
     insufficientPermissionResponse,
     validateCurrentUserPermissionForContent,
-} from 'lib/utils/auth-utils';
-import { validCaseTimeUnits } from 'lib/global-values/types';
-import { CaseTimeUnit } from 'types/content-types/global-case-time-set';
+} from '../../lib/utils/auth-utils';
+import { validCaseTimeUnits } from '../../lib/global-values/types';
+import { CaseTimeUnit } from '../../types/content-types/global-case-time-set';
 
 export type GlobalValueCommonInputParams = {
     key: string;

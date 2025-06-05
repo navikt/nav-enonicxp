@@ -1,11 +1,11 @@
 import { Request, Response } from '@enonic-types/core';
-import { isUUID } from 'lib/utils/uuid';
-import { isValidBranch } from 'lib/context/branches';
-import { logger } from 'lib/utils/logging';
-import { sitecontentVersionResolver } from 'lib/time-travel/get-content-from-datetime';
-import { getServiceRequestSubPath } from 'services/service-utils';
-import { userIsLoggedIn, validateServiceSecretHeader } from 'lib/utils/auth-utils';
-import { SITECONTENT_404_MSG_PREFIX } from 'lib/constants';
+import { isUUID } from '../../lib/utils/uuid';
+import { isValidBranch } from '../../lib/context/branches';
+import { logger } from '../../lib/utils/logging';
+import { sitecontentVersionResolver } from '../../lib/time-travel/get-content-from-datetime';
+import { userIsLoggedIn, validateServiceSecretHeader } from '../../lib/utils/auth-utils';
+import { SITECONTENT_404_MSG_PREFIX } from '../../lib/constants';
+import { getServiceRequestSubPath } from '../service-utils';
 import { publishedVersionsReqHandler } from './publishedVersions/publishedVersions';
 
 const isValidTime = (time?: string): time is string => {

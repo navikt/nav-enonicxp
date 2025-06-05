@@ -1,6 +1,6 @@
 import { Request, Response } from '@enonic-types/core';
 import * as portalLib from '/lib/xp/portal';
-import { frontendProxy } from 'lib/controllers/frontend-proxy';
+import { frontendProxy } from '../../lib/controllers/frontend-proxy';
 
 // This is a post-processing step which runs after the request has gone through the regular request pipeline. We do some
 // special silly handling of the page-template type, in order to get the page-controller selector for empty

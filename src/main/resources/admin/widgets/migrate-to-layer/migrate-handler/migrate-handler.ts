@@ -1,7 +1,7 @@
 import { Request, Response } from '@enonic-types/core'
 import * as contentLib from '/lib/xp/content';
-import { migrateContentToLayer } from 'lib/localization/layers-migration/migrate-content-to-layer';
-import { CONTENT_LOCALE_DEFAULT } from 'lib/constants';
+import { migrateContentToLayer } from '../../../../lib/localization/layers-migration/migrate-content-to-layer';
+import { CONTENT_LOCALE_DEFAULT } from '../../../../lib/constants';
 
 export const migrateContentToLayerWidgetHandler = (req: Request) : Response => {
     const   sourceId = req.params.sourceId as string,

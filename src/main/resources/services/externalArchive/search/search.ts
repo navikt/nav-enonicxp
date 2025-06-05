@@ -1,7 +1,7 @@
 import { Request } from '@enonic-types/core';
-import { runExternalArchiveQuery } from 'services/dataQuery/utils/queryRunners';
-import { logger } from 'lib/utils/logging';
-import { ContentDescriptor } from 'types/content-types/content-config';
+import { runExternalArchiveQuery } from '../../dataQuery/utils/queryRunners';
+import { logger } from '../../../lib/utils/logging';
+import { ContentDescriptor } from '../../../types/content-types/content-config';
 
 type SimpleHit = {
     _id: string;

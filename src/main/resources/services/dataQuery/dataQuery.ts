@@ -1,10 +1,10 @@
 import { Request, Response } from '@enonic-types/core';
-import { runInContext } from 'lib/context/run-in-context';
-import { ContentDescriptor } from 'types/content-types/content-config';
-import { contentTypesInDataQuery } from 'lib/contenttype-lists';
-import { logger } from 'lib/utils/logging';
-import { validateServiceSecretHeader } from 'lib/utils/auth-utils';
-import { parseJsonToArray } from 'lib/utils/array-utils';
+import { runInContext } from '../../lib/context/run-in-context';
+import { ContentDescriptor } from '../../types/content-types/content-config';
+import { contentTypesInDataQuery } from '../../lib/contenttype-lists';
+import { logger } from '../../lib/utils/logging';
+import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
+import { parseJsonToArray } from '../../lib/utils/array-utils';
 import { PublishStatus, publishStatuses } from './utils/types';
 import { runQuery } from './utils/queryRunners';
 

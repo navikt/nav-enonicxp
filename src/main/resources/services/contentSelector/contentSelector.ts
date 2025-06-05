@@ -8,12 +8,12 @@ import {
     customSelectorParseSelectedIdsFromReq,
     CustomSelectorServiceResponseHit,
 } from '../service-utils';
-import { logger } from 'lib/utils/logging';
-import { ContentDescriptor } from 'types/content-types/content-config';
-import { stripPathPrefix } from 'lib/paths/path-utils';
-import { parseJsonToArray, removeDuplicates } from 'lib/utils/array-utils';
-import { getNestedValues } from 'lib/utils/object-utils';
-import { stripLineBreaks } from 'lib/utils/string-utils';
+import { logger } from '../../lib/utils/logging';
+import { ContentDescriptor } from '../../types/content-types/content-config';
+import { stripPathPrefix } from '../../lib/paths/path-utils';
+import { parseJsonToArray, removeDuplicates } from '../../lib/utils/array-utils';
+import { getNestedValues } from '../../lib/utils/object-utils';
+import { stripLineBreaks } from '../../lib/utils/string-utils';
 
 type ReqParams = {
     contentTypes?: string;

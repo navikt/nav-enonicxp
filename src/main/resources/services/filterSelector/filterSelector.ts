@@ -1,11 +1,11 @@
 import { Request, Response } from '@enonic-types/core';
 import * as portalLib from '/lib/xp/portal';
 import { Content } from '/lib/xp/content';
-import { getRepoConnection } from 'lib/repos/repo-utils';
-import { getComponentConfig } from 'lib/utils/component-utils';
+import { getRepoConnection } from '../../lib/repos/repo-utils';
+import { getComponentConfig } from '../../lib/utils/component-utils';
 import { FiltersMenu } from '@xp-types/site/parts/filters-menu';
-import { logger } from 'lib/utils/logging';
-import { forceArray } from 'lib/utils/array-utils';
+import { logger } from '../../lib/utils/logging';
+import { forceArray } from '../../lib/utils/array-utils';
 import { customSelectorErrorIcon } from '../custom-selector-icons';
 
 type CategoryRaw = Required<FiltersMenu>['categories'][number];

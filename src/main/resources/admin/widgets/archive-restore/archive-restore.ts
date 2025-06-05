@@ -1,8 +1,8 @@
 import { Request, Response } from '@enonic-types/core'
 import thymeleafLib from '/lib/thymeleaf';
-import { URLS } from 'lib/constants';
-import { validateCurrentUserPermissionForContent } from 'lib/utils/auth-utils';
-import { getServiceRequestSubPath } from 'services/service-utils';
+import { URLS } from '../../../lib/constants';
+import { validateCurrentUserPermissionForContent } from '../../../lib/utils/auth-utils';
+import { getServiceRequestSubPath } from '../../../services/service-utils';
 import { archiveQueryResponse } from './query/archive-query-response';
 import { archiveRestoreResponse } from './restore/archive-restore-response';
 

@@ -1,7 +1,7 @@
 import { Request } from '@enonic-types/core'
 import * as authLib from '/lib/xp/auth';
-import { logger } from 'lib/utils/logging';
-import { LAYERS_ANON_USER, LAYERS_ID_PROVIDER } from 'lib/constants';
+import { logger } from '../lib/utils/logging';
+import { LAYERS_ANON_USER, LAYERS_ID_PROVIDER } from '../lib/constants';
 
 // Allows requests for non-authenticated users to files which should be publically availiable
 //

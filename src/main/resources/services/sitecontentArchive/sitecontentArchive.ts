@@ -1,10 +1,10 @@
 import { Request, Response } from '@enonic-types/core';
-import { getLayersData } from 'lib/localization/layers-data';
-import { logger } from 'lib/utils/logging';
-import { validateServiceSecretHeader } from 'lib/utils/auth-utils';
-import { SITECONTENT_404_MSG_PREFIX } from 'lib/constants';
-import { runInContext } from 'lib/context/run-in-context';
-import { getArchivedContent } from 'lib/external-archive/get-archived-content';
+import { getLayersData } from '../../lib/localization/layers-data';
+import { logger } from '../../lib/utils/logging';
+import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
+import { SITECONTENT_404_MSG_PREFIX } from '../../lib/constants';
+import { runInContext } from '../../lib/context/run-in-context';
+import { getArchivedContent } from '../../lib/external-archive/get-archived-content';
 
 export const get = (req: Request) : Response => {
     if (!validateServiceSecretHeader(req)) {

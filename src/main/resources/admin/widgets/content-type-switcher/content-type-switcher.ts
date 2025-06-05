@@ -2,8 +2,8 @@ import { Request, Response } from '@enonic-types/core'
 import * as contentLib from '/lib/xp/content';
 import * as portalLib from '/lib/xp/portal';
 import thymeleafLib from '/lib/thymeleaf';
-import { contentTypesInContentSwitcher } from 'lib/contenttype-lists';
-import { validateCurrentUserPermissionForContent } from 'lib/utils/auth-utils';
+import { contentTypesInContentSwitcher } from '../../../lib/contenttype-lists';
+import { validateCurrentUserPermissionForContent } from '../../../lib/utils/auth-utils';
 
 const view = resolve('./content-type-switcher.html');
 

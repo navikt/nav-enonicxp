@@ -1,7 +1,7 @@
 import { Request, Response } from '@enonic-types/core';
 import { Content } from '/lib/xp/content';
 import { gvServiceInvalidRequestResponse } from '../utils';
-import { getGlobalValueUsage } from 'lib/global-values/global-value-utils';
+import { getGlobalValueUsage } from '../../../lib/global-values/global-value-utils';
 
 const transformToResponseItem = (content: Content) => ({
     id: content._id,

@@ -1,6 +1,6 @@
 import { Request, Response } from '@enonic-types/core';
-import { getLayersData, isValidLocale } from 'lib/localization/layers-data';
-import { getRepoConnection } from 'lib/repos/repo-utils';
+import { getLayersData, isValidLocale } from '../../../lib/localization/layers-data';
+import { getRepoConnection } from '../../../lib/repos/repo-utils';
 
 // Note: This assumes a content will only have 0 or 1 attachments.
 // A content could have multiple attachments, if we used the AttachmentUploader input type in any of our content types.

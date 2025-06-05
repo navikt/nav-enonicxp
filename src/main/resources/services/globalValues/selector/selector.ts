@@ -6,18 +6,18 @@ import {
     getGlobalValueSet,
     getGlobalValueUniqueKey,
     getGvKeyAndContentIdFromUniqueKey,
-} from 'lib/global-values/global-value-utils';
-import { appendMacroDescriptionToKey } from 'lib/utils/component-utils';
-import { generateFulltextQuery } from 'lib/utils/mixed-bag-of-utils';
-import { runInContext } from 'lib/context/run-in-context';
-import { GlobalValueItem, GlobalValueContentDescriptor } from 'lib/global-values/types';
-import { buildGlobalValuePreviewString } from 'lib/global-values/macro-preview';
-import { forceArray } from 'lib/utils/array-utils';
+} from '../../../lib/global-values/global-value-utils';
+import { appendMacroDescriptionToKey } from '../../../lib/utils/component-utils';
+import { generateFulltextQuery } from '../../../lib/utils/mixed-bag-of-utils';
+import { runInContext } from '../../../lib/context/run-in-context';
+import { GlobalValueItem, GlobalValueContentDescriptor } from '../../../lib/global-values/types';
+import { buildGlobalValuePreviewString } from '../../../lib/global-values/macro-preview';
+import { forceArray } from '../../../lib/utils/array-utils';
 import {
     customSelectorHitWithLink,
     customSelectorParseSelectedIdsFromReq,
     CustomSelectorServiceResponseHit,
-} from 'services/service-utils';
+} from '../../service-utils';
 
 type ReqParams = Request['params'] & {
     contentType: GlobalValueContentDescriptor;

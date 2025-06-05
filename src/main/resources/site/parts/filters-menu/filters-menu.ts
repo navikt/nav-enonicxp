@@ -1,12 +1,12 @@
 import { Request } from '@enonic-types/core';
 import { Content } from '/lib/xp/portal';
 import * as portalLib from '/lib/xp/portal';
-import { getRepoConnection } from 'lib/repos/repo-utils';
-import { componentPreviewController } from 'lib/controllers/component-preview-controller';
-import { generateUUID, isUUID } from 'lib/utils/uuid';
-import { getComponentConfigByPath } from 'lib/utils/component-utils';
-import { forceArray } from 'lib/utils/array-utils';
-import { ContentNode } from 'types/content-types/content-config';
+import { getRepoConnection } from '../../../lib/repos/repo-utils';
+import { componentPreviewController } from '../../../lib/controllers/component-preview-controller';
+import { generateUUID, isUUID } from '../../../lib/utils/uuid';
+import { getComponentConfigByPath } from '../../../lib/utils/component-utils';
+import { forceArray } from '../../../lib/utils/array-utils';
+import { ContentNode } from '../../../types/content-types/content-config';
 
 const insertIdIfNotExist = (component: any) => {
     if (!isUUID(component.id)) {

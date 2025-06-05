@@ -1,5 +1,5 @@
 import { Request } from '@enonic-types/core';
-import { validateServiceSecretHeader } from 'lib/utils/auth-utils';
+import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { getServiceRequestSubPath } from '../service-utils';
 import { externalArchiveContentTreeService } from './contentTree/contentTree';
 import { externalArchiveContentService } from './content/content';

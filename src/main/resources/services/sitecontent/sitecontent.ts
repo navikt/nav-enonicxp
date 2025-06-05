@@ -1,10 +1,10 @@
 import { Request } from '@enonic-types/core';
-import { isValidBranch } from 'lib/context/branches';
-import { logger } from 'lib/utils/logging';
-import { validateServiceSecretHeader } from 'lib/utils/auth-utils';
-import { RepoBranch } from 'types/common';
-import { SITECONTENT_404_MSG_PREFIX } from 'lib/constants';
-import { isWellFormedContentRef } from 'lib/paths/path-utils';
+import { isValidBranch } from '../../lib/context/branches';
+import { logger } from '../../lib/utils/logging';
+import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
+import { RepoBranch } from '../../types/common';
+import { SITECONTENT_404_MSG_PREFIX } from '../../lib/constants';
+import { isWellFormedContentRef } from '../../lib/paths/path-utils';
 import { SitecontentResponse } from './common/content-response';
 import { sitecontentDraftResponse } from './draft/draft-response';
 import { sitecontentPublicResponse } from './public/public-response';

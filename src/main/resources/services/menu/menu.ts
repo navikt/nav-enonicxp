@@ -1,13 +1,13 @@
 import { Request } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { logger } from 'lib/utils/logging';
-import { getPublicPath } from 'lib/paths/public-path';
-import { getFromLocalCache } from 'lib/cache/local-cache';
-import { runInLocaleContext } from 'lib/localization/locale-context';
-import { getLayersData } from 'lib/localization/layers-data';
-import { buildCacheKeyForReqContext } from 'lib/cache/utils';
-import { replaceNAVwithNav } from 'lib/utils/string-utils';
+import { logger } from '../../lib/utils/logging';
+import { getPublicPath } from '../../lib/paths/public-path';
+import { getFromLocalCache } from '../../lib/cache/local-cache';
+import { runInLocaleContext } from '../../lib/localization/locale-context';
+import { getLayersData } from '../../lib/localization/layers-data';
+import { buildCacheKeyForReqContext } from '../../lib/cache/utils';
+import { replaceNAVwithNav } from '../../lib/utils/string-utils';
 
 const CACHE_KEY = 'decorator-menu-cache';
 const MENU_PATH = '/www.nav.no/dekorator-meny/';

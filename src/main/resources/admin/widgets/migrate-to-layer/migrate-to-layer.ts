@@ -2,16 +2,16 @@ import { Request, Response } from '@enonic-types/core'
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import thymeleafLib from '/lib/thymeleaf';
-import { validateCurrentUserPermissionForContent } from 'lib/utils/auth-utils';
+import { validateCurrentUserPermissionForContent } from '../../../lib/utils/auth-utils';
 import {
     APP_DESCRIPTOR,
     CONTENT_LOCALE_DEFAULT,
     CONTENT_ROOT_REPO_ID,
     URLS,
 } from 'lib/constants';
-import { getLayersData } from 'lib/localization/layers-data';
-import { batchedContentQuery } from 'lib/utils/batched-query';
-import { getServiceRequestSubPath } from 'services/service-utils';
+import { getLayersData } from '../../../lib/localization/layers-data';
+import { batchedContentQuery } from '../../../lib/utils/batched-query';
+import { getServiceRequestSubPath } from '../../../services/service-utils';
 import { migrateContentToLayerWidgetHandler } from './migrate-handler/migrate-handler';
 
 const view = resolve('./migrate-to-layer.html');

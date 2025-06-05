@@ -1,6 +1,6 @@
 import { Request, Response } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
-import { logger } from 'lib/utils/logging';
+import { logger } from '../../../lib/utils/logging';
 
 const DEFAULT_ICON_TYPE = 'base:structured';
 const defaultIcon = contentLib.getType(DEFAULT_ICON_TYPE)?.icon;

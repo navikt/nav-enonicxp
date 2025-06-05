@@ -1,9 +1,9 @@
 import { Request, Response } from '@enonic-types/core'
 import * as contentLib from '/lib/xp/content';
 import thymeleafLib from '/lib/thymeleaf';
-import { runInContext } from 'lib/context/run-in-context';
-import { logger } from 'lib/utils/logging';
-import { getParentPath } from 'lib/paths/path-utils';
+import { runInContext } from '../../../../lib/context/run-in-context';
+import { logger } from '../../../../lib/utils/logging';
+import { getParentPath } from '../../../../lib/paths/path-utils';
 
 const view = resolve('./archive-restore-response.html');
 

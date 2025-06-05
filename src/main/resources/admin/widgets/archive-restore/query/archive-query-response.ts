@@ -2,12 +2,12 @@ import { Request, Response } from '@enonic-types/core'
 import thymeleafLib from '/lib/thymeleaf';
 import { sanitize } from '/lib/xp/common';
 import { Content } from '/lib/xp/content';
-import { getRepoConnection } from 'lib/repos/repo-utils';
-import { forceArray } from 'lib/utils/array-utils';
-import { validateCurrentUserPermissionForContent } from 'lib/utils/auth-utils';
-import { batchedNodeQuery } from 'lib/utils/batched-query';
-import { isUUID } from 'lib/utils/uuid';
-import { getParentPath } from 'lib/paths/path-utils';
+import { getRepoConnection } from '../../../../lib/repos/repo-utils';
+import { forceArray } from '../../../../lib/utils/array-utils';
+import { validateCurrentUserPermissionForContent } from '../../../../lib/utils/auth-utils';
+import { batchedNodeQuery } from '../../../../lib/utils/batched-query';
+import { isUUID } from '../../../../lib/utils/uuid';
+import { getParentPath } from '../../../../lib/paths/path-utils';
 
 type ArchiveEntry = {
     name: string;

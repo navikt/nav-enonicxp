@@ -1,8 +1,8 @@
 import { Request, Response } from '@enonic-types/core';
-import { isUUID } from 'lib/utils/uuid';
-import { logger } from 'lib/utils/logging';
-import { getLayersData } from 'lib/localization/layers-data';
-import { getPublishedAndModifiedVersions } from 'lib/time-travel/get-published-versions';
+import { isUUID } from '../../../lib/utils/uuid';
+import { logger } from '../../../lib/utils/logging';
+import { getLayersData } from '../../../lib/localization/layers-data';
+import { getPublishedAndModifiedVersions } from '../../../lib/time-travel/get-published-versions';
 
 export const publishedVersionsReqHandler = (req: Request) : Response => {
     const

@@ -2,8 +2,8 @@ import { Request } from '@enonic-types/core'
 import * as portalLib from '/lib/xp/portal';
 import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
-import { NodeComponent } from 'types/components/component-node';
-import { PartConfigs, PartComponentName } from 'types/components/component-config';
+import { NodeComponent } from '../../types/components/component-node';
+import { PartConfigs, PartComponentName } from '../../types/components/component-config';
 import { logger } from '../utils/logging';
 import { getRepoConnection } from '../repos/repo-utils';
 import { CONTENT_ROOT_REPO_ID } from '../constants';

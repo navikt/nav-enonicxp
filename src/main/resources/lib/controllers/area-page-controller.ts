@@ -4,7 +4,7 @@ import { getRepoConnection } from '../repos/repo-utils';
 import { RepoNode } from '/lib/xp/node';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { NodeComponent } from 'types/components/component-node';
+import { NodeComponent } from '../../types/components/component-node';
 import { runInContext } from '../context/run-in-context';
 import { logger } from '../utils/logging';
 import { forceArray } from '../utils/array-utils';

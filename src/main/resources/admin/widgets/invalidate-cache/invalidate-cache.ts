@@ -2,8 +2,8 @@ import { Request, Response } from '@enonic-types/core'
 import * as contentLib from '/lib/xp/content';
 import * as portalLib from '/lib/xp/portal';
 import thymeleafLib from '/lib/thymeleaf';
-import { getLayersData } from 'lib/localization/layers-data';
-import { runInLocaleContext } from 'lib/localization/locale-context';
+import { getLayersData } from '../../../lib/localization/layers-data';
+import { runInLocaleContext } from '../../../lib/localization/locale-context';
 
 const view = resolve('./invalidate-cache.html');
 

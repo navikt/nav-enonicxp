@@ -1,21 +1,21 @@
 import { Request } from '@enonic-types/core';
 import cacheLib from '/lib/cache';
 import * as taskLib from '/lib/xp/task';
-import { batchedContentQuery } from 'lib/utils/batched-query';
-import { ContentDescriptor } from 'types/content-types/content-config';
-import { APP_DESCRIPTOR, NAVNO_ROOT_PATH, REDIRECTS_ROOT_PATH } from 'lib/constants';
+import { batchedContentQuery } from '../../lib/utils/batched-query';
+import { ContentDescriptor } from '../../types/content-types/content-config';
+import { APP_DESCRIPTOR, NAVNO_ROOT_PATH, REDIRECTS_ROOT_PATH } from '../../lib/constants';
 import {
     contentTypesRenderedByPublicFrontend,
     linkContentTypes,
-} from 'lib/contenttype-lists';
-import { logger } from 'lib/utils/logging';
-import { validateServiceSecretHeader } from 'lib/utils/auth-utils';
-import { stripPathPrefix, stripRedirectsPathPrefix } from 'lib/paths/path-utils';
-import { getPublicPath } from 'lib/paths/public-path';
-import { removeDuplicates } from 'lib/utils/array-utils';
-import { buildLocalePath } from 'lib/paths/locale-paths';
-import { hasValidCustomPath } from 'lib/paths/custom-paths/custom-path-utils';
-import { queryAllLayersToRepoIdBuckets } from 'lib/localization/layers-repo-utils/query-all-layers';
+} from '../../lib/contenttype-lists';
+import { logger } from '../../lib/utils/logging';
+import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
+import { stripPathPrefix, stripRedirectsPathPrefix } from '../../lib/paths/path-utils';
+import { getPublicPath } from '../../lib/paths/public-path';
+import { removeDuplicates } from '../../lib/utils/array-utils';
+import { buildLocalePath } from '../../lib/paths/locale-paths';
+import { hasValidCustomPath } from '../../lib/paths/custom-paths/custom-path-utils';
+import { queryAllLayersToRepoIdBuckets } from '../../lib/localization/layers-repo-utils/query-all-layers';
 
 const cache = cacheLib.newCache({ size: 2, expire: 600 });
 

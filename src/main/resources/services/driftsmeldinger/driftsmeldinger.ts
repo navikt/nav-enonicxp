@@ -2,11 +2,11 @@ import { Request } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { Melding } from '@xp-types/site/content-types/melding';
-import { getFromLocalCache } from 'lib/cache/local-cache';
-import { forceArray } from 'lib/utils/array-utils';
-import { getPublicPath } from 'lib/paths/public-path';
-import { CONTENT_LOCALE_DEFAULT } from 'lib/constants';
-import { buildCacheKeyForReqContext } from 'lib/cache/utils';
+import { getFromLocalCache } from '../../lib/cache/local-cache';
+import { forceArray } from '../../lib/utils/array-utils';
+import { getPublicPath } from '../../lib/paths/public-path';
+import { CONTENT_LOCALE_DEFAULT } from '../../lib/constants';
+import { buildCacheKeyForReqContext } from '../../lib/cache/utils';
 
 const CACHE_KEY = 'driftsmeldinger-cache';
 const DRIFTSMELDINGER_PATH = '/www.nav.no/no/driftsmeldinger';

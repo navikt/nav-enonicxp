@@ -4,9 +4,9 @@ import { Component } from '/lib/xp/portal';
 import { getRepoConnection } from '../repos/repo-utils';
 import { Content } from '/lib/xp/content';
 import * as commonLib from '/lib/xp/common';
-import { NodeComponent } from 'types/components/component-node';
-import { ArrayOrSingle, PickByFieldType } from 'types/util-types';
-import { ComponentConfigAll } from 'types/components/component-config';
+import { NodeComponent } from '../../types/components/component-node';
+import { ArrayOrSingle, PickByFieldType } from '../../types/util-types';
+import { ComponentConfigAll } from '../../types/components/component-config';
 import { COMPONENT_APP_KEY } from '../constants';
 import { forceArray } from './array-utils';
 

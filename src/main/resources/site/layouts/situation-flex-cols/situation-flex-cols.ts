@@ -1,6 +1,6 @@
 import { Request } from '@enonic-types/core';
-import { generateAnchorIdField } from 'lib/utils/component-utils';
-import { componentPreviewController } from 'lib/controllers/component-preview-controller';
+import { generateAnchorIdField } from '../../../lib/utils/component-utils';
+import { componentPreviewController } from '../../../lib/controllers/component-preview-controller';
 import { SituationFlexCols } from '@xp-types/site/layouts';
 
 export const get = (req: Request) => {
