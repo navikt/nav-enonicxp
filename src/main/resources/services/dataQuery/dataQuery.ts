@@ -41,7 +41,7 @@ export const get = (req: Request) : Response => {
     const
         batch = req.params.batch as string || 0,
         types = req.params.types as string,
-        publishStatus = req.params.publishStatus as string,
+        publishStatus = req.params.branch as string,
         requestId = req.params.requestId as string,
         query = req.params.query as string;
 

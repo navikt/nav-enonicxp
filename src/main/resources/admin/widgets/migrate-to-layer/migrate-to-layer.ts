@@ -8,7 +8,7 @@ import {
     CONTENT_LOCALE_DEFAULT,
     CONTENT_ROOT_REPO_ID,
     URLS,
-} from 'lib/constants';
+} from '../../../lib/constants';
 import { getLayersData } from '../../../lib/localization/layers-data';
 import { batchedContentQuery } from '../../../lib/utils/batched-query';
 import { getServiceRequestSubPath } from '../../../services/service-utils';

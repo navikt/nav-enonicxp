@@ -18,7 +18,7 @@ export const get = (req: Request) : Response => {
     }
 
     const
-        idOrArchivedPath= req.params.idOrArchivedPath as string,
+        idOrArchivedPath= req.params.id as string,
         locale = req.params.locale as string,
         time = req.params.time as string;
 
