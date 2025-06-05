@@ -1,10 +1,9 @@
-import { Request } from '@enonic-types/core'
+import { Request, Response } from '@enonic-types/core'
 import thymeleafLib from '/lib/thymeleaf';
 import { sanitize } from '/lib/xp/common';
 import { Content } from '/lib/xp/content';
 import { getRepoConnection } from 'lib/repos/repo-utils';
 import { forceArray } from 'lib/utils/array-utils';
-import { forceString } from 'lib/utils/string-utils';
 import { validateCurrentUserPermissionForContent } from 'lib/utils/auth-utils';
 import { batchedNodeQuery } from 'lib/utils/batched-query';
 import { isUUID } from 'lib/utils/uuid';
@@ -71,10 +70,10 @@ const queryArchive = ({ query, repoId }: { query?: string; repoId: string }): Ar
         );
 };
 
-export const archiveQueryResponse = (req: Request) => {
+export const archiveQueryResponse = (req: Request) : Response => {
     const { repositoryId } = req;
-    const { input } = req.params;
-    const archiveEntries = repositoryId ? queryArchive({ query: forceString(input), repoId: repositoryId }) : [];
+    const query = req.params.input as string;
+    const archiveEntries = repositoryId ? queryArchive({ query, repoId: repositoryId }) : [];
     const model = {
         archiveEntries: archiveEntries.length > 0 ? archiveEntries : null,
     };

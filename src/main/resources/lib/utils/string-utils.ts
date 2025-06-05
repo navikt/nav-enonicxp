@@ -1,8 +1,4 @@
-import { forceArray } from './array-utils';
-
 export const stripLineBreaks = (str: string) => str.replace(/\r?\n|\r/g, '');
-
-export const forceString = (arrayOrNot?: string | string[] | null | undefined) => forceArray(arrayOrNot)[0];
 
 export const capitalize = (str: string) =>
     str

@@ -7,7 +7,6 @@ import { generateUUID, isUUID } from 'lib/utils/uuid';
 import { getComponentConfigByPath } from 'lib/utils/component-utils';
 import { forceArray } from 'lib/utils/array-utils';
 import { ContentNode } from 'types/content-types/content-config';
-import { forceString } from 'lib/utils/string-utils';
 
 const insertIdIfNotExist = (component: any) => {
     if (!isUUID(component.id)) {
@@ -41,8 +40,8 @@ const injectPersistantIds = (req: Request) => {
     }
 
     const repo = getRepoConnection({
-        repoId: forceString(req.repositoryId),
-        branch: forceString(req.branch),
+        repoId: req.repositoryId as string,
+        branch: req.branch as string,
     });
 
     repo.modify<Content>({

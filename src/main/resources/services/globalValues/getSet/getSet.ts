@@ -1,11 +1,10 @@
 import { Request } from '@enonic-types/core';
 import { getGlobalValueSet } from 'lib/global-values/global-value-utils';
 import { forceArray } from 'lib/utils/array-utils';
-import { forceString } from 'lib/utils/string-utils';
 import { gvServiceInvalidRequestResponse } from '../utils';
 
 export const getGlobalValueSetService = (req: Request) => {
-    const contentId = forceString(req.params.contendId);
+    const contentId = req.params.contendId as string;
     const content = getGlobalValueSet(contentId);
     if (!content) {
         return gvServiceInvalidRequestResponse(`Global value set with id ${contentId} not found`);

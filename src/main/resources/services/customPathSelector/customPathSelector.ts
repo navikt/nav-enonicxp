@@ -1,4 +1,4 @@
-import { Request } from '@enonic-types/core';
+import { Request, Response } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
 import httpClient from '/lib/http-client';
 import * as portalLib from '/lib/xp/portal';
@@ -152,7 +152,7 @@ const getResult = ({
     };
 };
 
-export const get = (req: Request) => {
+export const get = (req: Request) : Response => {
     const content = portalLib.getContent();
 
     if (!content) {
@@ -173,9 +173,7 @@ export const get = (req: Request) => {
     }
 
     const query = req.params.query as string;
-
     const currentSelection = customSelectorParseSelectedIdsFromReq(req)[0];
-
     const result = getResult({ query, currentSelection, content });
 
     return {

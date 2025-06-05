@@ -8,7 +8,6 @@ import {
 } from 'lib/utils/auth-utils';
 import { logger } from 'lib/utils/logging';
 import { forceArray } from 'lib/utils/array-utils';
-import { forceString } from 'lib/utils/string-utils';
 import { applyModifiedData } from 'lib/utils/content-utils';
 import { CONTENT_ROOT_REPO_ID } from 'lib/constants';
 import { gvServiceInvalidRequestResponse } from '../utils';
@@ -19,8 +18,8 @@ import {
 
 export const removeGlobalValueItemService = (req: Request) => {
     const
-        key = forceString(req.params.key),
-        contentId = forceString(req.params.contentId);
+        key = req.params.key as string,
+        contentId = req.params.contentId as string;
 
     if (!validateCurrentUserPermissionForContent(contentId, 'DELETE')) {
         return insufficientPermissionResponse('DELETE');

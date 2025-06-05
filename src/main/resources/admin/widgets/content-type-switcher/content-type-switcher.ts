@@ -1,10 +1,9 @@
-import { Request } from '@enonic-types/core'
+import { Request, Response } from '@enonic-types/core'
 import * as contentLib from '/lib/xp/content';
 import * as portalLib from '/lib/xp/portal';
 import thymeleafLib from '/lib/thymeleaf';
 import { contentTypesInContentSwitcher } from 'lib/contenttype-lists';
 import { validateCurrentUserPermissionForContent } from 'lib/utils/auth-utils';
-import { forceString } from 'lib/utils/string-utils';
 
 const view = resolve('./content-type-switcher.html');
 
@@ -16,11 +15,11 @@ const getAllowedTypes = () => {
         );
 };
 
-export const get = (req: Request) => {
+export const get = (req: Request) : Response => {
     const { repositoryId } = req;
-    const { contentId } = req.params;
+    const contentId = req.params.contentId as string;
 
-    if (!validateCurrentUserPermissionForContent(forceString(contentId), 'PUBLISH')) {
+    if (!validateCurrentUserPermissionForContent(contentId, 'PUBLISH')) {
         return {
             body: '<widget>Tilgangsfeil - Du må ha publiseringstilgang for å endre innholdstype</widget>',
             contentType: 'text/html; charset=UTF-8',

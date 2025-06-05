@@ -1,4 +1,4 @@
-import { Request } from '@enonic-types/core';
+import { Request, Response } from '@enonic-types/core';
 import * as portalLib from '/lib/xp/portal';
 import { Content } from '/lib/xp/content';
 import { getRepoConnection } from 'lib/repos/repo-utils';
@@ -6,7 +6,6 @@ import { getComponentConfig } from 'lib/utils/component-utils';
 import { FiltersMenu } from '@xp-types/site/parts/filters-menu';
 import { logger } from 'lib/utils/logging';
 import { forceArray } from 'lib/utils/array-utils';
-import { forceString } from 'lib/utils/string-utils';
 import { customSelectorErrorIcon } from '../custom-selector-icons';
 
 type CategoryRaw = Required<FiltersMenu>['categories'][number];
@@ -25,10 +24,9 @@ const getFilterMenus = (req: Request) => {
     }
 
     const repo = getRepoConnection({
-        repoId: forceString(req.repositoryId),
-        branch: forceString(req.branch),
+        repoId: req.repositoryId as string,
+        branch: req.branch as string,
     });
-
     const components = forceArray(repo.get<Content>(content._id)?.components);
 
     return components.filter(
@@ -65,7 +63,7 @@ const generateHits = (req: Request) => {
         .flat(2);
 };
 
-export const get = (req: Request) => {
+export const get = (req: Request) : Response => {
     try {
         const hits = generateHits(req);
 

@@ -1,4 +1,4 @@
-import { Request } from '@enonic-types/core';
+import { Request, Response } from '@enonic-types/core';
 import { isUUID } from 'lib/utils/uuid';
 import { isValidBranch } from 'lib/context/branches';
 import { logger } from 'lib/utils/logging';
@@ -7,7 +7,6 @@ import { getServiceRequestSubPath } from 'services/service-utils';
 import { userIsLoggedIn, validateServiceSecretHeader } from 'lib/utils/auth-utils';
 import { SITECONTENT_404_MSG_PREFIX } from 'lib/constants';
 import { publishedVersionsReqHandler } from './publishedVersions/publishedVersions';
-import { forceString } from 'lib/utils/string-utils';
 
 const isValidTime = (time?: string): time is string => {
     try {
@@ -18,12 +17,12 @@ const isValidTime = (time?: string): time is string => {
     }
 };
 
-const sitecontentVersionsReqHandler = (req: Request) => {
+const sitecontentVersionsReqHandler = (req: Request) : Response => {
     const
-        id = forceString(req.params.id),
-        branch = req.params.branch ? forceString(req.params.branch) : "master",
-        time = forceString(req.params.time),
-        locale = forceString(req.params.locale);
+        id = req.params.id as string,
+        branch = req.params.branch ? req.params.branch as string : "master",
+        time = req.params.time as string,
+        locale = req.params.locale as string;
 
     if (!id || !isUUID(id)) {
         return {
@@ -93,7 +92,6 @@ const sitecontentVersionsReqHandler = (req: Request) => {
         };
     } catch (e) {
         const msg = `Error fetching content version for ${id} ${time} - ${e}`;
-
         logger.error(msg);
 
         return {
@@ -106,7 +104,7 @@ const sitecontentVersionsReqHandler = (req: Request) => {
     }
 };
 
-export const get = (req: Request) => {
+export const get = (req: Request) : Response => {
     if (!validateServiceSecretHeader(req) && !userIsLoggedIn()) {
         return {
             status: 401,
@@ -118,7 +116,6 @@ export const get = (req: Request) => {
     }
 
     const subPath = getServiceRequestSubPath(req);
-
     if (!subPath) {
         return sitecontentVersionsReqHandler(req);
     }

@@ -10,7 +10,6 @@ import {
 import { getContentForExternalArchive } from 'lib/external-archive/get-content';
 import { runInLocaleContext } from 'lib/localization/locale-context';
 import { getArchivedContent } from 'lib/external-archive/get-archived-content';
-import { forceString } from '../../../lib/utils/string-utils';
 
 type Response = {
     contentRaw: Content & { locale: string; originalContentTypeName: string | undefined };
@@ -59,9 +58,9 @@ const getContentRenderProps = (
 };
 
 export const externalArchiveContentService = (req: Request) => {
-    const id = forceString(req.params.id);
-    const versionId = forceString(req.params.versionId);
-    const locale = forceString(req.params.locale);
+    const id = req.params.id as string;
+    const versionId = req.params.versionId as string;
+    const locale = req.params.locale as string;
 
     if (!id || !locale) {
         return {
@@ -100,11 +99,9 @@ export const externalArchiveContentService = (req: Request) => {
     }
 
     const contentRenderProps = getContentRenderProps(content, locale, versionId, isArchived);
-
     const versions = getPublishedAndModifiedVersions(content._id, locale).filter(
         (v) => !v.excludeFromExternalArchive
     );
-
     const originalContentTypeName = getOriginalContentTypeName(content, versions);
 
     return {

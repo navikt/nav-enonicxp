@@ -1,4 +1,4 @@
-import { Request } from '@enonic-types/core';
+import { Request, Response } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import {
@@ -13,7 +13,6 @@ import { runInContext } from 'lib/context/run-in-context';
 import { GlobalValueItem, GlobalValueContentDescriptor } from 'lib/global-values/types';
 import { buildGlobalValuePreviewString } from 'lib/global-values/macro-preview';
 import { forceArray } from 'lib/utils/array-utils';
-import { forceString } from 'lib/utils/string-utils';
 import {
     customSelectorHitWithLink,
     customSelectorParseSelectedIdsFromReq,
@@ -105,13 +104,11 @@ const getHitsFromSelectedIds = (ids: string[], withDescription?: boolean) =>
         ];
     }, [] as CustomSelectorServiceResponseHit[]);
 
-export const globalValueSelectorService = (req: Request) => {
+export const globalValueSelectorService = (req: Request) : Response => {
     const { contentType } = req.params as ReqParams;
-    const query = forceString(req.params.query);
+    const query = req.params.query as string;
     const ids = customSelectorParseSelectedIdsFromReq(req);
-
     const withDescription = req.params.withDescription === 'true';
-
     const hits = runInContext({ branch: 'master' }, () =>
         ids.length > 0
             ? getHitsFromSelectedIds(ids, withDescription)

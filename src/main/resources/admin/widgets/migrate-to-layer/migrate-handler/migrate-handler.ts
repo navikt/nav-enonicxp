@@ -2,10 +2,11 @@ import { Request, Response } from '@enonic-types/core'
 import * as contentLib from '/lib/xp/content';
 import { migrateContentToLayer } from 'lib/localization/layers-migration/migrate-content-to-layer';
 import { CONTENT_LOCALE_DEFAULT } from 'lib/constants';
-import { forceString } from 'lib/utils/string-utils';
 
-export const migrateContentToLayerWidgetHandler = (req: Request) => {
-    const { sourceId: sourceContentId, targetLocale, targetId: targetContentIdInput } = req.params;
+export const migrateContentToLayerWidgetHandler = (req: Request) : Response => {
+    const   sourceId = req.params.sourceId as string,
+            targetLocale = req.params.targetLocale as string,
+            targetId = req.params.targetId as string;
 
     if (!targetLocale) {
         return {
@@ -14,10 +15,10 @@ export const migrateContentToLayerWidgetHandler = (req: Request) => {
         };
     }
 
-    if (!targetContentIdInput) {
+    if (!targetId) {
         return {
             body: {
-                message: `Feil: contentId må være valgt. Dette skal være det samme som det norske versjonen av innholdet`,
+                message: `Feil: Target contentId må være valgt. Dette skal være det samme som det norske versjonen av innholdet`,
                 result: 'error',
             },
             contentType: 'application/json',
@@ -25,7 +26,7 @@ export const migrateContentToLayerWidgetHandler = (req: Request) => {
     }
 
     // This should always be set programatically as a hidden input
-    if (!sourceContentId) {
+    if (!sourceId) {
         return {
             body: {
                 message: `Noe gikk galt. Forsøk å laste inn editoren på nytt (F5) og prøv igjen.`,
@@ -35,13 +36,12 @@ export const migrateContentToLayerWidgetHandler = (req: Request) => {
         };
     }
 
-    const targetContentId = forceString(targetContentIdInput).replace(/"/g, '').trim();
+    const targetContentId = targetId.replace(/"/g, '').trim();
     const targetContent = contentLib.get({ key: targetContentId });
-
     if (!targetContent) {
         return {
             body: {
-                message: `Feil: valgt contentId "${targetContentId}" er ikke gyldig. Velg Content Viewer i det norske innholdet og kopier _id verdien.`,
+                message: `Feil: valgt targetContentId "${targetContentId}" er ikke gyldig. Velg Content Viewer i det norske innholdet og kopier _id verdien.`,
                 result: 'error',
             },
             contentType: 'application/json',
@@ -49,10 +49,10 @@ export const migrateContentToLayerWidgetHandler = (req: Request) => {
     }
 
     const { errorMsgs, statusMsgs } = migrateContentToLayer({
-        sourceId: forceString(sourceContentId),
+        sourceId,
         sourceLocale: CONTENT_LOCALE_DEFAULT,
         targetId: targetContentId,
-        targetLocale: forceString(targetLocale),
+        targetLocale,
     });
 
     return {

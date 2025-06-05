@@ -1,11 +1,10 @@
-import { Request } from '@enonic-types/core';
+import { Request, Response } from '@enonic-types/core';
 import { runInContext } from 'lib/context/run-in-context';
 import { ContentDescriptor } from 'types/content-types/content-config';
 import { contentTypesInDataQuery } from 'lib/contenttype-lists';
 import { logger } from 'lib/utils/logging';
 import { validateServiceSecretHeader } from 'lib/utils/auth-utils';
 import { parseJsonToArray } from 'lib/utils/array-utils';
-import { forceString } from 'lib/utils/string-utils';
 import { PublishStatus, publishStatuses } from './utils/types';
 import { runQuery } from './utils/queryRunners';
 
@@ -15,7 +14,7 @@ const publishStatusIsValid = (status: string): status is PublishStatus =>
 let rejectUntilTime = 0;
 const timeoutPeriodMs = 1000 * 60 * 5;
 
-export const get = (req: Request) => {
+export const get = (req: Request) : Response => {
     if (!validateServiceSecretHeader(req)) {
         return {
             status: 401,
@@ -40,11 +39,11 @@ export const get = (req: Request) => {
     }
 
     const
-        batch = forceString(req.params.batch) || 0,
-        types = forceString(req.params.types),
-        publishStatus = forceString(req.params.publishStatus),
-        requestId = forceString(req.params.requestId),
-        query = forceString(req.params.query);
+        batch = req.params.batch as string || 0,
+        types = req.params.types as string,
+        publishStatus = req.params.publishStatus as string,
+        requestId = req.params.requestId as string,
+        query = req.params.query as string;
 
     if (!requestId) {
         logger.info('No request id specified');

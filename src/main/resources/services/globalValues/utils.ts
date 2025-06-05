@@ -1,11 +1,10 @@
-import { Request } from '@enonic-types/core';
+import { Request, Response } from '@enonic-types/core';
 import {
     insufficientPermissionResponse,
     validateCurrentUserPermissionForContent,
 } from 'lib/utils/auth-utils';
 import { validCaseTimeUnits } from 'lib/global-values/types';
 import { CaseTimeUnit } from 'types/content-types/global-case-time-set';
-import { forceString } from 'lib/utils/string-utils';
 
 export type GlobalValueCommonInputParams = {
     key: string;
@@ -46,11 +45,11 @@ const validateCaseTimeParams = ({ value, unit }: Partial<GlobalCaseTimesInputPar
     return null;
 };
 
-export const validateGlobalValueInputAndGetErrorResponse = (params: Request['params']) => {
+export const validateGlobalValueInputAndGetErrorResponse = (params: Request['params']) : Response | null => {
     const
-        contentId = forceString(params.contentId),
-        itemName = forceString(params.itemName),
-        type = forceString(params.type);
+        contentId = params.contentId as string,
+        itemName = params.itemName as string,
+        type = params.type as string;
 
     if (!contentId || !itemName || !type) {
         return gvServiceInvalidRequestResponse(
@@ -74,7 +73,7 @@ export const validateGlobalValueInputAndGetErrorResponse = (params: Request['par
     return gvServiceInvalidRequestResponse(`Invalid value type ${type}`);
 };
 
-export const gvServiceInvalidRequestResponse = (msg: string) => ({
+export const gvServiceInvalidRequestResponse = (msg: string) : Response => ({
     status: 400,
     contentType: 'application/json',
     body: {

@@ -1,4 +1,4 @@
-import { Request } from '@enonic-types/core'
+import { Request, Response } from '@enonic-types/core'
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import thymeleafLib from '/lib/thymeleaf';
@@ -12,7 +12,6 @@ import {
 import { getLayersData } from 'lib/localization/layers-data';
 import { batchedContentQuery } from 'lib/utils/batched-query';
 import { getServiceRequestSubPath } from 'services/service-utils';
-import { forceString } from 'lib/utils/string-utils';
 import { migrateContentToLayerWidgetHandler } from './migrate-handler/migrate-handler';
 
 const view = resolve('./migrate-to-layer.html');
@@ -46,9 +45,9 @@ const getTargetOptions = (content: Content) => {
 const isApplicableContentType = (content: Content) =>
     content.type.startsWith(APP_DESCRIPTOR) || content.type === 'portal:fragment';
 
-export const widgetResponse = (req: Request) => {
+export const widgetResponse = (req: Request) : Response => {
     const { repositoryId, contextPath } = req;
-    const { contentId } = req.params;
+    const contentId = req.params.contentId as string;
 
     if (!contentId) {
         return {
@@ -57,7 +56,7 @@ export const widgetResponse = (req: Request) => {
         };
     }
 
-    const content = contentLib.get({ key: forceString(contentId) });
+    const content = contentLib.get({ key: contentId });
     if (!content) {
         return {
             body: '<widget>Fant ikke innholdet. Kanskje det allerede er migrert?</widget>',
@@ -65,7 +64,7 @@ export const widgetResponse = (req: Request) => {
         };
     }
 
-    if (!validateCurrentUserPermissionForContent(forceString(contentId), 'PUBLISH')) {
+    if (!validateCurrentUserPermissionForContent(contentId, 'PUBLISH')) {
         return {
             body: '<widget>Tilgangsfeil - Du må ha publiseringstilgang for å flytte dette innholdet til et layer</widget>',
             contentType: 'text/html; charset=UTF-8',
@@ -86,10 +85,7 @@ export const widgetResponse = (req: Request) => {
         };
     }
 
-    const migrateHandlerUrl = `${URLS.PORTAL_ADMIN_ORIGIN}${contextPath}/${MIGRATE_HANDLER_PATH}`;
-
     const { locales, defaultLocale } = getLayersData();
-
     const nonDefaultLocales = locales.filter((locale) => locale !== CONTENT_LOCALE_DEFAULT);
     if (nonDefaultLocales.length === 0) {
         return {
@@ -98,9 +94,8 @@ export const widgetResponse = (req: Request) => {
         };
     }
 
-    if (
-        !content.language ||
-        (content.language === defaultLocale && content.type !== 'portal:fragment')
+    if (    !content.language ||
+            (content.language === defaultLocale && content.type !== 'portal:fragment')
     ) {
         return {
             body: `<widget>Denne widgeten kan ikke benyttes for innhold på default-språket (${defaultLocale})</widget>`,
@@ -116,7 +111,7 @@ export const widgetResponse = (req: Request) => {
     }
 
     const targetOptions = getTargetOptions(content);
-
+    const migrateHandlerUrl = `${URLS.PORTAL_ADMIN_ORIGIN}${contextPath}/${MIGRATE_HANDLER_PATH}`;
     const model = {
         locales: nonDefaultLocales,
         contentLocale: content.language,
