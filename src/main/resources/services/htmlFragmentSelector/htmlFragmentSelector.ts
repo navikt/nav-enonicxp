@@ -1,13 +1,18 @@
+import { Request } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import {
     appendMacroDescriptionToKey,
     getKeyWithoutMacroDescription,
 } from '../../lib/utils/component-utils';
-import { customSelectorHitWithLink, customSelectorParseSelectedIdsFromReq } from '../service-utils';
+import {
+    customSelectorHitWithLink,
+    customSelectorParseSelectedIdsFromReq,
+    CustomSelectorServiceResponseHit,
+} from '../service-utils';
 import { runInContext } from '../../lib/context/run-in-context';
 
-type Hit = XP.CustomSelectorServiceResponseHit;
+type Hit = CustomSelectorServiceResponseHit;
 
 const hitFromFragment = (fragment: Content<'portal:fragment'>, id?: string): Hit =>
     customSelectorHitWithLink(
@@ -59,8 +64,8 @@ const getHitsFromQuery = (query?: string) =>
         })
         .hits.map((fragment) => hitFromFragment(fragment));
 
-export const get = (req: XP.CustomSelectorServiceRequest) => {
-    const { query } = req.params;
+export const get = (req: Request) => {
+    const query = req.params.query as string;
     const ids = customSelectorParseSelectedIdsFromReq(req);
 
     const hits = runInContext({ branch: 'master' }, () =>

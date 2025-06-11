@@ -1,3 +1,4 @@
+import { Request } from '@enonic-types/core';
 import { getServiceRequestSubPath } from '../service-utils';
 import { globalValueSelectorService } from './selector/selector';
 import { getGlobalValueSetService } from './getSet/getSet';
@@ -9,7 +10,7 @@ import { reorderGlobalValuesService } from './reorderValues/reorderGlobalValuesS
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { getLayersData } from '../../lib/localization/layers-data';
 
-const getRequestHandler = (req: XP.Request) => {
+const getRequestHandler = (req: Request) => {
     const subPath = getServiceRequestSubPath(req);
 
     if (!subPath) {
@@ -34,7 +35,7 @@ const getRequestHandler = (req: XP.Request) => {
     }
 };
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) => {
     const reqHandler = getRequestHandler(req);
 
     if (!reqHandler) {

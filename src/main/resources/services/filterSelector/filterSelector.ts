@@ -1,13 +1,12 @@
+import { Request, Response } from '@enonic-types/core';
 import * as portalLib from '/lib/xp/portal';
 import { Content } from '/lib/xp/content';
 import { getRepoConnection } from '../../lib/repos/repo-utils';
 import { getComponentConfig } from '../../lib/utils/component-utils';
 import { FiltersMenu } from '@xp-types/site/parts/filters-menu';
 import { logger } from '../../lib/utils/logging';
-import { customSelectorErrorIcon } from '../custom-selector-icons';
 import { forceArray } from '../../lib/utils/array-utils';
-
-type Hit = XP.CustomSelectorServiceResponseHit;
+import { customSelectorErrorIcon } from '../custom-selector-icons';
 
 type CategoryRaw = Required<FiltersMenu>['categories'][number];
 
@@ -18,17 +17,16 @@ type Filter = CategoryRaw['filters'][number] & {
 };
 type Category = CategoryRaw & { filters: Filter[] };
 
-const getFilterMenus = (req: XP.Request) => {
+const getFilterMenus = (req: Request) => {
     const content = portalLib.getContent();
     if (!content) {
         throw new Error('Ugyldig context, forsøk å laste inn editoren på nytt (F5)');
     }
 
     const repo = getRepoConnection({
-        repoId: req.repositoryId,
-        branch: req.branch,
+        repoId: req.repositoryId as string,
+        branch: req.branch as string,
     });
-
     const components = forceArray(repo.get<Content>(content._id)?.components);
 
     return components.filter(
@@ -37,13 +35,13 @@ const getFilterMenus = (req: XP.Request) => {
     );
 };
 
-const generateHit = (category: Category, filter: Filter): Hit => ({
+const generateHit = (category: Category, filter: Filter) => ({
     id: filter.id,
     displayName: filter.filterName,
     description: `Kategori: ${category.categoryName}`,
 });
 
-const generateHits = (req: XP.Request) => {
+const generateHits = (req: Request) => {
     const filterMenus = getFilterMenus(req);
 
     return filterMenus
@@ -65,7 +63,7 @@ const generateHits = (req: XP.Request) => {
         .flat(2);
 };
 
-export const get = (req: XP.CustomSelectorServiceRequest) => {
+export const get = (req: Request) : Response => {
     try {
         const hits = generateHits(req);
 

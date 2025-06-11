@@ -1,3 +1,4 @@
+import { Request } from '@enonic-types/core';
 import * as taskLib from '/lib/xp/task';
 import thymeleafLib from '/lib/thymeleaf';
 import { runOfficeFetchTask } from '../lib/office-pages/office-tasks';
@@ -82,7 +83,7 @@ type Params = {
     cmd: keyof typeof validActions;
 };
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) => {
     if (!userIsAdmin()) {
         return {
             body: '<div>Administrator-tilgang er påkrevd</div>',

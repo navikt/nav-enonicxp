@@ -1,3 +1,4 @@
+import { Request, WebSocketEvent } from '@enonic-types/core';
 import graphqlPlaygroundLib from '/lib/graphql-playground';
 import graphQlLib from '/lib/graphql';
 import graphQlRxLib from '/lib/graphql-rx';
@@ -52,7 +53,7 @@ const handleStartMessage = (sessionId: string, message: any) => {
     }
 };
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) => {
     if (isProd) {
         return {
             status: 403,
@@ -77,13 +78,17 @@ export const get = (req: XP.Request) => {
     };
 };
 
-export const post = (req: XP.Request) => {
+export const post = (req: Request) => {
     if (isProd) {
         return {
             status: 403,
         };
     }
-
+    if (!req.body) {
+        return {
+            status: 500,
+        }
+    }
     const { query, variables } = JSON.parse(req.body);
     const response = graphQlLib.execute(schema, query, variables);
 
@@ -93,7 +98,7 @@ export const post = (req: XP.Request) => {
     };
 };
 
-export const webSocketEvent = (event: XP.WebSocketEvent) => {
+export const webSocketEvent = (event: WebSocketEvent<any>) => {
     if (isProd) {
         return {
             status: 403,
@@ -104,8 +109,8 @@ export const webSocketEvent = (event: XP.WebSocketEvent) => {
         case 'close':
             cancelSubscription(event.session.id);
             break;
-        case 'message':
-            const message = JSON.parse(event.message);
+        case 'message': {
+            const message = event.message ? JSON.parse(event.message) : "";
             switch (message.type) {
                 case 'connection_init':
                     webSocketLib.send(
@@ -123,6 +128,7 @@ export const webSocketEvent = (event: XP.WebSocketEvent) => {
                     break;
             }
             break;
+        }
         case 'error':
             logger.warning('Session [' + event.session.id + '] error: ' + event.error);
             break;

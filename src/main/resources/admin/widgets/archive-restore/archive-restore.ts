@@ -1,3 +1,4 @@
+import { Request, Response } from '@enonic-types/core'
 import thymeleafLib from '/lib/thymeleaf';
 import { URLS } from '../../../lib/constants';
 import { validateCurrentUserPermissionForContent } from '../../../lib/utils/auth-utils';
@@ -10,10 +11,9 @@ const view = resolve('./archive-restore.html');
 const QUERY_PATH = 'query';
 const RESTORE_PATH = 'restore';
 
-const widgetResponse = (req: XP.Request) => {
+const widgetResponse = (req: Request) : Response => {
     const { contextPath } = req;
-    const { contentId } = req.params;
-
+    const contentId = req.params.contentId as string;
     const widgetUrl = `${URLS.PORTAL_ADMIN_ORIGIN}${contextPath}`;
     const queryUrl = `${widgetUrl}/${QUERY_PATH}`;
     const restoreUrl = `${widgetUrl}/${RESTORE_PATH}`;
@@ -44,7 +44,7 @@ const widgetResponse = (req: XP.Request) => {
     };
 };
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) : Response => {
     const subPath = getServiceRequestSubPath(req);
 
     if (subPath === QUERY_PATH) {

@@ -1,3 +1,4 @@
+import { Request } from '@enonic-types/core';
 import * as portalLib from '/lib/xp/portal';
 import { Component } from '/lib/xp/portal';
 import { getRepoConnection } from '../repos/repo-utils';
@@ -87,10 +88,14 @@ type StringFieldsExcludingAnchorId<Config> = keyof Omit<
 >;
 
 export const generateAnchorIdField = <Config extends ComponentConfigAll & { anchorId?: string }>(
-    req: XP.Request,
+    req: Request,
     idSourceField: StringFieldsExcludingAnchorId<Config>,
     idSourceDefaultValue?: string
 ) => {
+    if (!req.repositoryId || !req.branch) {
+        return;
+    }
+
     const contentId = portalLib.getContent()?._id;
     if (!contentId) {
         return;

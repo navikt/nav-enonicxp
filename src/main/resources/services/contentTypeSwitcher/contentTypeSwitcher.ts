@@ -1,3 +1,4 @@
+import { Request } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
 import { ContentType } from '/lib/xp/content';
 import { validateCurrentUserPermissionForContent } from '../../lib/utils/auth-utils';
@@ -29,8 +30,14 @@ type Params = Partial<{
     wipeComponents: string;
 }>;
 
-export const get = (req: XP.Request) => {
-    const { repoId, contentId, contentType, wipeData, wipeComponents } = req.params as Params;
+export const get = (req: Request) => {
+    const {
+        repoId,
+        contentId,
+        contentType,
+        wipeData,
+        wipeComponents
+    } = req.params as Params;
 
     if (!repoId || !contentId || !contentType) {
         logger.warning(

@@ -1,3 +1,4 @@
+import { Request } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { Melding } from '@xp-types/site/content-types/melding';
@@ -29,7 +30,7 @@ const transformMessageContent = (message: MessageContent): Message => {
     };
 };
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) => {
     const body = getFromLocalCache(buildCacheKeyForReqContext(req, CACHE_KEY), () => {
         const result = contentLib.getChildren({
             key: DRIFTSMELDINGER_PATH,

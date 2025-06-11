@@ -1,7 +1,8 @@
+import { RequestParams } from '@enonic-types/core';
 import { createGlobalValueMacroPreview } from '../../../lib/global-values/macro-preview';
 import { forceArray } from '../../../lib/utils/array-utils';
 
-export const macro = (context: XP.MacroContext) => {
+export const macro = (context: { params: RequestParams }) => {
     const { keys } = context.params;
 
     if (!keys) {

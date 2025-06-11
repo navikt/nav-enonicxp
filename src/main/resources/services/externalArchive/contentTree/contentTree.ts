@@ -1,3 +1,4 @@
+import { Request } from '@enonic-types/core';
 import { validateServiceSecretHeader } from '../../../lib/utils/auth-utils';
 import { isValidLocale } from '../../../lib/localization/layers-data';
 import { buildExternalArchiveContentTreeLevel } from '../../../lib/external-archive/content-tree';
@@ -8,7 +9,7 @@ type Params = Partial<{
     fromArchive?: 'true';
 }>;
 
-export const externalArchiveContentTreeService = (req: XP.Request) => {
+export const externalArchiveContentTreeService = (req: Request) => {
     if (!validateServiceSecretHeader(req)) {
         return {
             status: 401,
