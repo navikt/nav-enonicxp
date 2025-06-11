@@ -1,4 +1,4 @@
-#import "./parts/partAccordion.graphql"
+#import "./parts/partTrekkspill.graphql"
 #import "./parts/partAreaCard.graphql"
 #import "./parts/partAreapageSituationCard.graphql"
 #import "./parts/partButton.graphql"
@@ -115,8 +115,8 @@ fragment partComponents on PartComponentData {
                 read_more {
                     ...partComponentReadMore
                 }
-                accordion {
-                    ...partComponentAccordion
+                trekkspill {
+                    ...partComponentTrekkspill
                 }
                 user_tests {
                     ...partUserTests
