@@ -39,9 +39,9 @@ fragment oversiktPage on no_nav_navno_Oversikt {
             type
             ingress
             keywords
-            formDetailsPaths
-            formDetailsTitles
-            formDetailsIngresses
+            itemPaths
+            itemTitles
+            ItemIngresses
             formNumbers
             area
             taxonomy

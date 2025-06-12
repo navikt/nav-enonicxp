@@ -3,12 +3,12 @@ import graphQlLib from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 import { logger } from '../../../utils/logging';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
-import { buildFormDetailsList } from '../../../overview-pages/forms-overview-v2/build-forms-overview-list';
-import { FormDetailsListItem } from '../../../overview-pages/forms-overview-v2/types';
+import { buildFormDetailsList } from '../../../overview-pages/oversikt-v3/build-items-overview-list';
+import { ListItem } from '../../../overview-pages/oversikt-v3/types';
 
 export const oversiktDataCallback: CreationCallback = (context, params) => {
-    const oversiktListItem = graphQlCreateObjectType<keyof FormDetailsListItem>(context, {
-        name: context.uniqueName('FormDetailsList'),
+    const oversiktListItem = graphQlCreateObjectType<keyof ListItem>(context, {
+        name: context.uniqueName('oversiktListItem'),
         description: 'Liste over sider med skjemadetaljer',
         fields: {
             url: { type: graphQlLib.GraphQLString },
@@ -16,10 +16,10 @@ export const oversiktDataCallback: CreationCallback = (context, params) => {
             targetLanguage: { type: graphQlLib.GraphQLString },
             ingress: { type: graphQlLib.GraphQLString },
             keywords: { type: graphQlLib.list(graphQlLib.GraphQLString) },
-            formDetailsPaths: { type: graphQlLib.list(graphQlLib.GraphQLString) },
-            formDetailsTitles: { type: graphQlLib.list(graphQlLib.GraphQLString) },
-            formDetailsIngresses: { type: graphQlLib.list(graphQlLib.GraphQLString) },
-            formNumbers: { type: graphQlLib.list(graphQlLib.GraphQLString) },
+            itemPaths: { type: graphQlLib.list(graphQlLib.GraphQLString) },
+            itemTitles: { type: graphQlLib.list(graphQlLib.GraphQLString) },
+            ItemIngresses: { type: graphQlLib.list(graphQlLib.GraphQLString) },
+            itemFormNumbers: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             sortTitle: { type: graphQlLib.GraphQLString },
             title: { type: graphQlLib.GraphQLString },
             anchorId: { type: graphQlLib.GraphQLString },

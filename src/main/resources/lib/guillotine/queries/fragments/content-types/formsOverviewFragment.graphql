@@ -39,9 +39,9 @@ fragment contentFormsOverviewPage on no_nav_navno_FormsOverview {
             type
             ingress
             keywords
-            formDetailsPaths
-            formDetailsTitles
-            formDetailsIngresses
+            itemPaths
+            itemTitles
+            ItemIngresses
             formNumbers
             area
             taxonomy

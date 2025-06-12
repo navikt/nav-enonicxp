@@ -18,9 +18,9 @@ export type FormDetailsMap = Record<string, Content<'no.nav.navno:form-details'>
 
 export type FormDetailsListItem = {
     anchorId: string;
-    formDetailsPaths: string[];
-    formDetailsTitles: string[];
-    formDetailsIngresses: string[];
+    itemPaths: string[];
+    itemTitles: string[];
+    ItemIngresses: string[];
     formNumbers: string[];
     keywords: string[];
     url: string | null;

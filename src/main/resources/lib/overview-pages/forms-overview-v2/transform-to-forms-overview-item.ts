@@ -77,13 +77,13 @@ export const getFormsOverviewListItemTransformer =
             illustration: content.data.illustration,
             area: forceArray(content.data.area),
             taxonomy,
-            formDetailsPaths: formDetailsContents.map((formDetails) =>
+            itemPaths: formDetailsContents.map((formDetails) =>
                 getPublicPath(formDetails, overviewPageLanguage)
             ),
-            formDetailsTitles: formDetailsContents
+            itemTitles: formDetailsContents
                 .map((formDetails) => formDetails.data.title)
                 .filter(Boolean),
-            formDetailsIngresses: formDetailsContents
+            ItemIngresses: formDetailsContents
                 .map((formDetails) =>
                     formDetails.data.ingress ? striptags(formDetails.data.ingress) : ''
                 )
