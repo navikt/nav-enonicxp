@@ -91,12 +91,6 @@ export const contentTypesWithComponents = [
     'portal:page-template',
 ] as const satisfies ContentTypeList;
 
-export const contentTypesWithProductDetails = [
-    `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
-    `${APP_DESCRIPTOR}:themed-article-page`,
-    `${APP_DESCRIPTOR}:guide-page`,
-] as const satisfies ContentTypeList;
-
 export const contentTypesInOverviewPages = contentTypesWithProductDetails;
 
 export const contentTypesInAllProductsOverviewPages = [
@@ -139,6 +133,12 @@ export const contentTypesRenderedByEditorFrontend = [
 export const contentTypesWithCustomEditor = [
     `${APP_DESCRIPTOR}:global-value-set`,
     `${APP_DESCRIPTOR}:global-case-time-set`,
+] as const satisfies ContentTypeList;
+
+export const contentTypesWithProductDetails = [
+    `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
+    `${APP_DESCRIPTOR}:themed-article-page`,
+    `${APP_DESCRIPTOR}:guide-page`,
 ] as const satisfies ContentTypeList;
 
 export const contentTypesWithFormDetails = [

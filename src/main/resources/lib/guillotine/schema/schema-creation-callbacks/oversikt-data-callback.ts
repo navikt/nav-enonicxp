@@ -3,23 +3,63 @@ import graphQlLib from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 import { logger } from '../../../utils/logging';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
-import { buildFormDetailsList } from '../../../overview-pages/oversikt-v3/build-items-overview-list';
-import { ListItem } from '../../../overview-pages/oversikt-v3/types';
+import { buildFormDetailsList } from '../../../overview-pages/oversikt-v3/build-forms-overview-list';
+import {
+    OversiktListItem,
+    OversiktPageItemProductLink,
+    SimpleDetail,
+    SimpleFormDetail,
+    SimpleProductDetail,
+} from '../../../overview-pages/oversikt-v3/types';
+
+const buildItemList = (content: contentLib.Content<'no.nav.navno:oversikt'>) => {
+    if (
+        content.data.overviewType === 'application' ||
+        content.data.overviewType === 'addendum' ||
+        content.data.overviewType === 'complaint'
+    ) {
+        return buildFormDetailsList(content);
+    } else if (
+        content.data.overviewType === 'rates' ||
+        content.data.overviewType === 'payout_dates' ||
+        content.data.overviewType === 'processing_times'
+    ) {
+        return buildProductDetailsList(content);
+    } else {
+        return buildBasicServicesList(content);
+    }
+};
 
 export const oversiktDataCallback: CreationCallback = (context, params) => {
-    const oversiktListItem = graphQlCreateObjectType<keyof ListItem>(context, {
+    const SimpleFormDetailSchema = graphQlCreateObjectType<keyof SimpleDetail>(context, {
+        name: context.uniqueName('SimpleFormDetail'),
+        description: 'Form link',
+        fields: {
+            path: { type: graphQlLib.GraphQLString },
+            language: { type: graphQlLib.GraphQLString },
+            title: { type: graphQlLib.GraphQLString },
+            type: { type: graphQlLib.GraphQLString },
+            formNumber: { type: graphQlLib.GraphQLString },
+        },
+    });
+
+    const ItemListSchema = graphQlCreateObjectType<keyof OversiktListItem>(context, {
         name: context.uniqueName('oversiktListItem'),
         description: 'Liste over sider med skjemadetaljer',
         fields: {
             url: { type: graphQlLib.GraphQLString },
-            type: { type: graphQlLib.GraphQLString },
+            detailsPath: { type: graphQlLib.GraphQLString },
+            audience: { type: graphQlLib.GraphQLString },
+            detailItems: {
+                type: graphQlLib.list(SimpleFormDetailSchema),
+            },
             targetLanguage: { type: graphQlLib.GraphQLString },
             ingress: { type: graphQlLib.GraphQLString },
             keywords: { type: graphQlLib.list(graphQlLib.GraphQLString) },
-            itemPaths: { type: graphQlLib.list(graphQlLib.GraphQLString) },
-            itemTitles: { type: graphQlLib.list(graphQlLib.GraphQLString) },
-            ItemIngresses: { type: graphQlLib.list(graphQlLib.GraphQLString) },
-            itemFormNumbers: { type: graphQlLib.list(graphQlLib.GraphQLString) },
+            //itemPaths: { type: graphQlLib.list(graphQlLib.GraphQLString) },
+            //itemTitles: { type: graphQlLib.list(graphQlLib.GraphQLString) },
+            //itemIngresses: { type: graphQlLib.list(graphQlLib.GraphQLString) },
+            //itemFormNumbers: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             sortTitle: { type: graphQlLib.GraphQLString },
             title: { type: graphQlLib.GraphQLString },
             anchorId: { type: graphQlLib.GraphQLString },
@@ -35,8 +75,8 @@ export const oversiktDataCallback: CreationCallback = (context, params) => {
         },
     });
 
-    params.fields.oversiktList = {
-        type: graphQlLib.list(oversiktListItem),
+    params.fields.itemList = {
+        type: graphQlLib.list(ItemListSchema),
         resolve: () => {
             const contentId = getGuillotineContentQueryBaseContentId();
             if (!contentId) {
@@ -45,12 +85,12 @@ export const oversiktDataCallback: CreationCallback = (context, params) => {
             }
 
             const content = contentLib.get({ key: contentId });
-            if (content?.type !== 'no.nav.navno:forms-overview') {
+            if (content?.type !== 'no.nav.navno:oversikt') {
                 logger.error(`Content not found for forms overview page id ${contentId}`);
                 return [];
             }
 
-            return buildFormDetailsList(content);
+            return buildItemList(content);
         },
     };
 };
