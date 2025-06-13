@@ -3,14 +3,8 @@ import graphQlLib from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 import { logger } from '../../../utils/logging';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
-import { buildFormDetailsList } from '../../../overview-pages/oversikt-v3/build-forms-overview-list';
-import {
-    OversiktListItem,
-    OversiktPageItemProductLink,
-    SimpleDetail,
-    SimpleFormDetail,
-    SimpleProductDetail,
-} from '../../../overview-pages/oversikt-v3/types';
+import { buildFormDetailsList } from '../../../overview-pages/oversikt-v3/form-details-utils';
+import { OversiktListItem, SimpleDetail } from '../../../overview-pages/oversikt-v3/types';
 
 const buildItemList = (content: contentLib.Content<'no.nav.navno:oversikt'>) => {
     if (
@@ -45,7 +39,8 @@ export const oversiktDataCallback: CreationCallback = (context, params) => {
 
     const ItemListSchema = graphQlCreateObjectType<keyof OversiktListItem>(context, {
         name: context.uniqueName('oversiktListItem'),
-        description: 'Liste over sider med skjemadetaljer',
+        description:
+            'Liste over sider med produktdetaljer, skjemadetaljer eller grunnleggende oversikt over tjenester',
         fields: {
             url: { type: graphQlLib.GraphQLString },
             detailsPath: { type: graphQlLib.GraphQLString },
@@ -56,10 +51,6 @@ export const oversiktDataCallback: CreationCallback = (context, params) => {
             targetLanguage: { type: graphQlLib.GraphQLString },
             ingress: { type: graphQlLib.GraphQLString },
             keywords: { type: graphQlLib.list(graphQlLib.GraphQLString) },
-            //itemPaths: { type: graphQlLib.list(graphQlLib.GraphQLString) },
-            //itemTitles: { type: graphQlLib.list(graphQlLib.GraphQLString) },
-            //itemIngresses: { type: graphQlLib.list(graphQlLib.GraphQLString) },
-            //itemFormNumbers: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             sortTitle: { type: graphQlLib.GraphQLString },
             title: { type: graphQlLib.GraphQLString },
             anchorId: { type: graphQlLib.GraphQLString },

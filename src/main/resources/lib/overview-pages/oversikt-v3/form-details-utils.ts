@@ -9,9 +9,7 @@ import { buildFormDetailsMap } from './build-form-details-map';
 import { logger } from '../../utils/logging';
 import { getLayersData } from '../../localization/layers-data';
 
-export const buildFormDetailsList = (
-    formsOverviewContent: Content<'no.nav.navno:forms-overview'>
-) => {
+export const buildFormDetailsList = (formsOverviewContent: Content<'no.nav.navno:oversikt'>) => {
     const { language, data, _id } = formsOverviewContent;
     const { overviewType, audience, excludedContent, localeFallback } = data;
 
