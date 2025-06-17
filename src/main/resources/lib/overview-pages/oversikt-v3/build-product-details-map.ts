@@ -1,17 +1,17 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { ContentInOverviewPages, OverviewPageDetailedType } from './types';
+import { ContentInOverviewPages, OversiktPageDetailedType } from './types';
 
 type ProductDetailsMap = Record<string, Content<'no.nav.navno:product-details'>>;
 
 export const buildProductDetailsMap = (
     productPageContents: ContentInOverviewPages[],
-    overviewType: OverviewPageDetailedType
+    oversiktType: OversiktPageDetailedType
 ) => {
     const productDetailsIdsSet: Record<string, true> = {};
 
     productPageContents.forEach((content) => {
-        const id = content.data[overviewType];
+        const id = (content.data as Record<string, unknown>)[oversiktType] as string;
         if (!id) {
             return;
         }

@@ -1,42 +1,39 @@
 import { Content } from '/lib/xp/content';
 import { runInContext } from '../../context/run-in-context';
 import { sortByLocaleCompareOnField } from '../../utils/sort-utils';
-import { getOverviewContent } from './get-overview-content';
+import { getOversiktContent as getContentThatHasDetails } from './helpers';
 import { logger } from '../../utils/logging';
-import { transformToOverviewItem } from './transform-to-overview-item';
-import { ContentInOverviewPages, OverviewPageDetailedType, OverviewPageItem } from './types';
+import { transformProductDetail } from './transform-to-oversikt-item';
+import { ContentInOverviewPages, OversiktPageDetailedType, OversiktListItem } from './types';
 import { forceArray } from '../../utils/array-utils';
 import { getLocalizedContentWithFallbackData } from '../common/localization';
 import { buildProductDetailsMap } from './build-product-details-map';
 import { getLayersData } from '../../localization/layers-data';
 
-const buildSimpleOverviewList = (productPageContents: ContentInOverviewPages[]) =>
-    productPageContents.map((content) => transformToOverviewItem(content));
-
 const buildDetailedOverviewList = (
     productPageContents: ContentInOverviewPages[],
-    overviewType: OverviewPageDetailedType
+    oversiktType: OversiktPageDetailedType
 ) => {
-    const productDetailsMap = buildProductDetailsMap(productPageContents, overviewType);
+    const productDetailsMap = buildProductDetailsMap(productPageContents, oversiktType);
 
-    return productPageContents.reduce<OverviewPageItem[]>((acc, content) => {
-        const id = content.data[overviewType] as string;
-        const productDetails = productDetailsMap[id];
+    return productPageContents.reduce<OversiktListItem[]>((acc, content) => {
+        const id = (content.data as Record<string, unknown>)[oversiktType] as string;
+        const productDetail = productDetailsMap[id];
 
-        if (productDetails) {
-            acc.push(transformToOverviewItem(content, productDetails));
+        if (productDetail) {
+            acc.push(transformProductDetail(content, productDetail));
         }
 
         return acc;
     }, []);
 };
 
-export const buildOverviewList = (overviewContent: Content<'no.nav.navno:overview'>) => {
+export const buildProductDetailsList = (overviewContent: Content<'no.nav.navno:oversikt'>) => {
     const { data, language, _id } = overviewContent;
-    const { overviewType, audience, localeFallback, excludedContent } = data;
+    const { oversiktType, audience, localeFallback, excludedContent } = data;
 
-    if (!overviewType) {
-        logger.error(`Type not set for overview page id ${_id}`);
+    if (!oversiktType || oversiktType === 'all_products') {
+        logger.error(`Type invalid or not set set for overview page id ${_id}`);
         return [];
     }
 
@@ -45,25 +42,23 @@ export const buildOverviewList = (overviewContent: Content<'no.nav.navno:overvie
         return [];
     }
 
-    const listContents = getOverviewContent({
-        overviewType,
+    const contentWithProductDetails = getContentThatHasDetails({
+        oversiktType,
         audience,
         excludedContentIds: forceArray(excludedContent),
     });
 
     const locale = language || getLayersData().defaultLocale;
 
-    const overviewList = runInContext({ branch: 'master' }, () => {
+    const productDetails = runInContext({ branch: 'master' }, () => {
         const localizedContent = getLocalizedContentWithFallbackData({
-            contents: listContents,
+            contents: contentWithProductDetails,
             localeFallbackIds: forceArray(localeFallback),
             language: locale,
         });
 
-        return overviewType === 'all_products'
-            ? buildSimpleOverviewList(localizedContent)
-            : buildDetailedOverviewList(localizedContent, overviewType);
+        return buildDetailedOverviewList(localizedContent, oversiktType);
     });
 
-    return overviewList.sort(sortByLocaleCompareOnField('title'));
+    return productDetails.sort(sortByLocaleCompareOnField('title'));
 };

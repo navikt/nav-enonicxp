@@ -91,8 +91,6 @@ export const contentTypesWithComponents = [
     'portal:page-template',
 ] as const satisfies ContentTypeList;
 
-export const contentTypesInOverviewPages = contentTypesWithProductDetails;
-
 export const contentTypesInAllProductsOverviewPages = [
     `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
     `${APP_DESCRIPTOR}:themed-article-page`,
@@ -151,3 +149,5 @@ export const contentTypesWithTaxonomy = [
     `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
     `${APP_DESCRIPTOR}:themed-article-page`,
 ] as const satisfies ContentTypeList;
+
+export const contentTypesInOverviewPages = contentTypesWithProductDetails;

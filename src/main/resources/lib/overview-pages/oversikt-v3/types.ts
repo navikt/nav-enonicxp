@@ -1,21 +1,18 @@
 import { Content } from '/lib/xp/content';
 import {
-    contentTypesInOverviewPages,
     contentTypesWithFormDetails,
     contentTypesWithProductDetails,
 } from '../../contenttype-lists';
-import { Overview } from '@xp-types/site/content-types/overview';
-import { Taxonomy } from '@xp-types/site/mixins/taxonomy';
+import { Oversikt } from '@xp-types/site/content-types';
 import { Area } from '@xp-types/site/mixins/area';
-import { ThemedArticlePage } from '@xp-types/site/content-types/themed-article-page';
 import { ArrayOrSingle } from '../../../types/util-types';
-
-type OverviewItemTaxonomy = Taxonomy['taxonomy'] | ThemedArticlePage['taxonomy'];
+import { ContentWithTaxonomy } from '../forms-overview-v2/types';
 
 type ContentTypeWithFormDetails = (typeof contentTypesWithFormDetails)[number];
 type ContentTypeWithProductDetails = (typeof contentTypesWithProductDetails)[number];
 
 export type ContentWithFormDetails = Content<ContentTypeWithFormDetails>;
+export type ContentWithProductDetails = Content<ContentTypeWithProductDetails>;
 
 export type ProductDataInFormsOverviewItem = Pick<
     ContentWithFormDetails['data'],
@@ -23,15 +20,20 @@ export type ProductDataInFormsOverviewItem = Pick<
 >;
 
 // Generated data type definitions are incorrect due to a bug with nested mixins
-export type ContentInOverviewPages = Content<ContentTypesInOverviewPages> & {
+export type ContentInOverviewPages = Content<
+    ContentTypeWithFormDetails | ContentTypeWithProductDetails
+> & {
     data: { keywords?: ArrayOrSingle<string> };
 };
+export type Taxonomy = Pick<ContentWithTaxonomy['data'], 'taxonomy'> | null;
+export type FormDetailsMap = Record<string, Content<'no.nav.navno:form-details'>>;
 
 export type SimpleProductDetail = {
     path: string;
     type: ContentTypeWithProductDetails;
     language: string;
     title: string;
+    ingress: string;
 };
 
 export type SimpleFormDetail = {
@@ -39,36 +41,34 @@ export type SimpleFormDetail = {
     type: ContentTypeWithFormDetails;
     language: string;
     title: string;
-    formNumber: string;
+    ingress: string;
+    formNumbers: string[];
 };
 
-export type SimpleDetail = SimpleProductDetail | SimpleFormDetail;
+export type OutboundLinks = {
+    url: string;
+    type: ContentTypeWithFormDetails | ContentTypeWithProductDetails;
+    language: string;
+    title: string;
+};
 
-export type FormDetailsListItem = {
-    anchorId: string;
-    itemPaths: string[];
-    itemTitles: string[];
-    ItemIngresses: string[];
-    formNumbers: string[];
-    keywords: string[];
-    url: string | null;
-    type: ContentTypeWithFormDetails;
-    targetLanguage: string;
-    taxonomy: Taxonomy;
-} & Required<ProductDataInFormsOverviewItem>;
+export type SimpleDetail = Partial<SimpleProductDetail | SimpleFormDetail>;
 
 export type OversiktListItem = {
-    url: string;
+    url: string | null;
     anchorId?: string;
-    detailsPath?: string;
-    audience: string;
     title: string;
-    ingress: string;
-    illustration: string;
-    detailItems: SimpleProductDetail[];
-    taxonomy?: OverviewItemTaxonomy;
+    sortTitle: string;
+    taxonomy?: Taxonomy;
+    audience: string;
+    targetLanguage: string;
     area: Area['area'];
     keywords?: ArrayOrSingle<string>;
+    productLinks?: OutboundLinks[];
+    type: ContentTypeWithFormDetails | ContentTypeWithProductDetails;
+    ingress: string;
+    illustration: string;
+    subItems: SimpleDetail[];
 };
 
-export type OverviewPageDetailedType = Exclude<Overview['overviewType'], 'all_products'>;
+export type OversiktPageDetailedType = Exclude<Oversikt['oversiktType'], 'all_products'>;

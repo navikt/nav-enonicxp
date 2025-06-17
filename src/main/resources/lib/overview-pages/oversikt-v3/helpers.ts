@@ -4,16 +4,16 @@ import {
     contentTypesInOverviewPages,
 } from '../../contenttype-lists';
 import { forceArray } from '../../utils/array-utils';
-import { Overview } from '@xp-types/site/content-types/overview';
+import { Oversikt } from '@xp-types/site/content-types';
 
 type Args = {
-    overviewType: Overview['overviewType'];
-    audience: Overview['audience'];
+    oversiktType: Oversikt['oversiktType'];
+    audience: Oversikt['audience'];
     excludedContentIds: string[];
 };
 
-export const getOverviewContent = ({ overviewType, audience, excludedContentIds }: Args) => {
-    const isAllProductsType = overviewType === 'all_products';
+export const getOversiktContent = ({ oversiktType, audience, excludedContentIds }: Args) => {
+    const isAllProductsType = oversiktType === 'all_products';
 
     return contentLib.query({
         start: 0,
@@ -34,7 +34,7 @@ export const getOverviewContent = ({ overviewType, audience, excludedContentIds 
                         ? [
                               {
                                   exists: {
-                                      field: `data.${overviewType}`,
+                                      field: `data.${oversiktType}`,
                                   },
                               },
                           ]

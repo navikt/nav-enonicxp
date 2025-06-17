@@ -18,7 +18,7 @@ export type Oversikt = {
   /**
    * Velg type oversikt
    */
-  overviewType: "application" | "complaint" | "addendum" | "rates" | "payout_dates" | "processing_times" | "all_products";
+  oversiktType: "application" | "complaint" | "addendum" | "rates" | "payout_dates" | "processing_times" | "all_products";
 
   /**
    * Velg piktogram

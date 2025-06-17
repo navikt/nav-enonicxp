@@ -1,17 +1,60 @@
 import { Content } from '/lib/xp/content';
 import { forceArray } from '../../utils/array-utils';
-import { OversiktListItem } from './types';
-import { getFormsOverviewListItemTransformer } from './transform-to-forms-overview-item';
+import { FormDetailsMap, OversiktListItem } from './types';
 import { sortByLocaleCompareOnField } from '../../utils/sort-utils';
-import { getFormsOverviewContent } from './get-forms-overview-content';
+import { getOversiktContent } from './helpers';
 import { getLocalizedContentWithFallbackData } from '../common/localization';
-import { buildFormDetailsMap } from './build-form-details-map';
 import { logger } from '../../utils/logging';
 import { getLayersData } from '../../localization/layers-data';
 
+import * as contentLib from '/lib/xp/content';
+import { ContentWithFormDetails } from './types';
+import { Oversikt } from '@xp-types/site/content-types/oversikt';
+import { getFormsOverviewListItemTransformer } from './transform-to-oversikt-item';
+
+const buildFormDetailsDictionary = (
+    contentWithFormDetails: ContentWithFormDetails[],
+    oversiktType: Oversikt['oversiktType']
+) => {
+    const formDetailsIdsSet: Record<string, true> = {};
+
+    contentWithFormDetails.forEach((content) => {
+        forceArray(content.data.formDetailsTargets).forEach(
+            (targetId) => (formDetailsIdsSet[targetId] = true)
+        );
+    }, []);
+
+    const formDetailsIds = Object.keys(formDetailsIdsSet);
+
+    const formDetailsContent = contentLib.query({
+        count: formDetailsIds.length,
+        contentTypes: ['no.nav.navno:form-details'],
+        filters: {
+            ids: {
+                values: formDetailsIds,
+            },
+            boolean: {
+                must: [
+                    {
+                        hasValue: {
+                            field: 'data.formType._selected',
+                            values: [oversiktType],
+                        },
+                    },
+                ],
+            },
+        },
+    }).hits;
+
+    return formDetailsContent.reduce<FormDetailsMap>((acc, formDetail) => {
+        acc[formDetail._id] = formDetail;
+        return acc;
+    }, {});
+};
+
 export const buildFormDetailsList = (formsOverviewContent: Content<'no.nav.navno:oversikt'>) => {
     const { language, data, _id } = formsOverviewContent;
-    const { overviewType, audience, excludedContent, localeFallback } = data;
+    const { oversiktType, audience, excludedContent, localeFallback } = data;
 
     if (!audience?._selected) {
         logger.error(`Audience not set for overview page ${_id} (${language})`);
@@ -24,29 +67,33 @@ export const buildFormDetailsList = (formsOverviewContent: Content<'no.nav.navno
         return [];
     }
 
-    if (!overviewType) {
-        logger.error(`Overview type not set for overview page ${_id} (${language})`);
+    if (!oversiktType || oversiktType === 'all_products') {
+        logger.error(`Oversikt type invalid or not set for overview page ${_id} (${language})`);
         return [];
     }
 
-    const listContent = getFormsOverviewContent({
+    const contentWithFormDetails = getOversiktContent({
+        oversiktType,
         audience,
         excludedContentIds: forceArray(excludedContent),
     });
 
     const locale = language || getLayersData().defaultLocale;
 
-    const localizedContent = getLocalizedContentWithFallbackData({
-        contents: listContent,
+    const localizedContentWithFormDetails = getLocalizedContentWithFallbackData({
+        contents: contentWithFormDetails,
         localeFallbackIds: forceArray(localeFallback),
         language: locale,
     });
 
-    const formDetailsMap = buildFormDetailsMap(localizedContent, overviewType);
+    const formDetailsDictionary = buildFormDetailsDictionary(
+        localizedContentWithFormDetails,
+        oversiktType
+    );
 
-    const listItemTransformer = getFormsOverviewListItemTransformer(formDetailsMap, locale);
+    const listItemTransformer = getFormsOverviewListItemTransformer(formDetailsDictionary, locale);
 
-    return localizedContent
+    return localizedContentWithFormDetails
         .reduce<OversiktListItem[]>((acc, content) => {
             const transformedItem = listItemTransformer(content);
             if (transformedItem) {

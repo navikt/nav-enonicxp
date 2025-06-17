@@ -4,19 +4,25 @@ import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-
 import { logger } from '../../../utils/logging';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
 import { buildFormDetailsList } from '../../../overview-pages/oversikt-v3/form-details-utils';
-import { OversiktListItem, SimpleDetail } from '../../../overview-pages/oversikt-v3/types';
+import {
+    OutboundLinks,
+    OversiktListItem,
+    SimpleDetail,
+} from '../../../overview-pages/oversikt-v3/types';
+import { buildProductDetailsList } from '../../../overview-pages/oversikt-v3/product-details-utils';
+import { buildBasicServicesList } from '../../../overview-pages/oversikt-v3/basic-services-utils';
 
 const buildItemList = (content: contentLib.Content<'no.nav.navno:oversikt'>) => {
     if (
-        content.data.overviewType === 'application' ||
-        content.data.overviewType === 'addendum' ||
-        content.data.overviewType === 'complaint'
+        content.data.oversiktType === 'application' ||
+        content.data.oversiktType === 'addendum' ||
+        content.data.oversiktType === 'complaint'
     ) {
         return buildFormDetailsList(content);
     } else if (
-        content.data.overviewType === 'rates' ||
-        content.data.overviewType === 'payout_dates' ||
-        content.data.overviewType === 'processing_times'
+        content.data.oversiktType === 'rates' ||
+        content.data.oversiktType === 'payout_dates' ||
+        content.data.oversiktType === 'processing_times'
     ) {
         return buildProductDetailsList(content);
     } else {
@@ -33,7 +39,19 @@ export const oversiktDataCallback: CreationCallback = (context, params) => {
             language: { type: graphQlLib.GraphQLString },
             title: { type: graphQlLib.GraphQLString },
             type: { type: graphQlLib.GraphQLString },
-            formNumber: { type: graphQlLib.GraphQLString },
+            ingress: { type: graphQlLib.GraphQLString },
+            formNumbers: { type: graphQlLib.GraphQLString },
+        },
+    });
+
+    const OutboundLinksSchema = graphQlCreateObjectType<keyof OutboundLinks>(context, {
+        name: context.uniqueName('OutboundLinks'),
+        description: 'Outbound links to external resources',
+        fields: {
+            url: { type: graphQlLib.GraphQLString },
+            type: { type: graphQlLib.GraphQLString },
+            language: { type: graphQlLib.GraphQLString },
+            title: { type: graphQlLib.GraphQLString },
         },
     });
 
@@ -43,9 +61,10 @@ export const oversiktDataCallback: CreationCallback = (context, params) => {
             'Liste over sider med produktdetaljer, skjemadetaljer eller grunnleggende oversikt over tjenester',
         fields: {
             url: { type: graphQlLib.GraphQLString },
+            type: { type: graphQlLib.GraphQLString },
             detailsPath: { type: graphQlLib.GraphQLString },
             audience: { type: graphQlLib.GraphQLString },
-            detailItems: {
+            subItems: {
                 type: graphQlLib.list(SimpleFormDetailSchema),
             },
             targetLanguage: { type: graphQlLib.GraphQLString },
@@ -56,6 +75,9 @@ export const oversiktDataCallback: CreationCallback = (context, params) => {
             anchorId: { type: graphQlLib.GraphQLString },
             taxonomy: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             area: { type: graphQlLib.list(graphQlLib.GraphQLString) },
+            productLinks: {
+                type: graphQlLib.list(OutboundLinksSchema),
+            },
             illustration: {
                 type: graphQlLib.reference('Content'),
                 resolve: (env) => {
