@@ -10,9 +10,8 @@ const transformToResponseItem = (content: Content) => ({
 });
 
 export const getGlobalValueUsageService = (req: Request): Response => {
-    const
-        key = req.params.key as string,
-        contentId = req.params.contentId as string;
+    const key = req.params.key as string;
+    const contentId = req.params.contentId as string;
 
     if (!key || !contentId) {
         return gvServiceInvalidRequestResponse(

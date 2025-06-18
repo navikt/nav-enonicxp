@@ -4,9 +4,9 @@ import { migrateContentToLayer } from '../../../../lib/localization/layers-migra
 import { CONTENT_LOCALE_DEFAULT } from '../../../../lib/constants';
 
 export const migrateContentToLayerWidgetHandler = (req: Request) : Response => {
-    const   sourceId = req.params.sourceId as string,
-            targetLocale = req.params.targetLocale as string,
-            targetId = req.params.targetId as string;
+    const sourceId = req.params.sourceId as string;
+    const targetLocale = req.params.targetLocale as string;
+    const targetId = req.params.targetId as string;
 
     if (!targetLocale) {
         return {

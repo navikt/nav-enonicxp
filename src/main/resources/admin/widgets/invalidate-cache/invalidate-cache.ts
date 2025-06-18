@@ -8,8 +8,8 @@ import { runInLocaleContext } from '../../../lib/localization/locale-context';
 const view = resolve('./invalidate-cache.html');
 
 export const get = (req: Request) : Response => {
-    const   contentId = req.params.contentId as string,
-            repository = req.params.repository as string;
+    const contentId = req.params.contentId as string;
+    const repository = req.params.repository as string;
 
     if (!contentId || !repository) {
         return {

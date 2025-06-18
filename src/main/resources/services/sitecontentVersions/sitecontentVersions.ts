@@ -18,11 +18,10 @@ const isValidTime = (time?: string): time is string => {
 };
 
 const sitecontentVersionsReqHandler = (req: Request) : Response => {
-    const
-        id = req.params.id as string,
-        branch = req.params.branch ? req.params.branch as string : "master",
-        time = req.params.time as string,
-        locale = req.params.locale as string;
+    const id = req.params.id as string;
+    const branch = req.params.branch ? req.params.branch as string : "master";
+    const time = req.params.time as string;
+    const locale = req.params.locale as string;
 
     if (!id || !isUUID(id)) {
         return {

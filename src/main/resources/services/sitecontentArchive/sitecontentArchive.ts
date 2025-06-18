@@ -17,10 +17,9 @@ export const get = (req: Request) : Response => {
         };
     }
 
-    const
-        idOrArchivedPath= req.params.id as string,
-        locale = req.params.locale as string,
-        time = req.params.time as string;
+    const idOrArchivedPath= req.params.id as string;
+    const locale = req.params.locale as string;
+    const time = req.params.time as string;
 
     if (!idOrArchivedPath) {
         return {

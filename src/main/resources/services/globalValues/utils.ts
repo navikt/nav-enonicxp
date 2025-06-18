@@ -46,10 +46,9 @@ const validateCaseTimeParams = ({ value, unit }: Partial<GlobalCaseTimesInputPar
 };
 
 export const validateGlobalValueInputAndGetErrorResponse = (params: Request['params']) : Response | null => {
-    const
-        contentId = params.contentId as string,
-        itemName = params.itemName as string,
-        type = params.type as string;
+    const contentId = params.contentId as string;
+    const itemName = params.itemName as string;
+    const type = params.type as string;
 
     if (!contentId || !itemName || !type) {
         return gvServiceInvalidRequestResponse(

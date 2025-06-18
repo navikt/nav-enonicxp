@@ -60,8 +60,8 @@ const restoreFromArchive = (
     });
 
 export const archiveRestoreResponse = (req: Request) : Response => {
-    const   contentId = req.params.contentId as string,
-            selectedContent = req.params.selectedContent as string;
+    const contentId = req.params.contentId as string;
+    const selectedContent = req.params.selectedContent as string;
 
     if (!selectedContent || !contentId) {
         return {

@@ -18,9 +18,8 @@ const validateKeys = (keysFromParam: string[], valueItems: GlobalValueItem[]) =>
 };
 
 export const reorderGlobalValuesService = (req: Request) : Response => {
-    const
-        contentId = req.params.contentId as string,
-        orderedKeys = req.params.orderedKeys as string;
+    const contentId = req.params.contentId as string;
+    const orderedKeys = req.params.orderedKeys as string;
 
     if (!contentId || !orderedKeys) {
         return gvServiceInvalidRequestResponse(

@@ -7,9 +7,8 @@ import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { getLayersData } from '../../lib/localization/layers-data';
 
 export const get = (req: Request)  => {
-    const
-        contentId = req.params.contentId as string,
-        locale = req.params.locale as string;
+    const contentId = req.params.contentId as string;
+    const locale = req.params.locale as string;
 
     if (!contentId) {
         const msg = 'No contentId specified for cache invalidate service';

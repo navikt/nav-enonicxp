@@ -52,9 +52,11 @@ export const validateCurrentUserPermissionForContent = (
         return hasPermission ? [...acc, principal.principal] : acc;
     }, []);
 
-    return  allowedPrincipals.some((allowedPrincipal) =>
+    const currentUserHasAccess = allowedPrincipals.some((allowedPrincipal) =>
         currentUserPrincipals.some((currentPrincipal) => currentPrincipal === allowedPrincipal)
     );
+
+    return currentUserHasAccess;
 };
 
 export const validateServiceSecretHeader = (req: Request) =>

@@ -17,9 +17,8 @@ import {
 } from '../../../lib/global-values/global-value-utils';
 
 export const removeGlobalValueItemService = (req: Request) => {
-    const
-        key = req.params.key as string,
-        contentId = req.params.contentId as string;
+    const key = req.params.key as string;
+    const contentId = req.params.contentId as string;
 
     if (!validateCurrentUserPermissionForContent(contentId, 'DELETE')) {
         return insufficientPermissionResponse('DELETE');

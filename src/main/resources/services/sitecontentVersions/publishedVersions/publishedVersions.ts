@@ -5,9 +5,8 @@ import { getLayersData } from '../../../lib/localization/layers-data';
 import { getPublishedAndModifiedVersions } from '../../../lib/time-travel/get-published-versions';
 
 export const publishedVersionsReqHandler = (req: Request) : Response => {
-    const
-        id = req.params.id as string,
-        locale = req.params.locale as string;
+    const id = req.params.id as string;
+    const locale = req.params.locale as string;
 
     if (!id || !isUUID(id)) {
         return {
