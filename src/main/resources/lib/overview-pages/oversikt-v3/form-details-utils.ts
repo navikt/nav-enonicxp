@@ -63,6 +63,7 @@ export const buildFormDetailsList = (formsOverviewContent: Content<'no.nav.navno
 
     const isTransportPage =
         audience._selected === 'provider' && audience.provider.pageType?._selected === 'links';
+
     if (isTransportPage) {
         return [];
     }
@@ -92,7 +93,9 @@ export const buildFormDetailsList = (formsOverviewContent: Content<'no.nav.navno
     );
 
     const listItemTransformer = getFormsOverviewListItemTransformer(formDetailsDictionary, locale);
-
+    logger.info(
+        `localizedContentWithFormDetails length: ${localizedContentWithFormDetails.length}`
+    );
     return localizedContentWithFormDetails
         .reduce<OversiktListItem[]>((acc, content) => {
             const transformedItem = listItemTransformer(content);

@@ -31,21 +31,33 @@ fragment oversiktPage on no_nav_navno_Oversikt {
         illustration {
             ...animatedIconsTargetMixin
         }
-        oversiktList {
+        itemList {
+            url
+            type
+            audience
             title
             sortTitle
-            url
+            anchorId
             targetLanguage
-            type
             ingress
             keywords
-            itemPaths
-            itemTitles
-            ItemIngresses
-            formNumbers
-            area
             taxonomy
-            anchorId
+            area
+            detailsPath
+            productLinks {
+                url
+                type
+                language
+                title
+            }
+            subItems {
+                path
+                language
+                title
+                type
+                ingress
+                formNumbers
+            }
             illustration {
                 ... on no_nav_navno_AnimatedIcons {
                     type

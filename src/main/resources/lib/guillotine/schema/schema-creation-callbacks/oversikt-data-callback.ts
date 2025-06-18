@@ -13,6 +13,7 @@ import { buildProductDetailsList } from '../../../overview-pages/oversikt-v3/pro
 import { buildBasicServicesList } from '../../../overview-pages/oversikt-v3/basic-services-utils';
 
 const buildItemList = (content: contentLib.Content<'no.nav.navno:oversikt'>) => {
+    logger.info(`Building item list for content with ID: ${content.data.oversiktType}`);
     if (
         content.data.oversiktType === 'application' ||
         content.data.oversiktType === 'addendum' ||
@@ -40,7 +41,7 @@ export const oversiktDataCallback: CreationCallback = (context, params) => {
             title: { type: graphQlLib.GraphQLString },
             type: { type: graphQlLib.GraphQLString },
             ingress: { type: graphQlLib.GraphQLString },
-            formNumbers: { type: graphQlLib.GraphQLString },
+            formNumbers: { type: graphQlLib.list(graphQlLib.GraphQLString) },
         },
     });
 
@@ -62,21 +63,21 @@ export const oversiktDataCallback: CreationCallback = (context, params) => {
         fields: {
             url: { type: graphQlLib.GraphQLString },
             type: { type: graphQlLib.GraphQLString },
-            detailsPath: { type: graphQlLib.GraphQLString },
             audience: { type: graphQlLib.GraphQLString },
-            subItems: {
-                type: graphQlLib.list(SimpleFormDetailSchema),
-            },
+            title: { type: graphQlLib.GraphQLString },
+            sortTitle: { type: graphQlLib.GraphQLString },
+            anchorId: { type: graphQlLib.GraphQLString },
             targetLanguage: { type: graphQlLib.GraphQLString },
             ingress: { type: graphQlLib.GraphQLString },
             keywords: { type: graphQlLib.list(graphQlLib.GraphQLString) },
-            sortTitle: { type: graphQlLib.GraphQLString },
-            title: { type: graphQlLib.GraphQLString },
-            anchorId: { type: graphQlLib.GraphQLString },
             taxonomy: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             area: { type: graphQlLib.list(graphQlLib.GraphQLString) },
+            detailsPath: { type: graphQlLib.GraphQLString },
             productLinks: {
                 type: graphQlLib.list(OutboundLinksSchema),
+            },
+            subItems: {
+                type: graphQlLib.list(SimpleFormDetailSchema),
             },
             illustration: {
                 type: graphQlLib.reference('Content'),

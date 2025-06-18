@@ -5,6 +5,7 @@ import {
 } from '../../contenttype-lists';
 import { forceArray } from '../../utils/array-utils';
 import { Oversikt } from '@xp-types/site/content-types';
+import { logger } from '../../utils/logging';
 
 type Args = {
     oversiktType: Oversikt['oversiktType'];
@@ -15,7 +16,7 @@ type Args = {
 export const getOversiktContent = ({ oversiktType, audience, excludedContentIds }: Args) => {
     const isAllProductsType = oversiktType === 'all_products';
 
-    return contentLib.query({
+    const query = {
         start: 0,
         count: 1000,
         contentTypes: isAllProductsType
@@ -27,7 +28,7 @@ export const getOversiktContent = ({ oversiktType, audience, excludedContentIds 
                     {
                         hasValue: {
                             field: 'data.audience._selected',
-                            values: forceArray(audience),
+                            values: forceArray(audience._selected),
                         },
                     },
                     ...(!isAllProductsType
@@ -66,5 +67,8 @@ export const getOversiktContent = ({ oversiktType, audience, excludedContentIds 
                 ],
             },
         },
-    }).hits;
+    };
+
+    logger.info(JSON.stringify(query, null, 2));
+    return contentLib.query(query).hits;
 };
