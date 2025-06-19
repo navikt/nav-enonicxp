@@ -43,10 +43,6 @@
                     <label>Vis område-filter</label>
                     <default>checked</default>
                 </input>
-                <input name="taxonomyFilterToggle" type="CheckBox">
-                    <label>Vis kategori-filter</label>
-                    <default>checked</default>
-                </input>
                 <input name="textFilterToggle" type="CheckBox">
                     <label>Vis fritekst-filter</label>
                     <default>checked</default>

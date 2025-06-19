@@ -25,6 +25,7 @@ export const dynamicPageContentTypes = [
     `${APP_DESCRIPTOR}:form-intermediate-step`,
     `${APP_DESCRIPTOR}:generic-page`,
     `${APP_DESCRIPTOR}:overview`,
+    `${APP_DESCRIPTOR}:oversikt`,
     `${APP_DESCRIPTOR}:office-page`,
     `${APP_DESCRIPTOR}:front-page`,
     `${APP_DESCRIPTOR}:front-page-nested`,

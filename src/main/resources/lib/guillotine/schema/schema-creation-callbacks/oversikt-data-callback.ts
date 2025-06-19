@@ -11,20 +11,13 @@ import {
 } from '../../../overview-pages/oversikt-v3/types';
 import { buildProductDetailsList } from '../../../overview-pages/oversikt-v3/product-details-utils';
 import { buildBasicServicesList } from '../../../overview-pages/oversikt-v3/basic-services-utils';
+import { getOversiktCategory } from '../../../../lib/overview-pages/oversikt-v3/helpers';
 
 const buildItemList = (content: contentLib.Content<'no.nav.navno:oversikt'>) => {
     logger.info(`Building item list for content with ID: ${content.data.oversiktType}`);
-    if (
-        content.data.oversiktType === 'application' ||
-        content.data.oversiktType === 'addendum' ||
-        content.data.oversiktType === 'complaint'
-    ) {
+    if (getOversiktCategory(content.data.oversiktType) === 'formDetails') {
         return buildFormDetailsList(content);
-    } else if (
-        content.data.oversiktType === 'rates' ||
-        content.data.oversiktType === 'payout_dates' ||
-        content.data.oversiktType === 'processing_times'
-    ) {
+    } else if (getOversiktCategory(content.data.oversiktType) === 'productDetails') {
         return buildProductDetailsList(content);
     } else {
         return buildBasicServicesList(content);

@@ -41,11 +41,6 @@ export type Oversikt = {
   areasFilterToggle: boolean;
 
   /**
-   * Vis kategori-filter
-   */
-  taxonomyFilterToggle: boolean;
-
-  /**
    * Vis fritekst-filter
    */
   textFilterToggle: boolean;

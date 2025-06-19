@@ -13,15 +13,34 @@ type Args = {
     excludedContentIds: string[];
 };
 
+export const getOversiktCategory = (oversiktType: Oversikt['oversiktType']) => {
+    if (
+        oversiktType === 'application' ||
+        oversiktType === 'addendum' ||
+        oversiktType === 'complaint'
+    ) {
+        return 'formDetails';
+    } else if (
+        oversiktType === 'rates' ||
+        oversiktType === 'payout_dates' ||
+        oversiktType === 'processing_times'
+    ) {
+        return 'productDetails';
+    } else {
+        return 'basicServices';
+    }
+};
+
 export const getOversiktContent = ({ oversiktType, audience, excludedContentIds }: Args) => {
-    const isAllProductsType = oversiktType === 'all_products';
+    const oversiktCategory = getOversiktCategory(oversiktType);
 
     const query = {
         start: 0,
         count: 1000,
-        contentTypes: isAllProductsType
-            ? contentTypesInAllProductsOverviewPages
-            : contentTypesInOverviewPages,
+        contentTypes:
+            oversiktCategory === 'basicServices'
+                ? contentTypesInAllProductsOverviewPages
+                : contentTypesInOverviewPages,
         filters: {
             boolean: {
                 must: [
@@ -31,11 +50,20 @@ export const getOversiktContent = ({ oversiktType, audience, excludedContentIds 
                             values: forceArray(audience._selected),
                         },
                     },
-                    ...(!isAllProductsType
+                    ...(oversiktCategory === 'productDetails'
                         ? [
                               {
                                   exists: {
                                       field: `data.${oversiktType}`,
+                                  },
+                              },
+                          ]
+                        : []),
+                    ...(oversiktCategory === 'formDetails'
+                        ? [
+                              {
+                                  exists: {
+                                      field: `data.formDetailsTargets`,
                                   },
                               },
                           ]

@@ -55,6 +55,7 @@ const buildFormDetailsDictionary = (
 export const buildFormDetailsList = (formsOverviewContent: Content<'no.nav.navno:oversikt'>) => {
     const { language, data, _id } = formsOverviewContent;
     const { oversiktType, audience, excludedContent, localeFallback } = data;
+    logger.info('Running buildFormDetailsList')
 
     if (!audience?._selected) {
         logger.error(`Audience not set for overview page ${_id} (${language})`);
@@ -78,6 +79,8 @@ export const buildFormDetailsList = (formsOverviewContent: Content<'no.nav.navno
         audience,
         excludedContentIds: forceArray(excludedContent),
     });
+
+    logger.info(JSON.stringify(contentWithFormDetails, null, 2))
 
     const locale = language || getLayersData().defaultLocale;
 
