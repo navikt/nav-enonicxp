@@ -4,7 +4,7 @@
 fragment oversiktPage on no_nav_navno_Oversikt {
     dataAsJson
     data {
-        audience {
+        g {
             _selected
             provider {
                 pageType {
