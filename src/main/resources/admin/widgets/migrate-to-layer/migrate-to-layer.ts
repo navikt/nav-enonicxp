@@ -1,3 +1,4 @@
+import { Request, Response } from '@enonic-types/core'
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import thymeleafLib from '/lib/thymeleaf';
@@ -9,9 +10,9 @@ import {
     URLS,
 } from '../../../lib/constants';
 import { getLayersData } from '../../../lib/localization/layers-data';
+import { batchedContentQuery } from '../../../lib/utils/batched-query';
 import { getServiceRequestSubPath } from '../../../services/service-utils';
 import { migrateContentToLayerWidgetHandler } from './migrate-handler/migrate-handler';
-import { batchedContentQuery } from '../../../lib/utils/batched-query';
 
 const view = resolve('./migrate-to-layer.html');
 
@@ -44,9 +45,9 @@ const getTargetOptions = (content: Content) => {
 const isApplicableContentType = (content: Content) =>
     content.type.startsWith(APP_DESCRIPTOR) || content.type === 'portal:fragment';
 
-export const widgetResponse = (req: XP.Request) => {
+export const widgetResponse = (req: Request) : Response => {
     const { repositoryId, contextPath } = req;
-    const { contentId } = req.params;
+    const contentId = req.params.contentId as string;
 
     if (!contentId) {
         return {
@@ -84,10 +85,7 @@ export const widgetResponse = (req: XP.Request) => {
         };
     }
 
-    const migrateHandlerUrl = `${URLS.PORTAL_ADMIN_ORIGIN}${contextPath}/${MIGRATE_HANDLER_PATH}`;
-
     const { locales, defaultLocale } = getLayersData();
-
     const nonDefaultLocales = locales.filter((locale) => locale !== CONTENT_LOCALE_DEFAULT);
     if (nonDefaultLocales.length === 0) {
         return {
@@ -96,9 +94,8 @@ export const widgetResponse = (req: XP.Request) => {
         };
     }
 
-    if (
-        !content.language ||
-        (content.language === defaultLocale && content.type !== 'portal:fragment')
+    if (    !content.language ||
+            (content.language === defaultLocale && content.type !== 'portal:fragment')
     ) {
         return {
             body: `<widget>Denne widgeten kan ikke benyttes for innhold på default-språket (${defaultLocale})</widget>`,
@@ -114,7 +111,7 @@ export const widgetResponse = (req: XP.Request) => {
     }
 
     const targetOptions = getTargetOptions(content);
-
+    const migrateHandlerUrl = `${URLS.PORTAL_ADMIN_ORIGIN}${contextPath}/${MIGRATE_HANDLER_PATH}`;
     const model = {
         locales: nonDefaultLocales,
         contentLocale: content.language,
@@ -129,7 +126,7 @@ export const widgetResponse = (req: XP.Request) => {
     };
 };
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) => {
     const subPath = getServiceRequestSubPath(req);
 
     if (subPath === MIGRATE_HANDLER_PATH) {

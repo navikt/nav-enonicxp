@@ -1,3 +1,4 @@
+import { Request, Response } from '@enonic-types/core'
 import * as contentLib from '/lib/xp/content';
 import * as portalLib from '/lib/xp/portal';
 import thymeleafLib from '/lib/thymeleaf';
@@ -14,9 +15,9 @@ const getAllowedTypes = () => {
         );
 };
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) : Response => {
     const { repositoryId } = req;
-    const { contentId } = req.params;
+    const contentId = req.params.contentId as string;
 
     if (!validateCurrentUserPermissionForContent(contentId, 'PUBLISH')) {
         return {

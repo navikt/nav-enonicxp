@@ -1,3 +1,4 @@
+import { Request, Response } from '@enonic-types/core';
 import {
     insufficientPermissionResponse,
     validateCurrentUserPermissionForContent,
@@ -44,8 +45,10 @@ const validateCaseTimeParams = ({ value, unit }: Partial<GlobalCaseTimesInputPar
     return null;
 };
 
-export const validateGlobalValueInputAndGetErrorResponse = (params: XP.Request['params']) => {
-    const { contentId, itemName, type } = params;
+export const validateGlobalValueInputAndGetErrorResponse = (params: Request['params']) : Response | null => {
+    const contentId = params.contentId as string;
+    const itemName = params.itemName as string;
+    const type = params.type as string;
 
     if (!contentId || !itemName || !type) {
         return gvServiceInvalidRequestResponse(
@@ -69,7 +72,7 @@ export const validateGlobalValueInputAndGetErrorResponse = (params: XP.Request['
     return gvServiceInvalidRequestResponse(`Invalid value type ${type}`);
 };
 
-export const gvServiceInvalidRequestResponse = (msg: string) => ({
+export const gvServiceInvalidRequestResponse = (msg: string) : Response => ({
     status: 400,
     contentType: 'application/json',
     body: {

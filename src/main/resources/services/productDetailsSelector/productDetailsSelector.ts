@@ -1,3 +1,4 @@
+import { Request } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
 import * as portalLib from '/lib/xp/portal';
 import { Content } from '/lib/xp/content';
@@ -9,17 +10,22 @@ import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { ProductDetails } from '@xp-types/site/content-types';
 
 type ProductDetailsType = ProductDetails['detailType'];
-type ProductDetailsContentType = Content<'no.nav.navno:product-details'>;
-type SelectorHit = XP.CustomSelectorServiceResponseHit;
+const PRODUCT_DETAIL_TYPES = [
+    'rates',
+    'payout_dates',
+    'processing_times',
+] as const satisfies readonly ProductDetailsType[];
 
-type SelectorParams = {
-    detailType: ProductDetailsType;
-};
+function isProductDetailsType(value: string | string[]): value is ProductDetailsType {
+    return PRODUCT_DETAIL_TYPES.includes(value as ProductDetailsType);
+}
+
+type ProductDetailsContentType = Content<'no.nav.navno:product-details'>;
 
 const makeDescription = (content: Content) =>
     `[${content.language}] ${stripPathPrefix(content._path)}`;
 
-const transformHit = (content: ProductDetailsContentType): SelectorHit =>
+const transformHit = (content: ProductDetailsContentType) =>
     customSelectorHitWithLink(
         {
             id: content._id,
@@ -29,7 +35,7 @@ const transformHit = (content: ProductDetailsContentType): SelectorHit =>
         content._id
     );
 
-const makeErrorHit = (id: string, displayName: string, description: string): SelectorHit =>
+const makeErrorHit = (id: string, displayName: string, description: string) =>
     customSelectorHitWithLink(
         {
             id,
@@ -80,11 +86,7 @@ const getSelectedHit = (selectedId: string, detailType: ProductDetailsType, loca
     return transformHit(publishedContent);
 };
 
-const getHitsFromQuery = (
-    detailType: ProductDetailsType,
-    locale: string,
-    query?: string
-): SelectorHit[] => {
+const getHitsFromQuery = (detailType: ProductDetailsType, locale: string, query?: string) => {
     const { hits } = runInLocaleContext({ branch: 'master', locale }, () =>
         contentLib.query({
             count: 1000,
@@ -106,9 +108,10 @@ const getHitsFromQuery = (
     return hits.map(transformHit);
 };
 
-const selectorHandler = (req: XP.Request<XP.CustomSelectorServiceParams & SelectorParams>) => {
-    const { detailType, query } = req.params;
-    if (!detailType) {
+const selectorHandler = (req: Request) => {
+    const detailType = req.params.detailType;
+    const query = req.params.query as string;
+    if (!detailType || !isProductDetailsType(detailType)) {
         return {
             status: 400,
         };
@@ -138,6 +141,6 @@ const selectorHandler = (req: XP.Request<XP.CustomSelectorServiceParams & Select
     };
 };
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) => {
     return selectorHandler(req);
 };

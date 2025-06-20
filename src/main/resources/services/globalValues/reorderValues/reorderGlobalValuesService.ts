@@ -1,3 +1,5 @@
+import { Request, Response } from '@enonic-types/core';
+import { Content } from '/lib/xp/content';
 import { getRepoConnection } from '../../../lib/repos/repo-utils';
 import { gvServiceInvalidRequestResponse } from '../utils';
 import { getGlobalValueSet } from '../../../lib/global-values/global-value-utils';
@@ -6,7 +8,6 @@ import { GlobalValueItem } from '../../../lib/global-values/types';
 import { forceArray, parseJsonToArray } from '../../../lib/utils/array-utils';
 import { applyModifiedData } from '../../../lib/utils/content-utils';
 import { CONTENT_ROOT_REPO_ID } from '../../../lib/constants';
-import { Content } from '/lib/xp/content';
 
 // Verify that the keys-array from the request matches the keys in the global values set
 const validateKeys = (keysFromParam: string[], valueItems: GlobalValueItem[]) => {
@@ -16,8 +17,9 @@ const validateKeys = (keysFromParam: string[], valueItems: GlobalValueItem[]) =>
     );
 };
 
-export const reorderGlobalValuesService = (req: XP.Request) => {
-    const { contentId, orderedKeys } = req.params;
+export const reorderGlobalValuesService = (req: Request) : Response => {
+    const contentId = req.params.contentId as string;
+    const orderedKeys = req.params.orderedKeys as string;
 
     if (!contentId || !orderedKeys) {
         return gvServiceInvalidRequestResponse(

@@ -1,10 +1,11 @@
+import { ErrorRequest } from '@enonic-types/core';
 import thymeleafLib from '/lib/thymeleaf';
 import { frontendProxy } from '../../lib/controllers/frontend-proxy';
 import { NAVNO_ROOT_PATH } from '../../lib/constants';
 
 const basicErrorView = resolve('error.html');
 
-export const handleError = (req: XP.ErrorRequest) => {
+export const handleError = (req: ErrorRequest) => {
     // For non-404 errors, return a basic error message
     if (req.status !== 404) {
         return {

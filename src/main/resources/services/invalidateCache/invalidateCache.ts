@@ -1,3 +1,4 @@
+import { Request } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
 import * as eventLib from '/lib/xp/event';
 import { CACHE_INVALIDATE_EVENT_NAME } from '../../lib/cache/cache-invalidate';
@@ -5,8 +6,9 @@ import { logger } from '../../lib/utils/logging';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { getLayersData } from '../../lib/localization/layers-data';
 
-export const get = (req: XP.Request) => {
-    const { contentId, locale } = req.params;
+export const get = (req: Request)  => {
+    const contentId = req.params.contentId as string;
+    const locale = req.params.locale as string;
 
     if (!contentId) {
         const msg = 'No contentId specified for cache invalidate service';
