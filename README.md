@@ -132,3 +132,11 @@ go to portal-admin of the environment you wish to restart:
 Then just use the Applications link ({baseurl}/admin/tool/com.enonic.xp.app.applications/main). When
 you select the app you will see buttons on the top of the page for stopping and starting the app.
 
+## Viktig å huske på
+### Unngå endring av feltnavn i Enonic-innholdstyper
+Endring av feltnavn i Enonic (f.eks. fra `html` til `editorial` i et `richText`-felt) medfører at 
+referanser til tidligere data brytes. Verdiene eksisterer fortsatt i nodenes rådata, men blir 
+ikke hentet ut via GraphQL-spørringer og vises heller ikke i Content Studio eller frontend. Dette 
+skyldes at Enonic ikke har støtte for migrering av datamodeller. Dersom historikk eller gjenbruk 
+av eksisterende innhold er viktig, må navnekonvensjoner holdes stabile eller endringer håndteres 
+eksplisitt via migreringsscript.
