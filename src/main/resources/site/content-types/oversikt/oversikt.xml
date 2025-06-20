@@ -18,11 +18,6 @@
                     <occurrences minimum="0" maximum="1"/>
                     <default>Fra A til Å</default>
                 </input>
-                <input type="HtmlArea" name="ingress">
-                    <label>Ingress/beskrivelse</label>
-                    <help-text>En kort beskrivelse som vises i lenkepanel/kort som lenker til denne siden</help-text>
-                    <occurrences minimum="1" maximum="1"/>
-                </input>
                 <input name="oversiktType" type="ComboBox">
                     <label>Velg type oversikt</label>
                     <occurrences minimum="1" maximum="1"/>
