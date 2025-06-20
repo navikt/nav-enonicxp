@@ -48,6 +48,7 @@ import officeInformationQuery from './content-queries/officeInformationQuery.gra
 import officePageQuery from './content-queries/officePageQuery.graphql';
 import officeEditorialPageQuery from './content-queries/officeEditorialPageQuery.graphql';
 import overviewPageQuery from './content-queries/overviewPageQuery.graphql';
+import oversiktQuery from './content-queries/oversiktPageQuery.graphql';
 import pageListQuery from './content-queries/pageListQuery.graphql';
 import payoutDatesQuery from './content-queries/payoutDatesQuery.graphql';
 import portalFragmentQuery from './content-queries/portalFragmentQuery.graphql';
@@ -109,6 +110,7 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:office-information': officeInformationQuery,
     'no.nav.navno:office-page': officePageQuery,
     'no.nav.navno:office-editorial-page': officeEditorialPageQuery,
+    'no.nav.navno:oversikt': oversiktQuery,
     'no.nav.navno:payout-dates': payoutDatesQuery,
     'no.nav.navno:page-list': pageListQuery,
     'no.nav.navno:publishing-calendar': publishingCalendarQuery,

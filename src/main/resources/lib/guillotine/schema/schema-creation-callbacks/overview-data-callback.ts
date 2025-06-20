@@ -1,12 +1,12 @@
 import * as contentLib from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
-import { buildOverviewList } from '../../../overview-pages/overview/build-overview-list';
+import { buildOverviewList } from '../../../overview-pages/overview-v1/build-overview-list';
 import { logger } from '../../../utils/logging';
 import {
     OverviewPageItem,
     OverviewPageItemProductLink,
-} from '../../../overview-pages/overview/types';
+} from '../../../overview-pages/overview-v1/types';
 import { forceArray } from '../../../utils/array-utils';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
 

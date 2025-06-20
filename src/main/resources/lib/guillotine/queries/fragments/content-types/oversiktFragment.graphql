@@ -1,0 +1,75 @@
+#import "../mixins/animatedIconsTargetFragment.graphql"
+#import "../mixins/imageInlineFragment.graphql"
+
+fragment oversiktPage on no_nav_navno_Oversikt {
+    dataAsJson
+    data {
+        audience {
+            _selected
+            provider {
+                pageType {
+                    _selected
+                    overview {
+                        provider_audience
+                    }
+                    links {
+                        links {
+                            text
+                            link {
+                                _path
+                                ... on no_nav_navno_FormsOverview {
+                                    data {
+                                        title
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        illustration {
+            ...animatedIconsTargetMixin
+        }
+        itemList {
+            url
+            type
+            audience
+            title
+            sortTitle
+            anchorId
+            targetLanguage
+            ingress
+            keywords
+            taxonomy
+            area
+            detailsPath
+            productLinks {
+                url
+                type
+                language
+                title
+            }
+            subItems {
+                path
+                language
+                title
+                type
+                ingress
+                formNumbers
+            }
+            illustration {
+                ... on no_nav_navno_AnimatedIcons {
+                    type
+                    data {
+                        icons {
+                            icon {
+                                ...imageInlineMixin
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
