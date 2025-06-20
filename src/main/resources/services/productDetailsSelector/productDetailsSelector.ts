@@ -109,8 +109,9 @@ const getHitsFromQuery = (detailType: ProductDetailsType, locale: string, query?
 };
 
 const selectorHandler = (req: Request) => {
-    const { detailType, query } = req.params;
-    if (!detailType || !isProductDetailsType(detailType) || typeof query !== 'string') {
+    const detailType = req.params.detailType;
+    const query = req.params.query as string;
+    if (!detailType || !isProductDetailsType(detailType)) {
         return {
             status: 400,
         };
