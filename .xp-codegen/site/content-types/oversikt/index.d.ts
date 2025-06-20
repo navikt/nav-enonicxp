@@ -11,11 +11,6 @@ export type Oversikt = {
   underTitle?: string;
 
   /**
-   * Ingress/beskrivelse
-   */
-  ingress: string;
-
-  /**
    * Velg type oversikt
    */
   oversiktType: "application" | "complaint" | "addendum" | "rates" | "payout_dates" | "processing_times" | "all_products";
