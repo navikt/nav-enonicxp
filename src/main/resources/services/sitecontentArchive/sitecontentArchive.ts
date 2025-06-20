@@ -6,7 +6,7 @@ import { SITECONTENT_404_MSG_PREFIX } from '../../lib/constants';
 import { runInContext } from '../../lib/context/run-in-context';
 import { getArchivedContent } from '../../lib/external-archive/get-archived-content';
 
-export const get = (req: Request) : Response => {
+export const get = (req: Request): Response => {
     if (!validateServiceSecretHeader(req)) {
         return {
             status: 401,
@@ -17,7 +17,7 @@ export const get = (req: Request) : Response => {
         };
     }
 
-    const idOrArchivedPath= req.params.id as string;
+    const idOrArchivedPath = req.params.id as string;
     const locale = req.params.locale as string;
     const time = req.params.time as string;
 

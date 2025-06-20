@@ -4,9 +4,9 @@ import { buildEditorPathFromContext } from '../../../lib/paths/editor-path';
 import { RequestParams } from '@enonic-types/core';
 
 export const macro = (context: { params: RequestParams }) => {
-    const { fragmentId } = context.params;
+    const fragmentId = context.params.fragmentId as string;
 
-    if (!fragmentId || 'string' !== typeof fragmentId) {
+    if (!fragmentId) {
         return { body: '<span>Macroen er ikke konfigurert</span>' };
     }
 

@@ -1,9 +1,7 @@
-import { Request } from '@enonic-types/core';
-import { buildEditorPathFromContext } from 'lib/paths/editor-path';
-import { stripLeadingAndTrailingSlash } from 'lib/paths/path-utils';
 import { customSelectorEditIcon } from './custom-selector-icons';
-
-const getServiceName = (contextPath: string) => contextPath.split('/').slice(-1)[0];
+import { buildEditorPathFromContext } from '../lib/paths/editor-path';
+import { stripLeadingAndTrailingSlash } from '../lib/paths/path-utils';
+import { Request } from '@enonic-types/core';
 
 export type CustomSelectorServiceResponseHit = {
     id: string;
@@ -15,13 +13,10 @@ export type CustomSelectorServiceResponseHit = {
     };
 };
 
+const getServiceName = (req: Request) => req.contextPath?.split('/').slice(-1)[0] || '';
+
 export const getServiceRequestSubPath = (req: Request) => {
-    if (!req.contextPath) {
-        return null;
-    }
-    return stripLeadingAndTrailingSlash(
-        req.path.split(getServiceName(req.contextPath)).slice(-1)[0]
-    );
+    return stripLeadingAndTrailingSlash(req.path.split(getServiceName(req)).slice(-1)[0]);
 };
 
 // We can't use target or onclick to make the link open in a new tab, as content studio removes
