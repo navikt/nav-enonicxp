@@ -10,7 +10,7 @@ import { getLayersData } from '../../localization/layers-data';
 import * as contentLib from '/lib/xp/content';
 import { ContentWithFormDetails } from './types';
 import { Oversikt } from '@xp-types/site/content-types/oversikt';
-import { getFormsOverviewListItemTransformer } from './transform-to-oversikt-item';
+import { getFormsOversiktListItemTransformer } from './transform-to-oversikt-item';
 
 const buildFormDetailsDictionary = (
     contentWithFormDetails: ContentWithFormDetails[],
@@ -55,7 +55,7 @@ const buildFormDetailsDictionary = (
 export const buildFormDetailsList = (formsOverviewContent: Content<'no.nav.navno:oversikt'>) => {
     const { language, data, _id } = formsOverviewContent;
     const { oversiktType, audience, excludedContent, localeFallback } = data;
-    logger.info('Running buildFormDetailsList')
+    logger.info('Running buildFormDetailsList');
 
     if (!audience?._selected) {
         logger.error(`Audience not set for overview page ${_id} (${language})`);
@@ -80,8 +80,6 @@ export const buildFormDetailsList = (formsOverviewContent: Content<'no.nav.navno
         excludedContentIds: forceArray(excludedContent),
     });
 
-    logger.info(JSON.stringify(contentWithFormDetails, null, 2))
-
     const locale = language || getLayersData().defaultLocale;
 
     const localizedContentWithFormDetails = getLocalizedContentWithFallbackData({
@@ -95,10 +93,7 @@ export const buildFormDetailsList = (formsOverviewContent: Content<'no.nav.navno
         oversiktType
     );
 
-    const listItemTransformer = getFormsOverviewListItemTransformer(formDetailsDictionary, locale);
-    logger.info(
-        `localizedContentWithFormDetails length: ${localizedContentWithFormDetails.length}`
-    );
+    const listItemTransformer = getFormsOversiktListItemTransformer(formDetailsDictionary, locale);
     return localizedContentWithFormDetails
         .reduce<OversiktListItem[]>((acc, content) => {
             const transformedItem = listItemTransformer(content);

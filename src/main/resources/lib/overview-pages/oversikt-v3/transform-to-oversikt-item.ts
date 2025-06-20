@@ -44,8 +44,7 @@ const getTaxonomy = (content: ContentWithFormDetails) => {
 };
 
 export const transformBasicOversiktItem = (
-    productPage: ContentWithProductDetails,
-    productDetail?: Content<'no.nav.navno:product-details'>
+    productPage: ContentWithProductDetails
 ): OversiktListItem => {
     const { type, data, language, displayName } = productPage;
     const { title, audience, sortTitle, externalProductUrl } = data;
@@ -60,7 +59,7 @@ export const transformBasicOversiktItem = (
     return {
         title: listItemTitle,
         sortTitle: data.sortTitle || listItemTitle,
-        audience: audience._selected,
+        audience: audience?._selected,
         taxonomy: getTaxonomy(productPage),
         area: forceArray(data.area),
         ingress: data.ingress ? striptags(data.ingress) : '',
@@ -69,13 +68,7 @@ export const transformBasicOversiktItem = (
         url: getUrl(productPage),
         illustration: data.illustration,
         anchorId: sanitize(listItemTitle),
-        subItems: [
-            {
-                path: productDetail
-                    ? getPublicPath(productDetail, productDetail.language || defaultLocale)
-                    : undefined,
-            },
-        ],
+        subItems: [],
         productLinks: [
             {
                 language: productPageLocale,
@@ -123,7 +116,7 @@ export const transformProductDetail = (
     };
 };
 
-export const getFormsOverviewListItemTransformer =
+export const getFormsOversiktListItemTransformer =
     (formDetailsMap: FormDetailsMap, overviewPageLanguage: string) =>
     (content: ContentWithFormDetails): OversiktListItem | null => {
         // Get the form details actually used in this content
@@ -141,8 +134,6 @@ export const getFormsOverviewListItemTransformer =
         if (relevantFormDetails.length === 0) {
             return null;
         }
-
-        logger.info(`relevantFormDetails: ${relevantFormDetails.length}`);
 
         const title = content.data.title || content.displayName;
         const sortTitle = content.data.sortTitle || title;
