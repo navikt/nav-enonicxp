@@ -12,6 +12,7 @@
                     <label>Side-tittel</label>
                     <occurrences minimum="1" maximum="1"/>
                 </input>
+                <mixin name="ingress" />
                 <input type="TextLine" name="underTitle">
                     <label>Under-tittel</label>
                     <occurrences minimum="0" maximum="1"/>

@@ -6,6 +6,11 @@ export type Oversikt = {
   title: string;
 
   /**
+   * Ingress
+   */
+  ingress?: string;
+
+  /**
    * Under-tittel
    */
   underTitle?: string;
