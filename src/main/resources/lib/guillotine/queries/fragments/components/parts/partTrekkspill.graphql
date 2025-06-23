@@ -1,7 +1,7 @@
 #import "../../richText/richTextFragment.graphql"
 
-fragment partComponentAccordion on Part_no_nav_navno_accordion {
-    accordion {
+fragment partComponentTrekkspill on Part_no_nav_navno_trekkspill {
+    trekkspill {
         title
         anchorId
         html(processHtml: { type: server }) {
