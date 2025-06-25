@@ -1,11 +1,14 @@
+import { Request, Response } from '@enonic-types/core';
 import { getLayersData, isValidLocale } from '../../../lib/localization/layers-data';
 import { getRepoConnection } from '../../../lib/repos/repo-utils';
 
 // Note: This assumes a content will only have 0 or 1 attachments.
 // A content could have multiple attachments, if we used the AttachmentUploader input type in any of our content types.
 // We don't use this atm, and it's unlikely we will in the forseeable future. But if we do, implement accordingly :D
-export const externalArchiveAttachmentService = (req: XP.Request): XP.Response => {
-    const { id, versionId, locale } = req.params;
+export const externalArchiveAttachmentService = (req: Request): Response => {
+    const id = req.params.id as string;
+    const versionId = req.params.versionId as string;
+    const locale = req.params.locale as string;
 
     if (!id || !locale || !versionId) {
         return {
