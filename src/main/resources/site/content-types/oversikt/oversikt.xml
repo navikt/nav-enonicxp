@@ -12,12 +12,12 @@
                     <label>Side-tittel</label>
                     <occurrences minimum="1" maximum="1"/>
                 </input>
-                <mixin name="ingress" />
                 <input type="TextLine" name="underTitle">
                     <label>Under-tittel</label>
                     <occurrences minimum="0" maximum="1"/>
-                    <default>Fra A til Å</default>
+                    <default></default>
                 </input>
+                <mixin name="ingress" />
                 <input name="oversiktType" type="ComboBox">
                     <label>Velg type oversikt</label>
                     <occurrences minimum="1" maximum="1"/>
