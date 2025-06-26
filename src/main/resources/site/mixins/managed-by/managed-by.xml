@@ -7,15 +7,13 @@
                     <label>Velg forvalter</label>
                     <occurrences minimum="0" maximum="99"/>
                     <config>
-                        <option value="arbeid_ytelser_styringsenhet">Arbeid og ytelser styringsenhet</option>
                         <option value="arbeidslivssenter">Arbeidslivssenter</option>
                         <option value="digisos">Digisos</option>
-                        <option value="familie_pensjonsytelser_styringsenhet">Familie- og pensjonsytelser styringsenhet</option>
                         <option value="fylke">Fylke</option>
                         <option value="hjelpemiddelsentralen">Hjelpemiddelsentralen</option>
-                        <option value="hjelpemidler_styringsenhet">Hjelpemidler og tilrettelegging styringsenhet</option>
+                        <option value="innholdsteam_arbeidsgivertjenester">Innholdsteam arbeidsgivertjenester</option>
                         <option value="kjernegruppe_aap">Kjernegrupppe AAP</option>
-                        <option value="kjernegruppe_dagpenger">Kjernegruppe dagpenger</option>
+                        <option value="kjernegruppe_arbeid">Kjernegruppe arbeid</option>
                         <option value="kjernegruppe_ekspertbistand">Kjernegrupppe ekspertbistand</option>
                         <option value="kjernegruppe_familie">Kjedrnegruppe familie</option>
                         <option value="kjernegruppe_hjelpemidler">Kjernegrupppe hjelpemidler</option>
@@ -30,7 +28,6 @@
                         <option value="kjernegruppe_tiltakspenger">Kjernegruppe tiltakspenger</option>
                         <option value="kjernegruppe_uforetrygd">Kjernegrupppe uføretrygd</option>
                         <option value="kjernegruppe_yrkesskade">Kjernegruppe yrkesskade</option>           
-                        <option value="nav_kontaktsenter_styringsenhet">Nav kontaktsenter styringsenhet</option>
                         <option value="team_minside">Team Min side</option>
                         <option value="team_navno">Team nav.no</option>
                         <option value="po_aap">PO AAP (IKKE BRUK)</option>

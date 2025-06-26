@@ -9,6 +9,7 @@
                     <occurrences minimum="1" maximum="99"/>
                     <config>
                         <option value="arbeids_og_tjenesteavdelingen">Arbeidsavdelingen</option>
+                        <option value="kontaktsenteret">Arbeidsavdelingen / Nav kontaktsenter styringsenhet</option>
                         <option value="arbeidsavdelingen_arbeid_helse">Arbeidsavdelingen / Seksjon for arbeid og helse</option>
                         <option value="arbeidsavdelingen_arbeidsgivertjenester">Arbeidsavdelingen / Seksjon for arbeidsgivertjenester</option>
                         <option value="arbeidsavdelingen_arbeidsmarkedstiltak">Arbeidsavdelingen / Seksjon for arbeidsmarkedstiltak</option>
@@ -22,9 +23,14 @@
                         <option value="statistikk">Kunnskapsavdelingen / Statistikkseksjonen</option>
                         <option value="klageinstans">NAV klageinstans</option>  
                         <option value="it_avdelingen">Teknologiavdelingen</option>
+                        <option value="velferdsavdelingen">Velferdsavdelingen</option>
+                        <option value="hjelpemidler_og_tilrettelegging">Velferdsavdelingen / Hjelpemidler og tilrettelegging styringsenhet</option>     
                         <option value="velferdsavdelingen_hjelpemidler">Velferdsavdelingen / Seksjon for hjelpemidler og tilrettelegging</option>
                         <option value="velferdsavdelingen_sosiale_tjenester">Velferdsavdelingen / Seksjon for sosiale tjenester</option>
                         <option value="ytelsesavdelingen">Ytelsesavdelingen</option>
+                        <option value="arbeid_og_ytelser_styringsenhet">Ytelsesavdelingen / Arbeid og ytelser Styringsenhet</option>
+                        <option value="familie_og_pensjonsytelser_styringsenhet">Ytelsesavdelingen / Familie- og pensjonsytelser styringsenhet</option>
+                        <option value="ytelsesavdelingen_nav_kontroll">Ytelsesavdelingen / Nav kontroll</option>
                         <option value="ytelsesavdelingen_arbeidsavklaringspenger">Ytelsesavdelingen / Seksjon for arbeidsavklaringspenger</option>
                         <option value="ytelsesavdelingen_arbeidsytelser">Ytelsesavdelingen / Seksjon for arbeidsytelser</option>
                         <option value="ytelsesavdelingen_familieytelser">Ytelsesavdelingen / Seksjon for familieytelser</option>
@@ -34,16 +40,10 @@
                         <option value="okonomi">Økonomi- og styringsavdelingen</option>                 
                         <option value="annet">Annet</option>           
                         <option value="arbeidslivssenter">Arbeidslivssenter (IKKE BRUK)</option>
-                        <option value="hjelpemiddelsentralen">Hjelpemiddelsentralen (IKKE BRUK)</option>
-                        <option value="hjelpemidler_og_tilrettelegging">Hjelpemidler og tilrettelegging (IKKE BRUK)</option>          
-                        <option value="fylke">Fylke (IKKE BRUK)</option>
-                        <option value="kontaktsenteret">Kontaktsenteret (IKKE BRUK)</option>
+                        <option value="fylke">Fylke (IKKE BRUK)</option>  
+                        <option value="hjelpemiddelsentralen">Hjelpemiddelsentralen (IKKE BRUK)</option>                            
                         <option value="min_side">Min Side (IKKE BRUK)</option>
-                        <option value="team_personbruker">Team Personbruker (IKKE BRUK)</option>
-                        <option value="arbeid_og_ytelser_styringsenhet">Ytelsesavdelingen / Arbeid og ytelser
-                            Styringsenhet (IKKE BRUK) </option>
-                        <option value="familie_og_pensjonsytelser_styringsenhet">Ytelsesavdelingen / Familie- og
-                            pensjonsytelser styringsenhet (IKKE BRUK) </option>
+                        <option value="team_personbruker">Team Personbruker (IKKE BRUK)</option>        
                     </config>
                 </input>
             </items>
