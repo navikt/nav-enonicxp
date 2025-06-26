@@ -1,3 +1,4 @@
+import { Request } from '@enonic-types/core';
 import { Content, getType } from '/lib/xp/content';
 import { runSitecontentGuillotineQuery } from '../../../lib/guillotine/queries/run-sitecontent-query';
 import { getLayersData, isValidLocale } from '../../../lib/localization/layers-data';
@@ -56,8 +57,10 @@ const getContentRenderProps = (
         : resolveCurrentContent(content, locale);
 };
 
-export const externalArchiveContentService = (req: XP.Request) => {
-    const { id, locale, versionId } = req.params;
+export const externalArchiveContentService = (req: Request) => {
+    const id = req.params.id as string;
+    const versionId = req.params.versionId as string;
+    const locale = req.params.locale as string;
 
     if (!id || !locale) {
         return {
@@ -96,11 +99,9 @@ export const externalArchiveContentService = (req: XP.Request) => {
     }
 
     const contentRenderProps = getContentRenderProps(content, locale, versionId, isArchived);
-
     const versions = getPublishedAndModifiedVersions(content._id, locale).filter(
         (v) => !v.excludeFromExternalArchive
     );
-
     const originalContentTypeName = getOriginalContentTypeName(content, versions);
 
     return {

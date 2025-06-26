@@ -1,14 +1,15 @@
+import { Request } from '@enonic-types/core'
 import * as portalLib from '/lib/xp/portal';
 import { getRepoConnection } from '../repos/repo-utils';
 import { RepoNode } from '/lib/xp/node';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { frontendProxy } from './frontend-proxy';
-import { logger } from '../utils/logging';
 import { NodeComponent } from '../../types/components/component-node';
 import { runInContext } from '../context/run-in-context';
+import { logger } from '../utils/logging';
 import { forceArray } from '../utils/array-utils';
 import { applyModifiedData } from '../utils/content-utils';
+import { frontendProxy } from './frontend-proxy';
 
 type AreaPageContent = Content<'no.nav.navno:area-page'>;
 type AreaPageRepoNode = RepoNode<Content<'no.nav.navno:area-page'>>;
@@ -40,8 +41,8 @@ const getSituationsLayout = (
 const getRelevantSituationPages = (areaPageNodeContent: AreaPageContent) =>
     runInContext({ branch: 'master' }, () => {
         const { area, audience } = areaPageNodeContent.data;
-
         const selectedAudience = audience?._selected;
+
         if (!selectedAudience) {
             return [];
         }
@@ -101,6 +102,7 @@ const situationCardHasTarget = (
     situationPageTarget: SituationPageContent
 ) => {
     const config = situationCard.part?.config?.['no-nav-navno']?.['areapage-situation-card'];
+
     if (!config) {
         return false;
     }
@@ -161,35 +163,34 @@ const validateRegionComponents = (
 
 // If an areapage-situations layout is present on the page, populate
 // it with situation cards appropriate for the page.
-const populateSituationsLayout = (req: XP.Request) => {
+const populateSituationsLayout = (req: Request) => {
     const content = portalLib.getContent();
     if (!content) {
         logger.error(`Could not get contextual content from request - path: ${req.rawPath}`);
         return;
     }
-
     if (content.type !== 'no.nav.navno:area-page') {
         logger.error(`Invalid type for area page controller - ${content._id}`);
         return;
     }
-
     if (!content.data.area) {
         logger.error(`No area specified for area page - ${content._id}`, true);
         return;
     }
-
     if (!content.data.audience?._selected) {
         logger.error(`No audience specified for area page - ${content._id}`, true);
         return;
     }
+    if (!req.repositoryId) {
+        logger.error(`No repoId for area page - ${content._id}`);
+        return;
+    }
 
     const repo = getRepoConnection({ repoId: req.repositoryId, branch: 'draft' });
-
     const nodeContent = repo.get<AreaPageContent>({ key: content._id });
     if (!nodeContent?.components) {
         return;
     }
-
     const components = forceArray(nodeContent.components);
 
     // If no areapage-situations layout exists on the page, there is nothing to populate
@@ -199,7 +200,6 @@ const populateSituationsLayout = (req: XP.Request) => {
     }
 
     const relevantSituationPages = getRelevantSituationPages(nodeContent);
-
     const situationsRegionPath = `${situationLayout.path}/situations`;
     const situationsRegionComponents = components.filter((component) =>
         component.path.startsWith(situationsRegionPath)
@@ -231,7 +231,7 @@ const populateSituationsLayout = (req: XP.Request) => {
     });
 };
 
-const areaPageController = (req: XP.Request) => {
+const areaPageController = (req: Request) => {
     if ((req.mode === 'edit' || req.mode === 'inline') && req.method === 'GET') {
         populateSituationsLayout(req);
     }

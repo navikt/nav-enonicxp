@@ -1,12 +1,13 @@
+import { Request } from '@enonic-types/core';
+import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { getServiceRequestSubPath } from '../service-utils';
 import { externalArchiveContentTreeService } from './contentTree/contentTree';
 import { externalArchiveContentService } from './content/content';
-import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { externalArchiveContentIconService } from './contentIcon/contentIcon';
 import { externalArchiveAttachmentService } from './attachment/attachment';
 import { externalArchiveSearchService } from './search/search';
 
-const getRequestHandler = (req: XP.Request) => {
+const getRequestHandler = (req: Request) => {
     const subPath = getServiceRequestSubPath(req);
 
     switch (subPath) {
@@ -25,7 +26,7 @@ const getRequestHandler = (req: XP.Request) => {
     }
 };
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) => {
     if (!validateServiceSecretHeader(req)) {
         return {
             status: 401,

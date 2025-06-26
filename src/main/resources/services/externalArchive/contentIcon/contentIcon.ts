@@ -1,17 +1,16 @@
+import { Request, Response } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
 import { logger } from '../../../lib/utils/logging';
 
 const DEFAULT_ICON_TYPE = 'base:structured';
-
 const defaultIcon = contentLib.getType(DEFAULT_ICON_TYPE)?.icon;
 
 if (!defaultIcon) {
     logger.critical(`No icon found for specified default type ${DEFAULT_ICON_TYPE}`);
 }
 
-export const externalArchiveContentIconService = (req: XP.Request) => {
-    const { type } = req.params;
-
+export const externalArchiveContentIconService = (req: Request) : Response => {
+    const type = req.params.type as string;
     if (!type) {
         return {
             status: 400,
@@ -23,7 +22,6 @@ export const externalArchiveContentIconService = (req: XP.Request) => {
     }
 
     const typeData = contentLib.getType(type);
-
     if (!typeData) {
         return {
             status: 400,
@@ -35,7 +33,6 @@ export const externalArchiveContentIconService = (req: XP.Request) => {
     }
 
     const icon = typeData.icon || defaultIcon;
-
     if (!icon) {
         return {
             status: 404,

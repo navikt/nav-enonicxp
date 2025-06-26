@@ -5,7 +5,7 @@ import { processAllOffices, fetchAllOfficeDataFromNorg } from './office-update';
 import { runInContext } from '../context/run-in-context';
 
 const OFFICE_FETCH_TASK_NAME = 'no.nav.navno:update-office';
-const CRON_SCHEDULE = app.config.env === 'localhost' ? '*/3 * * * *' : '* * * * *';
+const CRON_SCHEDULE = app.config.env === 'localhost' ? '*/10 * * * *' : '* * * * *';
 
 const MAX_FAILURE_COUNT_BEFORE_CRITICAL = 10;
 
@@ -34,10 +34,11 @@ export const runOfficeFetchTask = () => {
     );
 };
 
-export const createOfficeFetchSchedule = () => {
+export const createOfficeImportSchedule = () => {
     createOrUpdateSchedule({
-        jobName: 'office_update_from_norg2_schedule',
-        jobDescription: 'Fetches office from norg and updates into XP as hourly schedule',
+        jobName: 'office_import_schedule',
+        jobDescription:
+            'Imports and updates legacy office information from norg2 every minute (or every 10 minutes in localhost)',
         jobSchedule: {
             type: 'CRON',
             value: CRON_SCHEDULE,

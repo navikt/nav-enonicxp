@@ -112,6 +112,11 @@ export type FormDetails = {
                    */
                   external: {
                     /**
+                     * Skjemanummer
+                     */
+                    formNumber?: string;
+
+                    /**
                      * URL
                      */
                     url: string;
@@ -167,6 +172,11 @@ export type FormDetails = {
                    * Ekstern lenke til skjema
                    */
                   external: {
+                    /**
+                     * Skjemanummer
+                     */
+                    formNumber?: string;
+
                     /**
                      * URL
                      */
@@ -228,6 +238,11 @@ export type FormDetails = {
                    * Ekstern lenke til skjema
                    */
                   external: {
+                    /**
+                     * Skjemanummer
+                     */
+                    formNumber?: string;
+
                     /**
                      * URL
                      */

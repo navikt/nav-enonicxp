@@ -1,4 +1,5 @@
-import { runExternalArchiveQuery } from '../../../services/dataQuery/utils/queryRunners';
+import { Request } from '@enonic-types/core';
+import { runExternalArchiveQuery } from '../../dataQuery/utils/queryRunners';
 import { logger } from '../../../lib/utils/logging';
 import { ContentDescriptor } from '../../../types/content-types/content-config';
 
@@ -11,7 +12,7 @@ type SimpleHit = {
     type: string;
 };
 
-export const externalArchiveSearchService = (req: XP.Request) => {
+export const externalArchiveSearchService = (req: Request) => {
     try {
         const { query, searchType } = req.params;
         const requestId = `archive-${Date.now()}`;

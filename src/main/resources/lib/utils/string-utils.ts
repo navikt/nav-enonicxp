@@ -18,6 +18,7 @@ const isProtected = (key?: string) => {
         'path',
         'type',
         'language',
+        'formNumber',
         'formNumbers',
         'mediaUrl',
         '_childOrderValue',
@@ -50,12 +51,10 @@ const replaceSingleString = (str: string): string => {
         return acc.replace(regexp, replace);
     }, str);
 
-    const finalReplacement = orgresult.replace(
+    return orgresult.replace(
         /(<a\b[^>]*href="[^"]*NAV[^"]*"[^>]*>[^<]*<\/a>)|NAV(?![^<]*>)/g,
         (match, anchorTag) => anchorTag || 'Nav'
     );
-
-    return finalReplacement;
 };
 
 // This is a temporary replacement function as part of the NAV => Nav process

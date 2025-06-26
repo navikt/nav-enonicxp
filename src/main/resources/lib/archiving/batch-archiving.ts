@@ -142,21 +142,19 @@ const unpublishAndArchiveContents = (
     const skippedContent: ContentDataSimple[] = [];
 
     contents.forEach((content) => {
-        // Change: We want the archiving to be more greedy, so don't check for inbound references.
-        const references: ContentDataSimple[] = []; // getRelevantReferences(content, repoId);
+        const references: ContentDataSimple[] = [];
 
         const contentFinal: ContentDataSimple = {
             ...content,
             references,
         };
 
-        // Change: We want the archiving to be more greedy, so don't check for newer
-        // descendants. This might change in the near future, so keep it commented out for now.
-        // if (hasNewerDescendants(content, cutoffTs)) {
-        //     contentFinal.errors.push(
-        //         'Innholdet har under-innhold som er nyere enn tidsavgrensingen for arkivering'
-        //     );
-        // }
+        // Content of type 'no.nav.navno:current-topic-page' should not be archived
+        // if it has a publish?.to date set.
+        if (contentFinal.type === 'no.nav.navno:current-topic-page' && contentFinal.publish?.to) {
+            skippedContent.push(contentFinal);
+            return;
+        }
 
         // Content is published and has a publish date that is newer than the cutoff date,
         // so it should not be unpublished. This is not an error, so don't push to the errors array.

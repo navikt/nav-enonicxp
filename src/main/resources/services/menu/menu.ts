@@ -1,3 +1,4 @@
+import { Request } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { logger } from '../../lib/utils/logging';
@@ -83,7 +84,7 @@ const getMenuItemChildren = (contentId: string, locale?: string) => {
         }, [] as MenuItem[]);
 };
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) => {
     try {
         const menuContent = contentLib.get({ key: MENU_PATH });
         if (!menuContent) {

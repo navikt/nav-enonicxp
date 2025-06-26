@@ -1,3 +1,4 @@
+import { Request } from '@enonic-types/core';
 import * as portalLib from '/lib/xp/portal';
 import { Component } from '/lib/xp/portal';
 import { getRepoConnection } from '../repos/repo-utils';
@@ -68,12 +69,9 @@ const componentHasUniqueAnchorId = (content: any, currentComponent: Component) =
     }
 
     const currentAnchorId = config.anchorId;
-
     const components = forceArray(content.components);
-
     const isDuplicate = components.some((component) => {
         const config = getComponentConfig(component);
-
         return (
             configHasAnchorId(config) &&
             config.anchorId === currentAnchorId &&
@@ -90,10 +88,14 @@ type StringFieldsExcludingAnchorId<Config> = keyof Omit<
 >;
 
 export const generateAnchorIdField = <Config extends ComponentConfigAll & { anchorId?: string }>(
-    req: XP.Request,
+    req: Request,
     idSourceField: StringFieldsExcludingAnchorId<Config>,
     idSourceDefaultValue?: string
 ) => {
+    if (!req.repositoryId || !req.branch) {
+        return;
+    }
+
     const contentId = portalLib.getContent()?._id;
     if (!contentId) {
         return;
@@ -119,7 +121,6 @@ export const generateAnchorIdField = <Config extends ComponentConfigAll & { anch
         key: contentId,
         editor: (content) => {
             const components = forceArray(content.components);
-
             const config = getComponentConfigByPath(component.path, components) as Config;
 
             if (!config) {
@@ -131,7 +132,6 @@ export const generateAnchorIdField = <Config extends ComponentConfigAll & { anch
             }
 
             const fieldValue = config[idSourceField] as unknown as string;
-
             if (fieldValue && fieldValue !== idSourceDefaultValue) {
                 const newId = commonLib.sanitize(fieldValue);
 

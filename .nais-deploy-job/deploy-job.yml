@@ -12,6 +12,11 @@ spec:
       value: "https://{{ xpAdminHost }}/admin/rest/app/install"
   envFrom:
     - secret: xp-navno-deploy
+  observability:
+    logging:
+      destinations:
+        - id: elastic
+        - id: loki
   accessPolicy:
     outbound:
       external:

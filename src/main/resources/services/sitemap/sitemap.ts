@@ -1,8 +1,9 @@
+import { Request } from '@enonic-types/core';
 import { getAllSitemapEntries, requestSitemapUpdate } from '../../lib/sitemap/sitemap';
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) => {
     if (!validateServiceSecretHeader(req)) {
         return {
             status: 401,

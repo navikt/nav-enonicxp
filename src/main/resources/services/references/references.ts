@@ -1,3 +1,4 @@
+import { Request } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
 import { isValidLocale } from '../../lib/localization/layers-data';
 import { RepoBranch } from '../../types/common';
@@ -47,7 +48,7 @@ const getResolversForContentType = (
     }
 };
 
-export const get = (req: XP.Request) => {
+export const get = (req: Request) => {
     const { contentId, locale, branch = 'draft' } = req.params as ReqParams;
 
     if (!contentId) {

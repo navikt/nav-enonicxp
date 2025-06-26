@@ -1,3 +1,4 @@
+import { Request, Response } from '@enonic-types/core'
 import * as contentLib from '/lib/xp/content';
 import thymeleafLib from '/lib/thymeleaf';
 import { runInContext } from '../../../../lib/context/run-in-context';
@@ -58,8 +59,9 @@ const restoreFromArchive = (
         }
     });
 
-export const archiveRestoreResponse = (req: XP.Request) => {
-    const { contentId, selectedContent } = req.params;
+export const archiveRestoreResponse = (req: Request) : Response => {
+    const contentId = req.params.contentId as string;
+    const selectedContent = req.params.selectedContent as string;
 
     if (!selectedContent || !contentId) {
         return {
@@ -69,7 +71,6 @@ export const archiveRestoreResponse = (req: XP.Request) => {
     }
 
     const { success, message } = restoreFromArchive(selectedContent, contentId);
-
     const model = {
         success,
         message,
