@@ -122,9 +122,6 @@
                         <param value="contentTypes">
                             ["no.nav.navno:content-page-with-sidemenus","no.nav.navno:guide-page", "no.nav.navno:themed-article-page"]
                         </param>
-                        <param value="selectorQuery">data.audience._selected="{data.audience._selected}" AND
-                            data.formDetailsTargets LIKE "*"
-                        </param>
                         <param value="sort">data.area ASC, displayName ASC</param>
                     </config>
                 </input>
