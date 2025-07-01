@@ -7,7 +7,7 @@
             <occurrences minimum="1" maximum="1" />
         </input>
         <input name="html" type="HtmlArea">
-            <label>Innhold i ekspandert panel</label>
+            <label>Innhold</label>
             <occurrences minimum="1" maximum="1" />
         </input>
         <mixin name="auth-render-option"/>
