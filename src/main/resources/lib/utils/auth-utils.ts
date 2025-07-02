@@ -1,3 +1,4 @@
+import { Request } from '@enonic-types/core';
 import * as authLib from '/lib/xp/auth';
 import * as contentLib from '/lib/xp/content';
 import { Permission, AccessControlEntry } from '/lib/xp/content';
@@ -58,5 +59,5 @@ export const validateCurrentUserPermissionForContent = (
     return currentUserHasAccess;
 };
 
-export const validateServiceSecretHeader = (req: XP.Request) =>
+export const validateServiceSecretHeader = (req: Request) =>
     req.headers.secret === app.config.serviceSecret;

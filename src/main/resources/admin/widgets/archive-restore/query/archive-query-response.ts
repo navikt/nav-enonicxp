@@ -1,7 +1,8 @@
-import { getRepoConnection } from '../../../../lib/repos/repo-utils';
+import { Request, Response } from '@enonic-types/core'
 import thymeleafLib from '/lib/thymeleaf';
 import { sanitize } from '/lib/xp/common';
 import { Content } from '/lib/xp/content';
+import { getRepoConnection } from '../../../../lib/repos/repo-utils';
 import { forceArray } from '../../../../lib/utils/array-utils';
 import { validateCurrentUserPermissionForContent } from '../../../../lib/utils/auth-utils';
 import { batchedNodeQuery } from '../../../../lib/utils/batched-query';
@@ -69,10 +70,10 @@ const queryArchive = ({ query, repoId }: { query?: string; repoId: string }): Ar
         );
 };
 
-export const archiveQueryResponse = (req: XP.Request) => {
+export const archiveQueryResponse = (req: Request) : Response => {
     const { repositoryId } = req;
-    const { input } = req.params;
-    const archiveEntries = repositoryId ? queryArchive({ query: input, repoId: repositoryId }) : [];
+    const query = req.params.input as string;
+    const archiveEntries = repositoryId ? queryArchive({ query, repoId: repositoryId }) : [];
     const model = {
         archiveEntries: archiveEntries.length > 0 ? archiveEntries : null,
     };

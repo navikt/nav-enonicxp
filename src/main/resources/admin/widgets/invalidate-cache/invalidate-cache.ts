@@ -1,3 +1,4 @@
+import { Request, Response } from '@enonic-types/core'
 import * as contentLib from '/lib/xp/content';
 import * as portalLib from '/lib/xp/portal';
 import thymeleafLib from '/lib/thymeleaf';
@@ -6,8 +7,9 @@ import { runInLocaleContext } from '../../../lib/localization/locale-context';
 
 const view = resolve('./invalidate-cache.html');
 
-export const get = (req: XP.Request) => {
-    const { contentId, repository } = req.params;
+export const get = (req: Request) : Response => {
+    const contentId = req.params.contentId as string;
+    const repository = req.params.repository as string;
 
     if (!contentId || !repository) {
         return {
@@ -18,7 +20,6 @@ export const get = (req: XP.Request) => {
 
     const { repoIdToLocaleMap } = getLayersData();
     const locale = repoIdToLocaleMap[repository];
-
     const content = runInLocaleContext({ locale, branch: 'master' }, () =>
         contentLib.get({ key: contentId })
     );

@@ -1,14 +1,12 @@
+import { Request, Response } from '@enonic-types/core'
 import * as contentLib from '/lib/xp/content';
 import { migrateContentToLayer } from '../../../../lib/localization/layers-migration/migrate-content-to-layer';
 import { CONTENT_LOCALE_DEFAULT } from '../../../../lib/constants';
 
-type ResponseBody = {
-    result: 'success' | 'error';
-    message: string;
-};
-
-export const migrateContentToLayerWidgetHandler = (req: XP.Request): XP.Response<ResponseBody> => {
-    const { sourceId: sourceContentId, targetLocale, targetId: targetContentIdInput } = req.params;
+export const migrateContentToLayerWidgetHandler = (req: Request) : Response => {
+    const sourceId = req.params.sourceId as string;
+    const targetLocale = req.params.targetLocale as string;
+    const targetId = req.params.targetId as string;
 
     if (!targetLocale) {
         return {
@@ -17,10 +15,10 @@ export const migrateContentToLayerWidgetHandler = (req: XP.Request): XP.Response
         };
     }
 
-    if (!targetContentIdInput) {
+    if (!targetId) {
         return {
             body: {
-                message: `Feil: contentId må være valgt. Dette skal være det samme som det norske versjonen av innholdet`,
+                message: `Feil: Target contentId må være valgt. Dette skal være det samme som det norske versjonen av innholdet`,
                 result: 'error',
             },
             contentType: 'application/json',
@@ -28,7 +26,7 @@ export const migrateContentToLayerWidgetHandler = (req: XP.Request): XP.Response
     }
 
     // This should always be set programatically as a hidden input
-    if (!sourceContentId) {
+    if (!sourceId) {
         return {
             body: {
                 message: `Noe gikk galt. Forsøk å laste inn editoren på nytt (F5) og prøv igjen.`,
@@ -38,13 +36,12 @@ export const migrateContentToLayerWidgetHandler = (req: XP.Request): XP.Response
         };
     }
 
-    const targetContentId = targetContentIdInput.replace(/"/g, '').trim();
+    const targetContentId = targetId.replace(/"/g, '').trim();
     const targetContent = contentLib.get({ key: targetContentId });
-
     if (!targetContent) {
         return {
             body: {
-                message: `Feil: valgt contentId "${targetContentId}" er ikke gyldig. Velg Content Viewer i det norske innholdet og kopier _id verdien.`,
+                message: `Feil: valgt targetContentId "${targetContentId}" er ikke gyldig. Velg Content Viewer i det norske innholdet og kopier _id verdien.`,
                 result: 'error',
             },
             contentType: 'application/json',
@@ -52,7 +49,7 @@ export const migrateContentToLayerWidgetHandler = (req: XP.Request): XP.Response
     }
 
     const { errorMsgs, statusMsgs } = migrateContentToLayer({
-        sourceId: sourceContentId,
+        sourceId,
         sourceLocale: CONTENT_LOCALE_DEFAULT,
         targetId: targetContentId,
         targetLocale,

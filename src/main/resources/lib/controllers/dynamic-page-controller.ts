@@ -1,20 +1,19 @@
+import { Request } from '@enonic-types/core'
 import * as portalLib from '/lib/xp/portal';
-import { getRepoConnection } from '../repos/repo-utils';
 import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
-import { frontendProxy } from './frontend-proxy';
-import { logger } from '../utils/logging';
 import { NodeComponent } from '../../types/components/component-node';
+import { PartConfigs, PartComponentName } from '../../types/components/component-config';
+import { logger } from '../utils/logging';
+import { getRepoConnection } from '../repos/repo-utils';
 import { CONTENT_ROOT_REPO_ID } from '../constants';
 import { FiltersMenu } from '@xp-types/site/parts/filters-menu';
 import { forceArray } from '../utils/array-utils';
-import { PartConfigs, PartComponentName } from '../../types/components/component-config';
+import { frontendProxy } from './frontend-proxy';
 
 type DynamicContentRepoNode = RepoNode<Content>;
-
 type FilterMenuComponent = NodeComponent<'part', 'filters-menu'>;
 type Component = NodeComponent<'part'>;
-
 type CategoryRaw = Required<FiltersMenu>['categories'][number];
 type Filter = CategoryRaw['filters'][number] & {
     id: string;
@@ -99,7 +98,7 @@ const cleanComponentForInvalidFilterId = (
     return { component, wasCleaned: componentHasInvalidFilters };
 };
 
-const removeInvalidFilterIds = (req: XP.Request) => {
+const removeInvalidFilterIds = (req: Request) => {
     const content = portalLib.getContent();
     if (!content) {
         logger.error(`Could not get contextual content from request path - ${req.rawPath}`);
@@ -150,7 +149,7 @@ const removeInvalidFilterIds = (req: XP.Request) => {
     });
 };
 
-const dynamicPageController = (req: XP.Request) => {
+const dynamicPageController = (req: Request) => {
     if ((req.mode === 'edit' || req.mode === 'inline') && req.method === 'GET') {
         removeInvalidFilterIds(req);
     }

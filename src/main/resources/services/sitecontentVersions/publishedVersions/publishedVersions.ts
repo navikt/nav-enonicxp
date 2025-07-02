@@ -1,10 +1,12 @@
+import { Request, Response } from '@enonic-types/core';
 import { isUUID } from '../../../lib/utils/uuid';
 import { logger } from '../../../lib/utils/logging';
 import { getLayersData } from '../../../lib/localization/layers-data';
 import { getPublishedAndModifiedVersions } from '../../../lib/time-travel/get-published-versions';
 
-export const publishedVersionsReqHandler = (req: XP.Request) => {
-    const { id, locale } = req.params;
+export const publishedVersionsReqHandler = (req: Request) : Response => {
+    const id = req.params.id as string;
+    const locale = req.params.locale as string;
 
     if (!id || !isUUID(id)) {
         return {

@@ -1,9 +1,10 @@
 import * as contentLib from '/lib/xp/content';
 import { getKeyWithoutMacroDescription } from '../../../lib/utils/component-utils';
 import { buildEditorPathFromContext } from '../../../lib/paths/editor-path';
+import { RequestParams } from '@enonic-types/core';
 
-export const macro = (context: XP.MacroContext) => {
-    const { fragmentId } = context.params;
+export const macro = (context: { params: RequestParams }) => {
+    const fragmentId = context.params.fragmentId as string;
 
     if (!fragmentId) {
         return { body: '<span>Macroen er ikke konfigurert</span>' };
