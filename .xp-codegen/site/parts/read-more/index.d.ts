@@ -6,7 +6,7 @@ export type ReadMore = {
   title: string;
 
   /**
-   * Innhold i ekspandert panel
+   * Innhold
    */
   html: string;
 
