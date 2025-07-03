@@ -28,7 +28,7 @@
                         <option value="kjernegruppe_tiltakspenger">Kjernegruppe tiltakspenger</option>
                         <option value="kjernegruppe_uforetrygd">Kjernegruppe uføretrygd</option>
                         <option value="kjernegruppe_yrkesskade">Kjernegruppe yrkesskade</option>           
-                        <option value="team_navno">Nav.no-redaksjonen</option>
+                        <option value="navno_redaksjonen">Nav.no-redaksjonen</option>
                         <option value="team_minside">Team Min side</option>
                         <option value="team_navno">Team nav.no</option>
                         <option value="po_aap">PO AAP (IKKE BRUK)</option>
