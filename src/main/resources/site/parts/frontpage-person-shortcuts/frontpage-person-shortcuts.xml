@@ -21,6 +21,7 @@
                         <showStatus>true</showStatus>
                         <allowContentType>${app}:overview</allowContentType>
                         <allowContentType>${app}:forms-overview</allowContentType>
+                        <allowContentType>${app}:oversikt</allowContentType>
                     </config>
                 </input>
             </items>

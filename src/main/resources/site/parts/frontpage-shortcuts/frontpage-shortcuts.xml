@@ -35,6 +35,7 @@
                         <allowContentType>${app}:themed-article-page</allowContentType>
                         <allowContentType>${app}:overview</allowContentType>
                         <allowContentType>${app}:forms-overview</allowContentType>
+                        <allowContentType>${app}:oversikt</allowContentType>
                         <allowContentType>${app}:page-list</allowContentType>
                     </config>
                 </input>

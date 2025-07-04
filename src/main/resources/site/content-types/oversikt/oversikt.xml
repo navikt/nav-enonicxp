@@ -1,0 +1,146 @@
+<content-type>
+    <display-name>Oversiktsside (v3)</display-name>
+    <description>Oversikt for søknad/skjema, klage/anke, ettersendelse, tjenester og produktdetaljer</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <form>
+        <field-set>
+            <label>Sideoppsett</label>
+            <items>
+                <input type="TextLine" name="title">
+                    <label>Side-tittel</label>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <input type="TextLine" name="underTitle">
+                    <label>Under-tittel</label>
+                    <occurrences minimum="0" maximum="1"/>
+                    <default></default>
+                </input>
+                <mixin name="ingress" />
+                <input name="oversiktType" type="ComboBox">
+                    <label>Velg type oversikt</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <option value="application">Søknad og skjema</option>
+                        <option value="complaint">Klage og anke</option>
+                        <option value="addendum">Ettersendelse</option>
+                        <option value="rates">Satser</option>
+                        <option value="payout_dates">Utbetalingdatoer</option>
+                        <option value="processing_times">Saksbehandlingstider</option>
+                        <option value="all_products">Alle produkter</option>
+                    </config>
+                </input>
+                <mixin name="illustration"/>
+                <mixin name="custom-path-selector-required"/>
+                <mixin name="external-product-url"/>
+                <input name="areasFilterToggle" type="CheckBox">
+                    <label>Vis område-filter</label>
+                    <default>checked</default>
+                </input>
+                <input name="textFilterToggle" type="CheckBox">
+                    <label>Vis fritekst-filter</label>
+                    <default>checked</default>
+                </input>
+            </items>
+        </field-set>
+        <option-set name="audience">
+            <label>Målgruppe</label>
+            <occurrences minimum="1" maximum="1"/>
+            <options minimum="1" maximum="1">
+                <option name="person">
+                    <label>Privatperson</label>
+                </option>
+                <option name="employer">
+                    <label>Arbeidsgiver</label>
+                </option>
+                <option name="provider">
+                    <label>Samarbeidspartner</label>
+                    <items>
+                        <option-set name="pageType">
+                            <label>Velg sidetype</label>
+                            <occurrences minimum="1" maximum="1"/>
+                            <options minimum="1" maximum="1">
+                                <option name="overview">
+                                    <label>Oversiktsside for underkategori</label>
+                                    <items>
+                                        <mixin name="provider-audience"/>
+                                    </items>
+                                </option>
+                                <option name="links">
+                                    <label>Transportside til oversikter for underkategorier</label>
+                                    <items>
+                                        <item-set name="links">
+                                            <label>Lenker til oversiktssider</label>
+                                            <occurrences minimum="1" maximum="0"/>
+                                            <items>
+                                                <input type="TextLine" name="text">
+                                                    <label>Lenketekst</label>
+                                                    <help-text>Hvis denne er tom benyttes tittel på oversiktssiden som
+                                                        lenketekst
+                                                    </help-text>
+                                                </input>
+                                                <input type="ContentSelector" name="link">
+                                                    <label>Velg oversiktsside</label>
+                                                    <occurrences minimum="1" maximum="1"/>
+                                                    <config>
+                                                        <allowContentType>${app}:oversikt</allowContentType>
+                                                    </config>
+                                                </input>
+                                            </items>
+                                        </item-set>
+                                    </items>
+                                </option>
+                            </options>
+                        </option-set>
+                    </items>
+                </option>
+            </options>
+        </option-set>
+        <field-set>
+            <label>Data for ikke-lokaliserte sider</label>
+            <items>
+                <input name="localeFallback" type="ContentSelector">
+                    <label>Velg fallback data</label>
+                    <help-text>Brukes for å sette inn elementer for sider som ikke er lokalisert</help-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allowContentType>${app}:content-data-locale-fallback</allowContentType>
+                        <showStatus>true</showStatus>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Ekskluderte sider</label>
+            <items>
+                <input name="excludedContent" type="CustomSelector">
+                    <label>Velg innhold som ikke skal vises i denne oversikten</label>
+                    <occurrences minimum="0" maximum="0"/>
+                    <config>
+                        <service>contentSelector</service>
+                        <param value="contentTypes">
+                            ["no.nav.navno:content-page-with-sidemenus","no.nav.navno:guide-page", "no.nav.navno:themed-article-page"]
+                        </param>
+                        <param value="sort">data.area ASC, displayName ASC</param>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <mixin name="owner"/>
+        <field-set>
+            <label>Søkeoptimalisering</label>
+            <items>
+                <mixin name="keywords"/>
+                <input name="noindex" type="CheckBox">
+                    <label>
+                        Skal ikke vises i søk
+                    </label>
+                    <help-text>
+                        Gjelder både søket på nav.no og eksterne søk som Google og Bing
+                    </help-text>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>
