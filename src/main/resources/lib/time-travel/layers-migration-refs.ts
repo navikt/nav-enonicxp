@@ -1,7 +1,7 @@
 import { getRepoConnection } from '../repos/repo-utils';
 import { CONTENT_ROOT_REPO_ID } from '../constants';
 import { logger } from '../utils/logging';
-import { getLayerMigrationData } from '../localization/layers-migration/migration-data';
+import { getLayerMigrationData } from '../localization/layers-repo-utils/migration-data';
 
 export const getLayersMigrationArchivedContentRef = ({
     contentId,
