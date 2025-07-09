@@ -14,20 +14,17 @@ type Args = {
 };
 
 export const getOversiktCategory = (oversiktType: Oversikt['oversiktType']) => {
-    if (
-        oversiktType === 'application' ||
-        oversiktType === 'addendum' ||
-        oversiktType === 'complaint'
-    ) {
-        return 'formDetails';
-    } else if (
-        oversiktType === 'rates' ||
-        oversiktType === 'payout_dates' ||
-        oversiktType === 'processing_times'
-    ) {
-        return 'productDetails';
-    } else {
-        return 'basicServices';
+    switch (oversiktType) {
+        case 'application':
+        case 'addendum':
+        case 'complaint':
+            return 'formDetails';
+        case 'rates':
+        case 'payout_dates':
+        case 'processing_times':
+            return 'productDetails';
+        default:
+            return 'basicServices';
     }
 };
 

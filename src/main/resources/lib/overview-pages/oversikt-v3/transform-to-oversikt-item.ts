@@ -3,7 +3,6 @@ import { sanitize } from '/lib/xp/common';
 import { ContentWithProductDetails, OversiktListItem } from './types';
 import { getPublicPath } from '../../paths/public-path';
 import { getLayersData } from '../../localization/layers-data';
-import { logger } from '../../utils/logging';
 import { forceArray } from '../../utils/array-utils';
 import striptags from '/assets/striptags/3.2.0/src/striptags';
 import {
