@@ -3,8 +3,8 @@ import graphQlLib from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 import { logger } from '../../../utils/logging';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
-import { buildFormDetailsList } from '../../../overview-pages/forms-overview/build-forms-overview-list';
-import { FormDetailsListItem } from '../../../overview-pages/forms-overview/types';
+import { buildFormDetailsList } from '../../../overview-pages/forms-overview-v2/build-forms-overview-list';
+import { FormDetailsListItem } from '../../../overview-pages/forms-overview-v2/types';
 
 export const formsOverviewDataCallback: CreationCallback = (context, params) => {
     const formDetailsList = graphQlCreateObjectType<keyof FormDetailsListItem>(context, {

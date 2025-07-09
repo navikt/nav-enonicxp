@@ -43,6 +43,7 @@ import { contentInterfaceCallback } from './schema-creation-callbacks/content-in
 import { externalLinkCallback } from './schema-creation-callbacks/external-link-callback';
 import { createOpeningHoursFields } from './schema-creation-callbacks/common/opening-hours-mixin';
 import { formsOverviewDataCallback } from './schema-creation-callbacks/forms-overview-data-callback';
+import { oversiktDataCallback } from './schema-creation-callbacks/oversikt-data-callback';
 import {
     audienceCallback,
     alternativeAudienceCallback,
@@ -78,6 +79,7 @@ export const schemaCreationCallbacks: Record<string, CreationCallback> = {
     no_nav_navno_FormDetails_Data: formDetailsDataCallback,
     no_nav_navno_FormDetails: formDetailsCallback,
     no_nav_navno_FormIntermediateStep: formIntermediateStepCallback,
+    no_nav_navno_Oversikt_Data: oversiktDataCallback,
     Part_no_nav_navno_areapage_situation_card: areapageSituationCardPartCallback,
     Part_no_nav_navno_dynamic_news_list_ContentList: contentListCallback(
         'target',

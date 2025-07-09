@@ -25,6 +25,7 @@ export const dynamicPageContentTypes = [
     `${APP_DESCRIPTOR}:form-intermediate-step`,
     `${APP_DESCRIPTOR}:generic-page`,
     `${APP_DESCRIPTOR}:overview`,
+    `${APP_DESCRIPTOR}:oversikt`,
     `${APP_DESCRIPTOR}:office-page`,
     `${APP_DESCRIPTOR}:front-page`,
     `${APP_DESCRIPTOR}:front-page-nested`,
@@ -91,14 +92,6 @@ export const contentTypesWithComponents = [
     'portal:page-template',
 ] as const satisfies ContentTypeList;
 
-export const contentTypesWithProductDetails = [
-    `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
-    `${APP_DESCRIPTOR}:themed-article-page`,
-    `${APP_DESCRIPTOR}:guide-page`,
-] as const satisfies ContentTypeList;
-
-export const contentTypesInOverviewPages = contentTypesWithProductDetails;
-
 export const contentTypesInAllProductsOverviewPages = [
     `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
     `${APP_DESCRIPTOR}:themed-article-page`,
@@ -141,6 +134,12 @@ export const contentTypesWithCustomEditor = [
     `${APP_DESCRIPTOR}:global-case-time-set`,
 ] as const satisfies ContentTypeList;
 
+export const contentTypesWithProductDetails = [
+    `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
+    `${APP_DESCRIPTOR}:themed-article-page`,
+    `${APP_DESCRIPTOR}:guide-page`,
+] as const satisfies ContentTypeList;
+
 export const contentTypesWithFormDetails = [
     `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
     `${APP_DESCRIPTOR}:themed-article-page`,
@@ -151,3 +150,5 @@ export const contentTypesWithTaxonomy = [
     `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
     `${APP_DESCRIPTOR}:themed-article-page`,
 ] as const satisfies ContentTypeList;
+
+export const contentTypesInOverviewPages = contentTypesWithProductDetails;
