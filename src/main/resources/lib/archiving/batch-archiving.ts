@@ -1,14 +1,15 @@
 import { QueryDsl } from '/lib/xp/node';
 import * as contentLib from '/lib/xp/content';
+import * as schedulerLib from '/lib/xp/scheduler';
 import { Content } from '/lib/xp/content';
 import { queryAllLayersToRepoIdBuckets } from '../localization/layers-repo-utils/query-all-layers';
+import { getUnpublishJobName } from '../scheduling/scheduled-publish';
 import { getRepoConnection } from '../repos/repo-utils';
 import { logger } from '../utils/logging';
 import { runInContext } from '../context/run-in-context';
 import { MISC_REPO_ID, URLS } from '../constants';
 import { buildEditorPath } from '../paths/editor-path';
 import { getMiscRepoConnection } from '../repos/misc-repo';
-import { ReferencesFinder } from '../reference-search/references-finder';
 import { MainArticle } from '@xp-types/site/content-types';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { CONTENT_TYPES_WITH_CONTENT_LISTS } from '../contentlists/remove-unpublished';
@@ -109,26 +110,16 @@ const hasNewerDescendants = (content: ContentDataSimple | Content, timestamp: st
     );
 };
 
-const getRelevantReferences = (content: ContentDataSimple, repoId: string) => {
-    const references = new ReferencesFinder({
-        contentId: content._id,
-        repoId,
-        logErrorsOnly: true,
-    }).run();
-
-    if (!references) {
-        return [];
-    }
-
-    return references.reduce<ContentDataSimple[]>((acc, refContent) => {
-        // References from certain content types are automatically fixed by an event handler on unpublish
-        // and can safely be ignored
-        if (!contentTypeReferencesToIgnore.has(refContent.type)) {
-            acc.push(simplifyContent(refContent, repoId));
-        }
-
-        return acc;
-    }, []);
+const removeScheduledJobsForArchivedContent = (contentIds: string[], repoId: string) => {
+    contentIds.forEach((contentId) => {
+        // A job won't always exist, so just try our best to delete it
+        // and extra handling if there's no job to delete.
+        const jobName = getUnpublishJobName(contentId, repoId);
+        const result = schedulerLib.delete({ name: jobName });
+        logger.info(
+            `Remove scheduled unpublish job for archived content ${contentId} - ${jobName}: ${result ? 'Success' : 'No job found'}`
+        );
+    });
 };
 
 const unpublishAndArchiveContents = (
@@ -188,6 +179,11 @@ const unpublishAndArchiveContents = (
                     ...content,
                     archivedChildren: archiveResult.filter((id) => id !== content._id),
                 });
+
+                removeScheduledJobsForArchivedContent(
+                    [content._id, ...content.archivedChildren],
+                    repoId
+                );
             } catch (e: any) {
                 logger.error(
                     `Failed to unpublish/archive ${content._id} / ${content._path} - ${e}`
