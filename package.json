@@ -44,6 +44,7 @@
         "@enonic-types/lib-project": "7.15.0",
         "@enonic-types/lib-repo": "7.15.0",
         "@enonic-types/lib-scheduler": "7.15.0",
+        "@enonic-types/lib-schema": "7.15.0",
         "@enonic-types/lib-task": "7.15.0",
         "@enonic-types/lib-value": "7.15.0",
         "@enonic-types/lib-websocket": "7.15.0",

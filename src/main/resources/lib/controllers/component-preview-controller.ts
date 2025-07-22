@@ -1,4 +1,4 @@
-import { Request } from '@enonic-types/core'
+import { Request } from '@enonic-types/core';
 import * as portalLib from '/lib/xp/portal';
 import httpClient from '/lib/http-client';
 import { URLS } from '../constants';
@@ -6,6 +6,7 @@ import { logger } from '../utils/logging';
 import { runGuillotineComponentPreviewQuery } from '../guillotine/queries/run-sitecontent-query';
 import {
     destructureComponent,
+    getSchemaRegionsDictionary,
     insertComponentsIntoRegions,
 } from '../guillotine/utils/process-components';
 import { runGuillotineContentQuery } from '../guillotine/queries/run-content-query';
@@ -59,9 +60,16 @@ const getComponentProps = () => {
         return rootFragment;
     }
 
+    const regionsDictionary = getSchemaRegionsDictionary();
+
     // Layouts must include components in its regions
     if (portalComponent.type === 'layout') {
-        return insertComponentsIntoRegions(portalComponent, components, fragments);
+        return insertComponentsIntoRegions({
+            parentComponent: portalComponent,
+            components,
+            fragments,
+            regionsDictionary,
+        });
     }
 
     // Parts need to be destructured into the structure the frontend expects for rendering

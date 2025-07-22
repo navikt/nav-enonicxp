@@ -1,7 +1,10 @@
 import { Region } from '/lib/xp/portal';
+import { listComponents } from '/lib/xp/schema';
 import { PortalComponent } from '../../../types/components/component-portal';
 import { GuillotineUnresolvedComponentType } from '../queries/run-sitecontent-query';
 import { ComponentType } from '../../../types/components/component-config';
+import { runInContext } from '../../context/run-in-context';
+import { LayoutDescriptor, PageDescriptor, PartDescriptor } from '@enonic-types/core';
 
 // TODO: consider refactoring this mess :D
 
@@ -23,6 +26,16 @@ import { ComponentType } from '../../../types/components/component-config';
 // inserted into their matching regions.
 
 type Regions = Record<string, Region>;
+
+type Descriptors = LayoutDescriptor | PartDescriptor | PageDescriptor;
+type RegionsDictionary = Record<Descriptors, Region['name'][]>;
+
+type InsertComponentsIntoRegionsProps = {
+    parentComponent: PortalComponent;
+    components: GuillotineComponent[];
+    fragments: PortalComponent<'fragment'>[];
+    regionsDictionary: RegionsDictionary;
+};
 
 export type GuillotineComponent = {
     type: ComponentType;
@@ -87,11 +100,42 @@ export const destructureComponent = (component: GuillotineComponent) => {
     };
 };
 
-export const insertComponentsIntoRegions = (
-    parentComponent: PortalComponent,
-    components: GuillotineComponent[],
-    fragments: PortalComponent<'fragment'>[]
-): PortalComponent => {
+const insertMissingRegions = ({
+    parentComponent,
+    regionsDictionary,
+}: {
+    parentComponent: PortalComponent;
+    regionsDictionary: RegionsDictionary;
+}) => {
+    const { regions, descriptor } = parentComponent;
+    if (!descriptor || !regionsDictionary) {
+        return regions || {};
+    }
+
+    const expectedRegions = regionsDictionary[descriptor];
+
+    if (!expectedRegions) {
+        return regions || {};
+    }
+
+    return Object.entries(expectedRegions).reduce<Regions>((acc, [regionName]) => {
+        const augmentedRegion = (regions && regions[regionName]) ?? {
+            name: regionName,
+            components: [],
+        };
+        return {
+            ...acc,
+            [regionName]: augmentedRegion,
+        };
+    }, {});
+};
+
+export const insertComponentsIntoRegions = ({
+    parentComponent,
+    components,
+    fragments,
+    regionsDictionary,
+}: InsertComponentsIntoRegionsProps): PortalComponent => {
     const { path, regions } = parentComponent;
 
     if (!regions || !path) {
@@ -101,7 +145,12 @@ export const insertComponentsIntoRegions = (
     // Strip trailing slash (only applicable to the page root component)
     const parentPath = path.replace(/\/$/, '');
 
-    const regionsWithComponents = Object.entries(regions).reduce<Regions>(
+    log.info(parentComponent.descriptor);
+    log.info(JSON.stringify(regionsDictionary, null, 2));
+
+    const allRegions = insertMissingRegions({ parentComponent, regionsDictionary });
+
+    const regionsWithComponents = Object.entries(allRegions).reduce<Regions>(
         (acc, [regionName, region]) => {
             // This is the component path for the current region. We use this to filter out components
             // belonging to this region
@@ -137,11 +186,12 @@ export const insertComponentsIntoRegions = (
 
                 return [
                     ...acc,
-                    insertComponentsIntoRegions(
-                        { ...regionComponent, ...destructureComponent(component) },
+                    insertComponentsIntoRegions({
+                        parentComponent: { ...regionComponent, ...destructureComponent(component) },
                         components,
-                        fragments
-                    ),
+                        fragments,
+                        regionsDictionary,
+                    }),
                 ];
             }, []);
 
@@ -157,6 +207,35 @@ export const insertComponentsIntoRegions = (
     );
 
     return { ...parentComponent, regions: regionsWithComponents };
+};
+
+export const getSchemaRegionsDictionary = () => {
+    return runInContext({ branch: 'draft', asAdmin: true }, () => {
+        const layouts = listComponents({
+            application: 'no.nav.navno',
+            type: 'LAYOUT',
+        });
+        const pages = listComponents({
+            application: 'no.nav.navno',
+            type: 'PAGE',
+        });
+
+        const regions = [...layouts, ...pages].reduce((acc, component) => {
+            if (component.type !== 'LAYOUT' && component.type !== 'PAGE') {
+                return acc;
+            }
+            if (!('regions' in component) || !component.regions) {
+                return acc;
+            }
+
+            return {
+                ...acc,
+                [component.key]: component.regions,
+            };
+        }, {});
+
+        return regions;
+    });
 };
 
 // Inserts components from a guillotine query into the matching regions of the page object
@@ -177,17 +256,20 @@ export const buildPageComponentTree = ({
         return page;
     }
 
+    const regionsDictionary = getSchemaRegionsDictionary();
+
     const pageComponent = components.find((component) => component.path === '/');
 
     if (!pageComponent) {
         return page;
     }
 
-    return insertComponentsIntoRegions(
-        { ...page, ...destructureComponent(pageComponent) },
+    return insertComponentsIntoRegions({
+        parentComponent: { ...page, ...destructureComponent(pageComponent) },
         components,
-        fragments
-    );
+        fragments,
+        regionsDictionary,
+    });
 };
 
 // Fragments have slightly different structures and constraints, so we handle them separately
