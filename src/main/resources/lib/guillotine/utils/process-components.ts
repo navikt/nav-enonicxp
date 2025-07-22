@@ -118,7 +118,7 @@ const insertMissingRegions = ({
         return regions || {};
     }
 
-    return Object.entries(expectedRegions).reduce<Regions>((acc, [regionName]) => {
+    return expectedRegions.reduce<Regions>((acc, regionName) => {
         const augmentedRegion = (regions && regions[regionName]) ?? {
             name: regionName,
             components: [],
