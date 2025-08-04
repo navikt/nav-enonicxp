@@ -13,6 +13,7 @@ const getContentNode = (node: NodeEventData) => {
     const repo = getRepoConnection({
         repoId: node.repo,
         branch: 'master',
+        asAdmin: true,
     });
 
     const content = repo.get<Content>(node.id);
