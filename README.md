@@ -49,10 +49,46 @@ enonic project deploy
 
 ## Kopiere data til lokal sandbox fra prod
 
-For å få data inn til lokal sandbox så må man først og fremst opprette en datadump av hele databasen. Oppskrift på det finner du her: https://confluence.adeo.no/spaces/ATOM/pages/387108768/Div.+jobber#Div.jobber-Systemdumps. Etter dumpen er opprettet kan du laste ned zipfila fra data toolbox i [dev](https://portal-admin-dev.oera.no/admin/tool/systems.rcd.enonic.datatoolbox/data-toolbox#dumps) eller q6, avhengig av hvilket miljø du opprettet dumpen i. Flytt zipfila inn der hvor din sandbox-implementasjon ligger, under home/data/dump.
-Eksempel på terminalkommando om zip-fil ligger i Downloads-mappa.
-`mv Downloads/prod_2025_08_05.zip ~/.enonic/sandboxes/navno/home/data/dump`.
-Kjør `enonic dump load` (kan kjøres fra hvor som helst, men zip-fila må ligge i data/dump katalogen). Da kan du velge dump, også må du oppgi brukernavn+passord på format `bruker:passord` der brukernavnet er `su` og passord er det du har definert i system.properties fila di. System.properties ligger under `home/config`, hvis du ikke har den fra før kan du opprette den `touch system.properties`. Her er verdier som kan ligge https://developer.enonic.com/docs/xp/stable/deployment/config#standard_config_files, men den relevante er `xp.suPassword=PASSORDDUVELGER`. Dumpen tar lang tid så lurt å starte over natta og tvinge maskin til å ikke sovne med feks caffeinate(innebygd på mac).
+1. **Opprette en datadump**
+
+   For å få data inn til lokal sandbox så må man først og fremst opprette en datadump av hele databasen. Oppskrift på det finner du her: [Systemdumps – Confluence](https://confluence.adeo.no/spaces/ATOM/pages/387108768/Div.+jobber#Div.jobber-Systemdumps)
+
+2. **Last ned dumpen**
+
+   Når dumpen er opprettet, laster du ned ZIP-filen fra *Data Toolbox* i [dev](https://portal-admin-dev.oera.no/admin/tool/systems.rcd.enonic.datatoolbox/data-toolbox#dumps)  eller *q6* (avhengig av hvilket miljø du opprettet dumpen i).
+
+3. **Flytt ZIP-filen til riktig mappe**
+
+   Filen skal ligge i: ```home/data/dump``` i din sandbox-implementasjon.
+   
+    Eksempel på terminalkommando (hvis filen ligger i Downloads):
+   ```mv Downloads/prod_2025_08_05.zip ~/.enonic/sandboxes/navno/home/data/dump```
+
+5. **Kjør import av dumpen**
+
+   Kjør kommandoen: ```enonic dump load```
+
+   Denne kan kjøres fra hvor som helst, men *ZIP-filen må ligge* i data/dump-katalogen.
+   Velg dumpen fra listen.
+
+6. **Oppgi brukernavn og passord**
+
+   Format ```bruker:passord```
+    - Brukernavn: su
+    - Passord: det du har definert i system.properties-filen.
+   
+      ```system.properties```-filen ligger i:
+      ```home/config```
+      Hvis du ikke har den fra før:
+      ```touch system.properties```
+      Relevant verdi i filen:
+      ```xp.suPassword=PASSORDDUVELGER```
+      Flere eksempler finnes her:  [Standard config files – Enonic Docs](https://developer.enonic.com/docs/xp/stable/deployment/config#standard_config_files)
+
+7. **Vent på at dumpen fullfører**
+
+   Dette kan ta *lang* tid, så det kan være lurt å starte prosessen om natten. Pass på at maskinen ikke går i dvale, f.eks. ved å bruke:
+   ```caffeinate``` (innebygd på Mac).
 
 ## Server config docs
 
