@@ -66,12 +66,14 @@ enonic project deploy
 
 5. **Kjør import av dumpen**
 
+   Sørg for at Enonic kjører lokalt først (kjøres i egen terminal): ```enonic project deploy```
+
    Kjør kommandoen: ```enonic dump load```
 
    Denne kan kjøres fra hvor som helst, men *ZIP-filen må ligge* i data/dump-katalogen.
    Velg dumpen fra listen.
 
-6. **Oppgi brukernavn og passord**
+7. **Oppgi brukernavn og passord**
 
    Format ```bruker:passord```
     - Brukernavn: su
@@ -85,7 +87,7 @@ enonic project deploy
       ```xp.suPassword=PASSORDDUVELGER```
       Flere eksempler finnes her:  [Standard config files – Enonic Docs](https://developer.enonic.com/docs/xp/stable/deployment/config#standard_config_files)
 
-7. **Vent på at dumpen fullfører**
+8. **Vent på at dumpen fullfører**
 
    Dette kan ta *lang* tid, så det kan være lurt å starte prosessen om natten. Pass på at maskinen ikke går i dvale, f.eks. ved å bruke:
    ```caffeinate``` (innebygd på Mac).
