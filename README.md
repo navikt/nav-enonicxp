@@ -47,18 +47,27 @@ cp com.enonic.app.contentstudio.cfg /YOUR_SANDBOX_PATH/home/config/com.enonic.ap
 enonic project deploy
 ```
 
+## Kopiere data til lokal sandbox fra prod
+
+For å få data inn til lokal sandbox så må man først og fremst opprette en datadump av hele databasen. Oppskrift på det finner du her: https://confluence.adeo.no/spaces/ATOM/pages/387108768/Div.+jobber#Div.jobber-Systemdumps. Etter dumpen er opprettet kan du laste ned zipfila fra data toolbox i [dev](https://portal-admin-dev.oera.no/admin/tool/systems.rcd.enonic.datatoolbox/data-toolbox#dumps) eller q6, avhengig av hvilket miljø du opprettet dumpen i. Flytt zipfila inn der hvor din sandbox-implementasjon ligger, under home/data/dump.
+Eksempel på terminalkommando om zip-fil ligger i Downloads-mappa.
+`mv Downloads/prod_2025_08_05.zip ~/.enonic/sandboxes/navno/home/data/dump`.
+Kjør `enonic dump` (kan kjøres fra hvor som helst, men zip-fila må ligge i data/dump katalogen). Da kan du velge dump, også må du oppgi brukernavn+passord på format `bruker:passord` der brukernavnet er `su` og passord er det du har definert i system.properties fila di. System.properties ligger under `home/config`, hvis du ikke har den fra før kan du opprette den `touch system.properties`. Her er verdier som kan ligge https://developer.enonic.com/docs/xp/stable/deployment/config#standard_config_files, men den relevante er `xp.suPassword=PASSORDDUVELGER`. Dumpen tar lang tid så lurt å starte over natta og tvinge maskin til å ikke sovne med feks caffeinate(innebygd på mac).
+
 ## Server config docs
+
 [See confluence pages](https://confluence.adeo.no/display/ATOM/Servere)
 
 ## Cache docs
+
 https://github.com/navikt/nav-enonicxp/wiki/Caching
 
 ## Deploy
 
--   **dev/dev2(q6):** Run deploy-to-(dev|dev2/q6) workflow dispatch
--   **P:** Make a PR between main and your feature branch **\*** and create a release at <br />
-    https://github.com/navikt/nav-enonicxp/releases <br />
-    **Obs:** Release must be formatted as **vX.X.X** (e.g v1.2.1)
+- **dev/dev2(q6):** Run deploy-to-(dev|dev2/q6) workflow dispatch
+- **P:** Make a PR between main and your feature branch **\*** and create a release at <br />
+  https://github.com/navikt/nav-enonicxp/releases <br />
+  **Obs:** Release must be formatted as **vX.X.X** (e.g v1.2.1)
 
 ## Useful Enonic XP tools
 
@@ -71,6 +80,7 @@ Enonic XP krever at npm-pakker dras inn som webjars. For å dra inn en pakke i j
 Det betyr at path til spesifikk versjon må settes opp i kildekoden. For at dette skal fungere som forventet lokalt og i din IDE, må det settes opp en match i tsconfig mellom versjonsspesifikk path i webjar og path i node_modules.
 
 ### Rutine ved bumping av dependecies
+
 1. Sjekk om ønsket versjon finnes som webjar
 2. Oppdater versjon av webjar i `build.gradle`: `webjar "org.webjars.npm:html-entities:2.5.2"`
 3. Oppdater path i ts-fil: `import { decode } from '/assets/html-entities/2.5.2/lib';`
@@ -133,10 +143,12 @@ Then just use the Applications link ({baseurl}/admin/tool/com.enonic.xp.app.appl
 you select the app you will see buttons on the top of the page for stopping and starting the app.
 
 ## Viktig å huske på
+
 ### Unngå endring av feltnavn i Enonic-innholdstyper
-Endring av feltnavn i Enonic (f.eks. fra `html` til `editorial` i et `richText`-felt) medfører at 
-referanser til tidligere data brytes. Verdiene eksisterer fortsatt i nodenes rådata, men blir 
-ikke hentet ut via GraphQL-spørringer og vises heller ikke i Content Studio eller frontend. Dette 
-skyldes at Enonic ikke har støtte for migrering av datamodeller. Dersom historikk eller gjenbruk 
-av eksisterende innhold er viktig, må navnekonvensjoner holdes stabile eller endringer håndteres 
+
+Endring av feltnavn i Enonic (f.eks. fra `html` til `editorial` i et `richText`-felt) medfører at
+referanser til tidligere data brytes. Verdiene eksisterer fortsatt i nodenes rådata, men blir
+ikke hentet ut via GraphQL-spørringer og vises heller ikke i Content Studio eller frontend. Dette
+skyldes at Enonic ikke har støtte for migrering av datamodeller. Dersom historikk eller gjenbruk
+av eksisterende innhold er viktig, må navnekonvensjoner holdes stabile eller endringer håndteres
 eksplisitt via migreringsscript.
