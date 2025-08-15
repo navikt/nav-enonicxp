@@ -90,7 +90,8 @@ enonic project deploy
 8. **Vent på at dumpen fullfører**
 
    Dette kan ta *lang* tid, så det kan være lurt å starte prosessen om natten. Pass på at maskinen ikke går i dvale, f.eks. ved å bruke:
-   ```caffeinate``` (innebygd på Mac). Du vil få en feilmelding når dumpen er ferdig, men det er forventet.
+   ```caffeinate``` (innebygd på Mac). Du vil få en feilmelding som den under når dumpen er ferdig, men det er forventet.
+   ```Unable to connect to remote service:  (...)```
 
 ## Server config docs
 
