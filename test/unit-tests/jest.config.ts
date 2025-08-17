@@ -1,5 +1,5 @@
 import { pathsToModuleNameMapper, JestConfigWithTsJest } from 'ts-jest';
-import { compilerOptions } from './tsconfig.json';
+import { compilerOptions } from './tsconfig.json' with { type: 'json' };
 
 const pathsToModuleNameMapperExcludingMockedLibs = () => {
     const modulesFromTsConfig = pathsToModuleNameMapper(compilerOptions.paths) as Record<
