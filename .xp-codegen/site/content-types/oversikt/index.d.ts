@@ -48,7 +48,7 @@ export type Oversikt = {
   /**
    * Målgruppe
    */
-  audience:
+  audience: Array<
     | {
         /**
          * Selected
@@ -128,7 +128,8 @@ export type Oversikt = {
                 };
               };
         };
-      };
+      }
+  >;
 
   /**
    * Velg fallback data

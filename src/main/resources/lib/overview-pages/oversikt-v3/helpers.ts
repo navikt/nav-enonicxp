@@ -5,12 +5,39 @@ import {
 } from '../../contenttype-lists';
 import { forceArray } from '../../utils/array-utils';
 import { Oversikt } from '@xp-types/site/content-types';
-import { logger } from '../../utils/logging';
 
 type Args = {
     oversiktType: Oversikt['oversiktType'];
     audience: Oversikt['audience'];
     excludedContentIds: string[];
+};
+
+const buildAudienceFilter = (audience: Oversikt['audience']) => {
+    const audienceSelected = audience.map((audience) => audience._selected);
+    const audienceProviderSelection = audience.find((item) => item._selected === 'provider');
+
+    const providerSubAudience =
+        audienceProviderSelection?.provider.pageType._selected === 'overview'
+            ? forceArray(audienceProviderSelection.provider.pageType.overview.provider_audience)
+            : [];
+
+    const providerSubAudienceFilter =
+        providerSubAudience.length > 1
+            ? {
+                  hasValue: {
+                      field: 'data.audience.provider.overview.provider_audience',
+                      values: providerSubAudience.map((item) => item),
+                  },
+              }
+            : {};
+
+    return {
+        hasValue: {
+            field: 'data.audience._selected',
+            values: audienceSelected,
+        },
+        ...providerSubAudienceFilter,
+    };
 };
 
 export const getOversiktCategory = (oversiktType: Oversikt['oversiktType']) => {
@@ -31,6 +58,8 @@ export const getOversiktCategory = (oversiktType: Oversikt['oversiktType']) => {
 export const getOversiktContent = ({ oversiktType, audience, excludedContentIds }: Args) => {
     const oversiktCategory = getOversiktCategory(oversiktType);
 
+    const audienceFilter = buildAudienceFilter(forceArray(audience));
+
     const query = {
         start: 0,
         count: 1000,
@@ -41,12 +70,7 @@ export const getOversiktContent = ({ oversiktType, audience, excludedContentIds 
         filters: {
             boolean: {
                 must: [
-                    {
-                        hasValue: {
-                            field: 'data.audience._selected',
-                            values: forceArray(audience._selected),
-                        },
-                    },
+                    audienceFilter,
                     ...(oversiktCategory === 'productDetails'
                         ? [
                               {
@@ -94,6 +118,5 @@ export const getOversiktContent = ({ oversiktType, audience, excludedContentIds 
         },
     };
 
-    logger.info(JSON.stringify(query, null, 2));
     return contentLib.query(query).hits;
 };
