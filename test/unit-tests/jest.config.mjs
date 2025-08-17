@@ -1,11 +1,11 @@
-import { pathsToModuleNameMapper, JestConfigWithTsJest } from 'ts-jest';
-import { compilerOptions } from './tsconfig.json' with { type: 'json' };
+import { pathsToModuleNameMapper } from 'ts-jest';
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
+const { compilerOptions } = require('./tsconfig.json');
 
 const pathsToModuleNameMapperExcludingMockedLibs = () => {
-    const modulesFromTsConfig = pathsToModuleNameMapper(compilerOptions.paths) as Record<
-        string,
-        unknown
-    >;
+    const modulesFromTsConfig = pathsToModuleNameMapper(compilerOptions.paths);
 
     Object.keys(modulesFromTsConfig).forEach((moduleKey) => {
         if (moduleKey.startsWith('^/lib')) {
@@ -16,7 +16,7 @@ const pathsToModuleNameMapperExcludingMockedLibs = () => {
     return modulesFromTsConfig;
 };
 
-const jestConfig: JestConfigWithTsJest = {
+const jestConfig = {
     clearMocks: true,
 
     collectCoverage: true,
