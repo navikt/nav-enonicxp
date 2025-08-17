@@ -1,7 +1,10 @@
-import { pathsToModuleNameMapper, JestConfigWithTsJest } from 'ts-jest';
-import { compilerOptions } from './tsconfig.json';
+import { pathsToModuleNameMapper } from 'ts-jest';
+import { createRequire } from 'module';
 
-const jestConfig: JestConfigWithTsJest = {
+const require = createRequire(import.meta.url);
+const { compilerOptions } = require('./tsconfig.json');
+
+const jestConfig = {
     globals: {
         app: {
             config: {
