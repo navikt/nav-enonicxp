@@ -14,34 +14,34 @@ type Args = {
 };
 
 const buildAudienceFilter = (audience: Oversikt['audience']) => {
-    const audienceSelected = audience.map((audience) => audience._selected);
+    const audienceKeys = audience.map((audience) => audience._selected);
     const audienceProviderSelection = audience.find((item) => item._selected === 'provider');
 
-    const providerSubAudience =
+    const providerSubAudienceKeys =
         audienceProviderSelection?.provider.pageType._selected === 'overview'
             ? forceArray(audienceProviderSelection.provider.pageType.overview.provider_audience)
             : [];
 
-    const hasProviderWithSubAudience =
-        audienceSelected.includes('provider') && providerSubAudience.length > 0;
-    const nonProviderAudiences = audienceSelected.filter((aud) => aud !== 'provider');
+    const audienceIsProvider =
+        audienceKeys.includes('provider') && providerSubAudienceKeys.length > 0;
 
-    if (!hasProviderWithSubAudience) {
+    if (!audienceIsProvider) {
         return {
             hasValue: {
                 field: 'data.audience._selected',
-                values: audienceSelected,
+                values: audienceKeys,
             },
         };
     }
 
+    const allOtherAudiences = audienceKeys.filter((audience) => audience !== 'provider');
     const filters = [];
 
-    if (nonProviderAudiences.length > 0) {
+    if (allOtherAudiences.length > 0) {
         filters.push({
             hasValue: {
                 field: 'data.audience._selected',
-                values: nonProviderAudiences,
+                values: allOtherAudiences,
             },
         });
     }
@@ -58,7 +58,7 @@ const buildAudienceFilter = (audience: Oversikt['audience']) => {
                 {
                     hasValue: {
                         field: 'data.audience.provider.provider_audience',
-                        values: providerSubAudience,
+                        values: providerSubAudienceKeys,
                     },
                 },
             ],
