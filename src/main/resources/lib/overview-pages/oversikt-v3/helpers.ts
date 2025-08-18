@@ -131,12 +131,6 @@ export const getOversiktContent = ({ oversiktType, audience, excludedContentIds 
                             values: [true],
                         },
                     },
-                    {
-                        hasValue: {
-                            field: 'data.hideFromProductlist',
-                            values: [true],
-                        },
-                    },
                     ...(excludedContentIds.length > 0
                         ? [
                               {
