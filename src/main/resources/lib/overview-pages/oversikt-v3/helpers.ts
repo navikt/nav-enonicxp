@@ -73,12 +73,6 @@ export const getOversiktContent = ({ oversiktType, audience, excludedContentIds 
                             values: [true],
                         },
                     },
-                    {
-                        hasValue: {
-                            field: 'data.hideFromProductlist',
-                            values: [true],
-                        },
-                    },
                     ...(excludedContentIds.length > 0
                         ? [
                               {
@@ -94,6 +88,5 @@ export const getOversiktContent = ({ oversiktType, audience, excludedContentIds 
         },
     };
 
-    logger.info(JSON.stringify(query, null, 2));
     return contentLib.query(query).hits;
 };

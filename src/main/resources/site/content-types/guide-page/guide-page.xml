@@ -10,7 +10,7 @@
             <items>
                 <mixin name="page-header"/>
                 <input type="CheckBox" name="hideFromProductlist">
-                    <label>Ikke vis denne siden på oversiktssider (gjelder ikke skjemaoversikter)</label>
+                    <label>Kun oversiktsside v1: Ikke vis denne siden på oversiktssider (gjelder ikke skjemaoversikter)</label>
                     <default>unchecked</default>
                 </input>
                 <mixin name="ingress-required" />
