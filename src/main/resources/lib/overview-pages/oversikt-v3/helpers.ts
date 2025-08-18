@@ -5,6 +5,7 @@ import {
 } from '../../contenttype-lists';
 import { forceArray } from '../../utils/array-utils';
 import { Oversikt } from '@xp-types/site/content-types';
+import { logger } from '../../utils/logging';
 
 type Args = {
     oversiktType: Oversikt['oversiktType'];
@@ -21,23 +22,56 @@ const buildAudienceFilter = (audience: Oversikt['audience']) => {
             ? forceArray(audienceProviderSelection.provider.pageType.overview.provider_audience)
             : [];
 
-    const providerSubAudienceFilter =
-        providerSubAudience.length > 1
-            ? {
-                  hasValue: {
-                      field: 'data.audience.provider.overview.provider_audience',
-                      values: providerSubAudience.map((item) => item),
-                  },
-              }
-            : {};
+    const hasProviderWithSubAudience =
+        audienceSelected.includes('provider') && providerSubAudience.length > 0;
+    const nonProviderAudiences = audienceSelected.filter((aud) => aud !== 'provider');
 
-    return {
-        hasValue: {
-            field: 'data.audience._selected',
-            values: audienceSelected,
+    if (!hasProviderWithSubAudience) {
+        return {
+            hasValue: {
+                field: 'data.audience._selected',
+                values: audienceSelected,
+            },
+        };
+    }
+
+    const filters = [];
+
+    if (nonProviderAudiences.length > 0) {
+        filters.push({
+            hasValue: {
+                field: 'data.audience._selected',
+                values: nonProviderAudiences,
+            },
+        });
+    }
+
+    filters.push({
+        boolean: {
+            must: [
+                {
+                    hasValue: {
+                        field: 'data.audience._selected',
+                        values: ['provider'],
+                    },
+                },
+                {
+                    hasValue: {
+                        field: 'data.audience.provider.provider_audience',
+                        values: providerSubAudience,
+                    },
+                },
+            ],
         },
-        ...providerSubAudienceFilter,
-    };
+    });
+
+    return filters.length === 1
+        ? filters[0]
+        : {
+              boolean: {
+                  should: filters,
+              },
+          };
 };
 
 export const getOversiktCategory = (oversiktType: Oversikt['oversiktType']) => {
