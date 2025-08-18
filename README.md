@@ -64,7 +64,7 @@ enonic project deploy
     Eksempel på terminalkommando (hvis filen ligger i Downloads):
    ```mv Downloads/prod_2025_08_05.zip ~/.enonic/sandboxes/navno/home/data/dump```
 
-5. **Kjør import av dumpen**
+4. **Kjør import av dumpen**
 
    Sørg for at Enonic kjører lokalt først (kjøres i egen terminal): ```enonic project deploy```
 
@@ -73,7 +73,7 @@ enonic project deploy
    Denne kan kjøres fra hvor som helst, men *ZIP-filen må ligge* i data/dump-katalogen.
    Velg dumpen fra listen.
 
-7. **Oppgi brukernavn og passord**
+5. **Oppgi brukernavn og passord**
 
    Format ```bruker:passord```
     - Brukernavn: su
@@ -87,22 +87,31 @@ enonic project deploy
       ```xp.suPassword=PASSORDDUVELGER```
       Flere eksempler finnes her:  [Standard config files – Enonic Docs](https://developer.enonic.com/docs/xp/stable/deployment/config#standard_config_files)
 
-8. **Vent på at dumpen fullfører**
+6. **Vent på at dumpen fullfører**
 
    Dette kan ta *lang* tid, så det kan være lurt å starte prosessen om natten. Pass på at maskinen ikke går i dvale, f.eks. ved å bruke:
    ```caffeinate``` (innebygd på Mac). Du vil få en feilmelding som den under når dumpen er ferdig, men det er forventet.
    ```Unable to connect to remote service:  (...)```
 
-10. **Flytt dumpen til rett plass**
+7. **Flytt dumpen til rett plass**
 
-```
-.enonic
-    sandboxes
-        navno
-            home
-                dump
-                    [navn på dumpen, f.eks prod_2025_08_05]
-```
+    Sjekk at dumpen ligger i riktig mappe:
+    ```
+    .enonic
+        sandboxes
+            navno
+                home
+                    dump
+                        [navn på dumpen, f.eks prod_2025_08_05]
+    ```
+8. **Potensiell feil**
+
+    Hvis du går inn i ```localhost:8080/admin/tool``` og ikke finner Content Studio i menyen til høyre må du installere Content Studio med en nyere versjon:
+    - Gå til ```Applications```
+    - Velg ```Content Studio``` (legg også merke til at den antagelig har status ```stopped```)
+    - Klikk på ```Uninstall```
+    - Klikk på ```Install```
+    - Finn ```Content Studio``` og klikk ```Install```
 
 ## Server config docs
 
