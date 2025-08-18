@@ -93,6 +93,17 @@ enonic project deploy
    ```caffeinate``` (innebygd på Mac). Du vil få en feilmelding som den under når dumpen er ferdig, men det er forventet.
    ```Unable to connect to remote service:  (...)```
 
+10. **Flytt dumpen til rett plass**
+
+```
+.enonic
+    sandboxes
+        navno
+            home
+                dump
+                    [navn på dumpen, f.eks prod_2025_08_05]
+```
+
 ## Server config docs
 
 [See confluence pages](https://confluence.adeo.no/display/ATOM/Servere)
