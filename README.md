@@ -51,51 +51,54 @@ enonic project deploy
 
 1. **Opprette en datadump**
 
-   For å få data inn til lokal sandbox så må man først og fremst opprette en datadump av hele databasen. Oppskrift på det finner du her: [Systemdumps – Confluence](https://confluence.adeo.no/spaces/ATOM/pages/387108768/Div.+jobber#Div.jobber-Systemdumps)
+    For å få data inn til lokal sandbox så må man først og fremst opprette en datadump av hele databasen. Oppskrift på det finner du her: [Systemdumps – Confluence](https://confluence.adeo.no/spaces/ATOM/pages/387108768/Div.+jobber#Div.jobber-Systemdumps)
 
 2. **Last ned dumpen**
 
-   Når dumpen er opprettet, laster du ned ZIP-filen fra *Data Toolbox* i [dev](https://portal-admin-dev.oera.no/admin/tool/systems.rcd.enonic.datatoolbox/data-toolbox#dumps)  eller *q6* (avhengig av hvilket miljø du opprettet dumpen i).
+    Når dumpen er opprettet, laster du ned ZIP-filen fra _Data Toolbox_ i [dev](https://portal-admin-dev.oera.no/admin/tool/systems.rcd.enonic.datatoolbox/data-toolbox#dumps) eller _q6_ (avhengig av hvilket miljø du opprettet dumpen i).
 
 3. **Flytt ZIP-filen til riktig mappe**
 
-   Filen skal ligge i: ```home/data/dump``` i din sandbox-implementasjon.
-   
+    Filen skal ligge i: `home/data/dump` i din sandbox-implementasjon.
+
     Eksempel på terminalkommando (hvis filen ligger i Downloads):
-   ```mv Downloads/prod_2025_08_05.zip ~/.enonic/sandboxes/navno/home/data/dump```
+    `mv Downloads/prod_2025_08_05.zip ~/.enonic/sandboxes/navno/home/data/dump`
 
 4. **Kjør import av dumpen**
 
-   Sørg for at Enonic kjører lokalt først (kjøres i egen terminal): ```enonic project deploy```
+    Sørg for at Enonic kjører lokalt først (kjøres i egen terminal): `enonic project deploy`
 
-   Kjør kommandoen: ```enonic dump load```
+    Kjør kommandoen: `enonic dump load`
 
-   Denne kan kjøres fra hvor som helst, men *ZIP-filen må ligge* i data/dump-katalogen.
-   Velg dumpen fra listen.
+    Denne kan kjøres fra hvor som helst, men _ZIP-filen må ligge_ i data/dump-katalogen.
+    Velg dumpen fra listen.
 
 5. **Oppgi brukernavn og passord**
 
-   Format ```bruker:passord```
+    Format `bruker:passord`
+
     - Brukernavn: su
     - Passord: det du har definert i system.properties-filen.
-   
-      ```system.properties```-filen ligger i:
-      ```home/config```
-      Hvis du ikke har den fra før:
-      ```touch system.properties```
-      Relevant verdi i filen:
-      ```xp.suPassword=PASSORDDUVELGER```
-      Flere eksempler finnes her:  [Standard config files – Enonic Docs](https://developer.enonic.com/docs/xp/stable/deployment/config#standard_config_files)
+
+        `system.properties`-filen ligger i:
+        `home/config`
+        `I windows ligger filen her: C:\Users\YourUser\.enonic\sandboxes\YourSandboxName\home\config `
+        Hvis du ikke har den fra før:
+        `touch system.properties`
+        Relevant verdi i filen:
+        `xp.suPassword=PASSORDDUVELGER`
+        Flere eksempler finnes her: [Standard config files – Enonic Docs](https://developer.enonic.com/docs/xp/stable/deployment/config#standard_config_files)
 
 6. **Vent på at dumpen fullfører**
 
-   Dette kan ta *lang* tid, så det kan være lurt å starte prosessen om natten. Pass på at maskinen ikke går i dvale, f.eks. ved å bruke:
-   ```caffeinate``` (innebygd på Mac). Du vil få en feilmelding som den under når dumpen er ferdig, men det er forventet.
-   ```Unable to connect to remote service:  (...)```
+    Dette kan ta _lang_ tid, så det kan være lurt å starte prosessen om natten. Pass på at maskinen ikke går i dvale, f.eks. ved å bruke:
+    `caffeinate` (innebygd på Mac). Du vil få en feilmelding som den under når dumpen er ferdig, men det er forventet.
+    `Unable to connect to remote service:  (...)`
 
 7. **Flytt dumpen til rett plass**
 
     Sjekk at dumpen ligger i riktig mappe:
+
     ```
     .enonic
         sandboxes
@@ -104,14 +107,16 @@ enonic project deploy
                     dump
                         [navn på dumpen, f.eks prod_2025_08_05]
     ```
+
 8. **Potensiell feil**
 
-    Hvis du går inn i ```localhost:8080/admin/tool``` og ikke finner Content Studio i menyen til høyre må du installere Content Studio med en nyere versjon:
-    - Gå til ```Applications```
-    - Velg ```Content Studio``` (legg også merke til at den antagelig har status ```stopped```)
-    - Klikk på ```Uninstall```
-    - Klikk på ```Install```
-    - Finn ```Content Studio``` og klikk ```Install```
+    Hvis du går inn i `localhost:8080/admin/tool` og ikke finner Content Studio i menyen til høyre må du installere Content Studio med en nyere versjon:
+
+    - Gå til `Applications`
+    - Velg `Content Studio` (legg også merke til at den antagelig har status `stopped`)
+    - Klikk på `Uninstall`
+    - Klikk på `Install`
+    - Finn `Content Studio` og klikk `Install`
 
 ## Server config docs
 
