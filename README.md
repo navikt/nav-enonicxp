@@ -47,18 +47,91 @@ cp com.enonic.app.contentstudio.cfg /YOUR_SANDBOX_PATH/home/config/com.enonic.ap
 enonic project deploy
 ```
 
+## Kopiere data til lokal sandbox fra prod
+
+1. **Opprette en datadump**
+
+    For å få data inn til lokal sandbox så må man først og fremst opprette en datadump av hele databasen. Oppskrift på det finner du her: [Systemdumps – Confluence](https://confluence.adeo.no/spaces/ATOM/pages/387108768/Div.+jobber#Div.jobber-Systemdumps)
+
+2. **Last ned dumpen**
+
+    Når dumpen er opprettet, laster du ned ZIP-filen fra _Data Toolbox_ i [dev](https://portal-admin-dev.oera.no/admin/tool/systems.rcd.enonic.datatoolbox/data-toolbox#dumps) eller _q6_ (avhengig av hvilket miljø du opprettet dumpen i).
+
+3. **Flytt ZIP-filen til riktig mappe**
+
+    Filen skal ligge i: `home/data/dump` i din sandbox-implementasjon.
+
+    Eksempel på terminalkommando (hvis filen ligger i Downloads):
+    `mv Downloads/prod_2025_08_05.zip ~/.enonic/sandboxes/navno/home/data/dump`
+
+4. **Kjør import av dumpen**
+
+    Sørg for at Enonic kjører lokalt først (kjøres i egen terminal): `enonic project deploy`
+
+    Kjør kommandoen: `enonic dump load`
+
+    Denne kan kjøres fra hvor som helst, men _ZIP-filen må ligge_ i data/dump-katalogen.
+    Velg dumpen fra listen.
+
+5. **Oppgi brukernavn og passord**
+
+    Format `bruker:passord`
+
+    - Brukernavn: su
+    - Passord: det du har definert i system.properties-filen.
+
+        `system.properties`-filen ligger i:
+        `home/config`
+        `I windows ligger filen her: C:\Users\YourUser\.enonic\sandboxes\YourSandboxName\home\config `
+        Hvis du ikke har den fra før:
+        `touch system.properties`
+        Relevant verdi i filen:
+        `xp.suPassword=PASSORDDUVELGER`
+        Flere eksempler finnes her: [Standard config files – Enonic Docs](https://developer.enonic.com/docs/xp/stable/deployment/config#standard_config_files)
+
+6. **Vent på at dumpen fullfører**
+
+    Dette kan ta _lang_ tid, så det kan være lurt å starte prosessen om natten. Pass på at maskinen ikke går i dvale, f.eks. ved å bruke:
+    `caffeinate` (innebygd på Mac). Du vil få en feilmelding som den under når dumpen er ferdig, men det er forventet.
+    `Unable to connect to remote service:  (...)`
+
+7. **Flytt dumpen til rett plass**
+
+    Sjekk at dumpen ligger i riktig mappe:
+
+    ```
+    .enonic
+        sandboxes
+            navno
+                home
+                    dump
+                        [navn på dumpen, f.eks prod_2025_08_05]
+    ```
+
+8. **Potensiell feil**
+
+    Hvis du går inn i `localhost:8080/admin/tool` og ikke finner Content Studio i menyen til høyre må du installere Content Studio med en nyere versjon:
+
+    - Gå til `Applications`
+    - Velg `Content Studio` (legg også merke til at den antagelig har status `stopped`)
+    - Klikk på `Uninstall`
+    - Klikk på `Install`
+    - Finn `Content Studio` og klikk `Install`
+
 ## Server config docs
+
 [See confluence pages](https://confluence.adeo.no/display/ATOM/Servere)
 
 ## Cache docs
+
 https://github.com/navikt/nav-enonicxp/wiki/Caching
 
 ## Deploy
 
--   **dev/dev2(q6):** Run deploy-to-(dev|dev2/q6) workflow dispatch
--   **P:** Make a PR between main and your feature branch **\*** and create a release at <br />
-    https://github.com/navikt/nav-enonicxp/releases <br />
-    **Obs:** Release must be formatted as **vX.X.X** (e.g v1.2.1)
+- **dev/dev2(q6):** Run deploy-to-(dev|dev2/q6) workflow dispatch
+- **P:** Make a PR between main and your feature branch **\*** and create a release at <br />
+  https://github.com/navikt/nav-enonicxp/releases <br />
+  **Obs:** Release must be formatted as **vX.X.X** (e.g v1.2.1)
 
 ## Useful Enonic XP tools
 
@@ -71,6 +144,7 @@ Enonic XP krever at npm-pakker dras inn som webjars. For å dra inn en pakke i j
 Det betyr at path til spesifikk versjon må settes opp i kildekoden. For at dette skal fungere som forventet lokalt og i din IDE, må det settes opp en match i tsconfig mellom versjonsspesifikk path i webjar og path i node_modules.
 
 ### Rutine ved bumping av dependecies
+
 1. Sjekk om ønsket versjon finnes som webjar
 2. Oppdater versjon av webjar i `build.gradle`: `webjar "org.webjars.npm:html-entities:2.5.2"`
 3. Oppdater path i ts-fil: `import { decode } from '/assets/html-entities/2.5.2/lib';`
@@ -133,10 +207,12 @@ Then just use the Applications link ({baseurl}/admin/tool/com.enonic.xp.app.appl
 you select the app you will see buttons on the top of the page for stopping and starting the app.
 
 ## Viktig å huske på
+
 ### Unngå endring av feltnavn i Enonic-innholdstyper
-Endring av feltnavn i Enonic (f.eks. fra `html` til `editorial` i et `richText`-felt) medfører at 
-referanser til tidligere data brytes. Verdiene eksisterer fortsatt i nodenes rådata, men blir 
-ikke hentet ut via GraphQL-spørringer og vises heller ikke i Content Studio eller frontend. Dette 
-skyldes at Enonic ikke har støtte for migrering av datamodeller. Dersom historikk eller gjenbruk 
-av eksisterende innhold er viktig, må navnekonvensjoner holdes stabile eller endringer håndteres 
+
+Endring av feltnavn i Enonic (f.eks. fra `html` til `editorial` i et `richText`-felt) medfører at
+referanser til tidligere data brytes. Verdiene eksisterer fortsatt i nodenes rådata, men blir
+ikke hentet ut via GraphQL-spørringer og vises heller ikke i Content Studio eller frontend. Dette
+skyldes at Enonic ikke har støtte for migrering av datamodeller. Dersom historikk eller gjenbruk
+av eksisterende innhold er viktig, må navnekonvensjoner holdes stabile eller endringer håndteres
 eksplisitt via migreringsscript.
