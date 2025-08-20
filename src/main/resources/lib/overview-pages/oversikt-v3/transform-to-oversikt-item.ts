@@ -105,7 +105,7 @@ export const transformProductDetail = (
             {
                 path: getPublicPath(
                     productDetail,
-                    productPage.language || getLayersData().defaultLocale
+                    productDetail.language || getLayersData().defaultLocale
                 ),
                 title: productPage.data.title,
                 ingress: productPage.data.ingress ? striptags(productPage.data.ingress) : '',

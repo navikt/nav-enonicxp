@@ -13,6 +13,67 @@ type Args = {
     excludedContentIds: string[];
 };
 
+const buildAudienceFilter = (audience: Oversikt['audience']) => {
+    const audienceKeys = audience.map((audience) => audience._selected);
+    const audienceProviderSelection = audience.find((item) => item._selected === 'provider');
+
+    const providerSubAudienceKeys =
+        audienceProviderSelection?.provider.pageType._selected === 'overview'
+            ? forceArray(audienceProviderSelection.provider.pageType.overview.provider_audience)
+            : [];
+
+    const audienceIsProvider =
+        audienceKeys.includes('provider') && providerSubAudienceKeys.length > 0;
+
+    if (!audienceIsProvider) {
+        return {
+            hasValue: {
+                field: 'data.audience._selected',
+                values: audienceKeys,
+            },
+        };
+    }
+
+    const allOtherAudiences = audienceKeys.filter((audience) => audience !== 'provider');
+    const filters = [];
+
+    if (allOtherAudiences.length > 0) {
+        filters.push({
+            hasValue: {
+                field: 'data.audience._selected',
+                values: allOtherAudiences,
+            },
+        });
+    }
+
+    filters.push({
+        boolean: {
+            must: [
+                {
+                    hasValue: {
+                        field: 'data.audience._selected',
+                        values: ['provider'],
+                    },
+                },
+                {
+                    hasValue: {
+                        field: 'data.audience.provider.provider_audience',
+                        values: providerSubAudienceKeys,
+                    },
+                },
+            ],
+        },
+    });
+
+    return filters.length === 1
+        ? filters[0]
+        : {
+              boolean: {
+                  should: filters,
+              },
+          };
+};
+
 export const getOversiktCategory = (oversiktType: Oversikt['oversiktType']) => {
     switch (oversiktType) {
         case 'application':
@@ -31,6 +92,8 @@ export const getOversiktCategory = (oversiktType: Oversikt['oversiktType']) => {
 export const getOversiktContent = ({ oversiktType, audience, excludedContentIds }: Args) => {
     const oversiktCategory = getOversiktCategory(oversiktType);
 
+    const audienceFilter = buildAudienceFilter(forceArray(audience));
+
     const query = {
         start: 0,
         count: 1000,
@@ -41,12 +104,7 @@ export const getOversiktContent = ({ oversiktType, audience, excludedContentIds 
         filters: {
             boolean: {
                 must: [
-                    {
-                        hasValue: {
-                            field: 'data.audience._selected',
-                            values: forceArray(audience._selected),
-                        },
-                    },
+                    audienceFilter,
                     ...(oversiktCategory === 'productDetails'
                         ? [
                               {
@@ -73,12 +131,6 @@ export const getOversiktContent = ({ oversiktType, audience, excludedContentIds 
                             values: [true],
                         },
                     },
-                    {
-                        hasValue: {
-                            field: 'data.hideFromProductlist',
-                            values: [true],
-                        },
-                    },
                     ...(excludedContentIds.length > 0
                         ? [
                               {
@@ -94,6 +146,5 @@ export const getOversiktContent = ({ oversiktType, audience, excludedContentIds 
         },
     };
 
-    logger.info(JSON.stringify(query, null, 2));
     return contentLib.query(query).hits;
 };

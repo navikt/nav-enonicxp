@@ -16,7 +16,7 @@ export type GuidePage = {
   norwegianTitle?: string;
 
   /**
-   * Ikke vis denne siden på oversiktssider (gjelder ikke skjemaoversikter)
+   * Kun oversiktsside v1: Ikke vis denne siden på oversiktssider (gjelder ikke skjemaoversikter)
    */
   hideFromProductlist: boolean;
 
