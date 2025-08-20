@@ -128,6 +128,7 @@
             </items>
         </field-set>
         <mixin name="owner"/>
+        <mixin name="managed-by"/>
         <field-set>
             <label>Søkeoptimalisering</label>
             <items>
