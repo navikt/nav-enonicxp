@@ -60,5 +60,5 @@ export const buildProductDetailsList = (overviewContent: Content<'no.nav.navno:o
         return buildDetailedOverviewList(localizedContent, oversiktType);
     });
 
-    return productDetails.sort(sortByLocaleCompareOnField('title'));
+    return productDetails.sort(sortByLocaleCompareOnField('sortTitle'));
 };
