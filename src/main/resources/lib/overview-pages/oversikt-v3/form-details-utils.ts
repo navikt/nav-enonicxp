@@ -56,7 +56,6 @@ export const buildFormDetailsList = (formsOverviewContent: Content<'no.nav.navno
     const { language, data, _id } = formsOverviewContent;
     const { oversiktType, audience, excludedContent, localeFallback } = data;
     const audienceAsArray = forceArray(audience);
-    logger.info('Running buildFormDetailsList');
 
     if (audienceAsArray.length === 0) {
         logger.error(`Audience not set for overview page ${_id} (${language})`);
