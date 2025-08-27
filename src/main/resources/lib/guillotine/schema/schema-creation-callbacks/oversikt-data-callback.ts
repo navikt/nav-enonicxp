@@ -1,4 +1,5 @@
 import * as contentLib from '/lib/xp/content';
+import * as contextLib from '/lib/xp/context';
 import graphQlLib from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 import { logger } from '../../../utils/logging';
@@ -14,7 +15,6 @@ import { buildBasicServicesList } from '../../../overview-pages/oversikt-v3/basi
 import { getOversiktCategory } from '../../../../lib/overview-pages/oversikt-v3/helpers';
 
 const buildItemList = (content: contentLib.Content<'no.nav.navno:oversikt'>) => {
-    logger.info(`Building item list for content with ID: ${content.data.oversiktType}`);
     if (getOversiktCategory(content.data.oversiktType) === 'formDetails') {
         return buildFormDetailsList(content);
     } else if (getOversiktCategory(content.data.oversiktType) === 'productDetails') {
@@ -87,7 +87,10 @@ export const oversiktDataCallback: CreationCallback = (context, params) => {
         resolve: () => {
             const contentId = getGuillotineContentQueryBaseContentId();
             if (!contentId) {
-                logger.error('No contentId provided for overview-page resolver');
+                const context = contextLib.get();
+                logger.error(
+                    `No contentId provided for overview-page resolver: ${JSON.stringify(context)}`
+                );
                 return [];
             }
 
