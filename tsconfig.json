@@ -33,6 +33,7 @@
             "/lib/xp/io": ["../../../node_modules/@enonic-types/lib-io"],
             "/lib/xp/node": ["types/xp-libs/lib-node"],
             "/lib/xp/portal": ["types/xp-libs/lib-portal"],
+            "/lib/xp/schema": ["../../../node_modules/@enonic-types/lib-schema"],
             "/lib/xp/project": ["../../../node_modules/@enonic-types/lib-project"],
             "/lib/xp/repo": ["../../../node_modules/@enonic-types/lib-repo"],
             "/lib/xp/scheduler": ["../../../node_modules/@enonic-types/lib-scheduler"],

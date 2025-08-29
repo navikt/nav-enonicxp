@@ -33,6 +33,7 @@
             "/lib/xp/project": ["node_modules/@enonic-types/lib-project"],
             "/lib/xp/repo": ["node_modules/@enonic-types/lib-repo"],
             "/lib/xp/scheduler": ["node_modules/@enonic-types/lib-scheduler"],
+            "/lib/xp/schema": ["node_modules/@enonic-types/lib-schema"],
             "/lib/xp/task": ["node_modules/@enonic-types/lib-task"],
             "/lib/xp/value": ["node_modules/@enonic-types/lib-value"],
             "/lib/xp/websocket": ["node_modules/@enonic-types/lib-websocket"],

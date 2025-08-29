@@ -37,6 +37,7 @@ dependencies {
     include "com.enonic.xp:lib-project:${xpVersion}"
     include "com.enonic.xp:lib-repo:${xpVersion}"
     include "com.enonic.xp:lib-scheduler:${xpVersion}"
+    include "com.enonic.xp:lib-schema:${xpVersion}"
     include "com.enonic.xp:lib-task:${xpVersion}"
     include "com.enonic.xp:lib-value:${xpVersion}"
     include "com.enonic.xp:lib-websocket:${xpVersion}"
