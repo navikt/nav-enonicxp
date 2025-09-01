@@ -51,6 +51,11 @@ export type Overview = {
   customPath: string;
 
   /**
+   * Videresend alle besøk til annen url:
+   */
+  externalProductUrl?: string;
+
+  /**
    * Velg eier
    */
   owner: Array<"arbeids_og_tjenesteavdelingen" | "kontaktsenteret" | "arbeidsavdelingen_arbeid_helse" | "arbeidsavdelingen_arbeidsgivertjenester" | "arbeidsavdelingen_arbeidsmarkedstiltak" | "arbeidsavdelingen_arbeidsoppfolging" | "avdeling for brukeropplevelse" | "hr_avdelingen" | "direktoratet" | "juridisk_avdeling" | "kommunikasjonsavdelingen" | "kunnskapsavdelingen" | "statistikk" | "klageinstans" | "it_avdelingen" | "velferdsavdelingen" | "hjelpemidler_og_tilrettelegging" | "velferdsavdelingen_hjelpemidler" | "velferdsavdelingen_sosiale_tjenester" | "ytelsesavdelingen" | "arbeid_og_ytelser_styringsenhet" | "familie_og_pensjonsytelser_styringsenhet" | "ytelsesavdelingen_nav_kontroll" | "ytelsesavdelingen_arbeidsavklaringspenger" | "ytelsesavdelingen_arbeidsytelser" | "ytelsesavdelingen_familieytelser" | "ytelsesavdelingen_helseytelser" | "ytelsesavdelingen_kontroll" | "ytelsesavdelingen_pensjon" | "okonomi" | "annet" | "arbeidslivssenter" | "fylke" | "hjelpemiddelsentralen" | "min_side" | "team_personbruker"> | "arbeids_og_tjenesteavdelingen" | "kontaktsenteret" | "arbeidsavdelingen_arbeid_helse" | "arbeidsavdelingen_arbeidsgivertjenester" | "arbeidsavdelingen_arbeidsmarkedstiltak" | "arbeidsavdelingen_arbeidsoppfolging" | "avdeling for brukeropplevelse" | "hr_avdelingen" | "direktoratet" | "juridisk_avdeling" | "kommunikasjonsavdelingen" | "kunnskapsavdelingen" | "statistikk" | "klageinstans" | "it_avdelingen" | "velferdsavdelingen" | "hjelpemidler_og_tilrettelegging" | "velferdsavdelingen_hjelpemidler" | "velferdsavdelingen_sosiale_tjenester" | "ytelsesavdelingen" | "arbeid_og_ytelser_styringsenhet" | "familie_og_pensjonsytelser_styringsenhet" | "ytelsesavdelingen_nav_kontroll" | "ytelsesavdelingen_arbeidsavklaringspenger" | "ytelsesavdelingen_arbeidsytelser" | "ytelsesavdelingen_familieytelser" | "ytelsesavdelingen_helseytelser" | "ytelsesavdelingen_kontroll" | "ytelsesavdelingen_pensjon" | "okonomi" | "annet" | "arbeidslivssenter" | "fylke" | "hjelpemiddelsentralen" | "min_side" | "team_personbruker";
