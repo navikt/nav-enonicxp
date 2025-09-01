@@ -37,6 +37,7 @@ const xpContentTypeToSearchContentType: {
     'no.nav.navno:situation-page': 'situasjonsside',
     'no.nav.navno:forms-overview': 'skjemaoversikt',
     'no.nav.navno:overview': 'oversikt',
+    'no.nav.navno:oversikt': 'oversikt',
     'media:spreadsheet': 'fil-spreadsheet',
     'media:document': 'fil-document',
 } as const;
