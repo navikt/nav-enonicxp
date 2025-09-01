@@ -145,9 +145,6 @@ export const insertComponentsIntoRegions = ({
     // Strip trailing slash (only applicable to the page root component)
     const parentPath = path.replace(/\/$/, '');
 
-    log.info(parentComponent.descriptor);
-    log.info(JSON.stringify(regionsDictionary, null, 2));
-
     const allRegions = insertMissingRegions({ parentComponent, regionsDictionary });
 
     const regionsWithComponents = Object.entries(allRegions).reduce<Regions>(
