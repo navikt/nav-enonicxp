@@ -14,7 +14,7 @@ fragment productTargetMixin on Content {
     ...contentGuidePage
     ...contentToolsPage
     ...contentGenericPage
-    ...on no_nav_navno_Overview {
+    ... on no_nav_navno_Overview {
         data {
             title
             ingress
@@ -23,7 +23,16 @@ fragment productTargetMixin on Content {
             }
         }
     }
-    ...on no_nav_navno_FormsOverview {
+    ... on no_nav_navno_FormsOverview {
+        data {
+            title
+            ingress
+            illustration {
+                ...animatedIconsTargetMixin
+            }
+        }
+    }
+    ... on no_nav_navno_Oversikt {
         data {
             title
             ingress

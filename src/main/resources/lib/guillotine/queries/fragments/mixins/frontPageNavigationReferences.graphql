@@ -33,4 +33,11 @@ fragment frontPageNavigationReferences on Content {
             }
         }
     }
+    ... on no_nav_navno_Oversikt {
+        data {
+            illustration {
+                ...animatedIconsTargetMixin
+            }
+        }
+    }
 }
