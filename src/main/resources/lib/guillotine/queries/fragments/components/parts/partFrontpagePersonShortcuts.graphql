@@ -15,6 +15,11 @@ fragment partFrontpagePersonShortcuts on Part_no_nav_navno_frontpage_person_shor
                     title
                 }
             }
+            ... on no_nav_navno_Oversikt {
+                data {
+                    title
+                }
+            }
         }
     }
 }
