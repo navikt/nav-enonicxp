@@ -240,10 +240,14 @@ export const buildExternalSearchDocument = (
         return null;
     }
 
-    return new ExternalSearchDocumentBuilder(
+    const searchDocument = new ExternalSearchDocumentBuilder(
         content,
         locale,
         searchConfig,
         contentGroupConfig.groupKeys
     ).build();
+
+    log.info(`searchdocument: ${JSON.stringify(searchDocument, null, 2)}`);
+
+    return searchDocument;
 };
