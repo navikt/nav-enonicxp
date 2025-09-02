@@ -61,11 +61,15 @@ const getAudienceFromData = (content: ContentNode<any>): SearchDocumentAudience[
             if (item._selected === 'provider') {
                 acc.push('provider');
 
-                const subAudience = forceArray(
-                    item.provider?.pageType?.overview?.provider_audience
-                ).map<SubAudience>((providerAudience) => `provider_${providerAudience}`);
+                const subAudience =
+                    item.provider?.pageType?.overview?.provider_audience ||
+                    item.provider?.provider_audience;
 
-                acc.push(...subAudience);
+                const subAudienceAsArray = forceArray(subAudience).map<SubAudience>(
+                    (providerAudience) => `provider_${providerAudience}`
+                );
+
+                acc.push(...subAudienceAsArray);
             } else {
                 acc.push(item._selected);
             }
