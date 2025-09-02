@@ -43,6 +43,7 @@ const getAudienceFromData = (content: ContentNode<any>): SearchDocumentAudience[
         | ArrayOrSingle<MainAudience>
         | AudienceMixin['audience']
         | undefined;
+
     if (!audience) {
         return null;
     }
@@ -51,24 +52,36 @@ const getAudienceFromData = (content: ContentNode<any>): SearchDocumentAudience[
         return [audience];
     }
 
-    if (Array.isArray(audience)) {
-        return audience;
-    }
+    const audienceAsArray = forceArray<any>(audience);
 
-    if (audience._selected) {
-        const mainAudience = audience._selected;
-        if (mainAudience !== 'provider') {
-            return forceArray(mainAudience);
+    const flatAudience = audienceAsArray.reduce((acc, item) => {
+        if (typeof item === 'string') {
+            acc.push(item);
+        } else if (item && typeof item === 'object' && '_selected' in item) {
+            if (item._selected === 'provider') {
+                acc.push('provider');
+
+                const subAudience =
+                    item.provider?.pageType?.overview?.provider_audience ||
+                    item.provider?.provider_audience;
+
+                const subAudienceLabels = forceArray(subAudience).map<SubAudience>(
+                    (providerAudience) => `provider_${providerAudience}`
+                );
+
+                // Note: Fix for required sub audiences. Will be fixed in separate
+                // task.
+                if (subAudienceLabels.length < 7) {
+                    acc.push(...subAudienceLabels);
+                }
+            } else {
+                acc.push(item._selected);
+            }
         }
+        return acc;
+    }, []);
 
-        const subAudience = forceArray(audience.provider?.provider_audience).map<SubAudience>(
-            (providerAudience) => `provider_${providerAudience}`
-        );
-
-        return ['provider', ...subAudience];
-    }
-
-    return null;
+    return flatAudience;
 };
 
 const getAudienceFromPath = (content: ContentNode): SearchDocumentAudience[] | null => {
