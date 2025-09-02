@@ -65,11 +65,15 @@ const getAudienceFromData = (content: ContentNode<any>): SearchDocumentAudience[
                     item.provider?.pageType?.overview?.provider_audience ||
                     item.provider?.provider_audience;
 
-                const subAudienceAsArray = forceArray(subAudience).map<SubAudience>(
+                const subAudienceLabels = forceArray(subAudience).map<SubAudience>(
                     (providerAudience) => `provider_${providerAudience}`
                 );
 
-                acc.push(...subAudienceAsArray);
+                // Note: Fix for required sub audiences. Will be fixed in separate
+                // task.
+                if (subAudienceLabels.length < 7) {
+                    acc.push(...subAudienceLabels);
+                }
             } else {
                 acc.push(item._selected);
             }
