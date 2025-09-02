@@ -247,7 +247,5 @@ export const buildExternalSearchDocument = (
         contentGroupConfig.groupKeys
     ).build();
 
-    log.info(`searchdocument: ${JSON.stringify(searchDocument, null, 2)}`);
-
     return searchDocument;
 };
