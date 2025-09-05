@@ -35,6 +35,9 @@ const verifyIngressOwner = (path: string) => {
             url: `${URLS.FRONTEND_ORIGIN}${path}`,
             connectionTimeout: 10000,
             followRedirects: false,
+            headers: {
+                secret: app.config.serviceSecret,
+            },
         });
 
         return response.headers['app-name'] === FRONTEND_APP_NAME;
@@ -152,7 +155,7 @@ const getResult = ({
     };
 };
 
-export const get = (req: Request) : Response => {
+export const get = (req: Request): Response => {
     const content = portalLib.getContent();
 
     if (!content) {
