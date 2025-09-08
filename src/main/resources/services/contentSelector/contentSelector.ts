@@ -22,6 +22,16 @@ type ReqParams = {
     sort?: string;
 } & RequestParams;
 
+type HitCacheDictionary = Record<
+    string,
+    {
+        time: number | null;
+        hits: CustomSelectorServiceResponseHit[];
+    }
+>;
+
+const hitCacheDictionary: HitCacheDictionary = {};
+
 const CONTENT_INJECTION_PATTERN = /{(\w|\.|-|,|_| )+}/g;
 
 const formatFieldValue = (value: string, withQuotes: boolean) =>
@@ -83,8 +93,23 @@ const transformHit = (content: Content) =>
         content._id
     );
 
-const getHitsFromQuery = (query: string, contentTypes?: ContentDescriptor[], sort?: string) => {
-    return contentLib
+const getHitsFromQuery = (
+    query: string,
+    contentTypes?: ContentDescriptor[],
+    sort?: string,
+    cacheName: string | null = null
+) => {
+    const shouldFetchFromCache =
+        cacheName &&
+        hitCacheDictionary[cacheName]?.time &&
+        Date.now() - hitCacheDictionary[cacheName].time < 10000 &&
+        hitCacheDictionary[cacheName].hits.length > 0;
+
+    if (shouldFetchFromCache) {
+        return hitCacheDictionary[cacheName].hits;
+    }
+
+    const hits = contentLib
         .query({
             count: 1000,
             contentTypes: contentTypes,
@@ -92,6 +117,15 @@ const getHitsFromQuery = (query: string, contentTypes?: ContentDescriptor[], sor
             sort,
         })
         .hits.map(transformHit);
+
+    if (cacheName) {
+        hitCacheDictionary[cacheName] = {
+            time: Date.now(),
+            hits: hits,
+        };
+    }
+
+    return hits;
 };
 
 const getHitsFromIds = (ids: string[]) =>
@@ -122,19 +156,27 @@ const getHitsFromIds = (ids: string[]) =>
 //     </config>
 // </input>
 //
+
+const getCacheName = (sourcePage: string | string[]) => {
+    return sourcePage === 'content-data-locale-fallback' ? 'fallback-content' : null;
+};
+
 export const get = (req: Request) => {
     const {
         query: userQuery,
         contentTypes: contentTypesJson,
         selectorQuery,
         sort,
+        sourcePage,
     } = req.params as ReqParams;
+
+    const cacheName = getCacheName(sourcePage);
 
     const query = buildQuery(userQuery, selectorQuery);
     const contentTypes = parseContentTypes(contentTypesJson);
 
     const hitsFromIds = getHitsFromIds(customSelectorParseSelectedIdsFromReq(req));
-    const hitsFromQuery = getHitsFromQuery(query, contentTypes || undefined, sort);
+    const hitsFromQuery = getHitsFromQuery(query, contentTypes || undefined, sort, cacheName);
     const hits = removeDuplicates([...hitsFromIds, ...hitsFromQuery], (a, b) => a.id === b.id);
 
     return {
