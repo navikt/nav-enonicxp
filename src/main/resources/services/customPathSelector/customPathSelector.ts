@@ -32,12 +32,10 @@ const verifyIngressOwner = (path: string) => {
     try {
         const response = httpClient.request({
             method: 'HEAD',
-            url: `https://www.intern.dev.nav.no${path}`, // Må kjøre på intern-ingress for kontakt med GCP
+            url: `${URLS.FRONTEND_ORIGIN}${path}?noRedirect=true`, // Må hindre redirect til ansatt-ingress.
             connectionTimeout: 10000,
             followRedirects: false,
         });
-
-        log.info(JSON.stringify(response));
 
         return response.headers['app-name'] === FRONTEND_APP_NAME;
     } catch (e) {
