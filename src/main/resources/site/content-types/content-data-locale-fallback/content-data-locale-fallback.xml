@@ -45,6 +45,7 @@
                         <service>contentSelector</service>
                         <param value="selectorQuery">{data.contentQuery} AND type IN ({data.contentTypes, true})</param>
                         <param value="sort">displayName ASC</param>
+                        <param value="sourcePage">content-data-locale-fallback</param>
                     </config>
                 </input>
             </items>
