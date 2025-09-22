@@ -20,6 +20,8 @@ import {
 import { RepoBranch } from '../../types/common';
 import { customSelectorParseSelectedIdsFromReq } from '../service-utils';
 
+const isProd = app.config.env === 'p';
+
 // Returns an error message to the editor with an intentionally invalid id (customPath id must start with '/')
 const generateErrorHit = (displayName: string, description: string) => ({
     id: `error-${Date.now()}`,
@@ -30,9 +32,10 @@ const generateErrorHit = (displayName: string, description: string) => ({
 
 const verifyIngressOwner = (path: string) => {
     try {
+        const redirectArgs = !isProd ? '?noRedirect=true' : '';
         const response = httpClient.request({
             method: 'HEAD',
-            url: `${URLS.FRONTEND_ORIGIN}${path}?noRedirect=true`, // Må hindre redirect til ansatt-ingress.
+            url: `${URLS.FRONTEND_ORIGIN}${path}${redirectArgs}`, // Må hindre redirect til ansatt-ingress.
             connectionTimeout: 10000,
             followRedirects: false,
         });
