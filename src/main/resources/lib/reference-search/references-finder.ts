@@ -187,8 +187,8 @@ export class ReferencesFinder {
             return;
         }
 
-        this.findAndProcessReferences(() => this.findOverviewRefs(content));
-        this.findAndProcessReferences(() => this.findFormsOverviewRefs(content));
+        this.findAndProcessReferences(() => this.findProductDetailsOversiktRefs(content));
+        this.findAndProcessReferences(() => this.findFormDetailsOversiktRefs(content));
         this.findAndProcessReferences(() => this.findAlertInContextRefs(content));
         this.findAndProcessReferences(() => this.findOfficeRefs(content));
         this.findAndProcessReferences(() => this.findContactInfoRefs(content));
@@ -274,7 +274,7 @@ export class ReferencesFinder {
     }
 
     // Overview pages are generated from meta-data of certain content types
-    private findOverviewRefs(content: ContentNode<any>): QueryResult {
+    private findProductDetailsOversiktRefs(content: ContentNode<any>): QueryResult {
         if (!typesWithOverviewPages.has(content.type)) {
             return [];
         }
@@ -288,7 +288,7 @@ export class ReferencesFinder {
             {
                 hasValue: {
                     field: 'type',
-                    values: ['no.nav.navno:overview'],
+                    values: ['no.nav.navno:oversikt'],
                 },
             },
             {
@@ -299,7 +299,7 @@ export class ReferencesFinder {
             },
             {
                 hasValue: {
-                    field: 'data.overviewType',
+                    field: 'data.oversiktType',
                     values: overviewTypes,
                 },
             },
@@ -333,47 +333,8 @@ export class ReferencesFinder {
         return result;
     }
 
-    private findAlertInContextRefs = (content: ContentNode): QueryResult => {
-        if (content.type !== 'no.nav.navno:alert-in-context') {
-            return [];
-        }
-
-        const targetContent = content.data.target[content.data.target?._selected]?.targetContent;
-
-        if (!targetContent) {
-            return [];
-        }
-
-        const targetIds = forceArray(targetContent);
-
-        const result = this.contentNodeQuery({
-            filters: {
-                boolean: {
-                    must: [
-                        {
-                            hasValue: {
-                                field: 'type',
-                                values: ['no.nav.navno:form-details'],
-                            },
-                        },
-                        {
-                            hasValue: {
-                                field: '_id',
-                                values: targetIds,
-                            },
-                        },
-                    ],
-                },
-            },
-        });
-
-        this.logResult('alert in context pages', content._id, result);
-
-        return result;
-    };
-
     // Forms overview pages are generated from meta-data of certain content types
-    private findFormsOverviewRefs(content: ContentNode<any>): QueryResult {
+    private findFormDetailsOversiktRefs(content: ContentNode<any>): QueryResult {
         if (!typesWithFormsOverviewPages.has(content.type)) {
             return [];
         }
@@ -391,7 +352,7 @@ export class ReferencesFinder {
             {
                 hasValue: {
                     field: 'type',
-                    values: ['no.nav.navno:forms-overview'],
+                    values: ['no.nav.navno:oversikt'],
                 },
             },
             {
@@ -437,6 +398,45 @@ export class ReferencesFinder {
 
         return result;
     }
+
+    private findAlertInContextRefs = (content: ContentNode): QueryResult => {
+        if (content.type !== 'no.nav.navno:alert-in-context') {
+            return [];
+        }
+
+        const targetContent = content.data.target[content.data.target?._selected]?.targetContent;
+
+        if (!targetContent) {
+            return [];
+        }
+
+        const targetIds = forceArray(targetContent);
+
+        const result = this.contentNodeQuery({
+            filters: {
+                boolean: {
+                    must: [
+                        {
+                            hasValue: {
+                                field: 'type',
+                                values: ['no.nav.navno:form-details'],
+                            },
+                        },
+                        {
+                            hasValue: {
+                                field: '_id',
+                                values: targetIds,
+                            },
+                        },
+                    ],
+                },
+            },
+        });
+
+        this.logResult('alert in context pages', content._id, result);
+
+        return result;
+    };
 
     // Changes to an office editorial page affects all office-page in the same language
     private findOfficeRefs(content: ContentNode): QueryResult {
