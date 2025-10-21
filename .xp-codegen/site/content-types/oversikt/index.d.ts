@@ -152,12 +152,22 @@ export type Oversikt = {
   "managed-by"?: Array<"arbeidslivssenter" | "digisos" | "fylke" | "hjelpemiddelsentralen" | "innholdsteam_arbeidsgivertjenester" | "kjernegruppe_aap" | "kjernegruppe_arbeid" | "kjernegruppe_ekspertbistand" | "kjernegruppe_familie" | "kjernegruppe_hjelpemidler" | "kjernegruppe_medlemskap" | "kjernegruppe_oppfolging" | "kjernegruppe_ortopediske_hjelpemidler" | "kjernegruppe_pensjon" | "kjernegruppe_sosiale_tjenester" | "kjernegruppe_spraktolk" | "kjernegruppe_sykepenger" | "kjernegruppe_tiltak" | "kjernegruppe_tiltakspenger" | "kjernegruppe_uforetrygd" | "kjernegruppe_yrkesskade" | "navno_redaksjonen" | "team_minside" | "team_navno" | "po_aap" | "po_arbeid" | "po_familie" | "po_helse" | "po_pensjon" | "po_arbeidsgiver"> | "arbeidslivssenter" | "digisos" | "fylke" | "hjelpemiddelsentralen" | "innholdsteam_arbeidsgivertjenester" | "kjernegruppe_aap" | "kjernegruppe_arbeid" | "kjernegruppe_ekspertbistand" | "kjernegruppe_familie" | "kjernegruppe_hjelpemidler" | "kjernegruppe_medlemskap" | "kjernegruppe_oppfolging" | "kjernegruppe_ortopediske_hjelpemidler" | "kjernegruppe_pensjon" | "kjernegruppe_sosiale_tjenester" | "kjernegruppe_spraktolk" | "kjernegruppe_sykepenger" | "kjernegruppe_tiltak" | "kjernegruppe_tiltakspenger" | "kjernegruppe_uforetrygd" | "kjernegruppe_yrkesskade" | "navno_redaksjonen" | "team_minside" | "team_navno" | "po_aap" | "po_arbeid" | "po_familie" | "po_helse" | "po_pensjon" | "po_arbeidsgiver";
 
   /**
-   * Nøkkelord (internt søk)
+   * Sidebeskrivelse for søk og sosiale medier
    */
-  keywords?: Array<string> | string;
+  metaDescription?: string;
+
+  /**
+   * Canonical url - NB! Skal bare legges inn av hovedredaktør/administrator
+   */
+  canonicalUrl?: string;
 
   /**
    * Skal ikke vises i søk
    */
   noindex: boolean;
+
+  /**
+   * Ikke vis "tilfeldige" utdrag (snippets) i Google-søk
+   */
+  nosnippet: boolean;
 };
