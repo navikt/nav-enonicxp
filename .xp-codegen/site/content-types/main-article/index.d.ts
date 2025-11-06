@@ -181,11 +181,6 @@ export type MainArticle = {
   formDetailsTargets?: Array<string> | string;
 
   /**
-   * Del på sosiale medier
-   */
-  social?: Array<"twitter" | "facebook" | "linkedin"> | "twitter" | "facebook" | "linkedin";
-
-  /**
    * Legg til andre språkversjoner
    */
   languages?: Array<string> | string;
