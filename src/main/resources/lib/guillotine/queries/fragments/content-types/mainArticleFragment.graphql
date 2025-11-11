@@ -7,7 +7,6 @@ fragment contentMainArticle on no_nav_navno_MainArticle {
     dataAsJson
     data {
         ingress
-        social
         hasTableOfContents
         text(processHtml: { type: server }) {
             ...richText
