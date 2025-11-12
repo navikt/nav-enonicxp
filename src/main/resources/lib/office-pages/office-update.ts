@@ -36,8 +36,9 @@ const OFFICES_BASE_PATH = '/www.nav.no/kontor';
 
 const getOfficeContentName = (officeData: OfficeNorgData) => commonLib.sanitize(officeData.navn);
 
+//TODO: oppdater kommentar under
 // Possible office types are FPY, KONTROLL, OKONOMI, HMS, YTA, OPPFUTLAND, but only HMS for now.
-const officeTypesForImport: ReadonlySet<string> = new Set(['HMS']);
+const officeTypesForImport: ReadonlySet<string> = new Set(['HMS', 'ALS']);
 
 const norgRequest = <T>(requestConfig: HttpRequestParams): T[] | null => {
     const response = request({
