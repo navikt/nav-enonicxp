@@ -16,7 +16,7 @@ export type OfficePage = {
   norwegianTitle?: string;
 
   /**
-   * Linkedin (kun for arbeidslivssenterside)
+   * LinkedIn (kun for arbeidslivssenterside)
    */
   linkedin?: string;
 
