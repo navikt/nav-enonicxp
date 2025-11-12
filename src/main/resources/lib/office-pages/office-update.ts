@@ -39,6 +39,8 @@ const getOfficeContentName = (officeData: OfficeNorgData) => commonLib.sanitize(
 //TODO: oppdater kommentar under
 // Possible office types are FPY, KONTROLL, OKONOMI, HMS, YTA, OPPFUTLAND, but only HMS for now.
 const officeTypesForImport: ReadonlySet<string> = new Set(['HMS', 'ALS']);
+const HMSPageTemplateID = '1ca7fd52-96b8-4c4a-9884-f73332223ef6';
+const ALSPageTemplateID = 'aeadd32c-3152-4739-94c4-949990e8133e';
 
 const norgRequest = <T>(requestConfig: HttpRequestParams): T[] | null => {
     const response = request({
@@ -332,6 +334,13 @@ const createOfficePage = (officeData: OfficeNorgData) => {
 
     const previewOnly = officeData.type !== 'LOKAL';
 
+    let pageTemplatePageId = '';
+    if (officeData.type === 'HMS') {
+        pageTemplatePageId = HMSPageTemplateID;
+    } else if (officeData.type === 'ALS') {
+        pageTemplatePageId = ALSPageTemplateID;
+    }
+
     try {
         const content = contentLib.create({
             name: getOfficeContentName(officeData),
@@ -340,6 +349,10 @@ const createOfficePage = (officeData: OfficeNorgData) => {
             language: getOfficeLanguage(officeData),
             contentType: OFFICE_PAGE_CONTENT_TYPE,
             data,
+
+            page: {
+                template: pageTemplatePageId,
+            },
             x: {
                 'no-nav-navno': {
                     // Newly imported (created) office pages has to be checked by
