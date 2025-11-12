@@ -8,7 +8,7 @@
     <form>
         <mixin name="page-header" />
         <input name="linkedin" type="TextLine">
-            <label>Linkedin (kun for arbeidslivssenterside)</label>
+            <label>LinkedIn (kun for arbeidslivssenterside)</label>
         </input>
         <option-set name="officeNorgData">
             <label>Kontordata (OBS! Overskrives fra NORG)</label>
