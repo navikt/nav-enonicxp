@@ -5,6 +5,7 @@ fragment contentGuidePage on no_nav_navno_GuidePage {
     dataAsJson
     data {
         area
+        lastPublished
         audience {
             _selected
             provider {
