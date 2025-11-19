@@ -7,9 +7,18 @@
     <allow-child-content>true</allow-child-content>
     <form>
         <mixin name="page-header" />
-        <input name="linkedin" type="TextLine">
-            <label>LinkedIn (kun for arbeidslivssenterside)</label>
-        </input>
+        <item-set name="linkedin">
+            <label>LinkedIn (kun for arbeidslivssenter)</label>
+            <occurrences minimum="0" maximum="1" />
+            <items>
+                <input name="lenketekst" type="TextLine">
+                    <label>Lenketekst</label>
+                </input>
+                <input name="lenke" type="TextLine">
+                    <label>Lenke</label>
+                </input>
+            </items>
+        </item-set>
         <option-set name="officeNorgData">
             <label>Kontordata (OBS! Overskrives fra NORG)</label>
             <occurrences minimum="1" maximum="1" />
