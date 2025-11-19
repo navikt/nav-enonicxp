@@ -26,9 +26,11 @@ type OfficeOverview = {
     enhetNr: string;
     navn: string;
     type: string;
+    organisasjonsnummer?: string;
 };
 
-type OfficeTypeDictionary = Map<string, string>;
+type OfficeTypeDictionaryValue = { type: string; organisasjonsnummer?: string };
+type OfficeTypeDictionary = Map<string, OfficeTypeDictionaryValue>;
 
 const OFFICE_PAGE_CONTENT_TYPE: OfficePageDescriptor = `no.nav.navno:office-page`;
 const INTERNAL_LINK_CONTENT_TYPE: InternalLinkDescriptor = `no.nav.navno:internal-link`;
@@ -75,7 +77,9 @@ const generalOfficeAdapter = (
     officeData: OfficeRawNORGData,
     officeTypeDictionary: OfficeTypeDictionary
 ): OfficeNorgData => {
-    const type = officeTypeDictionary.get(officeData.enhetNr) || '';
+    const entry = officeTypeDictionary.get(officeData.enhetNr);
+    const type = entry?.type ?? '';
+    const organisasjonsnummer = entry?.organisasjonsnummer ?? '';
 
     if (!type) {
         logger.warning(
@@ -90,7 +94,7 @@ const generalOfficeAdapter = (
         telefonnummer: officeData.telefonnummer,
         telefonnummerKommentar: officeData.telefonnummerKommentar,
         status: 'Aktiv',
-        organisasjonsnummer: '',
+        organisasjonsnummer,
         sosialeTjenester: '',
         spesielleOpplysninger: officeData.spesielleOpplysninger,
         underEtableringDato: '',
@@ -104,7 +108,10 @@ const generalOfficeAdapter = (
 
 export const fetchAllOfficeDataFromNorg = () => {
     try {
-        const officeTypeDictionary = new Map<string, string>();
+        const officeTypeDictionary = new Map<
+            string,
+            { type: string; organisasjonsnummer?: string }
+        >();
 
         const officeOverview = norgRequest<OfficeOverview>({
             url: `${URLS.NORG_OFFICE_OVERVIEW_API_URL}`,
@@ -120,7 +127,12 @@ export const fetchAllOfficeDataFromNorg = () => {
 
         // The kontaktinformasjoner-endpoint will not include the actual office type in its payload, so we need to
         // make a dictionary to look up the type from the office number.
-        officeOverview.forEach((office) => officeTypeDictionary.set(office.enhetNr, office.type));
+        officeOverview.forEach((office) =>
+            officeTypeDictionary.set(office.enhetNr, {
+                type: office.type,
+                organisasjonsnummer: office.organisasjonsnummer,
+            })
+        );
 
         const enhetnrForFetching = officeOverview
             .filter((office) => officeTypesForImport.has(office.type))
