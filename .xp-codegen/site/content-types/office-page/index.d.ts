@@ -18,17 +18,7 @@ export type OfficePage = {
   /**
    * LinkedIn (kun for arbeidslivssenter)
    */
-  linkedin?: {
-    /**
-     * Lenketekst
-     */
-    lenketekst?: string;
-
-    /**
-     * Lenke
-     */
-    lenke?: string;
-  };
+  linkedin?: string;
 
   /**
    * Kontordata (OBS! Overskrives fra NORG)
