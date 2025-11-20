@@ -9,7 +9,7 @@
     },
     "type": "module",
     "devDependencies": {
-        "@swc/cli": "0.7.3",
+        "@swc/cli": "0.7.9",
         "@swc/core": "1.11.24"
     }
 }
