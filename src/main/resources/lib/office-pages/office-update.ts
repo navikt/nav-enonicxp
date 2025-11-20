@@ -37,9 +37,6 @@ const INTERNAL_LINK_CONTENT_TYPE: InternalLinkDescriptor = `no.nav.navno:interna
 const OFFICES_BASE_PATH = '/www.nav.no/kontor';
 
 const getOfficeContentName = (officeData: OfficeNorgData) => commonLib.sanitize(officeData.navn);
-
-//TODO: oppdater kommentar under
-// Possible office types are FPY, KONTROLL, OKONOMI, HMS, YTA, OPPFUTLAND, but only HMS for now.
 const officeTypesForImport: ReadonlySet<string> = new Set(['HMS', 'ALS']);
 
 const HMSPageTemplateID = '1ca7fd52-96b8-4c4a-9884-f73332223ef6';
