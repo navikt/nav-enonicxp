@@ -16,6 +16,11 @@ export type OfficePage = {
   norwegianTitle?: string;
 
   /**
+   * LinkedIn (kun for arbeidslivssenter)
+   */
+  linkedin?: string;
+
+  /**
    * Kontordata (OBS! Overskrives fra NORG)
    */
   officeNorgData:
