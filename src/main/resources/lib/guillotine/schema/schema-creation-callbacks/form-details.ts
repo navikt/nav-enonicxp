@@ -40,6 +40,11 @@ const getFormNumbersFromVariations = (formType: FormDetails['formType']) => {
         const { _selected } = variation;
         const selectedVariation = (variation as any)[_selected];
 
+        // If the editor created a form-detail, didn't add any variations and just saved, we have nothing to extract.
+        if (!selectedVariation?.variations) {
+            return acc;
+        }
+
         const subFormNumbers: string[] = [];
         forceArray(selectedVariation.variations).forEach((variationItem) => {
             if (variationItem.link._selected === 'external') {
