@@ -39,14 +39,6 @@ const OFFICES_BASE_PATH = '/www.nav.no/kontor';
 const getOfficeContentName = (officeData: OfficeNorgData) => commonLib.sanitize(officeData.navn);
 const officeTypesForImport: ReadonlySet<string> = new Set(['HMS', 'ALS']);
 
-const HMSPageTemplateID = '1ca7fd52-96b8-4c4a-9884-f73332223ef6';
-const ALSPageTemplateID = 'aeadd32c-3152-4739-94c4-949990e8133e';
-
-const PAGE_TEMPLATE_BY_TYPE: Record<string, string | undefined> = {
-    HMS: HMSPageTemplateID,
-    ALS: ALSPageTemplateID,
-};
-
 const norgRequest = <T>(requestConfig: HttpRequestParams): T[] | null => {
     const response = request({
         url: requestConfig.url,
@@ -347,8 +339,6 @@ const createOfficePage = (officeData: OfficeNorgData) => {
         checksum: createObjectChecksum(officeData),
     });
 
-    const pageTemplateId = PAGE_TEMPLATE_BY_TYPE[officeData.type] ?? '';
-
     const previewOnly = officeData.type !== 'LOKAL';
 
     try {
@@ -359,7 +349,6 @@ const createOfficePage = (officeData: OfficeNorgData) => {
             language: getOfficeLanguage(officeData),
             contentType: OFFICE_PAGE_CONTENT_TYPE,
             data,
-            ...(pageTemplateId && { page: { template: pageTemplateId } }),
             x: {
                 'no-nav-navno': {
                     // Newly imported (created) office pages has to be checked by
