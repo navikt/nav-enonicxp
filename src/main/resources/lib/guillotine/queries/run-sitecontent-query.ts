@@ -54,7 +54,8 @@ export const runSitecontentGuillotineQuery = (
     // Certain pages need extra queries for resolving.
     if (
         baseContent.type === 'no.nav.navno:office-page' &&
-        baseContent.data?.officeNorgData.data.type === 'LOKAL'
+        (baseContent.data?.officeNorgData.data.type === 'LOKAL' ||
+            baseContent.data?.officeNorgData.data.type === 'ALS')
     ) {
         return buildOfficeBranchPageWithEditorialContent(contentQueryResult);
     }
