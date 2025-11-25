@@ -52,7 +52,6 @@ export interface CreateContentParams<ContentType extends ContentDescriptor>
     extends CreateContentParamsOriginal<unknown, ContentType> {
     contentType: ContentType;
     data: XP.ContentTypes[ContentType];
-    page?: XP.Page;
 }
 
 export declare function create<ContentType extends ContentDescriptor>(
