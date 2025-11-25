@@ -1,11 +1,20 @@
 <content-type>
     <display-name>Kontorside for redaktørinnhold</display-name>
-    <description>Sidemal for redaktørdelen av kontorsidene. Denne skal kun benyttes én gang pr språk</description>
+    <description>Sidemal for redaktørdelen av kontorsidene for lokalkontor og arbeidslivssenter.
+        Denne skal kun benyttes én gang pr språk på hver sidetype</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <mixin name="dynamic-page-common"/>
+        <input name="officeType" type="RadioButton">
+            <label>Kontortype</label>
+            <occurrences minimum="1" maximum="1" />
+            <config>
+                <option value="LOKAL">Lokalkontor</option>
+                <option value="ALS">Arbeidslivssenter</option>
+            </config>
+        </input>
+        <mixin name="dynamic-page-common" />
     </form>
 </content-type>
