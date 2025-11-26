@@ -25,7 +25,11 @@ export const officeCallback: CreationCallback = (context, params) => {
 
             const officeData = officeDataContent.data?.officeNorgData?.data;
 
-            if (!officeData || officeData.type !== 'LOKAL') {
+            if (!officeData) {
+                return null;
+            }
+
+            if (officeData.type !== 'LOKAL' && officeData.type !== 'ALS') {
                 return null;
             }
 
@@ -47,6 +51,12 @@ export const officeCallback: CreationCallback = (context, params) => {
                                     values: [language],
                                 },
                             },
+                            {
+                                hasValue: {
+                                    field: 'data.officeType',
+                                    values: [officeData.type],
+                                },
+                            },
                         ],
                     },
                 },
@@ -62,7 +72,7 @@ export const officeCallback: CreationCallback = (context, params) => {
                 return queryResult.count > 0 ? queryResult.hits[0] : undefined;
             }
 
-            // Editorial content for office pages should only have one content per language,
+            // Editorial content for office pages should only have a maximum of one content per type in each language,
             // so select the first hit.
             const editorialContent = queryResult.hits[0];
 
