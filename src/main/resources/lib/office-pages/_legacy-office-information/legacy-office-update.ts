@@ -20,7 +20,7 @@ const parentPath = '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer';
 const officeInfoUpdateTaskDescriptor = 'no.nav.navno:update-office-info';
 const fiveMinutes = 5 * 60 * 1000;
 
-const enhetTypesToImport: ReadonlySet<string> = new Set(['OKONOMI', 'OPPFUTLAND']);
+const enhetTypesToImport: ReadonlySet<string> = new Set(['ALS', 'OKONOMI', 'OPPFUTLAND']);
 
 // Always import these even if not in the set of types
 const enhetNrToImport: ReadonlySet<string> = new Set([
