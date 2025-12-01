@@ -313,7 +313,7 @@ export type ThemedArticlePage = {
   canonicalUrl?: string;
 
   /**
-   * Skal ikke vises i søk
+   * Ikke vis "tilfeldige "
    */
   noindex: boolean;
 

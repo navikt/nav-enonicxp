@@ -32,13 +32,9 @@
                     </help-text>
                 </input>
                 <input name="nosnippet" type="CheckBox">
-                    <label>
-                        Ikke vis "tilfeldige" utdrag (snippets) i Google-søk
-                    </label>
+                    <label>Ikke vis "tilfeldige" utdrag (snippets). NB! Skal bare brukes av hovedredaktør/administrator.</label>                  
                     <help-text>
-                        Google vil ikke forsøke å vise "tilfeldige" utdrag fra denne siden i
-                        søkeresultatet, men vil sannsynligvis vise SEO-teksten eller ingressen.
-                        Innholdet vil fortsatt være søkbart.
+                        Huker du av her, hindrer du synlighet i både tradisjonelle søkemotorer og KI-verktøy.
                     </help-text>
                 </input>
             </items>
