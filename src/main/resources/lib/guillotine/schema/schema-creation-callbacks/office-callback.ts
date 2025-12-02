@@ -39,9 +39,11 @@ export const officeCallback: CreationCallback = (context, params) => {
             // before checking.
             const language = skriftspraak?.toUpperCase() === 'NN' ? 'nn' : CONTENT_LOCALE_DEFAULT;
 
+            const rootFolder = officeData.type === 'ALS' ? 'arbeidsgiver' : 'kontor';
+
             const queryResult = contentLib.query({
                 contentTypes: ['no.nav.navno:office-editorial-page'],
-                query: '_path LIKE "*/www.nav.no/kontor/editorial-mappe/*"',
+                query: `_path LIKE "*/www.nav.no/${rootFolder}/editorial-mappe/*"`,
                 filters: {
                     boolean: {
                         must: [

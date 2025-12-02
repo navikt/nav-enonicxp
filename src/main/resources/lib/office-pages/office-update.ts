@@ -35,9 +35,13 @@ type OfficeTypeDictionary = Map<string, OfficeTypeDictionaryValue>;
 const OFFICE_PAGE_CONTENT_TYPE: OfficePageDescriptor = `no.nav.navno:office-page`;
 const INTERNAL_LINK_CONTENT_TYPE: InternalLinkDescriptor = `no.nav.navno:internal-link`;
 const OFFICES_BASE_PATH = '/www.nav.no/kontor';
+const ALS_OFFICES_BASE_PATH = '/www.nav.no/arbeidsgiver';
 
 const getOfficeContentName = (officeData: OfficeNorgData) => commonLib.sanitize(officeData.navn);
 const officeTypesForImport: ReadonlySet<string> = new Set(['HMS', 'ALS']);
+
+const getParentPathForType = (type: string) =>
+    type === 'ALS' ? ALS_OFFICES_BASE_PATH : OFFICES_BASE_PATH;
 
 const norgRequest = <T>(requestConfig: HttpRequestParams): T[] | null => {
     const response = request({
@@ -199,16 +203,15 @@ const getOfficeLanguage = (office: OfficeNorgData) => {
     return office.brukerkontakt?.skriftspraak?.toLowerCase() || CONTENT_LOCALE_DEFAULT;
 };
 
-const getExistingOfficePages = () => {
-    return contentLib
-        .getChildren({
-            key: OFFICES_BASE_PATH,
-            count: 2000,
-        })
-        .hits.filter(
-            (office) => office.type === OFFICE_PAGE_CONTENT_TYPE
-        ) as Content<OfficePageDescriptor>[];
-};
+const OFFICE_PARENT_PATHS = [OFFICES_BASE_PATH, ALS_OFFICES_BASE_PATH];
+
+const getExistingOfficePages = (): Content<OfficePageDescriptor>[] =>
+    OFFICE_PARENT_PATHS.reduce<Content<OfficePageDescriptor>[]>((acc, parentPath) => {
+        const { hits } = contentLib.getChildren({ key: parentPath, count: 2000 });
+        const offices = hits.filter((office) => office.type === OFFICE_PAGE_CONTENT_TYPE);
+        acc.push(...(offices as Content<OfficePageDescriptor>[]));
+        return acc;
+    }, []);
 
 const moveAndRedirectOnNameChange = (
     prevOfficePage: Content<OfficePageDescriptor>,
@@ -232,7 +235,7 @@ const moveAndRedirectOnNameChange = (
         // Create a redirect from the old path
         const internalLink = contentLib.create<InternalLinkDescriptor>({
             name: prevContentName,
-            parentPath: OFFICES_BASE_PATH,
+            parentPath: getParentPathForType(prevOfficePage.type),
             displayName: `${prevOfficePage.displayName} (redirect til ${newOfficeData.navn})`,
             contentType: INTERNAL_LINK_CONTENT_TYPE,
             data: {
@@ -344,7 +347,7 @@ const createOfficePage = (officeData: OfficeNorgData) => {
     try {
         const content = contentLib.create({
             name: getOfficeContentName(officeData),
-            parentPath: OFFICES_BASE_PATH,
+            parentPath: getParentPathForType(officeData.type),
             displayName: officeData.navn,
             language: getOfficeLanguage(officeData),
             contentType: OFFICE_PAGE_CONTENT_TYPE,
@@ -401,7 +404,7 @@ export const processAllOffices = (offices: OfficeNorgData[]) => {
 
     offices.forEach((officePageData) => {
         const contentName = getOfficeContentName(officePageData);
-        const pathName = `${OFFICES_BASE_PATH}/${contentName}`;
+        const pathName = `${getParentPathForType(officePageData.type)}/${contentName}`;
 
         if (pathHasInvalidContent(pathName)) {
             logger.info(`Found invalid content on ${pathName} - deleting`);
