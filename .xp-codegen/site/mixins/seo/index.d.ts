@@ -11,12 +11,12 @@ export type Seo = {
   canonicalUrl?: string;
 
   /**
-   * Skal ikke vises i søk
+   * Skal ikke vises i søk. NB! Skal bare brukes av hovedredaktør/administrator.
    */
   noindex: boolean;
 
   /**
-   * Ikke vis "tilfeldige" utdrag (snippets) i Google-søk
+   * Ikke vis "tilfeldige" utdrag (snippets). NB! Skal bare brukes av hovedredaktør/administrator.
    */
   nosnippet: boolean;
 };
