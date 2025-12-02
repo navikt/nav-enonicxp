@@ -48,7 +48,7 @@
         "@enonic-types/lib-task": "7.15.4",
         "@enonic-types/lib-value": "7.15.4",
         "@enonic-types/lib-websocket": "7.15.4",
-        "@eslint/compat": "1.4.1",
+        "@eslint/compat": "2.0.0",
         "@eslint/eslintrc": "3.3.1",
         "@eslint/js": "9.39.1",
         "@item-enonic-types/lib-cache": "2.2.1",
