@@ -47,7 +47,7 @@ export const buildSearchDocumentOfficeIngress = (content: OfficeContent) => {
     }
 
     // HMS (Hjelpemiddelsentral)
-    if (officeData.type === 'HMS') {
+    if (officeData.type === 'HMS' || officeData.type === 'ALS') {
         return officeData.navn; // i.e "NAV Hjelpemiddelsentral i Oslo"
     }
 
