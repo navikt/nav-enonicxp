@@ -197,6 +197,10 @@ const deleteContent = (contentRef: string) => {
 };
 
 const getOfficeLanguage = (office: OfficeNorgData) => {
+    // Overstyringen kan fjernes dersom skriftspraak blir endret til "NN" på disse tre sidene i Norg
+    const overstyrTilNynorskKontorer = ['1591', '1191', '1291'];
+    if (overstyrTilNynorskKontorer.includes(office.enhetNr)) return 'nn';
+
     if (office.brukerkontakt?.skriftspraak?.toLowerCase() === 'nb') {
         return CONTENT_LOCALE_DEFAULT;
     }
