@@ -14,6 +14,7 @@
                 <option value="LOKAL">Lokalkontor</option>
                 <option value="ALS">Arbeidslivssenter</option>
             </config>
+            <default>LOKAL</default>
         </input>
         <mixin name="dynamic-page-common" />
     </form>
