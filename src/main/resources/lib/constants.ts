@@ -29,17 +29,17 @@ const revalidatorProxyOrigins: EnvRecord = {
 
 const norgOfficeOverviewApiUrl: EnvRecord = {
     p: 'https://norg2.intern.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
-    dev: 'https://norg2.intern.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV', //TODO: ENDRE TILBAKE!!
+    dev: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
     q6: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
-    localhost: 'https://norg2.intern.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV', //TODO: ENDRE TILBAKE!!
+    localhost: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
     test: '', // 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
 } as const;
 
 const norgOfficeInformationApiUrl: EnvRecord = {
     p: 'https://norg2.intern.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
-    dev: 'https://norg2.intern.nav.no/norg2/api/v2/enhet/kontaktinformasjoner', //TODO: ENDRE TILBAKE!!
+    dev: 'https://norg2.intern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
     q6: 'https://norg2.intern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
-    localhost: 'https://norg2.intern.nav.no/norg2/api/v2/enhet/kontaktinformasjoner', //TODO: ENDRE TILBAKE!!
+    localhost: 'https://norg2.intern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
     test: '', // 'https://norg2.intern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
 } as const;
 
