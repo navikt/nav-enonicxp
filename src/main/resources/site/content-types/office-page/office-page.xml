@@ -7,6 +7,17 @@
     <allow-child-content>true</allow-child-content>
     <form>
         <mixin name="page-header" />
+        <option-set name="audience">
+            <label>Målgruppe</label>
+            <options minimum="0" maximum="1">
+                <option name="person">
+                    <label>Privatperson</label>
+                </option>
+                <option name="employer">
+                    <label>Arbeidsgiver</label>
+                </option>
+            </options>
+        </option-set>
         <input name="linkedin" type="HtmlArea">
             <label>LinkedIn (kun for arbeidslivssenter)</label>
         </input>
