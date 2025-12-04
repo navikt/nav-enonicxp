@@ -16,6 +16,38 @@ export type OfficePage = {
   norwegianTitle?: string;
 
   /**
+   * Målgruppe
+   */
+  audience?:
+    | {
+        /**
+         * Selected
+         */
+        _selected: "person";
+
+        /**
+         * Privatperson
+         */
+        person: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "employer";
+
+        /**
+         * Arbeidsgiver
+         */
+        employer: Record<string, unknown>;
+      };
+
+  /**
+   * LinkedIn (kun for arbeidslivssenter)
+   */
+  linkedin?: string;
+
+  /**
    * Kontordata (OBS! Overskrives fra NORG)
    */
   officeNorgData:
