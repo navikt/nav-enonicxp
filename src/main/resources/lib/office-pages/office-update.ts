@@ -235,7 +235,7 @@ const moveAndRedirectOnNameChange = (
         // Create a redirect from the old path
         const internalLink = contentLib.create<InternalLinkDescriptor>({
             name: prevContentName,
-            parentPath: getParentPathForType(prevOfficePage.type),
+            parentPath: getParentPathForType(prevOfficePage.data.officeNorgData.data.type),
             displayName: `${prevOfficePage.displayName} (redirect til ${newOfficeData.navn})`,
             contentType: INTERNAL_LINK_CONTENT_TYPE,
             data: {
