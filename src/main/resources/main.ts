@@ -37,7 +37,8 @@ if (clusterLib.isMaster()) {
 
 if (app.config.env !== 'test') {
     createOfficeImportSchedule();
-    createLegacyOfficeImportSchedule();
+    // TODO fjern kommentering etter at vi har satt opp redirects og fjernet kontorer fra enhetNrToImport i legacy-office-update.ts
+    // createLegacyOfficeImportSchedule();
     activateSitemapDataUpdateEventListener();
 }
 
