@@ -6,6 +6,15 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <mixin name="dynamic-page-common"/>
+        <input name="officeType" type="RadioButton">
+            <label>Kontortype</label>
+            <occurrences minimum="1" maximum="1" />
+            <config>
+                <option value="LOKAL">Lokalkontor</option>
+                <option value="ALS">Arbeidslivssenter</option>
+            </config>
+            <default>LOKAL</default>
+        </input>
+        <mixin name="dynamic-page-common" />
     </form>
 </content-type>
