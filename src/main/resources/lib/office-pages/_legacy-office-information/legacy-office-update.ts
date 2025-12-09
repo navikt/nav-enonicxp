@@ -20,11 +20,25 @@ const parentPath = '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer';
 const officeInfoUpdateTaskDescriptor = 'no.nav.navno:update-office-info';
 const fiveMinutes = 5 * 60 * 1000;
 
-const enhetTypesToImport: ReadonlySet<string> = new Set(['ALS', 'OKONOMI', 'OPPFUTLAND']);
+const enhetTypesToImport: ReadonlySet<string> = new Set(['OKONOMI', 'OPPFUTLAND']);
 
 // Always import these even if not in the set of types
 const enhetNrToImport: ReadonlySet<string> = new Set([
     '4534', // [KONTROLL] NAV Registerforvaltning
+
+    // Arbeidslivssenter
+    '0891', // Nav arbeid og helse Vestfold og Telemark
+    '1091', // Agder
+    '0491', // Innlandet
+    '1591', // Møre og Romsdal
+    '1891', // Nordland
+    '0391', // Oslo
+    '0291', // Øst-Viken
+    '1191', // Rogaland
+    '1991', // Troms og Finnmark
+    '5772', // Trøndelag
+    '0691', // Vest-Viken
+    '1291', // Vestland
 ]);
 
 const shouldImportOffice = (enhet: OfficeInformation['enhet']) => {
@@ -229,7 +243,14 @@ const cleanOfficeInfo = (officeInfo: OfficeInformation[]): OfficeInformation[] =
     });
 };
 
+const tempDisableImport = true;
+
 export const fetchAndUpdateOfficeInfo = (retry?: boolean) => {
+    if (tempDisableImport) {
+        logger.info('Legacy office import temporarily disabled');
+        return;
+    }
+
     const newOfficeInfo = fetchOfficeInfo();
     if (!newOfficeInfo) {
         if (retry) {

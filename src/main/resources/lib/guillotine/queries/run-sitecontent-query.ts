@@ -51,10 +51,14 @@ export const runSitecontentGuillotineQuery = (
         return contentQueryResult;
     }
 
-    // Certain pages need extra queries for resolving.
+    // Certain pages need extra queries for resolving:
+    // LOKAL and ALS office pages have a separate editorial page. This is injected into the office page
+    // through the office-callback and because only "page" is automatically recognized and resolved in content,
+    // we need to run buildOfficeBranchPageWithEditorialContent that will specifically look for and resolve the editorial page.
     if (
         baseContent.type === 'no.nav.navno:office-page' &&
-        baseContent.data?.officeNorgData.data.type === 'LOKAL'
+        (baseContent.data?.officeNorgData.data.type === 'LOKAL' ||
+            baseContent.data?.officeNorgData.data.type === 'ALS')
     ) {
         return buildOfficeBranchPageWithEditorialContent(contentQueryResult);
     }

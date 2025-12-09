@@ -25,7 +25,11 @@ export const officeCallback: CreationCallback = (context, params) => {
 
             const officeData = officeDataContent.data?.officeNorgData?.data;
 
-            if (!officeData || officeData.type !== 'LOKAL') {
+            if (!officeData) {
+                return null;
+            }
+
+            if (officeData.type !== 'LOKAL' && officeData.type !== 'ALS') {
                 return null;
             }
 
@@ -35,9 +39,11 @@ export const officeCallback: CreationCallback = (context, params) => {
             // before checking.
             const language = skriftspraak?.toUpperCase() === 'NN' ? 'nn' : CONTENT_LOCALE_DEFAULT;
 
+            const rootFolder = officeData.type === 'ALS' ? 'arbeidsgiver' : 'kontor';
+
             const queryResult = contentLib.query({
                 contentTypes: ['no.nav.navno:office-editorial-page'],
-                query: '_path LIKE "*/www.nav.no/kontor/editorial-mappe/*"',
+                query: `_path LIKE "*/www.nav.no/${rootFolder}/editorial-mappe/*"`,
                 filters: {
                     boolean: {
                         must: [
@@ -45,6 +51,12 @@ export const officeCallback: CreationCallback = (context, params) => {
                                 hasValue: {
                                     field: 'language',
                                     values: [language],
+                                },
+                            },
+                            {
+                                hasValue: {
+                                    field: 'data.officeType',
+                                    values: [officeData.type],
                                 },
                             },
                         ],
@@ -62,7 +74,7 @@ export const officeCallback: CreationCallback = (context, params) => {
                 return queryResult.count > 0 ? queryResult.hits[0] : undefined;
             }
 
-            // Editorial content for office pages should only have one content per language,
+            // Editorial content for office pages should only have a maximum of one content per type in each language,
             // so select the first hit.
             const editorialContent = queryResult.hits[0];
 
