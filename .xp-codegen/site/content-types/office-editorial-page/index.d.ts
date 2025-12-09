@@ -41,12 +41,12 @@ export type OfficeEditorialPage = {
   canonicalUrl?: string;
 
   /**
-   * Skal ikke vises i søk
+   * Ikke vis "tilfeldige "
    */
   noindex: boolean;
 
   /**
-   * Ikke vis "tilfeldige" utdrag (snippets). NB! Skal bare brukes av hovedredaktør/administrator.
+   * Ikke vis "tilfeldige" utdrag (snippets) i Google-søk
    */
   nosnippet: boolean;
 };
