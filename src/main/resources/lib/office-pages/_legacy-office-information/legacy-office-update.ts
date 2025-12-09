@@ -243,7 +243,14 @@ const cleanOfficeInfo = (officeInfo: OfficeInformation[]): OfficeInformation[] =
     });
 };
 
+const tempDisableImport = true;
+
 export const fetchAndUpdateOfficeInfo = (retry?: boolean) => {
+    if (tempDisableImport) {
+        logger.info('Legacy office import temporarily disabled');
+        return;
+    }
+
     const newOfficeInfo = fetchOfficeInfo();
     if (!newOfficeInfo) {
         if (retry) {
