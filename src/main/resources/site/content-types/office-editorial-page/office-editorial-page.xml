@@ -1,6 +1,7 @@
 <content-type>
     <display-name>Kontorside for redaktørinnhold</display-name>
-    <description>Sidemal for redaktørdelen av kontorsidene. Denne skal kun benyttes én gang pr språk</description>
+    <description>Sidemal for redaktørdelen av kontorsidene for lokalkontor og arbeidslivssenter.
+        Denne skal kun benyttes én gang pr språk på hver sidetype</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
