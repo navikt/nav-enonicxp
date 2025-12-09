@@ -79,9 +79,7 @@ export const searchApiPostDocuments = (documents: SearchDocument[]) => {
                     // If something went wrong, log document info for investigation.
                     // Log full documents if batch is small, otherwise just IDs.
                     documents:
-                        logLevel === 'error' && documentsBatch.length <= 20
-                            ? documentsBatch
-                            : undefined,
+                        logLevel === 'error' ? documentsBatch : undefined,
                 })
             );
         } catch (e) {
