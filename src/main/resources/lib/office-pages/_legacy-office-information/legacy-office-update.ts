@@ -36,7 +36,7 @@ const enhetNrToImport: ReadonlySet<string> = new Set([
     '0291', // Øst-Viken
     '1191', // Rogaland
     '1991', // Troms og Finnmark
-    // '5772', // Trøndelag
+    '5772', // Trøndelag
     '0691', // Vest-Viken
     '1291', // Vestland
 ]);
