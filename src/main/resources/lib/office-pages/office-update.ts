@@ -32,6 +32,10 @@ type OfficeOverview = {
 type OfficeTypeDictionaryValue = { type: string; organisasjonsnummer?: string };
 type OfficeTypeDictionary = Map<string, OfficeTypeDictionaryValue>;
 
+const officeNameOverrides: Readonly<Record<string, string>> = {
+    '0891': 'Nav arbeidslivssenter Vestfold og Telemark',
+};
+
 const OFFICE_PAGE_CONTENT_TYPE: OfficePageDescriptor = `no.nav.navno:office-page`;
 const INTERNAL_LINK_CONTENT_TYPE: InternalLinkDescriptor = `no.nav.navno:internal-link`;
 const OFFICES_BASE_PATH = '/www.nav.no/kontor';
@@ -82,7 +86,7 @@ const generalOfficeAdapter = (
 
     return {
         enhetNr: officeData.enhetNr,
-        navn: officeData.navn,
+        navn: officeNameOverrides[officeData.enhetNr] ?? officeData.navn,
         type,
         telefonnummer: officeData.telefonnummer,
         telefonnummerKommentar: officeData.telefonnummerKommentar,

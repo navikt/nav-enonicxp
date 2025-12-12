@@ -28,17 +28,17 @@ const enhetNrToImport: ReadonlySet<string> = new Set([
 
     // Arbeidslivssenter
     '0891', // Nav arbeid og helse Vestfold og Telemark
-    '1091', // Agder
-    '0491', // Innlandet
-    '1591', // Møre og Romsdal
-    '1891', // Nordland
-    '0391', // Oslo
-    '0291', // Øst-Viken
-    '1191', // Rogaland
-    '1991', // Troms og Finnmark
-    '5772', // Trøndelag
-    '0691', // Vest-Viken
-    '1291', // Vestland
+    // '1091', // Agder
+    // '0491', // Innlandet
+    // '1591', // Møre og Romsdal
+    // '1891', // Nordland
+    // '0391', // Oslo
+    // '0291', // Øst-Viken
+    // '1191', // Rogaland
+    // '1991', // Troms og Finnmark
+    // '5772', // Trøndelag
+    // '0691', // Vest-Viken
+    // '1291', // Vestland
 ]);
 
 const shouldImportOffice = (enhet: OfficeInformation['enhet']) => {
