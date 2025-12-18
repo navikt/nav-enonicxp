@@ -36,12 +36,12 @@ export type DynamicPage = {
   canonicalUrl?: string;
 
   /**
-   * Ikke vis "tilfeldige "
+   * Skal ikke vises i søk
    */
   noindex: boolean;
 
   /**
-   * Ikke vis "tilfeldige" utdrag (snippets) i Google-søk
+   * Ikke vis "tilfeldige" utdrag (snippets). NB! Skal bare brukes av hovedredaktør/administrator.
    */
   nosnippet: boolean;
 
