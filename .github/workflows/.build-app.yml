@@ -38,7 +38,7 @@ jobs:
           node-version: 22
           cache: 'npm'
       - name: Install node.js dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
       - name: Run unit tests
         run: npm run test --workspace=test/unit-tests
       - name: Build application
