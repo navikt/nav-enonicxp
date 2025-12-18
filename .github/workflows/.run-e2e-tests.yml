@@ -22,7 +22,7 @@ jobs:
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
       - name: Install node.js dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
       - name: Download jar files
         uses: actions/download-artifact@v4
         with:
