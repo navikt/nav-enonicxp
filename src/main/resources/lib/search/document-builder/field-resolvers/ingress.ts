@@ -46,9 +46,8 @@ export const buildSearchDocumentOfficeIngress = (content: OfficeContent) => {
         return '';
     }
 
-    // HMS (Hjelpemiddelsentral) og ALS (Arbeidslivssenter)
     if (officeData.type === 'HMS' || officeData.type === 'ALS') {
-        return officeData.navn; // i.e "NAV hjelpemiddelsentral Oslo"
+        return content.data.metaDescription;
     }
 
     const steder = getSted(officeData.brukerkontakt?.publikumsmottak);
