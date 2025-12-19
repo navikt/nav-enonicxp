@@ -38,7 +38,7 @@
         "@enonic-types/lib-context": "7.15.4",
         "@enonic-types/lib-event": "7.15.4",
         "@enonic-types/lib-grid": "7.15.4",
-        "@enonic-types/lib-io": "7.15.4",
+        "@enonic-types/lib-io": "7.16.1",
         "@enonic-types/lib-node": "7.15.4",
         "@enonic-types/lib-portal": "7.15.4",
         "@enonic-types/lib-project": "7.15.4",
