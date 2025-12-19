@@ -11,7 +11,7 @@ export type Seo = {
   canonicalUrl?: string;
 
   /**
-   * Skal ikke vises i søk. NB! Skal bare brukes av hovedredaktør/administrator.
+   * Skal ikke vises i søk
    */
   noindex: boolean;
 
