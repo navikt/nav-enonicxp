@@ -57,7 +57,7 @@
         "@item-enonic-types/lib-guillotine": "5.5.0",
         "@item-enonic-types/lib-http-client": "3.2.2",
         "@item-enonic-types/lib-thymeleaf": "2.1.0",
-        "@types/node": "24.10.1",
+        "@types/node": "25.0.1",
         "@typescript-eslint/eslint-plugin": "8.46.4",
         "@typescript-eslint/parser": "8.46.4",
         "dayjs": "1.11.13",
