@@ -33,7 +33,7 @@
         "@enonic-types/lib-auditlog": "7.15.4",
         "@enonic-types/lib-auth": "7.15.4",
         "@enonic-types/lib-cluster": "7.15.4",
-        "@enonic-types/lib-common": "7.15.4",
+        "@enonic-types/lib-common": "7.16.1",
         "@enonic-types/lib-content": "7.15.4",
         "@enonic-types/lib-context": "7.15.4",
         "@enonic-types/lib-event": "7.15.4",
