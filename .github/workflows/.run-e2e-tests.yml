@@ -24,7 +24,7 @@ jobs:
       - name: Install node.js dependencies
         run: npm ci --ignore-scripts
       - name: Download jar files
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: ${{ inputs.buildArtifact }}
       - name: Build test assets

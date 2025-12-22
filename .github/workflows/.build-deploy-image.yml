@@ -32,7 +32,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v6
       - name: Download app jar
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: ${{ inputs.buildArtifact }}
       - name: Copy app jar
