@@ -46,7 +46,7 @@ jobs:
       - name: Build e2e test data
         run: ./gradlew build -p=test/e2e-tests/.xp-test-data-app -PxpVersion=${{ inputs.xpVersion }}
       - name: Upload jar files
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         id: artifact-upload
         with:
           name: ${{ env.buildArtifact }}
