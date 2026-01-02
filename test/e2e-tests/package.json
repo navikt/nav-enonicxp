@@ -11,6 +11,6 @@
     },
     "type": "module",
     "devDependencies": {
-        "testcontainers": "10.24.2"
+        "testcontainers": "11.10.0"
     }
 }

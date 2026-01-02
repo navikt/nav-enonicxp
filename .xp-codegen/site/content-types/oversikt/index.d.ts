@@ -48,7 +48,7 @@ export type Oversikt = {
   /**
    * Målgruppe
    */
-  audience:
+  audience: Array<
     | {
         /**
          * Selected
@@ -128,7 +128,8 @@ export type Oversikt = {
                 };
               };
         };
-      };
+      }
+  >;
 
   /**
    * Velg fallback data
@@ -146,12 +147,27 @@ export type Oversikt = {
   owner: Array<"arbeids_og_tjenesteavdelingen" | "kontaktsenteret" | "arbeidsavdelingen_arbeid_helse" | "arbeidsavdelingen_arbeidsgivertjenester" | "arbeidsavdelingen_arbeidsmarkedstiltak" | "arbeidsavdelingen_arbeidsoppfolging" | "avdeling for brukeropplevelse" | "hr_avdelingen" | "direktoratet" | "juridisk_avdeling" | "kommunikasjonsavdelingen" | "kunnskapsavdelingen" | "statistikk" | "klageinstans" | "it_avdelingen" | "velferdsavdelingen" | "hjelpemidler_og_tilrettelegging" | "velferdsavdelingen_hjelpemidler" | "velferdsavdelingen_sosiale_tjenester" | "ytelsesavdelingen" | "arbeid_og_ytelser_styringsenhet" | "familie_og_pensjonsytelser_styringsenhet" | "ytelsesavdelingen_nav_kontroll" | "ytelsesavdelingen_arbeidsavklaringspenger" | "ytelsesavdelingen_arbeidsytelser" | "ytelsesavdelingen_familieytelser" | "ytelsesavdelingen_helseytelser" | "ytelsesavdelingen_kontroll" | "ytelsesavdelingen_pensjon" | "okonomi" | "annet" | "arbeidslivssenter" | "fylke" | "hjelpemiddelsentralen" | "min_side" | "team_personbruker"> | "arbeids_og_tjenesteavdelingen" | "kontaktsenteret" | "arbeidsavdelingen_arbeid_helse" | "arbeidsavdelingen_arbeidsgivertjenester" | "arbeidsavdelingen_arbeidsmarkedstiltak" | "arbeidsavdelingen_arbeidsoppfolging" | "avdeling for brukeropplevelse" | "hr_avdelingen" | "direktoratet" | "juridisk_avdeling" | "kommunikasjonsavdelingen" | "kunnskapsavdelingen" | "statistikk" | "klageinstans" | "it_avdelingen" | "velferdsavdelingen" | "hjelpemidler_og_tilrettelegging" | "velferdsavdelingen_hjelpemidler" | "velferdsavdelingen_sosiale_tjenester" | "ytelsesavdelingen" | "arbeid_og_ytelser_styringsenhet" | "familie_og_pensjonsytelser_styringsenhet" | "ytelsesavdelingen_nav_kontroll" | "ytelsesavdelingen_arbeidsavklaringspenger" | "ytelsesavdelingen_arbeidsytelser" | "ytelsesavdelingen_familieytelser" | "ytelsesavdelingen_helseytelser" | "ytelsesavdelingen_kontroll" | "ytelsesavdelingen_pensjon" | "okonomi" | "annet" | "arbeidslivssenter" | "fylke" | "hjelpemiddelsentralen" | "min_side" | "team_personbruker";
 
   /**
-   * Nøkkelord (internt søk)
+   * Velg forvalter
    */
-  keywords?: Array<string> | string;
+  "managed-by"?: Array<"arbeidslivssenter" | "digisos" | "fylke" | "hjelpemiddelsentralen" | "innholdsteam_arbeidsgivertjenester" | "kjernegruppe_aap" | "kjernegruppe_arbeid" | "kjernegruppe_ekspertbistand" | "kjernegruppe_familie" | "kjernegruppe_hjelpemidler" | "kjernegruppe_medlemskap" | "kjernegruppe_oppfolging" | "kjernegruppe_ortopediske_hjelpemidler" | "kjernegruppe_pensjon" | "kjernegruppe_sosiale_tjenester" | "kjernegruppe_spraktolk" | "kjernegruppe_sykepenger" | "kjernegruppe_tiltak" | "kjernegruppe_tiltakspenger" | "kjernegruppe_uforetrygd" | "kjernegruppe_yrkesskade" | "navno_redaksjonen" | "team_minside" | "team_navno" | "po_aap" | "po_arbeid" | "po_familie" | "po_helse" | "po_pensjon" | "po_arbeidsgiver"> | "arbeidslivssenter" | "digisos" | "fylke" | "hjelpemiddelsentralen" | "innholdsteam_arbeidsgivertjenester" | "kjernegruppe_aap" | "kjernegruppe_arbeid" | "kjernegruppe_ekspertbistand" | "kjernegruppe_familie" | "kjernegruppe_hjelpemidler" | "kjernegruppe_medlemskap" | "kjernegruppe_oppfolging" | "kjernegruppe_ortopediske_hjelpemidler" | "kjernegruppe_pensjon" | "kjernegruppe_sosiale_tjenester" | "kjernegruppe_spraktolk" | "kjernegruppe_sykepenger" | "kjernegruppe_tiltak" | "kjernegruppe_tiltakspenger" | "kjernegruppe_uforetrygd" | "kjernegruppe_yrkesskade" | "navno_redaksjonen" | "team_minside" | "team_navno" | "po_aap" | "po_arbeid" | "po_familie" | "po_helse" | "po_pensjon" | "po_arbeidsgiver";
+
+  /**
+   * Sidebeskrivelse for søk og sosiale medier
+   */
+  metaDescription?: string;
+
+  /**
+   * Canonical url - NB! Skal bare legges inn av hovedredaktør/administrator
+   */
+  canonicalUrl?: string;
 
   /**
    * Skal ikke vises i søk
    */
   noindex: boolean;
+
+  /**
+   * Ikke vis "tilfeldige" utdrag (snippets). NB! Skal bare brukes av hovedredaktør/administrator.
+   */
+  nosnippet: boolean;
 };

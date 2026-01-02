@@ -26,18 +26,26 @@ type OfficeOverview = {
     enhetNr: string;
     navn: string;
     type: string;
+    organisasjonsnummer?: string;
 };
 
-type OfficeTypeDictionary = Map<string, string>;
+type OfficeTypeDictionaryValue = { type: string; organisasjonsnummer?: string };
+type OfficeTypeDictionary = Map<string, OfficeTypeDictionaryValue>;
+
+const officeNameOverrides: Readonly<Record<string, string>> = {
+    '0891': 'Nav arbeidslivssenter Vestfold og Telemark',
+};
 
 const OFFICE_PAGE_CONTENT_TYPE: OfficePageDescriptor = `no.nav.navno:office-page`;
 const INTERNAL_LINK_CONTENT_TYPE: InternalLinkDescriptor = `no.nav.navno:internal-link`;
 const OFFICES_BASE_PATH = '/www.nav.no/kontor';
+const ALS_OFFICES_BASE_PATH = '/www.nav.no/arbeidsgiver';
 
 const getOfficeContentName = (officeData: OfficeNorgData) => commonLib.sanitize(officeData.navn);
+const officeTypesForImport: ReadonlySet<string> = new Set(['HMS', 'ALS']);
 
-// Possible office types are FPY, KONTROLL, OKONOMI, HMS, YTA, OPPFUTLAND, but only HMS for now.
-const officeTypesForImport: ReadonlySet<string> = new Set(['HMS']);
+const getParentPathForType = (type: string) =>
+    type === 'ALS' ? ALS_OFFICES_BASE_PATH : OFFICES_BASE_PATH;
 
 const norgRequest = <T>(requestConfig: HttpRequestParams): T[] | null => {
     const response = request({
@@ -66,7 +74,9 @@ const generalOfficeAdapter = (
     officeData: OfficeRawNORGData,
     officeTypeDictionary: OfficeTypeDictionary
 ): OfficeNorgData => {
-    const type = officeTypeDictionary.get(officeData.enhetNr) || '';
+    const entry = officeTypeDictionary.get(officeData.enhetNr);
+    const type = entry?.type ?? '';
+    const organisasjonsnummer = entry?.organisasjonsnummer ?? '';
 
     if (!type) {
         logger.warning(
@@ -76,12 +86,12 @@ const generalOfficeAdapter = (
 
     return {
         enhetNr: officeData.enhetNr,
-        navn: officeData.navn,
+        navn: officeNameOverrides[officeData.enhetNr] ?? officeData.navn,
         type,
         telefonnummer: officeData.telefonnummer,
         telefonnummerKommentar: officeData.telefonnummerKommentar,
         status: 'Aktiv',
-        organisasjonsnummer: '',
+        organisasjonsnummer,
         sosialeTjenester: '',
         spesielleOpplysninger: officeData.spesielleOpplysninger,
         underEtableringDato: '',
@@ -95,7 +105,10 @@ const generalOfficeAdapter = (
 
 export const fetchAllOfficeDataFromNorg = () => {
     try {
-        const officeTypeDictionary = new Map<string, string>();
+        const officeTypeDictionary = new Map<
+            string,
+            { type: string; organisasjonsnummer?: string }
+        >();
 
         const officeOverview = norgRequest<OfficeOverview>({
             url: `${URLS.NORG_OFFICE_OVERVIEW_API_URL}`,
@@ -111,7 +124,12 @@ export const fetchAllOfficeDataFromNorg = () => {
 
         // The kontaktinformasjoner-endpoint will not include the actual office type in its payload, so we need to
         // make a dictionary to look up the type from the office number.
-        officeOverview.forEach((office) => officeTypeDictionary.set(office.enhetNr, office.type));
+        officeOverview.forEach((office) =>
+            officeTypeDictionary.set(office.enhetNr, {
+                type: office.type,
+                organisasjonsnummer: office.organisasjonsnummer,
+            })
+        );
 
         const enhetnrForFetching = officeOverview
             .filter((office) => officeTypesForImport.has(office.type))
@@ -189,16 +207,15 @@ const getOfficeLanguage = (office: OfficeNorgData) => {
     return office.brukerkontakt?.skriftspraak?.toLowerCase() || CONTENT_LOCALE_DEFAULT;
 };
 
-const getExistingOfficePages = () => {
-    return contentLib
-        .getChildren({
-            key: OFFICES_BASE_PATH,
-            count: 2000,
-        })
-        .hits.filter(
-            (office) => office.type === OFFICE_PAGE_CONTENT_TYPE
-        ) as Content<OfficePageDescriptor>[];
-};
+const OFFICE_PARENT_PATHS = [OFFICES_BASE_PATH, ALS_OFFICES_BASE_PATH];
+
+const getExistingOfficePages = (): Content<OfficePageDescriptor>[] =>
+    OFFICE_PARENT_PATHS.reduce<Content<OfficePageDescriptor>[]>((acc, parentPath) => {
+        const { hits } = contentLib.getChildren({ key: parentPath, count: 2000 });
+        const offices = hits.filter((office) => office.type === OFFICE_PAGE_CONTENT_TYPE);
+        acc.push(...(offices as Content<OfficePageDescriptor>[]));
+        return acc;
+    }, []);
 
 const moveAndRedirectOnNameChange = (
     prevOfficePage: Content<OfficePageDescriptor>,
@@ -222,7 +239,7 @@ const moveAndRedirectOnNameChange = (
         // Create a redirect from the old path
         const internalLink = contentLib.create<InternalLinkDescriptor>({
             name: prevContentName,
-            parentPath: OFFICES_BASE_PATH,
+            parentPath: getParentPathForType(prevOfficePage.data.officeNorgData.data.type),
             displayName: `${prevOfficePage.displayName} (redirect til ${newOfficeData.navn})`,
             contentType: INTERNAL_LINK_CONTENT_TYPE,
             data: {
@@ -334,7 +351,7 @@ const createOfficePage = (officeData: OfficeNorgData) => {
     try {
         const content = contentLib.create({
             name: getOfficeContentName(officeData),
-            parentPath: OFFICES_BASE_PATH,
+            parentPath: getParentPathForType(officeData.type),
             displayName: officeData.navn,
             language: getOfficeLanguage(officeData),
             contentType: OFFICE_PAGE_CONTENT_TYPE,
@@ -391,7 +408,7 @@ export const processAllOffices = (offices: OfficeNorgData[]) => {
 
     offices.forEach((officePageData) => {
         const contentName = getOfficeContentName(officePageData);
-        const pathName = `${OFFICES_BASE_PATH}/${contentName}`;
+        const pathName = `${getParentPathForType(officePageData.type)}/${contentName}`;
 
         if (pathHasInvalidContent(pathName)) {
             logger.info(`Found invalid content on ${pathName} - deleting`);

@@ -46,7 +46,7 @@
         </field-set>
         <option-set name="audience">
             <label>Målgruppe</label>
-            <occurrences minimum="1" maximum="1"/>
+            <occurrences minimum="1" maximum="0"/>
             <options minimum="1" maximum="1">
                 <option name="person">
                     <label>Privatperson</label>
@@ -128,19 +128,7 @@
             </items>
         </field-set>
         <mixin name="owner"/>
-        <field-set>
-            <label>Søkeoptimalisering</label>
-            <items>
-                <mixin name="keywords"/>
-                <input name="noindex" type="CheckBox">
-                    <label>
-                        Skal ikke vises i søk
-                    </label>
-                    <help-text>
-                        Gjelder både søket på nav.no og eksterne søk som Google og Bing
-                    </help-text>
-                </input>
-            </items>
-        </field-set>
+        <mixin name="managed-by"/>
+        <mixin name="seo"/>
     </form>
 </content-type>

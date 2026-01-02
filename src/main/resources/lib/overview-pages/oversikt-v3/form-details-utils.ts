@@ -55,15 +55,16 @@ const buildFormDetailsDictionary = (
 export const buildFormDetailsList = (formsOverviewContent: Content<'no.nav.navno:oversikt'>) => {
     const { language, data, _id } = formsOverviewContent;
     const { oversiktType, audience, excludedContent, localeFallback } = data;
-    logger.info('Running buildFormDetailsList');
+    const audienceAsArray = forceArray(audience);
 
-    if (!audience?._selected) {
+    if (audienceAsArray.length === 0) {
         logger.error(`Audience not set for overview page ${_id} (${language})`);
         return [];
     }
 
-    const isTransportPage =
-        audience._selected === 'provider' && audience.provider.pageType?._selected === 'links';
+    const isTransportPage = audienceAsArray.some(
+        (item) => item._selected === 'provider' && item.provider.pageType?._selected === 'links'
+    );
 
     if (isTransportPage) {
         return [];

@@ -16,7 +16,7 @@ export type GuidePage = {
   norwegianTitle?: string;
 
   /**
-   * Ikke vis denne siden på oversiktssider (gjelder ikke skjemaoversikter)
+   * Kun oversiktsside v1: Ikke vis denne siden på oversiktssider (gjelder ikke skjemaoversikter)
    */
   hideFromProductlist: boolean;
 
@@ -313,7 +313,7 @@ export type GuidePage = {
   noindex: boolean;
 
   /**
-   * Ikke vis "tilfeldige" utdrag (snippets) i Google-søk
+   * Ikke vis "tilfeldige" utdrag (snippets). NB! Skal bare brukes av hovedredaktør/administrator.
    */
   nosnippet: boolean;
 };

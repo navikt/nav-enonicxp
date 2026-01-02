@@ -3,6 +3,14 @@ import { logger } from '../../utils/logging';
 import { SearchDocument } from '../document-builder/document-builder';
 import { searchApiRequest } from './search-api-request';
 
+type PostAPILogMessage = {
+    status: number;
+    body: any;
+    batchStart: number;
+    batchEnd: number;
+    documents?: SearchDocument[];
+};
+
 const BATCH_SIZE = 100;
 
 // This won't be thread safe, but problems here should be very unlikely, and in any case the
@@ -17,6 +25,23 @@ export const searchApiPostDocumentsAsync = (documents: SearchDocument[]) => {
         description: `Sending document batch to search api`,
         func: () => searchApiPostDocuments(documents),
     });
+};
+
+const createLogMessage = (message: PostAPILogMessage) => {
+    const baseMessage = `Response from search/post api for batch ${message.batchStart} - ${message.batchEnd}: ${message.status} - ${JSON.stringify(message.body)}`;
+
+    if (!message.documents) {
+        return baseMessage;
+    }
+
+    const documentInfo =
+        message.documents.length <= 20
+            ? JSON.stringify(message.documents)
+            : JSON.stringify(message.documents.map((doc) => doc.id));
+
+    const label = message.documents.length <= 20 ? 'Documents' : 'Document ids';
+
+    return `${baseMessage} - ${label}: ${documentInfo}`;
 };
 
 export const searchApiPostDocuments = (documents: SearchDocument[]) => {
@@ -46,9 +71,16 @@ export const searchApiPostDocuments = (documents: SearchDocument[]) => {
             const logLevel = response.status < 300 ? 'info' : 'error';
 
             logger[logLevel](
-                `Response from search/post api for batch ${i} - ${i + documentsBatch.length}: ${
-                    response.status
-                } - ${JSON.stringify(response.body)}`
+                createLogMessage({
+                    status: response.status,
+                    body: response.body,
+                    batchStart: i,
+                    batchEnd: i + documentsBatch.length,
+                    // If something went wrong, log document info for investigation.
+                    // Log full documents if batch is small, otherwise just IDs.
+                    documents:
+                        logLevel === 'error' ? documentsBatch : undefined,
+                })
             );
         } catch (e) {
             logger.error(

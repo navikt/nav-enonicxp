@@ -101,21 +101,9 @@
         </item-set>
         <mixin name="form-details-selector"/>
         <field-set>
-            <label>Sosiale medier</label>
-            <items>
-                <input name="social" type="ComboBox">
-                    <label>Del på sosiale medier</label>
-                    <help-text>Velg hvor dette skal deles</help-text>
-                    <config>
-                        <option value="twitter">Twitter</option>
-                        <option value="facebook">Facebook</option>
-                        <option value="linkedin">LinkedIn</option>
-                    </config>
-                    <occurrences minimum="0" maximum="0"/>
-                </input>
-            </items>
+            <label>Sosiale medier (funksjonalitet fjernet)</label>
         </field-set>
-        <mixin name="languages-legacy"/>
+         <mixin name="languages-legacy"/>
         <mixin name="decorator-toggles"/>
         <mixin name="seo"/>
         <mixin name="keywords"/>

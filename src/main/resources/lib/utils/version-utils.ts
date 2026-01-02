@@ -7,7 +7,7 @@ import { Content } from '/lib/xp/content';
 import { isContentLocalized } from '../localization/locale-utils';
 import { CONTENT_ROOT_REPO_ID } from '../constants';
 
-const MAX_VERSIONS_COUNT_TO_RETRIEVE = 2000;
+const MAX_VERSIONS_COUNT_TO_RETRIEVE = 3000;
 
 export type GetNodeVersionsParams = {
     nodeKey: string;

@@ -181,11 +181,6 @@ export type MainArticle = {
   formDetailsTargets?: Array<string> | string;
 
   /**
-   * Del på sosiale medier
-   */
-  social?: Array<"twitter" | "facebook" | "linkedin"> | "twitter" | "facebook" | "linkedin";
-
-  /**
    * Legg til andre språkversjoner
    */
   languages?: Array<string> | string;
@@ -216,7 +211,7 @@ export type MainArticle = {
   noindex: boolean;
 
   /**
-   * Ikke vis "tilfeldige" utdrag (snippets) i Google-søk
+   * Ikke vis "tilfeldige" utdrag (snippets). NB! Skal bare brukes av hovedredaktør/administrator.
    */
   nosnippet: boolean;
 
