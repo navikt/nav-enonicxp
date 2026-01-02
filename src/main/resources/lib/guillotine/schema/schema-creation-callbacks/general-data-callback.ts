@@ -8,14 +8,15 @@ import { CreationCallback } from '../../utils/creation-callback-utils';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
 
 /*
-Bakgrunn: Dersom innhold som allerede er publisert, men gjort endringer i markeres som klar på fredag
-slik at en redaktør kan publisere det på mandag, så vil publish.from være satt til fredag.
-Det finnes ingen mekanisme som viser at den faktiske publiseringen skjedde på mandag.
+Bakgrunn: Hvis innhold som allerede er publisert markeres som 'klar' på fredag
+slik at en redaktør kan publisere det på mandag, så vil publish.from være satt til fredag,
+slik at det ser ut som at innholdet ble publisert på fredag og ikke mandag.
+Det finnes ingen innebygget XP-mekanisme som viser at den faktiske publiseringen skjedde på mandag.
 
-Regler for å bestemme "sist publisert":
-- Ny publisering: Bruk from
-- Forhåndspublisering: Bruk from
-- Publisering av eksisterende innhold: Bruk _ts
+Derimot vil _ts alltid oppdateres til den faktiske publiseringsdatoen når innholdet publiseres.
+
+Løsning: Vi definerer en ny felt 'lastPublished' som tar høyde for dette ved å bruke publish.from
+kun dersom denne datoen er nyere enn _ts i master.
 */
 export const determineLastPublished = (
     node: nodeLib.RepoNode<contentLib.Content>
