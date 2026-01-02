@@ -10,7 +10,7 @@ const partialContent = {
     _ts: '2025-05-25T13:33:00.000Z',
 } as any;
 
-describe('TestotdetermineLastPublished', () => {
+describe('Test of determineLastPublished', () => {
     test('Should use publish.from when this is the latest date.', () => {
         partialContent.publish.from = '2025-06-01T10:00:00.000Z';
         const lastPublished = determineLastPublished(partialContent as any);
