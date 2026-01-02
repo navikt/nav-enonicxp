@@ -30,9 +30,9 @@ jobs:
       image: ${{ steps.docker-push.outputs.image }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Download app jar
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: ${{ inputs.buildArtifact }}
       - name: Copy app jar

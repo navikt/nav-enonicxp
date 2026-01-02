@@ -16,7 +16,7 @@ export type Seo = {
   noindex: boolean;
 
   /**
-   * Ikke vis "tilfeldige" utdrag (snippets) i Google-søk
+   * Ikke vis "tilfeldige" utdrag (snippets). NB! Skal bare brukes av hovedredaktør/administrator.
    */
   nosnippet: boolean;
 };

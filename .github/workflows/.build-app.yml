@@ -25,20 +25,20 @@ jobs:
       buildArtifact: ${{ env.buildArtifact }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
           java-version: 21
           cache: 'gradle'
       - name: Setup node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: 'npm'
       - name: Install node.js dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
       - name: Run unit tests
         run: npm run test --workspace=test/unit-tests
       - name: Build application
@@ -46,7 +46,7 @@ jobs:
       - name: Build e2e test data
         run: ./gradlew build -p=test/e2e-tests/.xp-test-data-app -PxpVersion=${{ inputs.xpVersion }}
       - name: Upload jar files
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         id: artifact-upload
         with:
           name: ${{ env.buildArtifact }}

@@ -27,6 +27,7 @@ export const dynamicPageContentTypes = [
     `${APP_DESCRIPTOR}:overview`,
     `${APP_DESCRIPTOR}:oversikt`,
     `${APP_DESCRIPTOR}:office-page`,
+    `${APP_DESCRIPTOR}:office-editorial-page`,
     `${APP_DESCRIPTOR}:front-page`,
     `${APP_DESCRIPTOR}:front-page-nested`,
     `${APP_DESCRIPTOR}:current-topic-page`,
@@ -45,7 +46,6 @@ export const linkContentTypes = [
 export const contentTypesInSitemap = [
     ...dynamicPageContentTypes,
     ...legacyPageContentTypes,
-    `${APP_DESCRIPTOR}:office-page`,
 ] as const satisfies ContentTypeList;
 
 export const contentTypesInDataQuery = [
@@ -88,7 +88,6 @@ export const contentTypesWithBreadcrumbs = [
 export const contentTypesWithComponents = [
     ...dynamicPageContentTypes,
     `${APP_DESCRIPTOR}:product-details`,
-    `${APP_DESCRIPTOR}:office-page`,
     'portal:page-template',
 ] as const satisfies ContentTypeList;
 
