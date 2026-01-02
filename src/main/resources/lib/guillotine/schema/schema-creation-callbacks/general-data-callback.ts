@@ -23,8 +23,8 @@ export const determineLastPublished = (
     const publishFrom = node.publish?.from;
     const changedTs = node._ts;
 
-    if (publishFrom && publishFrom > changedTs) {
-        return publishFrom || null;
+    if (publishFrom && new Date(publishFrom).getTime() > new Date(changedTs).getTime()) {
+        return publishFrom;
     }
 
     return changedTs;
