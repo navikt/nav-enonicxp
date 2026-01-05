@@ -324,6 +324,7 @@ const updateOfficePageIfChanged = (
                     checksum: newChecksum,
                 }),
             }),
+            requireValid: false,
         });
 
         // Content can only be published if it and it's outbound content
