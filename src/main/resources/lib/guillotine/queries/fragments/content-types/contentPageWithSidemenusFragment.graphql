@@ -6,6 +6,7 @@ fragment contentContentPageWithSidemenus on no_nav_navno_ContentPageWithSidemenu
     data {
         area
         taxonomy
+        lastPublished
         audience {
             _selected
             provider {
