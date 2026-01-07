@@ -26,11 +26,11 @@ const checkContextAndLog = (
     msg: string,
     file: string,
     line: string,
-    logAsInfoInDraftContext?: boolean,
+    forceInfoLevelWhenInDraft?: boolean,
     isEditorialError?: boolean
 ) => {
     const level =
-        logAsInfoInDraftContext && contextLib.get()?.branch === 'draft'
+        forceInfoLevelWhenInDraft && contextLib.get()?.branch === 'draft'
             ? 'info'
             : customLevel === 'critical'
               ? 'error'
@@ -40,7 +40,7 @@ const checkContextAndLog = (
 
 const logInfo = (
     msg: string,
-    logAsInfoInDraftContext?: never,
+    forceInfoLevelWhenInDraft?: never,
     content?: never,
     file?: never,
     line?: never
@@ -50,7 +50,7 @@ const logInfo = (
 
 const logWarning = (
     msg: string,
-    logAsInfoInDraftContext?: boolean,
+    forceInfoLevelWhenInDraft?: boolean,
     isEditorialError?: boolean,
     file?: never,
     line?: never
@@ -60,14 +60,14 @@ const logWarning = (
         msg,
         file as unknown as string,
         line as unknown as string,
-        logAsInfoInDraftContext,
+        forceInfoLevelWhenInDraft,
         isEditorialError
     );
 };
 
 const logError = (
     msg: string,
-    logAsInfoInDraftContext?: boolean,
+    forceInfoLevelWhenInDraft?: boolean,
     isEditorialError?: boolean,
     file?: never,
     line?: never
@@ -77,14 +77,14 @@ const logError = (
         msg,
         file as unknown as string,
         line as unknown as string,
-        logAsInfoInDraftContext,
+        forceInfoLevelWhenInDraft,
         isEditorialError
     );
 };
 
 const logCriticalError = (
     msg: string,
-    logAsInfoInDraftContext?: boolean,
+    forceInfoLevelWhenInDraft?: boolean,
     isEditorialError?: boolean,
     file?: never,
     line?: never
@@ -94,7 +94,7 @@ const logCriticalError = (
         msg,
         file as unknown as string,
         line as unknown as string,
-        logAsInfoInDraftContext,
+        forceInfoLevelWhenInDraft,
         isEditorialError
     );
 };
