@@ -1,7 +1,7 @@
 <part xmlns="urn:enonic:xp:model:1.0">
     <display-name>Trekkspill</display-name>
     <form>
-        <item-set name="accordion">
+        <item-set name="trekkspill">
             <label>Trekkspill</label>
             <occurrences minimum="2" maximum="0"/>
             <items>
