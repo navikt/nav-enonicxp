@@ -58,7 +58,7 @@
         "@item-enonic-types/lib-http-client": "3.2.2",
         "@item-enonic-types/lib-thymeleaf": "2.1.0",
         "@types/node": "25.0.3",
-        "@typescript-eslint/eslint-plugin": "8.50.0",
+        "@typescript-eslint/eslint-plugin": "8.51.0",
         "@typescript-eslint/parser": "8.50.0",
         "dayjs": "1.11.13",
         "eslint": "9.39.2",
