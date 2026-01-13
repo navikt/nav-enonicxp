@@ -59,7 +59,7 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
         resolve: (): OverviewPageItem[] => {
             const contentId = getGuillotineContentQueryBaseContentId();
             if (!contentId) {
-                logger.error('No contentId provided for overview page resolver');
+                logger.warning('No contentId provided for overview page resolver');
                 return [];
             }
 
