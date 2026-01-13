@@ -45,7 +45,11 @@ const updatePressNewsSets = () => {
     });
 
     if (pressLandingPages.total > 10) {
-        logger.critical(`Why are there ${pressLandingPages.total} press landing pages?!`);
+        logger.critical(
+            `Why are there ${pressLandingPages.total} press landing pages?!`,
+            true,
+            true
+        );
     }
 
     const pressLandingPageIds = pressLandingPages.hits.map((hit) => hit._id);

@@ -56,7 +56,7 @@ export const run = (params: UnpublishExpiredContent) => {
         } else {
             const contentNow = repo.get<Content>({ key: id });
             if (contentNow) {
-                logger.critical(`Could not unpublish ${contentInfo} - unknown error`);
+                logger.critical(`Could not unpublish ${contentInfo} - unknown error`, false, true);
             } else {
                 logger.warning(`Could not unpublish ${contentInfo} as it was already unpublished`);
             }

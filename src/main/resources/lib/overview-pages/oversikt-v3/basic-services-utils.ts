@@ -13,12 +13,12 @@ export const buildBasicServicesList = (overviewContent: Content<'no.nav.navno:ov
     const { oversiktType, audience, localeFallback, excludedContent } = data;
 
     if (!oversiktType || oversiktType !== 'all_products') {
-        logger.error(`Type not set for overview page id ${_id}`);
+        logger.error(`Type not set for overview page id ${_id}`, true, true);
         return [];
     }
 
     if (!audience) {
-        logger.error(`Audience not set for overview page id ${_id}`);
+        logger.error(`Audience not set for overview page id ${_id}`, true, true);
         return [];
     }
 

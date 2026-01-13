@@ -33,12 +33,12 @@ export const buildProductDetailsList = (overviewContent: Content<'no.nav.navno:o
     const { oversiktType, audience, localeFallback, excludedContent } = data;
 
     if (!oversiktType || oversiktType === 'all_products') {
-        logger.error(`Type invalid or not set set for overview page id ${_id}`);
+        logger.error(`Type invalid or not set set for overview page id ${_id}`, true, true);
         return [];
     }
 
     if (!audience) {
-        logger.error(`Audience not set for overview page id ${_id}`);
+        logger.error(`Audience not set for overview page id ${_id}`, true, true);
         return [];
     }
 
