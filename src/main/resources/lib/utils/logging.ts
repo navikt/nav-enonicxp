@@ -41,7 +41,7 @@ const checkContextAndLog = (
 const logInfo = (
     msg: string,
     forceInfoLevelWhenInDraft?: never,
-    content?: never,
+    isEditorialError?: never,
     file?: never,
     line?: never
 ) => {
