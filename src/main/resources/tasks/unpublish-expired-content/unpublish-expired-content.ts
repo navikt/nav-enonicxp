@@ -21,7 +21,7 @@ export const run = (params: UnpublishExpiredContent) => {
 
     const content = repo.get<Content>({ key: id });
     if (!content) {
-        logger.error(`Content ${contentInfo} not found in master - aborting unpublish task`);
+        logger.warning(`Content ${contentInfo} not found in master - aborting unpublish task`);
         return;
     }
 
