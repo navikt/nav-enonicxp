@@ -17,6 +17,9 @@ spec:
       destinations:
         - id: elastic
         - id: loki
+  prometheus:
+    enabled: true
+    path: "/api/internal/metrics"
   accessPolicy:
     outbound:
       external:
