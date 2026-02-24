@@ -1,6 +1,8 @@
-FROM alpine:latest
+FROM europe-north1-docker.pkg.dev/cgr-nav/pull-through/nav.no/node:24-slim
 
-RUN apk --no-cache add curl
+RUN apt-get update \
+ && apt-get install -y curl \
+ && rm -rf /var/lib/apt/lists/*
 
 ARG appFileName
 ENV APP_FILE_NAME=${appFileName}
