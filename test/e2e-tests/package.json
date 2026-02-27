@@ -11,6 +11,10 @@
     },
     "type": "module",
     "devDependencies": {
-        "testcontainers": "11.11.0"
+        "@types/jest": "catalog:",
+        "jest": "catalog:",
+        "testcontainers": "catalog:",
+        "ts-jest": "catalog:",
+        "ts-node": "catalog:"
     }
 }
