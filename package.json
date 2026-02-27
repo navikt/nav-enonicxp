@@ -1,9 +1,10 @@
 {
     "name": "navno-enonicxp",
     "version": "2.52.3",
+    "packageManager": "pnpm@10.30.3+sha512.c961d1e0a2d8e354ecaa5166b822516668b7f44cb5bd95122d590dd81922f606f5473b6d23ec4a5be05e7fcd18e8488d47d978bbe981872f1145d06e9a740017",
     "scripts": {
-        "test": "npm run test --prefix test",
-        "build": "npm-run-all lint babel",
+        "test": "pnpm --filter nav-enonicxp-tests run test",
+        "build": "pnpm run lint && pnpm run babel",
         "lint": "eslint ./src/main/resources --ext=ts --quiet && tsc --noemit",
         "babel": "babel src/main/resources --out-dir=build/resources/main --no-copy-ignored --extensions \".ts\""
     },
@@ -17,11 +18,6 @@
     },
     "homepage": "https://github.com/navikt/nav-enonicxp#readme",
     "type": "module",
-    "workspaces": [
-        "test",
-        "test/e2e-tests",
-        "test/unit-tests"
-    ],
     "devDependencies": {
         "@anders-nom/babel-plugin-import-graphql-string": "2.8.1-12",
         "@babel/cli": "7.28.3",
@@ -68,9 +64,17 @@
         "eslint-plugin-prettier": "5.5.4",
         "graphql": "16.12.0",
         "html-entities": "2.5.2",
-        "npm-run-all": "4.1.5",
         "prettier": "3.7.4",
         "striptags": "3.2.0",
         "typescript": "5.9.3"
+    },
+    "pnpm": {
+        "onlyBuiltDependencies": [
+            "@swc/core",
+            "cpu-features",
+            "protobufjs",
+            "ssh2",
+            "unrs-resolver"
+        ]
     }
 }
