@@ -6,6 +6,10 @@
     },
     "type": "module",
     "devDependencies": {
-        "@enonic/mock-xp": "1.0.0"
+        "@enonic/mock-xp": "catalog:",
+        "@types/jest": "catalog:",
+        "jest": "catalog:",
+        "ts-jest": "catalog:",
+        "ts-node": "catalog:"
     }
 }
