@@ -52,7 +52,7 @@ jobs:
             # copied into Docker images, and all Node.js dependencies are dev-only (build tools, testing).
             # If this changes, add steps to rm -rf node_modules and pnpm install --frozen-lockfile --prod.
             - name: Upload jar files
-              uses: actions/upload-artifact@v6
+              uses: actions/upload-artifact@v7
               id: artifact-upload
               with:
                   name: ${{ env.buildArtifact }}

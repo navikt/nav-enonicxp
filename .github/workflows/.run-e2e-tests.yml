@@ -25,7 +25,7 @@ jobs:
             - name: Install node.js dependencies
               run: pnpm install --frozen-lockfile
             - name: Download jar files
-              uses: actions/download-artifact@v6
+              uses: actions/download-artifact@v8
               with:
                   name: ${{ inputs.buildArtifact }}
             - name: Build test assets
