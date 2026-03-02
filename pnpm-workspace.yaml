@@ -3,7 +3,7 @@ packages:
   - test/e2e-tests
   - test/unit-tests
   - test/e2e-tests/.xp-test-data-app
-
+minimumReleaseAge: 10080
 catalog:
   '@anders-nom/babel-plugin-import-graphql-string': 2.8.1-12
   '@babel/cli': 7.28.3
