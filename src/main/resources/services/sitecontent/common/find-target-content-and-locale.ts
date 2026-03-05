@@ -131,6 +131,7 @@ const resolveExactPath = (path: string, branch: RepoBranch): ContentAndLocale | 
         return handleExactHit(defaultLayerNodes[0].id, path, defaultLocale);
     }
 
+    // There are multiple content with the same path. This could happen if customPath and _path (ie a folder) are the same.
     const contentIds = defaultLayerNodes.map((node) => node.id);
 
     const { hits } = contentLib.query({
@@ -139,8 +140,8 @@ const resolveExactPath = (path: string, branch: RepoBranch): ContentAndLocale | 
             ids: {
                 values: contentIds,
             },
-            /* boolean: {
-                // There is a outlier where both arbeidsgiver-forside and a folder called 'arbeidsgiver'
+            boolean: {
+                // There is a outlier where both arbeidsgiver-forside (customPath 'arbeidsgiver') and a folder called 'arbeidsgiver'
                 // clash. It doesn't cause failure, but it causes log errors.
                 mustNot: [
                     {
@@ -150,9 +151,18 @@ const resolveExactPath = (path: string, branch: RepoBranch): ContentAndLocale | 
                         },
                     },
                 ],
-            }, */
+            },
         },
     });
+
+    if (hits.length === 1) {
+        return handleExactHit(hits[0]._id, path, defaultLocale);
+    }
+
+    // If there are STILL multiple content, something is wrong so log error.
+    logger.critical(
+        `${hits.length} content found with path "${path}" in multiple layers. This should be investigated.`
+    );
 
     const content = getContentFromMultipleHits(path, hits);
 
