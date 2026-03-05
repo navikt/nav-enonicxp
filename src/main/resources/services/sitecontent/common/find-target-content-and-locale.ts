@@ -223,6 +223,5 @@ export const findTargetContentAndLocale = ({
     path: string;
     branch: RepoBranch;
 }): ContentAndLocale | null => {
-    logger.info('findTargetContentAndLocale called with path: ' + path);
     return resolveLocalePath(path, branch) || resolveExactPath(path, branch);
 };
