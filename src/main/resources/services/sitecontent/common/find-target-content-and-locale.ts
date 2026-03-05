@@ -139,6 +139,18 @@ const resolveExactPath = (path: string, branch: RepoBranch): ContentAndLocale | 
             ids: {
                 values: contentIds,
             },
+            /* boolean: {
+                // There is a outlier where both arbeidsgiver-forside and a folder called 'arbeidsgiver'
+                // clash. It doesn't cause failure, but it causes log errors.
+                mustNot: [
+                    {
+                        hasValue: {
+                            field: 'type',
+                            values: ['base:folder'],
+                        },
+                    },
+                ],
+            }, */
         },
     });
 
@@ -201,5 +213,6 @@ export const findTargetContentAndLocale = ({
     path: string;
     branch: RepoBranch;
 }): ContentAndLocale | null => {
+    logger.info('findTargetContentAndLocale called with path: ' + path);
     return resolveLocalePath(path, branch) || resolveExactPath(path, branch);
 };
