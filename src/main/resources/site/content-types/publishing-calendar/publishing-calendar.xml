@@ -6,8 +6,7 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <mixin name="ingress"/>
-        <mixin name="seo"/>
-        <mixin name="keywords"/>
+        <mixin name="ingress" />
+        <mixin name="seo" />
     </form>
 </content-type>
