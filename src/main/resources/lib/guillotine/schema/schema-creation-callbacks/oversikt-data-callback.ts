@@ -62,7 +62,6 @@ export const oversiktDataCallback: CreationCallback = (context, params) => {
             anchorId: { type: graphQlLib.GraphQLString },
             targetLanguage: { type: graphQlLib.GraphQLString },
             ingress: { type: graphQlLib.GraphQLString },
-            keywords: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             taxonomy: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             area: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             detailsPath: { type: graphQlLib.GraphQLString },

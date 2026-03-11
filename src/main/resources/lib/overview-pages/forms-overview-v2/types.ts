@@ -22,7 +22,6 @@ export type FormDetailsListItem = {
     formDetailsTitles: string[];
     formDetailsIngresses: string[];
     formNumbers: string[];
-    keywords: string[];
     url: string | null;
     type: ContentTypeWithFormDetails;
     targetLanguage: string;

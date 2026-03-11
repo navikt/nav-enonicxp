@@ -40,7 +40,6 @@ fragment oversiktPage on no_nav_navno_Oversikt {
             anchorId
             targetLanguage
             ingress
-            keywords
             taxonomy
             area
             detailsPath
