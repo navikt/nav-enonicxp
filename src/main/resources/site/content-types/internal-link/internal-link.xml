@@ -29,6 +29,5 @@
         </input>
         <mixin name="custom-path-selector"/>
         <mixin name="type-of-redirect"/>
-        <mixin name="keywords"/>
     </form>
 </content-type>
