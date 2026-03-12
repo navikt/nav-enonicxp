@@ -1,57 +1,63 @@
 name: Build application
 on:
-  workflow_call:
-    inputs:
-      environment:
-        required: true
-        type: string
-      xpVersion:
-        required: true
-        type: string
-    outputs:
-      buildArtifact:
-        description: "nav.no app jar"
-        value: ${{ jobs.build.outputs.buildArtifact }}
+    workflow_call:
+        inputs:
+            environment:
+                required: true
+                type: string
+            xpVersion:
+                required: true
+                type: string
+        outputs:
+            buildArtifact:
+                description: 'nav.no app jar'
+                value: ${{ jobs.build.outputs.buildArtifact }}
 
 jobs:
-  build:
-    name: Build application
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    env:
-      buildArtifact: navno-jar-${{inputs.environment}}-${{github.sha}}
-    outputs:
-      buildArtifact: ${{ env.buildArtifact }}
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v6
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'zulu'
-          java-version: 21
-          cache: 'gradle'
-      - name: Setup node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 22
-          cache: 'npm'
-      - name: Install node.js dependencies
-        run: npm ci --ignore-scripts
-      - name: Run unit tests
-        run: npm run test --workspace=test/unit-tests
-      - name: Build application
-        run: ./gradlew build -PxpVersion=${{ inputs.xpVersion }}
-      - name: Build e2e test data
-        run: ./gradlew build -p=test/e2e-tests/.xp-test-data-app -PxpVersion=${{ inputs.xpVersion }}
-      - name: Upload jar files
-        uses: actions/upload-artifact@v5
-        id: artifact-upload
-        with:
-          name: ${{ env.buildArtifact }}
-          path: |
-            build/libs/navno.jar
-            test/e2e-tests/.xp-test-data-app/build/libs/navno-testdata.jar
-          overwrite: 'true'
-          retention-days: 1
+    build:
+        name: Build application
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        env:
+            buildArtifact: navno-jar-${{inputs.environment}}-${{github.sha}}
+        outputs:
+            buildArtifact: ${{ env.buildArtifact }}
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v6
+            - name: Setup Java
+              uses: actions/setup-java@v5
+              with:
+                  distribution: 'zulu'
+                  java-version: 21
+                  cache: 'gradle'
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v4
+            - name: Setup node.js
+              uses: actions/setup-node@v6
+              with:
+                  node-version: 22
+                  cache: 'pnpm'
+            - name: Install node.js dependencies
+              run: pnpm install --frozen-lockfile
+            - name: Run unit tests
+              run: pnpm --filter nav-enonicxp-unit-tests run test
+            - name: Build application
+              run: ./gradlew build -PxpVersion=${{ inputs.xpVersion }}
+            - name: Build e2e test data
+              run: ./gradlew build -p=test/e2e-tests/.xp-test-data-app -PxpVersion=${{ inputs.xpVersion }}
+            # TODO: "Delete node_modules" and "Install production dependencies" steps were omitted.
+            # This project builds JAR files (Enonic XP app), not a Node.js app. No node_modules are
+            # copied into Docker images, and all Node.js dependencies are dev-only (build tools, testing).
+            # If this changes, add steps to rm -rf node_modules and pnpm install --frozen-lockfile --prod.
+            - name: Upload jar files
+              uses: actions/upload-artifact@v7
+              id: artifact-upload
+              with:
+                  name: ${{ env.buildArtifact }}
+                  path: |
+                      build/libs/navno.jar
+                      test/e2e-tests/.xp-test-data-app/build/libs/navno-testdata.jar
+                  overwrite: 'true'
+                  retention-days: 1

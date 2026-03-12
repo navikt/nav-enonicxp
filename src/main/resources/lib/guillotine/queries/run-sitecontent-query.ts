@@ -100,7 +100,7 @@ const processComponentsQueryResult = (
             if (queryParams.branch === 'draft' || isContentPreviewOnly(baseContent)) {
                 logger.info(msg);
             } else {
-                logger.critical(msg);
+                logger.critical(msg, false, true);
             }
         }
 

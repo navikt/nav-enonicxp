@@ -18,9 +18,7 @@ import { ContentPageWithSidemenus } from '@xp-types/site/content-types/content-p
 type ContentWithMissingMixins = ContentWithFormDetails & {
     data: ProductDataInFormsOverviewItem &
         Pick<ContentPageWithSidemenus, 'externalProductUrl'> &
-        Required<Pick<FormDetailsSelector, 'formDetailsTargets'>> & {
-            keywords?: string | string[];
-        };
+        Required<Pick<FormDetailsSelector, 'formDetailsTargets'>>;
 };
 
 const getUrl = (content: ContentWithFormDetails) => {
@@ -95,7 +93,6 @@ export const transformProductDetail = (
         sortTitle,
         ingress: productPage.data.ingress,
         audience: productPage.data.audience?._selected || 'all',
-        keywords: forceArray((productPage as ContentWithMissingMixins).data.keywords),
         type: productPage.type,
         targetLanguage: productPage.language || getLayersData().defaultLocale,
         illustration: productPage.data.illustration,
@@ -151,7 +148,6 @@ export const getFormsOversiktListItemTransformer =
             sortTitle,
             ingress: content.data.ingress,
             audience: content.data.audience?._selected || 'all',
-            keywords: forceArray((content as ContentWithMissingMixins).data.keywords),
             url: getUrl(content),
             type: content.type,
             targetLanguage: content.language || getLayersData().defaultLocale,

@@ -58,7 +58,7 @@ export const buildFormDetailsList = (formsOverviewContent: Content<'no.nav.navno
     const audienceAsArray = forceArray(audience);
 
     if (audienceAsArray.length === 0) {
-        logger.error(`Audience not set for overview page ${_id} (${language})`);
+        logger.error(`Audience not set for overview page ${_id} (${language})`, true, true);
         return [];
     }
 
@@ -71,7 +71,11 @@ export const buildFormDetailsList = (formsOverviewContent: Content<'no.nav.navno
     }
 
     if (!oversiktType || oversiktType === 'all_products') {
-        logger.error(`Oversikt type invalid or not set for overview page ${_id} (${language})`);
+        logger.error(
+            `Oversikt type invalid or not set for overview page ${_id} (${language})`,
+            true,
+            true
+        );
         return [];
     }
 

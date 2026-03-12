@@ -56,11 +56,14 @@ const getParentContent = (content: Content): Content | null => {
     return contentLib.get({ key: parentPath });
 };
 
-const generateBreadcrumbsFromParent = (content: Content, segments: Content[]): Breadcrumb[] | null => {
+const generateBreadcrumbsFromParent = (
+    content: Content,
+    segments: Content[]
+): Breadcrumb[] | null => {
     const parentContent = getParentContent(content);
 
     if (!parentContent) {
-        logger.error(`Content has invalid parent: ${content._id} (${content._path})`);
+        logger.error(`Content has invalid parent: ${content._id} (${content._path})`, true, true);
         return null;
     }
 
@@ -68,7 +71,11 @@ const generateBreadcrumbsFromParent = (content: Content, segments: Content[]): B
     // is possible to end up with a circular breadcrumbs trail if a descendant of a content (or the
     // content itself) is set as its parent.
     if (segments.some((segmentContent) => segmentContent._id === parentContent._id)) {
-        logger.error(`Content has circular breadcrumbs: ${content._id} (${content._path})`);
+        logger.error(
+            `Content has circular breadcrumbs: ${content._id} (${content._path})`,
+            false,
+            true
+        );
         return null;
     }
 

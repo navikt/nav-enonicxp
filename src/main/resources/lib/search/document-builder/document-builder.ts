@@ -53,7 +53,6 @@ export type SearchDocument = {
         audience: SearchDocumentAudience[];
         metatags?: SearchDocumentMetatag[];
         fylke?: SearchDocumentFylke;
-        keywords?: string[];
         languageRefs?: string[];
     };
 };
@@ -110,7 +109,6 @@ class ExternalSearchDocumentBuilder {
                 type: getSearchDocumentContentType(content),
                 createdAt: publishedTime,
                 lastUpdated: content.modifiedTime || publishedTime,
-                keywords: forceArray(content.data.keywords),
                 languageRefs: getSearchDocumentLanguageRefs(content),
             },
         };
@@ -231,7 +229,7 @@ export const buildExternalSearchDocument = (
 
     const searchConfig = getExternalSearchConfig();
     if (!searchConfig) {
-        logger.error('No search config found!');
+        logger.critical('No search config found!');
         return null;
     }
 

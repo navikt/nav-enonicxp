@@ -111,7 +111,9 @@ export const getModifiedTimeIncludingFragments = (content: Content, branch: Repo
             if (!fragment) {
                 if (branch === 'master') {
                     logger.error(
-                        `Attempted to get modifiedTime from fragment id ${fragmentId} on content ${contentId} on branch ${branch} but no fragment was found`
+                        `Attempted to get modifiedTime from fragment id ${fragmentId} on content ${contentId} on branch ${branch} but no fragment was found`,
+                        true,
+                        true
                     );
                 }
                 return latestModifiedTime;

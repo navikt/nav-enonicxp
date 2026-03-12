@@ -81,7 +81,9 @@ const getSpecialOpeningHoursObject = (
         logger.critical(
             `Multiple active special opening hour found for contact information: ${hits
                 .map((hit) => hit._id)
-                .join(', ')}`
+                .join(', ')}`,
+            true,
+            true
         );
     }
 

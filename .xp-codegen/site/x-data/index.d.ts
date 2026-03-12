@@ -7,7 +7,6 @@ export type MenuItem = import("./menu-item").MenuItem;
 export type OldContentType = import("./oldContentType").OldContentType;
 export type PreviewOnly = import("./previewOnly").PreviewOnly;
 export type RedirectToLayer = import("./redirectToLayer").RedirectToLayer;
-export type SearchOrder = import("./searchOrder").SearchOrder;
 export type VirtualParent = import("./virtualParent").VirtualParent;
 
 declare global {
@@ -21,7 +20,6 @@ declare global {
       oldContentType?: OldContentType;
       previewOnly?: PreviewOnly;
       redirectToLayer?: RedirectToLayer;
-      searchOrder?: SearchOrder;
       virtualParent?: VirtualParent;
     };
   }

@@ -47,10 +47,6 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
                 type: graphQlLib.list(graphQlLib.GraphQLString),
                 resolve: (env) => forceArray(env.source.area),
             },
-            keywords: {
-                type: graphQlLib.list(graphQlLib.GraphQLString),
-                resolve: (env) => (env.source.keywords ? forceArray(env.source.keywords) : null),
-            },
         },
     });
 
@@ -59,7 +55,7 @@ export const overviewDataCallback: CreationCallback = (context, params) => {
         resolve: (): OverviewPageItem[] => {
             const contentId = getGuillotineContentQueryBaseContentId();
             if (!contentId) {
-                logger.error('No contentId provided for overview page resolver');
+                logger.warning('No contentId provided for overview page resolver');
                 return [];
             }
 

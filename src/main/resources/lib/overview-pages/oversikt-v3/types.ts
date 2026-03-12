@@ -22,9 +22,7 @@ export type ProductDataInFormsOverviewItem = Pick<
 // Generated data type definitions are incorrect due to a bug with nested mixins
 export type ContentInOverviewPages = Content<
     ContentTypeWithFormDetails | ContentTypeWithProductDetails
-> & {
-    data: { keywords?: ArrayOrSingle<string> };
-};
+>;
 export type Taxonomy = Pick<ContentWithTaxonomy['data'], 'taxonomy'> | null;
 export type FormDetailsMap = Record<string, Content<'no.nav.navno:form-details'>>;
 
@@ -63,7 +61,6 @@ export type OversiktListItem = {
     audience: string;
     targetLanguage: string;
     area: Area['area'];
-    keywords?: ArrayOrSingle<string>;
     productLinks?: OutboundLinks[];
     type: ContentTypeWithFormDetails | ContentTypeWithProductDetails;
     ingress: string;

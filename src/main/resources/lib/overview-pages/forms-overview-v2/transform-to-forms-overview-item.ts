@@ -18,9 +18,7 @@ import { getLayersData } from '../../localization/layers-data';
 type ContentWithMissingMixins = ContentWithFormDetails & {
     data: ProductDataInFormsOverviewItem &
         Pick<ContentPageWithSidemenus, 'externalProductUrl'> &
-        Required<Pick<FormDetailsSelector, 'formDetailsTargets'>> & {
-            keywords?: string | string[];
-        };
+        Required<Pick<FormDetailsSelector, 'formDetailsTargets'>>;
 };
 
 const getUrl = (content: ContentWithFormDetails) => {
@@ -69,7 +67,6 @@ export const getFormsOverviewListItemTransformer =
             title,
             sortTitle,
             ingress: content.data.ingress,
-            keywords: forceArray((content as ContentWithMissingMixins).data.keywords),
             url: getUrl(content),
             type: content.type,
             targetLanguage: content.language || getLayersData().defaultLocale,

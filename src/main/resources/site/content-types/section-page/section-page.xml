@@ -3,12 +3,13 @@
     <description>Seksjonsside (bokser). Eksempel Person/Bedrift/NAV og Samfunn/DITT NAV</description>
     <super-type>base:unstructured</super-type>
     <form>
-        <mixin name="ingress"/>
-        <mixin name="main-panels"/>
-        <mixin name="link-panels"/>
+        <mixin name="ingress" />
+        <mixin name="main-panels" />
+        <mixin name="link-panels" />
         <field-set>
             <label>Nyttig å vite</label>
-            <help-text>'Nyttig å vite' hentes fra prioriterte underartikler og/eller fra valgt innhold</help-text>
+            <help-text>'Nyttig å vite' hentes fra prioriterte underartikler og/eller fra valgt
+                innhold</help-text>
             <items>
                 <input type="Long" name="nrNTK">
                     <label>Hvor mange elementer i undermenyene er tillatt</label>
@@ -63,9 +64,8 @@
                 </input>
             </items>
         </field-set>
-        <mixin name="languages-legacy"/>
-        <mixin name="decorator-toggles"/>
-        <mixin name="seo"/>
-        <mixin name="keywords"/>
+        <mixin name="languages-legacy" />
+        <mixin name="decorator-toggles" />
+        <mixin name="seo" />
     </form>
 </content-type>

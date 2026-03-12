@@ -30,8 +30,8 @@ dependencies {
     include "com.enonic.xp:lib-repo:${xpVersion}"
 }
 
-tasks.register('buildJs', NpmTask) {
-    dependsOn 'npmInstall'
+tasks.register('buildJs', PnpmTask) {
+    dependsOn 'pnpmInstall'
     dependsOn(processResources)
 
     args = ['run', 'build']

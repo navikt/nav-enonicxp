@@ -16,7 +16,7 @@ export const buildFormDetailsList = (
     const { overviewType, audience, excludedContent, localeFallback } = data;
 
     if (!audience?._selected) {
-        logger.error(`Audience not set for overview page ${_id} (${language})`);
+        logger.error(`Audience not set for overview page ${_id} (${language})`, true, true);
         return [];
     }
 
@@ -27,7 +27,7 @@ export const buildFormDetailsList = (
     }
 
     if (!overviewType) {
-        logger.error(`Overview type not set for overview page ${_id} (${language})`);
+        logger.error(`Overview type not set for overview page ${_id} (${language})`, true, true);
         return [];
     }
 

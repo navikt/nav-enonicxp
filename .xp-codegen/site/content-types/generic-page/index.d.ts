@@ -115,11 +115,6 @@ export type GenericPage = {
   description?: string;
 
   /**
-   * Nøkkelord (internt søk)
-   */
-  keywords?: Array<string> | string;
-
-  /**
    * Sidebeskrivelse for søk og sosiale medier
    */
   metaDescription?: string;
