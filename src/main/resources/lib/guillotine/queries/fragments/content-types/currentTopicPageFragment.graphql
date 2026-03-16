@@ -4,5 +4,6 @@ fragment contentCurrentTopicPage on no_nav_navno_CurrentTopicPage {
     dataAsJson
     data {
         area
+        lastPublished
     }
 }
