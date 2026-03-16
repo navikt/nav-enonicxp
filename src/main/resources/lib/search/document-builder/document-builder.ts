@@ -51,6 +51,7 @@ export type SearchDocument = {
         language: string;
         type: SearchDocumentContentType;
         audience: SearchDocumentAudience[];
+        keywords: string[];
         metatags?: SearchDocumentMetatag[];
         fylke?: SearchDocumentFylke;
         languageRefs?: string[];
@@ -94,8 +95,9 @@ class ExternalSearchDocumentBuilder {
 
         const replacedTitle = replaceNAVwithNav(title);
         const replacedIngress = replaceNAVwithNav(this.getIngress());
+        const keywords = forceArray<string>(content.data?.keywords);
 
-        return {
+        const searchDocument: SearchDocument = {
             id: generateSearchDocumentId(content._id, locale),
             href,
             title: replacedTitle,
@@ -106,12 +108,17 @@ class ExternalSearchDocumentBuilder {
                 language: getSearchDocumentLanguage(content.language || locale),
                 fylke: getSearchDocumentFylke(content),
                 metatags: getSearchDocumentMetatags(content),
+                keywords,
                 type: getSearchDocumentContentType(content),
                 createdAt: publishedTime,
                 lastUpdated: content.modifiedTime || publishedTime,
                 languageRefs: getSearchDocumentLanguageRefs(content),
             },
         };
+
+        logger.info(`Built search document for content ${JSON.stringify(searchDocument)}`);
+
+        return searchDocument;
     }
 
     private getFirstMatchingFieldValue(metaKey: MetaKey) {
