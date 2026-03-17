@@ -95,6 +95,10 @@ class ExternalSearchDocumentBuilder {
 
         const replacedTitle = replaceNAVwithNav(title);
         const replacedIngress = replaceNAVwithNav(this.getIngress());
+
+        // Keywords are no longer available in ordinary content.
+        // In order to avoid search hits from "invisible" keywords,
+        // only allow keywords for the external-search-content type.
         const keywords =
             content.type === 'no.nav.navno:external-search-content'
                 ? forceArray<string>(content.data?.keywords)
