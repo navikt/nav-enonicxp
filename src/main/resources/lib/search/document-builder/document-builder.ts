@@ -95,7 +95,10 @@ class ExternalSearchDocumentBuilder {
 
         const replacedTitle = replaceNAVwithNav(title);
         const replacedIngress = replaceNAVwithNav(this.getIngress());
-        const keywords = forceArray<string>(content.data?.keywords);
+        const keywords =
+            content.type === 'no.nav.navno:external-search-content'
+                ? forceArray<string>(content.data?.keywords)
+                : [];
 
         const searchDocument: SearchDocument = {
             id: generateSearchDocumentId(content._id, locale),
