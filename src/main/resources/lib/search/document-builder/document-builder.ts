@@ -213,6 +213,17 @@ const isExcludedContent = (content: ContentNode) => {
         getContentLocaleRedirectTarget(content) ||
         isExcludedLocalContent(content)
     ) {
+        const excludeReason = {
+            awaitingPrepublish: isContentAwaitingPrepublish(content),
+            noIndex: isContentNoIndex(content),
+            previewOnly: isContentPreviewOnly(content),
+            hasRedirectTarget: !!getContentLocaleRedirectTarget(content),
+            excludedLocalContent: isExcludedLocalContent(content),
+        };
+
+        logger.info(
+            `Excluding content ${content._id} from search indexing due to status or redirect target: ${JSON.stringify(excludeReason)}`
+        );
         return true;
     }
 
@@ -249,6 +260,7 @@ export const buildExternalSearchDocument = (
 
     const contentGroupConfig = getContentGroupConfig(searchConfig, content);
     if (!contentGroupConfig) {
+        logger.warning(`No content group config found for content type ${content.type}`);
         return null;
     }
 
