@@ -51,6 +51,7 @@ export type SearchDocument = {
         language: string;
         type: SearchDocumentContentType;
         audience: SearchDocumentAudience[];
+        keywords: string[];
         metatags?: SearchDocumentMetatag[];
         fylke?: SearchDocumentFylke;
         languageRefs?: string[];
@@ -95,7 +96,15 @@ class ExternalSearchDocumentBuilder {
         const replacedTitle = replaceNAVwithNav(title);
         const replacedIngress = replaceNAVwithNav(this.getIngress());
 
-        return {
+        // Keywords are no longer available in ordinary content.
+        // In order to avoid search hits from "invisible" keywords,
+        // only allow keywords for the external-search-content type.
+        const keywords =
+            content.type === 'no.nav.navno:external-search-content'
+                ? forceArray<string>(content.data?.keywords)
+                : [];
+
+        const searchDocument: SearchDocument = {
             id: generateSearchDocumentId(content._id, locale),
             href,
             title: replacedTitle,
@@ -106,12 +115,17 @@ class ExternalSearchDocumentBuilder {
                 language: getSearchDocumentLanguage(content.language || locale),
                 fylke: getSearchDocumentFylke(content),
                 metatags: getSearchDocumentMetatags(content),
+                keywords,
                 type: getSearchDocumentContentType(content),
                 createdAt: publishedTime,
                 lastUpdated: content.modifiedTime || publishedTime,
                 languageRefs: getSearchDocumentLanguageRefs(content),
             },
         };
+
+        logger.info(`Built search document for content ${JSON.stringify(searchDocument)}`);
+
+        return searchDocument;
     }
 
     private getFirstMatchingFieldValue(metaKey: MetaKey) {
@@ -199,6 +213,17 @@ const isExcludedContent = (content: ContentNode) => {
         getContentLocaleRedirectTarget(content) ||
         isExcludedLocalContent(content)
     ) {
+        const excludeReason = {
+            awaitingPrepublish: isContentAwaitingPrepublish(content),
+            noIndex: isContentNoIndex(content),
+            previewOnly: isContentPreviewOnly(content),
+            hasRedirectTarget: !!getContentLocaleRedirectTarget(content),
+            excludedLocalContent: isExcludedLocalContent(content),
+        };
+
+        logger.info(
+            `Excluding content ${content._id} from search indexing due to status or redirect target: ${JSON.stringify(excludeReason)}`
+        );
         return true;
     }
 
@@ -235,6 +260,7 @@ export const buildExternalSearchDocument = (
 
     const contentGroupConfig = getContentGroupConfig(searchConfig, content);
     if (!contentGroupConfig) {
+        logger.warning(`No content group config found for content type ${content.type}`);
         return null;
     }
 
