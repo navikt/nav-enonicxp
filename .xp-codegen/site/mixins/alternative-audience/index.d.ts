@@ -111,6 +111,17 @@ export type AlternativeAudience = {
               /**
                * Selected
                */
+              _selected: "deduction_recipient";
+
+              /**
+               * Trekkmottaker
+               */
+              deduction_recipient: Record<string, unknown>;
+            }
+          | {
+              /**
+               * Selected
+               */
               _selected: "other";
 
               /**
