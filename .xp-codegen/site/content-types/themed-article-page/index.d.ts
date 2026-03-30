@@ -59,7 +59,7 @@ export type ThemedArticlePage = {
           /**
            * Velg underkategorier
            */
-          provider_audience: Array<"doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "other"> | "doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "other";
+          provider_audience: Array<"doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "deduction_recipient" | "other"> | "doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "deduction_recipient" | "other";
         };
       }
     | {
@@ -210,6 +210,17 @@ export type ThemedArticlePage = {
                * Hjelpemiddelformidler
                */
               aid_supplier: Record<string, unknown>;
+            }
+          | {
+              /**
+               * Selected
+               */
+              _selected: "deduction_recipient";
+
+              /**
+               * Trekkmottaker
+               */
+              deduction_recipient: Record<string, unknown>;
             }
           | {
               /**
