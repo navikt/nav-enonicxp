@@ -123,8 +123,6 @@ class ExternalSearchDocumentBuilder {
             },
         };
 
-        logger.info(`Built search document for content ${JSON.stringify(searchDocument)}`);
-
         return searchDocument;
     }
 
