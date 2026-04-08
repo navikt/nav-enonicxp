@@ -39,6 +39,7 @@ export type SimpleFormDetail = {
     type: ContentTypeWithFormDetails;
     language: string;
     title: string;
+    longTitle: string;
     ingress: string;
     formNumbers: string[];
 };
