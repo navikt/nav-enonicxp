@@ -48,7 +48,6 @@ runs:
       id: docker-push
       with:
         team: personbruker
-        project_id: ${{ secrets.NAIS_MANAGEMENT_PROJECT_ID }}
         identity_provider: ${{ inputs.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
         docker_context: .nais-deploy-job
         image_suffix: ${{ inputs.xpEnv }}
