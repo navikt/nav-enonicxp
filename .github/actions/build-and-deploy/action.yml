@@ -1,0 +1,62 @@
+name: Build, test and deploy app
+
+inputs:
+  naisCluster:
+    required: true
+    description: NAIS cluster to deploy to
+  xpAdminHost:
+    required: true
+    description: XP admin host
+  xpEnv:
+    required: true
+    description: XP environment
+  xpVersion:
+    required: true
+    description: Enonic XP version
+  NAIS_WORKLOAD_IDENTITY_PROVIDER:
+    required: true
+    description: NAIS workload identity provider
+
+outputs:
+  image:
+    description: Docker image tag
+    value: ${{ steps.docker-push.outputs.image }}
+
+runs:
+  using: composite
+  steps:
+    - name: Build application
+      uses: ./.github/actions/build-app
+      with:
+        xpEnv: ${{ inputs.xpEnv }}
+        xpVersion: ${{ inputs.xpVersion }}
+
+    - name: Build test assets
+      shell: bash
+      run: pnpm --filter nav-enonicxp-e2e-tests run prepare-gha
+
+    - name: Run e2e tests
+      shell: bash
+      run: pnpm --filter nav-enonicxp-e2e-tests run test
+
+    - name: Copy app jar
+      shell: bash
+      run: cp build/libs/navno.jar .nais-deploy-job
+
+    - name: Build and push docker image
+      uses: nais/docker-build-push@v0
+      id: docker-push
+      with:
+        team: personbruker
+        project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
+        identity_provider: ${{ inputs.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+        docker_context: .nais-deploy-job
+        image_suffix: ${{ inputs.xpEnv }}
+        build_args: appFileName=navno.jar
+
+    - name: Deploy to nais
+      uses: nais/deploy/actions/deploy@v2
+      env:
+        CLUSTER: ${{ inputs.naisCluster }}
+        RESOURCE: .nais-deploy-job/deploy-job.yml
+        VAR: image=${{ inputs.image }},xpAdminHost=${{ inputs.xpAdminHost }},xpEnv=${{ inputs.xpEnv }}

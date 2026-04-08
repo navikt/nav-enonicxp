@@ -6,18 +6,22 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to prod
-    uses: ./.github/workflows/.build-and-deploy.yml
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
-    with:
-      naisCluster: prod-gcp
-      xpAdminHost: portal-admin.oera.no
-      xpEnv: prod
-      xpVersion: '7.14.4'
-    secrets:
-      NAIS_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      - name: Deploy to prod
+        uses: ./.github/actions/build-and-deploy
+        with:
+          naisCluster: prod-gcp
+          xpAdminHost: portal-admin.oera.no
+          xpEnv: prod
+          xpVersion: '7.14.4'
+          NAIS_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
 
   release:
     name: Create a new release
@@ -29,6 +33,7 @@ jobs:
     steps:
       - name: Generate unique tag name
         run: echo "TAG_NAME=$(date +%s)" >> $GITHUB_ENV
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
