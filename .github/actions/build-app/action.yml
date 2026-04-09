@@ -1,0 +1,58 @@
+name: Build application
+
+inputs:
+  xpEnv:
+    required: true
+    description: XP environment name
+  xpVersion:
+    required: true
+    description: Enonic XP version
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Java
+      uses: actions/setup-java@v5
+      with:
+        distribution: zulu
+        java-version: 21
+        cache: gradle
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+
+    - name: Setup node.js
+      uses: actions/setup-node@v6
+      with:
+        node-version: 22
+        cache: pnpm
+
+    - name: Install node.js dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile
+
+    - name: Run unit tests
+      shell: bash
+      run: pnpm --filter nav-enonicxp-unit-tests run test
+
+    - name: Build application
+      shell: bash
+      run: ./gradlew build -PxpVersion=${{ inputs.xpVersion }}
+
+    - name: Build e2e test data
+      shell: bash
+      run: ./gradlew build -p=test/e2e-tests/.xp-test-data-app -PxpVersion=${{ inputs.xpVersion }}
+        # TODO: "Delete node_modules" and "Install production dependencies" steps were omitted.
+        # This project builds JAR files (Enonic XP app), not a Node.js app. No node_modules are
+        # copied into Docker images, and all Node.js dependencies are dev-only (build tools, testing).
+        # If this changes, add steps to rm -rf node_modules and pnpm install --frozen-lockfile --prod.
+
+    - name: Upload jar files
+      uses: actions/upload-artifact@v7
+      with:
+        name: navno-jar-${{ inputs.xpEnv }}-${{ github.sha }}
+        path: |
+          build/libs/navno.jar
+          test/e2e-tests/.xp-test-data-app/build/libs/navno-testdata.jar
+        overwrite: 'true'
+        retention-days: 1
