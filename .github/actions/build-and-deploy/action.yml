@@ -16,6 +16,9 @@ inputs:
   NAIS_WORKLOAD_IDENTITY_PROVIDER:
     required: true
     description: NAIS workload identity provider
+  NAIS_MANAGEMENT_PROJECT_ID:
+    required: true
+    description: NAIS management project ID
 
 outputs:
   image:
@@ -48,7 +51,7 @@ runs:
       id: docker-push
       with:
         team: personbruker
-        project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
+        project_id: ${{ inputs.NAIS_MANAGEMENT_PROJECT_ID }}
         identity_provider: ${{ inputs.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
         docker_context: .nais-deploy-job
         image_suffix: ${{ inputs.xpEnv }}

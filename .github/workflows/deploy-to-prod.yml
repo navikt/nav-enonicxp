@@ -5,7 +5,7 @@ on:
       - main
 
 jobs:
-  deploy-to-prod-to-dev:
+  deploy-to-prod:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -22,10 +22,11 @@ jobs:
           xpEnv: prod
           xpVersion: '7.14.4'
           NAIS_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+          NAIS_MANAGEMENT_PROJECT_ID: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
 
   release:
     name: Create a new release
-    needs: deploy
+    needs: deploy-to-prod
     runs-on: ubuntu-latest
     permissions:
       contents: write
