@@ -2,7 +2,7 @@ name: Deploy to dev2/q6
 on: workflow_dispatch
 
 jobs:
-  deploy:
+  deploy-to-dev2:
     runs-on: ubuntu-latest
     permissions:
       contents: read
