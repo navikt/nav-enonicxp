@@ -139,6 +139,7 @@ export const getFormsOversiktListItemTransformer =
         const subItems = relevantFormDetails.map((formDetails) => ({
             path: getPublicPath(formDetails, overviewPageLanguage),
             title: formDetails.data.title,
+            longTitle: formDetails.data.longTitle,
             ingress: formDetails.data.ingress ? striptags(formDetails.data.ingress) : '',
             formNumbers: forceArray(formDetails.data.formNumbers),
         }));

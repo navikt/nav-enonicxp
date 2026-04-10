@@ -32,6 +32,7 @@ export const oversiktDataCallback: CreationCallback = (context, params) => {
             path: { type: graphQlLib.GraphQLString },
             language: { type: graphQlLib.GraphQLString },
             title: { type: graphQlLib.GraphQLString },
+            longTitle: { type: graphQlLib.GraphQLString },
             type: { type: graphQlLib.GraphQLString },
             ingress: { type: graphQlLib.GraphQLString },
             formNumbers: { type: graphQlLib.list(graphQlLib.GraphQLString) },

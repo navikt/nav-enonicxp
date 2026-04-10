@@ -53,6 +53,7 @@ fragment oversiktPage on no_nav_navno_Oversikt {
                 path
                 language
                 title
+                longTitle
                 type
                 ingress
                 formNumbers
