@@ -54,7 +54,7 @@
                                                 <option name="administrator"><label>Bostyrer</label></option>
                                                 <option name="measures_organizer"><label>Tiltaksarrangør</label></option>
                                                 <option name="aid_supplier"><label>Hjelpemiddelformidler</label></option>
-                                                <option name="deduction_recipient"><label>Trekkmottaker</label></option>
+                                                <option name="trekkmottaker"><label>Trekkmottaker</label></option>
                                                 <option name="other">
                                                     <label>Andre samarbeidspartnere</label>
                                                     <items>

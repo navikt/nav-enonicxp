@@ -3,5 +3,5 @@ export type ProviderAudience = {
   /**
    * Velg underkategorier
    */
-  provider_audience: Array<"doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "deduction_recipient" | "other"> | "doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "deduction_recipient" | "other";
+  provider_audience: Array<"doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "trekkmottaker" | "other"> | "doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "trekkmottaker" | "other";
 };

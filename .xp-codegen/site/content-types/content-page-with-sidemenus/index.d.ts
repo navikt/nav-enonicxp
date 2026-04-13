@@ -59,7 +59,7 @@ export type ContentPageWithSidemenus = {
           /**
            * Velg underkategorier
            */
-          provider_audience: Array<"doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "deduction_recipient" | "other"> | "doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "deduction_recipient" | "other";
+          provider_audience: Array<"doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "trekkmottaker" | "other"> | "doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "trekkmottaker" | "other";
         };
       }
     | {
@@ -195,12 +195,12 @@ export type ContentPageWithSidemenus = {
               /**
                * Selected
                */
-              _selected: "deduction_recipient";
+              _selected: "trekkmottaker";
 
               /**
                * Trekkmottaker
                */
-              deduction_recipient: Record<string, unknown>;
+              trekkmottaker: Record<string, unknown>;
             }
           | {
               /**

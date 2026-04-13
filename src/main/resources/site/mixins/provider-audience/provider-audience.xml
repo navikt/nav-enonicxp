@@ -10,7 +10,7 @@
                 <option value="administrator">Bostyrer</option>
                 <option value="measures_organizer">Tiltaksarrangør</option>
                 <option value="aid_supplier">Hjelpemiddelformidler</option>
-                <option value="deduction_recipient">Trekkmottaker</option>
+                <option value="trekkmottaker">Trekkmottaker</option>
                 <option value="other">Andre samarbeidspartnere</option>
             </config>
         </input>
