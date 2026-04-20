@@ -111,6 +111,17 @@ export type AlternativeAudience = {
               /**
                * Selected
                */
+              _selected: "trekkmottaker";
+
+              /**
+               * Trekkmottaker
+               */
+              trekkmottaker: Record<string, unknown>;
+            }
+          | {
+              /**
+               * Selected
+               */
               _selected: "other";
 
               /**
