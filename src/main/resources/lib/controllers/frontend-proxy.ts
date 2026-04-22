@@ -1,4 +1,4 @@
-import { Request } from '@enonic-types/core'
+import { Request } from '@enonic-types/core';
 import httpClient from '/lib/http-client';
 import * as portalLib from '/lib/xp/portal';
 import { Content } from '/lib/xp/portal';
