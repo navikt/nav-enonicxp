@@ -83,23 +83,22 @@ export const frontendProxy = (req: Request, path?: string) => {
         return healthCheckDummyResponse();
     }
 
-    const content = portalLib.getContent();
-
-    if (content && isMedia(content)) {
-        return mediaResponse(content);
-    }
-
-    const frontendUrl = getFrontendUrl(req, path);
-    if (!frontendUrl) {
-        return errorResponse('N/A', 500, 'No valid frontendUrl');
-    }
-
-    const repositoryId = req.repositoryId;
-    if (!repositoryId) {
-        return errorResponse(frontendUrl, 500, 'No valid repositoryId');
-    }
-
     try {
+        const content = portalLib.getContent();
+
+        if (content && isMedia(content)) {
+            return mediaResponse(content);
+        }
+
+        const frontendUrl = getFrontendUrl(req, path);
+        if (!frontendUrl) {
+            return errorResponse('N/A', 500, 'No valid frontendUrl');
+        }
+
+        const repositoryId = req.repositoryId;
+        if (!repositoryId) {
+            return errorResponse(frontendUrl, 500, 'No valid repositoryId');
+        }
         const response = httpClient.request({
             url: encodeURI(frontendUrl),
             contentType: 'text/html',
@@ -137,7 +136,7 @@ export const frontendProxy = (req: Request, path?: string) => {
 
         return response;
     } catch (e) {
-        return errorResponse(frontendUrl, 500, `Exception: ${e}`);
+        return errorResponse(getFrontendUrl(req, path) || 'N/A', 500, `Exception: ${e}`);
     }
 };
 
