@@ -5,7 +5,7 @@
         <option-set name="contactOptions">
             <label>Kontakt-oss kanaler</label>
             <expanded>true</expanded>
-            <occurrences minimum="1" maximum="1"/>
+            <occurrences minimum="1" maximum="1" />
             <options minimum="1" maximum="1">
                 <option name="chat">
                     <label>Chat</label>
@@ -105,19 +105,21 @@
                     <items>
                         <input name="title" type="TextLine">
                             <label>Tittel</label>
-                            <occurrences minimum="1" maximum="1"/>
+                            <occurrences minimum="1" maximum="1" />
                         </input>
                         <input name="icon" type="ComboBox">
                             <label>Icon</label>
-                            <occurrences minimum="1" maximum="1"/>
+                            <occurrences minimum="1" maximum="1" />
                             <config>
                                 <option value="facebook">Facebook</option>
                                 <option value="linkedin">LinkedIn</option>
+                                <option value="nyhetsbrev">Nyhetsbrev</option>
+                                <option value="generisk">Generisk</option>
                             </config>
                         </input>
                         <input name="url" type="TextLine">
                             <label>Url</label>
-                            <occurrences minimum="1" maximum="1"/>
+                            <occurrences minimum="1" maximum="1" />
                         </input>
                         <input name="ingress" type="HtmlArea">
                             <label>Ingress</label>
@@ -126,6 +128,6 @@
                 </option>
             </options>
         </option-set>
-        <mixin name="auth-render-option"/>
+        <mixin name="auth-render-option" />
     </form>
 </part>
