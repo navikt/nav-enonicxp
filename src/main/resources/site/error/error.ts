@@ -34,8 +34,9 @@ export const handleError = (req: ErrorRequest) => {
 
         return frontendProxy(req.request, possiblePaths[1] || possiblePaths[0]);
     } catch (e) {
+        const errorDetail = e instanceof Error ? e.stack : String(e);
         logger.critical(
-            `Error handler failed: ${e} | Original error: status=${req.status}, message=${req.message}, path=${req.request?.rawPath}`
+            `Error handler failed: ${errorDetail} | Original error: status=${req.status}, message=${req.message}, path=${req.request?.rawPath}`
         );
         return {
             status: req.status || 500,

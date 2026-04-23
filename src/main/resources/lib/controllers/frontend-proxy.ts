@@ -83,6 +83,8 @@ export const frontendProxy = (req: Request, path?: string) => {
         return healthCheckDummyResponse();
     }
 
+    let frontendUrl: string | null = null;
+
     try {
         const content = portalLib.getContent();
 
@@ -90,7 +92,7 @@ export const frontendProxy = (req: Request, path?: string) => {
             return mediaResponse(content);
         }
 
-        const frontendUrl = getFrontendUrl(req, path);
+        frontendUrl = getFrontendUrl(req, path);
         if (!frontendUrl) {
             return errorResponse('N/A', 500, 'No valid frontendUrl');
         }
@@ -136,7 +138,8 @@ export const frontendProxy = (req: Request, path?: string) => {
 
         return response;
     } catch (e) {
-        return errorResponse(getFrontendUrl(req, path) || 'N/A', 500, `Exception: ${e}`);
+        const errorDetail = e instanceof Error ? e.stack : String(e);
+        return errorResponse(frontendUrl || 'N/A', 500, `Exception: ${errorDetail}`);
     }
 };
 
