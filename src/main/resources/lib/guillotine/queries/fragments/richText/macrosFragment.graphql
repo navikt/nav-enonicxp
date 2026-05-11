@@ -9,9 +9,6 @@ fragment macros on Macro {
     ref
     config {
         alert_box {
-            type
-            size
-            inline
             body
         }
         button {
