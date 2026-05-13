@@ -1,5 +1,5 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>Infokort</display-name>
+    <display-name>Infokort (varsel)</display-name>
     <description>Infokort med rik tekst</description>
     <form>
         <input type="HtmlArea" name="content">

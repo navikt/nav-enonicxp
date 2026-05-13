@@ -1,5 +1,5 @@
 <macro>
-    <display-name>Infokort</display-name>
+    <display-name>Infokort (varsel)</display-name>
     <description>Infokort med rik tekst</description>
     <form>
         <input type="HtmlArea" name="body">
