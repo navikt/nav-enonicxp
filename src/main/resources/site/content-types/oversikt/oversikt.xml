@@ -33,7 +33,9 @@
                 </input>
                 <mixin name="illustration"/>
                 <mixin name="custom-path-selector-required"/>
-                <mixin name="external-product-url"/>
+                <input type="TextLine" name="externalProductUrl">
+                    <label>Videresend alle besøk til annen url:</label>
+                </input>
                 <input name="areasFilterToggle" type="CheckBox">
                     <label>Vis område-filter</label>
                     <default>checked</default>
