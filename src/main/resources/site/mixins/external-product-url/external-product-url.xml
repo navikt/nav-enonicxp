@@ -3,5 +3,8 @@
     <input type="TextLine" name="externalProductUrl">
         <label>Videresend alle besøk til annen url:</label>
     </input>
+    <input type="ContentSelector" name="externalContentRedirect">
+        <label>Videresend alle besøkt til annet innhold (kun for administratorer):</label>
+    </input>
   </form>
 </mixin>

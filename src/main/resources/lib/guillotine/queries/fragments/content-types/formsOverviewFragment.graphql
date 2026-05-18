@@ -45,6 +45,9 @@ fragment contentFormsOverviewPage on no_nav_navno_FormsOverview {
             area
             taxonomy
             anchorId
+            externalContentRedirect {
+                ...contentCommon
+            }
             illustration {
                 ... on no_nav_navno_AnimatedIcons {
                     type

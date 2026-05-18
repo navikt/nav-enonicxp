@@ -58,6 +58,9 @@ fragment oversiktPage on no_nav_navno_Oversikt {
                 ingress
                 formNumbers
             }
+            externalContentRedirect {
+                ...contentCommon
+            }
             illustration {
                 ... on no_nav_navno_AnimatedIcons {
                     type

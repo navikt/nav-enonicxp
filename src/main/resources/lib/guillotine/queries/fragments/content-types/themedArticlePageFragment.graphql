@@ -41,6 +41,9 @@ fragment contentThemedArticlePage on no_nav_navno_ThemedArticlePage {
             ...contentCommon
             dataAsJson
         }
+        externalContentRedirect {
+            ...contentCommon
+        }
         illustration {
             ...animatedIconsTargetMixin
         }

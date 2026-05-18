@@ -40,6 +40,9 @@ fragment contentGuidePage on no_nav_navno_GuidePage {
             ...contentCommon
             dataAsJson
         }
+        externalContentRedirect {
+            ...contentCommon
+        }
         illustration {
             ...animatedIconsTargetMixin
         }

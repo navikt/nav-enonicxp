@@ -12,6 +12,9 @@ fragment contentToolsPage on no_nav_navno_ToolsPage {
             }
         }
         taxonomy
+        externalContentRedirect {
+            ...contentCommon
+        }
         illustration {
             ...animatedIconsTargetMixin
         }

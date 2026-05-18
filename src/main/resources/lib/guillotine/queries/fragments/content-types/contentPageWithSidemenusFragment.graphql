@@ -45,6 +45,9 @@ fragment contentContentPageWithSidemenus on no_nav_navno_ContentPageWithSidemenu
         illustration {
             ...animatedIconsTargetMixin
         }
+        externalContentRedirect {
+            ...contentCommon
+        }
         processing_times
         payout_dates
         rates
