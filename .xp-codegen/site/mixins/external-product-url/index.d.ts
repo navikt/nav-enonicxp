@@ -8,5 +8,5 @@ export type ExternalProductUrl = {
   /**
    * Videresend alle besøkt til annet innhold (kun for administratorer):
    */
-  externalContentRedirect: string;
+  externalContentRedirect?: string;
 };
