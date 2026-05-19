@@ -1,5 +1,7 @@
 FROM europe-north1-docker.pkg.dev/cgr-nav/pull-through/nav.no/node:24-slim
 
+WORKDIR /
+
 ARG appFileName
 ENV APP_FILE_NAME=${appFileName}
 
