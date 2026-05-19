@@ -19,9 +19,4 @@ export type ExternalLink = {
    * Skriv inn ønsket kort-url
    */
   customPath?: string;
-
-  /**
-   * Nøkkelord (internt søk)
-   */
-  keywords?: Array<string> | string;
 };

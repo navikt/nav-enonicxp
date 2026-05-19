@@ -29,9 +29,4 @@ export type InternalLink = {
    * Permanent redirect (innhold flyttet til ny url)
    */
   permanentRedirect: boolean;
-
-  /**
-   * Nøkkelord (internt søk)
-   */
-  keywords?: Array<string> | string;
 };

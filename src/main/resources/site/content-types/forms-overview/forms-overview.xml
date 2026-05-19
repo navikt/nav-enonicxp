@@ -10,31 +10,32 @@
             <items>
                 <input type="TextLine" name="title">
                     <label>Side-tittel</label>
-                    <occurrences minimum="1" maximum="1"/>
+                    <occurrences minimum="1" maximum="1" />
                     <default>Søknad og skjema</default>
                 </input>
                 <input type="TextLine" name="underTitle">
                     <label>Under-tittel</label>
-                    <occurrences minimum="0" maximum="1"/>
+                    <occurrences minimum="0" maximum="1" />
                     <default>Fra A til Å</default>
                 </input>
                 <input type="TextArea" name="ingress">
                     <label>Ingress/beskrivelse</label>
-                    <help-text>En kort beskrivelse som vises i lenkepanel/kort som lenker til denne siden</help-text>
-                    <occurrences minimum="1" maximum="1"/>
+                    <help-text>En kort beskrivelse som vises i lenkepanel/kort som lenker til denne
+                        siden</help-text>
+                    <occurrences minimum="1" maximum="1" />
                 </input>
                 <input name="overviewType" type="ComboBox">
                     <label>Velg type oversikt</label>
-                    <occurrences minimum="1" maximum="1"/>
+                    <occurrences minimum="1" maximum="1" />
                     <config>
                         <option value="application">Søknad og skjema</option>
                         <option value="complaint">Klage og anke</option>
                         <option value="addendum">Ettersendelse</option>
                     </config>
                 </input>
-                <mixin name="illustration"/>
-                <mixin name="custom-path-selector-required"/>
-                <mixin name="external-product-url"/>
+                <mixin name="illustration" />
+                <mixin name="custom-path-selector-required" />
+                <mixin name="external-product-url" />
                 <input name="areasFilterToggle" type="CheckBox">
                     <label>Vis område-filter</label>
                     <default>checked</default>
@@ -51,7 +52,7 @@
         </field-set>
         <option-set name="audience">
             <label>Målgruppe</label>
-            <occurrences minimum="1" maximum="1"/>
+            <occurrences minimum="1" maximum="1" />
             <options minimum="1" maximum="1">
                 <option name="person">
                     <label>Privatperson</label>
@@ -64,12 +65,12 @@
                     <items>
                         <option-set name="pageType">
                             <label>Velg sidetype</label>
-                            <occurrences minimum="1" maximum="1"/>
+                            <occurrences minimum="1" maximum="1" />
                             <options minimum="1" maximum="1">
                                 <option name="overview">
                                     <label>Oversiktsside for underkategori</label>
                                     <items>
-                                        <mixin name="provider-audience"/>
+                                        <mixin name="provider-audience" />
                                     </items>
                                 </option>
                                 <option name="links">
@@ -77,17 +78,18 @@
                                     <items>
                                         <item-set name="links">
                                             <label>Lenker til oversiktssider</label>
-                                            <occurrences minimum="1" maximum="0"/>
+                                            <occurrences minimum="1" maximum="0" />
                                             <items>
                                                 <input type="TextLine" name="text">
                                                     <label>Lenketekst</label>
-                                                    <help-text>Hvis denne er tom benyttes tittel på oversiktssiden som
+                                                    <help-text>Hvis denne er tom benyttes tittel på
+                                                        oversiktssiden som
                                                         lenketekst
                                                     </help-text>
                                                 </input>
                                                 <input type="ContentSelector" name="link">
                                                     <label>Velg oversiktsside</label>
-                                                    <occurrences minimum="1" maximum="1"/>
+                                                    <occurrences minimum="1" maximum="1" />
                                                     <config>
                                                         <allowContentType>${app}:forms-overview</allowContentType>
                                                     </config>
@@ -108,7 +110,7 @@
                 <input name="localeFallback" type="ContentSelector">
                     <label>Velg fallback data</label>
                     <help-text>Brukes for å sette inn elementer for sider som ikke er lokalisert</help-text>
-                    <occurrences maximum="0" minimum="0"/>
+                    <occurrences maximum="0" minimum="0" />
                     <config>
                         <allowContentType>${app}:content-data-locale-fallback</allowContentType>
                         <showStatus>true</showStatus>
@@ -121,13 +123,14 @@
             <items>
                 <input name="excludedContent" type="CustomSelector">
                     <label>Velg innhold som ikke skal vises i denne oversikten</label>
-                    <occurrences minimum="0" maximum="0"/>
+                    <occurrences minimum="0" maximum="0" />
                     <config>
                         <service>contentSelector</service>
                         <param value="contentTypes">
                             ["no.nav.navno:content-page-with-sidemenus","no.nav.navno:guide-page"]
                         </param>
-                        <param value="selectorQuery">data.audience._selected="{data.audience._selected}" AND
+                        <param value="selectorQuery">data.audience._selected="{data.audience._selected}"
+                            AND
                             data.formDetailsTargets LIKE "*"
                         </param>
                         <param value="sort">data.area ASC, displayName ASC</param>
@@ -135,11 +138,10 @@
                 </input>
             </items>
         </field-set>
-        <mixin name="owner"/>
+        <mixin name="owner" />
         <field-set>
             <label>Søkeoptimalisering</label>
             <items>
-                <mixin name="keywords"/>
                 <input name="noindex" type="CheckBox">
                     <label>
                         Skal ikke vises i søk

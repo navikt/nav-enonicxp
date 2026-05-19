@@ -15,7 +15,6 @@ export const formsOverviewDataCallback: CreationCallback = (context, params) => 
             type: { type: graphQlLib.GraphQLString },
             targetLanguage: { type: graphQlLib.GraphQLString },
             ingress: { type: graphQlLib.GraphQLString },
-            keywords: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             formDetailsPaths: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             formDetailsTitles: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             formDetailsIngresses: { type: graphQlLib.list(graphQlLib.GraphQLString) },

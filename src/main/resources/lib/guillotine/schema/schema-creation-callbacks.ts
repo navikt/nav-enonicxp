@@ -21,6 +21,7 @@ import {
     pageNavigationMenuCallback,
 } from './schema-creation-callbacks/page-navigation-menu';
 import { filterCallback } from './schema-creation-callbacks/filters-menu';
+import { generalDataCallback } from './schema-creation-callbacks/general-data-callback';
 import {
     globalValueMacroConfigCallback,
     globalValueWithMathMacroConfigCallback,
@@ -105,17 +106,23 @@ export const schemaCreationCallbacks: Record<string, CreationCallback> = {
     RichText: richTextCallback,
     no_nav_navno_AreaPage_Audience: audienceCallback,
     no_nav_navno_CurrentTopicPage_Audience: audienceCallback,
+    no_nav_navno_CurrentTopicPage_Data: generalDataCallback,
     no_nav_navno_FrontPage_Audience: audienceCallback,
     no_nav_navno_SituationPage_Audience: audienceCallback,
+    no_nav_navno_SituationPage_Data: generalDataCallback,
     no_nav_navno_GenericPage_Audience: audienceCallback,
     no_nav_navno_ContentPageWithSidemenus_Audience: audienceCallback,
+    no_nav_navno_ContentPageWithSidemenus_Data: generalDataCallback,
     no_nav_navno_ContentPageWithSidemenus_AlternativeAudience: alternativeAudienceCallback(
         'ContentPageWithSidemenus'
     ),
     no_nav_navno_ThemedArticlePage_Audience: audienceCallback,
+    no_nav_navno_ThemedArticlePage_Data: generalDataCallback,
     no_nav_navno_ThemedArticlePage_AlternativeAudience:
         alternativeAudienceCallback('ThemedArticlePage'),
     no_nav_navno_ToolsPage_Audience: audienceCallback,
+    no_nav_navno_ToolsPage_Data: generalDataCallback,
     no_nav_navno_GuidePage_Audience: audienceCallback,
+    no_nav_navno_GuidePage_Data: generalDataCallback,
     no_nav_navno_GuidePage_AlternativeAudience: alternativeAudienceCallback('GuidePage'),
 } as const;

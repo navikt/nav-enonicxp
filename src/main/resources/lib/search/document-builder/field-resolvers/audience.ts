@@ -52,30 +52,37 @@ const getAudienceFromData = (content: ContentNode<any>): SearchDocumentAudience[
         return [audience];
     }
 
-    const audienceAsArray = forceArray<any>(audience);
+    const audienceAsArray = forceArray<ArrayOrSingle<MainAudience> | AudienceMixin['audience']>(
+        audience
+    );
 
-    const flatAudience = audienceAsArray.reduce((acc, item) => {
+    const flatAudience = audienceAsArray.reduce<SearchDocumentAudience[]>((acc, item) => {
         if (typeof item === 'string') {
             acc.push(item);
         } else if (item && typeof item === 'object' && '_selected' in item) {
-            if (item._selected === 'provider') {
-                acc.push('provider');
+            const selectedOptions = forceArray(item._selected);
 
-                const subAudience =
-                    item.provider?.pageType?.overview?.provider_audience ||
-                    item.provider?.provider_audience;
+            for (const selected of selectedOptions) {
+                if (selected === 'provider') {
+                    acc.push('provider');
 
-                const subAudienceLabels = forceArray(subAudience).map<SubAudience>(
-                    (providerAudience) => `provider_${providerAudience}`
-                );
+                    const provider = (item as Record<string, any>).provider;
+                    const subAudience =
+                        provider?.pageType?.overview?.provider_audience ||
+                        provider?.provider_audience;
 
-                // Note: Fix for required sub audiences. Will be fixed in separate
-                // task.
-                if (subAudienceLabels.length < 7) {
-                    acc.push(...subAudienceLabels);
+                    const subAudienceLabels = forceArray(subAudience).map<SubAudience>(
+                        (providerAudience) => `provider_${providerAudience}`
+                    );
+
+                    // Note: Fix for required sub audiences. Will be fixed in separate
+                    // task.
+                    if (subAudienceLabels.length < 7) {
+                        acc.push(...subAudienceLabels);
+                    }
+                } else {
+                    acc.push(selected);
                 }
-            } else {
-                acc.push(item._selected);
             }
         }
         return acc;

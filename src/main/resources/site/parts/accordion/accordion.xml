@@ -3,20 +3,23 @@
     <form>
         <item-set name="accordion">
             <label>Trekkspill</label>
-            <occurrences minimum="2" maximum="0"/>
+            <occurrences minimum="2" maximum="0" />
             <items>
                 <input name="title" type="TextLine">
                     <label>Tittel</label>
-                    <occurrences minimum="1" maximum="1"/>
+                    <occurrences minimum="1" maximum="1" />
                 </input>
                 <input name="anchorId" type="TextLine">
                     <label>Ankerid</label>
                     <help-text>Setter inn anker-id som kan legges til etter selve url'en.</help-text>
-                    <occurrences minimum="0" maximum="1"/>
+                    <occurrences minimum="0" maximum="1" />
                 </input>
                 <input name="html" type="HtmlArea">
                     <label>Innhold</label>
-                    <occurrences minimum="1" maximum="1"/>
+                    <occurrences minimum="1" maximum="1" />
+                    <config>
+                        <include>Language</include>
+                    </config>
                 </input>
             </items>
         </item-set>

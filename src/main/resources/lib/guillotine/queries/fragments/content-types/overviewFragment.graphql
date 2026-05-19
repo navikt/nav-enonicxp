@@ -16,7 +16,6 @@ fragment contentOverviewPage on no_nav_navno_Overview {
             taxonomy
             audience
             area
-            keywords
             productLinks {
                 url
                 language

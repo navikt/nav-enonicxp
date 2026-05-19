@@ -1,4 +1,4 @@
-import { Request } from '@enonic-types/core'
+import { Request } from '@enonic-types/core';
 import httpClient from '/lib/http-client';
 import * as portalLib from '/lib/xp/portal';
 import { Content } from '/lib/xp/portal';
@@ -83,23 +83,24 @@ export const frontendProxy = (req: Request, path?: string) => {
         return healthCheckDummyResponse();
     }
 
-    const content = portalLib.getContent();
-
-    if (content && isMedia(content)) {
-        return mediaResponse(content);
-    }
-
-    const frontendUrl = getFrontendUrl(req, path);
-    if (!frontendUrl) {
-        return errorResponse('N/A', 500, 'No valid frontendUrl');
-    }
-
-    const repositoryId = req.repositoryId;
-    if (!repositoryId) {
-        return errorResponse(frontendUrl, 500, 'No valid repositoryId');
-    }
+    let frontendUrl: string | null = null;
 
     try {
+        const content = portalLib.getContent();
+
+        if (content && isMedia(content)) {
+            return mediaResponse(content);
+        }
+
+        frontendUrl = getFrontendUrl(req, path);
+        if (!frontendUrl) {
+            return errorResponse('N/A', 500, 'No valid frontendUrl');
+        }
+
+        const repositoryId = req.repositoryId;
+        if (!repositoryId) {
+            return errorResponse(frontendUrl, 500, 'No valid repositoryId');
+        }
         const response = httpClient.request({
             url: encodeURI(frontendUrl),
             contentType: 'text/html',
@@ -137,7 +138,8 @@ export const frontendProxy = (req: Request, path?: string) => {
 
         return response;
     } catch (e) {
-        return errorResponse(frontendUrl, 500, `Exception: ${e}`);
+        const errorDetail = e instanceof Error ? e.stack : String(e);
+        return errorResponse(frontendUrl || 'N/A', 500, `Exception: ${errorDetail}`);
     }
 };
 

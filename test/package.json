@@ -2,19 +2,15 @@
     "name": "nav-enonicxp-tests",
     "version": "1.0.0",
     "scripts": {
-        "test": "npm-run-all -p test:*",
-        "test:e2e": "npm run prepare-and-test --workspace e2e-tests",
-        "test:unit": "npm run test --workspace unit-tests"
+        "test": "pnpm run '/^test:.*$/' --parallel",
+        "test:e2e": "pnpm --filter nav-enonicxp-e2e-tests run prepare-and-test",
+        "test:unit": "pnpm --filter nav-enonicxp-unit-tests run test"
     },
     "type": "module",
-    "workspaces": [
-        "e2e-tests",
-        "unit-tests"
-    ],
     "devDependencies": {
-        "@types/jest": "30.0.0",
-        "jest": "30.2.0",
-        "ts-jest": "29.4.6",
-        "ts-node": "10.9.2"
+        "@types/jest": "catalog:",
+        "jest": "catalog:",
+        "ts-jest": "catalog:",
+        "ts-node": "catalog:"
     }
 }

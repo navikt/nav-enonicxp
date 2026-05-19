@@ -5,10 +5,9 @@
         base:structured
     </super-type>
     <form>
-        <mixin name="ingress"/>
-        <mixin name="link-panels"/>
-        <mixin name="decorator-toggles"/>
-        <mixin name="seo"/>
-        <mixin name="keywords"/>
+        <mixin name="ingress" />
+        <mixin name="link-panels" />
+        <mixin name="decorator-toggles" />
+        <mixin name="seo" />
     </form>
 </content-type>

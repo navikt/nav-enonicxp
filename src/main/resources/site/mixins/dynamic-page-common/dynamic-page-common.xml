@@ -1,7 +1,7 @@
 <mixin>
     <form>
-        <mixin name="languages-legacy"/>
-        <mixin name="decorator-toggles"/>
+        <mixin name="languages-legacy" />
+        <mixin name="decorator-toggles" />
         <field-set>
             <label>For internt søk</label>
             <items>
@@ -11,9 +11,8 @@
                         søkeresultater. Bør være maks 240 tegn.
                     </help-text>
                 </input>
-                <mixin name="keywords"/>
             </items>
         </field-set>
-        <mixin name="seo"/>
+        <mixin name="seo" />
     </form>
 </mixin>

@@ -25,7 +25,6 @@ export type IconSelector = import("./icon-selector").IconSelector;
 export type Illustration = import("./illustration").Illustration;
 export type Ingress = import("./ingress").Ingress;
 export type IngressRequired = import("./ingress-required").IngressRequired;
-export type Keywords = import("./keywords").Keywords;
 export type LanguagesLegacy = import("./languages-legacy").LanguagesLegacy;
 export type LayoutsCommon = import("./layouts-common").LayoutsCommon;
 export type Link = import("./link").Link;

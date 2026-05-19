@@ -4,14 +4,16 @@ import { runInContext } from '../../../lib/context/run-in-context';
 
 const view = resolve('./dashboard.html');
 
-const announcementsPath = '/www.nav.no/admin/announcement';
-
 const dashboardInfo = () => {
     const content = runInContext({ branch: 'master' }, () =>
-        contentLib.get({ key: announcementsPath })
-    );
+        contentLib.query({
+            count: 100,
+            contentTypes: ['no.nav.navno:announcement-to-editors'],
+            sort: 'createdTime DESC',
+        })
+    ).hits[0];
 
-    if (content && content.type === 'no.nav.navno:announcement-to-editors') {
+    if (content) {
         const { displayName, data } = content;
 
         const { text } = data;

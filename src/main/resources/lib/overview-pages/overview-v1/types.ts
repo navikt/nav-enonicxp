@@ -11,9 +11,7 @@ type OverviewItemTaxonomy = Taxonomy['taxonomy'] | ThemedArticlePage['taxonomy']
 type ContentTypesInOverviewPages = (typeof contentTypesInOverviewPages)[number];
 
 // Generated data type definitions are incorrect due to a bug with nested mixins
-export type ContentInOverviewPages = Content<ContentTypesInOverviewPages> & {
-    data: { keywords?: ArrayOrSingle<string> };
-};
+export type ContentInOverviewPages = Content<ContentTypesInOverviewPages>;
 
 export type OverviewPageItemProductLink = {
     url: string;
@@ -32,7 +30,6 @@ export type OverviewPageItem = {
     productLinks: OverviewPageItemProductLink[];
     taxonomy?: OverviewItemTaxonomy;
     area: Area['area'];
-    keywords?: ArrayOrSingle<string>;
 };
 
 export type OverviewPageDetailedType = Exclude<Overview['overviewType'], 'all_products'>;

@@ -79,7 +79,7 @@ export type PressLandingPage = {
           /**
            * Velg underkategorier
            */
-          provider_audience: Array<"doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "other"> | "doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "other";
+          provider_audience: Array<"doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "trekkmottaker" | "other"> | "doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "trekkmottaker" | "other";
         };
       }
     | {
@@ -108,4 +108,39 @@ export type PressLandingPage = {
    * Legg til andre språkversjoner
    */
   languages?: Array<string> | string;
+
+  /**
+   * Fant du det du lette etter?
+   */
+  feedbackToggle: boolean;
+
+  /**
+   * Chatbot Frida
+   */
+  chatbotToggle: boolean;
+
+  /**
+   * Oppsummering
+   */
+  description?: string;
+
+  /**
+   * Sidebeskrivelse for søk og sosiale medier
+   */
+  metaDescription?: string;
+
+  /**
+   * Canonical url - NB! Skal bare legges inn av hovedredaktør/administrator
+   */
+  canonicalUrl?: string;
+
+  /**
+   * Skal ikke vises i søk
+   */
+  noindex: boolean;
+
+  /**
+   * Ikke vis "tilfeldige" utdrag (snippets). NB! Skal bare brukes av hovedredaktør/administrator.
+   */
+  nosnippet: boolean;
 };

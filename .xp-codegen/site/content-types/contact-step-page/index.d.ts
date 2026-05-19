@@ -38,7 +38,7 @@ export type ContactStepPage = {
   /**
    * Enkeltsteg
    */
-  linkPanels: Array<{
+  linkPanels?: Array<{
     /**
      * Innhold det skal lenkes til
      */

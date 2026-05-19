@@ -119,9 +119,4 @@ export type SectionPage = {
    * Ikke vis "tilfeldige" utdrag (snippets). NB! Skal bare brukes av hovedredaktør/administrator.
    */
   nosnippet: boolean;
-
-  /**
-   * Nøkkelord (internt søk)
-   */
-  keywords?: Array<string> | string;
 };

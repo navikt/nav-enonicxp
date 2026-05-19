@@ -64,7 +64,7 @@ export type GuidePage = {
           /**
            * Velg underkategorier
            */
-          provider_audience: Array<"doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "other"> | "doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "other";
+          provider_audience: Array<"doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "trekkmottaker" | "other"> | "doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "trekkmottaker" | "other";
         };
       }
     | {
@@ -210,6 +210,17 @@ export type GuidePage = {
               /**
                * Selected
                */
+              _selected: "trekkmottaker";
+
+              /**
+               * Trekkmottaker
+               */
+              trekkmottaker: Record<string, unknown>;
+            }
+          | {
+              /**
+               * Selected
+               */
               _selected: "other";
 
               /**
@@ -291,11 +302,6 @@ export type GuidePage = {
    * Oppsummering
    */
   description?: string;
-
-  /**
-   * Nøkkelord (internt søk)
-   */
-  keywords?: Array<string> | string;
 
   /**
    * Sidebeskrivelse for søk og sosiale medier

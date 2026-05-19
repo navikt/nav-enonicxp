@@ -52,8 +52,8 @@ dependencies {
     webjar "org.webjars.npm:dayjs:1.11.13"
 }
 
-tasks.register('babelJs', NpmTask) {
-    dependsOn 'npmInstall'
+tasks.register('babelJs', PnpmTask) {
+    dependsOn 'pnpmInstall'
     dependsOn(generateTypeScript)
     dependsOn(processResources)
 

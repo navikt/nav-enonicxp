@@ -28,7 +28,7 @@
             <items>
                 <item-set name="linkPanels">
                     <label>Enkeltsteg</label>
-                    <occurrences minimum="1" maximum="0" />
+                    <occurrences minimum="0" maximum="0" />
                     <items>
                         <mixin name="link-internal" />
                         <input type="TextArea" name="ingress">

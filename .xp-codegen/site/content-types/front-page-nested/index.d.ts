@@ -39,7 +39,7 @@ export type FrontPageNested = {
           /**
            * Velg underkategorier
            */
-          provider_audience: Array<"doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "other"> | "doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "other";
+          provider_audience: Array<"doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "trekkmottaker" | "other"> | "doctor" | "municipality_employed" | "optician" | "administrator" | "measures_organizer" | "aid_supplier" | "trekkmottaker" | "other";
         };
       }
     | {
@@ -88,11 +88,6 @@ export type FrontPageNested = {
    * Oppsummering
    */
   description?: string;
-
-  /**
-   * Nøkkelord (internt søk)
-   */
-  keywords?: Array<string> | string;
 
   /**
    * Sidebeskrivelse for søk og sosiale medier
