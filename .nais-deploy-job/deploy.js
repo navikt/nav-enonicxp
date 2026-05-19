@@ -2,6 +2,7 @@
 'use strict';
 
 const { readFileSync, existsSync } = require('fs');
+const path = require('path');
 const https = require('https');
 const http = require('http');
 
@@ -25,13 +26,14 @@ requireEnv('XP_PASSWORD', XP_PASSWORD, true);
 requireEnv('XP_INSTALL_API', XP_INSTALL_API);
 
 const boundary = `FormBoundary${Date.now()}`;
+const fileName = path.basename(APP_FILE_NAME);
 console.log(`Reading file: ${APP_FILE_NAME}`);
 const fileContent = readFileSync(APP_FILE_NAME);
 console.log(`File size: ${fileContent.length} bytes`);
 
 const body = Buffer.concat([
     Buffer.from(
-        `--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${APP_FILE_NAME}"\r\nContent-Type: application/octet-stream\r\n\r\n`
+        `--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${fileName}"\r\nContent-Type: application/octet-stream\r\n\r\n`
     ),
     fileContent,
     Buffer.from(`\r\n--${boundary}--\r\n`),
