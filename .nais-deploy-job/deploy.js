@@ -7,8 +7,6 @@ const https = require('https');
 const http = require('http');
 
 console.log('Running deploy script!');
-console.log('CWD:', process.cwd());
-console.log('UID:', process.getuid(), 'GID:', process.getgid());
 
 const { APP_FILE_NAME, XP_INSTALL_API, XP_USER, XP_PASSWORD } = process.env;
 
@@ -27,9 +25,7 @@ requireEnv('XP_INSTALL_API', XP_INSTALL_API);
 
 const boundary = `FormBoundary${Date.now()}`;
 const fileName = path.basename(APP_FILE_NAME);
-console.log(`Reading file: ${APP_FILE_NAME}`);
 const fileContent = readFileSync(APP_FILE_NAME);
-console.log(`File size: ${fileContent.length} bytes`);
 
 const body = Buffer.concat([
     Buffer.from(
@@ -63,11 +59,8 @@ const options = {
     }),
 };
 
-console.log(`Sending ${body.length} bytes to ${url.hostname}:${options.port}${options.path}`);
-
 const req = lib.request(options, (res) => {
     console.log(`Response status: ${res.statusCode}`);
-    console.log(`Response headers: ${JSON.stringify(res.headers)}`);
     let data = '';
     res.on('data', (chunk) => {
         data += chunk;
@@ -82,7 +75,6 @@ const req = lib.request(options, (res) => {
 
 req.on('error', (err) => {
     console.error('Request failed:', err.message);
-    console.error('Error code:', err.code);
     process.exit(1);
 });
 
