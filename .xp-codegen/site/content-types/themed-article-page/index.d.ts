@@ -100,6 +100,11 @@ export type ThemedArticlePage = {
   externalProductUrl?: string;
 
   /**
+   * Videresend alle besøkt til annet innhold (kun for administratorer):
+   */
+  externalContentRedirect?: string;
+
+  /**
    * Skriv inn ønsket kort-url
    */
   customPath: string;
