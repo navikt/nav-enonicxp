@@ -13,6 +13,8 @@
             <allowContentType>${app}:themed-article-page</allowContentType>
             <allowContentType>${app}:generic-page</allowContentType>
             <allowContentType>${app}:area-page</allowContentType>
+            <allowContentType>${app}:main-article</allowContentType>
+            <allowContentType>${app}:main-article-chapter</allowContentType>
         </config>
     </input>
   </form>
