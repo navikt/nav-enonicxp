@@ -4,4 +4,9 @@ export type ExternalProductUrl = {
    * Videresend alle besøk til annen url:
    */
   externalProductUrl?: string;
+
+  /**
+   * Videresend alle besøkt til annet innhold (kun for administratorer):
+   */
+  externalContentRedirect?: string;
 };

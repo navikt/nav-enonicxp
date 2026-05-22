@@ -3,5 +3,16 @@
     <input type="TextLine" name="externalProductUrl">
         <label>Videresend alle besøk til annen url:</label>
     </input>
+    <input type="ContentSelector" name="externalContentRedirect">
+        <label>Videresend alle besøkt til annet innhold (kun for administratorer):</label>
+        <config>
+            <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
+            <allowContentType>${app}:situation-page</allowContentType>
+            <allowContentType>${app}:guide-page</allowContentType>
+            <allowContentType>${app}:tools-page</allowContentType>
+            <allowContentType>${app}:themed-article-page</allowContentType>
+            <allowContentType>${app}:generic-page</allowContentType>
+        </config>
+    </input>
   </form>
 </mixin>
