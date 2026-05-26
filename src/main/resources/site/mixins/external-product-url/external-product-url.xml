@@ -6,17 +6,22 @@
     <input type="ContentSelector" name="externalContentRedirect">
         <label>Videresend alle besøkt til annet innhold (kun for administratorer):</label>
         <config>
-            <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
-            <allowContentType>${app}:situation-page</allowContentType>
-            <allowContentType>${app}:guide-page</allowContentType>
-            <allowContentType>${app}:tools-page</allowContentType>
-            <allowContentType>${app}:themed-article-page</allowContentType>
-            <allowContentType>${app}:generic-page</allowContentType>
             <allowContentType>${app}:area-page</allowContentType>
-            <allowContentType>${app}:main-article</allowContentType>
+            <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
+            <allowContentType>${app}:current-topic-page</allowContentType>
+            <allowContentType>${app}:dynamic-page</allowContentType>
+            <allowContentType>${app}:form-intermediate-step</allowContentType>
+            <allowContentType>${app}:front-page</allowContentType>
+            <allowContentType>${app}:generic-page</allowContentType>
+            <allowContentType>${app}:guide-page</allowContentType>
             <allowContentType>${app}:main-article-chapter</allowContentType>
-            <allowContentType>${app}:overview</allowContentType>
-            <allowContentType>${app}:forms-overview</allowContentType>
+            <allowContentType>${app}:main-article</allowContentType>
+            <allowContentType>${app}:oversikt</allowContentType>
+            <allowContentType>${app}:page-list</allowContentType>
+            <allowContentType>${app}:situation-page</allowContentType>
+            <allowContentType>${app}:themed-article-page</allowContentType>
+            <allowContentType>${app}:tools-page</allowContentType>
+            <allowContentType>${app}:section-page</allowContentType>
         </config>
     </input>
   </form>
