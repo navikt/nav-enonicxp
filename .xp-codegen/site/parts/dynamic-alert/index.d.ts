@@ -6,26 +6,6 @@ export type DynamicAlert = {
   content?: string;
 
   /**
-   * Type
-   */
-  type?: "info" | "suksess" | "advarsel" | "feil";
-
-  /**
-   * Størrelse
-   */
-  size?: "medium" | "small";
-
-  /**
-   * Uten bakgrunn (inline)
-   */
-  inline: boolean;
-
-  /**
-   * Margin på containeren
-   */
-  margin?: string;
-
-  /**
    * Velg visning
    */
   renderOnAuthState: "always" | "loggedIn" | "loggedOut";
