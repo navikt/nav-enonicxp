@@ -24,7 +24,7 @@ const frontendOrigins: EnvRecord = {
 const revalidatorProxyOrigins: EnvRecord = {
     p: 'https://nav-enonicxp-frontend-revalidator-proxy.intern.nav.no',
     dev: 'https://nav-enonicxp-frontend-revalidator-proxy.intern.dev.nav.no',
-    dev3: 'https://nav-enonicxp-frontend-revalidator-proxy-3.intern.dev.nav.no',
+    dev3: 'https://nav-enonicxp-frontend-revalidator-proxy-3.ekstern.dev.nav.no',
     q6: 'https://nav-enonicxp-frontend-revalidator-proxy-2.intern.dev.nav.no',
     localhost: 'http://localhost:3002',
     test: 'http://localhost:3002',
@@ -33,7 +33,7 @@ const revalidatorProxyOrigins: EnvRecord = {
 const norgOfficeOverviewApiUrl: EnvRecord = {
     p: 'https://norg2.intern.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
     dev: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
-    dev3: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
+    dev3: 'https://norg2.ekstern.dev.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
     q6: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
     localhost: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
     test: '', // 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
@@ -42,7 +42,7 @@ const norgOfficeOverviewApiUrl: EnvRecord = {
 const norgOfficeInformationApiUrl: EnvRecord = {
     p: 'https://norg2.intern.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
     dev: 'https://norg2.intern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
-    dev3: 'https://norg2.intern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
+    dev3: 'https://norg2.ekstern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
     q6: 'https://norg2.intern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
     localhost: 'https://norg2.intern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
     test: '', // 'https://norg2.intern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
@@ -51,7 +51,7 @@ const norgOfficeInformationApiUrl: EnvRecord = {
 const norgLegacyOfficeInformationApiUrl: EnvRecord = {
     p: 'https://norg2.intern.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
     dev: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
-    dev3: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
+    dev3: 'https://norg2.ekstern.dev.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
     q6: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
     localhost:
         'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
@@ -61,7 +61,7 @@ const norgLegacyOfficeInformationApiUrl: EnvRecord = {
 const norgLocalOfficeApiUrl: EnvRecord = {
     p: 'https://norg2.intern.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
     dev: 'https://norg2.intern.dev.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
-    dev3: 'https://norg2.intern.dev.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
+    dev3: 'https://norg2.ekstern.dev.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
     q6: 'https://norg2.intern.dev.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
     localhost: 'https://norg2.intern.dev.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
     test: '', //https://norg2.intern.dev.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
@@ -79,7 +79,7 @@ const xpOrigins: EnvRecord = {
 const searchApiUrls: EnvRecord = {
     p: 'https://navno-search-admin-api.intern.nav.no/content/personbruker',
     dev: 'https://navno-search-admin-api.intern.dev.nav.no/content/personbruker',
-    dev3: 'https://navno-search-admin-api.intern.dev.nav.no/content/personbruker',
+    dev3: 'https://navno-search-admin-api.ekstern.dev.nav.no/content/personbruker',
     q6: '',
     localhost: '',
     test: '',
