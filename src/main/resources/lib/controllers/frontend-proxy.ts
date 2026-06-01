@@ -122,7 +122,10 @@ export const frontendProxy = (req: Request, path?: string) => {
             return errorResponse(frontendUrl, 500, 'No response from HTTP client');
         }
 
-        const { status, message } = response;
+        const contentType = response.contentType || 'text/html; charset=UTF-8';
+        const status = typeof response.status === 'number' ? response.status : 200;
+        const body = response.body?.toString() || '';
+        const message = response.message ? response.message.toString() : '';
 
         if (status >= 400 && status !== 404) {
             logger.warning(
@@ -136,9 +139,13 @@ export const frontendProxy = (req: Request, path?: string) => {
             return errorResponse(frontendUrl, status, 'Redirects are not supported in editor view');
         }
 
-        return response;
+        return {
+            status,
+            contentType,
+            body,
+        };
     } catch (e) {
-        const errorDetail = e instanceof Error ? e.stack : String(e);
+        const errorDetail = (e as any)?.stack || String(e);
         return errorResponse(frontendUrl || 'N/A', 500, `Exception: ${errorDetail}`);
     }
 };

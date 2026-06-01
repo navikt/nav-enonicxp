@@ -149,12 +149,43 @@ const removeInvalidFilterIds = (req: Request) => {
     });
 };
 
-const dynamicPageController = (req: Request) => {
-    if ((req.mode === 'edit' || req.mode === 'inline') && req.method === 'GET') {
-        removeInvalidFilterIds(req);
+const hasBody = (value: unknown): value is { body: string } => {
+    return !!value && typeof value === 'object' && 'body' in value;
+};
+
+const getStatus = (value: unknown): number | 'unknown' => {
+    if (!value || typeof value !== 'object' || !('status' in value)) {
+        return 'unknown';
     }
 
-    return frontendProxy(req);
+    const status = (value as { status?: unknown }).status;
+    return typeof status === 'number' ? status : 'unknown';
+};
+
+const dynamicPageController = (req: Request) => {
+    if ((req.mode === 'edit' || req.mode === 'inline') && req.method === 'GET') {
+        try {
+            removeInvalidFilterIds(req);
+        } catch (e) {
+            const errorDetail = (e as any)?.stack || String(e);
+            logger.error(
+                `Unexpected error in removeInvalidFilterIds for path ${req.rawPath}: ${errorDetail}`
+            );
+        }
+    }
+
+    const proxyResult = frontendProxy(req);
+    logger.info(
+        `Finished processing dynamic page request for path ${req.rawPath} - status: ${getStatus(proxyResult)}, hasBody: ${hasBody(proxyResult)}, bodyLength: ${hasBody(proxyResult) ? proxyResult.body.length : 0}`
+    );
+
+    if (!hasBody(proxyResult) || !proxyResult.body) {
+        logger.error(
+            `No body in proxy result for path ${req.rawPath} - status: ${getStatus(proxyResult)}`
+        );
+    }
+
+    return proxyResult;
 };
 
 export const get = dynamicPageController;
