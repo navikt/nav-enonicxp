@@ -182,6 +182,7 @@ export const get = (req: Request) => {
     });
 
     const allHeaders = response.headers || {};
+    // alt-svc from the frontend advertises HTTP/3 which XP's Jetty does not support, and the header value causes Jetty to crash during response serialization
     const { 'alt-svc': _, ...safeHeaders } = allHeaders;
     const body = response.body || '';
 
