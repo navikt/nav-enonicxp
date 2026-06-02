@@ -139,18 +139,14 @@ export const frontendProxy = (req: Request, path?: string) => {
         // Forward the CSP header from the frontend response to prevent XP 7.16's default
         // restrictive CSP from blocking inline scripts needed for Next.js hydration.
         // When both are present, browsers enforce all CSP headers (most restrictive wins).
-        const cspHeader = response.headers?.['content-security-policy'];
+        const cspHeader = response.headers?.['content-security-policy'] || '';
         const appName = response.headers?.['app-name'] || 'unknown-app';
-        if (cspHeader) {
-            return {
-                status: response.status,
-                contentType: response.contentType,
-                body: response.body,
-                headers: { 'content-security-policy': cspHeader, 'app-name': appName },
-            };
-        }
-
-        return response;
+        return {
+            status: response.status,
+            contentType: response.contentType,
+            body: response.body,
+            headers: { 'content-security-policy': cspHeader, 'app-name': appName },
+        };
     } catch (e) {
         const errorDetail = (e as any)?.stack || String(e);
         return errorResponse(frontendUrl || 'N/A', 500, `Exception: ${errorDetail}`);

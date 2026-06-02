@@ -11,6 +11,7 @@ import { hasValidCustomPath } from '../paths/custom-paths/custom-path-utils';
 import { runInContext } from '../context/run-in-context';
 import { getFromLocalCache } from '../cache/local-cache';
 import { buildCacheKeyForReqContext } from '../cache/utils';
+import { logger } from '../utils/logging';
 
 const FRONTEND_API_URL = `${URLS.FRONTEND_ORIGIN}/editor/site-info`;
 const CACHE_KEY = 'content-lists';
@@ -172,11 +173,23 @@ export const get = (req: Request) => {
         },
     };
 
-    return httpClient.request({
+    const response = httpClient.request({
         url: FRONTEND_API_URL,
         method: 'POST',
         contentType: 'application/json',
         headers: { secret: app.config.serviceSecret },
         body: JSON.stringify(requestBody),
     });
+
+    const allHeaders = response.headers || {};
+    const { 'alt-svc': _, ...safeHeaders } = allHeaders;
+    const body = response.body || '';
+
+    return {
+        ...response,
+        status: response.status,
+        body: body,
+        contentType: response.contentType,
+        headers: safeHeaders,
+    };
 };
