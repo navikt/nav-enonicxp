@@ -172,11 +172,24 @@ export const get = (req: Request) => {
         },
     };
 
-    return httpClient.request({
+    const response = httpClient.request({
         url: FRONTEND_API_URL,
         method: 'POST',
         contentType: 'application/json',
         headers: { secret: app.config.serviceSecret },
         body: JSON.stringify(requestBody),
     });
+
+    const allHeaders = response.headers || {};
+    // alt-svc from the frontend advertises HTTP/3 which XP's Jetty does not support, and the header value causes Jetty to crash during response serialization
+    const { 'alt-svc': _, ...safeHeaders } = allHeaders;
+    const body = response.body || '';
+
+    return {
+        ...response,
+        status: response.status,
+        body: body,
+        contentType: response.contentType,
+        headers: safeHeaders,
+    };
 };
