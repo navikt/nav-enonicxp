@@ -98,17 +98,19 @@ export const buildTrimmedFormDetailsData = (
         trimFormTypeVariation(ft, onChanged)
     ) as FormDetails['formType'];
 
+    const formNumbers =
+        trimmedFormNumbers.length === 0
+            ? undefined
+            : trimmedFormNumbers.length === 1
+              ? trimmedFormNumbers[0]
+              : trimmedFormNumbers;
+
     const trimmedData: FormDetails = {
         ...data,
         title,
         longTitle,
         languageDisclaimer,
-        formNumbers:
-            trimmedFormNumbers.length === 0
-                ? undefined
-                : trimmedFormNumbers.length === 1
-                  ? trimmedFormNumbers[0]
-                  : trimmedFormNumbers,
+        formNumbers,
         formType: trimmedFormType,
     };
 
