@@ -140,7 +140,7 @@ export const sitecontentNotFoundRedirect = ({
             ? runInLocaleContext(
                   {
                       locale:
-                          getContentLocaleRedirectTarget(redirectContent) ??
+                          getContentLocaleRedirectTarget(redirectContent) ||
                           redirectContent.language,
                   },
                   () => runSitecontentGuillotineQuery(redirectContent, branch)
