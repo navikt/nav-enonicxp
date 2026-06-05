@@ -5,6 +5,7 @@ import { CONTENT_REPO_PREFIX, CONTENT_ROOT_REPO_ID } from '../constants';
 import { transformFragmentCreatorToFragment } from '../content-transformers/fragment-creator';
 import { isContentLocalized } from '../localization/locale-utils';
 import { updateQbrickVideoContent } from './video-update';
+import { trimFormDetailsWhitespace } from './form-details-trim';
 import { logger } from '../utils/logging';
 import { isMainDatanode } from '../cluster-utils/main-datanode';
 import { contentDataLocaleFallbackRefreshItems } from './content-data-locale-fallback-update';
@@ -12,15 +13,15 @@ import { synchronizeMetaDataToLayers } from '../meta-synchronization/meta-synchr
 
 let hasContentUpdateListener = false;
 
-const contentTypesToMetaSynchronize = [
+const contentTypesToMetaSynchronize = new Set([
     'no.nav.navno:content-page-with-sidemenus',
     'no.nav.navno:situation-page',
     'no.nav.navno:guide-page',
     'no.nav.navno:themed-article-page',
     'no.nav.navno:tools-page',
     'no.nav.navno:current-topic-page',
-    'no.nav.navno:generic-page',
-];
+    'no.nav.navno:generic-page'],
+);
 
 const handleUpdateEvent = (event: eventLib.EnonicEvent) => {
     if (!isMainDatanode()) {
@@ -43,6 +44,15 @@ const handleUpdateEvent = (event: eventLib.EnonicEvent) => {
             const { _path, type } = content;
 
             switch (type) {
+                case 'no.nav.navno:form-details': {
+                    if (node.branch !== 'draft') {
+                        break;
+                    }
+
+                    runInContext({ asAdmin: true }, () => trimFormDetailsWhitespace(content));
+                    break;
+                }
+                }
                 case 'no.nav.navno:video': {
                     updateQbrickVideoContent(content);
                     break;
@@ -64,9 +74,7 @@ const handleUpdateEvent = (event: eventLib.EnonicEvent) => {
                 case 'no.nav.navno:global-case-time-set': {
                     if (repo !== CONTENT_ROOT_REPO_ID) {
                         const layerId = repo.replace(`${CONTENT_REPO_PREFIX}.`, '');
-                        logger.error(
-                            `Content on "${_path}" with type "${type}" was localized to layer "${layerId}" - reverting!`
-                        );
+                        logger.error(`Content on "${_path}" with type "${type}" was localized to layer "${layerId}" - reverting!`);
                         contentLib.resetInheritance({
                             key: id,
                             projectName: layerId,
@@ -100,7 +108,7 @@ const handlePushedEvent = (event: eventLib.EnonicEvent) => {
 
             const { type } = content;
 
-            if (contentTypesToMetaSynchronize.includes(type)) {
+            if (contentTypesToMetaSynchronize.has(type)) {
                 synchronizeMetaDataToLayers(content, repo);
             }
         });
