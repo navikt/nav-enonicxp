@@ -13,15 +13,7 @@ import { synchronizeMetaDataToLayers } from '../meta-synchronization/meta-synchr
 
 let hasContentUpdateListener = false;
 
-const contentTypesToMetaSynchronize = [
-    'no.nav.navno:content-page-with-sidemenus',
-    'no.nav.navno:situation-page',
-    'no.nav.navno:guide-page',
-    'no.nav.navno:themed-article-page',
-    'no.nav.navno:tools-page',
-    'no.nav.navno:current-topic-page',
-    'no.nav.navno:generic-page',
-];
+const contentTypesToMetaSynchronize = ['no.nav.navno:content-page-with-sidemenus', 'no.nav.navno:situation-page', 'no.nav.navno:guide-page', 'no.nav.navno:themed-article-page', 'no.nav.navno:tools-page', 'no.nav.navno:current-topic-page', 'no.nav.navno:generic-page'];
 
 const handleUpdateEvent = (event: eventLib.EnonicEvent) => {
     if (!isMainDatanode()) {
@@ -45,7 +37,10 @@ const handleUpdateEvent = (event: eventLib.EnonicEvent) => {
 
             switch (type) {
                 case 'no.nav.navno:form-details': {
-                    trimFormDetailsWhitespace(content);
+                    if (node.branch === 'draft') {
+                        trimFormDetailsWhitespace(content);
+                        break;
+                    }
                     break;
                 }
                 case 'no.nav.navno:video': {
@@ -54,8 +49,7 @@ const handleUpdateEvent = (event: eventLib.EnonicEvent) => {
                 }
                 case 'no.nav.navno:fragment-creator': {
                     transformFragmentCreatorToFragment({
-                        content,
-                        repoId: repo,
+                        content, repoId: repo,
                     });
                     break;
                 }
@@ -69,9 +63,7 @@ const handleUpdateEvent = (event: eventLib.EnonicEvent) => {
                 case 'no.nav.navno:global-case-time-set': {
                     if (repo !== CONTENT_ROOT_REPO_ID) {
                         const layerId = repo.replace(`${CONTENT_REPO_PREFIX}.`, '');
-                        logger.error(
-                            `Content on "${_path}" with type "${type}" was localized to layer "${layerId}" - reverting!`
-                        );
+                        logger.error(`Content on "${_path}" with type "${type}" was localized to layer "${layerId}" - reverting!`);
                         contentLib.resetInheritance({
                             key: id,
                             projectName: layerId,
@@ -120,12 +112,10 @@ export const activateContentUpdateListener = () => {
     hasContentUpdateListener = true;
 
     eventLib.listener({
-        type: 'node.updated',
-        callback: handleUpdateEvent,
+        type: 'node.updated', callback: handleUpdateEvent,
     });
 
     eventLib.listener({
-        type: 'node.pushed',
-        callback: handlePushedEvent,
+        type: 'node.pushed', callback: handlePushedEvent,
     });
 };

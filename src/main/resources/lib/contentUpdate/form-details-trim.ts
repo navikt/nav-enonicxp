@@ -1,5 +1,4 @@
 import * as contentLib from '/lib/xp/content';
-import { Content } from '/lib/xp/content';
 import { FormDetails } from '@xp-types/site/content-types/form-details';
 import { forceArray } from '../utils/array-utils';
 import { logger } from '../utils/logging';
@@ -116,7 +115,7 @@ export const buildTrimmedFormDetailsData = (
     return { trimmedData, hasChanges };
 };
 
-export const trimFormDetailsWhitespace = (content: Content<'no.nav.navno:form-details'>) => {
+export const trimFormDetailsWhitespace = (content: contentLib.Content<'no.nav.navno:form-details'>) => {
     const { trimmedData, hasChanges } = buildTrimmedFormDetailsData(content.data);
 
     if (!hasChanges) {
