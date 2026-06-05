@@ -5,6 +5,7 @@ import { CONTENT_REPO_PREFIX, CONTENT_ROOT_REPO_ID } from '../constants';
 import { transformFragmentCreatorToFragment } from '../content-transformers/fragment-creator';
 import { isContentLocalized } from '../localization/locale-utils';
 import { updateQbrickVideoContent } from './video-update';
+import { trimFormDetailsWhitespace } from './form-details-trim';
 import { logger } from '../utils/logging';
 import { isMainDatanode } from '../cluster-utils/main-datanode';
 import { contentDataLocaleFallbackRefreshItems } from './content-data-locale-fallback-update';
@@ -43,6 +44,10 @@ const handleUpdateEvent = (event: eventLib.EnonicEvent) => {
             const { _path, type } = content;
 
             switch (type) {
+                case 'no.nav.navno:form-details': {
+                    trimFormDetailsWhitespace(content);
+                    break;
+                }
                 case 'no.nav.navno:video': {
                     updateQbrickVideoContent(content);
                     break;
