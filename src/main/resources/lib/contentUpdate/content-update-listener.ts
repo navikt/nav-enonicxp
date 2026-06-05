@@ -20,7 +20,7 @@ const contentTypesToMetaSynchronize = new Set([
     'no.nav.navno:themed-article-page',
     'no.nav.navno:tools-page',
     'no.nav.navno:current-topic-page',
-    'no.nav.navno:generic-page']
+    'no.nav.navno:generic-page'],
 );
 
 const handleUpdateEvent = (event: eventLib.EnonicEvent) => {
@@ -57,7 +57,8 @@ const handleUpdateEvent = (event: eventLib.EnonicEvent) => {
                 }
                 case 'no.nav.navno:fragment-creator': {
                     transformFragmentCreatorToFragment({
-                        content, repoId: repo,
+                        content,
+                        repoId: repo,
                     });
                     break;
                 }
@@ -120,10 +121,12 @@ export const activateContentUpdateListener = () => {
     hasContentUpdateListener = true;
 
     eventLib.listener({
-        type: 'node.updated', callback: handleUpdateEvent,
+        type: 'node.updated',
+        callback: handleUpdateEvent,
     });
 
     eventLib.listener({
-        type: 'node.pushed', callback: handlePushedEvent,
+        type: 'node.pushed',
+        callback: handlePushedEvent,
     });
 };

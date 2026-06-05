@@ -12,7 +12,7 @@ type VariationItem = NonNullable<
 
 const trimVariationItem = (
     item: VariationItem,
-    onChanged: () => void
+    onChanged: () => void,
 ): VariationItem => {
     const trimmedLabel = item.label.trim();
     if (trimmedLabel !== item.label) {
@@ -42,7 +42,7 @@ const trimVariationItem = (
 
 const trimFormTypeVariation = (
     variation: FormTypeVariation,
-    onChanged: () => void
+    onChanged: () => void,
 ): FormTypeVariation => {
     const selected = variation._selected;
     const selectedData = (variation as Record<string, unknown>)[selected] as {
@@ -67,7 +67,7 @@ const trimFormTypeVariation = (
 };
 
 export const buildTrimmedFormDetailsData = (
-    data: FormDetails
+    data: FormDetails,
 ): { trimmedData: FormDetails; hasChanges: boolean } => {
     let hasChanges = false;
     const onChanged = () => {
