@@ -8,6 +8,7 @@ import { runInLocaleContext } from '../../../lib/localization/locale-context';
 import { runSitecontentGuillotineQuery } from '../../../lib/guillotine/queries/run-sitecontent-query';
 import { transformToRedirect } from '../common/transform-to-redirect';
 import { SitecontentResponse } from '../common/content-response';
+import { getContentLocaleRedirectTarget } from '../../../lib/utils/content-utils';
 
 const MAX_PARENT_PATH_LENGTH = 10;
 
@@ -136,8 +137,13 @@ export const sitecontentNotFoundRedirect = ({
             getRedirectFromAncestors(`${REDIRECTS_ROOT_PATH}${strippedPath}`);
 
         return redirectContent
-            ? runInLocaleContext({ locale: redirectContent.language }, () =>
-                  runSitecontentGuillotineQuery(redirectContent, branch)
+            ? runInLocaleContext(
+                  {
+                      locale:
+                          getContentLocaleRedirectTarget(redirectContent) ||
+                          redirectContent.language,
+                  },
+                  () => runSitecontentGuillotineQuery(redirectContent, branch)
               )
             : null;
     });
