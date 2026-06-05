@@ -45,11 +45,13 @@ const handleUpdateEvent = (event: eventLib.EnonicEvent) => {
 
             switch (type) {
                 case 'no.nav.navno:form-details': {
-                    if (node.branch === 'draft') {
-                        trimFormDetailsWhitespace(content);
+                    if (node.branch !== 'draft') {
                         break;
                     }
+
+                    runInContext({ asAdmin: true }, () => trimFormDetailsWhitespace(content));
                     break;
+                }
                 }
                 case 'no.nav.navno:video': {
                     updateQbrickVideoContent(content);
