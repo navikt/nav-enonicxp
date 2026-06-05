@@ -20,8 +20,8 @@ const contentTypesToMetaSynchronize = new Set([
     'no.nav.navno:themed-article-page',
     'no.nav.navno:tools-page',
     'no.nav.navno:current-topic-page',
-    'no.nav.navno:generic-page'],
-);
+    'no.nav.navno:generic-page',
+]);
 
 const handleUpdateEvent = (event: eventLib.EnonicEvent) => {
     if (!isMainDatanode()) {
@@ -52,7 +52,6 @@ const handleUpdateEvent = (event: eventLib.EnonicEvent) => {
                     runInContext({ asAdmin: true }, () => trimFormDetailsWhitespace(content));
                     break;
                 }
-                }
                 case 'no.nav.navno:video': {
                     updateQbrickVideoContent(content);
                     break;
@@ -74,7 +73,9 @@ const handleUpdateEvent = (event: eventLib.EnonicEvent) => {
                 case 'no.nav.navno:global-case-time-set': {
                     if (repo !== CONTENT_ROOT_REPO_ID) {
                         const layerId = repo.replace(`${CONTENT_REPO_PREFIX}.`, '');
-                        logger.error(`Content on "${_path}" with type "${type}" was localized to layer "${layerId}" - reverting!`);
+                        logger.error(
+                            `Content on "${_path}" with type "${type}" was localized to layer "${layerId}" - reverting!`
+                        );
                         contentLib.resetInheritance({
                             key: id,
                             projectName: layerId,
