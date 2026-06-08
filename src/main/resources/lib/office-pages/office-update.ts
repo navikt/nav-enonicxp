@@ -331,6 +331,9 @@ const updateOfficePageIfChanged = (
         // is udate with master. Ie, content that currently is in
         // some sort of "in progress" by editors, should not
         // be automatically published.
+        logger.info(
+            `OfficeImporting: Updated office page ${existingOfficePage._path}. Up to date with master: ${isUpToDateWithMaster}, all outbound dependencies are published: ${allOutboundsArePublished}`
+        );
         return isUpToDateWithMaster && allOutboundsArePublished;
     } catch (e) {
         logger.critical(
@@ -423,6 +426,9 @@ export const processAllOffices = (offices: OfficeNorgData[]) => {
 
         if (existingOffice) {
             const shouldBePublished = updateOfficePageIfChanged(officePageData, existingOffice);
+            logger.info(
+                `OfficeImporting: ${officePageData.navn} already exists, updating content. Should be published: ${shouldBePublished}`
+            );
             if (shouldBePublished) {
                 summary.updated.push(existingOffice._id);
             }
