@@ -36,6 +36,8 @@ const officeNameOverrides: Readonly<Record<string, string>> = {
     '0891': 'Nav arbeidslivssenter Vestfold og Telemark',
 };
 
+const officeTypesToForcePublish = new Set(['LOKAL']);
+
 const OFFICE_PAGE_CONTENT_TYPE: OfficePageDescriptor = `no.nav.navno:office-page`;
 const INTERNAL_LINK_CONTENT_TYPE: InternalLinkDescriptor = `no.nav.navno:internal-link`;
 const OFFICES_BASE_PATH = '/www.nav.no/kontor';
@@ -327,14 +329,14 @@ const updateOfficePageIfChanged = (
             requireValid: false,
         });
 
-        // Content can only be published if it and it's outbound content
-        // is udate with master. Ie, content that currently is in
-        // some sort of "in progress" by editors, should not
-        // be automatically published.
-        logger.info(
-            `OfficeImporting: Updated office page ${existingOfficePage._path}. Up to date with master: ${isUpToDateWithMaster}, all outbound dependencies are published: ${allOutboundsArePublished}`
-        );
-        return isUpToDateWithMaster && allOutboundsArePublished;
+        // Some office types have an editorial part, and should not be force published as an
+        // editor might also be working on a draft. LOKAL (lokalkontor) however
+        // should always be published immediately.
+        const shouldPublish =
+            officeTypesToForcePublish.has(newOfficeData.type) ||
+            (isUpToDateWithMaster && allOutboundsArePublished);
+
+        return shouldPublish;
     } catch (e) {
         logger.critical(
             `OfficeImporting: Failed to modify office page content ${existingOfficePage._path} - ${e}`
@@ -426,9 +428,7 @@ export const processAllOffices = (offices: OfficeNorgData[]) => {
 
         if (existingOffice) {
             const shouldBePublished = updateOfficePageIfChanged(officePageData, existingOffice);
-            logger.info(
-                `OfficeImporting: ${officePageData.navn} already exists, updating content. Should be published: ${shouldBePublished}`
-            );
+
             if (shouldBePublished) {
                 summary.updated.push(existingOffice._id);
             }
