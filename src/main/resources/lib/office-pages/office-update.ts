@@ -1,6 +1,7 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { HttpRequestParams, request } from '/lib/http-client';
+import { Workflow } from '@enonic-types/core';
 import * as commonLib from '/lib/xp/common';
 import { isDraftAndMasterSameVersion } from '../repos/repo-utils';
 import { OfficePage as OfficePageData } from '@xp-types/site/content-types/office-page';
@@ -68,6 +69,22 @@ const norgRequest = <T>(requestConfig: HttpRequestParams): T[] | null => {
         );
         return null;
     }
+};
+
+const createForcedWorkflowState = (
+    state: Workflow['state'],
+    existingOfficePage: Content<OfficePageDescriptor>
+) => {
+    if (existingOfficePage.data.officeNorgData?.data?.type !== 'LOKAL') {
+        return null;
+    }
+    // If the updatable office is LOKAL (lokalkontor), we want to force publish it.
+    // setting state: 'READY' is the first step to allow this.
+    return {
+        workflow: {
+            state,
+        },
+    };
 };
 
 const localOfficeAdapter = (officeData: OfficeRawNORGData) => ({ ...officeData, type: 'LOKAL' });
@@ -325,6 +342,7 @@ const updateOfficePageIfChanged = (
                     officeData: newOfficeData,
                     checksum: newChecksum,
                 }),
+                ...createForcedWorkflowState('READY', existingOfficePage), // Forces LOKAL to be ready for publish
             }),
             requireValid: false,
         });
