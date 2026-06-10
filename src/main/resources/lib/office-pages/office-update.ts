@@ -16,6 +16,7 @@ import {
 } from '../constants';
 import { createObjectChecksum } from '../utils/object-utils';
 import { OfficeRawNORGData } from './office-raw-norg-data';
+import { OfficeTypes } from './types';
 
 type OfficePageDescriptor = NavNoDescriptor<'office-page'>;
 type InternalLinkDescriptor = NavNoDescriptor<'internal-link'>;
@@ -37,7 +38,7 @@ const officeNameOverrides: Readonly<Record<string, string>> = {
     '0891': 'Nav arbeidslivssenter Vestfold og Telemark',
 };
 
-const officeTypesToForcePublish = new Set(['LOKAL']);
+const officeTypesToForcePublish = new Set([OfficeTypes.LOKAL]);
 
 const OFFICE_PAGE_CONTENT_TYPE: OfficePageDescriptor = `no.nav.navno:office-page`;
 const INTERNAL_LINK_CONTENT_TYPE: InternalLinkDescriptor = `no.nav.navno:internal-link`;
@@ -45,10 +46,10 @@ const OFFICES_BASE_PATH = '/www.nav.no/kontor';
 const ALS_OFFICES_BASE_PATH = '/www.nav.no/arbeidsgiver';
 
 const getOfficeContentName = (officeData: OfficeNorgData) => commonLib.sanitize(officeData.navn);
-const officeTypesForImport: ReadonlySet<string> = new Set(['HMS', 'ALS']);
+const officeTypesForImport: ReadonlySet<string> = new Set([OfficeTypes.HMS, OfficeTypes.ALS]);
 
 const getParentPathForType = (type: string) =>
-    type === 'ALS' ? ALS_OFFICES_BASE_PATH : OFFICES_BASE_PATH;
+    type === OfficeTypes.ALS ? ALS_OFFICES_BASE_PATH : OFFICES_BASE_PATH;
 
 const norgRequest = <T>(requestConfig: HttpRequestParams): T[] | null => {
     const response = request({
@@ -71,23 +72,23 @@ const norgRequest = <T>(requestConfig: HttpRequestParams): T[] | null => {
     }
 };
 
-const createForcedWorkflowState = (
-    state: Workflow['state'],
-    existingOfficePage: Content<OfficePageDescriptor>
-) => {
-    if (existingOfficePage.data.officeNorgData?.data?.type !== 'LOKAL') {
+const forceReadyStateIfLocal = (existingOfficePage: Content<OfficePageDescriptor>) => {
+    if (existingOfficePage.data.officeNorgData?.data?.type !== OfficeTypes.LOKAL) {
         return null;
     }
     // If the updatable office is LOKAL (lokalkontor), we want to force publish it.
     // setting state: 'READY' is the first step to allow this.
     return {
         workflow: {
-            state,
+            state: 'READY' as Workflow['state'],
         },
     };
 };
 
-const localOfficeAdapter = (officeData: OfficeRawNORGData) => ({ ...officeData, type: 'LOKAL' });
+const localOfficeAdapter = (officeData: OfficeRawNORGData) => ({
+    ...officeData,
+    type: OfficeTypes.LOKAL,
+});
 
 const generalOfficeAdapter = (
     officeData: OfficeRawNORGData,
@@ -342,7 +343,7 @@ const updateOfficePageIfChanged = (
                     officeData: newOfficeData,
                     checksum: newChecksum,
                 }),
-                ...createForcedWorkflowState('READY', existingOfficePage), // Forces LOKAL to be ready for publish
+                ...forceReadyStateIfLocal(existingOfficePage),
             }),
             requireValid: false,
         });
@@ -351,7 +352,7 @@ const updateOfficePageIfChanged = (
         // editor might also be working on a draft. LOKAL (lokalkontor) however
         // should always be published immediately.
         const shouldPublish =
-            officeTypesToForcePublish.has(newOfficeData.type) ||
+            officeTypesToForcePublish.has(newOfficeData.type as OfficeTypes) ||
             (isUpToDateWithMaster && allOutboundsArePublished);
 
         return shouldPublish;
@@ -370,7 +371,7 @@ const createOfficePage = (officeData: OfficeNorgData) => {
         checksum: createObjectChecksum(officeData),
     });
 
-    const previewOnly = officeData.type !== 'LOKAL';
+    const previewOnly = officeData.type !== OfficeTypes.LOKAL;
 
     try {
         const content = contentLib.create({

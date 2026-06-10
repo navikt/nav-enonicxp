@@ -11,6 +11,12 @@ const OFFICE_PAGE_TYPES = [
     'no.nav.navno:office-page',
 ] as const satisfies ReadonlyArray<ContentDescriptor>;
 
+export enum OfficeTypes {
+    LOKAL = 'LOKAL',
+    HMS = 'HMS',
+    ALS = 'ALS',
+}
+
 export const isOfficeContent = (content: Content): content is OfficeContent =>
     OFFICE_PAGE_TYPES.includes((content as OfficeContent).type);
 

@@ -3,6 +3,7 @@ import * as contentLib from '/lib/xp/content';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import { logger } from '../../../utils/logging';
 import { CONTENT_LOCALE_DEFAULT } from '../../../constants';
+import { OfficeTypes } from '../../../office-pages/types';
 
 export const officeCallback: CreationCallback = (context, params) => {
     params.fields.editorial = {
@@ -29,7 +30,7 @@ export const officeCallback: CreationCallback = (context, params) => {
                 return null;
             }
 
-            if (officeData.type !== 'LOKAL' && officeData.type !== 'ALS') {
+            if (officeData.type !== OfficeTypes.LOKAL && officeData.type !== OfficeTypes.ALS) {
                 return null;
             }
 
@@ -39,7 +40,7 @@ export const officeCallback: CreationCallback = (context, params) => {
             // before checking.
             const language = skriftspraak?.toUpperCase() === 'NN' ? 'nn' : CONTENT_LOCALE_DEFAULT;
 
-            const rootFolder = officeData.type === 'ALS' ? 'arbeidsgiver' : 'kontor';
+            const rootFolder = officeData.type === OfficeTypes.ALS ? 'arbeidsgiver' : 'kontor';
 
             const queryResult = contentLib.query({
                 contentTypes: ['no.nav.navno:office-editorial-page'],

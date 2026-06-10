@@ -2,6 +2,7 @@ import { logger } from '../../../utils/logging';
 import { OfficeContent, Publikumsmottak } from '../../../office-pages/types';
 import { forceArray, removeDuplicatesFilter } from '../../../utils/array-utils';
 import { capitalize } from '../../../utils/string-utils';
+import { OfficeTypes } from '../../../office-pages/types';
 
 const INGRESS_MAX_LENGTH = 500;
 
@@ -46,7 +47,7 @@ export const buildSearchDocumentOfficeIngress = (content: OfficeContent) => {
         return '';
     }
 
-    if (officeData.type === 'HMS' || officeData.type === 'ALS') {
+    if (officeData.type === OfficeTypes.HMS || officeData.type === OfficeTypes.ALS) {
         return content.data.metaDescription || officeData.navn;
     }
 

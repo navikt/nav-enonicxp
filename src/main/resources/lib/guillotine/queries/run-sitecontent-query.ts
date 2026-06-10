@@ -19,6 +19,7 @@ import { getLocaleFromContext } from '../../localization/locale-context';
 import { isContentPreviewOnly } from '../../utils/content-utils';
 import { SitecontentResponse } from '../../../services/sitecontent/common/content-response';
 import { ContentDescriptor } from '../../../types/content-types/content-config';
+import { OfficeTypes } from 'lib/office-pages/types';
 
 export type GuillotineUnresolvedComponentType = { type: ComponentType; path: string };
 
@@ -57,8 +58,8 @@ export const runSitecontentGuillotineQuery = (
     // we need to run buildOfficeBranchPageWithEditorialContent that will specifically look for and resolve the editorial page.
     if (
         baseContent.type === 'no.nav.navno:office-page' &&
-        (baseContent.data?.officeNorgData.data.type === 'LOKAL' ||
-            baseContent.data?.officeNorgData.data.type === 'ALS')
+        (baseContent.data?.officeNorgData.data.type === OfficeTypes.LOKAL ||
+            baseContent.data?.officeNorgData.data.type === OfficeTypes.ALS)
     ) {
         return buildOfficeBranchPageWithEditorialContent(contentQueryResult);
     }
