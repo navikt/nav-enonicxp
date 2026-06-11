@@ -19,7 +19,7 @@ import { getLocaleFromContext } from '../../localization/locale-context';
 import { isContentPreviewOnly } from '../../utils/content-utils';
 import { SitecontentResponse } from '../../../services/sitecontent/common/content-response';
 import { ContentDescriptor } from '../../../types/content-types/content-config';
-import { OfficeTypes } from 'lib/office-pages/types';
+import { OfficeTypes } from '../../office-pages/types';
 
 export type GuillotineUnresolvedComponentType = { type: ComponentType; path: string };
 
