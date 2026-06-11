@@ -1,5 +1,5 @@
 import { logger } from '../../../utils/logging';
-import { OfficeContent, Publikumsmottak } from '../../../office-pages/types';
+import { OfficeContent, Publikumsmottak, OfficeTypes } from '../../../office-pages/types';
 import { forceArray, removeDuplicatesFilter } from '../../../utils/array-utils';
 import { capitalize } from '../../../utils/string-utils';
 
@@ -46,7 +46,7 @@ export const buildSearchDocumentOfficeIngress = (content: OfficeContent) => {
         return '';
     }
 
-    if (officeData.type === 'HMS' || officeData.type === 'ALS') {
+    if (officeData.type === OfficeTypes.HMS || officeData.type === OfficeTypes.ALS) {
         return content.data.metaDescription || officeData.navn;
     }
 
