@@ -12,6 +12,7 @@ type SimpleHit = {
     type: string;
 };
 
+//TODO: Slett når ikke brukes lenger?
 export const externalArchiveSearchService = (req: Request) => {
     try {
         const { query, searchType } = req.params;
