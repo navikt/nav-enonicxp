@@ -3,6 +3,14 @@
     <description>Responsive flexbox-kolonner</description>
     <form>
         <mixin name="header-with-anchor"/>
+        <input type="TextArea" name="paragraph">
+            <label>Avsnitt</label>
+            <occurrences minimum="0" maximum="1"/>
+            <config>
+                <max-length>250</max-length>
+                <show-counter>true</show-counter>
+            </config>
+        </input>
         <input type="Long" name="numCols">
             <label>Antall kolonner ved full skjermbredde</label>
             <config>
