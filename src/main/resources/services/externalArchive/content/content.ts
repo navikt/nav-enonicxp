@@ -13,6 +13,7 @@ import { getArchivedContent } from '../../../lib/external-archive/get-archived-c
 
 type Response = {
     contentRaw: Content & { locale: string; originalContentTypeName: string | undefined };
+    latestContent?: Content;
     contentRenderProps?: Record<string, unknown> | null;
     versions: VersionReferenceEnriched[];
 };
@@ -82,7 +83,7 @@ export const externalArchiveContentService = (req: Request) => {
         };
     }
 
-    const { content, isArchived } = getContentForExternalArchive({
+    const { content, isArchived, latestContent } = getContentForExternalArchive({
         contentId: id,
         versionId,
         locale,
@@ -109,6 +110,7 @@ export const externalArchiveContentService = (req: Request) => {
         contentType: 'application/json',
         body: {
             contentRaw: { ...content, originalContentTypeName, locale },
+            latestContent: latestContent ?? undefined,
             contentRenderProps,
             versions,
         } satisfies Response,

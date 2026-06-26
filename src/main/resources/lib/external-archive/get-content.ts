@@ -86,7 +86,7 @@ export const getContentForExternalArchive = ({
     contentId: string;
     versionId?: string;
     locale: string;
-}): { content: Content | null; isArchived: boolean } => {
+}): { content: Content | null; isArchived: boolean; latestContent: Content | null } => {
     const latestContent = getRepoConnection({
         branch: 'draft',
         repoId: getLayersData().localeToRepoIdMap[locale],
@@ -103,11 +103,13 @@ export const getContentForExternalArchive = ({
         return {
             content: null,
             isArchived,
+            latestContent,
         };
     }
 
     return {
         content: contentRequested,
         isArchived,
+        latestContent,
     };
 };
