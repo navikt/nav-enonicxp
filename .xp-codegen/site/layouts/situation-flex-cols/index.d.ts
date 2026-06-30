@@ -16,9 +16,9 @@ export type SituationFlexCols = {
   hideFromInternalNavigation: boolean;
 
   /**
-   * Avsnitt
+   * Ingress
    */
-  paragraph?: string;
+  ingress?: string;
 
   /**
    * Antall kolonner ved full skjermbredde
