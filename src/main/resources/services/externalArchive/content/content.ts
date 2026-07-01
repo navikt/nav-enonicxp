@@ -147,6 +147,10 @@ const getArchivedOrUnpublishedTime = (
     const nextVersion = versions[currentVersionIndex - 1];
     const unpublishedTime = !nextVersion.publishFromTime ? nextVersion.timestamp : undefined;
 
+    if (currentVersionIndex === 1) {
+        return { unpublishedTime };
+    }
+
     const versionAfterNext = versions[currentVersionIndex - 2];
     const archivedTime = versionAfterNext.archivedTime ? versionAfterNext.archivedTime : undefined;
 
