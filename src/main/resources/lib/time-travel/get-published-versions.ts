@@ -125,7 +125,9 @@ export const getAllVersions = (contentId: string, locale: string) => {
 // Used by the version history selector in the frontend
 export const getPublishedAndModifiedVersions = (contentId: string, locale: string) => {
     const allVersions = getAllVersions(contentId, locale);
-    return allVersions.filter(filterNonModifiedVersions);
+    return allVersions.filter((version, index, allVersionsArray) =>
+        filterNonModifiedVersions(version, index, allVersionsArray)
+    );
 };
 
 // Used by the version history selector in the external archive
