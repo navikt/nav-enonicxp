@@ -79,8 +79,13 @@ export const frontendProxy = (req: Request, path?: string) => {
     // Ensures our legacy health-check still works after the old /no/person page is removed
     // TODO: remove this asap after the health-check has been updated
     if (req.mode === 'live' && req.url.endsWith('/no/person')) {
+        // Temporary origin logging to determine who still calls the legacy health check
+        // (external monitor vs load balancer probe vs on-node agent). Remove together with the check.
         logger.info(
-            `Is the old health check still in use? (Yes it is!), returning dummy response for ${req.url}`
+            `Is the old health check still in use? (Yes it is!), returning dummy response for ${req.url} - ` +
+                `host: ${req.host} - remoteAddress: ${req.remoteAddress} - ` +
+                `x-forwarded-for: ${req.headers['x-forwarded-for']} - user-agent: ${req.headers['user-agent']} - ` +
+                `method: ${req.method} - scheme: ${req.scheme}`
         );
         return healthCheckDummyResponse();
     }
