@@ -21,6 +21,7 @@ export type Content<ContentType extends ContentDescriptor = ContentDescriptor> =
             inherit?: Array<'CONTENT' | 'PARENT' | 'NAME' | 'SORT'>; // This field is incorrectly defined in the original type
             archivedTime?: string; // Archive related fields are missing in the original type
             archivedBy?: string;
+            _versionKey?: string;
         } & (
             | {
                   originalParentPath: string;
