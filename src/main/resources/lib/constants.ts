@@ -78,7 +78,7 @@ const searchApiUrls: EnvRecord = {
 
 const archiveOrigins: EnvRecord = {
     p: '',
-    dev: 'https://cms-arkiv.ansatt.dev.nav.no/xp',
+    dev: 'https://cms-arkiv.intern.dev.nav.no/xp',
     q6: '',
     localhost: 'http://localhost:3499/xp',
     test: '',
