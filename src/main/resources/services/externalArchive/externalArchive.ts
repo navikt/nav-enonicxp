@@ -5,6 +5,8 @@ import { externalArchiveContentTreeService } from './contentTree/contentTree';
 import { externalArchiveContentService } from './content/content';
 import { externalArchiveContentIconService } from './contentIcon/contentIcon';
 import { externalArchiveAttachmentService } from './attachment/attachment';
+import { externalArchiveNodeListService } from './nodeList/nodeList';
+import { externalArchiveLocalesService } from './locales/locales';
 
 const getRequestHandler = (req: Request) => {
     const subPath = getServiceRequestSubPath(req);
@@ -18,6 +20,10 @@ const getRequestHandler = (req: Request) => {
             return externalArchiveContentIconService;
         case 'attachment':
             return externalArchiveAttachmentService;
+        case 'nodeList':
+            return externalArchiveNodeListService;
+        case 'locales':
+            return externalArchiveLocalesService;
         default:
             return null;
     }

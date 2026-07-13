@@ -21,6 +21,7 @@ import { isMainDatanode } from '../cluster-utils/main-datanode';
 import { updateExternalSearchDocumentForContent } from '../search/update-one';
 import { draftCacheClearOnUpdate } from './draft-cache';
 import { requestArchiveIndexing } from './archive-index';
+import { isExcludedFromExternalArchive } from '../utils/content-utils';
 
 let hasSetupListeners = false;
 
@@ -71,7 +72,11 @@ const nodeListenerCallback = (event: EnonicEvent) => {
             isRunningClusterWide: true,
         });
 
-        if (event.type === 'node.pushed' && isMainDatanode()) {
+        if (
+            event.type === 'node.pushed' &&
+            isMainDatanode() &&
+            !isExcludedFromExternalArchive(content)
+        ) {
             requestArchiveIndexing(node.id, locale, content._versionKey);
         }
     });
