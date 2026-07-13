@@ -35,11 +35,10 @@ export const externalArchiveNodeListService = (req: Request) => {
         };
     }
 
+    // NB: XP-runtimen (Nashorn) mangler ES6-APIer som Number.isFinite. parsedCount > 0
+    // fanger NaN (NaN > 0 === false) og negative selv; Infinity klemmes av Math.min.
     const parsedCount = Math.floor(Number(count));
-    const countNum =
-        Number.isFinite(parsedCount) && parsedCount > 0
-            ? Math.min(parsedCount, MAX_COUNT)
-            : DEFAULT_COUNT;
+    const countNum = parsedCount > 0 ? Math.min(parsedCount, MAX_COUNT) : DEFAULT_COUNT;
 
     const result = buildExternalArchiveNodeList(locale, after ?? '', countNum);
 
