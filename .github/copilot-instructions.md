@@ -15,7 +15,7 @@
     - cache invalidation and frontend revalidation: These all call the nav-enonicxp-frontend-revalidator-proxy (separate app) to trigger cache invalidation and frontend revalidation.
     - localization/layers behavior: default layer is Bokmål. Two other layers are Nynorsk and English.
     - sitemap generation
-    - external search indexing: Each publush or delete event trigger the buildExternalSearchDocument, which creates a minimal document. This is sent to navno-search-admin-api for indexing in OpenSearch.
+    - external search indexing: Each publish or delete event triggers buildExternalSearchDocument, which creates a minimal document. This is sent to navno-search-admin-api for indexing in OpenSearch.
     - Office data imports: Cron jobs that imports from Norg2, transpiles and publishes updated office data, for example for local Nav offices.
 
 ## Architecture map (read this first)
