@@ -11,12 +11,12 @@
 - Backend CMS/API application for NAV.no on Enonic XP 7.
 - Exposes APIs consumed by **`nav-enonicxp-frontend`** (Next.js, separate repo). Some are protected with secret headers and/or role-based access.
 - Contains substantial runtime logic for:
-    - publish/prepublish/unpublish flows: Runs as Enonic XP tasks.
-    - cache invalidation and frontend revalidation: These all call the nav-enonicxp-frontend-revalidator-proxy (separate app) to trigger cache invalidation and frontend revalidation.
-    - localization/layers behavior: default layer is Bokmål. Two other layers are Nynorsk and English.
-    - sitemap generation
-    - external search indexing: Each publish or delete event triggers buildExternalSearchDocument, which creates a minimal document. This is sent to navno-search-admin-api for indexing in OpenSearch.
-    - Office data imports: Cron jobs that imports from Norg2, transpiles and publishes updated office data, for example for local Nav offices.
+    - Publish/prepublish/unpublish flows, run as Enonic XP tasks.
+    - Cache invalidation and frontend revalidation, via calls to the separate `revalidator-proxy` app.
+    - Localization/layers: layers are discovered dynamically from XP projects (`layers-data.ts`); default locale is Bokmål (`no`), currently also Nynorsk and English.
+    - Sitemap generation.
+    - External search indexing: publish/delete events call `buildExternalSearchDocument` and post to `navno-search-admin-api` (`SEARCH_API_URL`).
+    - Office data imports: cron jobs fetch from Norg2, then transpile and publish updated office data (e.g. local Nav offices).
 
 ## Architecture map (read this first)
 
@@ -104,30 +104,15 @@
 ## Code style and readability conventions
 
 - Prefer **`const` + arrow functions** for helpers and exports (`export const get = ...`, `export const run = ...`).
-- Keep flow easy to scan:
-    - guard clauses / early returns first
-    - main happy-path logic after validation
-    - small focused helper functions above the endpoint/task entrypoint
-- Prioritize **legibility over cleverness**:
-    - descriptive names are preferred over short/clever names
-    - avoid compressed “smart” expressions when a few explicit lines are clearer
-    - avoid unnecessary abstractions for one-off logic
-- Use explicit typing where it improves intent:
-    - typed request param objects
-    - explicit union types for constrained values
-    - narrow return types for service/task outputs
-- Comments should be short and purposeful:
-    - explain _why_ (constraints/workarounds/domain behavior), not obvious _what_
-    - keep comments near non-obvious logic paths
-- Error handling/logging style:
-    - use `logger` (not `console`)
-    - include useful context (ids, paths, repo/locale/branch)
-    - return explicit HTTP status + structured JSON body for service errors
-- Keep formatting/patterns consistent with surrounding files (this repo has legacy variation; align with local file style when editing).
+- Keep flow easy to scan: guard clauses / early returns first, happy-path logic after validation, small focused helpers above the entrypoint.
+- Prioritize **legibility over cleverness**: descriptive names over clever ones; explicit lines over compressed expressions; no unnecessary abstractions for one-off logic.
+- Use explicit typing where it clarifies intent: typed request-param objects, union types for constrained values, narrow return types for service/task outputs.
+- Comments: short and purposeful — explain _why_ (constraints/workarounds/domain), not obvious _what_; keep them near non-obvious logic.
+- Error handling/logging: use `logger` (not `console`); include useful context (ids, paths, repo/locale/branch); return explicit HTTP status + structured JSON body for service errors.
+- This repo has legacy variation — align with the surrounding file's style when editing.
 
 ## Working style for changes
 
-- Make minimal, surgical changes aligned with existing patterns.
-- Reuse existing helper functions before adding new abstractions.
+- Make minimal, surgical changes; reuse existing helpers before adding abstractions.
 - Preserve event/listener/scheduler side effects.
-- For behavior changes touching API responses, keep frontend contract compatibility in mind (`nav-enonicxp-frontend`).
+- For changes touching API responses, keep `nav-enonicxp-frontend` contract compatibility in mind.
