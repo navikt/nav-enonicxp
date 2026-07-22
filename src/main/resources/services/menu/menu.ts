@@ -40,9 +40,13 @@ const getTargetPath = (menuItem: MenuItemContent, locale: string) => {
 
     if (target.type === 'no.nav.navno:external-link') {
         return target.data.url;
-    } else {
-        return getPublicPath(target, locale);
     }
+
+    if (target._path === '/www.nav.no/no') {
+        return '/';
+    }
+
+    return getPublicPath(target, locale);
 };
 
 const menuItemContentTransformer = (menuItem: MenuItemContent, locale: string): MenuItem => {
