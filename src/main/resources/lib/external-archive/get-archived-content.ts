@@ -4,6 +4,7 @@ import { getContentVersionFromTime, getNodeVersions } from '../utils/version-uti
 import { getUnixTimeFromDateTimeString } from '../utils/datetime-utils';
 import * as contentLib from '/lib/xp/content';
 import { runInTimeTravelContext } from '../time-travel/run-with-time-travel';
+import { runInContext } from '../context/run-in-context';
 import { runSitecontentGuillotineQuery } from '../guillotine/queries/run-sitecontent-query';
 import { isUUID } from '../utils/uuid';
 import { stripPathPrefix } from '../paths/path-utils';
@@ -122,7 +123,9 @@ export const getArchivedContent = (
             repoId,
         },
         () => {
-            return runSitecontentGuillotineQuery(requestedContent, 'draft');
+            return runInContext({ attributes: { baseContentId: requestedContent._id } }, () =>
+                runSitecontentGuillotineQuery(requestedContent, 'draft')
+            );
         }
     );
 

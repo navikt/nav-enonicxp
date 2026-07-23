@@ -4,6 +4,7 @@ import * as contextLib from '/lib/xp/context';
 import { getNodeVersions } from '../../../../utils/version-utils';
 import { logger } from '../../../../utils/logging';
 import { getGuillotineContentQueryBaseContentId } from '../../../utils/content-query-context';
+import { contentLibGetStandard } from '../../../../time-travel/standard-functions';
 
 // Find the original content type for a content source.
 //
@@ -33,6 +34,11 @@ export const insertOriginalContentTypeField = (params: graphQlLib.CreateObjectTy
 
             const baseContentId = getGuillotineContentQueryBaseContentId();
             if (baseContentId !== _id) {
+                logger.error(
+                    `originalType field can only be resolved for the base content node - source: ${JSON.stringify(
+                        env.source
+                    )}, baseContentId: ${baseContentId}`
+                );
                 return null;
             }
 
@@ -44,7 +50,11 @@ export const insertOriginalContentTypeField = (params: graphQlLib.CreateObjectTy
 
             const firstVersion = versions[versions.length - 1];
 
-            const firstContent = contentLib.get({
+            // Fetch the specific first version directly via the standard content getter.
+            // contentLib.get is monkey-patched inside a time-travel context (used for archived
+            // content) and would otherwise ignore the versionId and resolve to the target-time
+            // version instead of the requested original version.
+            const firstContent = contentLibGetStandard({
                 key: firstVersion.nodeId,
                 versionId: firstVersion.versionId,
             });
@@ -57,6 +67,10 @@ export const insertOriginalContentTypeField = (params: graphQlLib.CreateObjectTy
             }
 
             const { type: originalType } = firstContent;
+
+            logger.info(
+                `originalType field resolved for content ${_id} - originalType: ${originalType}, currentType: ${currentType}`
+            );
 
             if (originalType === currentType) {
                 return null;
