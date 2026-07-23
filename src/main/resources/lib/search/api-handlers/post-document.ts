@@ -2,6 +2,7 @@ import * as taskLib from '/lib/xp/task';
 import { logger } from '../../utils/logging';
 import { SearchDocument } from '../document-builder/document-builder';
 import { searchApiRequest } from './search-api-request';
+import { isSearchIndexingEnabled } from '../utils';
 
 type PostAPILogMessage = {
     status: number;
@@ -61,6 +62,12 @@ export const searchApiPostDocuments = (documents: SearchDocument[]) => {
         const documentsBatch = documents.slice(i, i + BATCH_SIZE);
 
         try {
+            if (!isSearchIndexingEnabled()) {
+                logger.info(
+                    `Search indexing is not enabled for this environment, skipping posting. Logging document here: ${JSON.stringify(documentsBatch, null, 2)}`
+                );
+                continue;
+            }
             const response = searchApiRequest({
                 method: 'POST',
                 contentType: 'application/json',
@@ -78,8 +85,7 @@ export const searchApiPostDocuments = (documents: SearchDocument[]) => {
                     batchEnd: i + documentsBatch.length,
                     // If something went wrong, log document info for investigation.
                     // Log full documents if batch is small, otherwise just IDs.
-                    documents:
-                        logLevel === 'error' ? documentsBatch : undefined,
+                    documents: logLevel === 'error' ? documentsBatch : undefined,
                 })
             );
         } catch (e) {
