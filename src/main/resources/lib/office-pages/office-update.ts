@@ -46,7 +46,13 @@ const OFFICES_BASE_PATH = '/www.nav.no/kontor';
 const ALS_OFFICES_BASE_PATH = '/www.nav.no/arbeidsgiver';
 
 const getOfficeContentName = (officeData: OfficeNorgData) => commonLib.sanitize(officeData.navn);
-const officeTypesForImport: ReadonlySet<string> = new Set([OfficeTypes.HMS, OfficeTypes.ALS]);
+const officeTypesForImport: ReadonlySet<string> = new Set([
+    OfficeTypes.HMS,
+    OfficeTypes.ALS,
+    OfficeTypes.OKONOMI,
+    OfficeTypes.OPPFUTLAND,
+]);
+const officeNumbersForImport: ReadonlySet<string> = new Set(['4534']);
 
 const getParentPathForType = (type: string) =>
     type === OfficeTypes.ALS ? ALS_OFFICES_BASE_PATH : OFFICES_BASE_PATH;
@@ -152,7 +158,11 @@ export const fetchAllOfficeDataFromNorg = () => {
         );
 
         const enhetnrForFetching = officeOverview
-            .filter((office) => officeTypesForImport.has(office.type))
+            .filter(
+                (office) =>
+                    officeTypesForImport.has(office.type) ||
+                    officeNumbersForImport.has(office.enhetNr)
+            )
             .map((office) => office.enhetNr);
 
         const norgOffices = norgRequest<OfficeRawNORGData>({

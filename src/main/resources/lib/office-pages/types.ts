@@ -15,6 +15,9 @@ export enum OfficeTypes {
     LOKAL = 'LOKAL',
     HMS = 'HMS',
     ALS = 'ALS',
+    OKONOMI = 'OKONOMI',
+    OPPFUTLAND = 'OPPFUTLAND',
+    KONTROLL = 'KONTROLL',
 }
 
 export const isOfficeContent = (content: Content): content is OfficeContent =>

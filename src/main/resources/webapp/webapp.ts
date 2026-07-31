@@ -11,7 +11,6 @@ import { removeUnpublishedFromAllContentLists } from '../lib/contentlists/remove
 import { userIsAdmin } from '../lib/utils/auth-utils';
 import { externalSearchUpdateAll } from '../lib/search/update-all';
 import { URLS } from '../lib/constants';
-import { fetchAndUpdateOfficeInfo } from '../lib/office-pages/_legacy-office-information/legacy-office-update';
 import { runSchedulerCleanup } from '../lib/scheduling/schedule-cleanup';
 import { NAVOccurences } from '../lib/reporting/NAVOccurrences';
 import { archiveOldNews } from '../lib/archiving/archive-old-news';
@@ -23,10 +22,7 @@ const view = resolve('webapp.html');
 const validActions: ActionsMap = {
     norg: {
         description: 'Oppdater kontor fra norg',
-        callback: () => {
-            runOfficeFetchTask();
-            fetchAndUpdateOfficeInfo();
-        },
+        callback: runOfficeFetchTask,
     },
     wipeCache: {
         description: 'Slett frontend-cache',
