@@ -6,6 +6,27 @@
 <body>
 <h1>Webapp</h1>
 <div data-th-each="cmd: ${cmds}">
+    <div data-th-if="${cmd.cmd=='schedulerCleanup'}">
+        <h2>Fjern utdaterte scheduler-jobber</h2>
+        <p data-th-if="${schedulerMessage}" data-th-text="${schedulerMessage}"></p>
+        <div data-th-if="${hasObsoleteJobs}">
+            <p>Følgende kjente utdaterte scheduler-jobber finnes:</p>
+            <ul>
+                <li data-th-each="job: ${obsoleteJobs}" data-th-text="${job.name}"></li>
+            </ul>
+            <form data-th-action="${actionUrl}" method="post">
+                <input type="hidden" name="cmd" value="deleteObsoleteSchedulerJobs">
+                <div style="margin-bottom: 0.5rem">
+                    <label>
+                        <input type="checkbox" name="confirmDelete" value="true" required>
+                        Bekreft sletting
+                    </label>
+                </div>
+                <input type="submit" value="Slett utdaterte scheduler-jobber">
+            </form>
+        </div>
+        <p data-th-if="${!hasObsoleteJobs}">Ingen kjente utdaterte scheduler-jobber finnes.</p>
+    </div>
     <h2 data-th-text="${cmd.description}"></h2>
     <div data-th-if="${cmd.cmd==runningCmd}">
         <h3>Just ran this procedure</h3>

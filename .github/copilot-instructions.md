@@ -68,6 +68,7 @@
 - Prepublish/unpublish scheduling:
     - `lib/scheduling/scheduled-publish.ts`
     - related tasks in `src/main/resources/tasks/*`
+- Scheduler jobs persist independently in XP. When removing or renaming a persisted job, add its former exact name to `OBSOLETE_SCHEDULED_JOB_NAMES` in `lib/scheduling/manage-scheduled-jobs.ts`. The admin Webapp's scheduler-cleanup UI uses this list to let operators review and explicitly delete obsolete jobs. Task descriptor changes still require an explicit cleanup plan.
 - If you change publish behavior, validate both:
     1. scheduler/task flow
     2. cache invalidation/revalidation flow
