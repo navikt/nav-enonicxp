@@ -12,7 +12,8 @@ import { Content } from '/lib/xp/content';
 import { forceArray } from '../utils/array-utils';
 
 const pageHasComponents = (content: NonNullable<SitecontentResponse>) => {
-    return content.page?.regions?.pageContent?.components?.length > 0;
+    const components = forceArray(content.page?.regions?.pageContent?.components);
+    return components.length > 0;
 };
 
 // We need to find page templates ourselves, as the version history hack we use for resolving content
