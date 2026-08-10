@@ -19,7 +19,7 @@ import { getLocaleFromContext } from '../../localization/locale-context';
 import { isContentPreviewOnly } from '../../utils/content-utils';
 import { SitecontentResponse } from '../../../services/sitecontent/common/content-response';
 import { ContentDescriptor } from '../../../types/content-types/content-config';
-import { OfficeTypes } from '../../office-pages/types';
+import { getOfficeEditorialType } from '../../office-pages/office-editorial';
 
 export type GuillotineUnresolvedComponentType = { type: ComponentType; path: string };
 
@@ -53,13 +53,15 @@ export const runSitecontentGuillotineQuery = (
     }
 
     // Certain pages need extra queries for resolving:
-    // LOKAL and ALS office pages have a separate editorial page. This is injected into the office page
+    // Some office pages have a separate editorial page. This is injected into the office page
     // through the office-callback and because only "page" is automatically recognized and resolved in content,
     // we need to run buildOfficeBranchPageWithEditorialContent that will specifically look for and resolve the editorial page.
     if (
         baseContent.type === 'no.nav.navno:office-page' &&
-        (baseContent.data?.officeNorgData.data.type === OfficeTypes.LOKAL ||
-            baseContent.data?.officeNorgData.data.type === OfficeTypes.ALS)
+        getOfficeEditorialType(
+            baseContent.data?.officeNorgData.data.type,
+            baseContent.data?.useUnitEditorialPage
+        )
     ) {
         return buildOfficeBranchPageWithEditorialContent(contentQueryResult);
     }
@@ -168,15 +170,8 @@ export const runGuillotineComponentPreviewQuery = (baseContent: Content, compone
 const buildOfficeBranchPageWithEditorialContent = (contentQueryResult: any) => {
     const officeEditorialPageContent = contentQueryResult?.editorial;
 
-    // Editorial page is null if office is not of type LOKAL,
-    // so skip further resolving and just return.
     if (!officeEditorialPageContent) {
-        return {
-            ...contentQueryResult,
-            editorial: {
-                page: {},
-            },
-        };
+        return contentQueryResult;
     }
 
     const officeEditorialQueryParams: BaseQueryParams = {

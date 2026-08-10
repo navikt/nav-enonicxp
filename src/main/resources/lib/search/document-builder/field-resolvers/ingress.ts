@@ -47,7 +47,7 @@ export const buildSearchDocumentOfficeIngress = (content: OfficeContent) => {
     }
 
     if (officeData.type === OfficeTypes.HMS || officeData.type === OfficeTypes.ALS) {
-        return content.data.metaDescription || officeData.navn;
+        return content.data.metaDescription || officeData.navn || content.displayName;
     }
 
     const steder = getSted(officeData.brukerkontakt?.publikumsmottak);

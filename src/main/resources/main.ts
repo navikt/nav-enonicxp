@@ -10,7 +10,6 @@ import {
     generateSitemapDataAndActivateSchedule,
 } from './lib/sitemap/sitemap';
 import { updateClusterInfo } from './lib/cluster-utils/cluster-api';
-import { createLegacyOfficeImportSchedule } from './lib/office-pages/_legacy-office-information/legacy-office-update';
 import { activateContentListItemUnpublishedListener } from './lib/contentlists/remove-unpublished';
 import { activateCustomPathNodeListeners } from './lib/paths/custom-paths/custom-path-event-listeners';
 import { createOfficeImportSchedule } from './lib/office-pages/office-tasks';
@@ -37,7 +36,6 @@ if (clusterLib.isMaster()) {
 
 if (app.config.env !== 'test') {
     createOfficeImportSchedule();
-    createLegacyOfficeImportSchedule();
     activateSitemapDataUpdateEventListener();
 }
 
