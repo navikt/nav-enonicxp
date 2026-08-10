@@ -2,7 +2,7 @@ import * as eventLib from '/lib/xp/event';
 import * as taskLib from '/lib/xp/task';
 import { CONTENT_ROOT_PATH } from '/lib/xp/content';
 import { logger } from '../utils/logging';
-import { CONTENT_ROOT_REPO_ID, URLS } from '../constants';
+import { CONTENT_ROOT_REPO_ID } from '../constants';
 import { getLayersData } from '../localization/layers-data';
 import { getExternalSearchConfig, revalidateExternalSearchConfigCache } from './config';
 import { updateExternalSearchDocumentForContent } from './update-one';
@@ -29,16 +29,6 @@ const runSearchDocumentUpdateTask = (contentId: string, repoId: string) => {
 };
 
 export const activateExternalSearchIndexEventHandlers = () => {
-    if (!app.config.searchApiKey) {
-        logger.info('No search api key set for current environment - content will not be indexed');
-        return;
-    }
-
-    if (!URLS.SEARCH_API_URL) {
-        logger.info('No search api url set for current environment - content will not be indexed');
-        return;
-    }
-
     if (isActive) {
         logger.error(
             `Attempted to activate search index event handlers, but handlers were already active!`
