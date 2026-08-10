@@ -48,9 +48,9 @@ export type OfficePage = {
   linkedin?: string;
 
   /**
-   * Vis «Søknader og skjema»
+   * Bruk felles redaksjonell side for enheter
    */
-  showApplicationFormLinks: boolean;
+  useUnitEditorialPage: boolean;
 
   /**
    * Kontordata (NORG-importerte kontorer oppdateres automatisk)

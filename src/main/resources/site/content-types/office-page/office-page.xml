@@ -21,9 +21,8 @@
         <input name="linkedin" type="HtmlArea">
             <label>LinkedIn (kun for arbeidslivssenter)</label>
         </input>
-        <input name="showApplicationFormLinks" type="CheckBox">
-            <label>Vis «Søknader og skjema»</label>
-            <help-text>Viser lenker til skjemaoversiktene for privatpersoner, arbeidsgivere og samarbeidspartnere.</help-text>
+        <input name="useUnitEditorialPage" type="CheckBox">
+            <label>Bruk felles redaksjonell side for enheter</label>
             <default>unchecked</default>
         </input>
         <option-set name="officeNorgData">
