@@ -4,7 +4,11 @@ import { findContentsWithText } from '../utils/htmlarea-utils';
 import { logger } from '../utils/logging';
 import { GlobalNumberValueItem } from '../../types/content-types/global-value-set';
 import { CaseTimeItem } from '../../types/content-types/global-case-time-set';
-import { GlobalValueContentTypes, isGlobalValueSetType } from './types';
+import {
+    GlobalValueContentDescriptor,
+    GlobalValueContentTypes,
+    isGlobalValueSetType,
+} from './types';
 import { forceArray } from '../utils/array-utils';
 import { runInLocaleContext } from '../localization/locale-context';
 import { getLayersData } from '../localization/layers-data';
@@ -95,6 +99,30 @@ export const getGlobalValueSet = (contentId?: string): GlobalValueContentTypes |
     }
 
     return content;
+};
+
+export const getAllGlobalValueSet = (
+    type: GlobalValueContentDescriptor
+): GlobalValueContentTypes[] | null => {
+    if (!type) {
+        return null;
+    }
+
+    const { defaultLocale } = getLayersData();
+
+    // Global values should always be retrieved from the default layer
+    const items = runInLocaleContext({ locale: defaultLocale }, () =>
+        contentLib.query({
+            count: 100,
+            contentTypes: [type],
+            sort: 'createdTime DESC',
+        })
+    ).hits;
+    if (!items || items.length === 0 || !items.every((content) => isGlobalValueSetType(content))) {
+        return null;
+    }
+
+    return items;
 };
 
 export const getGlobalNumberValue = (gvKey: string, contentId: string) => {

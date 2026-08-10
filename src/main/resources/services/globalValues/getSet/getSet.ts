@@ -4,7 +4,7 @@ import { forceArray } from '../../../lib/utils/array-utils';
 import { gvServiceInvalidRequestResponse } from '../utils';
 
 export const getGlobalValueSetService = (req: Request) => {
-    const contentId = req.params.contendId as string;
+    const contentId = req.params.contentId as string;
     const content = getGlobalValueSet(contentId);
     if (!content) {
         return gvServiceInvalidRequestResponse(`Global value set with id ${contentId} not found`);

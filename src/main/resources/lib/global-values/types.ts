@@ -18,6 +18,11 @@ const globalValueContentTypesSet: { [key in ContentDescriptor]?: true } = {
     'no.nav.navno:global-case-time-set': true,
 };
 
+export const isGlobalValueContentDescriptor = (
+    value: string
+): value is GlobalValueContentDescriptor =>
+    !!globalValueContentTypesSet[value as ContentDescriptor];
+
 export const isGlobalValueSetType = (content: Content): content is GlobalValueContentTypes =>
     !!globalValueContentTypesSet[content.type];
 
