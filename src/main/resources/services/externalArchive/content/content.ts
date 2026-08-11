@@ -110,7 +110,7 @@ export const externalArchiveContentService = (req: Request) => {
         allVersions
     );
 
-    const publishedVersions = getVersionsForExternalArchive(allVersions);
+    const publishedVersions = getVersionsForExternalArchive(versionsWithUnpublishedTime);
     const originalContentTypeName = getOriginalContentTypeName(content, publishedVersions);
 
     return {
@@ -144,7 +144,7 @@ const getOriginalContentTypeName = (
 const getArchivedOrUnpublishedTime = (
     versionKey: string | undefined,
     versions: VersionReferenceEnriched[]
-): { unpublishedTime?: string; archivedTime?: string } | undefined => {
+): { unpublishedTime: string } | undefined => {
     const currentVersionIndex = versions.findIndex((v) => v.versionId === versionKey);
     if (currentVersionIndex === -1 || currentVersionIndex === 0) {
         return undefined;
@@ -154,14 +154,5 @@ const getArchivedOrUnpublishedTime = (
 
     const unpublishedTime = !nextVersion?.publishFromTime ? nextVersion?.timestamp : undefined;
 
-    if (currentVersionIndex === 1) {
-        return { unpublishedTime };
-    }
-
-    const versionAfterNext = versions[currentVersionIndex - 2];
-    const archivedTime = versionAfterNext?.archivedTime
-        ? versionAfterNext?.archivedTime
-        : undefined;
-
-    return { unpublishedTime, archivedTime };
+    return unpublishedTime ? { unpublishedTime } : undefined;
 };
