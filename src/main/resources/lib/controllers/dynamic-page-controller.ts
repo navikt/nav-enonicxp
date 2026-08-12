@@ -151,7 +151,14 @@ const removeInvalidFilterIds = (req: Request) => {
 
 const dynamicPageController = (req: Request) => {
     if ((req.mode === 'edit' || req.mode === 'inline') && req.method === 'GET') {
-        removeInvalidFilterIds(req);
+        try {
+            removeInvalidFilterIds(req);
+        } catch (e) {
+            const errorDetail = (e as any)?.stack || String(e);
+            logger.error(
+                `Unexpected error in removeInvalidFilterIds for path ${req.rawPath}: ${errorDetail}`
+            );
+        }
     }
 
     return frontendProxy(req);

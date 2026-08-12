@@ -27,7 +27,7 @@ import {
     getSearchDocumentLanguage,
     getSearchDocumentLanguageRefs,
 } from './field-resolvers/language';
-import { isOfficeContent } from '../../office-pages/types';
+import { isOfficeContent, OfficeTypes } from '../../office-pages/types';
 import {
     buildSearchDocumentIngress,
     buildSearchDocumentOfficeIngress,
@@ -228,7 +228,7 @@ const isExcludedContent = (content: ContentNode) => {
     switch (content.type) {
         // 'LOKAL' office type is handled by the new office-page content type
         case 'no.nav.navno:office-information': {
-            return content.data.enhet.type === 'LOKAL';
+            return content.data.enhet.type === OfficeTypes.LOKAL;
         }
         // Only form details which contain an application should be indexed
         case 'no.nav.navno:form-details': {

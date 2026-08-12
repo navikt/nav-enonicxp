@@ -1,9 +1,9 @@
 <macro>
-    <display-name>~(Deprecated - bruk Varselboks)</display-name>
+    <display-name>~(Deprecated - bruk Infokort (varsel))</display-name>
     <form>
         <input name="varselBoks" type="TextLine">
-            <label>Deprecated - bruk Varselboks</label>
-            <occurrences minimum="1" maximum="1"/>
+            <label>Deprecated - bruk Infokort (varsel)</label>
+            <occurrences minimum="1" maximum="1" />
             <config>
                 <regexp>^$</regexp>
             </config>

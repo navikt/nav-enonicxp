@@ -1,6 +1,7 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { HttpRequestParams, request } from '/lib/http-client';
+import { Workflow } from '@enonic-types/core';
 import * as commonLib from '/lib/xp/common';
 import { isDraftAndMasterSameVersion } from '../repos/repo-utils';
 import { OfficePage as OfficePageData } from '@xp-types/site/content-types/office-page';
@@ -15,6 +16,7 @@ import {
 } from '../constants';
 import { createObjectChecksum } from '../utils/object-utils';
 import { OfficeRawNORGData } from './office-raw-norg-data';
+import { OfficeTypes } from './types';
 
 type OfficePageDescriptor = NavNoDescriptor<'office-page'>;
 type InternalLinkDescriptor = NavNoDescriptor<'internal-link'>;
@@ -36,16 +38,18 @@ const officeNameOverrides: Readonly<Record<string, string>> = {
     '0891': 'Nav arbeidslivssenter Vestfold og Telemark',
 };
 
+const officeTypesToForcePublish = new Set([OfficeTypes.LOKAL]);
+
 const OFFICE_PAGE_CONTENT_TYPE: OfficePageDescriptor = `no.nav.navno:office-page`;
 const INTERNAL_LINK_CONTENT_TYPE: InternalLinkDescriptor = `no.nav.navno:internal-link`;
 const OFFICES_BASE_PATH = '/www.nav.no/kontor';
 const ALS_OFFICES_BASE_PATH = '/www.nav.no/arbeidsgiver';
 
 const getOfficeContentName = (officeData: OfficeNorgData) => commonLib.sanitize(officeData.navn);
-const officeTypesForImport: ReadonlySet<string> = new Set(['HMS', 'ALS']);
+const officeTypesForImport: ReadonlySet<string> = new Set([OfficeTypes.HMS, OfficeTypes.ALS]);
 
 const getParentPathForType = (type: string) =>
-    type === 'ALS' ? ALS_OFFICES_BASE_PATH : OFFICES_BASE_PATH;
+    type === OfficeTypes.ALS ? ALS_OFFICES_BASE_PATH : OFFICES_BASE_PATH;
 
 const norgRequest = <T>(requestConfig: HttpRequestParams): T[] | null => {
     const response = request({
@@ -68,7 +72,23 @@ const norgRequest = <T>(requestConfig: HttpRequestParams): T[] | null => {
     }
 };
 
-const localOfficeAdapter = (officeData: OfficeRawNORGData) => ({ ...officeData, type: 'LOKAL' });
+const forceReadyStateIfLocal = (existingOfficePage: Content<OfficePageDescriptor>) => {
+    if (existingOfficePage.data.officeNorgData?.data?.type !== OfficeTypes.LOKAL) {
+        return null;
+    }
+    // If the updatable office is LOKAL (lokalkontor), we want to force publish it.
+    // setting state: 'READY' is the first step to allow this.
+    return {
+        workflow: {
+            state: 'READY' as Workflow['state'],
+        },
+    };
+};
+
+const localOfficeAdapter = (officeData: OfficeRawNORGData) => ({
+    ...officeData,
+    type: OfficeTypes.LOKAL,
+});
 
 const generalOfficeAdapter = (
     officeData: OfficeRawNORGData,
@@ -323,15 +343,19 @@ const updateOfficePageIfChanged = (
                     officeData: newOfficeData,
                     checksum: newChecksum,
                 }),
+                ...forceReadyStateIfLocal(existingOfficePage),
             }),
             requireValid: false,
         });
 
-        // Content can only be published if it and it's outbound content
-        // is udate with master. Ie, content that currently is in
-        // some sort of "in progress" by editors, should not
-        // be automatically published.
-        return isUpToDateWithMaster && allOutboundsArePublished;
+        // Some office types have an editorial part, and should not be force published as an
+        // editor might also be working on a draft. LOKAL (lokalkontor) however
+        // should always be published immediately.
+        const shouldPublish =
+            officeTypesToForcePublish.has(newOfficeData.type as OfficeTypes) ||
+            (isUpToDateWithMaster && allOutboundsArePublished);
+
+        return shouldPublish;
     } catch (e) {
         logger.critical(
             `OfficeImporting: Failed to modify office page content ${existingOfficePage._path} - ${e}`
@@ -347,7 +371,7 @@ const createOfficePage = (officeData: OfficeNorgData) => {
         checksum: createObjectChecksum(officeData),
     });
 
-    const previewOnly = officeData.type !== 'LOKAL';
+    const previewOnly = officeData.type !== OfficeTypes.LOKAL;
 
     try {
         const content = contentLib.create({
@@ -423,6 +447,7 @@ export const processAllOffices = (offices: OfficeNorgData[]) => {
 
         if (existingOffice) {
             const shouldBePublished = updateOfficePageIfChanged(officePageData, existingOffice);
+
             if (shouldBePublished) {
                 summary.updated.push(existingOffice._id);
             }

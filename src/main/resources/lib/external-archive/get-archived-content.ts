@@ -11,11 +11,16 @@ import { SitecontentResponse } from '../../services/sitecontent/common/content-r
 import { Content } from '/lib/xp/content';
 import { forceArray } from '../utils/array-utils';
 
+const pageHasComponents = (content: NonNullable<SitecontentResponse>) => {
+    const components = forceArray(content.page?.regions?.pageContent?.components);
+    return components.length > 0;
+};
+
 // We need to find page templates ourselves, as the version history hack we use for resolving content
 // from the archive does not work with the Java method Guillotine uses for resolving page templates
 const getPageTemplate = (content: NonNullable<SitecontentResponse>) => {
     // If the content has its own customized page component, it should not need a page template
-    if (content.page?.customized) {
+    if (content.page?.customized || pageHasComponents(content)) {
         return null;
     }
 

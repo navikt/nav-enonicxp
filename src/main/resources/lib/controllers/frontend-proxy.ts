@@ -136,9 +136,17 @@ export const frontendProxy = (req: Request, path?: string) => {
             return errorResponse(frontendUrl, status, 'Redirects are not supported in editor view');
         }
 
-        return response;
+        const allHeaders = response.headers || {};
+        // alt-svc from the frontend advertises HTTP/3 which XP's Jetty does not support, and the header value causes Jetty to crash during response serialization
+        const { 'alt-svc': _, ...safeHeaders } = allHeaders;
+        return {
+            status: response.status,
+            contentType: response.contentType,
+            body: response.body,
+            headers: safeHeaders,
+        };
     } catch (e) {
-        const errorDetail = e instanceof Error ? e.stack : String(e);
+        const errorDetail = (e as any)?.stack || String(e);
         return errorResponse(frontendUrl || 'N/A', 500, `Exception: ${errorDetail}`);
     }
 };

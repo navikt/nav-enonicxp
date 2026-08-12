@@ -13,6 +13,8 @@ import { isExcludedFromExternalArchive } from '../utils/content-utils';
 export type VersionReferenceEnriched = NodeVersion & {
     locale: string;
     excludeFromExternalArchive?: boolean;
+    archivedTime?: string;
+    publishFromTime?: string;
 } & Pick<Content, 'displayName' | 'modifiedTime' | 'type'>;
 
 // Due to a previously existing bug, content types with a custom editor has not always set its
@@ -45,6 +47,8 @@ const enrichVersionReference = (version: NodeVersion, locale: string): VersionRe
         excludeFromExternalArchive:
             (content && isExcludedFromExternalArchive(content)) || undefined,
         type: content?.type || 'base:folder',
+        archivedTime: content?.archivedTime,
+        publishFromTime: content?.publish?.from,
     };
 };
 
@@ -99,8 +103,8 @@ const filterNonModifiedVersions = (
     return version.modifiedTime !== prevVersion.modifiedTime;
 };
 
-// Used by the version history selector in the frontend and the external archive
-export const getPublishedAndModifiedVersions = (contentId: string, locale: string) => {
+// Used to find archived and unpublished information for content in the external archive.
+export const getAllVersions = (contentId: string, locale: string) => {
     const repoId = getLayersData().localeToRepoIdMap[locale];
 
     const params: GetNodeVersionsParams = {
@@ -115,7 +119,20 @@ export const getPublishedAndModifiedVersions = (contentId: string, locale: strin
 
     const preLayersMigrationVersions = getPreLayersMigrationVersions(params);
 
-    return [...normalVersions, ...preLayersMigrationVersions]
-        .sort(sortByTimestamp)
-        .filter(filterNonModifiedVersions);
+    return [...normalVersions, ...preLayersMigrationVersions].sort(sortByTimestamp);
+};
+
+// Used by the version history selector in the frontend
+export const getPublishedAndModifiedVersions = (contentId: string, locale: string) => {
+    const allVersions = getAllVersions(contentId, locale);
+    return allVersions.filter((version, index, allVersionsArray) =>
+        filterNonModifiedVersions(version, index, allVersionsArray)
+    );
+};
+
+// Used by the version history selector in the external archive
+export const getVersionsForExternalArchive = (versions: VersionReferenceEnriched[]) => {
+    return versions.filter(
+        (v, i, a) => filterNonModifiedVersions(v, i, a) && !v.excludeFromExternalArchive
+    );
 };

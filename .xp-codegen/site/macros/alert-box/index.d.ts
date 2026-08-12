@@ -4,19 +4,4 @@ export type AlertBox = {
    * Innhold
    */
   body: string;
-
-  /**
-   * Type
-   */
-  type: "info" | "success" | "warning" | "error";
-
-  /**
-   * Størrelse
-   */
-  size?: "medium" | "small";
-
-  /**
-   * Uten bakgrunn (inline)
-   */
-  inline: boolean;
 };
