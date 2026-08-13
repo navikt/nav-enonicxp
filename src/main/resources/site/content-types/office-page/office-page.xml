@@ -20,6 +20,9 @@
         </option-set>
         <input name="linkedin" type="HtmlArea">
             <label>LinkedIn (kun for arbeidslivssenter)</label>
+            <config>
+                <include>Undo Redo</include>
+            </config>
         </input>
         <option-set name="officeNorgData">
             <label>Kontordata (OBS! Overskrives fra NORG)</label>
