@@ -13,8 +13,12 @@ import {
     URLS,
     CONTENT_ROOT_REPO_ID,
     NORG2_CONSUMER_ID,
+    NORG_PROXY_TOKEN_SCOPE,
+    NORG_PROXY_TARGET_CLIENT_ID,
+    NORG_PROXY_TARGET_APP,
 } from '../constants';
 import { createObjectChecksum } from '../utils/object-utils';
+import { getAzureAdToken } from '../utils/azure-ad-token';
 import { OfficeRawNORGData } from './office-raw-norg-data';
 import { OfficeTypes } from './types';
 
@@ -52,12 +56,26 @@ const getParentPathForType = (type: string) =>
     type === OfficeTypes.ALS ? ALS_OFFICES_BASE_PATH : OFFICES_BASE_PATH;
 
 const norgRequest = <T>(requestConfig: HttpRequestParams): T[] | null => {
+    // Calls now go through org-ekstern-proxy (see constants), which requires an EntraID Bearer
+    // token plus routing headers telling it which internal app (norg2) to forward to.
+    const accessToken = getAzureAdToken(NORG_PROXY_TOKEN_SCOPE);
+
+    if (!accessToken) {
+        logger.error(
+            `OfficeImporting: Could not acquire EntraID token for norg2 request to ${requestConfig.url}`
+        );
+        return null;
+    }
+
     const response = request({
         url: requestConfig.url,
         method: requestConfig.method,
         contentType: 'application/json',
         headers: {
             consumerId: NORG2_CONSUMER_ID,
+            Authorization: `Bearer ${accessToken}`,
+            'target-client-id': NORG_PROXY_TARGET_CLIENT_ID,
+            'target-app': NORG_PROXY_TARGET_APP,
         },
         body: requestConfig.body,
     });

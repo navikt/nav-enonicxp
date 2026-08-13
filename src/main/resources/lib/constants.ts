@@ -33,7 +33,7 @@ const revalidatorProxyOrigins: EnvRecord = {
 const norgOfficeOverviewApiUrl: EnvRecord = {
     p: 'https://norg2.intern.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
     dev: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
-    dev3: 'https://norg2.ekstern.dev.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
+    dev3: 'https://org-ekstern-proxy.ekstern.dev.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
     q6: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
     localhost: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
     test: '', // 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet?enhetStatusListe=AKTIV',
@@ -42,7 +42,7 @@ const norgOfficeOverviewApiUrl: EnvRecord = {
 const norgOfficeInformationApiUrl: EnvRecord = {
     p: 'https://norg2.intern.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
     dev: 'https://norg2.intern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
-    dev3: 'https://norg2.ekstern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
+    dev3: 'https://org-ekstern-proxy.ekstern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
     q6: 'https://norg2.intern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
     localhost: 'https://norg2.intern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
     test: '', // 'https://norg2.intern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
@@ -51,7 +51,7 @@ const norgOfficeInformationApiUrl: EnvRecord = {
 const norgLegacyOfficeInformationApiUrl: EnvRecord = {
     p: 'https://norg2.intern.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
     dev: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
-    dev3: 'https://norg2.ekstern.dev.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
+    dev3: 'https://org-ekstern-proxy.ekstern.dev.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
     q6: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
     localhost:
         'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
@@ -61,7 +61,7 @@ const norgLegacyOfficeInformationApiUrl: EnvRecord = {
 const norgLocalOfficeApiUrl: EnvRecord = {
     p: 'https://norg2.intern.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
     dev: 'https://norg2.intern.dev.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
-    dev3: 'https://norg2.ekstern.dev.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
+    dev3: 'https://org-ekstern-proxy.ekstern.dev.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
     q6: 'https://norg2.intern.dev.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
     localhost: 'https://norg2.intern.dev.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
     test: '', //https://norg2.intern.dev.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
@@ -80,6 +80,18 @@ const searchApiUrls: EnvRecord = {
     p: 'https://navno-search-admin-api.intern.nav.no/content/personbruker',
     dev: 'https://navno-search-admin-api.intern.dev.nav.no/content/personbruker',
     dev3: 'https://navno-search-admin-api.ekstern.dev.nav.no/content/personbruker',
+    q6: '',
+    localhost: '',
+    test: '',
+} as const;
+
+// OAuth2 scope requested when authenticating to org-ekstern-proxy (which forwards to norg2).
+// This is the proxy app registration's scope (api://<proxy-app-id>/.default), not norg2's.
+// TODO: fill in the exact scope values per environment, provided by the org-ekstern-proxy team.
+const norgProxyTokenScope: EnvRecord = {
+    p: '',
+    dev: '',
+    dev3: '',
     q6: '',
     localhost: '',
     test: '',
@@ -132,3 +144,16 @@ export const ADMIN_PRINCIPAL = 'role:system.admin';
 export const LOGGED_IN_PRINCIPAL = 'role:system.admin.login';
 
 export const NORG2_CONSUMER_ID = 'navno-enonicxp';
+
+// EntraID (Azure AD) client-credentials auth for calling Nav APIs from Enonic Cloud.
+// Nav's tenant ID (directory) is a fixed GUID; the token endpoint is derived from it.
+// Verified via https://login.microsoftonline.com/navno.onmicrosoft.com/.well-known/openid-configuration
+export const AZURE_AD_TENANT_ID = '62366534-1ec3-4962-8869-9b5535279d0b';
+export const AZURE_AD_TOKEN_URL = `https://login.microsoftonline.com/${AZURE_AD_TENANT_ID}/oauth2/v2.0/token`;
+
+// Scope requested when authenticating to org-ekstern-proxy (see norgProxyTokenScope above).
+export const NORG_PROXY_TOKEN_SCOPE = norgProxyTokenScope[env];
+
+// Routing headers required by org-ekstern-proxy to forward the request to the target app (norg2).
+export const NORG_PROXY_TARGET_CLIENT_ID = '20c8fc78-f9a4-4dae-b4dd-07b8db088545';
+export const NORG_PROXY_TARGET_APP = 'norg2';
