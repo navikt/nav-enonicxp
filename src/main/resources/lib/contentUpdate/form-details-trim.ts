@@ -18,7 +18,7 @@ const trimVariationItem = (item: VariationItem, onChanged: () => void): Variatio
 
     let link = item.link;
     if (link._selected === 'external') {
-        const trimmedFormNumber = (link.external.formNumber ?? '').trim();
+        const trimmedFormNumber = link.external.formNumber?.trim();
         const trimmedUrl = (link.external.url ?? '').trim();
 
         if (trimmedFormNumber !== link.external.formNumber || trimmedUrl !== link.external.url) {
