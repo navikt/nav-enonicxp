@@ -11,15 +11,15 @@ type VariationItem = NonNullable<
 >[number];
 
 const trimVariationItem = (item: VariationItem, onChanged: () => void): VariationItem => {
-    const trimmedLabel = item.label?.trim();
+    const trimmedLabel = (item.label ?? '').trim();
     if (trimmedLabel !== item.label) {
         onChanged();
     }
 
     let link = item.link;
     if (link._selected === 'external') {
-        const trimmedFormNumber = link.external.formNumber?.trim();
-        const trimmedUrl = link.external.url?.trim();
+        const trimmedFormNumber = (link.external.formNumber ?? '').trim();
+        const trimmedUrl = (link.external.url ?? '').trim();
 
         if (trimmedFormNumber !== link.external.formNumber || trimmedUrl !== link.external.url) {
             onChanged();
@@ -78,7 +78,7 @@ export const buildTrimmedFormDetailsData = (
         return trimmed;
     };
 
-    const title = data.title?.trim();
+    const title = (data.title ?? '').trim();
     if (title !== data.title) onChanged();
 
     const longTitle = trimOptional(data.longTitle);
