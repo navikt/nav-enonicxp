@@ -4,7 +4,8 @@ import { runSitecontentGuillotineQuery } from '../../../lib/guillotine/queries/r
 import { getLayersData, isValidLocale } from '../../../lib/localization/layers-data';
 import { runInTimeTravelContext } from '../../../lib/time-travel/run-with-time-travel';
 import {
-    getPublishedAndModifiedVersions,
+    getAllVersions,
+    getVersionsForExternalArchive,
     VersionReferenceEnriched,
 } from '../../../lib/time-travel/get-published-versions';
 import { getContentForExternalArchive } from '../../../lib/external-archive/get-content';
@@ -99,18 +100,31 @@ export const externalArchiveContentService = (req: Request) => {
     }
 
     const contentRenderProps = getContentRenderProps(content, locale, versionId, isArchived);
-    const versions = getPublishedAndModifiedVersions(content._id, locale).filter(
-        (v) => !v.excludeFromExternalArchive
+    const allVersions = getAllVersions(content._id, locale);
+    const versionsWithUnpublishedTime = allVersions.map((version) => ({
+        ...version,
+        ...getArchivedOrUnpublishedTime(version.versionId, allVersions),
+    }));
+    const archivedAndUnpublishedTime = getArchivedOrUnpublishedTime(
+        content._versionKey,
+        allVersions
     );
-    const originalContentTypeName = getOriginalContentTypeName(content, versions);
+
+    const publishedVersions = getVersionsForExternalArchive(versionsWithUnpublishedTime);
+    const originalContentTypeName = getOriginalContentTypeName(content, publishedVersions);
 
     return {
         status: 200,
         contentType: 'application/json',
         body: {
-            contentRaw: { ...content, originalContentTypeName, locale },
+            contentRaw: {
+                ...content,
+                originalContentTypeName,
+                locale,
+                ...archivedAndUnpublishedTime,
+            },
             contentRenderProps,
-            versions,
+            versions: publishedVersions,
         } satisfies Response,
     };
 };
@@ -125,4 +139,20 @@ const getOriginalContentTypeName = (
     }
     const versionType = versions.find((v) => !linkArray.includes(v.type))?.type;
     return versionType && getType(versionType)?.displayName;
+};
+
+const getArchivedOrUnpublishedTime = (
+    versionKey: string | undefined,
+    versions: VersionReferenceEnriched[]
+): { unpublishedTime: string } | undefined => {
+    const currentVersionIndex = versions.findIndex((v) => v.versionId === versionKey);
+    if (currentVersionIndex === -1 || currentVersionIndex === 0) {
+        return undefined;
+    }
+
+    const nextVersion = versions[currentVersionIndex - 1];
+
+    const unpublishedTime = !nextVersion?.publishFromTime ? nextVersion?.timestamp : undefined;
+
+    return unpublishedTime ? { unpublishedTime } : undefined;
 };
