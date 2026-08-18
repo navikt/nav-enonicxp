@@ -10,11 +10,8 @@ type VariationItem = NonNullable<
     | Extract<FormTypeVariation, { _selected: 'addendum' }>['addendum']['variations']
 >[number];
 
-const trimVariationItem = (
-    item: VariationItem,
-    onChanged: () => void,
-): VariationItem => {
-    const trimmedLabel = item.label.trim();
+const trimVariationItem = (item: VariationItem, onChanged: () => void): VariationItem => {
+    const trimmedLabel = (item.label ?? '').trim();
     if (trimmedLabel !== item.label) {
         onChanged();
     }
@@ -22,7 +19,7 @@ const trimVariationItem = (
     let link = item.link;
     if (link._selected === 'external') {
         const trimmedFormNumber = link.external.formNumber?.trim();
-        const trimmedUrl = link.external.url.trim();
+        const trimmedUrl = (link.external.url ?? '').trim();
 
         if (trimmedFormNumber !== link.external.formNumber || trimmedUrl !== link.external.url) {
             onChanged();
@@ -42,7 +39,7 @@ const trimVariationItem = (
 
 const trimFormTypeVariation = (
     variation: FormTypeVariation,
-    onChanged: () => void,
+    onChanged: () => void
 ): FormTypeVariation => {
     const selected = variation._selected;
     const selectedData = (variation as Record<string, unknown>)[selected] as {
@@ -67,7 +64,7 @@ const trimFormTypeVariation = (
 };
 
 export const buildTrimmedFormDetailsData = (
-    data: FormDetails,
+    data: FormDetails
 ): { trimmedData: FormDetails; hasChanges: boolean } => {
     let hasChanges = false;
     const onChanged = () => {
@@ -81,7 +78,7 @@ export const buildTrimmedFormDetailsData = (
         return trimmed;
     };
 
-    const title = data.title.trim();
+    const title = (data.title ?? '').trim();
     if (title !== data.title) onChanged();
 
     const longTitle = trimOptional(data.longTitle);
@@ -117,7 +114,9 @@ export const buildTrimmedFormDetailsData = (
     return { trimmedData, hasChanges };
 };
 
-export const trimFormDetailsWhitespace = (content: contentLib.Content<'no.nav.navno:form-details'>) => {
+export const trimFormDetailsWhitespace = (
+    content: contentLib.Content<'no.nav.navno:form-details'>
+) => {
     const { trimmedData, hasChanges } = buildTrimmedFormDetailsData(content.data);
 
     if (!hasChanges) {

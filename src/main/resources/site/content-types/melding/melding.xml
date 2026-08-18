@@ -19,6 +19,9 @@
                     <label>Brødtekst melding</label>
                     <help-text>Kort og konsis meldingstekst</help-text>
                     <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <include>Undo Redo</include>
+                    </config>
                 </input>
                 <item-set name="urlscope">
                     <label>Vis kun på bestemte URL'er</label>
