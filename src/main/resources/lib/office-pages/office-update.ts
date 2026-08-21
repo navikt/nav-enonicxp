@@ -13,8 +13,13 @@ import {
     URLS,
     CONTENT_ROOT_REPO_ID,
     NORG2_CONSUMER_ID,
+    NORG_PROXY_TOKEN_SCOPE,
+    NORG_PROXY_TARGET_CLIENT_ID,
+    NORG_PROXY_TARGET_APP,
 } from '../constants';
 import { createObjectChecksum } from '../utils/object-utils';
+import { getAzureAdToken } from '../utils/azure-ad-token';
+import { norgProxyRequest } from '../utils/norg-proxy-request';
 import { OfficeRawNORGData } from './office-raw-norg-data';
 import { OfficeTypes } from './types';
 
@@ -51,13 +56,27 @@ const officeTypesForImport: ReadonlySet<string> = new Set([OfficeTypes.HMS, Offi
 const getParentPathForType = (type: string) =>
     type === OfficeTypes.ALS ? ALS_OFFICES_BASE_PATH : OFFICES_BASE_PATH;
 
-const norgRequest = <T>(requestConfig: HttpRequestParams): T[] | null => {
+const norgProxyFetch = <T>(requestConfig: HttpRequestParams): T[] | null => {
+    // Calls now go through org-ekstern-proxy (see constants), which requires an EntraID Bearer
+    // token plus routing headers telling it which internal app (norg2) to forward to.
+    const accessToken = getAzureAdToken(NORG_PROXY_TOKEN_SCOPE);
+
+    if (!accessToken) {
+        logger.error(
+            `OfficeImporting: Could not acquire EntraID token for norg2 request to ${requestConfig.url}`
+        );
+        return null;
+    }
+
     const response = request({
         url: requestConfig.url,
         method: requestConfig.method,
         contentType: 'application/json',
         headers: {
             consumerId: NORG2_CONSUMER_ID,
+            Authorization: `Bearer ${accessToken}`,
+            'target-client-id': NORG_PROXY_TARGET_CLIENT_ID,
+            'target-app': NORG_PROXY_TARGET_APP,
         },
         body: requestConfig.body,
     });
@@ -130,10 +149,13 @@ export const fetchAllOfficeDataFromNorg = () => {
             { type: string; organisasjonsnummer?: string }
         >();
 
-        const officeOverview = norgRequest<OfficeOverview>({
-            url: `${URLS.NORG_OFFICE_OVERVIEW_API_URL}`,
-            method: 'GET',
-        });
+        const officeOverview = norgProxyRequest<OfficeOverview>(
+            {
+                url: `${URLS.NORG_OFFICE_OVERVIEW_API_URL}`,
+                method: 'GET',
+            },
+            'OfficeImporting'
+        );
 
         if (!officeOverview) {
             logger.error(
@@ -155,16 +177,22 @@ export const fetchAllOfficeDataFromNorg = () => {
             .filter((office) => officeTypesForImport.has(office.type))
             .map((office) => office.enhetNr);
 
-        const norgOffices = norgRequest<OfficeRawNORGData>({
-            url: URLS.NORG_OFFICE_INFORMATION_API_URL,
-            method: 'POST',
-            body: JSON.stringify(enhetnrForFetching),
-        });
+        const norgOffices = norgProxyRequest<OfficeRawNORGData>(
+            {
+                url: URLS.NORG_OFFICE_INFORMATION_API_URL,
+                method: 'POST',
+                body: JSON.stringify(enhetnrForFetching),
+            },
+            'OfficeImporting'
+        );
 
-        const officeBranches = norgRequest<OfficeRawNORGData>({
-            url: URLS.NORG_LOCAL_OFFICE_API_URL,
-            method: 'GET',
-        });
+        const officeBranches = norgProxyRequest<OfficeRawNORGData>(
+            {
+                url: URLS.NORG_LOCAL_OFFICE_API_URL,
+                method: 'GET',
+            },
+            'OfficeImporting'
+        );
 
         if (!norgOffices || !officeBranches) {
             logger.error(`OfficeImporting: Could not fetch offices or branch from norg2`);

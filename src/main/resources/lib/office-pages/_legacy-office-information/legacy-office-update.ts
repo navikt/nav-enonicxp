@@ -1,17 +1,16 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import httpClient from '/lib/http-client';
 import * as commonLib from '/lib/xp/common';
 import * as taskLib from '/lib/xp/task';
 import { createOrUpdateSchedule } from '../../scheduling/schedule-job';
 import { OfficeInformation } from '@xp-types/site/content-types/office-information';
 import { NavNoDescriptor } from '../../../types/common';
 import { logger } from '../../utils/logging';
-import { CONTENT_ROOT_REPO_ID, NORG2_CONSUMER_ID, URLS } from '../../constants';
+import { CONTENT_ROOT_REPO_ID, URLS } from '../../constants';
 import { createObjectChecksum } from '../../utils/object-utils';
 import { runInContext } from '../../context/run-in-context';
 import { UpdateOfficeInfo } from '@xp-types/tasks/update-office-info';
-import { parseJsonToArray } from '../../utils/array-utils';
+import { norgProxyRequest } from '../../utils/norg-proxy-request';
 
 type OfficeInformationDescriptor = NavNoDescriptor<'office-information'>;
 
@@ -199,22 +198,14 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
 
 const fetchOfficeInfo = () => {
     try {
-        const response = httpClient.request({
-            url: URLS.NORG_LEGACY_OFFICE_INFORMATION_API_URL,
-            method: 'GET',
-            headers: {
-                consumerId: NORG2_CONSUMER_ID,
+        const officeInfo = norgProxyRequest<OfficeInformation>(
+            {
+                url: URLS.NORG_LEGACY_OFFICE_INFORMATION_API_URL,
+                method: 'GET',
             },
-        });
-
-        if (response.status === 200 && response.body) {
-            return parseJsonToArray<OfficeInformation>(response.body);
-        } else {
-            logger.error(
-                `Bad response from legacy norg2: ${response.status} - ${response.message}`
-            );
-            return null;
-        }
+            'LegacyOfficeImporting'
+        );
+        return officeInfo;
     } catch (e) {
         logger.error(`Exception from legacy norg2 request: ${e}`);
         return null;
