@@ -1,20 +1,14 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { HttpRequestParams, request } from '/lib/http-client';
 import { Workflow } from '@enonic-types/core';
 import * as commonLib from '/lib/xp/common';
 import { isDraftAndMasterSameVersion } from '../repos/repo-utils';
 import { OfficePage as OfficePageData } from '@xp-types/site/content-types/office-page';
-import { parseJsonToArray } from '../utils/array-utils';
 import { NavNoDescriptor } from '../../types/common';
 import { logger } from '../utils/logging';
-import {
-    CONTENT_LOCALE_DEFAULT,
-    URLS,
-    CONTENT_ROOT_REPO_ID,
-    NORG2_CONSUMER_ID,
-} from '../constants';
+import { CONTENT_LOCALE_DEFAULT, URLS, CONTENT_ROOT_REPO_ID } from '../constants';
 import { createObjectChecksum } from '../utils/object-utils';
+import { norgProxyRequest } from '../utils/norg-proxy-request';
 import { OfficeRawNORGData } from './office-raw-norg-data';
 import { OfficeTypes } from './types';
 
@@ -50,27 +44,6 @@ const officeTypesForImport: ReadonlySet<string> = new Set([OfficeTypes.HMS, Offi
 
 const getParentPathForType = (type: string) =>
     type === OfficeTypes.ALS ? ALS_OFFICES_BASE_PATH : OFFICES_BASE_PATH;
-
-const norgRequest = <T>(requestConfig: HttpRequestParams): T[] | null => {
-    const response = request({
-        url: requestConfig.url,
-        method: requestConfig.method,
-        contentType: 'application/json',
-        headers: {
-            consumerId: NORG2_CONSUMER_ID,
-        },
-        body: requestConfig.body,
-    });
-
-    if (response.status === 200 && response.body) {
-        return parseJsonToArray(response.body);
-    } else {
-        logger.error(
-            `OfficeImporting: Bad response from norg2: ${response.status} - ${response.message}, ${requestConfig.url}`
-        );
-        return null;
-    }
-};
 
 const forceReadyStateIfLocal = (existingOfficePage: Content<OfficePageDescriptor>) => {
     if (existingOfficePage.data.officeNorgData?.data?.type !== OfficeTypes.LOKAL) {
@@ -130,10 +103,13 @@ export const fetchAllOfficeDataFromNorg = () => {
             { type: string; organisasjonsnummer?: string }
         >();
 
-        const officeOverview = norgRequest<OfficeOverview>({
-            url: `${URLS.NORG_OFFICE_OVERVIEW_API_URL}`,
-            method: 'GET',
-        });
+        const officeOverview = norgProxyRequest<OfficeOverview>(
+            {
+                url: `${URLS.NORG_OFFICE_OVERVIEW_API_URL}`,
+                method: 'GET',
+            },
+            'OfficeImporting'
+        );
 
         if (!officeOverview) {
             logger.error(
@@ -155,16 +131,22 @@ export const fetchAllOfficeDataFromNorg = () => {
             .filter((office) => officeTypesForImport.has(office.type))
             .map((office) => office.enhetNr);
 
-        const norgOffices = norgRequest<OfficeRawNORGData>({
-            url: URLS.NORG_OFFICE_INFORMATION_API_URL,
-            method: 'POST',
-            body: JSON.stringify(enhetnrForFetching),
-        });
+        const norgOffices = norgProxyRequest<OfficeRawNORGData>(
+            {
+                url: URLS.NORG_OFFICE_INFORMATION_API_URL,
+                method: 'POST',
+                body: JSON.stringify(enhetnrForFetching),
+            },
+            'OfficeImporting'
+        );
 
-        const officeBranches = norgRequest<OfficeRawNORGData>({
-            url: URLS.NORG_LOCAL_OFFICE_API_URL,
-            method: 'GET',
-        });
+        const officeBranches = norgProxyRequest<OfficeRawNORGData>(
+            {
+                url: URLS.NORG_LOCAL_OFFICE_API_URL,
+                method: 'GET',
+            },
+            'OfficeImporting'
+        );
 
         if (!norgOffices || !officeBranches) {
             logger.error(`OfficeImporting: Could not fetch offices or branch from norg2`);

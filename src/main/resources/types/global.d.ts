@@ -2,9 +2,13 @@ declare const app: {
     name: 'no.nav.navno';
     version: string;
     config: {
-        env: 'p' | 'dev' | 'q6' | 'localhost' | 'test';
+        env: 'p' | 'dev' | 'dev3' | 'q6' | 'localhost' | 'test';
         serviceSecret: string;
         searchApiKey: string;
+        // EntraID (Azure AD) client-credentials for calling Nav APIs through org-ekstern-proxy
+        // after the migration to Enonic Cloud. Provided via server config, not committed to git.
+        clientId: string;
+        clientSecret: string;
     };
 };
 
