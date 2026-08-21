@@ -7,8 +7,8 @@ declare const app: {
         searchApiKey: string;
         // EntraID (Azure AD) client-credentials for calling Nav APIs through org-ekstern-proxy
         // after the migration to Enonic Cloud. Provided via server config, not committed to git.
-        azureClientId: string;
-        azureClientSecret: string;
+        clientId: string;
+        clientSecret: string;
     };
 };
 

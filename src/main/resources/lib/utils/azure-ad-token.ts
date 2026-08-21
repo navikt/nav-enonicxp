@@ -31,12 +31,12 @@ const EXPIRY_BUFFER_MS = 60 * 1000;
 const tokenCache = cacheLib.newCache({ size: 10, expire: 60 * 60 * 24 });
 
 const requestNewToken = (scope: string): CachedToken | null => {
-    const clientId = app.config.azureClientId;
-    const clientSecret = app.config.azureClientSecret;
+    const clientId = app.config.clientId;
+    const clientSecret = app.config.clientSecret;
 
     if (!clientId || !clientSecret) {
         logger.error(
-            'AzureAdToken: Missing azureClientId/azureClientSecret in app config - cannot request token'
+            'AzureAdToken: Missing clientId/clientSecret in app config - cannot request token'
         );
         return null;
     }
@@ -65,7 +65,9 @@ const requestNewToken = (scope: string): CachedToken | null => {
     try {
         const parsed = JSON.parse(response.body) as TokenResponse;
         if (!parsed.access_token) {
-            logger.error(`AzureAdToken: Token response for scope ${scope} did not contain an access_token`);
+            logger.error(
+                `AzureAdToken: Token response for scope ${scope} did not contain an access_token`
+            );
             return null;
         }
 
