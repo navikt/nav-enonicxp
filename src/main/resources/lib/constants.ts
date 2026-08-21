@@ -91,7 +91,7 @@ const searchApiUrls: EnvRecord = {
 const norgProxyTokenScope: EnvRecord = {
     p: '',
     dev: '',
-    dev3: '',
+    dev3: 'api://20c8fc78-f9a4-4dae-b4dd-07b8db088545/.default',
     q6: '',
     localhost: '',
     test: '',

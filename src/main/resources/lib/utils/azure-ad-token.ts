@@ -85,7 +85,9 @@ const requestNewToken = (scope: string): CachedToken | null => {
 // Only successful tokens are cached; failures are not cached so the next run retries.
 export const getAzureAdToken = (scope: string): string | null => {
     if (!scope) {
-        logger.error('AzureAdToken: No scope provided - cannot request token');
+        logger.error(
+            'AzureAdToken: No scope provided - set norgProxyTokenScope for the current env in lib/constants.ts or app config'
+        );
         return null;
     }
 

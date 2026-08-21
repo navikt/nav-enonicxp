@@ -1,24 +1,13 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { HttpRequestParams, request } from '/lib/http-client';
 import { Workflow } from '@enonic-types/core';
 import * as commonLib from '/lib/xp/common';
 import { isDraftAndMasterSameVersion } from '../repos/repo-utils';
 import { OfficePage as OfficePageData } from '@xp-types/site/content-types/office-page';
-import { parseJsonToArray } from '../utils/array-utils';
 import { NavNoDescriptor } from '../../types/common';
 import { logger } from '../utils/logging';
-import {
-    CONTENT_LOCALE_DEFAULT,
-    URLS,
-    CONTENT_ROOT_REPO_ID,
-    NORG2_CONSUMER_ID,
-    NORG_PROXY_TOKEN_SCOPE,
-    NORG_PROXY_TARGET_CLIENT_ID,
-    NORG_PROXY_TARGET_APP,
-} from '../constants';
+import { CONTENT_LOCALE_DEFAULT, URLS, CONTENT_ROOT_REPO_ID } from '../constants';
 import { createObjectChecksum } from '../utils/object-utils';
-import { getAzureAdToken } from '../utils/azure-ad-token';
 import { norgProxyRequest } from '../utils/norg-proxy-request';
 import { OfficeRawNORGData } from './office-raw-norg-data';
 import { OfficeTypes } from './types';
@@ -55,41 +44,6 @@ const officeTypesForImport: ReadonlySet<string> = new Set([OfficeTypes.HMS, Offi
 
 const getParentPathForType = (type: string) =>
     type === OfficeTypes.ALS ? ALS_OFFICES_BASE_PATH : OFFICES_BASE_PATH;
-
-const norgProxyFetch = <T>(requestConfig: HttpRequestParams): T[] | null => {
-    // Calls now go through org-ekstern-proxy (see constants), which requires an EntraID Bearer
-    // token plus routing headers telling it which internal app (norg2) to forward to.
-    const accessToken = getAzureAdToken(NORG_PROXY_TOKEN_SCOPE);
-
-    if (!accessToken) {
-        logger.error(
-            `OfficeImporting: Could not acquire EntraID token for norg2 request to ${requestConfig.url}`
-        );
-        return null;
-    }
-
-    const response = request({
-        url: requestConfig.url,
-        method: requestConfig.method,
-        contentType: 'application/json',
-        headers: {
-            consumerId: NORG2_CONSUMER_ID,
-            Authorization: `Bearer ${accessToken}`,
-            'target-client-id': NORG_PROXY_TARGET_CLIENT_ID,
-            'target-app': NORG_PROXY_TARGET_APP,
-        },
-        body: requestConfig.body,
-    });
-
-    if (response.status === 200 && response.body) {
-        return parseJsonToArray(response.body);
-    } else {
-        logger.error(
-            `OfficeImporting: Bad response from norg2: ${response.status} - ${response.message}, ${requestConfig.url}`
-        );
-        return null;
-    }
-};
 
 const forceReadyStateIfLocal = (existingOfficePage: Content<OfficePageDescriptor>) => {
     if (existingOfficePage.data.officeNorgData?.data?.type !== OfficeTypes.LOKAL) {
