@@ -27,8 +27,8 @@ const jestConfig = {
             config: {
                 env: 'localhost',
                 serviceSecret: 'dummyToken',
-                azureClientId: 'dummyClientId',
-                azureClientSecret: 'dummyClientSecret',
+                clientId: 'dummyClientId',
+                clientSecret: 'dummyClientSecret',
             },
         },
         __FILE__: '',

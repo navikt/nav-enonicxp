@@ -3,6 +3,10 @@ type EnvRecord = Record<ServerEnv, string>;
 
 const env: ServerEnv = app.config.env || 'p';
 
+// The Enonic Cloud PoC environment ("dev3") is the only environment currently reachable
+// through the org-ekstern-proxy (and thus the only one that needs EntraID token auth to norg2).
+export const IS_ENONIC_POC = env === 'dev3';
+
 const portalAdminOrigins: EnvRecord = {
     p: 'https://portal-admin.oera.no',
     dev: 'https://portal-admin-dev.oera.no',
@@ -91,7 +95,7 @@ const searchApiUrls: EnvRecord = {
 const norgProxyTokenScope: EnvRecord = {
     p: '',
     dev: '',
-    dev3: 'api://20c8fc78-f9a4-4dae-b4dd-07b8db088545/.default',
+    dev3: 'api://dev-gcp.org.norg2/.default',
     q6: '',
     localhost: '',
     test: '',

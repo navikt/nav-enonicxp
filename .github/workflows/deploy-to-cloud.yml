@@ -1,0 +1,24 @@
+name: Deploy to dev3/Enonic Cloud (PoC)
+on: workflow_dispatch
+
+jobs:
+  deploy-to-dev3:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      - name: Deploy to dev3/Enonic Cloud
+        uses: ./.github/actions/build-and-deploy
+        with:
+          naisCluster: dev-gcp
+          xpAdminHost: trial-navpoc-deploy.enonic.cloud
+          xpDeployEndpoint: /app/install
+          xpEnv: cloud-poc
+          xpVersion: '7.14.4'
+          deploySecretName: xp-navno-deploy-cloud-poc
+          NAIS_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+          NAIS_MANAGEMENT_PROJECT_ID: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}

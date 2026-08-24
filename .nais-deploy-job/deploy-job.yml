@@ -9,9 +9,9 @@ spec:
   image: {{ image }}
   env:
     - name: XP_INSTALL_API
-      value: "https://{{ xpAdminHost }}/admin/rest/app/install"
+      value: "https://{{ xpAdminHost }}{{ xpDeployEndpoint }}"
   envFrom:
-    - secret: xp-navno-deploy
+    - secret: {{ deploySecretName }}
   observability:
     logging:
       destinations:

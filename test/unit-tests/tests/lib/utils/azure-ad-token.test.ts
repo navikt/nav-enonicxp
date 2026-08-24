@@ -17,8 +17,8 @@ describe('getAzureAdToken', () => {
         mockedRequest.mockReset();
         // The cache is module-scoped and persists between tests; use a unique scope per test
         // to avoid cross-test cache hits.
-        app.config.azureClientId = 'test-client-id';
-        app.config.azureClientSecret = 'test-client-secret';
+        app.config.clientId = 'test-client-id';
+        app.config.clientSecret = 'test-client-secret';
     });
 
     test('requests a token with client_credentials and returns the access token', () => {
@@ -76,8 +76,8 @@ describe('getAzureAdToken', () => {
     });
 
     test('returns null when client credentials are missing', () => {
-        app.config.azureClientId = '';
-        app.config.azureClientSecret = '';
+        app.config.clientId = '';
+        app.config.clientSecret = '';
 
         const token = getAzureAdToken('scope-missing-creds');
 

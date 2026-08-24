@@ -57,7 +57,7 @@ const requestNewToken = (scope: string): CachedToken | null => {
 
     if (response.status !== 200 || !response.body) {
         logger.error(
-            `AzureAdToken: Failed to acquire token for scope ${scope}: ${response.status} - ${response.message}`
+            `AzureAdToken: Failed to acquire token for scope ${scope}: ${response.status} - ${response.message}. Response body: ${response.body || '<empty>'}`
         );
         return null;
     }
