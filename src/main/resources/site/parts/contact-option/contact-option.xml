@@ -18,6 +18,9 @@
                         </input>
                         <input name="ingress" type="HtmlArea">
                             <label>Overstyr ingress</label>
+                            <config>
+                                <include>Undo Redo</include>
+                            </config>
                         </input>
                         <!-- Dummy value to prevent graphql-errors for undefined field -->
                         <input name="title" type="TextLine">
@@ -39,6 +42,9 @@
                         </input>
                         <input name="ingress" type="HtmlArea">
                             <label>Overstyr ingress</label>
+                            <config>
+                                <include>Undo Redo</include>
+                            </config>
                         </input>
                         <!-- Dummy value to prevent graphql-errors for undefined field -->
                         <input name="url" type="TextLine">
@@ -67,6 +73,9 @@
                         </input>
                         <input name="ingress" type="HtmlArea">
                             <label>Overstyr ingress</label>
+                            <config>
+                                <include>Undo Redo</include>
+                            </config>
                         </input>
                         <!-- Dummy value to prevent graphql-errors for undefined field -->
                         <input name="phoneNumber" type="TextLine">
@@ -85,6 +94,9 @@
                         </input>
                         <input name="ingress" type="HtmlArea">
                             <label>Overstyr ingress</label>
+                            <config>
+                                <include>Undo Redo</include>
+                            </config>
                         </input>
                     </items>
                 </option>
@@ -96,6 +108,9 @@
                         </input>
                         <input name="ingress" type="HtmlArea">
                             <label>Overstyr ingress</label>
+                            <config>
+                                <include>Undo Redo</include>
+                            </config>
                         </input>
                     </items>
                 </option>
@@ -123,6 +138,9 @@
                         </input>
                         <input name="ingress" type="HtmlArea">
                             <label>Ingress</label>
+                            <config>
+                                <include>Undo Redo</include>
+                            </config>
                         </input>
                     </items>
                 </option>

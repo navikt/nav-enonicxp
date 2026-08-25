@@ -21,6 +21,9 @@
                         </input>
                         <input name="ingress" type="HtmlArea">
                             <label>Ingress</label>
+                            <config>
+                                <include>Undo Redo</include>
+                            </config>
                         </input>
                         <mixin name="opening-hours"/>
                     </items>
@@ -43,6 +46,9 @@
                         </input>
                         <input name="ingress" type="HtmlArea">
                             <label>Ingress</label>
+                            <config>
+                                <include>Undo Redo</include>
+                            </config>
                         </input>
                     </items>
                 </option>

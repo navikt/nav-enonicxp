@@ -20,6 +20,9 @@
             <items>
                 <input type="HtmlArea" name="pressCall">
                     <label>Informasjon om pressevakt</label>
+                    <config>
+                        <include>Undo Redo</include>
+                    </config>
                 </input>
             </items>
         </field-set>
