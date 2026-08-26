@@ -93,9 +93,9 @@ const searchApiUrls: EnvRecord = {
 // This is the proxy app registration's scope (api://<proxy-app-id>/.default), not norg2's.
 // TODO: fill in the exact scope values per environment, provided by the org-ekstern-proxy team.
 const norgProxyTokenScope: EnvRecord = {
-    p: '',
+    p: 'api://prod-gcp.org.norg2/.default',
     dev: '',
-    dev3: 'api://dev-gcp.org.norg2/.default',
+    dev3: 'api://prod-gcp.org.norg2/.default',
     q6: '',
     localhost: '',
     test: '',
