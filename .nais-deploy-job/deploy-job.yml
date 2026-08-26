@@ -7,6 +7,9 @@ metadata:
     team: personbruker
 spec:
   image: {{ image }}
+  # Retain the finished Job and its pod for 1 hour (also on failure) so the
+  # deploy.js output can be inspected via `kubectl logs` after a failed install.
+  ttlSecondsAfterFinished: 3600
   env:
     - name: XP_INSTALL_API
       value: "https://{{ xpAdminHost }}{{ xpDeployEndpoint }}"
