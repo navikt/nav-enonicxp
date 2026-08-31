@@ -22,7 +22,7 @@
             <label>LinkedIn (kun for arbeidslivssenter)</label>
         </input>
         <input name="useUnitEditorialPage" type="CheckBox">
-            <label>Bruk felles redaksjonell side for enheter</label>
+            <label>Vis felles redaksjonell side for enheter</label>
             <default>unchecked</default>
         </input>
         <option-set name="officeNorgData">
@@ -46,6 +46,10 @@
                         </input>
                         <input type="TextLine" name="telefonnummerKommentar">
                             <label>Kommentar til telefonnummer</label>
+                            <occurrences minimum="0" maximum="1" />
+                        </input>
+                        <input name="hidePhoneInformation" type="CheckBox">
+                            <label>Skjul tekst om telefontid og Nav kontaktsenter</label>
                             <occurrences minimum="0" maximum="1" />
                         </input>
                         <input type="TextLine" name="faksnummer">
@@ -132,6 +136,10 @@
                                 </input>
                                 <input type="TextLine" name="adresseTilleggsnavn">
                                     <label>Adresse tilleggsnavn</label>
+                                    <occurrences minimum="0" maximum="1" />
+                                </input>
+                                <input name="locationLabel" type="TextLine">
+                                    <label>Overstyr teksten «Beliggenhet»</label>
                                     <occurrences minimum="0" maximum="1" />
                                 </input>
                             </items>

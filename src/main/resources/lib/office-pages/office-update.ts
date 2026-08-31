@@ -112,6 +112,7 @@ const forceReadyStateIfLocal = (existingOfficePage: Content<OfficePageDescriptor
 const localOfficeAdapter = (officeData: OfficeRawNORGData): ImportedOfficeNorgData => ({
     ...officeData,
     type: OfficeTypes.LOKAL,
+    hidePhoneInformation: false,
 });
 
 const generalOfficeAdapter = (
@@ -134,6 +135,7 @@ const generalOfficeAdapter = (
         type,
         telefonnummer: officeData.telefonnummer,
         telefonnummerKommentar: officeData.telefonnummerKommentar,
+        hidePhoneInformation: false,
         status: 'Aktiv',
         organisasjonsnummer,
         sosialeTjenester: '',

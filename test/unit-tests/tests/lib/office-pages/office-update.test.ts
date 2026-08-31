@@ -118,6 +118,9 @@ describe('Office update', () => {
         expect(result?.find((office) => office.enhetNr === '4534')?.type).toBe(
             OfficeTypes.KONTROLL
         );
+        expect(result?.find((office) => office.enhetNr === '4534')?.hidePhoneInformation).toBe(
+            false
+        );
         expect(result?.some((office) => office.enhetNr === '9999')).toBe(false);
     });
 

@@ -48,7 +48,7 @@ export type OfficePage = {
   linkedin?: string;
 
   /**
-   * Bruk felles redaksjonell side for enheter
+   * Vis felles redaksjonell side for enheter
    */
   useUnitEditorialPage: boolean;
 
@@ -85,6 +85,11 @@ export type OfficePage = {
            * Kommentar til telefonnummer
            */
           telefonnummerKommentar?: string;
+
+          /**
+           * Skjul tekst om telefontid og Nav kontaktsenter
+           */
+          hidePhoneInformation: boolean;
 
           /**
            * Telefaks
@@ -179,6 +184,11 @@ export type OfficePage = {
              * Adresse tilleggsnavn
              */
             adresseTilleggsnavn?: string;
+
+            /**
+             * Overstyr teksten «Beliggenhet»
+             */
+            locationLabel?: string;
           };
 
           /**
