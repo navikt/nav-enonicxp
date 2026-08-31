@@ -87,7 +87,7 @@ export type OfficePage = {
           telefonnummerKommentar?: string;
 
           /**
-           * Skjul tekst om telefontid og Nav kontaktsenter
+           * Skjul informasjon under telefonnummeret
            */
           hidePhoneInformation: boolean;
 

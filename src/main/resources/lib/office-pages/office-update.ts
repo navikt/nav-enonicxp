@@ -59,6 +59,10 @@ const officeTypesForImport: ReadonlySet<string> = new Set([
     OfficeTypes.OKONOMI,
     OfficeTypes.OPPFUTLAND,
 ]);
+const officeTypesWithHiddenPhoneInformation: ReadonlySet<string> = new Set([
+    OfficeTypes.OKONOMI,
+    OfficeTypes.OPPFUTLAND,
+]);
 const officeNumbersForImport: ReadonlySet<string> = new Set(['4534']);
 const importedOfficeTypes: ReadonlySet<string> = new Set([
     OfficeTypes.LOKAL,
@@ -135,7 +139,7 @@ const generalOfficeAdapter = (
         type,
         telefonnummer: officeData.telefonnummer,
         telefonnummerKommentar: officeData.telefonnummerKommentar,
-        hidePhoneInformation: false,
+        hidePhoneInformation: officeTypesWithHiddenPhoneInformation.has(type),
         status: 'Aktiv',
         organisasjonsnummer,
         sosialeTjenester: '',

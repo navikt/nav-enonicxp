@@ -121,6 +121,12 @@ describe('Office update', () => {
         expect(result?.find((office) => office.enhetNr === '4534')?.hidePhoneInformation).toBe(
             false
         );
+        expect(result?.find((office) => office.enhetNr === '1003')?.hidePhoneInformation).toBe(
+            true
+        );
+        expect(result?.find((office) => office.enhetNr === '1004')?.hidePhoneInformation).toBe(
+            true
+        );
         expect(result?.some((office) => office.enhetNr === '9999')).toBe(false);
     });
 

@@ -49,7 +49,7 @@
                             <occurrences minimum="0" maximum="1" />
                         </input>
                         <input name="hidePhoneInformation" type="CheckBox">
-                            <label>Skjul tekst om telefontid og Nav kontaktsenter</label>
+                            <label>Skjul informasjon under telefonnummeret</label>
                             <occurrences minimum="0" maximum="1" />
                         </input>
                         <input type="TextLine" name="faksnummer">
