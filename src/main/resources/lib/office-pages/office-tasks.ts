@@ -1,16 +1,13 @@
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { logger } from '../utils/logging';
-import { CONTENT_ROOT_REPO_ID, IS_ENONIC_POC } from '../constants';
+import { CONTENT_ROOT_REPO_ID } from '../constants';
 import { processAllOffices, fetchAllOfficeDataFromNorg } from './office-update';
 import { runInContext } from '../context/run-in-context';
 
 const OFFICE_FETCH_TASK_NAME = 'no.nav.navno:update-office';
 
-// The Enonic Cloud PoC (dev3) proxies office data through org-ekstern-proxy with EntraID token
-// auth, so we poll less frequently there to limit token/API calls. Other environments keep the
-// original 1-minute schedule (localhost always runs every 10 minutes to reduce local dev noise).
-const CRON_SCHEDULE =
-    app.config.env === 'localhost' || IS_ENONIC_POC ? '*/10 * * * *' : '* * * * *';
+// Localhost runs every 10 minutes to reduce local dev noise; all other environments poll every minute.
+const CRON_SCHEDULE = app.config.env === 'localhost' ? '*/10 * * * *' : '* * * * *';
 
 const MAX_FAILURE_COUNT_BEFORE_CRITICAL = 10;
 

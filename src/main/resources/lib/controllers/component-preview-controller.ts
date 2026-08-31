@@ -1,7 +1,7 @@
 import { Request } from '@enonic-types/core';
 import * as portalLib from '/lib/xp/portal';
 import httpClient from '/lib/http-client';
-import { URLS } from '../constants';
+import { URLS, FRONTEND_TOKEN_SCOPE } from '../constants';
 import { logger } from '../utils/logging';
 import { runGuillotineComponentPreviewQuery } from '../guillotine/queries/run-sitecontent-query';
 import {
@@ -12,6 +12,7 @@ import {
 import { runGuillotineContentQuery } from '../guillotine/queries/run-content-query';
 import { Content } from '/lib/xp/portal';
 import { replaceNAVwithNav } from '../utils/string-utils';
+import { withCloudServiceAuthHeaders } from '../utils/service-call-auth';
 
 const fallbackResponse = {
     contentType: 'text/html',
@@ -112,9 +113,11 @@ export const componentPreviewController = (_: Request) => {
                 contentProps: replaceNAVwithNav(getContentProps()),
             }),
             contentType: 'application/json',
-            headers: {
-                secret: app.config.serviceSecret,
-            },
+            headers: withCloudServiceAuthHeaders(
+                { secret: app.config.serviceSecret },
+                FRONTEND_TOKEN_SCOPE,
+                'ComponentPreview'
+            ),
         });
 
         if (componentHtml?.body) {

@@ -2,11 +2,12 @@ import { Request } from '@enonic-types/core';
 import httpClient from '/lib/http-client';
 import * as portalLib from '/lib/xp/portal';
 import { Content } from '/lib/xp/portal';
-import { URLS } from '../constants';
+import { URLS, FRONTEND_TOKEN_SCOPE } from '../constants';
 import { logger } from '../utils/logging';
 import { getLayersData } from '../localization/layers-data';
 import { stripPathPrefix } from '../paths/path-utils';
 import { isMedia } from '../utils/content-utils';
+import { withCloudServiceAuthHeaders } from '../utils/service-call-auth';
 
 // Used for checking if a request to the frontend looped back to this controller
 const LOOPBACK_PARAM = 'fromXp';
@@ -106,9 +107,11 @@ export const frontendProxy = (req: Request, path?: string) => {
             contentType: 'text/html',
             connectionTimeout: 20000,
             readTimeout: 30000,
-            headers: {
-                secret: app.config.serviceSecret,
-            },
+            headers: withCloudServiceAuthHeaders(
+                { secret: app.config.serviceSecret },
+                FRONTEND_TOKEN_SCOPE,
+                'FrontendProxy'
+            ),
             followRedirects: false,
             queryParams: {
                 ...req.params,

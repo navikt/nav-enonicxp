@@ -49,20 +49,23 @@ export const norgProxyRequest = <T>(
     const accessToken = getAzureAdToken(NORG_PROXY_TOKEN_SCOPE);
 
     if (!accessToken) {
-        logger.error(`${logContext}: Could not acquire EntraID token for request to ${requestConfig.url}`);
+        logger.error(
+            `${logContext}: Could not acquire EntraID token for request to ${requestConfig.url}`
+        );
         return null;
     }
+
+    const headers = {
+        Authorization: `Bearer ${accessToken}`,
+        'target-client-id': NORG_PROXY_TARGET_CLIENT_ID,
+        'target-app': NORG_PROXY_TARGET_APP,
+    };
 
     const response = request({
         url: requestConfig.url,
         method: requestConfig.method,
         contentType: 'application/json',
-        headers: {
-            consumerId: NORG2_CONSUMER_ID,
-            Authorization: `Bearer ${accessToken}`,
-            'target-client-id': NORG_PROXY_TARGET_CLIENT_ID,
-            'target-app': NORG_PROXY_TARGET_APP,
-        },
+        headers,
         body: requestConfig.body,
     });
 

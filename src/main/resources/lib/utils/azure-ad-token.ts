@@ -71,6 +71,8 @@ const requestNewToken = (scope: string): CachedToken | null => {
             return null;
         }
 
+        logger.info(`AzureAdToken: Acquired new token for scope ${scope}`);
+
         return {
             accessToken: parsed.access_token,
             expiresAtMs: Date.now() + parsed.expires_in * 1000 - EXPIRY_BUFFER_MS,
