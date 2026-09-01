@@ -2,6 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import thymeleafLib from '/lib/thymeleaf';
 import { runInContext } from '../../../lib/context/run-in-context';
 import { getContentNodeKey } from '../../../lib/utils/content-utils';
+import { APP_DESCRIPTOR, NAVNO_NODE_ROOT_PATH } from '../../../lib/constants';
 
 const view = resolve('./dashboard.html');
 
@@ -11,11 +12,11 @@ const dashboardInfo = () => {
             query: {
                 term: {
                     field: '_parentPath',
-                    value: '/content/www.nav.no/admin',
+                    value: NAVNO_NODE_ROOT_PATH + '/admin',
                 },
             },
             count: 100,
-            contentTypes: ['no.nav.navno:announcement-to-editors'],
+            contentTypes: [`${APP_DESCRIPTOR}:announcement-to-editors`],
             sort: 'createdTime DESC',
         })
     ).hits[0];
@@ -33,7 +34,7 @@ const dashboardInfo = () => {
                           },
                       },
                       count: 100,
-                      contentTypes: ['no.nav.navno:announcement-to-editors'],
+                      contentTypes: [`${APP_DESCRIPTOR}:announcement-to-editors`],
                       sort: '_manualordervalue DESC',
                   })
               ).hits
