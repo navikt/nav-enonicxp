@@ -105,7 +105,7 @@ const norgProxyTokenScope: EnvRecord = {
 const revalidatorProxyTokenScope: EnvRecord = {
     p: '',
     dev: '',
-    dev3: 'api://dev-gcp.personbruker.nav-enonicxp-frontend-revalidator-proxy/.default',
+    dev3: 'api://dev-gcp.navno.nav-enonicxp-frontend-revalidator-proxy/.default',
     q6: '',
     localhost: '',
     test: '',
@@ -114,7 +114,7 @@ const revalidatorProxyTokenScope: EnvRecord = {
 const frontendTokenScope: EnvRecord = {
     p: '',
     dev: '',
-    dev3: 'api://dev-gcp.personbruker.nav-enonicxp-frontend/.default',
+    dev3: 'api://dev-gcp.navno.nav-enonicxp-frontend/.default',
     q6: '',
     localhost: '',
     test: '',
@@ -123,7 +123,7 @@ const frontendTokenScope: EnvRecord = {
 const searchAdminApiTokenScope: EnvRecord = {
     p: '',
     dev: '',
-    dev3: 'api://dev-gcp.personbruker.navno-search-admin-api/.default',
+    dev3: 'api://dev-gcp.navno.navno-search-admin-api/.default',
     q6: '',
     localhost: '',
     test: '',
