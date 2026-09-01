@@ -14,6 +14,7 @@ import { logger } from '../utils/logging';
 import { contentLibGetStandard, nodeLibConnectStandard } from './standard-functions';
 import { getTimeTravelContext } from './run-with-time-travel';
 import { getContentNodeKey } from '../utils/content-utils';
+import { NAVNO_NODE_ROOT_PATH } from '../constants';
 
 let timeTravelHooksEnabled = false;
 
@@ -135,7 +136,9 @@ export const hookLibsWithTimeTravel = () => {
 
             // Templates should always resolve to the active version, to avoid inconsistent
             // component structures
-            if (requestedVersion.nodePath.startsWith('/content/www.nav.no/_templates')) {
+            if (
+                requestedVersion.nodePath.startsWith(NAVNO_NODE_ROOT_PATH + '/_templates ')
+            ) {
                 return repoGet(nodeKey);
             }
 

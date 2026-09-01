@@ -12,5 +12,20 @@
                 <allowHeadings>h3 h4 normal</allowHeadings>
             </config>
         </input>
+        <field-set>
+            <label>Eventuelle underseksjoner</label>
+            <items>
+                <input type="HtmlArea" name="subText">
+                    <label>Tekst etter underseksjoner</label>
+                    <help-text>Vil vises under eventuelle underseksjoner</help-text>
+                    <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <include>Undo Redo</include>
+                        <exclude>JustifyBlock Underline</exclude>
+                        <allowHeadings>h3 h4 normal</allowHeadings>
+                    </config>
+                </input>
+            </items>
+        </field-set>
     </form>
 </content-type>

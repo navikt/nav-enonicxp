@@ -1,23 +1,46 @@
 import * as contentLib from '/lib/xp/content';
 import thymeleafLib from '/lib/thymeleaf';
 import { runInContext } from '../../../lib/context/run-in-context';
+import { getContentNodeKey } from '../../../lib/utils/content-utils';
+import { APP_DESCRIPTOR, NAVNO_NODE_ROOT_PATH } from '../../../lib/constants';
 
 const view = resolve('./dashboard.html');
 
 const dashboardInfo = () => {
     const content = runInContext({ branch: 'master' }, () =>
         contentLib.query({
+            query: {
+                term: {
+                    field: '_parentPath',
+                    value: NAVNO_NODE_ROOT_PATH + '/admin',
+                },
+            },
             count: 100,
-            contentTypes: ['no.nav.navno:announcement-to-editors'],
+            contentTypes: [`${APP_DESCRIPTOR}:announcement-to-editors`],
             sort: 'createdTime DESC',
         })
     ).hits[0];
 
     if (content) {
-        const { displayName, data } = content;
-
-        const { text } = data;
-        const model = { displayName, text };
+        const { displayName, _path, data } = content;
+        // Hent eventuelt underliggende innhold av samme innholdstype som subseksjoner
+        const subSections = content.hasChildren
+            ? runInContext({ branch: 'master' }, () =>
+                  contentLib.query({
+                      query: {
+                          term: {
+                              field: '_parentPath',
+                              value: getContentNodeKey(_path),
+                          },
+                      },
+                      count: 100,
+                      contentTypes: [`${APP_DESCRIPTOR}:announcement-to-editors`],
+                      sort: '_manualordervalue DESC',
+                  })
+              ).hits
+            : null;
+        const { text, subText } = data;
+        const model = { displayName, text, subSections, subText };
 
         return {
             body: thymeleafLib.render(view, model),
