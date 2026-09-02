@@ -27,6 +27,8 @@ const jestConfig = {
             config: {
                 env: 'localhost',
                 serviceSecret: 'dummyToken',
+                clientId: 'dummyClientId',
+                clientSecret: 'dummyClientSecret',
             },
         },
         __FILE__: '',

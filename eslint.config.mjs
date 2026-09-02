@@ -238,6 +238,20 @@ export default defineConfig([globalIgnores([
         "no-restricted-imports": "off",
     },
 }, {
+    files: [".nais-deploy-job/deploy.js"],
+    languageOptions: {
+        globals: {
+            Buffer: "readonly",
+            URL: "readonly",
+            console: "readonly",
+            process: "readonly",
+        },
+    },
+    rules: {
+        "@typescript-eslint/no-require-imports": "off",
+        "no-console": "off",
+    },
+}, {
     files: ["test/**/*.*"],
     rules: {
         "no-console": "off",

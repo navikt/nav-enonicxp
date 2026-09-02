@@ -1,5 +1,6 @@
 import httpClient, { HttpRequestParams } from '/lib/http-client';
-import { URLS } from '../../constants';
+import { SEARCH_API_TOKEN_SCOPE, URLS } from '../../constants';
+import { withCloudServiceAuthHeaders } from '../../utils/service-call-auth';
 
 type Params = Omit<HttpRequestParams, 'url'> & { servicePath?: string };
 
@@ -9,9 +10,14 @@ export const searchApiRequest = ({ servicePath, ...rest }: Params) => {
     return httpClient.request({
         ...rest,
         url: `${SERVICE_URL}${servicePath || ''}`,
-        headers: {
-            ...rest.headers,
-            'api-key': app.config.searchApiKey,
-        },
+        headers: withCloudServiceAuthHeaders(
+            {
+                ...rest.headers,
+                'api-key': app.config.searchApiKey,
+                'xp-origin': app.config.env,
+            },
+            SEARCH_API_TOKEN_SCOPE,
+            'SearchAdminApi'
+        ),
     });
 };
