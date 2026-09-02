@@ -14,6 +14,7 @@ export const searchApiRequest = ({ servicePath, ...rest }: Params) => {
             {
                 ...rest.headers,
                 'api-key': app.config.searchApiKey,
+                'xp-origin': app.config.env,
             },
             SEARCH_API_TOKEN_SCOPE,
             'SearchAdminApi'

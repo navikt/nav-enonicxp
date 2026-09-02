@@ -84,7 +84,7 @@ const searchApiUrls: EnvRecord = {
     p: 'https://navno-search-admin-api.intern.nav.no/content/personbruker',
     dev: 'https://navno-search-admin-api.intern.dev.nav.no/content/personbruker',
     dev3: 'https://navno-search-admin-api.ekstern.dev.nav.no/content/personbruker',
-    q6: '',
+    q6: 'https://navno-search-admin-api.ekstern.dev.nav.no/content/personbruker',
     localhost: '',
     test: '',
 } as const;
@@ -105,7 +105,7 @@ const norgProxyTokenScope: EnvRecord = {
 const revalidatorProxyTokenScope: EnvRecord = {
     p: '',
     dev: '',
-    dev3: 'api://dev-gcp.navno.nav-enonicxp-frontend-revalidator-proxy/.default',
+    dev3: 'api://dev-gcp.navno.nav-enonicxp-frontend-revalidator-proxy-dev3/.default',
     q6: '',
     localhost: '',
     test: '',

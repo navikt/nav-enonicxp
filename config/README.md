@@ -14,3 +14,7 @@ Calls to Nav APIs (norg2) go through `org-ekstern-proxy` and require an OAuth2 B
 - `clientSecret` – the corresponding client secret (rotate as required).
 
 The tenant id, token endpoint, token scope and proxy routing headers (`target-client-id`, `target-app`) are non-secret and live in `lib/constants.ts`. The token scope (`norgProxyTokenScope`) must still be filled in with the value provided by the `org-ekstern-proxy` team.
+
+## External search indexing
+
+Outbound requests to `navno-search-admin-api` (see `lib/search/api-handlers/search-api-request.ts`) send an `xp-origin` header set to `app.config.env`. This lets `navno-search-admin-api` identify which environment a request comes from and only do a log and drop when coming from q6 or dev3 (cloud). The reason for this is that we only have one dev setup for search and would like to contain to dev1.
