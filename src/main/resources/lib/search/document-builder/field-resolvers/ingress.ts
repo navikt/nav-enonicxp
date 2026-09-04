@@ -9,7 +9,7 @@ const DEFAULT_OFFICE_INGRESS = 'Kontorinformasjon';
 
 const getSted = (publikumsmottak: Publikumsmottak) => {
     if (!publikumsmottak || publikumsmottak.length === 0) {
-        return [DEFAULT_OFFICE_INGRESS];
+        return [];
     }
 
     // For offices with only one publikumsmottak, the 'stedsbeskrivelse' key
@@ -46,7 +46,7 @@ export const buildSearchDocumentOfficeIngress = (content: OfficeContent) => {
         return '';
     }
 
-    if (officeData.type === OfficeTypes.HMS || officeData.type === OfficeTypes.ALS) {
+    if (officeData.type !== OfficeTypes.LOKAL) {
         return content.data.metaDescription || officeData.navn || content.displayName;
     }
 

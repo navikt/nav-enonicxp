@@ -128,6 +128,8 @@ const generalOfficeAdapter = (
     const organisasjonsnummer = entry?.organisasjonsnummer ?? '';
 
     if (!type || !isImportedOfficeType(type)) {
+        // Partial import data can cause an existing office to be deleted as stale.
+        // Abort the entire fetch instead of continuing with an incomplete office list.
         throw new Error(
             `Could not find a supported type for office with enhetNr: ${officeData.enhetNr}`
         );

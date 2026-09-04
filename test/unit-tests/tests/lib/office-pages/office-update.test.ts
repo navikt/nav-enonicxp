@@ -130,6 +130,24 @@ describe('Office update', () => {
         expect(result?.some((office) => office.enhetNr === '9999')).toBe(false);
     });
 
+    test('aborts the import when office data cannot be matched to a supported type', () => {
+        const overview = [
+            {
+                enhetId: '1',
+                enhetNr: '1001',
+                navn: 'Okonomi',
+                type: OfficeTypes.OKONOMI,
+            },
+        ];
+
+        requestMock
+            .mockReturnValueOnce(httpResponse(JSON.stringify(overview)))
+            .mockReturnValueOnce(httpResponse(JSON.stringify([officeData('9999', 'Unknown')])))
+            .mockReturnValueOnce(httpResponse('[]'));
+
+        expect(fetchAllOfficeDataFromNorg()).toBeNull();
+    });
+
     test('never deletes editorially managed offices during stale cleanup', () => {
         const editorialOffice = officePage('editorial-office', '0000', OfficeTypes.REDAKSJONELT);
         const staleNorgOffice = officePage('stale-office', '1001', OfficeTypes.HMS);
