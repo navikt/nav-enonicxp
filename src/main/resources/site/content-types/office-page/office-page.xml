@@ -1,6 +1,6 @@
 <content-type>
     <display-name>Kontorside</display-name>
-    <description>Brukes kun for kontorer som allerede er importert fra NORG.</description>
+    <description>Brukes for kontorer som importeres fra NORG, og kontorer som vedlikeholdes redaksjonelt.</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
@@ -24,8 +24,12 @@
                 <include>Undo Redo</include>
             </config>
         </input>
+        <input name="useUnitEditorialPage" type="CheckBox">
+            <label>Vis felles redaksjonell side for enheter</label>
+            <default>unchecked</default>
+        </input>
         <option-set name="officeNorgData">
-            <label>Kontordata (OBS! Overskrives fra NORG)</label>
+            <label>Kontordata (NORG-importerte kontorer oppdateres automatisk)</label>
             <occurrences minimum="1" maximum="1" />
             <options minimum="1" maximum="1">
                 <option name="data">
@@ -36,23 +40,42 @@
                         </input>
                         <input type="TextLine" name="navn">
                             <label>Navn</label>
-                            <occurrences minimum="1" maximum="1" />
+                            <help-text>Navnet fra NORG. For redaksjonelt styrte kontorer brukes sidetittelen.</help-text>
+                            <occurrences minimum="0" maximum="1" />
                         </input>
                         <input type="TextLine" name="telefonnummer">
                             <label>Telefonnummer</label>
                             <occurrences minimum="0" maximum="1" />
                         </input>
                         <input type="TextLine" name="telefonnummerKommentar">
-                            <label>Telefonnummer</label>
+                            <label>Kommentar til telefonnummer</label>
+                            <occurrences minimum="0" maximum="1" />
+                        </input>
+                        <input name="hidePhoneInformation" type="CheckBox">
+                            <label>Skjul informasjon under telefonnummeret</label>
+                            <occurrences minimum="0" maximum="1" />
+                        </input>
+                        <input type="TextLine" name="faksnummer">
+                            <label>Telefaks</label>
                             <occurrences minimum="0" maximum="1" />
                         </input>
                         <input type="TextLine" name="enhetNr">
-                            <label>EnhetNr</label>
-                            <occurrences minimum="1" maximum="1" />
+                            <label>Kontornummer</label>
+                            <occurrences minimum="0" maximum="1" />
                         </input>
-                        <input type="TextLine" name="type">
-                            <label>Type</label>
+                        <input type="RadioButton" name="type">
+                            <label>Kontortype (velg «Redaksjonelt styrt» for manuelt vedlikehold)</label>
                             <occurrences minimum="1" maximum="1" />
+                            <config>
+                                <option value="REDAKSJONELT">Redaksjonelt styrt</option>
+                                <option value="LOKAL">Lokalkontor</option>
+                                <option value="HMS">Hjelpemiddelsentral</option>
+                                <option value="ALS">Arbeidslivssenter</option>
+                                <option value="OKONOMI">Økonomi</option>
+                                <option value="OPPFUTLAND">Oppfølging utland</option>
+                                <option value="KONTROLL">Kontroll</option>
+                            </config>
+                            <default>REDAKSJONELT</default>
                         </input>
                         <input type="TextLine" name="status">
                             <label>Status</label>
@@ -116,6 +139,10 @@
                                 </input>
                                 <input type="TextLine" name="adresseTilleggsnavn">
                                     <label>Adresse tilleggsnavn</label>
+                                    <occurrences minimum="0" maximum="1" />
+                                </input>
+                                <input name="locationLabel" type="TextLine">
+                                    <label>Overstyr teksten «Beliggenhet»</label>
                                     <occurrences minimum="0" maximum="1" />
                                 </input>
                             </items>

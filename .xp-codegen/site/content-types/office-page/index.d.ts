@@ -48,7 +48,12 @@ export type OfficePage = {
   linkedin?: string;
 
   /**
-   * Kontordata (OBS! Overskrives fra NORG)
+   * Vis felles redaksjonell side for enheter
+   */
+  useUnitEditorialPage: boolean;
+
+  /**
+   * Kontordata (NORG-importerte kontorer oppdateres automatisk)
    */
   officeNorgData:
     | {
@@ -69,7 +74,7 @@ export type OfficePage = {
           /**
            * Navn
            */
-          navn: string;
+          navn?: string;
 
           /**
            * Telefonnummer
@@ -77,19 +82,29 @@ export type OfficePage = {
           telefonnummer?: string;
 
           /**
-           * Telefonnummer
+           * Kommentar til telefonnummer
            */
           telefonnummerKommentar?: string;
 
           /**
-           * EnhetNr
+           * Skjul informasjon under telefonnummeret
            */
-          enhetNr: string;
+          hidePhoneInformation: boolean;
 
           /**
-           * Type
+           * Telefaks
            */
-          type: string;
+          faksnummer?: string;
+
+          /**
+           * Kontornummer
+           */
+          enhetNr?: string;
+
+          /**
+           * Kontortype (velg «Redaksjonelt styrt» for manuelt vedlikehold)
+           */
+          type: "REDAKSJONELT" | "LOKAL" | "HMS" | "ALS" | "OKONOMI" | "OPPFUTLAND" | "KONTROLL";
 
           /**
            * Status
@@ -169,6 +184,11 @@ export type OfficePage = {
              * Adresse tilleggsnavn
              */
             adresseTilleggsnavn?: string;
+
+            /**
+             * Overstyr teksten «Beliggenhet»
+             */
+            locationLabel?: string;
           };
 
           /**

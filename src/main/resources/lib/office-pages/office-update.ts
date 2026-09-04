@@ -22,6 +22,12 @@ type OfficePageDescriptor = NavNoDescriptor<'office-page'>;
 type InternalLinkDescriptor = NavNoDescriptor<'internal-link'>;
 
 type OfficeNorgData = OfficePageData['officeNorgData']['data'];
+type ImportedOfficeType = Exclude<OfficeNorgData['type'], 'REDAKSJONELT'>;
+type ImportedOfficeNorgData = Omit<OfficeNorgData, 'enhetNr' | 'navn' | 'type'> & {
+    enhetNr: string;
+    navn: string;
+    type: ImportedOfficeType;
+};
 
 type OfficeOverview = {
     enhetId: string;
@@ -45,8 +51,30 @@ const INTERNAL_LINK_CONTENT_TYPE: InternalLinkDescriptor = `no.nav.navno:interna
 const OFFICES_BASE_PATH = '/www.nav.no/kontor';
 const ALS_OFFICES_BASE_PATH = '/www.nav.no/arbeidsgiver';
 
-const getOfficeContentName = (officeData: OfficeNorgData) => commonLib.sanitize(officeData.navn);
-const officeTypesForImport: ReadonlySet<string> = new Set([OfficeTypes.HMS, OfficeTypes.ALS]);
+const getOfficeContentName = (officeData: ImportedOfficeNorgData) =>
+    commonLib.sanitize(officeData.navn);
+const officeTypesForImport: ReadonlySet<string> = new Set([
+    OfficeTypes.HMS,
+    OfficeTypes.ALS,
+    OfficeTypes.OKONOMI,
+    OfficeTypes.OPPFUTLAND,
+]);
+const officeTypesWithHiddenPhoneInformation: ReadonlySet<string> = new Set([
+    OfficeTypes.OKONOMI,
+    OfficeTypes.OPPFUTLAND,
+]);
+const officeNumbersForImport: ReadonlySet<string> = new Set(['4534']);
+const importedOfficeTypes: ReadonlySet<string> = new Set([
+    OfficeTypes.LOKAL,
+    OfficeTypes.HMS,
+    OfficeTypes.ALS,
+    OfficeTypes.OKONOMI,
+    OfficeTypes.OPPFUTLAND,
+    OfficeTypes.KONTROLL,
+]);
+
+const isImportedOfficeType = (type: string): type is ImportedOfficeType =>
+    importedOfficeTypes.has(type);
 
 const getParentPathForType = (type: string) =>
     type === OfficeTypes.ALS ? ALS_OFFICES_BASE_PATH : OFFICES_BASE_PATH;
@@ -85,22 +113,25 @@ const forceReadyStateIfLocal = (existingOfficePage: Content<OfficePageDescriptor
     };
 };
 
-const localOfficeAdapter = (officeData: OfficeRawNORGData) => ({
+const localOfficeAdapter = (officeData: OfficeRawNORGData): ImportedOfficeNorgData => ({
     ...officeData,
     type: OfficeTypes.LOKAL,
+    hidePhoneInformation: false,
 });
 
 const generalOfficeAdapter = (
     officeData: OfficeRawNORGData,
     officeTypeDictionary: OfficeTypeDictionary
-): OfficeNorgData => {
+): ImportedOfficeNorgData => {
     const entry = officeTypeDictionary.get(officeData.enhetNr);
-    const type = entry?.type ?? '';
+    const type = entry?.type;
     const organisasjonsnummer = entry?.organisasjonsnummer ?? '';
 
-    if (!type) {
-        logger.warning(
-            `OfficeImporting: Could not find the type for office with enhetNr: ${officeData.enhetNr}`
+    if (!type || !isImportedOfficeType(type)) {
+        // Partial import data can cause an existing office to be deleted as stale.
+        // Abort the entire fetch instead of continuing with an incomplete office list.
+        throw new Error(
+            `Could not find a supported type for office with enhetNr: ${officeData.enhetNr}`
         );
     }
 
@@ -110,6 +141,7 @@ const generalOfficeAdapter = (
         type,
         telefonnummer: officeData.telefonnummer,
         telefonnummerKommentar: officeData.telefonnummerKommentar,
+        hidePhoneInformation: officeTypesWithHiddenPhoneInformation.has(type),
         status: 'Aktiv',
         organisasjonsnummer,
         sosialeTjenester: '',
@@ -152,7 +184,11 @@ export const fetchAllOfficeDataFromNorg = () => {
         );
 
         const enhetnrForFetching = officeOverview
-            .filter((office) => officeTypesForImport.has(office.type))
+            .filter(
+                (office) =>
+                    officeTypesForImport.has(office.type) ||
+                    officeNumbersForImport.has(office.enhetNr)
+            )
             .map((office) => office.enhetNr);
 
         const norgOffices = norgRequest<OfficeRawNORGData>({
@@ -184,18 +220,6 @@ export const fetchAllOfficeDataFromNorg = () => {
     }
 };
 
-// Check if a path is taken by content with an invalid type
-// (only office pages and internal redirects should be allowed)
-const pathHasInvalidContent = (pathName: string) => {
-    const existingContent = contentLib.get({ key: pathName });
-
-    return (
-        existingContent &&
-        existingContent.type !== OFFICE_PAGE_CONTENT_TYPE &&
-        existingContent.type !== INTERNAL_LINK_CONTENT_TYPE
-    );
-};
-
 const deleteContent = (contentRef: string) => {
     const office = contentLib.get({ key: contentRef });
     if (!office) {
@@ -220,7 +244,7 @@ const deleteContent = (contentRef: string) => {
     return officeId;
 };
 
-const getOfficeLanguage = (office: OfficeNorgData) => {
+const getOfficeLanguage = (office: ImportedOfficeNorgData) => {
     if (office.brukerkontakt?.skriftspraak?.toLowerCase() === 'nb') {
         return CONTENT_LOCALE_DEFAULT;
     }
@@ -237,9 +261,12 @@ const getExistingOfficePages = (): Content<OfficePageDescriptor>[] =>
         return acc;
     }, []);
 
+const isEditoriallyManagedOfficePage = (office: Content<OfficePageDescriptor>) =>
+    office.data.officeNorgData?.data?.type === OfficeTypes.REDAKSJONELT;
+
 const moveAndRedirectOnNameChange = (
     prevOfficePage: Content<OfficePageDescriptor>,
-    newOfficeData: OfficeNorgData
+    newOfficeData: ImportedOfficeNorgData
 ) => {
     const prevContentName = prevOfficePage._name;
     const newContentName = getOfficeContentName(newOfficeData);
@@ -286,7 +313,7 @@ const mergeOfficeDataWithPageData = ({
     checksum,
 }: {
     pageData: OfficePageData;
-    officeData: OfficeNorgData;
+    officeData: ImportedOfficeNorgData;
     checksum: string;
 }): OfficePageData => {
     return {
@@ -303,7 +330,7 @@ const mergeOfficeDataWithPageData = ({
 };
 
 const updateOfficePageIfChanged = (
-    newOfficeData: OfficeNorgData,
+    newOfficeData: ImportedOfficeNorgData,
     existingOfficePage: Content<OfficePageDescriptor>
 ) => {
     const newChecksum = createObjectChecksum(newOfficeData);
@@ -364,7 +391,7 @@ const updateOfficePageIfChanged = (
     }
 };
 
-const createOfficePage = (officeData: OfficeNorgData) => {
+const createOfficePage = (officeData: ImportedOfficeNorgData) => {
     const data = mergeOfficeDataWithPageData({
         pageData: {} as OfficePageData,
         officeData,
@@ -410,7 +437,7 @@ const deleteStaleOfficePages = (
     existingOfficePages.forEach((existingOffice) => {
         const enhetNr = existingOffice.data.officeNorgData?.data?.enhetNr;
 
-        if (!validOfficeEnhetsNr.includes(enhetNr)) {
+        if (!enhetNr || !validOfficeEnhetsNr.includes(enhetNr)) {
             const deletedId = deleteContent(existingOffice._id);
             if (deletedId) {
                 deletedIds.push(deletedId);
@@ -421,8 +448,12 @@ const deleteStaleOfficePages = (
     return deletedIds;
 };
 
-export const processAllOffices = (offices: OfficeNorgData[]) => {
-    const existingOffices = getExistingOfficePages();
+export const processAllOffices = (offices: ImportedOfficeNorgData[]) => {
+    const allExistingOffices = getExistingOfficePages();
+    const editoriallyManagedOffices = allExistingOffices.filter(isEditoriallyManagedOfficePage);
+    const existingOffices = allExistingOffices.filter(
+        (office) => !isEditoriallyManagedOfficePage(office)
+    );
     const processedOfficeEnhetsNr: string[] = [];
 
     const summary: { created: string[]; updated: string[]; deleted: string[] } = {
@@ -432,10 +463,38 @@ export const processAllOffices = (offices: OfficeNorgData[]) => {
     };
 
     offices.forEach((officePageData) => {
+        const editorialOfficeWithSameNumber = editoriallyManagedOffices.find(
+            (office) => office.data.officeNorgData?.data?.enhetNr === officePageData.enhetNr
+        );
+
+        if (editorialOfficeWithSameNumber) {
+            logger.critical(
+                `OfficeImporting: Skipping office ${officePageData.enhetNr}; office number is owned by an editorial office: ${editorialOfficeWithSameNumber._path}`
+            );
+            processedOfficeEnhetsNr.push(officePageData.enhetNr);
+            return;
+        }
+
         const contentName = getOfficeContentName(officePageData);
         const pathName = `${getParentPathForType(officePageData.type)}/${contentName}`;
+        const contentAtTargetPath = contentLib.get({ key: pathName });
 
-        if (pathHasInvalidContent(pathName)) {
+        if (
+            contentAtTargetPath?.type === OFFICE_PAGE_CONTENT_TYPE &&
+            isEditoriallyManagedOfficePage(contentAtTargetPath as Content<OfficePageDescriptor>)
+        ) {
+            logger.critical(
+                `OfficeImporting: Skipping office ${officePageData.enhetNr}; target path is owned by an editorial office: ${pathName}`
+            );
+            processedOfficeEnhetsNr.push(officePageData.enhetNr);
+            return;
+        }
+
+        if (
+            contentAtTargetPath &&
+            contentAtTargetPath.type !== OFFICE_PAGE_CONTENT_TYPE &&
+            contentAtTargetPath.type !== INTERNAL_LINK_CONTENT_TYPE
+        ) {
             logger.info(`Found invalid content on ${pathName} - deleting`);
             deleteContent(pathName);
         }

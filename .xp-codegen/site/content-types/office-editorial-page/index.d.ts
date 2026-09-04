@@ -3,7 +3,7 @@ export type OfficeEditorialPage = {
   /**
    * Kontortype
    */
-  officeType: "LOKAL" | "ALS";
+  officeType: "LOKAL" | "ALS" | "ENHET";
 
   /**
    * Legg til andre språkversjoner
