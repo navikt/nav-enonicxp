@@ -1,8 +1,0 @@
-<task>
-    <description>Request updated office data from norg</description>
-    <form>
-        <input type="CheckBox" name="retry">
-            <label>Retry if update failed</label>
-        </input>
-    </form>
-</task>

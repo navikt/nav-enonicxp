@@ -43,15 +43,6 @@ const norgOfficeInformationApiUrl: EnvRecord = {
     test: '', // 'https://norg2.intern.dev.nav.no/norg2/api/v2/enhet/kontaktinformasjoner',
 } as const;
 
-const norgLegacyOfficeInformationApiUrl: EnvRecord = {
-    p: 'https://norg2.intern.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
-    dev: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
-    q6: 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
-    localhost:
-        'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
-    test: '', // 'https://norg2.intern.dev.nav.no/norg2/api/v1/enhet/kontaktinformasjon/organisering/all',
-} as const;
-
 const norgLocalOfficeApiUrl: EnvRecord = {
     p: 'https://norg2.intern.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
     dev: 'https://norg2.intern.dev.nav.no/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
@@ -83,7 +74,6 @@ export const URLS = {
     PORTAL_ADMIN_ORIGIN: portalAdminOrigins[env],
     NORG_OFFICE_OVERVIEW_API_URL: norgOfficeOverviewApiUrl[env],
     NORG_OFFICE_INFORMATION_API_URL: norgOfficeInformationApiUrl[env],
-    NORG_LEGACY_OFFICE_INFORMATION_API_URL: norgLegacyOfficeInformationApiUrl[env],
     NORG_LOCAL_OFFICE_API_URL: norgLocalOfficeApiUrl[env],
     SEARCH_API_URL: searchApiUrls[env],
 } as const;
