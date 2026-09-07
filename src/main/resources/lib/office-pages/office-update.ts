@@ -21,9 +21,15 @@ import { OfficeTypes } from './types';
 type OfficePageDescriptor = NavNoDescriptor<'office-page'>;
 type InternalLinkDescriptor = NavNoDescriptor<'internal-link'>;
 
-type OfficeNorgData = OfficePageData['officeNorgData']['data'];
+type BaseOfficeNorgData = OfficePageData['officeNorgData']['data'];
+type OfficeNorgData = Omit<BaseOfficeNorgData, 'beliggenhet'> & {
+    phoneHeader?: string;
+    beliggenhet?: BaseOfficeNorgData['beliggenhet'] & {
+        hideLocation?: boolean;
+    };
+};
 type ImportedOfficeType = Exclude<OfficeNorgData['type'], 'REDAKSJONELT'>;
-type ImportedOfficeNorgData = Omit<OfficeNorgData, 'enhetNr' | 'navn' | 'type'> & {
+type ImportedOfficeNorgData = Omit<BaseOfficeNorgData, 'enhetNr' | 'navn' | 'type'> & {
     enhetNr: string;
     navn: string;
     type: ImportedOfficeType;
@@ -307,7 +313,7 @@ const moveAndRedirectOnNameChange = (
     }
 };
 
-const mergeOfficeDataWithPageData = ({
+export const mergeOfficeDataWithPageData = ({
     pageData,
     officeData,
     checksum,
@@ -316,6 +322,8 @@ const mergeOfficeDataWithPageData = ({
     officeData: ImportedOfficeNorgData;
     checksum: string;
 }): OfficePageData => {
+    const existingOfficeData = pageData.officeNorgData?.data as OfficeNorgData | undefined;
+
     return {
         ...pageData,
         title: officeData.navn,
@@ -324,7 +332,14 @@ const mergeOfficeDataWithPageData = ({
             data: {
                 ...officeData,
                 checksum,
-            },
+                phoneHeader: existingOfficeData?.phoneHeader,
+                beliggenhet: officeData.beliggenhet
+                    ? {
+                          ...officeData.beliggenhet,
+                          hideLocation: existingOfficeData?.beliggenhet?.hideLocation,
+                      }
+                    : officeData.beliggenhet,
+            } as OfficeNorgData,
         },
     };
 };
