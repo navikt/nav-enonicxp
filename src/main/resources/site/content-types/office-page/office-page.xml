@@ -28,6 +28,16 @@
             <label>Vis felles redaksjonell side for enheter</label>
             <default>unchecked</default>
         </input>
+        <input name="phoneHeader" type="TextLine">
+            <label>Overskrift over telefonnummer</label>
+            <help-text>Vises over telefonnummeret på kontorsiden.</help-text>
+            <default>Telefonnummeret til Nav er</default>
+        </input>
+        <input name="hideLocation" type="CheckBox">
+            <label>Skjul beliggenhet</label>
+            <help-text>Skjuler besøksadressen som importeres fra NORG.</help-text>
+            <default>unchecked</default>
+        </input>
         <option-set name="officeNorgData">
             <label>Kontordata (NORG-importerte kontorer oppdateres automatisk)</label>
             <occurrences minimum="1" maximum="1" />
