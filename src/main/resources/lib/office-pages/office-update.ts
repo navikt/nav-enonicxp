@@ -30,10 +30,14 @@ type OfficeNorgData = Omit<BaseOfficeNorgData, 'beliggenhet'> & {
     beliggenhet?: OfficeLocation;
 };
 type ImportedOfficeType = Exclude<OfficeNorgData['type'], 'REDAKSJONELT'>;
-type ImportedOfficeNorgData = Omit<OfficeNorgData, 'enhetNr' | 'navn' | 'type'> & {
+type ImportedOfficeNorgData = Omit<
+    OfficeNorgData,
+    'enhetNr' | 'navn' | 'type' | 'beliggenhet'
+> & {
     enhetNr: string;
     navn: string;
     type: ImportedOfficeType;
+    beliggenhet?: Omit<OfficeLocation, 'hideLocation'>;
 };
 
 type OfficeOverview = {
@@ -324,23 +328,24 @@ export const mergeOfficeDataWithPageData = ({
     checksum: string;
 }): OfficePageData => {
     const existingOfficeData = pageData.officeNorgData?.data as OfficeNorgData | undefined;
+    const mergedOfficeData: OfficeNorgData = {
+        ...officeData,
+        checksum,
+        phoneHeader: existingOfficeData?.phoneHeader,
+        beliggenhet: officeData.beliggenhet
+            ? {
+                  ...officeData.beliggenhet,
+                  hideLocation: existingOfficeData?.beliggenhet?.hideLocation ?? false,
+              }
+            : officeData.beliggenhet,
+    };
 
     return {
         ...pageData,
         title: officeData.navn,
         officeNorgData: {
             _selected: 'data',
-            data: {
-                ...officeData,
-                checksum,
-                phoneHeader: existingOfficeData?.phoneHeader,
-                beliggenhet: officeData.beliggenhet
-                    ? {
-                          ...officeData.beliggenhet,
-                          hideLocation: existingOfficeData?.beliggenhet?.hideLocation,
-                      }
-                    : officeData.beliggenhet,
-            } as OfficeNorgData,
+            data: mergedOfficeData as BaseOfficeNorgData,
         },
     };
 };
