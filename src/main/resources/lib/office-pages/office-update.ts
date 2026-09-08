@@ -22,11 +22,12 @@ type OfficePageDescriptor = NavNoDescriptor<'office-page'>;
 type InternalLinkDescriptor = NavNoDescriptor<'internal-link'>;
 
 type BaseOfficeNorgData = OfficePageData['officeNorgData']['data'];
+type OfficeLocation = Omit<NonNullable<BaseOfficeNorgData['beliggenhet']>, 'hideLocation'> & {
+    hideLocation?: boolean;
+};
 type OfficeNorgData = Omit<BaseOfficeNorgData, 'beliggenhet'> & {
     phoneHeader?: string;
-    beliggenhet?: BaseOfficeNorgData['beliggenhet'] & {
-        hideLocation?: boolean;
-    };
+    beliggenhet?: OfficeLocation;
 };
 type ImportedOfficeType = Exclude<OfficeNorgData['type'], 'REDAKSJONELT'>;
 type ImportedOfficeNorgData = Omit<OfficeNorgData, 'enhetNr' | 'navn' | 'type'> & {
