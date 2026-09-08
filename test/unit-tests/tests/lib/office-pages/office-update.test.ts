@@ -2,6 +2,7 @@ import { request } from '/lib/http-client';
 import * as contentLib from '/lib/xp/content';
 import {
     fetchAllOfficeDataFromNorg,
+    mergeOfficeDataWithPageData,
     processAllOffices,
 } from '@navno-app/lib/office-pages/office-update';
 import { OfficeRawNORGData } from '@navno-app/lib/office-pages/office-raw-norg-data';
@@ -63,6 +64,43 @@ const officePage = (id: string, enhetNr: string, type: OfficeTypes) =>
 describe('Office update', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+    });
+
+    test('preserves editorial fields when merging imported office data', () => {
+        const result = mergeOfficeDataWithPageData({
+            pageData: {
+                officeNorgData: {
+                    _selected: 'data',
+                    data: {
+                        enhetNr: '1001',
+                        type: OfficeTypes.HMS,
+                        phoneHeader: 'Ring oss',
+                        beliggenhet: {
+                            hideLocation: true,
+                        },
+                    },
+                },
+            } as never,
+            officeData: {
+                enhetNr: '1001',
+                navn: 'Updated office',
+                type: OfficeTypes.HMS,
+                beliggenhet: {
+                    gatenavn: 'Norggata',
+                },
+            } as never,
+            checksum: 'new-checksum',
+        });
+        const mergedOfficeData = result.officeNorgData.data as typeof result.officeNorgData.data & {
+            phoneHeader?: string;
+            beliggenhet?: {
+                hideLocation?: boolean;
+            };
+        };
+
+        expect(mergedOfficeData.phoneHeader).toBe('Ring oss');
+        expect(mergedOfficeData.beliggenhet?.hideLocation).toBe(true);
+        expect(mergedOfficeData.beliggenhet?.gatenavn).toBe('Norggata');
     });
 
     test('imports configured office types and enhet 4534 only from KONTROLL', () => {

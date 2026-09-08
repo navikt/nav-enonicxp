@@ -43,6 +43,10 @@
                             <help-text>Navnet fra NORG. For redaksjonelt styrte kontorer brukes sidetittelen.</help-text>
                             <occurrences minimum="0" maximum="1" />
                         </input>
+                        <input name="phoneHeader" type="TextLine">
+                            <label>Overskrift over telefonnummer</label>
+                            <help-text>Valgfri overstyring av den språktilpassede standardteksten. Feltet overskrives ikke av NORG-importen.</help-text>
+                        </input>
                         <input type="TextLine" name="telefonnummer">
                             <label>Telefonnummer</label>
                             <occurrences minimum="0" maximum="1" />
@@ -144,6 +148,11 @@
                                 <input name="locationLabel" type="TextLine">
                                     <label>Overstyr teksten «Beliggenhet»</label>
                                     <occurrences minimum="0" maximum="1" />
+                                </input>
+                                <input name="hideLocation" type="CheckBox">
+                                    <label>Skjul beliggenhet</label>
+                                    <help-text>Skjuler besøksadressen som importeres fra NORG. Feltet overskrives ikke av NORG-importen.</help-text>
+                                    <default>unchecked</default>
                                 </input>
                             </items>
                         </item-set>
