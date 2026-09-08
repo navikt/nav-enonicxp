@@ -29,7 +29,7 @@ type OfficeNorgData = Omit<BaseOfficeNorgData, 'beliggenhet'> & {
     };
 };
 type ImportedOfficeType = Exclude<OfficeNorgData['type'], 'REDAKSJONELT'>;
-type ImportedOfficeNorgData = Omit<BaseOfficeNorgData, 'enhetNr' | 'navn' | 'type'> & {
+type ImportedOfficeNorgData = Omit<OfficeNorgData, 'enhetNr' | 'navn' | 'type'> & {
     enhetNr: string;
     navn: string;
     type: ImportedOfficeType;
