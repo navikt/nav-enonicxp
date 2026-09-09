@@ -1,0 +1,225 @@
+import { execFileSync } from 'node:child_process';
+import console from 'node:console';
+import {
+    copyFileSync,
+    existsSync,
+    mkdirSync,
+    readFileSync,
+    rmSync,
+    writeFileSync,
+} from 'node:fs';
+import { homedir } from 'node:os';
+import { join, resolve } from 'node:path';
+import process, { env } from 'node:process';
+
+const CONFIG_FILES = [
+    ['config/com.enonic.xp.content.cfg', 'com.enonic.xp.content.cfg'],
+    ['config/localhost/no.nav.navno.cfg', 'no.nav.navno.cfg'],
+    ['config/localhost/com.enonic.xp.web.vhost.cfg', 'com.enonic.xp.web.vhost.cfg'],
+    ['config/com.enonic.app.contentstudio.cfg', 'com.enonic.app.contentstudio.cfg'],
+];
+
+const readSandboxDistro = (sandboxPath) => {
+    const metadata = readFileSync(join(sandboxPath, '.enonic'), 'utf8');
+    const distro = metadata.match(/^distro = "([^"]+)"$/m)?.[1];
+    if (!distro) {
+        throw new Error(`Could not determine the XP distribution from ${sandboxPath}/.enonic`);
+    }
+    return distro;
+};
+
+const getDistroVersion = (distro) =>
+    distro.match(/(\d+\.\d+\.\d+(?:[-.][a-zA-Z0-9]+)?)$/)?.[1] ?? null;
+
+const getApplicationUrl = ({ key, version }) => {
+    const vendorUrlTemplates = {
+        'no.item.partfinder':
+            'https://repo.itemtest.no/releases/no/item/xp-part-finder/{version}/xp-part-finder-{version}.jar',
+        'systems.rcd.enonic.datatoolbox':
+            'https://github.com/GlennRicaud/maven/raw/main/systems/rcd/enonic/datatoolbox/{version}/datatoolbox-{version}.jar',
+    };
+    if (vendorUrlTemplates[key]) {
+        return vendorUrlTemplates[key].replaceAll('{version}', version);
+    }
+    const artifactCoordinates = {
+        'com.enonic.app.audit.log': ['com/enonic/app/audit-log', 'audit-log'],
+        'com.enonic.app.contentstudio.plus': [
+            'com/enonic/app/contentstudio.plus',
+            'contentstudio.plus',
+        ],
+    }[key];
+    const artifactPath = artifactCoordinates?.[0] ?? key.replaceAll('.', '/');
+    const artifact = artifactCoordinates?.[1] ??
+        (key === 'com.enonic.app.contentstudio' ? 'contentstudio' : key.split('.').at(-1));
+    return `https://repo.enonic.com/repository/public/${artifactPath}/${version}/${artifact}-${version}.jar`;
+};
+
+export const installCuratedApplications = ({
+    applications,
+    auth,
+    runCommand = execFileSync,
+}) => {
+    const results = applications
+        .filter(({ key }) => key !== 'no.nav.navno')
+        .map((application) => {
+            process.stdout.write(`Installing ${application.key} ${application.version}... `);
+            try {
+                const output = runCommand(
+                'enonic',
+                [
+                    'app',
+                    'install',
+                    '--url',
+                    getApplicationUrl(application),
+                    '--auth',
+                    auth,
+                    '--force',
+                ],
+                    { encoding: 'utf8', stdio: 'pipe' }
+                );
+                const failure = String(output || '').match(/"Failure"\s*:\s*"([^"]+)"/)?.[1];
+                if (failure) {
+                    throw new Error(failure);
+                }
+                console.log('done');
+                return true;
+            } catch (error) {
+                const message = error instanceof Error ? error.message.split('\n')[0] : String(error);
+                if (application.required !== false) {
+                    console.log('failed');
+                    throw new Error(
+                        `Could not install required application ${application.key}: ${message}`,
+                        { cause: error }
+                    );
+                }
+                console.log(`skipped (${message})`);
+                return false;
+            }
+        });
+    console.log(`Applications installed: ${results.filter(Boolean).length}/${results.length}`);
+};
+
+export const waitForManagementApi = (runCommand = execFileSync) => {
+    runCommand(
+        'curl',
+        [
+            '--silent',
+            '--output',
+            '/dev/null',
+            '--retry',
+            '60',
+            '--retry-connrefused',
+            '--retry-delay',
+            '1',
+            'http://localhost:4848/',
+        ],
+        { stdio: 'inherit' }
+    );
+};
+
+const setSuPassword = (systemPropertiesPath, password) => {
+    const properties = readFileSync(systemPropertiesPath, 'utf8');
+    const withoutPassword = properties
+        .split(/\r?\n/)
+        .filter((line) => !/^xp\.suPassword=/.test(line))
+        .join('\n')
+        .replace(/\n*$/, '\n');
+    writeFileSync(systemPropertiesPath, `${withoutPassword}xp.suPassword=${password}\n`);
+};
+
+export const removeTemporarySuPassword = (sandboxPath) => {
+    const systemPropertiesPath = join(sandboxPath, 'home/config/system.properties');
+    const properties = readFileSync(systemPropertiesPath, 'utf8');
+    const updatedProperties = properties
+        .split(/\r?\n/)
+        .filter((line) => !/^xp\.suPassword=/.test(line))
+        .join('\n')
+        .replace(/\n*$/, '\n');
+    writeFileSync(systemPropertiesPath, updatedProperties);
+};
+
+export const prepareCuratedTarget = ({
+    sandbox,
+    xpVersion,
+    appVersion,
+    contentStudioVersion,
+    applications = [
+        { key: 'com.enonic.app.contentstudio', version: contentStudioVersion },
+    ],
+    suPassword,
+    repositoryRoot = resolve('.'),
+    homeDirectory = homedir(),
+    runCommand = execFileSync,
+}) => {
+    const sandboxPath = join(homeDirectory, '.enonic/sandboxes', sandbox);
+    const sandboxMetadataPath = join(sandboxPath, '.enonic');
+    if (existsSync(sandboxMetadataPath)) {
+        const installedVersion = getDistroVersion(readSandboxDistro(sandboxPath));
+        if (installedVersion !== xpVersion) {
+            throw new Error(
+                `Target sandbox ${sandbox} uses XP ${installedVersion}; curated source uses XP ${xpVersion}`
+            );
+        }
+        return { created: false, sandboxPath };
+    }
+
+    runCommand(
+        'enonic',
+        [
+            'sandbox',
+            'create',
+            sandbox,
+            '--version',
+            xpVersion,
+            '--template',
+            'essentials',
+            '--force',
+            '--skip-start',
+        ],
+        { stdio: 'inherit' }
+    );
+
+    const configDirectory = join(sandboxPath, 'home/config');
+    mkdirSync(configDirectory, { recursive: true });
+    CONFIG_FILES.forEach(([source, target]) => {
+        copyFileSync(join(repositoryRoot, source), join(configDirectory, target));
+    });
+    writeFileSync(
+        join(configDirectory, 'com.enonic.xp.app.standardidprovider.cfg'),
+        'loginWithoutUser=false\n'
+    );
+    setSuPassword(join(configDirectory, 'system.properties'), suPassword);
+
+    try {
+        const distro = readSandboxDistro(sandboxPath);
+        const javaHome = join(homeDirectory, '.enonic/distributions', distro, 'jdk');
+        runCommand(
+            join(repositoryRoot, 'gradlew'),
+            ['build', `-PxpVersion=${xpVersion}`, `-Pversion=${appVersion}`],
+            {
+                cwd: repositoryRoot,
+                env: { ...env, JAVA_HOME: javaHome },
+                stdio: 'inherit',
+            }
+        );
+
+        const deployDirectory = join(sandboxPath, 'home/deploy');
+        mkdirSync(deployDirectory, { recursive: true });
+        rmSync(join(deployDirectory, 'README.txt'), { force: true });
+        copyFileSync(join(repositoryRoot, 'build/libs/navno.jar'), join(deployDirectory, 'navno.jar'));
+        runCommand('enonic', ['sandbox', 'start', sandbox, '--detach', '--force'], {
+            stdio: 'inherit',
+        });
+        waitForManagementApi(runCommand);
+        installCuratedApplications({
+            applications,
+            auth: `su:${suPassword}`,
+            runCommand,
+        });
+    } catch (error) {
+        removeTemporarySuPassword(sandboxPath);
+        throw error;
+    }
+
+    return { created: true, sandboxPath };
+};
