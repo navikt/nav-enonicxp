@@ -13,11 +13,11 @@
             </config>
         </input>
         <field-set>
-            <label>Eventuelle underseksjoner</label>
+            <label>Ved behov underseksjon</label>
             <items>
                 <input type="HtmlArea" name="subText">
-                    <label>Tekst etter underseksjoner</label>
-                    <help-text>Vil vises under eventuelle underseksjoner</help-text>
+                    <label>Tekst etter ekspanderbarpaneler</label>
+                    <help-text>Vil vises under eventuelle paneler</help-text>
                     <occurrences minimum="0" maximum="1"/>
                     <config>
                         <include>Undo Redo</include>

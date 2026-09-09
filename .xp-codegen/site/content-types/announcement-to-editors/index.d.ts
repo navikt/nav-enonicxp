@@ -6,7 +6,7 @@ export type AnnouncementToEditors = {
   text: string;
 
   /**
-   * Tekst etter underseksjoner
+   * Tekst etter ekspanderbarpaneler
    */
   subText?: string;
 };
