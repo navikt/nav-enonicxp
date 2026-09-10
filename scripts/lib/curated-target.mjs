@@ -2,6 +2,7 @@ import { execFileSync } from 'node:child_process';
 import console from 'node:console';
 import {
     copyFileSync,
+    chmodSync,
     existsSync,
     mkdirSync,
     readFileSync,
@@ -10,7 +11,14 @@ import {
 } from 'node:fs';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
-import process, { env } from 'node:process';
+import process from 'node:process';
+import { encodePropertyValue } from './curated-auth.mjs';
+import {
+    assertLocalTargetConfiguration,
+    assertLocalTargetProcess,
+    getLocalProcessEnvironment,
+    runLocalXpCommand,
+} from './curated-local-target.mjs';
 
 const CONFIG_FILES = [
     ['config/com.enonic.xp.content.cfg', 'com.enonic.xp.content.cfg'],
@@ -49,7 +57,8 @@ const getApplicationUrl = ({ key, version }) => {
         ],
     }[key];
     const artifactPath = artifactCoordinates?.[0] ?? key.replaceAll('.', '/');
-    const artifact = artifactCoordinates?.[1] ??
+    const artifact =
+        artifactCoordinates?.[1] ??
         (key === 'com.enonic.app.contentstudio' ? 'contentstudio' : key.split('.').at(-1));
     return `https://repo.enonic.com/repository/public/${artifactPath}/${version}/${artifact}-${version}.jar`;
 };
@@ -57,25 +66,28 @@ const getApplicationUrl = ({ key, version }) => {
 export const installCuratedApplications = ({
     applications,
     auth,
+    sandbox,
     runCommand = execFileSync,
+    verifyTarget = assertLocalTargetProcess,
 }) => {
     const results = applications
         .filter(({ key }) => key !== 'no.nav.navno')
         .map((application) => {
+            verifyTarget(sandbox);
+            if (
+                application.required === false &&
+                (application.started === false || !application.version)
+            ) {
+                console.log(
+                    `Skipping inactive or unversioned optional application ${application.key}`
+                );
+                return false;
+            }
             process.stdout.write(`Installing ${application.key} ${application.version}... `);
             try {
-                const output = runCommand(
-                'enonic',
-                [
-                    'app',
-                    'install',
-                    '--url',
-                    getApplicationUrl(application),
-                    '--auth',
-                    auth,
-                    '--force',
-                ],
-                    { encoding: 'utf8', stdio: 'pipe' }
+                const output = runLocalXpCommand(
+                    ['app', 'install', '--url', getApplicationUrl(application), '--force'],
+                    { sandbox, auth, runCommand, verifyTarget }
                 );
                 const failure = String(output || '').match(/"Failure"\s*:\s*"([^"]+)"/)?.[1];
                 if (failure) {
@@ -84,7 +96,8 @@ export const installCuratedApplications = ({
                 console.log('done');
                 return true;
             } catch (error) {
-                const message = error instanceof Error ? error.message.split('\n')[0] : String(error);
+                const message =
+                    error instanceof Error ? error.message.split('\n')[0] : String(error);
                 if (application.required !== false) {
                     console.log('failed');
                     throw new Error(
@@ -113,7 +126,7 @@ export const waitForManagementApi = (runCommand = execFileSync) => {
             '1',
             'http://localhost:4848/',
         ],
-        { stdio: 'inherit' }
+        { stdio: 'inherit', env: getLocalProcessEnvironment() }
     );
 };
 
@@ -124,7 +137,11 @@ const setSuPassword = (systemPropertiesPath, password) => {
         .filter((line) => !/^xp\.suPassword=/.test(line))
         .join('\n')
         .replace(/\n*$/, '\n');
-    writeFileSync(systemPropertiesPath, `${withoutPassword}xp.suPassword=${password}\n`);
+    writeFileSync(
+        systemPropertiesPath,
+        `${withoutPassword}xp.suPassword=${encodePropertyValue(password)}\n`
+    );
+    chmodSync(systemPropertiesPath, 0o600);
 };
 
 export const removeTemporarySuPassword = (sandboxPath) => {
@@ -143,17 +160,17 @@ export const prepareCuratedTarget = ({
     xpVersion,
     appVersion,
     contentStudioVersion,
-    applications = [
-        { key: 'com.enonic.app.contentstudio', version: contentStudioVersion },
-    ],
+    applications = [{ key: 'com.enonic.app.contentstudio', version: contentStudioVersion }],
     suPassword,
     repositoryRoot = resolve('.'),
     homeDirectory = homedir(),
     runCommand = execFileSync,
+    verifyTarget = assertLocalTargetProcess,
 }) => {
     const sandboxPath = join(homeDirectory, '.enonic/sandboxes', sandbox);
     const sandboxMetadataPath = join(sandboxPath, '.enonic');
     if (existsSync(sandboxMetadataPath)) {
+        assertLocalTargetConfiguration(sandboxPath);
         const installedVersion = getDistroVersion(readSandboxDistro(sandboxPath));
         if (installedVersion !== xpVersion) {
             throw new Error(
@@ -176,7 +193,7 @@ export const prepareCuratedTarget = ({
             '--force',
             '--skip-start',
         ],
-        { stdio: 'inherit' }
+        { stdio: 'inherit', env: getLocalProcessEnvironment() }
     );
 
     const configDirectory = join(sandboxPath, 'home/config');
@@ -184,6 +201,7 @@ export const prepareCuratedTarget = ({
     CONFIG_FILES.forEach(([source, target]) => {
         copyFileSync(join(repositoryRoot, source), join(configDirectory, target));
     });
+    writeFileSync(join(configDirectory, 'com.enonic.xp.cluster.cfg'), 'cluster.enabled=false\n');
     writeFileSync(
         join(configDirectory, 'com.enonic.xp.app.standardidprovider.cfg'),
         'loginWithoutUser=false\n'
@@ -195,10 +213,15 @@ export const prepareCuratedTarget = ({
         const javaHome = join(homeDirectory, '.enonic/distributions', distro, 'jdk');
         runCommand(
             join(repositoryRoot, 'gradlew'),
-            ['build', `-PxpVersion=${xpVersion}`, `-Pversion=${appVersion}`],
+            [
+                'build',
+                '-PcuratedImportLocal=true',
+                `-PxpVersion=${xpVersion}`,
+                `-Pversion=${appVersion}`,
+            ],
             {
                 cwd: repositoryRoot,
-                env: { ...env, JAVA_HOME: javaHome },
+                env: { ...getLocalProcessEnvironment(), JAVA_HOME: javaHome },
                 stdio: 'inherit',
             }
         );
@@ -206,15 +229,21 @@ export const prepareCuratedTarget = ({
         const deployDirectory = join(sandboxPath, 'home/deploy');
         mkdirSync(deployDirectory, { recursive: true });
         rmSync(join(deployDirectory, 'README.txt'), { force: true });
-        copyFileSync(join(repositoryRoot, 'build/libs/navno.jar'), join(deployDirectory, 'navno.jar'));
+        copyFileSync(
+            join(repositoryRoot, 'build/libs/navno.jar'),
+            join(deployDirectory, 'navno.jar')
+        );
         runCommand('enonic', ['sandbox', 'start', sandbox, '--detach', '--force'], {
             stdio: 'inherit',
+            env: getLocalProcessEnvironment(),
         });
         waitForManagementApi(runCommand);
         installCuratedApplications({
             applications,
             auth: `su:${suPassword}`,
+            sandbox,
             runCommand,
+            verifyTarget,
         });
     } catch (error) {
         removeTemporarySuPassword(sandboxPath);

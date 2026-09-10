@@ -5,7 +5,11 @@ import { join } from 'node:path';
 
 export const parseAuth = (auth, label) => {
     const separatorIndex = auth.indexOf(':');
-    if (separatorIndex < 1 || separatorIndex === auth.length - 1) {
+    if (
+        separatorIndex < 1 ||
+        separatorIndex === auth.length - 1 ||
+        /[\u0000-\u001f\u007f]/.test(auth)
+    ) {
         throw new Error(`${label} authentication must use the format user:password`);
     }
     return {
@@ -14,15 +18,30 @@ export const parseAuth = (auth, label) => {
     };
 };
 
+export const encodePropertyValue = (value) =>
+    value.replace(/[\\ \u0080-\uffff]/g, (character) =>
+        character === '\\' || character === ' '
+            ? `\\${character}`
+            : `\\u${character.charCodeAt(0).toString(16).padStart(4, '0')}`
+    );
+
+const decodePropertyValue = (value) =>
+    value.replace(/\\(u[0-9a-fA-F]{4}|.)/g, (_match, escaped) => {
+        if (escaped.startsWith('u') && escaped.length === 5) {
+            return String.fromCharCode(Number.parseInt(escaped.slice(1), 16));
+        }
+        return { t: '\t', n: '\n', r: '\r', f: '\f' }[escaped] ?? escaped;
+    });
+
 export const verifyStoppedTargetAuth = (sandboxPath, auth) => {
     const { username, password } = parseAuth(auth, 'Target');
     if (username !== 'su') {
         throw new Error('A stopped target sandbox must be authenticated with its built-in su user');
     }
     const properties = readFileSync(join(sandboxPath, 'home/config/system.properties'), 'utf8');
-    const configuredPassword = properties.match(/^xp\.suPassword=(.*)$/m)?.[1];
+    const configuredPassword = properties.match(/^\s*xp\.suPassword\s*[=:]\s*(.*)$/m)?.[1];
     const supplied = Buffer.from(password);
-    const configured = Buffer.from(configuredPassword || '');
+    const configured = Buffer.from(decodePropertyValue(configuredPassword || ''));
     if (supplied.length !== configured.length || !timingSafeEqual(supplied, configured)) {
         throw new Error('Target authentication failed');
     }
@@ -30,13 +49,15 @@ export const verifyStoppedTargetAuth = (sandboxPath, auth) => {
 
 export const promptForAuth = (label, { runCommand = spawnSync } = {}) => {
     if (!process.stdin.isTTY || !process.stderr.isTTY) {
-        throw new Error(`Set ${label === 'Source' ? 'CURATED_SOURCE_AUTH' : 'CURATED_TARGET_AUTH'} to user:password`);
+        throw new Error(
+            `Set ${label === 'Source' ? 'CURATED_SOURCE_AUTH' : 'CURATED_TARGET_AUTH'} to user:password`
+        );
     }
     const result = runCommand(
         '/bin/zsh',
         [
             '-c',
-            `read -r "username?${label} username: "; read -r -s "password?${label} password: "; printf '\\n' >&2; printf '%s:%s' "$username" "$password"`,
+            `read -r "username?${label} username: "; IFS= read -r -s "password?${label} password: "; printf '\\n' >&2; printf '%s:%s' "$username" "$password"`,
         ],
         { encoding: 'utf8', stdio: ['inherit', 'pipe', 'inherit'] }
     );
@@ -52,7 +73,7 @@ export const promptForPassword = (label, { runCommand = spawnSync } = {}) => {
     }
     const result = runCommand(
         '/bin/zsh',
-        ['-c', `read -r -s "password?${label}: "; printf '\\n' >&2; printf '%s' "$password"`],
+        ['-c', `IFS= read -r -s "password?${label}: "; printf '\\n' >&2; printf '%s' "$password"`],
         { encoding: 'utf8', stdio: ['inherit', 'pipe', 'inherit'] }
     );
     if (result.status !== 0 || !result.stdout) {

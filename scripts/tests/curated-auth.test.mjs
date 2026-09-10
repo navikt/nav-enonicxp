@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import {
     parseAuth,
+    encodePropertyValue,
     promptForAuth,
     promptForPassword,
     verifyStoppedTargetAuth,
@@ -13,6 +14,19 @@ import {
 test('rejects missing usernames and passwords', () => {
     assert.throws(() => parseAuth(':password', 'Source'), /user:password/);
     assert.throws(() => parseAuth('su:', 'Target'), /user:password/);
+    assert.throws(() => parseAuth('su:password\nxp.other=true', 'Target'), /user:password/);
+});
+
+test('round-trips Java property escaping without changing the target password', (t) => {
+    const sandboxPath = mkdtempSync(join(tmpdir(), 'curated-auth-'));
+    t.after(() => rmSync(sandboxPath, { recursive: true, force: true }));
+    mkdirSync(join(sandboxPath, 'home/config'), { recursive: true });
+    const password = ' space\\slash:\u00e6\ud83d\ude00';
+    writeFileSync(
+        join(sandboxPath, 'home/config/system.properties'),
+        `xp.suPassword=${encodePropertyValue(password)}\n`
+    );
+    assert.doesNotThrow(() => verifyStoppedTargetAuth(sandboxPath, `su:${password}`));
 });
 
 test('verifies the configured password for a stopped target sandbox', () => {
@@ -45,8 +59,14 @@ test('returns credentials collected by the interactive shell prompt', () => {
         });
         assert.equal(auth, 'editor:secret');
     } finally {
-        Object.defineProperty(process.stdin, 'isTTY', { value: originalInputTty, configurable: true });
-        Object.defineProperty(process.stderr, 'isTTY', { value: originalErrorTty, configurable: true });
+        Object.defineProperty(process.stdin, 'isTTY', {
+            value: originalInputTty,
+            configurable: true,
+        });
+        Object.defineProperty(process.stderr, 'isTTY', {
+            value: originalErrorTty,
+            configurable: true,
+        });
     }
 });
 
@@ -61,7 +81,13 @@ test('returns a password collected silently by the interactive shell prompt', ()
         });
         assert.equal(password, 'secret');
     } finally {
-        Object.defineProperty(process.stdin, 'isTTY', { value: originalInputTty, configurable: true });
-        Object.defineProperty(process.stderr, 'isTTY', { value: originalErrorTty, configurable: true });
+        Object.defineProperty(process.stdin, 'isTTY', {
+            value: originalInputTty,
+            configurable: true,
+        });
+        Object.defineProperty(process.stderr, 'isTTY', {
+            value: originalErrorTty,
+            configurable: true,
+        });
     }
 });

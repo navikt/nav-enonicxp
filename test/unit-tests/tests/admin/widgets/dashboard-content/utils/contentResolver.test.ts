@@ -7,6 +7,10 @@ jest.mock('/lib/xp/content', () => ({
     getType: jest.fn(),
 }));
 
+jest.mock('/lib/xp/repo', () => ({
+    list: jest.fn(() => [{ id: 'com.enonic.cms.default' }]),
+}));
+
 jest.mock('@navno-app/lib/repos/repo-utils', () => ({
     getContentProjectIdFromRepoId: jest.fn(),
     getRepoConnection: jest.fn(),
@@ -30,11 +34,7 @@ const logEntry = (repoId: string): ContentLogData => ({
 
 describe('Dashboard content resolver', () => {
     test('skips audit entries for deleted repositories', () => {
-        getRepoConnectionMock
-            .mockImplementationOnce(() => {
-                throw new Error('Repository not found');
-            })
-            .mockReturnValueOnce({ get: jest.fn(() => null) } as never);
+        getRepoConnectionMock.mockReturnValueOnce({ get: jest.fn(() => null) } as never);
 
         const result = dashboardContentResolveLogs(
             [logEntry('com.enonic.cms.navno-samisk'), logEntry('com.enonic.cms.default')],
@@ -42,9 +42,18 @@ describe('Dashboard content resolver', () => {
         );
 
         expect(result).toEqual([]);
-        expect(getRepoConnectionMock).toHaveBeenCalledTimes(2);
+        expect(getRepoConnectionMock).toHaveBeenCalledTimes(1);
         expect(loggerMock.warning).toHaveBeenCalledWith(
             expect.stringContaining('com.enonic.cms.navno-samisk')
         );
+    });
+
+    test('does not hide failures for an existing repository', () => {
+        getRepoConnectionMock.mockImplementationOnce(() => {
+            throw new Error('Unexpected connection failure');
+        });
+        expect(() =>
+            dashboardContentResolveLogs([logEntry('com.enonic.cms.default')], true)
+        ).toThrow('Unexpected connection failure');
     });
 });

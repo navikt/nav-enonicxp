@@ -35,9 +35,26 @@ runs:
       shell: bash
       run: pnpm --filter nav-enonicxp-unit-tests run test
 
+    - name: Run curated CLI tests
+      shell: bash
+      run: node --test scripts/tests/*.test.mjs
+
     - name: Build application
       shell: bash
       run: ./gradlew build -PxpVersion=${{ inputs.xpVersion }}
+
+    - name: Run curated JVM regression
+      shell: bash
+      run: ./gradlew --init-script test/curated-target-java/temporal-regression.gradle curatedTemporalRegression -PxpVersion=${{ inputs.xpVersion }}
+
+    - name: Verify production package boundary
+      shell: bash
+      run: |
+        entries="$(jar tf build/libs/navno.jar)"
+        if grep -Eq '^(services/curatedExportImport/|lib/exports/target/|no/nav/navno/exports/target/)' <<< "$entries"; then
+          echo "Writable curated import helpers must not be packaged for deployment"
+          exit 1
+        fi
 
     - name: Build e2e test data
       shell: bash

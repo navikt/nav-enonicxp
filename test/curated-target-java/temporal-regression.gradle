@@ -1,0 +1,13 @@
+gradle.projectsEvaluated {
+    rootProject.tasks.register('curatedTemporalRegression', JavaExec) {
+        dependsOn rootProject.tasks.named('compileJava')
+        classpath = rootProject.configurations.runtimeClasspath +
+            rootProject.files(rootProject.layout.buildDirectory.dir('classes/java/main'))
+        mainClass = rootProject.file('test/curated-target-java/CuratedNodeRepairTemporalRegression.java').absolutePath
+        def workDirectory = rootProject.layout.buildDirectory.dir('curated-temporal-regression').get().asFile
+        systemProperty 'java.io.tmpdir', workDirectory.absolutePath
+        doFirst {
+            workDirectory.mkdirs()
+        }
+    }
+}

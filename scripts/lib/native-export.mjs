@@ -1,5 +1,37 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
+const PROPERTY_TYPES = new Set([
+    'string',
+    'boolean',
+    'long',
+    'double',
+    'xml',
+    'geoPoint',
+    'dateTime',
+    'localDateTime',
+    'localDate',
+    'localTime',
+    'reference',
+    'link',
+    'binaryReference',
+    'property-set',
+]);
+
+export const sanitizeXmlString = (value) =>
+    Array.from(value)
+        .filter((character) => {
+            const code = character.codePointAt(0);
+            return (
+                code === 9 ||
+                code === 10 ||
+                code === 13 ||
+                (code >= 0x20 && code <= 0xd7ff) ||
+                (code >= 0xe000 && code <= 0xfffd) ||
+                (code >= 0x10000 && code <= 0x10ffff)
+            );
+        })
+        .join('');
 
 const escapeXml = (value) =>
     String(value)
@@ -7,54 +39,59 @@ const escapeXml = (value) =>
         .replaceAll('<', '&lt;')
         .replaceAll('>', '&gt;')
         .replaceAll('"', '&quot;')
-        .replaceAll("'", '&apos;');
+        .replaceAll("'", '&apos;')
+        .replaceAll('\r', '&#13;');
 
-const DATE_TIME_FIELDS = new Set(['createdTime', 'modifiedTime', 'first', 'from', 'to']);
-const REFERENCE_FIELDS = new Set(['link']);
-const BINARY_REFERENCE_FIELDS = new Set(['binary']);
-const LOCAL_TIME_PATTERN = /^\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?$/;
+export const canonicalProperties = (properties) =>
+    properties.map(({ name, type, value }) => ({
+        name,
+        type,
+        value:
+            type === 'property-set' && value !== null
+                ? canonicalProperties(value)
+                : (type === 'string' || type === 'xml') && value !== null
+                  ? sanitizeXmlString(value)
+                  : value,
+    }));
 
-const serializeProperty = (name, value, indentation) => {
+export const updateNativeExpectation = (nodeDirectory, update) => {
+    const path = resolve(nodeDirectory, 'curated-metadata.json');
+    const expectation = JSON.parse(readFileSync(path, 'utf8'));
+    update(expectation);
+    writeFileSync(path, JSON.stringify(expectation));
+};
+
+const serializeProperty = (property, indentation) => {
+    if (!property || typeof property.name !== 'string' || !PROPERTY_TYPES.has(property.type)) {
+        throw new Error('Native export requires explicit XP property names and types');
+    }
+    const { name, type, value } = property;
+    if (sanitizeXmlString(name) !== name) {
+        throw new Error(`Invalid XML property name: ${JSON.stringify(name)}`);
+    }
     const indent = ' '.repeat(indentation);
-    if (Array.isArray(value)) {
-        return value.map((item) => serializeProperty(name, item, indentation)).join('');
-    }
+    const attributes = `name="${escapeXml(name)}"`;
     if (value === null) {
-        return `${indent}<string isNull="true" name="${escapeXml(name)}"/>\n`;
+        return `${indent}<${type} isNull="true" ${attributes}/>\n`;
     }
-    if (typeof value === 'object') {
-        const properties = Object.entries(value)
-            .map(([childName, childValue]) => serializeProperty(childName, childValue, indentation + 4))
-            .join('');
-        return properties
-            ? `${indent}<property-set name="${escapeXml(name)}">\n${properties}${indent}</property-set>\n`
-            : `${indent}<property-set name="${escapeXml(name)}"/>\n`;
+    if (type === 'property-set') {
+        if (!Array.isArray(value)) {
+            throw new Error(`Expected typed property-set children at ${name}`);
+        }
+        return `${indent}<property-set ${attributes}>\n${value
+            .map((child) => serializeProperty(child, indentation + 4))
+            .join('')}${indent}</property-set>\n`;
     }
-    const type =
-        typeof value === 'boolean'
-            ? 'boolean'
-            : typeof value === 'number'
-              ? 'double'
-                            : (name === 'from' || name === 'to') && LOCAL_TIME_PATTERN.test(value)
-                                ? 'localTime'
-                                : DATE_TIME_FIELDS.has(name)
-                ? 'dateTime'
-                : REFERENCE_FIELDS.has(name)
-                  ? 'reference'
-                                    : BINARY_REFERENCE_FIELDS.has(name)
-                                        ? 'binaryReference'
-                  : 'string';
-    if (!['string', 'boolean', 'number'].includes(typeof value)) {
-        throw new Error(`Unsupported native export value type ${typeof value} at ${name}`);
+    if (typeof value !== 'string') {
+        throw new Error(
+            `Expected an exact lexical XP value at ${name}; numbers must not pass through JSON doubles`
+        );
     }
-    const serializedValue = type === 'localTime'
-        ? /^\d{2}:\d{2}$/.test(value)
-            ? `${value}:00.000`
-            : /^\d{2}:\d{2}:\d{2}$/.test(value)
-              ? `${value}.000`
-              : value
-        : value;
-    return `${indent}<${type} name="${escapeXml(name)}">${escapeXml(serializedValue)}</${type}>\n`;
+    const sanitized = sanitizeXmlString(value);
+    if (sanitized !== value && type !== 'string' && type !== 'xml') {
+        throw new Error(`Invalid XML characters in non-text property ${name}`);
+    }
+    return `${indent}<${type} ${attributes}>${escapeXml(sanitized)}</${type}>\n`;
 };
 
 const serializeIndexConfig = (config, indentation) => {
@@ -62,71 +99,109 @@ const serializeIndexConfig = (config, indentation) => {
     const scalarFields = ['decideByType', 'enabled', 'nGram', 'fulltext', 'includeInAllText'];
     const scalars = scalarFields
         .filter((name) => config[name] !== undefined)
-        .map((name) => `${indent}<${name}>${config[name]}</${name}>\n`)
+        .map((name) => `${indent}<${name}>${Boolean(config[name])}</${name}>\n`)
         .join('');
-    const processors = (config.indexValueProcessors || []).length === 0
-        ? ''
-        : `${indent}<indexValueProcessors>\n${config.indexValueProcessors.map((value) => `${indent}    <indexValueProcessor>${escapeXml(value)}</indexValueProcessor>\n`).join('')}${indent}</indexValueProcessors>\n`;
-    const languages = (config.languages || []).length === 0
-        ? ''
-        : `${indent}<languages>\n${config.languages.map((value) => `${indent}    <language>${escapeXml(value)}</language>\n`).join('')}${indent}</languages>\n`;
+    const processors =
+        (config.indexValueProcessors || []).length === 0
+            ? ''
+            : `${indent}<indexValueProcessors>\n${config.indexValueProcessors
+                  .map(
+                      (value) =>
+                          `${indent}    <indexValueProcessor>${escapeXml(value)}</indexValueProcessor>\n`
+                  )
+                  .join('')}${indent}</indexValueProcessors>\n`;
+    const languages =
+        (config.languages || []).length === 0
+            ? ''
+            : `${indent}<languages>\n${config.languages
+                  .map((value) => `${indent}    <language>${escapeXml(value)}</language>\n`)
+                  .join('')}${indent}</languages>\n`;
     return `${scalars}${processors}${languages}`;
 };
 
-const updateParentChildOrder = (nodeDirectory, nodeName) => {
-    const childOrderPath = resolve(dirname(dirname(nodeDirectory)), '_', 'manualChildOrder.txt');
-    if (!existsSync(childOrderPath)) {
-        return;
+export const writeNativeNodeXml = (nodeDirectory, source) => {
+    if (source?.formatVersion !== 1 || !source.node || !Array.isArray(source.properties)) {
+        throw new Error(
+            'A versioned, typed curated source envelope is required; untyped JSON cannot be exported faithfully'
+        );
     }
-    const childNames = readFileSync(childOrderPath, 'utf8').split(/\r?\n/).filter(Boolean);
-    if (!childNames.includes(nodeName)) {
-        writeFileSync(childOrderPath, `${childNames.concat(nodeName).join('\n')}\n`);
+    const sourceNode = source.node;
+    const indexConfig = sourceNode._indexConfig;
+    if (!indexConfig?.default || !Array.isArray(indexConfig.configs) || !indexConfig.allText) {
+        throw new Error(`Missing source index configuration for ${sourceNode._id}`);
     }
-};
-
-export const writeNativeNodeXml = (nodeDirectory, sourceNode) => {
-    mkdirSync(nodeDirectory, { recursive: true });
-    updateParentChildOrder(nodeDirectory, sourceNode._name);
+    for (const name of ['_id', '_nodeType', '_childOrder', '_ts', '_versionKey']) {
+        if (
+            typeof sourceNode[name] !== 'string' ||
+            sanitizeXmlString(sourceNode[name]) !== sourceNode[name]
+        ) {
+            throw new Error(`Missing or invalid node metadata ${name}`);
+        }
+    }
+    if (!Number.isFinite(Date.parse(sourceNode._ts))) {
+        throw new Error(`Invalid node timestamp for ${sourceNode._id}`);
+    }
     const permissions = (sourceNode._permissions || [])
         .map(
-            ({ principal, allow = [], deny = [] }) => `        <principal key="${escapeXml(principal)}">
+            ({ principal, allow = [], deny = [] }) =>
+                `        <principal key="${escapeXml(principal)}">
             <allow type="array">\n${allow.map((value) => `                <value>${escapeXml(value)}</value>\n`).join('')}            </allow>
             <deny type="array">\n${deny.map((value) => `                <value>${escapeXml(value)}</value>\n`).join('')}            </deny>
         </principal>\n`
         )
         .join('');
-    const data = Object.entries(sourceNode)
-        .filter(([name]) => !name.startsWith('_') && !['attachments', 'hasChildren'].includes(name))
-        .map(([name, value]) => serializeProperty(name, value, 8))
-        .join('');
-    const manualOrderValue = sourceNode._manualOrderValue === undefined
-        ? ''
-        : serializeProperty('manualOrderValue', sourceNode._manualOrderValue, 8);
-    const indexConfig = sourceNode._indexConfig || {};
+    const data = source.properties.map((property) => serializeProperty(property, 8)).join('');
     const indexConfigs = `<indexConfigs>
         <analyzer>${escapeXml(indexConfig.analyzer || 'document_index_default')}</analyzer>
         <defaultConfig>
-${serializeIndexConfig(indexConfig.default || {}, 12)}        </defaultConfig>
+${serializeIndexConfig(indexConfig.default, 12)}        </defaultConfig>
         <pathIndexConfigs>
-${(indexConfig.configs || []).map(({ path, config }) => `            <pathIndexConfig>
+${indexConfig.configs
+    .map(
+        ({ path, config }) => `            <pathIndexConfig>
                 <indexConfig>
 ${serializeIndexConfig(config, 20)}                </indexConfig>
                 <path>${escapeXml(path)}</path>
-            </pathIndexConfig>\n`).join('')}        </pathIndexConfigs>
+            </pathIndexConfig>\n`
+    )
+    .join('')}        </pathIndexConfigs>
         <allTextIndexConfig>
-${serializeIndexConfig(indexConfig.allText || {}, 12)}        </allTextIndexConfig>
+${serializeIndexConfig(indexConfig.allText, 12)}        </allTextIndexConfig>
     </indexConfigs>`;
     const xml = `<node>
     <id>${escapeXml(sourceNode._id)}</id>
-    <childOrder>${escapeXml(sourceNode._childOrder || '_name ASC')}</childOrder>
-    <nodeType>content</nodeType>
-    <timestamp>${escapeXml(new Date(sourceNode._ts).toISOString())}</timestamp>
+    <childOrder>${escapeXml(sourceNode._childOrder)}</childOrder>
+    <nodeType>${escapeXml(sourceNode._nodeType)}</nodeType>
+    <timestamp>${escapeXml(sourceNode._ts)}</timestamp>
     <inheritPermissions>${sourceNode._inheritsPermissions !== false}</inheritPermissions>
     <permissions>
 ${permissions}    </permissions>
     <data>
-${manualOrderValue}${data}    </data>
+${data}    </data>
     ${indexConfigs}
 </node>\n`;
+    mkdirSync(nodeDirectory, { recursive: true });
     writeFileSync(resolve(nodeDirectory, 'node.xml'), xml);
+    // Retain typed expectations before XP consumes the native import directory.
+    writeFileSync(
+        resolve(nodeDirectory, 'curated-metadata.json'),
+        JSON.stringify({
+            formatVersion: 2,
+            contentId: sourceNode._id,
+            contentPath: sourceNode._path,
+            versionId: sourceNode._versionKey,
+            timestamp: sourceNode._ts,
+            childOrder: sourceNode._childOrder,
+            manualOrderValue: source.manualOrderValue,
+            indexConfig,
+            nodeType: sourceNode._nodeType,
+            properties: canonicalProperties(source.properties),
+            binaries: source.binaryReferences.map((reference) => ({
+                reference,
+                sha512: null,
+                size: null,
+            })),
+            manualChildOrder: null,
+        })
+    );
 };

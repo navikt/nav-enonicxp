@@ -11,6 +11,7 @@ import { runInLocaleContext } from '../localization/locale-context';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { getRepoConnection } from '../repos/repo-utils';
 import { queryAllLayersToRepoIdBuckets } from '../localization/layers-repo-utils/query-all-layers';
+import { CuratedSourceNode, getCuratedSourceNode } from './curated-node-reader';
 
 const MAX_INPUT_PATHS = 1000;
 const MAX_EXPORT_ENTRIES = 20000;
@@ -44,22 +45,28 @@ const REQUIRED_RECURSIVE_ROOTS: ReadonlyArray<{
 ];
 
 export type CuratedExportReason =
-    | 'popular'
-    | 'type-coverage'
-    | 'dependency'
-    | 'ancestor'
-    | 'office-editorial'
-    | 'decorator-menu';
+    'popular' | 'type-coverage' | 'dependency' | 'ancestor' | 'office-editorial' | 'decorator-menu';
 
 export type CuratedExportEntry = {
     contentId: string;
     paths: Partial<Record<'draft' | 'master', string>>;
+    versions: Partial<Record<'draft' | 'master', string>>;
     contentType: string;
     locale: string;
     repoId: string;
     reason: CuratedExportReason;
     descendantCount: number;
     branches: Array<'draft' | 'master'>;
+};
+
+export type CuratedExportSeed = {
+    repository: string;
+    branch: 'draft' | 'master';
+    contentId: string;
+};
+
+export type CuratedExportOptions = {
+    seeds?: CuratedExportSeed[];
 };
 
 export type CuratedExportManifest = {
@@ -96,17 +103,30 @@ export type CuratedExportSupplement = {
     branch: 'draft' | 'master';
     invalidValuePaths: string[];
     node: RepoNode<Content>;
+    transport?: CuratedSourceNode;
 };
 
-const isValidXmlCharacter = (character: string) => {
-    const characterCode = character.charCodeAt(0);
-    return (
-        characterCode === 0x09 ||
-        characterCode === 0x0a ||
-        characterCode === 0x0d ||
-        (characterCode >= 0x20 && characterCode <= 0xd7ff) ||
-        (characterCode >= 0xe000 && characterCode <= 0xfffd)
-    );
+export const sanitizeXmlString = (value: string) => {
+    let sanitized = '';
+    for (let index = 0; index < value.length; index += 1) {
+        const code = value.charCodeAt(index);
+        if (code >= 0xd800 && code <= 0xdbff) {
+            const next = value.charCodeAt(index + 1);
+            if (next >= 0xdc00 && next <= 0xdfff) {
+                sanitized += value[index] + value[index + 1];
+                index += 1;
+            }
+        } else if (
+            code === 0x09 ||
+            code === 0x0a ||
+            code === 0x0d ||
+            (code >= 0x20 && code <= 0xd7ff) ||
+            (code >= 0xe000 && code <= 0xfffd)
+        ) {
+            sanitized += value[index];
+        }
+    }
+    return sanitized;
 };
 
 const sanitizeXmlValue = (
@@ -115,7 +135,7 @@ const sanitizeXmlValue = (
     invalidValuePaths: string[]
 ): unknown => {
     if (typeof value === 'string') {
-        const sanitizedValue = value.split('').filter(isValidXmlCharacter).join('');
+        const sanitizedValue = sanitizeXmlString(value);
         if (sanitizedValue !== value) {
             invalidValuePaths.push(valuePath);
         }
@@ -128,10 +148,6 @@ const sanitizeXmlValue = (
     }
     if (value && Object.prototype.toString.call(value) === '[object Object]') {
         return Object.keys(value).reduce<Record<string, unknown>>((sanitized, key) => {
-            if (!valuePath && key === 'attachment') {
-                sanitized[key] = (value as Record<string, unknown>)[key];
-                return sanitized;
-            }
             sanitized[key] = sanitizeXmlValue(
                 (value as Record<string, unknown>)[key],
                 valuePath ? `${valuePath}.${key}` : key,
@@ -153,12 +169,6 @@ export const createSanitizedSupplement = (
     if (invalidValuePaths.length === 0) {
         return null;
     }
-    if (node.attachment || Object.keys(node.attachments || {}).length > 0) {
-        throw new Error(
-            `Cannot supplement ${repoId}:${branch}:${node._path} because it has attachments`
-        );
-    }
-
     return {
         contentId: node._id,
         contentPath: node._path,
@@ -174,44 +184,67 @@ const getEntryKey = ({ contentId, repoId }: CuratedExportEntry) => `${repoId}:${
 const isExcludedPath = (path: string) =>
     EXCLUDED_ROOT_PATHS.some((rootPath) => path === rootPath || path.startsWith(`${rootPath}/`));
 
+const isAllowedNodePath = (path: string) =>
+    (path === CONTENT_ROOT_PATH || path.startsWith(`${CONTENT_ROOT_PATH}/`)) &&
+    !isExcludedPath(path.slice('/content'.length));
+
 const getEntry = (
     content: Content,
     locale: string,
     reason: CuratedExportReason,
     sourceBranch: 'draft' | 'master' = 'master'
-): CuratedExportEntry => {
+): CuratedExportEntry | null => {
     const repoId = getLayersData().localeToRepoIdMap[locale];
     if (!repoId) {
         throw new Error(`No content repository found for locale "${locale}"`);
     }
 
-    const contentPath = `/content${content._path}`;
-    const draftNode = getRepoConnection({ repoId, branch: 'draft', asAdmin: true }).get(content._id);
-    const masterNode = getRepoConnection({ repoId, branch: 'master', asAdmin: true }).get(content._id);
-    const paths: CuratedExportEntry['paths'] = {
-        draft: draftNode?._path,
-        master: masterNode?._path,
-        [sourceBranch]: contentPath,
-    };
-    const branches = (['draft', 'master'] as const).filter((branch) => paths[branch]);
-    const descendantCount = branches.reduce(
-        (maximum, branch) => {
-            const escapedBranchPath = paths[branch]!.replace(/"/g, '\\"');
-            return Math.max(
-                maximum,
-                getRepoConnection({ repoId, branch, asAdmin: true }).query({
-                    count: 0,
-                    query: `_path LIKE "${escapedBranchPath}/*"`,
-                }).total
+    const paths: CuratedExportEntry['paths'] = {};
+    const versions: CuratedExportEntry['versions'] = {};
+    const branches: CuratedExportEntry['branches'] = [];
+    let contentType = content.type;
+    (['draft', 'master'] as const).forEach((branch) => {
+        const node = getRepoConnection({ repoId, branch, asAdmin: true }).get<Content>(content._id);
+        if (!node || !isAllowedNodePath(node._path)) {
+            return;
+        }
+        if (!node._versionKey) {
+            throw new Error(`Missing source version for ${repoId}:${branch}:${content._id}`);
+        }
+        if (branch === sourceBranch && node._path !== `/content${content._path}`) {
+            throw new Error(`Content moved while planning: ${repoId}:${branch}:${content._id}`);
+        }
+        if (branch === sourceBranch) {
+            contentType = node.type;
+        }
+        paths[branch] = node._path;
+        versions[branch] = node._versionKey;
+        branches.push(branch);
+    });
+    if (!branches.includes(sourceBranch)) {
+        if (isAllowedNodePath(`/content${content._path}`)) {
+            throw new Error(
+                `Content disappeared while planning: ${repoId}:${sourceBranch}:${content._id}`
             );
-        },
-        0
-    );
+        }
+        return null;
+    }
+    const descendantCount = branches.reduce((maximum, branch) => {
+        const escapedBranchPath = paths[branch]!.replace(/"/g, '\\"');
+        return Math.max(
+            maximum,
+            getRepoConnection({ repoId, branch, asAdmin: true }).query({
+                count: 0,
+                query: `_path LIKE "${escapedBranchPath}/*"`,
+            }).total
+        );
+    }, 0);
 
     return {
         contentId: content._id,
         paths,
-        contentType: content.type,
+        versions,
+        contentType,
         locale,
         repoId,
         reason,
@@ -232,11 +265,8 @@ const getRequiredProjects = () => {
             throw new Error(`Required content project "${expectedProject.id}" was not found`);
         }
 
-        const parents = project.parents.length > 0
-            ? project.parents
-            : project.parent
-              ? [project.parent]
-              : [];
+        const parents =
+            project.parents.length > 0 ? project.parents : project.parent ? [project.parent] : [];
         if (
             project.language !== expectedProject.language ||
             parents.length !== expectedProject.parents.length ||
@@ -289,8 +319,9 @@ const getXpVersion = () => {
     const versions = (appLib.list() as InstalledApplication[])
         .filter(({ system }) => system)
         .map(({ version }) => version)
-        .filter((version, index, allVersions): version is string =>
-            Boolean(version) && allVersions.indexOf(version) === index
+        .filter(
+            (version, index, allVersions): version is string =>
+                Boolean(version) && allVersions.indexOf(version) === index
         );
     if (versions.length !== 1) {
         throw new Error(`Could not determine one XP runtime version: ${versions.join(', ')}`);
@@ -318,14 +349,28 @@ const getSanitizedSupplements = (entries: CuratedExportEntry[]) => {
     const supplements: CuratedExportSupplement[] = [];
     entries.forEach((entry) => {
         entry.branches.forEach((branch) => {
-            const node = getRepoConnection({ repoId: entry.repoId, branch, asAdmin: true }).get<Content>(
-                entry.contentId
-            );
-            if (!node) {
-                return;
+            const node = getRepoConnection({
+                repoId: entry.repoId,
+                branch,
+                asAdmin: true,
+            }).get<Content>(entry.contentId);
+            if (
+                !node ||
+                node._versionKey !== entry.versions[branch] ||
+                node._path !== entry.paths[branch]
+            ) {
+                throw new Error(
+                    `Content changed while planning: ${entry.repoId}:${branch}:${entry.contentId}`
+                );
             }
             const supplement = createSanitizedSupplement(node, entry.repoId, branch);
             if (supplement) {
+                supplement.transport = getCuratedSourceNode({
+                    repository: entry.repoId,
+                    branch,
+                    contentId: entry.contentId,
+                    versionId: entry.versions[branch],
+                });
                 supplements.push(supplement);
             }
         });
@@ -369,32 +414,59 @@ const findTypeRepresentative = (contentType: ContentDescriptor): CuratedExportEn
     return null;
 };
 
-const addDependencies = (
+const closeContentGraph = (
     initialEntries: CuratedExportEntry[],
     entriesByKey: Record<string, CuratedExportEntry>,
     excludedDependenciesByKey: Record<string, CuratedExportEntry>
 ) => {
-    const pendingEntries = initialEntries.reduce<
-        Array<{ entry: CuratedExportEntry; branch: 'draft' | 'master' }>
-    >((pending, entry) => {
-        entry.branches.forEach((branch) => pending.push({ entry, branch }));
-        return pending;
-    }, []);
-    const visitedEntryBranches = new Set<string>();
-
-    while (pendingEntries.length > 0) {
-        const { entry, branch } = pendingEntries.shift()!;
-        const entryBranchKey = `${getEntryKey(entry)}:${branch}`;
-        if (visitedEntryBranches.has(entryBranchKey)) {
-            continue;
+    const pendingEntries: Array<{ entry: CuratedExportEntry; branch: 'draft' | 'master' }> = [];
+    const queuedBranches = new Set<string>();
+    const selectedPaths = new Set<string>();
+    let entryCount = Object.keys(entriesByKey).length;
+    const enqueue = (entry: CuratedExportEntry) => {
+        entry.branches.forEach((branch) => {
+            const key = `${getEntryKey(entry)}:${branch}`;
+            selectedPaths.add(`${entry.repoId}:${branch}:${entry.paths[branch]}`);
+            if (!queuedBranches.has(key)) {
+                queuedBranches.add(key);
+                pendingEntries.push({ entry, branch });
+            }
+        });
+    };
+    const select = (entry: CuratedExportEntry) => {
+        const key = getEntryKey(entry);
+        if (!entriesByKey[key]) {
+            entryCount += 1;
+            if (entryCount > MAX_EXPORT_ENTRIES) {
+                throw new Error(`Export exceeded the limit of ${MAX_EXPORT_ENTRIES} content nodes`);
+            }
+            entriesByKey[key] = entry;
         }
-        visitedEntryBranches.add(entryBranchKey);
+        delete excludedDependenciesByKey[key];
+        enqueue(entriesByKey[key]);
+    };
+    if (entryCount > MAX_EXPORT_ENTRIES) {
+        throw new Error(`Export exceeded the limit of ${MAX_EXPORT_ENTRIES} content nodes`);
+    }
+    initialEntries.forEach(enqueue);
 
-        if (Object.keys(entriesByKey).length >= MAX_EXPORT_ENTRIES) {
-            throw new Error(
-                `Export exceeded the limit of ${MAX_EXPORT_ENTRIES} content nodes while processing ${entry.repoId}:${branch}:${entry.paths[branch]}`
+    for (let cursor = 0; cursor < pendingEntries.length; cursor += 1) {
+        const { entry, branch } = pendingEntries[cursor];
+
+        getAncestorContentPaths(entry.paths[branch]!).forEach((contentPath) => {
+            if (selectedPaths.has(`${entry.repoId}:${branch}:${contentPath}`)) {
+                return;
+            }
+            const ancestor = runInLocaleContext(
+                { locale: entry.locale, branch, asAdmin: true },
+                () => contentLib.get({ key: contentPath.slice('/content'.length) })
             );
-        }
+            const ancestorEntry = ancestor && getEntry(ancestor, entry.locale, 'ancestor', branch);
+            if (!ancestorEntry) {
+                throw new Error(`Missing ancestor ${contentPath} in ${entry.repoId}:${branch}`);
+            }
+            select(ancestorEntry);
+        });
 
         const dependencies = runInLocaleContext(
             { locale: entry.locale, branch, asAdmin: true },
@@ -405,9 +477,10 @@ const addDependencies = (
             const dependencyKey = `${entry.repoId}:${dependencyId}`;
             const selectedDependency = entriesByKey[dependencyKey];
             if (selectedDependency) {
-                if (selectedDependency.branches.includes(branch)) {
-                    pendingEntries.push({ entry: selectedDependency, branch });
-                }
+                enqueue(selectedDependency);
+                return;
+            }
+            if (excludedDependenciesByKey[dependencyKey]) {
                 return;
             }
             const dependency = runInLocaleContext(
@@ -422,6 +495,9 @@ const addDependencies = (
             }
 
             const dependencyEntry = getEntry(dependency, entry.locale, 'dependency', branch);
+            if (!dependencyEntry) {
+                return;
+            }
             if (
                 BROAD_CONTAINER_DEPENDENCY_TYPES.has(
                     dependencyEntry.contentType as ContentDescriptor
@@ -432,8 +508,7 @@ const addDependencies = (
                 return;
             }
 
-            entriesByKey[dependencyKey] = dependencyEntry;
-            pendingEntries.push({ entry: dependencyEntry, branch });
+            select(dependencyEntry);
         });
     }
 };
@@ -453,74 +528,6 @@ export const getAncestorContentPaths = (contentPath: string) => {
     return ancestorPaths;
 };
 
-const addAncestors = (entriesByKey: Record<string, CuratedExportEntry>) => {
-    const selectedPaths = new Set(
-        Object.values(entriesByKey).reduce<string[]>((paths, entry) => {
-            entry.branches.forEach((branch) =>
-                paths.push(`${entry.repoId}:${branch}:${entry.paths[branch]}`)
-            );
-            return paths;
-        }, [])
-    );
-    Object.values(entriesByKey).forEach((entry) => {
-        entry.branches.forEach((branch) => {
-            const branchPath = entry.paths[branch]!;
-            getAncestorContentPaths(branchPath).forEach((contentPath) => {
-                const pathKey = `${entry.repoId}:${branch}:${contentPath}`;
-                if (selectedPaths.has(pathKey)) {
-                    return;
-                }
-                const ancestor = runInLocaleContext(
-                    { locale: entry.locale, branch, asAdmin: true },
-                    () => contentLib.get({ key: contentPath.slice('/content'.length) })
-                );
-                if (!ancestor) {
-                    throw new Error(
-                        `Missing ancestor "${contentPath}" for "${branchPath}" in locale "${entry.locale}" branch "${branch}"`
-                    );
-                }
-
-                const ancestorEntry = getEntry(ancestor, entry.locale, 'ancestor', branch);
-                const ancestorKey = getEntryKey(ancestorEntry);
-                if (!entriesByKey[ancestorKey]) {
-                    entriesByKey[ancestorKey] = ancestorEntry;
-                }
-                ancestorEntry.branches.forEach((ancestorBranch) =>
-                    selectedPaths.add(
-                        `${ancestorEntry.repoId}:${ancestorBranch}:${ancestorEntry.paths[ancestorBranch]}`
-                    )
-                );
-            });
-        });
-    });
-};
-
-const getRecursivelyCoveredContentTypes = (entries: CuratedExportEntry[]) => {
-    const coveredContentTypes = new Set<string>();
-
-    entries.forEach((entry) => {
-        const masterPath = entry.paths.master;
-        if (entry.descendantCount === 0 || !masterPath) {
-            return;
-        }
-
-        const descendantsByRepoId = queryAllLayersToRepoIdBuckets({
-            branch: 'master',
-            state: 'localized',
-            resolveContent: true,
-            queryParams: {
-                count: MAX_EXPORT_ENTRIES,
-                query: `_path LIKE "${masterPath}/*"`,
-            },
-        });
-        Object.values(descendantsByRepoId).forEach((contents) =>
-            contents.forEach((content) => coveredContentTypes.add(content.type))
-        );
-    });
-
-    return coveredContentTypes;
-};
-
 const addRecursiveDescendants = (
     rootEntry: CuratedExportEntry,
     entriesByKey: Record<string, CuratedExportEntry>
@@ -534,8 +541,8 @@ const addRecursiveDescendants = (
             { locale: rootEntry.locale, branch, asAdmin: true },
             () =>
                 contentLib.query({
-                count: MAX_EXPORT_ENTRIES,
-                query: `_path LIKE "${rootPath}/*"`,
+                    count: MAX_EXPORT_ENTRIES,
+                    query: `_path LIKE "${rootPath}/*"`,
                 })
         );
         if (descendants.total > descendants.hits.length) {
@@ -545,16 +552,19 @@ const addRecursiveDescendants = (
         }
         descendants.hits.forEach((content) => {
             const descendantEntry = getEntry(content, rootEntry.locale, rootEntry.reason, branch);
-            entriesByKey[getEntryKey(descendantEntry)] = descendantEntry;
+            if (descendantEntry) {
+                entriesByKey[getEntryKey(descendantEntry)] = descendantEntry;
+            }
         });
     });
 };
 
 export const createCuratedExportManifest = (
     paths: string[],
-    scope: 'full' | 'page' = 'full'
+    scope: 'full' | 'page' = 'full',
+    { seeds = [] }: CuratedExportOptions = {}
 ): CuratedExportManifest => {
-    if (paths.length > MAX_INPUT_PATHS) {
+    if (paths.length + seeds.length > MAX_INPUT_PATHS) {
         throw new Error(`A maximum of ${MAX_INPUT_PATHS} popular paths is allowed`);
     }
 
@@ -562,6 +572,28 @@ export const createCuratedExportManifest = (
     const entriesByKey: Record<string, CuratedExportEntry> = {};
     const excludedDependenciesByKey: Record<string, CuratedExportEntry> = {};
     const unresolvedPaths: string[] = [];
+
+    seeds.forEach((seed) => {
+        const locale = getLayersData().repoIdToLocaleMap[seed.repository];
+        if (
+            !REQUIRED_REPO_IDS.includes(seed.repository) ||
+            !locale ||
+            !['draft', 'master'].includes(seed.branch) ||
+            !/^[a-zA-Z0-9-]+$/.test(seed.contentId)
+        ) {
+            throw new Error('Invalid structured content seed');
+        }
+        const content = runInLocaleContext({ locale, branch: seed.branch, asAdmin: true }, () =>
+            contentLib.get({ key: seed.contentId })
+        );
+        const entry = content && getEntry(content, locale, 'popular', seed.branch);
+        if (!entry) {
+            throw new Error(
+                `Structured content seed was not found or is excluded: ${seed.repository}:${seed.branch}:${seed.contentId}`
+            );
+        }
+        entriesByKey[getEntryKey(entry)] = entry;
+    });
 
     paths.forEach((path) => {
         if (isExcludedPath(path)) {
@@ -575,7 +607,9 @@ export const createCuratedExportManifest = (
         }
 
         const entry = getEntry(target.content, target.locale, 'popular');
-        entriesByKey[getEntryKey(entry)] = entry;
+        if (entry) {
+            entriesByKey[getEntryKey(entry)] = entry;
+        }
     });
 
     if (scope === 'full') {
@@ -587,16 +621,15 @@ export const createCuratedExportManifest = (
             }
 
             const entry = getEntry(target.content, target.locale, reason);
-            entriesByKey[getEntryKey(entry)] = entry;
-            addRecursiveDescendants(entry, entriesByKey);
+            if (entry) {
+                entriesByKey[getEntryKey(entry)] = entry;
+                addRecursiveDescendants(entry, entriesByKey);
+            }
         });
     }
 
     const selectedEntries = Object.values(entriesByKey);
     const selectedTypes = new Set(selectedEntries.map((entry) => entry.contentType));
-    getRecursivelyCoveredContentTypes(selectedEntries).forEach((contentType) =>
-        selectedTypes.add(contentType)
-    );
     const missingContentTypes: string[] = [];
 
     if (scope === 'full') {
@@ -612,15 +645,11 @@ export const createCuratedExportManifest = (
             }
 
             entriesByKey[getEntryKey(representative)] = representative;
+            selectedTypes.add(representative.contentType);
         });
     }
 
-    addDependencies(
-        Object.values(entriesByKey),
-        entriesByKey,
-        excludedDependenciesByKey
-    );
-    addAncestors(entriesByKey);
+    closeContentGraph(Object.values(entriesByKey), entriesByKey, excludedDependenciesByKey);
     const entries = Object.values(entriesByKey);
     if (scope === 'full') {
         validateRepositorySet(entries);

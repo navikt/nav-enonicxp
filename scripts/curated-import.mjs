@@ -2,7 +2,7 @@
 
 import { spawnSync } from 'node:child_process';
 import console from 'node:console';
-import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import process from 'node:process';
@@ -18,12 +18,20 @@ import { downloadProjectIcons, uploadProjectIcons } from './lib/curated-project-
 import { extractCuratedSource } from './lib/curated-source-extractor.mjs';
 import { getXpSessionCookie } from './lib/xp-session.mjs';
 import {
+    assertLocalTargetConfiguration,
+    assertLocalTargetProcess,
+    assertSandboxName,
+    getLocalProcessEnvironment,
+    LOCAL_IMPORT_SERVICE_URL,
+    verifyLocalImportTarget,
+} from './lib/curated-local-target.mjs';
+import {
     installCuratedApplications,
     prepareCuratedTarget,
     waitForManagementApi,
 } from './lib/curated-target.mjs';
 
-const IMPORT_SERVICE_URL = 'http://localhost:8080/_/service/no.nav.navno/curatedExportImport';
+const IMPORT_SERVICE_URL = LOCAL_IMPORT_SERVICE_URL;
 
 const getArguments = () => {
     const args = process.argv.slice(2);
@@ -61,6 +69,7 @@ const startSandbox = (sandbox) => {
     const result = spawnSync('enonic', ['sandbox', 'start', sandbox, '--detach', '--force'], {
         encoding: 'utf8',
         stdio: 'inherit',
+        env: getLocalProcessEnvironment(),
     });
     if (result.status !== 0) {
         throw new Error(`Could not start target sandbox ${sandbox}`);
@@ -71,16 +80,17 @@ const stopRunningSandbox = () => {
     const result = spawnSync('enonic', ['sandbox', 'stop', '--force'], {
         encoding: 'utf8',
         stdio: 'inherit',
+        env: getLocalProcessEnvironment(),
     });
     if (result.status !== 0) {
-        throw new Error('Could not stop the running source sandbox');
+        throw new Error('Could not stop the running local sandbox');
     }
 };
 
 const getRunningSandbox = () => {
     const statePath = join(homedir(), '.enonic/.enonic');
     return existsSync(statePath)
-        ? readFileSync(statePath, 'utf8').match(/^running = "([^"]+)"$/m)?.[1] ?? null
+        ? (readFileSync(statePath, 'utf8').match(/^running = "([^"]+)"$/m)?.[1] ?? null)
         : null;
 };
 
@@ -93,11 +103,15 @@ const main = async () => {
             'Usage: pnpm curated:import --source <prod|dev1|dev2|URL|sandbox> --target <sandbox> [--page <URL>] [--dump-name <name>] [--plan-only] [--force]'
         );
     }
-    if (!/^[a-zA-Z0-9._-]+$/.test(options.target)) {
-        throw new Error(`Unsupported target sandbox name: ${options.target}`);
-    }
+    assertSandboxName(options.target);
     const source = resolveCuratedSource(options.source);
-    if (source.kind === 'local' && source.name === options.target) {
+    const sourceIsLoopback = ['localhost', '127.0.0.1', '[::1]'].includes(
+        new URL(source.origin).hostname
+    );
+    if (
+        (source.kind === 'local' && source.name === options.target) ||
+        (sourceIsLoopback && getRunningSandbox() === options.target)
+    ) {
         throw new Error('Source and target sandbox must be different');
     }
     const sourceAuth =
@@ -107,8 +121,13 @@ const main = async () => {
     if (options.page && !targetExists) {
         throw new Error('--page requires an existing target sandbox');
     }
-    if (targetExists && !options.force && !options.page) {
-        throw new Error(`Target sandbox ${options.target} already exists; pass --force to import into it`);
+    if (targetExists && !options.force && !options.page && !options['plan-only']) {
+        throw new Error(
+            `Target sandbox ${options.target} already exists; pass --force to import into it`
+        );
+    }
+    if (targetExists && !options['plan-only']) {
+        assertLocalTargetConfiguration(targetPath);
     }
     const targetIsRunning = getRunningSandbox() === options.target;
     const targetAuth = options['plan-only']
@@ -134,7 +153,7 @@ const main = async () => {
     }
     if (targetAuth && targetExists && targetIsRunning) {
         try {
-            await getXpSessionCookie(IMPORT_SERVICE_URL, targetAuth);
+            await verifyLocalImportTarget({ sandbox: options.target, auth: targetAuth });
         } catch (error) {
             throw new Error('Target authentication failed', { cause: error });
         }
@@ -144,30 +163,35 @@ const main = async () => {
     console.log('Credentials verified');
 
     const outputDirectory = resolve('.curated');
-    mkdirSync(outputDirectory, { recursive: true });
-    const defaultInputPath = 'src/main/resources/services/curatedExportManifest/curated-content-urls.txt';
-    const pagePath = options.page
-        ? await resolveCuratedPage({
-              page: options.page,
-              sourceServiceUrl: source.sourceServiceUrl,
-              auth: sourceAuth,
-          })
-        : null;
-    const inputPath = pagePath
-        ? join(outputDirectory, 'curated-page-input.txt')
-        : resolve(options.input ?? defaultInputPath);
-    if (pagePath) {
-        writeFileSync(inputPath, `${pagePath}\n`);
-    }
+    mkdirSync(outputDirectory, { recursive: true, mode: 0o700 });
+    chmodSync(outputDirectory, 0o700);
+    const defaultInputPath =
+        'src/main/resources/services/curatedExportManifest/curated-content-urls.txt';
+    const pageSelection = options.page ? resolveCuratedPage({ page: options.page }) : null;
+    const structuredSeed = pageSelection && typeof pageSelection !== 'string';
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const bundle = options.bundle ?? (pagePath ? `curated-page-${timestamp}` : `curated-plan-${timestamp.slice(0, 10)}`);
+    const inputPath = pageSelection
+        ? join(
+              outputDirectory,
+              `curated-page-input-${timestamp}.${structuredSeed ? 'json' : 'txt'}`
+          )
+        : resolve(options.input ?? defaultInputPath);
+    if (pageSelection) {
+        writeFileSync(
+            inputPath,
+            structuredSeed ? JSON.stringify([pageSelection]) : `${pageSelection}\n`,
+            { mode: 0o600 }
+        );
+    }
+    const bundle =
+        options.bundle ?? `${pageSelection ? 'curated-page' : 'curated-plan'}-${timestamp}`;
     const manifestPath = join(outputDirectory, `${bundle}.manifest.json`);
 
     console.log(`Planning curated import from ${source.name} to ${options.target}`);
     runNodeScript(
         'scripts/create-curated-export.mjs',
         [
-            '--input',
+            structuredSeed ? '--seeds-file' : '--input',
             inputPath,
             '--service-url',
             source.serviceUrl,
@@ -178,7 +202,7 @@ const main = async () => {
         ],
         {
             cwd: outputDirectory,
-            env: { ...process.env, ENONIC_AUTH: sourceAuth },
+            env: { ...getLocalProcessEnvironment(), ENONIC_AUTH: sourceAuth },
         }
     );
     if (options['plan-only']) {
@@ -234,31 +258,37 @@ const main = async () => {
         suPassword: targetAuth.slice(targetAuth.indexOf(':') + 1),
     });
     if (!target.created) {
+        if (getRunningSandbox() === options.target) {
+            stopRunningSandbox();
+        }
         startSandbox(options.target);
         waitForManagementApi();
+        await verifyLocalImportTarget({ sandbox: options.target, auth: targetAuth });
         if (!options.page) {
             installCuratedApplications({
                 applications: manifest.applications,
                 auth: targetAuth,
+                sandbox: options.target,
             });
         }
     }
 
-    const targetExportDirectory = join(target.sandboxPath, 'home/data/export');
-    mkdirSync(targetExportDirectory, { recursive: true });
-    manifest.exports.forEach(({ exportName }) => {
-        cpSync(join(exportDirectory, exportName), join(targetExportDirectory, exportName), {
-            recursive: true,
-            force: true,
-        });
-    });
-
     try {
         runNodeScript(
             'scripts/import-curated-export.mjs',
-            ['--manifest', manifestPath, '--service-url', IMPORT_SERVICE_URL],
-            { env: { ...process.env, ENONIC_AUTH: targetAuth } }
+            [
+                '--manifest',
+                manifestPath,
+                '--service-url',
+                IMPORT_SERVICE_URL,
+                '--sandbox',
+                options.target,
+                '--export-dir',
+                exportDirectory,
+            ],
+            { env: { ...getLocalProcessEnvironment(), ENONIC_AUTH: targetAuth } }
         );
+        assertLocalTargetProcess(options.target);
         await uploadProjectIcons({
             targetServiceUrl: IMPORT_SERVICE_URL,
             icons: projectIcons,
@@ -268,13 +298,10 @@ const main = async () => {
             runNodeScript(
                 'scripts/create-curated-dump.mjs',
                 ['--sandbox', options.target, '--name', options['dump-name']],
-                { env: { ...process.env, ENONIC_AUTH: targetAuth } }
+                { env: { ...getLocalProcessEnvironment(), ENONIC_AUTH: targetAuth } }
             );
         }
     } finally {
-        manifest.exports.forEach(({ exportName }) => {
-            rmSync(join(targetExportDirectory, exportName), { recursive: true, force: true });
-        });
         if (target.created) {
             stopRunningSandbox();
             startSandbox(options.target);

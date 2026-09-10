@@ -25,6 +25,15 @@ test('resolves an explicit XP origin', () => {
     );
 });
 
+test('rejects credentials in a source URL without echoing them', () => {
+    assert.throws(
+        () => resolveCuratedSource('https://su:synthetic-password@xp.example.no'),
+        (error) =>
+            /must not contain credentials/.test(error.message) &&
+            !error.message.includes('synthetic-password')
+    );
+});
+
 test('resolves the running local sandbox and XP version', () => {
     const homeDirectory = mkdtempSync(join(tmpdir(), 'curated-source-'));
     const sandboxPath = join(homeDirectory, '.enonic', 'sandboxes', 'navno');

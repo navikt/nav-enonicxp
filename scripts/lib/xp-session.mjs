@@ -1,16 +1,18 @@
-export const getXpSessionCookie = async (serviceUrl, auth) => {
-    const separatorIndex = auth.indexOf(':');
-    if (separatorIndex < 1) {
-        throw new Error('XP authentication must use the format user:password');
-    }
+import { parseAuth } from './curated-auth.mjs';
+import { fetchXp } from './curated-http.mjs';
 
-    const response = await fetch(new URL('/_/idprovider/system', serviceUrl), {
+export const getXpSessionCookie = async (serviceUrl, auth) => {
+    const { username, password } = parseAuth(auth, 'XP');
+
+    const response = await fetchXp(new URL('/_/idprovider/system', serviceUrl), {
         method: 'POST',
+        redirect: 'error',
+        signal: AbortSignal.timeout(30000),
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             action: 'login',
-            user: auth.slice(0, separatorIndex),
-            password: auth.slice(separatorIndex + 1),
+            user: username,
+            password,
         }),
     });
     const result = await response.json();

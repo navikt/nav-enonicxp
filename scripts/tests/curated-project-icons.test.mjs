@@ -32,7 +32,9 @@ test('uploads project icons after project creation', async () => {
     const requests = [];
     await uploadProjectIcons({
         targetServiceUrl: 'http://localhost:8080/_/service/no.nav.navno/curatedExportImport',
-        icons: [{ projectId: 'default', contentType: 'image/svg+xml', data: Buffer.from('<svg/>') }],
+        icons: [
+            { projectId: 'default', contentType: 'image/svg+xml', data: Buffer.from('<svg/>') },
+        ],
         auth: 'su:password',
         getSessionCookie: async () => 'XPSESSION=target',
         fetchRequest: async (url, options) => {
@@ -45,4 +47,17 @@ test('uploads project icons after project creation', async () => {
     assert.equal(requests[0].options.headers.Cookie, 'XPSESSION=target');
     assert.equal(requests[0].options.body.get('name'), 'default');
     assert.equal(requests[0].options.body.get('scaleWidth'), '512');
+});
+
+test('does not mistake an icon server error for an absent icon', async () => {
+    await assert.rejects(
+        downloadProjectIcons({
+            sourceServiceUrl: 'https://source.example',
+            projects: [{ id: 'default' }],
+            auth: 'synthetic:password',
+            getSessionCookie: async () => 'synthetic-cookie',
+            fetchRequest: async () => ({ ok: false, status: 500 }),
+        }),
+        /Could not read icon for project default: 500/
+    );
 });

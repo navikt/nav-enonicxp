@@ -1,4 +1,5 @@
 import { getXpSessionCookie } from './xp-session.mjs';
+import { directLocalFetch, fetchXp } from './curated-http.mjs';
 
 const getIconUrl = (serviceUrl, projectId) =>
     new URL(`/admin/rest-v2/cs/project/icon/${encodeURIComponent(projectId)}`, serviceUrl);
@@ -7,7 +8,7 @@ export const downloadProjectIcons = async ({
     sourceServiceUrl,
     projects,
     auth,
-    fetchRequest = fetch,
+    fetchRequest = fetchXp,
     getSessionCookie = getXpSessionCookie,
 }) => {
     const cookie = await getSessionCookie(sourceServiceUrl, auth);
@@ -16,7 +17,7 @@ export const downloadProjectIcons = async ({
         const response = await fetchRequest(getIconUrl(sourceServiceUrl, project.id), {
             headers: { Cookie: cookie },
         });
-        if (response.status === 404 || response.status === 500) {
+        if (response.status === 404) {
             continue;
         }
         if (!response.ok) {
@@ -35,7 +36,7 @@ export const uploadProjectIcons = async ({
     targetServiceUrl,
     icons,
     auth,
-    fetchRequest = fetch,
+    fetchRequest = directLocalFetch,
     getSessionCookie = getXpSessionCookie,
 }) => {
     if (icons.length === 0) {
@@ -47,14 +48,20 @@ export const uploadProjectIcons = async ({
         const form = new FormData();
         form.set('name', icon.projectId);
         form.set('scaleWidth', '512');
-        form.set('icon', new Blob([icon.data], { type: icon.contentType }), `${icon.projectId}-icon`);
+        form.set(
+            'icon',
+            new Blob([icon.data], { type: icon.contentType }),
+            `${icon.projectId}-icon`
+        );
         const response = await fetchRequest(url, {
             method: 'POST',
             headers: { Cookie: cookie },
             body: form,
         });
         if (!response.ok) {
-            throw new Error(`Could not restore icon for project ${icon.projectId}: ${response.status}`);
+            throw new Error(
+                `Could not restore icon for project ${icon.projectId}: ${response.status}`
+            );
         }
     }
 };

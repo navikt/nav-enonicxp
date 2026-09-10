@@ -1,21 +1,22 @@
 import { Request, Response } from '@enonic-types/core';
-import { Content } from '/lib/xp/content';
-import { RepoNode } from '/lib/xp/node';
-import { getRepoConnection } from '../../lib/repos/repo-utils';
+import {
+    getCuratedSourceBinary,
+    getCuratedSourceNode,
+} from '../../lib/exports/curated-node-reader';
 import { userCanManageCuratedExports } from '../../lib/utils/auth-utils';
 import { logger } from '../../lib/utils/logging';
-
-const ALLOWED_REPOSITORIES = [
-    'com.enonic.cms.default',
-    'com.enonic.cms.navno-engelsk',
-    'com.enonic.cms.navno-nynorsk',
-];
-const ALLOWED_BRANCHES = ['draft', 'master'];
+import {
+    isCuratedBranch,
+    isCuratedContentId,
+    isCuratedContentPath,
+    isCuratedRepository,
+} from '../../lib/exports/curated-safety';
 const MAX_BATCH_SIZE = 100;
 
 const jsonResponse = (status: number, body: Record<string, unknown>): Response => ({
     status,
     contentType: 'application/json',
+    headers: { 'Cache-Control': 'no-store' },
     body,
 });
 
@@ -28,44 +29,29 @@ const getRequest = (req: Request) => {
     const repository = getStringParam(req, 'repository');
     const branch = getStringParam(req, 'branch');
     const contentId = getStringParam(req, 'contentId');
+    const versionId = req.params.versionId;
     if (
-        !repository ||
-        !ALLOWED_REPOSITORIES.includes(repository) ||
-        !branch ||
-        !ALLOWED_BRANCHES.includes(branch) ||
-        !contentId ||
-        !/^[a-zA-Z0-9-]+$/.test(contentId)
+        !isCuratedRepository(repository) ||
+        !isCuratedBranch(branch) ||
+        !isCuratedContentId(contentId) ||
+        (versionId !== undefined && !isCuratedContentId(versionId))
     ) {
         return null;
     }
 
-    return { repository, branch, contentId };
+    return {
+        repository,
+        branch,
+        contentId,
+        ...(versionId !== undefined && { versionId: versionId as string }),
+    };
 };
 
 const getRepositoryAndBranch = (repository: unknown, branch: unknown) => {
-    if (
-        typeof repository !== 'string' ||
-        !ALLOWED_REPOSITORIES.includes(repository) ||
-        typeof branch !== 'string' ||
-        !ALLOWED_BRANCHES.includes(branch)
-    ) {
+    if (!isCuratedRepository(repository) || !isCuratedBranch(branch)) {
         return null;
     }
     return { repository, branch };
-};
-
-const getBinaryReferences = (node: RepoNode<Content>) => {
-    const references: string[] = [];
-    if (node.attachment?.binary) {
-        references.push(node.attachment.binary);
-    }
-    Object.keys(node.attachments || {}).forEach((name) => {
-        const attachment = node.attachments?.[name] as { binary?: string } | undefined;
-        if (attachment?.binary) {
-            references.push(attachment.binary);
-        }
-    });
-    return references;
 };
 
 export const get = (req: Request): Response => {
@@ -74,35 +60,49 @@ export const get = (req: Request): Response => {
     }
     const request = getRequest(req);
     if (!request) {
-        return jsonResponse(400, { message: 'Invalid repository, branch, or contentId' });
+        return jsonResponse(400, {
+            message: 'Invalid repository, branch, contentId, or versionId',
+        });
+    }
+    const binaryReference = getStringParam(req, 'binaryReference');
+    if (req.params.binaryReference !== undefined && (!binaryReference || !request.versionId)) {
+        return jsonResponse(400, {
+            message: 'Binary reads require a binaryReference and an explicit versionId',
+        });
     }
 
     try {
-        const connection = getRepoConnection({
-            repoId: request.repository,
-            branch: request.branch,
-            asAdmin: true,
-        });
-        const node = connection.get<Content>(request.contentId);
-        if (!node || !node._path.startsWith('/content/www.nav.no')) {
+        const source = getCuratedSourceNode(request);
+        const node = source.node;
+        if (!node || !isCuratedContentPath(node._path)) {
             return jsonResponse(404, { message: 'Selected content node was not found' });
         }
-
-        const binaryReference = getStringParam(req, 'binaryReference');
-        if (!binaryReference) {
-            return jsonResponse(200, { node, binaryReferences: getBinaryReferences(node) });
+        if (
+            node._id !== request.contentId ||
+            (request.versionId !== undefined && node._versionKey !== request.versionId)
+        ) {
+            return jsonResponse(409, { message: 'Selected content ID or version did not match' });
         }
-        if (!getBinaryReferences(node).includes(binaryReference)) {
+
+        if (!binaryReference) {
+            return jsonResponse(200, source);
+        }
+        if (!source.binaryReferences.includes(binaryReference)) {
             return jsonResponse(404, { message: 'Binary reference was not found on the node' });
         }
 
-        const binary = connection.getBinary({ key: request.contentId, binaryReference });
+        const binary = getCuratedSourceBinary({
+            ...request,
+            versionId: request.versionId!,
+            binaryReference,
+        });
         if (!binary) {
             return jsonResponse(404, { message: 'Binary data was not found' });
         }
         return {
             status: 200,
             contentType: 'application/octet-stream',
+            headers: { 'Cache-Control': 'no-store' },
             body: binary,
         };
     } catch (error) {
@@ -126,31 +126,39 @@ export const post = (req: Request): Response => {
             repository?: unknown;
             branch?: unknown;
             contentIds?: unknown;
+            versionIds?: unknown;
         };
+        if (!body || typeof body !== 'object' || Array.isArray(body)) {
+            return jsonResponse(400, { message: 'A JSON object is required' });
+        }
         const source = getRepositoryAndBranch(body.repository, body.branch);
         if (
             !source ||
             !Array.isArray(body.contentIds) ||
             body.contentIds.length === 0 ||
             body.contentIds.length > MAX_BATCH_SIZE ||
-            body.contentIds.some(
-                (contentId) => typeof contentId !== 'string' || !/^[a-zA-Z0-9-]+$/.test(contentId)
-            )
+            body.contentIds.some((contentId) => !isCuratedContentId(contentId)) ||
+            !Array.isArray(body.versionIds) ||
+            body.versionIds.length !== body.contentIds.length ||
+            body.versionIds.some((versionId) => !isCuratedContentId(versionId))
         ) {
-            return jsonResponse(400, { message: 'Invalid repository, branch, or contentIds' });
+            return jsonResponse(400, {
+                message: 'Invalid repository, branch, contentIds, or parallel versionIds',
+            });
         }
 
-        const connection = getRepoConnection({
-            repoId: source.repository,
-            branch: source.branch,
-            asAdmin: true,
-        });
-        const nodes = body.contentIds.map((contentId) => {
-            const node = connection.get<Content>(contentId);
-            if (!node || !node._path.startsWith('/content/www.nav.no')) {
+        const versionIds = body.versionIds as string[];
+        const nodes = body.contentIds.map((contentId, index) => {
+            const versionId = versionIds[index];
+            const envelope = getCuratedSourceNode({ ...source, contentId, versionId });
+            const node = envelope.node;
+            if (!node || !isCuratedContentPath(node._path)) {
                 throw new Error(`Selected content node was not found: ${contentId}`);
             }
-            return { node, binaryReferences: getBinaryReferences(node) };
+            if (node._id !== contentId || node._versionKey !== versionId) {
+                throw new Error(`Selected content ID or version did not match: ${contentId}`);
+            }
+            return envelope;
         });
         return jsonResponse(200, { nodes });
     } catch (error) {

@@ -50,6 +50,9 @@ export const resolveCuratedSource = (
 
     if (/^https?:\/\//.test(source)) {
         const url = new URL(source);
+        if (url.username || url.password) {
+            throw new Error('--source URLs must not contain credentials');
+        }
         if ((url.pathname && url.pathname !== '/') || url.search || url.hash) {
             throw new Error('--source URL must contain only the XP origin');
         }
@@ -65,7 +68,9 @@ export const resolveCuratedSource = (
         throw new Error(`Source is neither a known environment nor a local sandbox: ${source}`);
     }
     if (runningSandbox !== source) {
-        throw new Error(`Start source sandbox ${source}; currently running: ${runningSandbox ?? 'none'}`);
+        throw new Error(
+            `Start source sandbox ${source}; currently running: ${runningSandbox ?? 'none'}`
+        );
     }
 
     return {

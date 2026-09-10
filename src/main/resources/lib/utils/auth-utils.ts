@@ -19,7 +19,7 @@ export const userIsLoggedIn = () => authLib.hasRole(LOGGED_IN_PRINCIPAL);
 
 export const userIsAdmin = () => authLib.hasRole(ADMIN_PRINCIPAL);
 
-export const userCanManageCuratedExports = () => userIsAdmin() || userIsLoggedIn();
+export const userCanManageCuratedExports = () => userIsAdmin();
 
 export const validateCurrentUserPermissionForContent = (
     contentId: string | undefined = undefined,

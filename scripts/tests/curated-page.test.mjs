@@ -43,25 +43,15 @@ test('parses a supported Content Studio edit URL', () => {
     );
 });
 
-test('resolves a Content Studio content ID through the source service', async () => {
-    const calls = [];
-    const result = await resolveCuratedPage({
-        page: 'https://portal-admin.oera.no/admin/tool/com.enonic.app.contentstudio/main/default/edit/content-id',
-        sourceServiceUrl: 'https://portal-admin.oera.no/_/service/no.nav.navno/curatedExportSource',
-        auth: 'user:password',
-        getSessionCookie: async () => 'XPSESSION=token',
-        fetchRequest: async (url, options) => {
-            calls.push({ url, options });
-            return {
-                ok: true,
-                json: async () => ({ node: { _path: '/content/www.nav.no/arbeid' } }),
-            };
-        },
-    });
-
-    assert.equal(result, '/content/www.nav.no/arbeid');
-    assert.equal(calls[0].url.searchParams.get('repository'), 'com.enonic.cms.default');
-    assert.equal(calls[0].url.searchParams.get('branch'), 'draft');
-    assert.equal(calls[0].url.searchParams.get('contentId'), 'content-id');
-    assert.equal(calls[0].options.headers.Cookie, 'XPSESSION=token');
+test('retains exact editor identity rather than resolving a draft path against master', () => {
+    for (const project of ['default', 'navno-engelsk', 'navno-nynorsk']) {
+        const result = resolveCuratedPage({
+            page: `https://portal-admin.oera.no/admin/tool/com.enonic.app.contentstudio/main/${project}/edit/draft-only-id`,
+        });
+        assert.deepEqual(result, {
+            repository: `com.enonic.cms.${project}`,
+            branch: 'draft',
+            contentId: 'draft-only-id',
+        });
+    }
 });

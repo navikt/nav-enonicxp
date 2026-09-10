@@ -11,6 +11,18 @@ import { RepoNode } from '/lib/xp/node';
 import { runInContext } from '../../lib/context/run-in-context';
 import { logger } from '../../lib/utils/logging';
 import { getRepoConnection } from '../../lib/repos/repo-utils';
+import {
+    CuratedTargetExpectation,
+    repairCuratedTargetBatch,
+    validateCuratedTargetBatch,
+} from '../../lib/exports/target/curated-target-fidelity';
+import {
+    isCuratedBranch,
+    isCuratedContentId,
+    isCuratedContentPath,
+    isCuratedImportEnabled,
+    isCuratedRepository,
+} from '../../lib/exports/curated-safety';
 
 const REQUIRED_PROJECTS = [
     { id: 'default', language: 'no', parents: [] },
@@ -18,8 +30,8 @@ const REQUIRED_PROJECTS = [
     { id: 'navno-nynorsk', language: 'nn', parents: ['default'] },
 ] as const;
 const REQUIRED_REPO_IDS = REQUIRED_PROJECTS.map(({ id }) => `com.enonic.cms.${id}`);
-const REQUIRED_CHILD_REPO_IDS = REQUIRED_REPO_IDS.slice(1);
-const COLLISION_PATH_SUFFIX = '-curated-import-collision';
+const MAX_RELOCATION_ENTRIES = 20000;
+const MAX_RELOCATION_DESCENDANTS = 1000;
 
 type ImportEntry = {
     contentId: string;
@@ -29,13 +41,16 @@ type ImportEntry = {
 };
 
 type RequestBody = {
-    action?: 'configure-login' | 'configure-projects' | 'prepare-project-import' | 'normalize-import-paths' | 'restore-supplements' | 'validate-import';
+    action?: 'configure-login' | 'configure-projects' | 'prepare-project-import' | 'normalize-import-paths' | 'restore-supplements' | 'validate-import' | 'repair-metadata' | 'validate-fidelity';
     applications?: RequiredApplication[];
     projects?: Project[];
     repository?: string;
     branch?: 'draft' | 'master';
     entries?: ImportEntry[];
     supplements?: ImportSupplement[];
+    scope?: 'full' | 'page';
+    expectations?: CuratedTargetExpectation[];
+    absentContentIds?: string[];
 };
 
 const configureLogin = () => {
@@ -81,30 +96,395 @@ type RequiredApplication = {
     required?: boolean;
 };
 
-const NON_RESTORABLE_NODE_KEYS = [
+const SUPPLEMENT_NODE_KEYS = [
+    '_childOrder',
+    '_inheritsPermissions',
+    '_manualOrderValue',
+    '_permissions',
+    '_indexConfig',
+    'displayName',
+    'type',
+    'data',
+    'x',
+    'page',
+    'fragment',
+    'components',
+    'language',
+    'creator',
+    'modifier',
+    'owner',
+    'createdTime',
+    'modifiedTime',
+    'originProject',
+    'childOrder',
+    'workflow',
+    'inherit',
+    'variantOf',
+];
+const READ_ONLY_NODE_KEYS = [
     '_id',
+    '_name',
     '_path',
     '_versionKey',
     '_ts',
     '_state',
     '_nodeType',
+    'attachment',
     'attachments',
     'hasChildren',
     'valid',
     'publish',
+    'processedReferences',
+    'validationErrors',
+    'originalName',
+    'originalParentPath',
+    'archivedTime',
+    'archivedBy',
 ];
 
-const getRestorableNodeData = (sourceNode: RepoNode<Content>) =>
-    Object.keys(sourceNode).reduce<Record<string, unknown>>((restorableData, key) => {
-        if (!NON_RESTORABLE_NODE_KEYS.includes(key)) {
-            restorableData[key] = (sourceNode as unknown as Record<string, unknown>)[key];
+const RESTORABLE_TEXT_ROOTS = [
+    'displayName',
+    'data',
+    'x',
+    'page',
+    'fragment',
+    'components',
+    'language',
+    'workflow',
+];
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+    value !== null && typeof value === 'object' && !Array.isArray(value);
+
+const parseStringLeafPath = (path: string): Array<string | number> | null => {
+    if (!/^[^.[\]]+(?:\.[^.[\]]+|\[(?:0|[1-9][0-9]*)\])*$/.test(path)) {
+        return null;
+    }
+    const segments = (path.match(/[^.[\]]+|\[\d+\]/g) || []).map((segment) =>
+        segment.startsWith('[') ? Number(segment.slice(1, -1)) : segment
+    );
+    if (
+        !RESTORABLE_TEXT_ROOTS.includes(segments[0] as string) ||
+        segments.some((segment) =>
+            typeof segment === 'number'
+                ? segment >= 4294967295
+                : ['__proto__', 'prototype', 'constructor'].includes(segment)
+        )
+    ) {
+        return null;
+    }
+    return segments;
+};
+
+const getStringLeaf = (node: unknown, segments: Array<string | number>) => {
+    let parent: unknown = node;
+    for (let index = 0; index < segments.length; index += 1) {
+        const key = segments[index];
+        if (
+            (typeof key === 'number' ? !Array.isArray(parent) : !isRecord(parent)) ||
+            !Object.prototype.hasOwnProperty.call(parent, key)
+        ) {
+            return null;
         }
-        return restorableData;
-    }, {});
+        const object = parent as Record<string | number, unknown>;
+        const value = object[key];
+        if (index === segments.length - 1) {
+            return typeof value === 'string' ? { parent: object, key, value } : null;
+        }
+        parent = value;
+    }
+    return null;
+};
+
+const isPrincipalKey = (value: unknown) =>
+    typeof value === 'string' &&
+    /^(role:[a-zA-Z0-9._-]+|(user|group):[a-zA-Z0-9._-]+:[^:\s/\\]+)$/.test(value);
+
+const isProjectPermissions = (value: unknown) =>
+    isRecord(value) &&
+    Object.keys(value).every(
+        (role) =>
+            ['owner', 'editor', 'author', 'contributor', 'viewer'].includes(role) &&
+            Array.isArray(value[role]) &&
+            value[role].every(isPrincipalKey)
+    );
+
+const isProjectReadAccess = (value: unknown) =>
+    isRecord(value) &&
+    Object.keys(value).every((key) => key === 'public' && typeof value[key] === 'boolean');
+
+const isNodePermissions = (value: unknown) =>
+    Array.isArray(value) &&
+    value.every(
+        (permission) =>
+            isRecord(permission) &&
+            isPrincipalKey(permission.principal) &&
+            Object.keys(permission).every((key) => ['principal', 'allow', 'deny'].includes(key)) &&
+            ['allow', 'deny'].every(
+                (key) =>
+                    permission[key] === undefined ||
+                    (Array.isArray(permission[key]) &&
+                        permission[key].every((action: unknown) =>
+                            [
+                                'READ',
+                                'CREATE',
+                                'MODIFY',
+                                'DELETE',
+                                'PUBLISH',
+                                'READ_PERMISSIONS',
+                                'WRITE_PERMISSIONS',
+                            ].includes(action as string)
+                        ))
+            )
+    );
+
+const isIndexConfigEntry = (value: unknown) =>
+    isRecord(value) &&
+    Object.keys(value).every((key) => {
+        if (['languages', 'indexValueProcessors'].includes(key)) {
+            return Array.isArray(value[key]) &&
+                value[key].every((item: unknown) => typeof item === 'string');
+        }
+        return (
+            ['decideByType', 'enabled', 'nGram', 'fulltext', 'includeInAllText', 'path'].includes(key) &&
+            typeof value[key] === 'boolean'
+        );
+    });
+
+const isNodeIndexConfig = (value: unknown) =>
+    isRecord(value) &&
+    Object.keys(value).every((key) => {
+        if (key === 'analyzer') {
+            return typeof value[key] === 'string';
+        }
+        if (key === 'default' || key === 'allText') {
+            return isIndexConfigEntry(value[key]);
+        }
+        if (key === 'configs') {
+            return Array.isArray(value[key]) &&
+                value[key].every(
+                    (entry: unknown) =>
+                        isRecord(entry) &&
+                        typeof entry.path === 'string' &&
+                        isIndexConfigEntry(entry.config)
+                );
+        }
+        return false;
+    });
+
+const hasValidNodeMetadata = (node: Record<string, unknown>) =>
+    (node._permissions === undefined || isNodePermissions(node._permissions)) &&
+    (node._indexConfig === undefined || isNodeIndexConfig(node._indexConfig)) &&
+    (node._inheritsPermissions === undefined || typeof node._inheritsPermissions === 'boolean') &&
+    (node._childOrder === undefined || typeof node._childOrder === 'string') &&
+    (node._manualOrderValue === undefined ||
+        (typeof node._manualOrderValue === 'number' && isFinite(node._manualOrderValue))) &&
+    (node.originProject === undefined ||
+        REQUIRED_PROJECTS.some(({ id }) => id === node.originProject)) &&
+    (node.variantOf === undefined || isCuratedContentId(node.variantOf)) &&
+    (node.inherit === undefined ||
+        (Array.isArray(node.inherit) &&
+            node.inherit.every((value) => ['CONTENT', 'PARENT', 'NAME', 'SORT'].includes(value))));
+
+const hasUnsafeProperty = (value: unknown): boolean => {
+    if (Array.isArray(value)) {
+        return value.some(hasUnsafeProperty);
+    }
+    return (
+        isRecord(value) &&
+        Object.keys(value).some(
+            (key) =>
+                ['__proto__', 'prototype', 'constructor'].includes(key) ||
+                hasUnsafeProperty(value[key])
+        )
+    );
+};
+
+const isImportEntry = (value: unknown): value is ImportEntry => {
+    if (
+        !isRecord(value) ||
+        !isCuratedRepository(value.repoId) ||
+        !isCuratedContentId(value.contentId) ||
+        !isRecord(value.paths) ||
+        !Array.isArray(value.branches) ||
+        value.branches.length === 0 ||
+        value.branches.length > 2 ||
+        value.branches.some((branch) => !isCuratedBranch(branch))
+    ) {
+        return false;
+    }
+    const paths = value.paths;
+    const branches = value.branches;
+    return (
+        Object.keys(paths).every(
+            (branch) =>
+                isCuratedBranch(branch) &&
+                branches.includes(branch) &&
+                isCuratedContentPath(paths[branch])
+        ) &&
+        branches.every((branch) => isCuratedContentPath(paths[branch]))
+    );
+};
+
+const isImportSupplement = (value: unknown): value is ImportSupplement => {
+    if (
+        !isRecord(value) ||
+        !isCuratedRepository(value.repoId) ||
+        !isCuratedBranch(value.branch) ||
+        !isCuratedContentId(value.contentId) ||
+        !isCuratedContentPath(value.contentPath) ||
+        !Array.isArray(value.invalidValuePaths) ||
+        value.invalidValuePaths.length === 0 ||
+        value.invalidValuePaths.some((path) => typeof path !== 'string') ||
+        !isRecord(value.node)
+    ) {
+        return false;
+    }
+    const node = value.node;
+    return (
+        node._id === value.contentId &&
+        node._path === value.contentPath &&
+        node._name === value.contentPath.slice(value.contentPath.lastIndexOf('/') + 1) &&
+        (node._nodeType === undefined || node._nodeType === 'content') &&
+        typeof node.type === 'string' &&
+        /^(no\.nav\.navno|portal|base|media):[a-zA-Z0-9-]+$/.test(node.type) &&
+        (node.attachment === undefined ||
+            (Array.isArray(node.attachment)
+                ? node.attachment.every(isRecord)
+                : isRecord(node.attachment))) &&
+        (node.attachments === undefined || isRecord(node.attachments)) &&
+        Object.keys(node).every(
+            (key) => SUPPLEMENT_NODE_KEYS.includes(key) || READ_ONLY_NODE_KEYS.includes(key)
+        ) &&
+        value.invalidValuePaths.every((path) => {
+            const segments = parseStringLeafPath(path);
+            return segments !== null && getStringLeaf(node, segments) !== null;
+        }) &&
+        hasValidNodeMetadata(node) &&
+        !containsInvalidXmlCharacter(node)
+    );
+};
+
+const hasDuplicateTargets = (entries: ImportEntry[] | ImportSupplement[]) => {
+    const ids = new Set<string>();
+    const paths = new Set<string>();
+    return entries.some((entry) => {
+        const branches = 'branches' in entry ? entry.branches : [entry.branch];
+        return branches.some((branch) => {
+            const id = `${entry.repoId}:${branch}:${entry.contentId}`;
+            const path = `${entry.repoId}:${branch}:${
+                'paths' in entry ? entry.paths[branch] : entry.contentPath
+            }`;
+            if (ids.has(id) || paths.has(path)) {
+                return true;
+            }
+            ids.add(id);
+            paths.add(path);
+            return false;
+        });
+    });
+};
+
+const validateRequest = (body: RequestBody) => {
+    if (!isRecord(body) || hasUnsafeProperty(body)) {
+        throw new Error('Invalid request object');
+    }
+    if (
+        (body.repository !== undefined && !isCuratedRepository(body.repository)) ||
+        (body.branch !== undefined && !isCuratedBranch(body.branch)) ||
+        (body.scope !== undefined && body.scope !== 'full' && body.scope !== 'page')
+    ) {
+        throw new Error('Invalid import repository or branch');
+    }
+    if (
+        body.entries !== undefined &&
+        (!Array.isArray(body.entries) ||
+            !body.entries.every(isImportEntry) ||
+            hasDuplicateTargets(body.entries))
+    ) {
+        throw new Error('Invalid import entries');
+    }
+    if (
+        body.supplements !== undefined &&
+        (!Array.isArray(body.supplements) ||
+            !body.supplements.every(isImportSupplement) ||
+            hasDuplicateTargets(body.supplements))
+    ) {
+        throw new Error('Invalid import supplements');
+    }
+    if (
+        body.repository &&
+        body.branch &&
+        (body.entries?.some(
+            (entry) =>
+                entry.repoId !== body.repository || !entry.branches.includes(body.branch!)
+        ) ||
+            body.supplements?.some(
+                (supplement) =>
+                    supplement.repoId !== body.repository || supplement.branch !== body.branch
+            ))
+    ) {
+        throw new Error('Import items do not match the requested repository and branch');
+    }
+};
+
+const assertContentOwnership = (
+    node: RepoNode<Content> | null,
+    contentId?: string,
+    contentPath?: string
+) => {
+    if (
+        node &&
+        (!isCuratedContentPath(node._path) ||
+            (node._nodeType !== undefined && node._nodeType !== 'content') ||
+            (contentId !== undefined && node._id !== contentId) ||
+            (contentPath !== undefined && node._path !== contentPath))
+    ) {
+        throw new Error('The target node does not belong to the selected content');
+    }
+};
+
+const getSelectedDescendantIds = (
+    connection: ReturnType<typeof getRepoConnection>,
+    content: RepoNode<Content>,
+    selectedIds: Set<string>
+) => {
+    const result = connection.findChildren({
+        parentKey: content._id,
+        recursive: true,
+        start: 0,
+        count: MAX_RELOCATION_DESCENDANTS + 1,
+    });
+    if (
+        !result ||
+        typeof result.total !== 'number' ||
+        !isFinite(result.total) ||
+        result.total % 1 !== 0 ||
+        result.total < 0 ||
+        result.total > MAX_RELOCATION_DESCENDANTS ||
+        result.hits.length !== result.total
+    ) {
+        throw new Error(`Cannot completely inspect descendants of ${content._id}; limit is ${MAX_RELOCATION_DESCENDANTS}`);
+    }
+    const ids = new Set<string>();
+    result.hits.forEach(({ id }) => {
+        if (!selectedIds.has(id) || ids.has(id) || id === content._id) {
+            throw new Error(`Cannot relocate ${content._id}: unselected or inconsistent descendant ${id}`);
+        }
+        const descendant = connection.get<Content>(id);
+        assertContentOwnership(descendant, id);
+        if (!descendant || !descendant._path.startsWith(`${content._path}/`)) {
+            throw new Error(`Cannot verify descendant ${id} of ${content._id}`);
+        }
+        ids.add(id);
+    });
+    return ids;
+};
 
 const jsonResponse = (status: number, body: Record<string, unknown>) => ({
     status,
     contentType: 'application/json',
+    headers: { 'Cache-Control': 'no-store' },
     body,
 });
 
@@ -118,6 +498,27 @@ const validateProjects = (projects: Project[]) => {
 
     REQUIRED_PROJECTS.forEach((expectedProject, index) => {
         const project = projects[index];
+        if (
+            !isRecord(project) ||
+            !Array.isArray(project.parents) ||
+            project.parents.some((parent) => typeof parent !== 'string') ||
+            typeof project.displayName !== 'string' ||
+            (project.description !== undefined && typeof project.description !== 'string') ||
+            (project.siteConfig !== undefined &&
+                (!Array.isArray(project.siteConfig) ||
+                    project.siteConfig.some(
+                        (config) =>
+                            !isRecord(config) ||
+                            typeof config.applicationKey !== 'string' ||
+                            (config.config !== undefined && !isRecord(config.config))
+                    ))) ||
+            (project.permissions !== undefined &&
+                !isProjectPermissions(project.permissions)) ||
+            (project.readAccess !== undefined &&
+                !isProjectReadAccess(project.readAccess))
+        ) {
+            throw new Error(`Invalid project configuration for "${expectedProject.id}"`);
+        }
         const parents = getParents(project);
         if (
             project.id !== expectedProject.id ||
@@ -214,6 +615,19 @@ const configureChildProject = (project: Project) => {
 
 const configureProjects = (projects: Project[]) => {
     validateProjects(projects);
+    projects.slice(1).forEach((project) => {
+        const existingProject = projectLib.get({ id: project.id });
+        if (
+            existingProject &&
+            (JSON.stringify(getParents(existingProject)) !== JSON.stringify(getParents(project)) ||
+                JSON.stringify(existingProject.permissions || {}) !==
+                    JSON.stringify(project.permissions || {}) ||
+                JSON.stringify(existingProject.readAccess || {}) !==
+                    JSON.stringify(project.readAccess || {}))
+        ) {
+            throw new Error(`Existing project "${project.id}" has incompatible topology or access`);
+        }
+    });
     configureDefaultProject(projects[0]);
     projects.slice(1).forEach(configureChildProject);
     return projects.map(({ id }) => projectLib.get({ id }));
@@ -243,74 +657,224 @@ const validateApplications = (applications: RequiredApplication[]) => {
 
 const getParentPath = (path: string) => path.slice(0, path.lastIndexOf('/'));
 
+type RelocationEntry = {
+    contentId: string;
+    targetPath: string;
+    content: RepoNode<Content> | null;
+};
+
+type Relocation = {
+    contentId: string;
+    sourcePath: string;
+    targetPath: string;
+    affected: Array<{ contentId: string; targetPath: string }>;
+};
+
+const orderRelocationEntries = (entries: RelocationEntry[]) => {
+    const entriesById = new Map(entries.map((entry) => [entry.contentId, entry]));
+    const sourceIds = new Map<string, string>();
+    const targetIds = new Map<string, string>();
+    entries.forEach((entry) => {
+        if (entry.content) {
+            sourceIds.set(entry.content._path, entry.contentId);
+        }
+        targetIds.set(entry.targetPath, entry.contentId);
+    });
+    const nearestAncestor = (path: string, ids: Map<string, string>) => {
+        let parentPath = getParentPath(path);
+        while (parentPath) {
+            const id = ids.get(parentPath);
+            if (id) {
+                return id;
+            }
+            parentPath = getParentPath(parentPath);
+        }
+        return null;
+    };
+    const ordered: RelocationEntry[] = [];
+    const visiting = new Set<string>();
+    const visited = new Set<string>();
+    const visit = (entry: RelocationEntry) => {
+        if (visited.has(entry.contentId)) {
+            return;
+        }
+        if (visiting.has(entry.contentId)) {
+            throw new Error('Cannot safely order conflicting source and destination subtrees');
+        }
+        visiting.add(entry.contentId);
+        const ancestors = [
+            entry.content ? nearestAncestor(entry.content._path, sourceIds) : null,
+            nearestAncestor(entry.targetPath, targetIds),
+        ];
+        ancestors.forEach((id) => {
+            if (id) {
+                visit(entriesById.get(id)!);
+            }
+        });
+        visiting.delete(entry.contentId);
+        visited.add(entry.contentId);
+        ordered.push(entry);
+    };
+    entries.slice().sort((left, right) => left.targetPath.length - right.targetPath.length).forEach(visit);
+    return ordered;
+};
+
+const planImportRelocations = (
+    connection: ReturnType<typeof getRepoConnection>,
+    branch: 'draft' | 'master',
+    entries: ImportEntry[],
+    allowMissing: boolean
+) => {
+    connection.refresh('SEARCH');
+    const selectedIds = new Set(entries.map(({ contentId }) => contentId));
+    const positions = new Map<string, string>();
+    const idsAtPaths = new Map<string, string>();
+    const selected = entries.map((entry) => {
+        const content = connection.get<Content>(entry.contentId);
+        assertContentOwnership(content, entry.contentId);
+        if (!content && !allowMissing) {
+            throw new Error(`Native-imported selected content is missing: ${entry.contentId}`);
+        }
+        if (content) {
+            if (idsAtPaths.has(content._path)) {
+                throw new Error(`Selected IDs have conflicting current paths: ${content._path}`);
+            }
+            positions.set(entry.contentId, content._path);
+            idsAtPaths.set(content._path, entry.contentId);
+        }
+        return { contentId: entry.contentId, targetPath: entry.paths[branch]!, content };
+    });
+    const occupantAt = (path: string) => {
+        const selectedId = idsAtPaths.get(path);
+        if (selectedId) {
+            return selectedId;
+        }
+        const node = connection.get<Content>(path);
+        if (path !== '/content') {
+            assertContentOwnership(node, undefined, path);
+        }
+        // A selected node may already have vacated this stored path in the simulated plan.
+        return node && !selectedIds.has(node._id) ? node._id : null;
+    };
+    const relocations: Relocation[] = [];
+    const deferredRelocations: string[] = [];
+    orderRelocationEntries(selected).forEach((entry) => {
+        const occupant = occupantAt(entry.targetPath);
+        if (occupant && occupant !== entry.contentId) {
+            throw new Error(`Cannot relocate ${entry.contentId}: target ${entry.targetPath} is occupied by ${occupant}; no content will be deleted`);
+        }
+        const sourcePath = positions.get(entry.contentId);
+        if (!entry.content || !sourcePath || sourcePath === entry.targetPath) {
+            return;
+        }
+        if (entry.targetPath.startsWith(`${sourcePath}/`)) {
+            throw new Error(`Cannot move ${entry.contentId} into its own subtree`);
+        }
+        getSelectedDescendantIds(connection, entry.content, selectedIds);
+        if (!occupantAt(getParentPath(entry.targetPath))) {
+            if (!allowMissing) {
+                throw new Error(`Destination parent is missing for selected content ${entry.contentId}`);
+            }
+            deferredRelocations.push(entry.contentId);
+            return;
+        }
+        const affected: Relocation['affected'] = [];
+        positions.forEach((path, contentId) => {
+            if (path === sourcePath || path.startsWith(`${sourcePath}/`)) {
+                affected.push({ contentId, targetPath: `${entry.targetPath}${path.slice(sourcePath.length)}` });
+            }
+        });
+        affected.forEach(({ contentId }) => idsAtPaths.delete(positions.get(contentId)!));
+        affected.forEach(({ contentId, targetPath }) => {
+            positions.set(contentId, targetPath);
+            idsAtPaths.set(targetPath, contentId);
+        });
+        relocations.push({ contentId: entry.contentId, sourcePath, targetPath: entry.targetPath, affected });
+    });
+    selected.forEach((entry) => {
+        if (
+            entry.content &&
+            positions.get(entry.contentId) !== entry.targetPath &&
+            !deferredRelocations.includes(entry.contentId)
+        ) {
+            throw new Error(`Relocation would displace selected content ${entry.contentId} from its required path`);
+        }
+    });
+    return { relocations, deferredRelocations, selectedIds };
+};
+
+const relocateImportPaths = (
+    repository: string,
+    branch: 'draft' | 'master',
+    entries: ImportEntry[],
+    allowMissing: boolean
+) => {
+    if (
+        !isCuratedRepository(repository) ||
+        !isCuratedBranch(branch) ||
+        entries.length > MAX_RELOCATION_ENTRIES ||
+        entries.some((entry) => entry.repoId !== repository || !entry.branches.includes(branch))
+    ) {
+        throw new Error(`Invalid relocation batch for ${repository}:${branch}`);
+    }
+
+    return runInContext({ repository, branch, asAdmin: true }, () => {
+        const connection = getRepoConnection({ repoId: repository, branch, asAdmin: true });
+        // Validate every planned subtree effect before starting XP's non-transactional moves.
+        const plan = planImportRelocations(connection, branch, entries, allowMissing);
+        plan.relocations.forEach((relocation) => {
+            connection.refresh('SEARCH');
+            const content = connection.get<Content>(relocation.contentId);
+            assertContentOwnership(content, relocation.contentId, relocation.sourcePath);
+            if (!content) {
+                throw new Error(`Selected content disappeared before relocation: ${relocation.contentId}`);
+            }
+            const target = connection.get<Content>(relocation.targetPath);
+            const parentPath = getParentPath(relocation.targetPath);
+            const parent = connection.get<Content>(parentPath);
+            if (parentPath !== '/content') {
+                assertContentOwnership(parent, undefined, parentPath);
+            }
+            if (target || !parent) {
+                throw new Error(`Destination changed before relocation of ${relocation.contentId}`);
+            }
+            const descendants = getSelectedDescendantIds(connection, content, plan.selectedIds);
+            if (
+                descendants.size !== relocation.affected.length - 1 ||
+                relocation.affected.some(
+                    ({ contentId }) => contentId !== relocation.contentId && !descendants.has(contentId)
+                )
+            ) {
+                throw new Error(`Subtree changed before relocation of ${relocation.contentId}`);
+            }
+            if (!connection.move({ source: relocation.contentId, target: relocation.targetPath })) {
+                throw new Error(`Could not relocate selected content ${relocation.contentId}`);
+            }
+            relocation.affected.forEach(({ contentId, targetPath }) => {
+                const moved = connection.get<Content>(contentId);
+                assertContentOwnership(moved, contentId, targetPath);
+                if (!moved) {
+                    throw new Error(`Selected content disappeared during relocation: ${contentId}`);
+                }
+            });
+        });
+        return {
+            relocatedPaths: plan.relocations.length,
+            deferredRelocations: plan.deferredRelocations,
+        };
+    });
+};
+
 const prepareProjectImport = (
     repository: string,
     branch: 'draft' | 'master',
     entries: ImportEntry[]
 ) => {
-    if (!REQUIRED_CHILD_REPO_IDS.includes(repository)) {
-        throw new Error(`Only child project repositories may be prepared: ${repository}`);
-    }
-    if (entries.some((entry) => entry.repoId !== repository || !entry.branches.includes(branch))) {
-        throw new Error(`Import entries do not match ${repository}:${branch}`);
-    }
-
-    return runInContext({ repository, branch, asAdmin: true }, () => {
-        const connection = getRepoConnection({ repoId: repository, branch, asAdmin: true });
-        let relocatedExistingContents = 0;
-        const deferredRelocations: string[] = [];
-        entries
-            .slice()
-            .sort((left, right) => left.paths[branch]!.length - right.paths[branch]!.length)
-            .forEach((entry) => {
-                const expectedPath = entry.paths[branch];
-                if (!expectedPath) {
-                    throw new Error(`Import entry ${entry.contentId} has no ${branch} path`);
-                }
-                const pathCollision = connection.get<Content>(expectedPath);
-                if (pathCollision && pathCollision._id !== entry.contentId) {
-                    const temporaryPath = `${expectedPath}${COLLISION_PATH_SUFFIX}`;
-                    const previousTemporaryCollision = connection.get<Content>(temporaryPath);
-                    if (previousTemporaryCollision) {
-                        connection.delete(previousTemporaryCollision._id);
-                    }
-                    const movedCollision = connection.move({
-                        source: pathCollision._id,
-                        target: temporaryPath,
-                    });
-                    if (!movedCollision) {
-                        throw new Error(
-                            `Could not relocate inherited path collision ${pathCollision._id}`
-                        );
-                    }
-                    relocatedExistingContents += 1;
-                }
-                const existingContent = connection.get<Content>(entry.contentId);
-                if (!existingContent || existingContent._path === expectedPath) {
-                    return;
-                }
-                if (!connection.get<Content>(getParentPath(expectedPath))) {
-                    deferredRelocations.push(entry.contentId);
-                    return;
-                }
-
-                const moved = connection.move({
-                    source: entry.contentId,
-                    target: expectedPath,
-                });
-                const movedContent = connection.get<Content>(entry.contentId);
-                if (!moved || !movedContent || movedContent._path !== expectedPath) {
-                    throw new Error(
-                        `Could not relocate child-layer content ${entry.contentId} to ${expectedPath}`
-                    );
-                }
-                relocatedExistingContents += 1;
-            });
-        return {
-            relocatedInheritedCollisions: relocatedExistingContents,
-            deferredRelocations,
-        };
-    });
+    const result = relocateImportPaths(repository, branch, entries, true);
+    return {
+        relocatedInheritedCollisions: result.relocatedPaths,
+        deferredRelocations: result.deferredRelocations,
+    };
 };
 
 const restoreSupplements = (
@@ -329,40 +893,48 @@ const restoreSupplements = (
 
     return runInContext({ repository, branch, asAdmin: true }, () => {
         const connection = getRepoConnection({ repoId: repository, branch, asAdmin: true });
-        return supplements.map((supplement) => {
-            const sourceNode = supplement.node;
+        const plans = supplements.map((supplement) => {
             const content = connection.get<Content>(supplement.contentId);
-            let restoredNode: RepoNode<Content>;
             if (!content) {
-                const pathCollision = connection.get<Content>(supplement.contentPath);
-                if (pathCollision && pathCollision._id !== supplement.contentId) {
-                    connection.delete(supplement.contentPath);
-                }
-                const parentPath = getParentPath(supplement.contentPath);
-                if (!connection.get<Content>(parentPath)) {
+                throw new Error(
+                    `Native-imported supplement ${repository}:${branch}:${supplement.contentId} is missing; native import must preserve the exact content ID`
+                );
+            }
+            assertContentOwnership(content, supplement.contentId, supplement.contentPath);
+            const patches = supplement.invalidValuePaths.map((path) => {
+                const segments = parseStringLeafPath(path)!;
+                const source = getStringLeaf(supplement.node, segments)!;
+                const target = getStringLeaf(content, segments);
+                if (!target) {
                     throw new Error(
-                        `Parent ${parentPath} is missing for native supplement ${supplement.contentId}`
+                        `Native-imported supplement ${supplement.contentId} has no string leaf at ${path}`
                     );
                 }
-                restoredNode = connection.create<Content>({
-                    ...getRestorableNodeData(sourceNode),
-                    _id: supplement.contentId,
-                    _name: sourceNode._name,
-                    _parentPath: parentPath,
-                } as never);
-            } else {
-                restoredNode = connection.modify<Content>({
-                    key: supplement.contentId,
-                    editor: (targetNode) => {
-                        const restorableData = getRestorableNodeData(sourceNode);
-                        Object.keys(restorableData).forEach((key) => {
-                            (targetNode as unknown as Record<string, unknown>)[key] =
-                                restorableData[key];
-                        });
-                        return targetNode;
-                    },
-                });
-            }
+                return { path, segments, value: source.value };
+            });
+            return { supplement, patches };
+        });
+        return plans.map(({ supplement, patches }) => {
+            const restoredNode = connection.modify<Content>({
+                key: supplement.contentId,
+                editor: (targetNode) => {
+                    assertContentOwnership(targetNode, supplement.contentId, supplement.contentPath);
+                    const leaves = patches.map((patch) => {
+                        const leaf = getStringLeaf(targetNode, patch.segments);
+                        if (!leaf) {
+                            throw new Error(
+                                `Supplement ${supplement.contentId} cannot replace a missing or typed non-string leaf at ${patch.path}`
+                            );
+                        }
+                        return { ...patch, leaf };
+                    });
+                    // Retain XP's typed reference, date and binary editor values everywhere else.
+                    leaves.forEach(({ leaf, value }) => {
+                        leaf.parent[leaf.key] = value;
+                    });
+                    return targetNode;
+                },
+            });
             if (restoredNode._id !== supplement.contentId || restoredNode._path !== supplement.contentPath) {
                 throw new Error(`Supplement verification failed for ${repository}:${branch}:${supplement.contentId}`);
             }
@@ -379,44 +951,7 @@ const normalizeImportPaths = (
     repository: string,
     branch: 'draft' | 'master',
     entries: ImportEntry[]
-) => {
-    if (!REQUIRED_REPO_IDS.includes(repository)) {
-        throw new Error(`Unexpected import repository: ${repository}`);
-    }
-    return runInContext({ repository, branch, asAdmin: true }, () => {
-        const connection = getRepoConnection({ repoId: repository, branch, asAdmin: true });
-        let normalizedPaths = 0;
-        entries
-            .slice()
-            .sort((left, right) => left.paths[branch]!.length - right.paths[branch]!.length)
-            .forEach((entry) => {
-                const expectedPath = entry.paths[branch];
-                if (!expectedPath) {
-                    throw new Error(`Import entry ${entry.contentId} has no ${branch} path`);
-                }
-                const temporaryCollision = connection.get<Content>(
-                    `${expectedPath}${COLLISION_PATH_SUFFIX}`
-                );
-                if (temporaryCollision) {
-                    connection.delete(temporaryCollision._id);
-                }
-                const content = connection.get<Content>(entry.contentId);
-                if (!content || content._path === expectedPath) {
-                    return;
-                }
-                const moved = connection.move({
-                    source: entry.contentId,
-                    target: expectedPath,
-                });
-                const movedContent = connection.get<Content>(entry.contentId);
-                if (!moved || !movedContent || movedContent._path !== expectedPath) {
-                    throw new Error(`Path normalization failed for ${repository}:${branch}:${entry.contentId}`);
-                }
-                normalizedPaths += 1;
-            });
-        return normalizedPaths;
-    });
-};
+) => relocateImportPaths(repository, branch, entries, false).relocatedPaths;
 
 const containsInvalidXmlCharacter = (value: unknown): boolean => {
     if (typeof value === 'string') {
@@ -490,6 +1025,7 @@ const validateImport = (entries: ImportEntry[], supplements: ImportSupplement[])
         });
     });
     return {
+        validationLevel: 'identity-only',
         checkedEntries: entries.reduce((total, entry) => total + entry.branches.length, 0),
         checkedSupplements: supplements.length,
         missingEntries,
@@ -509,16 +1045,68 @@ const validateImport = (entries: ImportEntry[], supplements: ImportSupplement[])
     };
 };
 
-export const post = (req: Request) => {
+const getImportAccessError = () => {
     if (!userCanManageCuratedExports()) {
         return jsonResponse(403, { message: 'System administrator access is required' });
+    }
+    if (!isCuratedImportEnabled()) {
+        return jsonResponse(403, {
+            message: 'Curated import requires an explicitly enabled localhost sandbox',
+        });
+    }
+    return null;
+};
+
+export const get = () => ({
+    ...(getImportAccessError() ||
+        jsonResponse(200, {
+            environment: 'localhost',
+            importEnabled: true,
+            importFormatVersion: 2,
+        })),
+    headers: { 'Cache-Control': 'no-store' },
+});
+
+export const post = (req: Request) => {
+    const accessError = getImportAccessError();
+    if (accessError) {
+        return accessError;
     }
     if (!req.body) {
         return jsonResponse(400, { message: 'A JSON request body is required' });
     }
 
+    let body: RequestBody;
     try {
-        const body = JSON.parse(req.body) as RequestBody;
+        body = JSON.parse(req.body) as RequestBody;
+        validateRequest(body);
+        if (body.action === 'configure-projects' && Array.isArray(body.projects)) {
+            validateProjects(body.projects);
+        }
+    } catch (error) {
+        return jsonResponse(400, { message: `Invalid curated import request: ${error}` });
+    }
+
+    try {
+        if (
+            (body.action === 'repair-metadata' || body.action === 'validate-fidelity') &&
+            body.repository &&
+            body.branch &&
+            body.scope &&
+            Array.isArray(body.expectations)
+        ) {
+            const batch = {
+                repository: body.repository,
+                branch: body.branch,
+                scope: body.scope,
+                expectations: body.expectations,
+                absentContentIds: body.absentContentIds,
+            };
+            const result = body.action === 'repair-metadata'
+                ? repairCuratedTargetBatch(batch)
+                : validateCuratedTargetBatch(batch);
+            return jsonResponse(200, result);
+        }
         if (body.action === 'configure-login') {
             return jsonResponse(200, configureLogin());
         }

@@ -3,6 +3,13 @@
 import { readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
+import { directLocalFetch } from './lib/curated-http.mjs';
+import {
+    assertLocalTargetProcess,
+    assertLocalUrl,
+    LOCAL_MANAGEMENT_URL,
+    verifyLocalImportTarget,
+} from './lib/curated-local-target.mjs';
 
 const getArguments = () => {
     const args = process.argv.slice(2);
@@ -20,9 +27,12 @@ const getArguments = () => {
 
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
-const request = async (url, auth, options = {}) => {
-    const response = await fetch(url, {
+const request = async (url, auth, sandbox, options = {}) => {
+    assertLocalTargetProcess(sandbox);
+    const response = await directLocalFetch(url, {
         ...options,
+        redirect: 'error',
+        signal: AbortSignal.timeout(30000),
         headers: {
             Authorization: `Basic ${Buffer.from(auth).toString('base64')}`,
             'Content-Type': 'application/json',
@@ -40,7 +50,9 @@ const assertRunningSandbox = (sandbox) => {
     const cliState = readFileSync(join(homedir(), '.enonic', '.enonic'), 'utf8');
     const runningSandbox = cliState.match(/^running = "([^"]+)"$/m)?.[1];
     if (runningSandbox !== sandbox) {
-        throw new Error(`Start ${sandbox} before creating the dump; currently running: ${runningSandbox ?? 'none'}`);
+        throw new Error(
+            `Start ${sandbox} before creating the dump; currently running: ${runningSandbox ?? 'none'}`
+        );
     }
 };
 
@@ -57,17 +69,25 @@ const main = async () => {
     }
     assertRunningSandbox(options.sandbox);
 
-    const managementUrl = options['management-url'] ?? 'http://localhost:4848';
-    const { taskId } = await request(`${managementUrl}/system/dump`, auth, {
+    const managementUrl = options['management-url'] ?? LOCAL_MANAGEMENT_URL;
+    assertLocalUrl(managementUrl, LOCAL_MANAGEMENT_URL);
+    await verifyLocalImportTarget({ sandbox: options.sandbox, auth });
+    const { taskId } = await request(`${managementUrl}/system/dump`, auth, options.sandbox, {
         method: 'POST',
         body: JSON.stringify({ name: options.name, includeVersions: false, archive: true }),
     });
 
     let status;
+    const deadline = Date.now() + 30 * 60 * 1000;
     do {
+        if (Date.now() > deadline) {
+            throw new Error('Dump creation exceeded 30 minutes; completion is unverified');
+        }
         await wait(1000);
-        status = await request(`${managementUrl}/task/${taskId}`, auth);
-        process.stdout.write(`\rCreating ${options.name}: ${status.progress.current}/${status.progress.total}`);
+        status = await request(`${managementUrl}/task/${taskId}`, auth, options.sandbox);
+        process.stdout.write(
+            `\rCreating ${options.name}: ${status.progress.current}/${status.progress.total}`
+        );
     } while (status.state === 'WAITING' || status.state === 'RUNNING');
     process.stdout.write('\n');
 

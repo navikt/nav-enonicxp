@@ -19,23 +19,30 @@ test('waits for the management API to accept connections', () => {
     const commands = [];
     waitForManagementApi((command, args, options) => commands.push({ command, args, options }));
 
-    assert.deepEqual(commands, [
-        {
-            command: 'curl',
-            args: [
-                '--silent',
-                '--output',
-                '/dev/null',
-                '--retry',
-                '60',
-                '--retry-connrefused',
-                '--retry-delay',
-                '1',
-                'http://localhost:4848/',
-            ],
-            options: { stdio: 'inherit' },
-        },
-    ]);
+    assert.deepEqual(
+        commands.map(({ command, args, options }) => ({
+            command,
+            args,
+            options: { stdio: options.stdio },
+        })),
+        [
+            {
+                command: 'curl',
+                args: [
+                    '--silent',
+                    '--output',
+                    '/dev/null',
+                    '--retry',
+                    '60',
+                    '--retry-connrefused',
+                    '--retry-delay',
+                    '1',
+                    'http://localhost:4848/',
+                ],
+                options: { stdio: 'inherit' },
+            },
+        ]
+    );
 });
 
 test('uses exceptional Maven coordinates and tolerates an unavailable optional app', () => {
@@ -48,6 +55,8 @@ test('uses exceptional Maven coordinates and tolerates an unavailable optional a
             { key: 'com.enonic.app.contentstudio.plus', version: '1.9.0', required: false },
         ],
         auth: 'su:password',
+        sandbox: 'target',
+        verifyTarget: () => {},
         runCommand(_command, args) {
             commands.push(args);
             return args[3].includes('contentstudio.plus')
@@ -69,6 +78,22 @@ test('uses exceptional Maven coordinates and tolerates an unavailable optional a
         commands[3][3],
         /com\/enonic\/app\/contentstudio\.plus\/1\.9\.0\/contentstudio\.plus-1\.9\.0\.jar$/
     );
+});
+
+test('does not start an optional application which is stopped in the source', () => {
+    let commands = 0;
+    installCuratedApplications({
+        applications: [
+            { key: 'com.enonic.app.xpdoctor', version: '2.3.0', required: false, started: false },
+        ],
+        auth: 'su:synthetic',
+        sandbox: 'target',
+        verifyTarget: () => {},
+        runCommand: () => {
+            commands += 1;
+        },
+    });
+    assert.equal(commands, 0);
 });
 
 test('creates and prepares a missing target sandbox', () => {
@@ -99,6 +124,7 @@ test('creates and prepares a missing target sandbox', () => {
         suPassword: 'temporary-password',
         repositoryRoot,
         homeDirectory,
+        verifyTarget: () => {},
         runCommand(command, args, options) {
             commands.push({ command, args, options });
             if (args[0] === 'sandbox' && args[1] === 'create') {
@@ -126,6 +152,7 @@ test('creates and prepares a missing target sandbox', () => {
     ]);
     assert.deepEqual(commands[1].args, [
         'build',
+        '-PcuratedImportLocal=true',
         '-PxpVersion=7.16.6',
         '-Pversion=2.3.4-test',
     ]);
@@ -150,21 +177,19 @@ test('creates and prepares a missing target sandbox', () => {
         'install',
         '--url',
         'https://repo.enonic.com/repository/public/com/enonic/app/contentstudio/5.3.2/contentstudio-5.3.2.jar',
-        '--auth',
-        'su:temporary-password',
         '--force',
     ]);
-    assert.deepEqual(commands[4].options, { encoding: 'utf8', stdio: 'pipe' });
+    assert.equal(commands[4].options.env.ENONIC_CLI_REMOTE_URL, 'http://localhost:4848');
+    assert.equal(commands[4].options.env.ENONIC_CLI_REMOTE_USER, 'su');
+    assert.equal(commands[4].options.env.ENONIC_CLI_REMOTE_PASS, 'temporary-password');
     assert.deepEqual(commands[5].args, [
         'app',
         'install',
         '--url',
         'https://repo.enonic.com/repository/public/com/enonic/app/xpdoctor/2.3.0/xpdoctor-2.3.0.jar',
-        '--auth',
-        'su:temporary-password',
         '--force',
     ]);
-    assert.deepEqual(commands[5].options, { encoding: 'utf8', stdio: 'pipe' });
+    assert.equal(commands[5].options.env.ENONIC_CLI_REMOTE_URL, 'http://localhost:4848');
     assert.equal(
         readFileSync(join(sandboxPath, 'home/config/system.properties'), 'utf8'),
         'existing.property=true\nxp.suPassword=temporary-password\n'
@@ -189,6 +214,14 @@ test('rejects an existing target with a different XP version', () => {
     const root = mkdtempSync(join(tmpdir(), 'curated-target-'));
     const sandboxPath = join(root, '.enonic/sandboxes/target');
     writeFile(join(sandboxPath, '.enonic'), 'distro = "enonic-xp-mac-arm64-sdk-7.15.0"\n');
+    writeFile(
+        join(sandboxPath, 'home/config/no.nav.navno.cfg'),
+        'env=localhost\ncuratedImportEnabled=true\nserviceSecret=dummyToken\n'
+    );
+    writeFile(
+        join(sandboxPath, 'home/config/com.enonic.xp.cluster.cfg'),
+        'cluster.enabled=false\n'
+    );
 
     assert.throws(
         () =>

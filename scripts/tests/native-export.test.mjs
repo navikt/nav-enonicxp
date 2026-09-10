@@ -1,99 +1,149 @@
 import assert from 'node:assert/strict';
-import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { randomUUID } from 'node:crypto';
+import { mkdirSync, readFileSync, rmSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import { test } from 'node:test';
-import { writeNativeNodeXml } from '../lib/native-export.mjs';
+import { sanitizeXmlString, writeNativeNodeXml } from '../lib/native-export.mjs';
 import { writeManualChildOrders } from '../lib/curated-source-extractor.mjs';
+import { createSourceNode } from './fixtures/curated-source-node.mjs';
 
-const createNode = () => ({
-    _id: 'content-id',
-    _name: 'page',
-    _ts: '2026-08-12T08:00:00Z',
-    _childOrder: '_name ASC',
-    _inheritsPermissions: true,
-    _permissions: [{ principal: 'role:system.everyone', allow: ['READ'], deny: [] }],
-    _indexConfig: {
-        analyzer: 'document_index_default',
-        default: { enabled: true },
-        configs: [],
-        allText: { enabled: true },
-    },
-    type: 'no.nav.navno:content-page',
-    data: { title: 'A & B', openingHours: { from: '09:00', to: '15:30' } },
-    attachment: { name: 'document.pdf', binary: 'document.pdf' },
-});
+const directory = (t) => {
+    const path = resolve('scripts/tests', `.native-export-${randomUUID()}`);
+    mkdirSync(path, { recursive: true });
+    t.after(() => rmSync(path, { recursive: true, force: true }));
+    return path;
+};
 
-test('writes XP native node XML with the original id and escaped data', () => {
-    const directory = mkdtempSync(join(tmpdir(), 'native-export-'));
-    const nodeDirectory = join(directory, 'www.nav.no', 'page', '_');
-    writeNativeNodeXml(nodeDirectory, createNode());
-
-    const xml = readFileSync(join(nodeDirectory, 'node.xml'), 'utf8');
-    assert.match(xml, /<id>content-id<\/id>/);
-    assert.match(xml, /<string name="title">A &amp; B<\/string>/);
-    assert.match(xml, /<localTime name="from">09:00:00\.000<\/localTime>/);
-    assert.match(xml, /<localTime name="to">15:30:00\.000<\/localTime>/);
-    assert.match(xml, /<binaryReference name="binary">document.pdf<\/binaryReference>/);
-    assert.match(xml, /<principal key="role:system.everyone">/);
-});
-
-test('uses native index defaults when XP omits index configuration', () => {
-    const directory = mkdtempSync(join(tmpdir(), 'native-export-'));
-    const nodeDirectory = join(directory, 'www.nav.no', 'page', '_');
-    const { _indexConfig, ...node } = createNode();
-
-    writeNativeNodeXml(nodeDirectory, node);
-
-    const xml = readFileSync(join(nodeDirectory, 'node.xml'), 'utf8');
-    assert.match(xml, /<analyzer>document_index_default<\/analyzer>/);
-    assert.match(xml, /<defaultConfig>\s*<\/defaultConfig>/);
-    assert.match(xml, /<pathIndexConfigs>\s*<\/pathIndexConfigs>/);
-});
-
-test('adds the node to an existing parent manual child order', () => {
-    const directory = mkdtempSync(join(tmpdir(), 'native-export-'));
-    const parentSystemDirectory = join(directory, 'www.nav.no', '_');
-    const nodeDirectory = join(directory, 'www.nav.no', 'page', '_');
-    writeFileSync(join(directory, 'placeholder'), '');
-    writeNativeNodeXml(parentSystemDirectory, { ...createNode(), _id: 'root', _name: 'www.nav.no' });
-    writeFileSync(join(parentSystemDirectory, 'manualChildOrder.txt'), 'first\n');
-    writeNativeNodeXml(nodeDirectory, createNode());
-
-    assert.equal(readFileSync(join(parentSystemDirectory, 'manualChildOrder.txt'), 'utf8'), 'first\npage\n');
-    assert.equal(existsSync(join(nodeDirectory, 'node.xml')), true);
-});
-
-test('writes selected children in manual order', () => {
-    const directory = mkdtempSync(join(tmpdir(), 'native-export-'));
-    const parent = {
-        ...createNode(),
-        _path: '/content/www.nav.no/menu',
-        _name: 'menu',
-        _childOrder: '_manualordervalue DESC, _timestamp DESC',
-    };
-    const first = {
-        ...createNode(),
-        _id: 'first',
-        _path: '/content/www.nav.no/menu/first',
-        _name: 'first',
-        _manualOrderValue: 20,
-    };
-    const second = {
-        ...createNode(),
-        _id: 'second',
-        _path: '/content/www.nav.no/menu/second',
-        _name: 'second',
-        _manualOrderValue: 10,
-    };
-    [parent, first, second].forEach((node) =>
-        writeNativeNodeXml(join(directory, node._path.slice('/content/'.length), '_'), node)
+test('writes actual XP types without guessing from field names', (t) => {
+    const path = directory(t);
+    const source = createSourceNode();
+    source.properties.push(
+        { name: 'from', type: 'string', value: 'Not a time' },
+        { name: 'link', type: 'string', value: 'Not a reference' },
+        { name: 'notDate', type: 'dateTime', value: '2026-09-08T00:00:00.000Z' },
+        { name: 'maximum', type: 'long', value: '9223372036854775807' },
+        { name: 'decimal', type: 'double', value: '2.5' },
+        { name: 'enabled', type: 'boolean', value: 'true' },
+        { name: 'lineEndings', type: 'string', value: 'first\r\nsecond' },
+        { name: 'location', type: 'geoPoint', value: '59.9,10.7' },
+        { name: 'local', type: 'localDateTime', value: '2026-09-08T00:00:00.000Z' },
+        { name: 'url', type: 'link', value: '/content/path' }
     );
+    writeNativeNodeXml(path, source);
+    const xml = readFileSync(join(path, 'node.xml'), 'utf8');
+    assert.match(xml, /<reference name="icon">image-id<\/reference>/);
+    assert.match(xml, /<string name="link">Not a reference<\/string>/);
+    assert.match(xml, /<string name="from">Not a time<\/string>/);
+    assert.match(xml, /<dateTime name="notDate">2026-09-08T00:00:00\.000Z<\/dateTime>/);
+    assert.match(xml, /<long name="maximum">9223372036854775807<\/long>/);
+    assert.match(xml, /<localDate name="date">2026-09-08Z<\/localDate>/);
+    assert.match(xml, /A &amp; B 😀/);
+    assert.match(xml, /first&#13;\nsecond/);
+    assert.match(xml, /<path>data\.title<\/path>/);
+});
 
-    writeManualChildOrders(directory, [parent, second, first]);
+test('preserves property cardinality and typed nulls', (t) => {
+    const path = directory(t);
+    const source = createSourceNode();
+    source.properties = [
+        { name: 'target', type: 'reference', value: null },
+        { name: 'target', type: 'reference', value: 'id' },
+        { name: 'group', type: 'property-set', value: null },
+        { name: 'group', type: 'property-set', value: [] },
+    ];
+    writeNativeNodeXml(path, source);
+    const xml = readFileSync(join(path, 'node.xml'), 'utf8');
+    assert.match(xml, /<reference isNull="true" name="target"\/>/);
+    assert.match(xml, /<reference name="target">id<\/reference>/);
+    assert.match(xml, /<property-set isNull="true" name="group"\/>/);
+    assert.match(xml, /<property-set name="group">\s*<\/property-set>/);
+});
 
+test('sanitizes text values including attachment text without damaging supplementary Unicode', (t) => {
+    const path = directory(t);
+    const source = createSourceNode();
+    source.properties = [
+        {
+            name: 'attachment',
+            type: 'property-set',
+            value: [
+                { name: 'binary', type: 'binaryReference', value: 'file.pdf' },
+                { name: 'text', type: 'string', value: '😀before\u0002after𐐷\ud800' },
+            ],
+        },
+    ];
+    writeNativeNodeXml(path, source);
+    const xml = readFileSync(join(path, 'node.xml'), 'utf8');
+    assert.match(xml, /😀beforeafter𐐷/);
+    assert.match(xml, /<binaryReference name="binary">file.pdf<\/binaryReference>/);
+    assert.equal(sanitizeXmlString('\ud800\udc00\ud800\u0000\ufffe'), '𐀀');
+    const expectation = JSON.parse(readFileSync(join(path, 'curated-metadata.json'), 'utf8'));
+    assert.equal(expectation.formatVersion, 2);
+    assert.equal(expectation.properties[0].value[1].value, '😀beforeafter𐐷');
+});
+
+test('rejects missing type/index metadata and JSON number coercion', (t) => {
+    const path = directory(t);
+    assert.throws(() => writeNativeNodeXml(path, createSourceNode().node), /typed curated source/);
+    const source = createSourceNode();
+    delete source.node._indexConfig;
+    assert.throws(() => writeNativeNodeXml(path, source), /index configuration/);
+    const coerced = createSourceNode();
+    coerced.properties = [{ name: 'integer', type: 'long', value: 9223372036854775807 }];
+    assert.throws(() => writeNativeNodeXml(path, coerced), /lexical XP value/);
+});
+
+test('persists metadata for existing-node repair instead of inventing a manualOrderValue data property', (t) => {
+    const path = directory(t);
+    const source = createSourceNode({ _ts: '2026-09-08T08:00:00.123456789Z' });
+    source.manualOrderValue = '9223372036854775807';
+    writeNativeNodeXml(path, source);
+    assert.doesNotMatch(readFileSync(join(path, 'node.xml'), 'utf8'), /name="manualOrderValue"/);
+    assert.match(
+        readFileSync(join(path, 'node.xml'), 'utf8'),
+        /<timestamp>2026-09-08T08:00:00\.123456789Z<\/timestamp>/
+    );
     assert.equal(
-        readFileSync(join(directory, 'www.nav.no', 'menu', '_', 'manualChildOrder.txt'), 'utf8'),
-        'first\nsecond\n'
+        JSON.parse(readFileSync(join(path, 'curated-metadata.json'), 'utf8')).manualOrderValue,
+        '9223372036854775807'
     );
 });
+
+for (const direction of ['DESC', 'ASC']) {
+    test(`writes exact 64-bit manual child order ${direction}`, (t) => {
+        const root = directory(t);
+        const parent = createSourceNode({
+            _id: 'parent',
+            _path: '/content/www.nav.no/menu',
+            _name: 'menu',
+            _childOrder: `_manualordervalue ${direction}, _timestamp DESC`,
+        });
+        const first = createSourceNode({
+            _id: 'first',
+            _path: '/content/www.nav.no/menu/first',
+            _name: 'first',
+        });
+        first.manualOrderValue = '9223372036854775807';
+        const second = createSourceNode({
+            _id: 'second',
+            _path: '/content/www.nav.no/menu/second',
+            _name: 'second',
+        });
+        second.manualOrderValue = '9223372036854775806';
+        [parent, first, second].forEach((source) =>
+            writeNativeNodeXml(join(root, source.node._path.slice('/content/'.length), '_'), source)
+        );
+        writeManualChildOrders(root, [parent, second, first]);
+        assert.equal(
+            readFileSync(join(root, 'www.nav.no/menu/_/manualChildOrder.txt'), 'utf8'),
+            direction === 'DESC' ? 'first\nsecond\n' : 'second\nfirst\n'
+        );
+        const metadata = JSON.parse(
+            readFileSync(join(root, 'www.nav.no/menu/_/curated-metadata.json'), 'utf8')
+        );
+        assert.deepEqual(
+            metadata.manualChildOrder.map(({ contentId }) => contentId),
+            direction === 'DESC' ? ['first', 'second'] : ['second', 'first']
+        );
+    });
+}

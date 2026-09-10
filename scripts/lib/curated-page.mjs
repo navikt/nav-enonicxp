@@ -1,5 +1,3 @@
-import { getXpSessionCookie } from './xp-session.mjs';
-
 const PROJECT_REPOSITORIES = {
     default: 'com.enonic.cms.default',
     'navno-engelsk': 'com.enonic.cms.navno-engelsk',
@@ -43,29 +41,13 @@ export const parseContentStudioPageUrl = (value) => {
     return { repository, branch: 'draft', contentId: match[2] };
 };
 
-export const resolveCuratedPage = async ({
-    page,
-    sourceServiceUrl,
-    auth,
-    fetchRequest = fetch,
-    getSessionCookie = getXpSessionCookie,
-}) => {
+export const resolveCuratedPage = ({ page }) => {
     const contentStudioPage = parseContentStudioPageUrl(page);
-    if (!contentStudioPage) {
-        new URL(page);
-        return page;
+    if (contentStudioPage) {
+        return contentStudioPage;
     }
-
-    const cookie = await getSessionCookie(sourceServiceUrl, auth);
-    const url = new URL(sourceServiceUrl);
-    Object.entries(contentStudioPage).forEach(([name, value]) => url.searchParams.set(name, value));
-    const response = await fetchRequest(url, { headers: { Cookie: cookie } });
-    const result = await response.json();
-    if (!response.ok) {
-        throw new Error(`Could not resolve Content Studio page: ${response.status} ${JSON.stringify(result)}`);
+    if (!['http:', 'https:'].includes(new URL(page).protocol)) {
+        throw new Error('Page URLs must use HTTP or HTTPS');
     }
-    if (!result.node?._path?.startsWith('/content/www.nav.no')) {
-        throw new Error('Content Studio page resolved outside the curated content root');
-    }
-    return result.node._path;
+    return page;
 };

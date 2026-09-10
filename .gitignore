@@ -2,9 +2,8 @@
 .curated/
 *.manifest.json
 *.import.sh
-curated-*.tar.gz
-prod-curated-*.tar.gz
-prod_curated_*.zip
+/*.tar.gz
+/*.zip
 
 ### OSX ###
 .DS_Store

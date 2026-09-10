@@ -1,21 +1,14 @@
 #!/usr/bin/env node
 
-import { execFileSync, spawnSync } from 'node:child_process';
-import {
-    existsSync,
-    mkdirSync,
-    readdirSync,
-    readFileSync,
-    rmSync,
-    statSync,
-    writeFileSync,
-} from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { chmodSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { writeNativeNodeXml } from './lib/native-export.mjs';
+import { fileURLToPath } from 'node:url';
+import { extractCuratedSource } from './lib/curated-source-extractor.mjs';
 import { getXpSessionCookie } from './lib/xp-session.mjs';
+import { fetchXp } from './lib/curated-http.mjs';
 
 const CONTENT_ROOT_PATH = '/content/www.nav.no';
-const RECURSIVE_EXPORT_REASONS = new Set(['office-editorial', 'decorator-menu']);
 const REQUIRED_PROJECTS = [
     { id: 'default', language: 'no', parents: [] },
     { id: 'navno-engelsk', language: 'en', parents: ['default'] },
@@ -54,11 +47,12 @@ const printUsage = () => {
   ENONIC_AUTH='user:password' node scripts/create-curated-export.mjs \\
     --input popular-paths.txt \\
     --service-url https://portal-admin.example.no/_/service/no.nav.navno/curatedExportManifest \\
-        --management-url https://xp-management.example.no \
     --bundle prod-curated-YYYY-MM-DD \
-    [--export-dir /path/to/XP_HOME/data/export] [--dry] [--plan-only] [--allow-missing-applications]
+    [--export-dir /new/local/export-directory] [--plan-only] [--allow-missing-applications]
 
-Input can be a JSON array or a text file with one URL/path per line.`);
+Input can be a JSON array or a text file with one URL/path per line.
+Editor selections use --seeds-file with repository/branch/contentId objects.
+Both remote and local sources are read through the source service, never native management export.`);
 };
 
 const normalizePath = (value) => {
@@ -99,7 +93,7 @@ const createExportName = (bundle, entry, index) => {
     return `${bundle}-${String(index + 1).padStart(2, '0')}-${locale}-${entry.sourceBranch}`;
 };
 
-const createNativeExports = (bundle, entries, sanitizedSupplements) => {
+const createNativeExports = (bundle, entries) => {
     const exportEntries = entries.flatMap((entry) =>
         entry.branches.map((sourceBranch) => ({
             ...entry,
@@ -128,108 +122,8 @@ const createNativeExports = (bundle, entries, sanitizedSupplements) => {
             contentPath,
             importPath: dirname(contentPath),
             selectedContentPaths: group.entries.map(({ sourcePath }) => sourcePath),
-            recursiveContentPaths: group.entries
-                .filter(({ reason }) => RECURSIVE_EXPORT_REASONS.has(reason))
-                .map(({ sourcePath }) => sourcePath),
-            supplementContentPaths: sanitizedSupplements
-                .filter(
-                    ({ repoId, branch }) =>
-                        repoId === group.repoId && branch === group.sourceBranch
-                )
-                .map(({ contentPath }) => contentPath),
             exportName: createExportName(bundle, group, index),
         };
-    });
-};
-
-const findNodeXmlPaths = (path) =>
-    readdirSync(path).flatMap((name) => {
-        const childPath = resolve(path, name);
-        if (statSync(childPath).isDirectory()) {
-            return findNodeXmlPaths(childPath);
-        }
-        return name === 'node.xml' ? [childPath] : [];
-    });
-
-const filterNativeExport = (exportDir, nativeExport) => {
-    const exportPath = resolve(exportDir, nativeExport.exportName);
-    const nodeXmlPaths = findNodeXmlPaths(exportPath).sort(
-        (left, right) => left.split('/').length - right.split('/').length
-    );
-    if (nodeXmlPaths.length === 0) {
-        throw new Error(`Native export ${nativeExport.exportName} contains no node.xml`);
-    }
-
-    const contentRootPath = dirname(dirname(nodeXmlPaths[0]));
-    const selectedContentPaths = new Set(nativeExport.selectedContentPaths);
-    const retainedContentPaths = new Set();
-    const shouldRetainPath = (contentPath) =>
-        selectedContentPaths.has(contentPath) ||
-        nativeExport.selectedContentPaths.some((path) => path.startsWith(`${contentPath}/`)) ||
-        nativeExport.recursiveContentPaths.some(
-            (path) => contentPath === path || contentPath.startsWith(`${path}/`)
-        );
-    const filterContentPath = (directoryPath, contentPath) => {
-        retainedContentPaths.add(contentPath);
-        readdirSync(directoryPath)
-            .filter((name) => name !== '_')
-            .forEach((name) => {
-                const childDirectoryPath = resolve(directoryPath, name);
-                const childContentPath = `${contentPath}/${name}`;
-                if (!statSync(childDirectoryPath).isDirectory() || !shouldRetainPath(childContentPath)) {
-                    rmSync(childDirectoryPath, { recursive: true, force: true });
-                    return;
-                }
-                filterContentPath(childDirectoryPath, childContentPath);
-            });
-
-        const childOrderPath = resolve(directoryPath, '_', 'manualChildOrder.txt');
-        if (existsSync(childOrderPath)) {
-            const retainedChildNames = readdirSync(directoryPath).filter((name) => name !== '_');
-            const childOrder = readFileSync(childOrderPath, 'utf8')
-                .split(/\r?\n/)
-                .filter((name) => retainedChildNames.includes(name));
-            if (childOrder.length > 0) {
-                writeFileSync(childOrderPath, `${childOrder.join('\n')}\n`);
-            } else {
-                writeFileSync(childOrderPath, '');
-            }
-        }
-    };
-    filterContentPath(contentRootPath, nativeExport.contentPath);
-
-    const missingContentPaths = nativeExport.selectedContentPaths.filter(
-        (contentPath) =>
-            !retainedContentPaths.has(contentPath) &&
-            !nativeExport.supplementContentPaths.includes(contentPath)
-    );
-    if (missingContentPaths.length > 0) {
-        throw new Error(
-            `Native export ${nativeExport.exportName} is missing selected paths after filtering: ${missingContentPaths.join(', ')}`
-        );
-    }
-};
-
-const writeSupplementNodeXml = (exportDir, nativeExport, supplement) => {
-    const sourceNode = supplement.node;
-    if (sourceNode.attachment || sourceNode.attachments) {
-        throw new Error(`Supplement ${supplement.contentId} contains unsupported attachments`);
-    }
-    const relativePath = supplement.contentPath.slice('/content/'.length);
-    const nodeDirectory = resolve(exportDir, nativeExport.exportName, relativePath, '_');
-    writeNativeNodeXml(nodeDirectory, sourceNode);
-};
-
-const writeSupplementExports = (exportDir, nativeExports, supplements) => {
-    supplements.forEach((supplement) => {
-        const nativeExport = nativeExports.find(
-            ({ repoId, sourceBranch }) =>
-                repoId === supplement.repoId && sourceBranch === supplement.branch
-        );
-        if (!nativeExport) {
-            throw new Error(`No native export found for supplement ${supplement.repoId}:${supplement.branch}`);
-        }
-        writeSupplementNodeXml(exportDir, nativeExport, supplement);
     });
 };
 
@@ -241,7 +135,8 @@ const validateManifest = (manifest, options) => {
         throw new Error(`Manifest is missing ${manifest.missingContentTypes.length} content types`);
     }
     const unavailableApplications = manifest.applications.filter(
-        ({ installed, started, version }) => !installed || !started || !version
+        ({ required, installed, started, version }) =>
+            required !== false && (!installed || !started || !version)
     );
     if (unavailableApplications.length > 0 && !options['allow-missing-applications']) {
         throw new Error(
@@ -277,8 +172,8 @@ const validateManifest = (manifest, options) => {
             entry.branches.some(
                 (branch) =>
                     typeof entry.paths[branch] !== 'string' ||
-                    !entry.paths[branch].startsWith(`${CONTENT_ROOT_PATH}/`) &&
-                    entry.paths[branch] !== CONTENT_ROOT_PATH
+                    (!entry.paths[branch].startsWith(`${CONTENT_ROOT_PATH}/`) &&
+                        entry.paths[branch] !== CONTENT_ROOT_PATH)
             )
         ) {
             throw new Error(
@@ -318,16 +213,18 @@ set -eu
 
 : "\${ENONIC_AUTH:?ENONIC_AUTH must use the format user:password}"
 : "\${CURATED_IMPORT_SERVICE_URL:?Set CURATED_IMPORT_SERVICE_URL to the target curatedExportImport service}"
+: "\${CURATED_TARGET_SANDBOX:?Set CURATED_TARGET_SANDBOX to the local target sandbox}"
 
 node scripts/import-curated-export.mjs \
     --manifest '${bundle}.manifest.json' \
     --service-url "$CURATED_IMPORT_SERVICE_URL" \
+    --sandbox "$CURATED_TARGET_SANDBOX" \
     "$@"
 `;
 };
 
 const postJson = async (url, body, headers = {}) => {
-    const response = await fetch(url, {
+    const response = await fetchXp(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -354,32 +251,26 @@ const postJson = async (url, body, headers = {}) => {
 
 const main = async () => {
     const options = getArguments();
-    if (options['write-supplements-only']) {
-        if (!options.manifest || !options['export-dir']) {
-            throw new Error('--write-supplements-only requires --manifest and --export-dir');
-        }
-        const manifest = JSON.parse(readFileSync(options.manifest, 'utf8'));
-        validateManifest(manifest, options);
-        writeSupplementExports(options['export-dir'], manifest.exports, manifest.sanitizedSupplements);
-        console.log(`Wrote ${manifest.sanitizedSupplements.length} native supplement nodes`);
-        return;
+    if (options['write-supplements-only'] || options['management-url'] || options.dry) {
+        throw new Error(
+            'Native management export and supplement-only repair are no longer supported. Use --plan-only or --export-dir with a fresh local directory; source data is fetched through the read-only service.'
+        );
     }
-    if (!options.input || !options['service-url'] || !options.bundle) {
+    if ((!options.input && !options['seeds-file']) || !options['service-url'] || !options.bundle) {
         printUsage();
         process.exitCode = 1;
         return;
     }
-    if (!/^[a-zA-Z0-9._-]+$/.test(options.bundle)) {
-        throw new Error('--bundle may only contain letters, numbers, dots, underscores, and hyphens');
+    if (!/^(?!\.{1,2}$)[a-zA-Z0-9._-]+$/.test(options.bundle)) {
+        throw new Error(
+            '--bundle may only contain letters, numbers, dots, underscores, and hyphens'
+        );
     }
-    if (!options.dry && !options['plan-only'] && !options['export-dir']) {
+    if (!options['plan-only'] && !options['export-dir']) {
         throw new Error('--export-dir is required when creating the archive');
     }
-    if (!options['plan-only'] && !options['management-url']) {
-        throw new Error('--management-url is required when running native exports');
-    }
-    if (options['management-url']) {
-        new URL(options['management-url']);
+    if (!options['plan-only'] && existsSync(options['export-dir'])) {
+        throw new Error('--export-dir must be a new local directory');
     }
 
     const auth = process.env.ENONIC_AUTH;
@@ -387,80 +278,63 @@ const main = async () => {
         throw new Error('ENONIC_AUTH must be set to user:password');
     }
 
-    const paths = readPaths(options.input);
+    const paths = options.input ? readPaths(options.input) : [];
+    const seeds = options['seeds-file']
+        ? JSON.parse(readFileSync(options['seeds-file'], 'utf8'))
+        : [];
+    if (!Array.isArray(seeds)) {
+        throw new Error(
+            '--seeds-file must contain an array of repository/branch/contentId selections'
+        );
+    }
     const sessionCookie = await getXpSessionCookie(options['service-url'], auth);
     const response = await postJson(
         options['service-url'],
-        { paths, scope: options.scope ?? 'full' },
+        { paths, seeds, scope: options.scope ?? 'full' },
         { Cookie: sessionCookie }
     );
 
     const manifest = response.body;
     if (!response.ok) {
-        throw new Error(`Manifest service returned ${response.status}: ${JSON.stringify(manifest)}`);
+        throw new Error(
+            `Manifest service returned ${response.status}: ${JSON.stringify(manifest)}`
+        );
     }
     validateManifest(manifest, options);
 
-    const nativeExports = createNativeExports(
-        options.bundle,
-        manifest.entries,
-        manifest.sanitizedSupplements
-    );
+    const nativeExports = createNativeExports(options.bundle, manifest.entries);
     const outputManifest = {
         ...manifest,
+        formatVersion: 1,
         bundle: options.bundle,
         exports: nativeExports,
     };
     const manifestPath = `${options.bundle}.manifest.json`;
-    writeFileSync(manifestPath, `${JSON.stringify(outputManifest, null, 2)}\n`);
-
-    for (const entry of options['plan-only'] ? [] : nativeExports) {
-        const args = [
-            'export',
-            '-t',
-            entry.exportName,
-            '--path',
-            `${entry.repoId}:${entry.sourceBranch}:${entry.contentPath}`,
-            '--skip-versions',
-            '--force',
-            '--auth',
-            auth,
-        ];
-        if (options.dry) {
-            args.push('--dry');
-        }
-
-        console.log(`Exporting ${entry.repoId}:${entry.sourceBranch}:${entry.contentPath}`);
-        const exportResult = spawnSync('enonic', args, {
-            encoding: 'utf8',
-            env: {
-                ...process.env,
-                ENONIC_CLI_REMOTE_URL: options['management-url'],
-            },
-        });
-        process.stdout.write(exportResult.stdout || '');
-        process.stderr.write(exportResult.stderr || '');
-        if (exportResult.status !== 0) {
-            const exportOutput = `${exportResult.stdout || ''}\n${exportResult.stderr || ''}`;
-            const isXp7ExportErrorsDecodeFailure =
-                exportOutput.includes('cannot unmarshal string into Go struct field') &&
-                exportOutput.includes('exportErrors');
-            if (!isXp7ExportErrorsDecodeFailure || options.dry) {
-                throw new Error(`Native export failed for ${entry.exportName}`);
+    if (!options['plan-only']) {
+        const sourceUrl = new URL(options['source-service-url'] ?? options['service-url']);
+        if (!options['source-service-url']) {
+            if (!sourceUrl.pathname.endsWith('/curatedExportManifest')) {
+                throw new Error('Set --source-service-url when using a custom manifest route');
             }
-            console.warn(
-                `XP reported export errors for ${entry.exportName}; validating selected paths against sanitized supplements`
+            sourceUrl.pathname = sourceUrl.pathname.replace(
+                /curatedExportManifest$/,
+                'curatedExportSource'
             );
         }
-        if (!options.dry) {
-            filterNativeExport(options['export-dir'], entry);
-        }
+        const extraction = await extractCuratedSource({
+            manifest: outputManifest,
+            sourceServiceUrl: sourceUrl.href,
+            auth,
+            exportDirectory: resolve(options['export-dir']),
+        });
+        console.log(
+            `Extracted ${extraction.nodeCount} nodes and ${extraction.binaryCount} binaries`
+        );
     }
-    if (!options.dry && !options['plan-only']) {
-        writeSupplementExports(options['export-dir'], nativeExports, manifest.sanitizedSupplements);
-    }
+    writeFileSync(manifestPath, `${JSON.stringify(outputManifest, null, 2)}\n`);
+    chmodSync(manifestPath, 0o600);
 
-    if (!options.dry && !options['plan-only']) {
+    if (!options['plan-only']) {
         const importScriptPath = `${options.bundle}.import.sh`;
         const archivePath = resolve(`${options.bundle}.tar.gz`);
         writeFileSync(importScriptPath, createImportScript(options.bundle), {
@@ -478,12 +352,21 @@ const main = async () => {
                 process.cwd(),
                 manifestPath,
                 importScriptPath,
+                '-C',
+                fileURLToPath(new URL('../', import.meta.url)),
                 'scripts/import-curated-export.mjs',
+                'scripts/lib/curated-auth.mjs',
+                'scripts/lib/curated-http.mjs',
                 'scripts/lib/curated-import-errors.mjs',
+                'scripts/lib/curated-import-files.mjs',
+                'scripts/lib/curated-import-expectations.mjs',
+                'scripts/lib/curated-local-target.mjs',
                 'scripts/lib/curated-projects.mjs',
+                'scripts/lib/xp-session.mjs',
             ],
             { stdio: 'inherit' }
         );
+        chmodSync(archivePath, 0o600);
         console.log(`Created bundle archive ${archivePath}`);
     }
 
@@ -494,10 +377,14 @@ const main = async () => {
         console.warn(`Unresolved popular paths: ${manifest.unresolvedPaths.length}`);
     }
     if (manifest.missingContentTypes.length > 0) {
-        console.warn(`Content types without a published representative: ${manifest.missingContentTypes.join(', ')}`);
+        console.warn(
+            `Content types without a published representative: ${manifest.missingContentTypes.join(', ')}`
+        );
     }
     if (manifest.excludedDependencies.length > 0) {
-        console.warn(`Excluded broad container dependencies: ${manifest.excludedDependencies.length}`);
+        console.warn(
+            `Excluded broad container dependencies: ${manifest.excludedDependencies.length}`
+        );
     }
 };
 
