@@ -3,6 +3,7 @@ import { ContentNode } from '../../../../types/content-types/content-config';
 import { getSearchDocumentContentType, SearchDocumentContentType } from './content-type';
 import { logger } from '../../../utils/logging';
 import { forceArray } from '../../../utils/array-utils';
+import { NAVNO_NODE_ROOT_PATH } from '../../../constants';
 
 export type SearchDocumentMetatag =
     | 'nyhet'
@@ -87,17 +88,17 @@ const isPressemelding = (content: ContentNode) =>
     content.type === 'no.nav.navno:main-article' && content.data.contentType === 'pressRelease';
 
 const isStatistikk = (content: ContentNode) =>
-    content._path.startsWith('/content/www.nav.no/no/nav-og-samfunn/statistikk') ||
+    content._path.startsWith(NAVNO_NODE_ROOT_PATH + '/no/nav-og-samfunn/statistikk') ||
     content.type === 'no.nav.navno:large-table';
 
 const isAnalyse = (content: ContentNode) =>
-    content._path.startsWith('/content/www.nav.no/no/nav-og-samfunn/kunnskap');
+    content._path.startsWith(NAVNO_NODE_ROOT_PATH + '/no/nav-og-samfunn/kunnskap');
 
 const pressePaths = [
     // "innhold-til-person-forside" news are included for historical reasons. Can be removed if/when the news under
     // this folder are moved to a more logical parent folder
-    '/content/www.nav.no/no/person/innhold-til-person-forside/nyheter',
-    '/content/www.nav.no/no/samarbeidspartner/presse',
+    NAVNO_NODE_ROOT_PATH + '/no/person/innhold-til-person-forside/nyheter',
+    NAVNO_NODE_ROOT_PATH + '/no/samarbeidspartner/presse',
 ] as const;
 
 const isPresse = (content: ContentNode) =>

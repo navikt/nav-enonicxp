@@ -1,6 +1,94 @@
 <widget >
-	<div id="admin-widget" style="background-color: white; padding: 1rem; align-items: center; font-size: 1rem;">
-		<h1 style="margin-top: 0; margin-bottom: 1.5rem" th:text='${displayName}'>Overskrift</h1>
-		<div style="max-width: 45rem" th:utext="${text}"></div>
+	<style>
+		#admin-widget {
+          max-width: 45rem;
+          line-height: 1.5;
+          background-color: white;
+          padding: 1rem;
+          align-items: center;
+          font-size: 1rem;
+        
+          details {
+            display: grid;
+            grid-template-columns: 24px 1fr;
+            gap: 0 0.25rem;
+            border-block: 1px solid gray;
+        
+            & ~ details {
+              margin-block-start: -1px;
+            }
+            summary {
+              grid-column: 1 / span 2;
+              display: inline-grid;
+              grid-template-columns: subgrid;
+              cursor: pointer;
+              text-align: left;
+        
+              svg {
+                align-self: baseline;
+                translate: 0 0.875rem;
+                height: 1.5rem;
+                width: 1.5rem;
+                flex-shrink: 0;
+                transition: scale .25s cubic-bezier(.2, 0, 0, 1);
+              }
+          
+              h3 {
+                margin-block: 0.75rem;
+              }
+            }
+           
+            &::details-content {
+              grid-column: 2;
+            }
+            
+            &[open] {
+              padding-bottom: 1.5rem;
+            }
+            
+            &[open] summary svg {
+              scale: 1 -1;
+            }
+          
+          }
+        
+          h1, h2, h3, h4 {
+            line-height: 1.33;
+          }
+          h1 {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+          }
+          h2 {
+            font-size: 1.5rem;
+          }
+          h3 {
+            font-size: 1.25rem;
+          }
+          h4 {
+            font-size: 1rem;
+          }
+          section {
+            margin-top: 1rem;
+          }
+        }
+	</style>
+
+	<div id="admin-widget">
+		<h1 th:text="${displayName}"></h1>
+		<section th:utext="${text}"></section>
+		<section th:if="${subSections}">
+			<details th:each="subSection: ${subSections}">
+				<summary>
+					<svg aria-hidden="true" focusable="false" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.5 10L12 15.5L17.5 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+					</svg>
+					<h3 th:text="${subSection.displayName}"></h3>
+				</summary>
+				<div th:utext="${subSection.data.text}"></div>
+				<div th:utext="${subSection.data.subText}"></div>
+			</details>
+		</section>
+		<section th:utext="${subText}"></section>
 	</div>
 </widget>
