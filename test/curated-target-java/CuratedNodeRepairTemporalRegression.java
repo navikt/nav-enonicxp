@@ -122,6 +122,7 @@ public final class CuratedNodeRepairTemporalRegression {
         data.addReference("reference", Reference.from("other-content"));
         data.addBinaryReference("file", BinaryReference.from("file.pdf"));
         data.addInstant("optional", null);
+        data.addSet("publish").addInstant("to", null);
         final PropertySet nested = data.addSet("nested");
         nested.addInstant("created", NESTED.truncatedTo(ChronoUnit.MILLIS));
         nested.addString("label", "nested unchanged");
@@ -160,6 +161,8 @@ public final class CuratedNodeRepairTemporalRegression {
         scalar(properties, "reference", "reference", "other-content");
         scalar(properties, "file", "binaryReference", "file.pdf");
         scalar(properties, "optional", "dateTime", null);
+        final ArrayNode publish = properties.addObject().put("name", "publish").put("type", "property-set").putArray("value");
+        scalar(publish, "to", "dateTime", null);
         final ArrayNode nested = properties.addObject().put("name", "nested").put("type", "property-set").putArray("value");
         scalar(nested, "created", "dateTime", NESTED.toString());
         scalar(nested, "label", "string", "nested unchanged");
@@ -245,6 +248,9 @@ public final class CuratedNodeRepairTemporalRegression {
               "Nested temporal precision lost");
         check(data.getProperty("optional", 0).getValue().isNull() && data.getProperty("nested", 1).getValue().isNull(),
               "Typed nulls or array cardinality changed");
+        check(data.getSet("publish").getProperty("to", 0).getValue().isNull() &&
+              data.getSet("publish").getProperty("to", 0).getType().equals(com.enonic.xp.data.ValueTypes.DATE_TIME),
+              "Unbounded publish.to must remain a present dateTime null");
         check(repaired.getAttachedBinaries().equals(source.getAttachedBinaries()), "Binary references or blob keys changed");
         check(NODES.get("unrelated") == unrelated, "Unselected content changed");
         REPAIR.validate(input);
@@ -261,6 +267,9 @@ public final class CuratedNodeRepairTemporalRegression {
         rejected(tree -> replace(tree, "localTime", ValueFactory.newLocalTime(LocalTime.parse("01:02:03.000000987"))));
         rejected(tree -> replace(tree, "instant", ValueFactory.newDateTime(null)));
         rejected(tree -> replace(tree, "optional", ValueFactory.newDateTime(INSTANT)));
+        rejected(tree -> tree.getSet("publish").removeProperty("to"));
+        rejected(tree -> tree.getSet("publish").getProperty("to", 0).setValue(ValueFactory.newString(null)));
+        rejected(tree -> tree.getSet("publish").getProperty("to", 0).setValue(ValueFactory.newDateTime(INSTANT)));
         rejected(tree -> tree.addString("extra", "must not be removed"));
 
         reset();

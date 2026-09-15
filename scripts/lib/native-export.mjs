@@ -61,11 +61,12 @@ export const updateNativeExpectation = (nodeDirectory, update) => {
     writeFileSync(path, JSON.stringify(expectation));
 };
 
-const serializeProperty = (property, indentation) => {
+const serializeProperty = (property, indentation, parentPath) => {
     if (!property || typeof property.name !== 'string' || !PROPERTY_TYPES.has(property.type)) {
         throw new Error('Native export requires explicit XP property names and types');
     }
     const { name, type, value } = property;
+    const propertyPath = `${parentPath}.${name}`;
     if (sanitizeXmlString(name) !== name) {
         throw new Error(`Invalid XML property name: ${JSON.stringify(name)}`);
     }
@@ -79,12 +80,12 @@ const serializeProperty = (property, indentation) => {
             throw new Error(`Expected typed property-set children at ${name}`);
         }
         return `${indent}<property-set ${attributes}>\n${value
-            .map((child) => serializeProperty(child, indentation + 4))
+            .map((child) => serializeProperty(child, indentation + 4, propertyPath))
             .join('')}${indent}</property-set>\n`;
     }
     if (typeof value !== 'string') {
         throw new Error(
-            `Expected an exact lexical XP value at ${name}; numbers must not pass through JSON doubles`
+            `Expected an exact lexical XP value at ${propertyPath} (XP type ${type}, received ${typeof value}); numbers must not pass through JSON doubles`
         );
     }
     const sanitized = sanitizeXmlString(value);
@@ -150,7 +151,11 @@ export const writeNativeNodeXml = (nodeDirectory, source) => {
         </principal>\n`
         )
         .join('');
-    const data = source.properties.map((property) => serializeProperty(property, 8)).join('');
+    const data = source.properties
+        .map((property) =>
+            serializeProperty(property, 8, `${sourceNode._path} [${sourceNode._id}]`)
+        )
+        .join('');
     const indexConfigs = `<indexConfigs>
         <analyzer>${escapeXml(indexConfig.analyzer || 'document_index_default')}</analyzer>
         <defaultConfig>

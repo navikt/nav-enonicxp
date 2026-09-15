@@ -17,7 +17,8 @@ const jsonResponse = (status: number, body: Record<string, unknown>): Response =
     status,
     contentType: 'application/json',
     headers: { 'Cache-Control': 'no-store' },
-    body,
+    // XP's JS-to-Java response map conversion drops nulls, including typed property values.
+    body: JSON.stringify(body),
 });
 
 const getStringParam = (req: Request, name: string) => {

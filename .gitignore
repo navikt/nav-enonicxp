@@ -44,7 +44,6 @@ gradle-app.setting
 
 ### WebStorm ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
-
 *.iml
 
 ## Directory-based project format:

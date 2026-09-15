@@ -3,15 +3,12 @@ import { Content } from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
 import {
     createCuratedExportManifest,
-    createSanitizedSupplement,
     getAncestorContentPaths,
-    sanitizeXmlString,
 } from '@navno-app/lib/exports/curated-content-export';
 import { findTargetContentAndLocale } from '@navno-app/services/sitecontent/common/find-target-content-and-locale';
 import { getRepoConnection } from '@navno-app/lib/repos/repo-utils';
 import { runInLocaleContext } from '@navno-app/lib/localization/locale-context';
 import { queryAllLayersToRepoIdBuckets } from '@navno-app/lib/localization/layers-repo-utils/query-all-layers';
-import { getCuratedSourceNode } from '@navno-app/lib/exports/curated-node-reader';
 
 jest.mock('/lib/xp/content', () => ({
     get: jest.fn(),
@@ -20,6 +17,7 @@ jest.mock('/lib/xp/content', () => ({
 }));
 jest.mock('@navno-app/lib/contenttype-lists', () => ({
     dynamicPageContentTypes: ['no.nav.navno:main-article'],
+    legacyPageContentTypes: [],
 }));
 jest.mock('@navno-app/services/sitecontent/common/find-target-content-and-locale', () => ({
     findTargetContentAndLocale: jest.fn(),
@@ -42,9 +40,6 @@ jest.mock('@navno-app/lib/localization/locale-context', () => ({ runInLocaleCont
 jest.mock('@navno-app/lib/repos/repo-utils', () => ({ getRepoConnection: jest.fn() }));
 jest.mock('@navno-app/lib/localization/layers-repo-utils/query-all-layers', () => ({
     queryAllLayersToRepoIdBuckets: jest.fn(),
-}));
-jest.mock('@navno-app/lib/exports/curated-node-reader', () => ({
-    getCuratedSourceNode: jest.fn(),
 }));
 jest.mock('/lib/xp/project', () => ({
     list: () => [
@@ -189,48 +184,6 @@ beforeEach(() => {
         return node ? { content: toContent(node), locale: 'no' } : null;
     });
     jest.mocked(queryAllLayersToRepoIdBuckets).mockReturnValue({});
-    jest.mocked(getCuratedSourceNode).mockImplementation(({ repository, branch, contentId }) => ({
-        formatVersion: 1,
-        node: getNode(repository, branch, contentId)!,
-        properties: [],
-        binaryReferences: [],
-        manualOrderValue: null,
-    }));
-});
-
-test('retains valid supplementary Unicode and removes only XML-invalid characters', () => {
-    expect(sanitizeXmlString('😀𐐷 før\u0002etter \ud800 \udc00 \uffff')).toBe('😀𐐷 føretter   ');
-    expect(
-        createSanitizedSupplement(
-            {
-                _id: 'valid',
-                _path: '/content/www.nav.no/valid',
-                data: { title: '😀' },
-            } as TestNode,
-            repositories.no,
-            'draft'
-        )
-    ).toBeNull();
-});
-
-test('sanitizes attachment text without discarding attachments or their binary references', () => {
-    const supplement = createSanitizedSupplement(
-        {
-            _id: 'media',
-            _path: '/content/www.nav.no/media',
-            attachment: [
-                { binary: 'one.pdf', text: 'før\u0002etter' },
-                { binary: 'two.pdf', text: '😀' },
-            ],
-        } as unknown as TestNode,
-        repositories.no,
-        'draft'
-    );
-    expect(supplement?.invalidValuePaths).toEqual(['attachment[0].text']);
-    expect(supplement?.node.attachment).toEqual([
-        { binary: 'one.pdf', text: 'føretter' },
-        { binary: 'two.pdf', text: '😀' },
-    ]);
 });
 
 test('returns all ancestors through the content root', () => {
@@ -255,7 +208,7 @@ test('includes pinned source versions and only selected graph nodes in page scop
 
 test('traverses both branches of dependencies discovered from only one branch', () => {
     addNode('page', '/www.nav.no/page');
-    addNode('shared', '/www.nav.no/shared');
+    addNode('shared', '/www.nav.no/shared', { type: 'portal:fragment' });
     addNode('draft-image', '/www.nav.no/draft-image', { branches: ['draft'] });
     setReferences('page', 'master', ['shared']);
     setReferences('shared', 'draft', ['draft-image']);
@@ -268,13 +221,72 @@ test('traverses both branches of dependencies discovered from only one branch', 
     );
 });
 
-test('follows references from ancestors and closes cycles once per entry branch', () => {
+test('includes linked pages without recursively selecting the rest of their link graph', () => {
+    addNode('page', '/www.nav.no/page');
+    addNode('linked-page', '/www.nav.no/linked-page');
+    addNode('second-hop-page', '/www.nav.no/second-hop-page');
+    setReferences('page', 'master', ['linked-page']);
+    setReferences('linked-page', 'master', ['second-hop-page']);
+
+    const contentIds = selectPage().entries.map(({ contentId }) => contentId);
+    expect(contentIds).toContain('linked-page');
+    expect(contentIds).not.toContain('second-hop-page');
+});
+
+test('follows a link content dependency to its target without traversing the target page', () => {
+    addNode('page', '/www.nav.no/page');
+    addNode('link', '/www.nav.no/link', { type: 'no.nav.navno:internal-link' });
+    addNode('target-page', '/www.nav.no/target-page');
+    addNode('second-hop-page', '/www.nav.no/second-hop-page');
+    setReferences('page', 'master', ['link']);
+    setReferences('link', 'master', ['target-page']);
+    setReferences('target-page', 'master', ['second-hop-page']);
+
+    const contentIds = selectPage().entries.map(({ contentId }) => contentId);
+    expect(contentIds).toContain('link');
+    expect(contentIds).toContain('target-page');
+    expect(contentIds).not.toContain('second-hop-page');
+});
+
+test('closes cycles between transitive dependency content types once per branch', () => {
+    addNode('page', '/www.nav.no/page');
+    addNode('first-fragment', '/www.nav.no/first-fragment', { type: 'portal:fragment' });
+    addNode('second-fragment', '/www.nav.no/second-fragment', { type: 'portal:fragment' });
+    setReferences('page', 'master', ['first-fragment']);
+    setReferences('first-fragment', 'master', ['second-fragment']);
+    setReferences('second-fragment', 'master', ['first-fragment']);
+
+    const contentIds = selectPage().entries.map(({ contentId }) => contentId);
+    expect(contentIds).toContain('first-fragment');
+    expect(contentIds).toContain('second-fragment');
+});
+
+test('includes direct references from ancestors without traversing their referenced pages', () => {
     addNode('page', '/www.nav.no/page');
     addNode('icon', '/www.nav.no/icon');
+    addNode('unrelated', '/www.nav.no/unrelated');
     setReferences('root', 'master', ['icon']);
-    setReferences('icon', 'master', ['page']);
-    expect(selectPage().entries).toContainEqual(expect.objectContaining({ contentId: 'icon' }));
-    expect(contentLib.getOutboundDependencies).toHaveBeenCalledTimes(6);
+    setReferences('icon', 'master', ['unrelated']);
+    const entries = selectPage().entries;
+    expect(entries).toContainEqual(expect.objectContaining({ contentId: 'icon' }));
+    expect(entries).not.toContainEqual(
+        expect.objectContaining({ contentId: 'unrelated' })
+    );
+});
+
+test('expands dependencies from content later selected as an ancestor', () => {
+    addNode('first-page', '/www.nav.no/first-page');
+    addNode('second-page', '/www.nav.no/section/second-page');
+    addNode('section', '/www.nav.no/section', { type: 'portal:fragment' });
+    addNode('section-image', '/www.nav.no/section-image', { type: 'media:image' });
+    setReferences('first-page', 'master', ['section']);
+    setReferences('section', 'master', ['section-image']);
+
+    const contentIds = createCuratedExportManifest(
+        ['/www.nav.no/first-page', '/www.nav.no/section/second-page'],
+        'page'
+    ).entries.map(({ contentId }) => contentId);
+    expect(contentIds).toContain('section-image');
 });
 
 test('closes the opposite-branch parent chain of a newly discovered moved ancestor', () => {
@@ -398,32 +410,38 @@ test('enumerates recursive editorial descendants as actual entries', () => {
     );
 });
 
-test('fails if a selected node changes during graph planning', () => {
-    addNode('page', '/www.nav.no/page');
-    jest.mocked(contentLib.getOutboundDependencies).mockImplementation(({ key: id }) => {
-        if (id === 'page') {
-            getNode(repositories.no, 'master', id)!._versionKey = 'changed-version';
+describe.each(['draft', 'master'] as const)('source consistency on %s', (branch) => {
+    test.each(['version', 'path', 'missing-node', 'missing-version', 'missing-path'])(
+        'rejects %s changes after graph selection',
+        (change) => {
+            addNode('page', '/www.nav.no/page');
+            jest.mocked(contentLib.getOutboundDependencies).mockImplementation(({ key: id }) => {
+                if (id === 'page') {
+                    const node = getNode(repositories.no, branch, id);
+                    if (change === 'missing-node') {
+                        nodes.delete(key(repositories.no, branch, id));
+                    } else if (node) {
+                        if (change === 'version' || change === 'missing-version') {
+                            node._versionKey = change === 'version' ? 'changed-version' : undefined!;
+                        } else {
+                            node._path = change === 'path' ? '/content/www.nav.no/moved' : undefined!;
+                        }
+                    }
+                }
+                return [];
+            });
+            expect(selectPage).toThrow(/changed while planning/);
         }
-        return [];
-    });
-    expect(selectPage).toThrow(/changed while planning/);
+    );
 });
 
-test('includes a typed envelope for every sanitized supplement', () => {
+test('does not embed legacy sanitized supplements or mutate source text', () => {
     addNode('page', '/www.nav.no/page', { branches: ['master'] });
     const page = getNode(repositories.no, 'master', 'page')!;
     (page.data as Record<string, unknown>).body = 'before\u0002after';
     const manifest = selectPage();
-    expect(manifest.sanitizedSupplements[0]).toMatchObject({
-        invalidValuePaths: ['data.body'],
-        transport: { formatVersion: 1, node: { _versionKey: 'page-master-version' } },
-    });
-    expect(getCuratedSourceNode).toHaveBeenCalledWith({
-        repository: repositories.no,
-        branch: 'master',
-        contentId: 'page',
-        versionId: 'page-master-version',
-    });
+    expect(manifest).not.toHaveProperty('sanitizedSupplements');
+    expect(page.data).toEqual({ body: 'before\u0002after' });
 });
 
 test('keeps stopped optional apps without including system applications', () => {

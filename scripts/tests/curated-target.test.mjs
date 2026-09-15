@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
@@ -7,6 +7,7 @@ import {
     installCuratedApplications,
     prepareCuratedTarget,
     removeTemporarySuPassword,
+    setCuratedImportMode,
     waitForManagementApi,
 } from '../lib/curated-target.mjs';
 
@@ -14,6 +15,31 @@ const writeFile = (path, content = '') => {
     mkdirSync(join(path, '..'), { recursive: true });
     writeFileSync(path, content);
 };
+
+const LOCAL_CONFIG = 'env=localhost\ncuratedImportEnabled=true\nserviceSecret=dummyToken\n';
+
+const installResult = (key, version) =>
+    JSON.stringify({
+        Failure: '',
+        ApplicationInstalledJson: { Application: { Key: key, Version: version } },
+    });
+
+test('enables import mode only for a safe local target and removes the flag on cleanup', (t) => {
+    const root = mkdtempSync(join(tmpdir(), 'curated-import-mode-'));
+    t.after(() => rmSync(root, { recursive: true, force: true }));
+    writeFile(join(root, 'home/config/no.nav.navno.cfg'), LOCAL_CONFIG);
+    writeFile(join(root, 'home/config/com.enonic.xp.cluster.cfg'), 'cluster.enabled=false\n');
+    setCuratedImportMode(root, true);
+    setCuratedImportMode(root, true);
+    assert.equal(
+        readFileSync(join(root, 'home/config/no.nav.navno.cfg'), 'utf8'),
+        `${LOCAL_CONFIG}curatedImportInProgress=true\n`
+    );
+    setCuratedImportMode(root, false);
+    assert.equal(readFileSync(join(root, 'home/config/no.nav.navno.cfg'), 'utf8'), LOCAL_CONFIG);
+    writeFile(join(root, 'home/config/no.nav.navno.cfg'), LOCAL_CONFIG.replace('localhost', 'p'));
+    assert.throws(() => setCuratedImportMode(root, true), /Target must/);
+});
 
 test('waits for the management API to accept connections', () => {
     const commands = [];
@@ -47,21 +73,23 @@ test('waits for the management API to accept connections', () => {
 
 test('uses exceptional Maven coordinates and tolerates an unavailable optional app', () => {
     const commands = [];
+    const applications = [
+        { key: 'com.enonic.app.audit.log', version: '1.2.1', required: true },
+        { key: 'no.item.partfinder', version: '1.2.0', required: true },
+        { key: 'systems.rcd.enonic.datatoolbox', version: '5.2.1', required: true },
+        { key: 'com.enonic.app.contentstudio.plus', version: '1.9.0', required: false },
+    ];
     installCuratedApplications({
-        applications: [
-            { key: 'com.enonic.app.audit.log', version: '1.2.1', required: true },
-            { key: 'no.item.partfinder', version: '1.2.0', required: true },
-            { key: 'systems.rcd.enonic.datatoolbox', version: '5.2.1', required: true },
-            { key: 'com.enonic.app.contentstudio.plus', version: '1.9.0', required: false },
-        ],
+        applications,
         auth: 'su:password',
         sandbox: 'target',
         verifyTarget: () => {},
         runCommand(_command, args) {
             commands.push(args);
+            const { key, version } = applications[commands.length - 1];
             return args[3].includes('contentstudio.plus')
                 ? '{"Failure":"not available"}'
-                : '{"Failure":""}';
+                : installResult(key, version);
         },
     });
 
@@ -77,6 +105,34 @@ test('uses exceptional Maven coordinates and tolerates an unavailable optional a
     assert.match(
         commands[3][3],
         /com\/enonic\/app\/contentstudio\.plus\/1\.9\.0\/contentstudio\.plus-1\.9\.0\.jar$/
+    );
+});
+
+test('requires the installer to confirm the exact application key and pinned version', () => {
+    const key = 'com.enonic.app.contentstudio';
+    const options = {
+        applications: [{ key, version: '5.4.12', required: true }],
+        auth: 'su:synthetic',
+        sandbox: 'target',
+        verifyTarget: () => {},
+    };
+    installCuratedApplications({
+        ...options,
+        runCommand: () => `Installing application\n${installResult(key, '5.4.12')}`,
+    });
+    for (const output of [
+        installResult(key, '5.4.14'),
+        installResult('another.application', '5.4.12'),
+        '{"Failure":""}',
+    ]) {
+        assert.throws(
+            () => installCuratedApplications({ ...options, runCommand: () => output }),
+            /Installation did not confirm com.enonic.app.contentstudio 5.4.12/
+        );
+    }
+    assert.throws(
+        () => installCuratedApplications({ ...options, runCommand: () => 'invalid response' }),
+        /Could not install required application/
     );
 });
 
@@ -108,7 +164,12 @@ test('creates and prepares a missing target sandbox', () => {
         'config/localhost/no.nav.navno.cfg',
         'config/localhost/com.enonic.xp.web.vhost.cfg',
         'config/com.enonic.app.contentstudio.cfg',
-    ].forEach((path) => writeFile(join(repositoryRoot, path), path));
+    ].forEach((path) =>
+        writeFile(
+            join(repositoryRoot, path),
+            path.endsWith('/no.nav.navno.cfg') ? LOCAL_CONFIG : path
+        )
+    );
     writeFile(join(repositoryRoot, 'build/libs/navno.jar'), 'app');
 
     const result = prepareCuratedTarget({
@@ -127,6 +188,12 @@ test('creates and prepares a missing target sandbox', () => {
         verifyTarget: () => {},
         runCommand(command, args, options) {
             commands.push({ command, args, options });
+            if (args[0] === 'sandbox' && args[1] === 'start') {
+                assert.match(
+                    readFileSync(join(sandboxPath, 'home/config/no.nav.navno.cfg'), 'utf8'),
+                    /^curatedImportInProgress=true$/m
+                );
+            }
             if (args[0] === 'sandbox' && args[1] === 'create') {
                 writeFile(join(sandboxPath, '.enonic'), `distro = "${distro}"\n`);
                 writeFile(
@@ -134,6 +201,11 @@ test('creates and prepares a missing target sandbox', () => {
                     'existing.property=true\n'
                 );
                 writeFile(join(sandboxPath, 'home/deploy/README.txt'), 'placeholder');
+            }
+            if (args[0] === 'app') {
+                return args[3].includes('contentstudio')
+                    ? installResult('com.enonic.app.contentstudio', '5.3.2')
+                    : installResult('com.enonic.app.xpdoctor', '2.3.0');
             }
         },
     });
@@ -145,8 +217,7 @@ test('creates and prepares a missing target sandbox', () => {
         'target',
         '--version',
         '7.16.6',
-        '--template',
-        'essentials',
+        '--skip-template',
         '--force',
         '--skip-start',
     ]);
@@ -246,7 +317,12 @@ test('removes the temporary SU password when provisioning fails', () => {
         'config/localhost/no.nav.navno.cfg',
         'config/localhost/com.enonic.xp.web.vhost.cfg',
         'config/com.enonic.app.contentstudio.cfg',
-    ].forEach((path) => writeFile(join(repositoryRoot, path), path));
+    ].forEach((path) =>
+        writeFile(
+            join(repositoryRoot, path),
+            path.endsWith('/no.nav.navno.cfg') ? LOCAL_CONFIG : path
+        )
+    );
 
     assert.throws(() =>
         prepareCuratedTarget({
@@ -276,5 +352,9 @@ test('removes the temporary SU password when provisioning fails', () => {
     assert.equal(
         readFileSync(join(sandboxPath, 'home/config/system.properties'), 'utf8'),
         'existing.property=true\n'
+    );
+    assert.doesNotMatch(
+        readFileSync(join(sandboxPath, 'home/config/no.nav.navno.cfg'), 'utf8'),
+        /curatedImportInProgress/
     );
 });

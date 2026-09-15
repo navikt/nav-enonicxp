@@ -91,7 +91,7 @@ test(
         t.after(() => tunnels.forEach((socket) => socket.destroy()));
         const proxy = await listen(proxyServer, t);
         const code = `
-        import { getXpSessionCookie } from ${JSON.stringify(new URL('../lib/xp-session.mjs', import.meta.url).href)};
+        import { getXpSessionCookie } from ${JSON.stringify(new URL('../lib/curated-auth.mjs', import.meta.url).href)};
         import { directLocalFetch } from ${JSON.stringify(new URL('../lib/curated-http.mjs', import.meta.url).href)};
         const origin = ${JSON.stringify(target.replace('127.0.0.1', 'localhost'))};
         const proxySupported = process.allowedNodeEnvironmentFlags.has('--use-env-proxy');

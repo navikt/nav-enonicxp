@@ -46,7 +46,7 @@ public final class CuratedNodeReader implements ScriptBean {
         final Node node = readNode(contentId, versionId);
         return gen -> {
             gen.value("versionId", node.getNodeVersionId().toString());
-            gen.value("manualOrderValue",
+            gen.rawValue("manualOrderValue",
                       node.getManualOrderValue() == null ? null : node.getManualOrderValue().toString());
             gen.array("properties");
             for (final Property property : node.data().getProperties()) {
@@ -93,7 +93,8 @@ public final class CuratedNodeReader implements ScriptBean {
         gen.value("name", property.getName());
         gen.value("type", type);
         if (property.getValue().isNull()) {
-            gen.value("value", null);
+            // XP's Nashorn map generator omits nulls unless they are written as raw values.
+            gen.rawValue("value", null);
         } else if (property.getType().equals(ValueTypes.PROPERTY_SET)) {
             gen.array("value");
             for (final Property child : property.getSet().getProperties()) {

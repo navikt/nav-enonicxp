@@ -24,6 +24,7 @@ import { externalArchiveAttachmentService } from '@navno-app/services/externalAr
 import * as authLib from '/lib/xp/auth';
 
 const request = (params: Record<string, string>) => ({ params }) as never;
+const responseBody = (response: ReturnType<typeof get>) => JSON.parse(response.body as string);
 const properties = [{ name: 'link', type: 'reference', value: 'linked-id' }];
 
 describe('curated export source', () => {
@@ -130,7 +131,7 @@ describe('curated export source', () => {
         }));
 
         expect(response.status).toBe(200);
-        expect(response.body).toEqual(expect.objectContaining({
+        expect(responseBody(response)).toEqual(expect.objectContaining({
             formatVersion: 1,
             properties,
             binaryReferences: ['document.pdf'],
@@ -187,20 +188,18 @@ describe('curated export source', () => {
             contentId: 'content-id',
             versionId: 'version-id',
         };
-        expect(get(request(params))).toMatchObject({
-            status: 200,
-            body: { binaryReferences },
-        });
-        expect(post({
+        const getResponse = get(request(params));
+        expect(getResponse.status).toBe(200);
+        expect(responseBody(getResponse)).toMatchObject({ binaryReferences });
+        const postResponse = post({
             body: JSON.stringify({
                 ...params,
                 contentIds: ['content-id'],
                 versionIds: ['version-id'],
             }),
-        } as never)).toMatchObject({
-            status: 200,
-            body: { nodes: [{ binaryReferences }] },
-        });
+        } as never);
+        expect(postResponse.status).toBe(200);
+        expect(responseBody(postResponse)).toMatchObject({ nodes: [{ binaryReferences }] });
         binaryReferences.forEach((binaryReference) => {
             getBinary.mockReturnValue({ stream: binaryReference });
             expect(get(request({ ...params, binaryReference })).status).toBe(200);
@@ -361,7 +360,7 @@ describe('curated export source', () => {
         } as never);
 
         expect(response.status).toBe(200);
-        expect((response.body as { nodes: unknown[] }).nodes).toHaveLength(2);
+        expect(responseBody(response).nodes).toHaveLength(2);
         expect(getNode).toHaveBeenCalledTimes(2);
         expect(readTypedNode).toHaveBeenNthCalledWith(1, {
             repository: 'com.enonic.cms.default',
@@ -375,12 +374,57 @@ describe('curated export source', () => {
             contentId: 'other-id',
             versionId: 'other-version',
         });
-        expect(response.body).toMatchObject({
+        expect(responseBody(response)).toMatchObject({
             nodes: [
                 { formatVersion: 1, properties, manualOrderValue: '9007199254740993' },
                 { formatVersion: 1, properties, manualOrderValue: '9007199254740993' },
             ],
         });
+    });
+
+    it('serializes GET and POST as JSON strings to preserve typed nulls across the XP response boundary', () => {
+        const source = {
+            formatVersion: 1,
+            node: {
+                _id: 'content-id',
+                _versionKey: 'version-id',
+                _path: '/content/www.nav.no/page',
+            },
+            properties: [
+                { name: 'to', type: 'dateTime', value: null },
+                { name: 'group', type: 'property-set', value: null },
+                { name: 'nested', type: 'property-set', value: [
+                    { name: 'to', type: 'dateTime', value: null },
+                    { name: 'maximum', type: 'long', value: '9223372036854775807' },
+                ] },
+            ],
+            binaryReferences: [],
+            manualOrderValue: null,
+        };
+        readTypedNode.mockReturnValue(source);
+        const params = {
+            repository: 'com.enonic.cms.default',
+            branch: 'draft',
+            contentId: 'content-id',
+            versionId: 'version-id',
+        };
+        const responses = [
+            get(request(params)),
+            post({
+                body: JSON.stringify({
+                    ...params,
+                    contentIds: [params.contentId],
+                    versionIds: [params.versionId],
+                }),
+            } as never),
+        ];
+        responses.forEach((response) => {
+            expect(response.status).toBe(200);
+            expect(response.contentType).toBe('application/json');
+            expect(typeof response.body).toBe('string');
+        });
+        expect(responseBody(responses[0])).toEqual(source);
+        expect(responseBody(responses[1])).toEqual({ nodes: [source] });
     });
 
     it('rejects metadata batches larger than 100 nodes', () => {

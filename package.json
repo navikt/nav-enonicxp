@@ -7,7 +7,8 @@
     "build": "pnpm run lint && pnpm run babel",
     "lint": "eslint ./src/main/resources --ext=ts --quiet && tsc --noemit",
     "babel": "babel src/main/resources --out-dir=build/resources/main --no-copy-ignored --extensions \".ts\"",
-    "curated:import": "node scripts/curated-import.mjs"
+    "sandbox:import": "node scripts/sandbox-import.mjs",
+    "sandbox:dump": "node scripts/create-sandbox-dump.mjs"
   },
   "repository": {
     "type": "git",

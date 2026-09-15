@@ -1,17 +1,18 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { RepoNode } from '/lib/xp/node';
 import * as appLib from '/lib/xp/app';
 import * as projectLib from '/lib/xp/project';
 import { Project } from '/lib/xp/project';
-import { dynamicPageContentTypes } from '../contenttype-lists';
+import {
+    dynamicPageContentTypes,
+    legacyPageContentTypes,
+} from '../contenttype-lists';
 import { findTargetContentAndLocale } from '../../services/sitecontent/common/find-target-content-and-locale';
 import { getLayersData } from '../localization/layers-data';
 import { runInLocaleContext } from '../localization/locale-context';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { getRepoConnection } from '../repos/repo-utils';
 import { queryAllLayersToRepoIdBuckets } from '../localization/layers-repo-utils/query-all-layers';
-import { CuratedSourceNode, getCuratedSourceNode } from './curated-node-reader';
 
 const MAX_INPUT_PATHS = 1000;
 const MAX_EXPORT_ENTRIES = 20000;
@@ -22,9 +23,11 @@ const REQUIRED_PROJECTS = [
     { id: 'navno-nynorsk', language: 'nn', parents: ['default'] },
 ] as const;
 const REQUIRED_REPO_IDS = REQUIRED_PROJECTS.map(({ id }) => `com.enonic.cms.${id}`);
-const MAX_CONTAINER_DEPENDENCY_DESCENDANTS = 50;
-const BROAD_CONTAINER_DEPENDENCY_TYPES: ReadonlySet<ContentDescriptor> = new Set([
-    'no.nav.navno:section-page',
+// Referenced pages are included, but do not recursively pull in their own links. Other dependency
+// types are expanded because they may contain references needed to render the selected page.
+const NON_TRANSITIVE_DEPENDENCY_CONTENT_TYPES: ReadonlySet<ContentDescriptor> = new Set([
+    ...dynamicPageContentTypes,
+    ...legacyPageContentTypes,
 ]);
 const SUPERSEDED_PAGE_CONTENT_TYPES: ReadonlySet<ContentDescriptor> = new Set([
     'no.nav.navno:dynamic-page',
@@ -86,7 +89,6 @@ export type CuratedExportManifest = {
     excludedDependencies: CuratedExportEntry[];
     unresolvedPaths: string[];
     missingContentTypes: string[];
-    sanitizedSupplements: CuratedExportSupplement[];
 };
 
 type InstalledApplication = {
@@ -94,89 +96,6 @@ type InstalledApplication = {
     version: string | null;
     started: boolean;
     system: boolean;
-};
-
-export type CuratedExportSupplement = {
-    contentId: string;
-    contentPath: string;
-    repoId: string;
-    branch: 'draft' | 'master';
-    invalidValuePaths: string[];
-    node: RepoNode<Content>;
-    transport?: CuratedSourceNode;
-};
-
-export const sanitizeXmlString = (value: string) => {
-    let sanitized = '';
-    for (let index = 0; index < value.length; index += 1) {
-        const code = value.charCodeAt(index);
-        if (code >= 0xd800 && code <= 0xdbff) {
-            const next = value.charCodeAt(index + 1);
-            if (next >= 0xdc00 && next <= 0xdfff) {
-                sanitized += value[index] + value[index + 1];
-                index += 1;
-            }
-        } else if (
-            code === 0x09 ||
-            code === 0x0a ||
-            code === 0x0d ||
-            (code >= 0x20 && code <= 0xd7ff) ||
-            (code >= 0xe000 && code <= 0xfffd)
-        ) {
-            sanitized += value[index];
-        }
-    }
-    return sanitized;
-};
-
-const sanitizeXmlValue = (
-    value: unknown,
-    valuePath: string,
-    invalidValuePaths: string[]
-): unknown => {
-    if (typeof value === 'string') {
-        const sanitizedValue = sanitizeXmlString(value);
-        if (sanitizedValue !== value) {
-            invalidValuePaths.push(valuePath);
-        }
-        return sanitizedValue;
-    }
-    if (Array.isArray(value)) {
-        return value.map((item, index) =>
-            sanitizeXmlValue(item, `${valuePath}[${index}]`, invalidValuePaths)
-        );
-    }
-    if (value && Object.prototype.toString.call(value) === '[object Object]') {
-        return Object.keys(value).reduce<Record<string, unknown>>((sanitized, key) => {
-            sanitized[key] = sanitizeXmlValue(
-                (value as Record<string, unknown>)[key],
-                valuePath ? `${valuePath}.${key}` : key,
-                invalidValuePaths
-            );
-            return sanitized;
-        }, {});
-    }
-    return value;
-};
-
-export const createSanitizedSupplement = (
-    node: RepoNode<Content>,
-    repoId: string,
-    branch: 'draft' | 'master'
-): CuratedExportSupplement | null => {
-    const invalidValuePaths: string[] = [];
-    const sanitizedNode = sanitizeXmlValue(node, '', invalidValuePaths) as RepoNode<Content>;
-    if (invalidValuePaths.length === 0) {
-        return null;
-    }
-    return {
-        contentId: node._id,
-        contentPath: node._path,
-        repoId,
-        branch,
-        invalidValuePaths,
-        node: sanitizedNode,
-    };
 };
 
 const getEntryKey = ({ contentId, repoId }: CuratedExportEntry) => `${repoId}:${contentId}`;
@@ -345,8 +264,7 @@ const validateRepositorySet = (entries: CuratedExportEntry[]) => {
     }
 };
 
-const getSanitizedSupplements = (entries: CuratedExportEntry[]) => {
-    const supplements: CuratedExportSupplement[] = [];
+const assertSelectedSourceConsistency = (entries: CuratedExportEntry[]) => {
     entries.forEach((entry) => {
         entry.branches.forEach((branch) => {
             const node = getRepoConnection({
@@ -363,19 +281,8 @@ const getSanitizedSupplements = (entries: CuratedExportEntry[]) => {
                     `Content changed while planning: ${entry.repoId}:${branch}:${entry.contentId}`
                 );
             }
-            const supplement = createSanitizedSupplement(node, entry.repoId, branch);
-            if (supplement) {
-                supplement.transport = getCuratedSourceNode({
-                    repository: entry.repoId,
-                    branch,
-                    contentId: entry.contentId,
-                    versionId: entry.versions[branch],
-                });
-                supplements.push(supplement);
-            }
         });
     });
-    return supplements;
 };
 
 const findTypeRepresentative = (contentType: ContentDescriptor): CuratedExportEntry | null => {
@@ -416,24 +323,34 @@ const findTypeRepresentative = (contentType: ContentDescriptor): CuratedExportEn
 
 const closeContentGraph = (
     initialEntries: CuratedExportEntry[],
-    entriesByKey: Record<string, CuratedExportEntry>,
-    excludedDependenciesByKey: Record<string, CuratedExportEntry>
+    entriesByKey: Record<string, CuratedExportEntry>
 ) => {
     const pendingEntries: Array<{ entry: CuratedExportEntry; branch: 'draft' | 'master' }> = [];
     const queuedBranches = new Set<string>();
-    const selectedPaths = new Set<string>();
+    const expandableEntryKeys = new Set<string>();
+    const selectedEntriesByPath = new Map<string, CuratedExportEntry>();
     let entryCount = Object.keys(entriesByKey).length;
-    const enqueue = (entry: CuratedExportEntry) => {
+    const canExpandDependency = (entry: CuratedExportEntry) =>
+        !NON_TRANSITIVE_DEPENDENCY_CONTENT_TYPES.has(entry.contentType as ContentDescriptor);
+    const enqueue = (entry: CuratedExportEntry, expandDependencies = false) => {
+        const entryKey = getEntryKey(entry);
+        if (expandDependencies) {
+            expandableEntryKeys.add(entryKey);
+        }
+        const shouldExpandDependencies = expandableEntryKeys.has(entryKey);
         entry.branches.forEach((branch) => {
-            const key = `${getEntryKey(entry)}:${branch}`;
-            selectedPaths.add(`${entry.repoId}:${branch}:${entry.paths[branch]}`);
+            const key = `${entryKey}:${branch}:${shouldExpandDependencies ? 'expand' : 'include'}`;
+            selectedEntriesByPath.set(
+                `${entry.repoId}:${branch}:${entry.paths[branch]}`,
+                entry
+            );
             if (!queuedBranches.has(key)) {
                 queuedBranches.add(key);
                 pendingEntries.push({ entry, branch });
             }
         });
     };
-    const select = (entry: CuratedExportEntry) => {
+    const select = (entry: CuratedExportEntry, expandDependencies = false) => {
         const key = getEntryKey(entry);
         if (!entriesByKey[key]) {
             entryCount += 1;
@@ -442,19 +359,22 @@ const closeContentGraph = (
             }
             entriesByKey[key] = entry;
         }
-        delete excludedDependenciesByKey[key];
-        enqueue(entriesByKey[key]);
+        enqueue(entriesByKey[key], expandDependencies);
     };
     if (entryCount > MAX_EXPORT_ENTRIES) {
         throw new Error(`Export exceeded the limit of ${MAX_EXPORT_ENTRIES} content nodes`);
     }
-    initialEntries.forEach(enqueue);
+    initialEntries.forEach((entry) => enqueue(entry, true));
 
     for (let cursor = 0; cursor < pendingEntries.length; cursor += 1) {
         const { entry, branch } = pendingEntries[cursor];
 
         getAncestorContentPaths(entry.paths[branch]!).forEach((contentPath) => {
-            if (selectedPaths.has(`${entry.repoId}:${branch}:${contentPath}`)) {
+            const selectedAncestor = selectedEntriesByPath.get(
+                `${entry.repoId}:${branch}:${contentPath}`
+            );
+            if (selectedAncestor) {
+                enqueue(selectedAncestor, true);
                 return;
             }
             const ancestor = runInLocaleContext(
@@ -465,8 +385,13 @@ const closeContentGraph = (
             if (!ancestorEntry) {
                 throw new Error(`Missing ancestor ${contentPath} in ${entry.repoId}:${branch}`);
             }
-            select(ancestorEntry);
+            select(ancestorEntry, true);
         });
+
+        // Dependency pages are included as link targets, but are not new page-graph roots.
+        if (!expandableEntryKeys.has(getEntryKey(entry))) {
+            continue;
+        }
 
         const dependencies = runInLocaleContext(
             { locale: entry.locale, branch, asAdmin: true },
@@ -477,10 +402,7 @@ const closeContentGraph = (
             const dependencyKey = `${entry.repoId}:${dependencyId}`;
             const selectedDependency = entriesByKey[dependencyKey];
             if (selectedDependency) {
-                enqueue(selectedDependency);
-                return;
-            }
-            if (excludedDependenciesByKey[dependencyKey]) {
+                enqueue(selectedDependency, canExpandDependency(selectedDependency));
                 return;
             }
             const dependency = runInLocaleContext(
@@ -498,17 +420,7 @@ const closeContentGraph = (
             if (!dependencyEntry) {
                 return;
             }
-            if (
-                BROAD_CONTAINER_DEPENDENCY_TYPES.has(
-                    dependencyEntry.contentType as ContentDescriptor
-                ) &&
-                dependencyEntry.descendantCount > MAX_CONTAINER_DEPENDENCY_DESCENDANTS
-            ) {
-                excludedDependenciesByKey[dependencyKey] = dependencyEntry;
-                return;
-            }
-
-            select(dependencyEntry);
+            select(dependencyEntry, canExpandDependency(dependencyEntry));
         });
     }
 };
@@ -570,7 +482,6 @@ export const createCuratedExportManifest = (
 
     const projects = getRequiredProjects();
     const entriesByKey: Record<string, CuratedExportEntry> = {};
-    const excludedDependenciesByKey: Record<string, CuratedExportEntry> = {};
     const unresolvedPaths: string[] = [];
 
     seeds.forEach((seed) => {
@@ -649,13 +560,13 @@ export const createCuratedExportManifest = (
         });
     }
 
-    closeContentGraph(Object.values(entriesByKey), entriesByKey, excludedDependenciesByKey);
+    closeContentGraph(Object.values(entriesByKey), entriesByKey);
     const entries = Object.values(entriesByKey);
     if (scope === 'full') {
         validateRepositorySet(entries);
     }
     const applications = getRequiredApplications(entries);
-    const sanitizedSupplements = getSanitizedSupplements(entries);
+    assertSelectedSourceConsistency(entries);
 
     return {
         scope,
@@ -664,9 +575,8 @@ export const createCuratedExportManifest = (
         applications,
         projects,
         entries,
-        excludedDependencies: Object.values(excludedDependenciesByKey),
+        excludedDependencies: [],
         unresolvedPaths,
         missingContentTypes,
-        sanitizedSupplements,
     };
 };

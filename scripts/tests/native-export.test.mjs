@@ -93,6 +93,18 @@ test('rejects missing type/index metadata and JSON number coercion', (t) => {
     assert.throws(() => writeNativeNodeXml(path, coerced), /lexical XP value/);
 });
 
+test('identifies the node, nested property and value shape when a null was omitted', (t) => {
+    const path = directory(t);
+    const source = createSourceNode({ _id: 'page-id', _path: '/content/www.nav.no/page' });
+    source.properties = [
+        { name: 'publish', type: 'property-set', value: [{ name: 'to', type: 'dateTime' }] },
+    ];
+    assert.throws(
+        () => writeNativeNodeXml(path, source),
+        /\/content\/www\.nav\.no\/page \[page-id\]\.publish\.to \(XP type dateTime, received undefined\)/
+    );
+});
+
 test('persists metadata for existing-node repair instead of inventing a manualOrderValue data property', (t) => {
     const path = directory(t);
     const source = createSourceNode({ _ts: '2026-09-08T08:00:00.123456789Z' });

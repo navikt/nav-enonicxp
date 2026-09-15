@@ -6,52 +6,64 @@ NAVs content management system powered by Enonic XP, an open source project.
 ![Deploy to dev](https://github.com/navikt/nav-enonicxp/actions/workflows/deploy-to-dev.yml/badge.svg) |
 ![Deploy to dev2/q6](https://github.com/navikt/nav-enonicxp/actions/workflows/deploy-to-q6.yml/badge.svg)
 
-## How to get started
+## Kom i gang
 
-1. Install Enonic by following the guide at https://developer.enonic.com/start
-2. Create a sandbox (preferably called **navno**)
+Installer [Enonic CLI](https://developer.enonic.com/start). Velg deretter hvordan du vil sette opp den lokale sandboxen.
 
-```
-enonic sandbox start
-```
+> [!NOTE]
+> Eksemplene bruker **navno** for å holde kommandoer og filstier konsistente. Et annet navn fungerer også.
 
-3. Launch admin console
+### Sandbox med kuratert innhold
 
-```
-open http://localhost:8080/admin
-```
+Bruk denne flyten når du trenger et representativt utvalg av innhold. Kommandoen oppretter sandboxen, bruker samme XP-versjon som kilden, kopierer lokal konfigurasjon, bygger og installerer NAV-applikasjonen, installerer Content Studio og importerer innholdet:
 
-4. Download the NAV.no - XP Application
-
-```
-git clone https://github.com/navikt/nav-enonicxp.git
+```bash
+pnpm sandbox:import --source prod --target navno
 ```
 
-5. Copy **com.enonic.xp.content.cfg**, **no.nav.navno.cfg** and **com.enonic.xp.web.vhost.cfg** to your sandbox
+Se [kuratert sandbox-flyt](src/main/resources/services/curatedExportManifest/README.md) for oppdatering av en eksisterende sandbox, sideimport og alternative kilder.
 
-```
-cp com.enonic.xp.content.cfg /YOUR_SANDBOX_PATH/home/config/com.enonic.xp.content.cfg
-cp no.nav.navno.cfg /YOUR_SANDBOX_PATH/home/config/no.nav.navno.cfg
-cp com.enonic.xp.web.vhost.cfg /YOUR_SANDBOX_PATH/home/config/com.enonic.xp.web.vhost.cfg
+### Manuelt oppsett av sandbox
+
+Bruk denne flyten når du vil starte uten importert innhold eller laste inn en [full systemdump](#full-systemdump). Den oppretter og konfigurerer sandboxen, men kopierer ikke data:
+
+```bash
+enonic sandbox create navno --skip-start
+enonic project sandbox navno
+
+cp config/com.enonic.xp.content.cfg ~/.enonic/sandboxes/navno/home/config/
+cp config/localhost/no.nav.navno.cfg ~/.enonic/sandboxes/navno/home/config/
+cp config/localhost/com.enonic.xp.web.vhost.cfg ~/.enonic/sandboxes/navno/home/config/
+cp config/com.enonic.app.contentstudio.cfg ~/.enonic/sandboxes/navno/home/config/
 ```
 
-6. Temporary step. Copy **com.enonic.app.contentstudio.cfg** to your sandbox
+Start sandboxen hvis den ikke allerede kjører:
 
-```
-cp com.enonic.app.contentstudio.cfg /YOUR_SANDBOX_PATH/home/config/com.enonic.app.contentstudio.cfg
+```bash
+enonic sandbox start navno
 ```
 
-## Development
+## Utvikling
 
-```
+Bygg og deploy applikasjonen til sandboxen som prosjektet er koblet til:
+
+```bash
 enonic project deploy
 ```
 
-## Kopiere data til lokal sandbox fra prod
+Åpne administrasjonsgrensesnittet:
+
+```bash
+open http://localhost:8080/admin
+```
+
+## Full systemdump
 
 1. **Opprette en datadump**
 
     For å få data inn til lokal sandbox så må man først og fremst opprette en datadump av hele databasen. Oppskrift på det finner du her: [Systemdumps – Confluence](https://confluence.adeo.no/spaces/ATOM/pages/387108768/Div.+jobber#Div.jobber-Systemdumps)
+
+    Du kan også opprette en dump fra en lokal sandbox med [`pnpm sandbox:dump`](src/main/resources/services/curatedExportManifest/README.md#del-en-baseline-med-enonic-systemdump).
 
 2. **Last ned dumpen**
 
@@ -66,7 +78,7 @@ enonic project deploy
 
 4. **Kjør import av dumpen**
 
-    Sørg for at Enonic kjører lokalt først (kjøres i egen terminal): `enonic project deploy`
+    Sett opp sandboxen som beskrevet under [Manuelt oppsett av sandbox](#manuelt-oppsett-av-sandbox). Sørg for at Enonic kjører lokalt først (kjøres i egen terminal): `enonic project deploy`
 
     Kjør kommandoen: `enonic dump load`
 
@@ -92,8 +104,7 @@ enonic project deploy
 6. **Vent på at dumpen fullfører**
 
     Dette kan ta _lang_ tid, så det kan være lurt å starte prosessen om natten. Pass på at maskinen ikke går i dvale, f.eks. ved å bruke:
-    `caffeinate` (innebygd på Mac). Du vil få en feilmelding som den under når dumpen er ferdig, men det er forventet.
-    `Unable to connect to remote service:  (...)`
+    `caffeinate` (innebygd på Mac). En tilkoblingsfeil som `Unable to connect to remote service` er ikke bevis på fullført lasting. Kontroller resultatet før sandboxen tas i bruk.
 
 7. **Flytt dumpen til rett plass**
 
@@ -104,8 +115,9 @@ enonic project deploy
         sandboxes
             navno
                 home
-                    dump
-                        [navn på dumpen, f.eks prod_2025_08_05]
+                    data
+                        dump
+                            [navn på dumpen, f.eks prod_2025_08_05]
     ```
 
 8. **Potensiell feil**

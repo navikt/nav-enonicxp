@@ -1,4 +1,3 @@
-const getContent = jest.fn();
 const getNode = jest.fn();
 const moveNode = jest.fn();
 const deleteNode = jest.fn();
@@ -11,6 +10,7 @@ const modifyProject = jest.fn();
 const createProject = jest.fn();
 const findChildren = jest.fn();
 const refresh = jest.fn();
+const pushNode = jest.fn();
 const repairTarget = jest.fn();
 const validateTarget = jest.fn();
 
@@ -28,9 +28,6 @@ jest.mock('/lib/xp/node', () => ({
 jest.mock('/lib/xp/auth');
 
 jest.mock('/lib/xp/app', () => ({}));
-jest.mock('/lib/xp/content', () => ({
-    get: getContent,
-}));
 jest.mock('/lib/xp/project', () => ({
     get: getProject,
     modify: modifyProject,
@@ -51,6 +48,7 @@ jest.mock('@navno-app/lib/repos/repo-utils', () => ({
         create: createNode,
         findChildren,
         refresh,
+        push: pushNode,
     })),
 }));
 
@@ -101,25 +99,9 @@ const mockNodeTree = (initial: Array<{ _id: string; _path: string }>) => {
     });
     return nodes;
 };
-const validSupplement = () => ({
-    contentId: 'content-id',
-    contentPath: '/content/www.nav.no/page',
-    repoId: childRepository,
-    branch: 'draft',
-    invalidValuePaths: ['data.body'],
-    node: {
-        _id: 'content-id',
-        _path: '/content/www.nav.no/page',
-        _name: 'page',
-        _nodeType: 'content',
-        type: 'no.nav.navno:main-article',
-        data: { body: 'Sanitized content' },
-    },
-});
-
 const importRequest = (body: unknown) => ({ body: JSON.stringify(body) }) as never;
 const expectNoWrites = () => {
-    [moveNode, deleteNode, modifyNode, createNode, modifySystemNode, authLib.deletePrincipal,
+    [moveNode, deleteNode, modifyNode, createNode, pushNode, modifySystemNode, authLib.deletePrincipal,
         modifyProject, createProject, repairTarget]
         .forEach((write) => expect(write).not.toHaveBeenCalled());
 };
@@ -137,20 +119,13 @@ describe('curated export import', () => {
             create: createNode,
             findChildren,
             refresh,
+            push: pushNode,
         } as never);
         findChildren.mockReturnValue({ total: 0, count: 0, hits: [] });
         jest.mocked(nodeLib.connect).mockReturnValue({
             get: getSystemNode,
             modify: modifySystemNode,
         } as never);
-        modifyNode.mockImplementation(({ editor }) =>
-            editor({
-                _id: 'invalid-content',
-                _path: '/content/www.nav.no/invalid-content',
-                _name: 'invalid-content',
-                data: { body: 'Before\u0001after' },
-            })
-        );
     });
 
     it('rejects users without an administrative role', () => {
@@ -172,12 +147,17 @@ describe('curated export import', () => {
                 environment: 'localhost',
                 importEnabled: true,
                 importFormatVersion: 2,
+                importInProgress: false,
             },
         });
         expect(getRepoConnection).not.toHaveBeenCalled();
         expect(nodeLib.connect).not.toHaveBeenCalled();
         expect(getProject).not.toHaveBeenCalled();
         expectNoWrites();
+
+        app.config.curatedImportInProgress = 'true';
+        expect(get().body).toMatchObject({ importInProgress: true });
+        delete app.config.curatedImportInProgress;
 
         Object.assign(app.config, { curatedImportEnabled: 'false' });
         expect(get().status).toBe(403);
@@ -221,7 +201,7 @@ describe('curated export import', () => {
         }
     );
 
-    it.each(['configure-login', 'configure-projects', 'prepare-project-import', 'normalize-import-paths', 'restore-supplements', 'validate-import', 'repair-metadata', 'validate-fidelity'])(
+    it.each(['configure-login', 'configure-projects', 'prepare-project-import', 'normalize-import-paths', 'repair-metadata', 'validate-fidelity', 'synchronize-published'])(
         'rejects arbitrary repositories and branches for %s before connecting',
         (action) => {
             for (const override of [
@@ -235,7 +215,6 @@ describe('curated export import', () => {
                     repository: childRepository,
                     branch: 'draft',
                     entries: [],
-                    supplements: [],
                     ...override,
                 }));
                 expect(response.status).toBe(400);
@@ -272,50 +251,73 @@ describe('curated export import', () => {
         expectNoWrites();
     });
 
-    it.each([
-        { contentId: 'role:system.admin' },
-        { repoId: 'system-repo' },
-        { branch: 'unknown' },
-        { node: { member: ['user:system:attacker'] } },
-        { node: { _id: 'different-id' } },
-        { node: { _path: '/identity/roles/system.admin' } },
-        { node: { _name: 'different-name' } },
-        { node: { _nodeType: 'principal' } },
-        { node: { _parentPath: '/identity' } },
-        { node: { _permissions: [{ principal: 'role:system.admin', allow: ['INVALID'] }] } },
-        { node: { _permissions: { member: ['user:system:attacker'] } } },
-        { node: { _inheritsPermissions: 'false' } },
-        { node: { _indexConfig: { default: 'invalid' } } },
-        { node: { originProject: 'other-project' } },
-        { invalidValuePaths: ['attachment.binary'], node: { attachment: { binary: 'secret' } } },
-        { node: { data: { body: 'still\u0001invalid' } } },
-    ])('rejects a malicious later supplement before writes (%j)', (override) => {
-        const valid = validSupplement();
-        const invalid = {
-            ...valid,
-            ...override,
-            node: { ...valid.node, ...override.node },
+    it('synchronizes source-published draft nodes to master', () => {
+        const entry = {
+            contentId: 'content-id',
+            paths: {
+                draft: `${rootPath}/page`,
+                master: `${rootPath}/page`,
+            },
+            repoId: childRepository,
+            branches: ['draft', 'master'],
         };
-        const first = {
-            ...valid,
-            contentId: 'first-id',
-            contentPath: '/content/www.nav.no/first',
-            node: { ...valid.node, _id: 'first-id', _path: '/content/www.nav.no/first', _name: 'first' },
-        };
-        const response = post(importRequest({
-            action: 'restore-supplements',
+        getNode.mockReturnValue({ _id: entry.contentId, _path: entry.paths.draft });
+        pushNode.mockReturnValue({ success: [entry.contentId], failed: [] });
+
+        expect(post(importRequest({
+            action: 'synchronize-published',
             repository: childRepository,
-            branch: 'draft',
-            supplements: [first, invalid],
-        }));
-        expect(response.status).toBe(400);
-        expect(getRepoConnection).not.toHaveBeenCalled();
-        expectNoWrites();
+            entries: [entry],
+        }))).toMatchObject({
+            status: 200,
+            body: { synchronizedPublished: 1 },
+        });
+        expect(pushNode).toHaveBeenCalledWith({
+            keys: [entry.contentId],
+            target: 'master',
+            resolve: false,
+        });
     });
+
+    it.each(['restore-supplements', 'validate-import', 'unknown-action'])(
+        'rejects removed or unknown action %s without reading or writing repositories',
+        (action) => {
+            const response = post(importRequest({
+                action,
+                repository: childRepository,
+                branch: 'draft',
+                entries: [relocationEntry('content-id', `${rootPath}/page`)],
+                supplements: [{
+                    contentId: 'content-id',
+                    contentPath: `${rootPath}/page`,
+                    repoId: childRepository,
+                    branch: 'draft',
+                    invalidValuePaths: ['data.body'],
+                    node: {
+                        _id: 'content-id',
+                        _path: `${rootPath}/page`,
+                        _name: 'page',
+                        type: 'no.nav.navno:main-article',
+                        data: { body: 'Sanitized content' },
+                    },
+                }],
+            }));
+            expect(response).toMatchObject({
+                status: 400,
+                headers: { 'Cache-Control': 'no-store' },
+                body: { message: 'Invalid curated export import action or payload' },
+            });
+            expect(getRepoConnection).not.toHaveBeenCalled();
+            expect(nodeLib.connect).not.toHaveBeenCalled();
+            expect(getProject).not.toHaveBeenCalled();
+            expect(validateTarget).not.toHaveBeenCalled();
+            expectNoWrites();
+        }
+    );
 
     it('rejects prototype-changing payload properties', () => {
         const response = post({
-            body: '{"action":"restore-supplements","supplements":[],"__proto__":{"member":"attacker"}}',
+            body: '{"action":"configure-login","__proto__":{"member":"attacker"}}',
         } as never);
         expect(response.status).toBe(400);
         expectNoWrites();
@@ -399,27 +401,6 @@ describe('curated export import', () => {
             action: 'configure-projects',
             applications: [],
             projects,
-        }));
-        expect(response.status).toBe(500);
-        expectNoWrites();
-    });
-
-    it('preflights every supplement target ownership before the first modification', () => {
-        const first = validSupplement();
-        const second = {
-            ...first,
-            contentId: 'second-id',
-            contentPath: '/content/www.nav.no/second',
-            node: { ...first.node, _id: 'second-id', _path: '/content/www.nav.no/second', _name: 'second' },
-        };
-        getNode.mockImplementation((key) => key === 'second-id'
-            ? { _id: 'second-id', _path: '/outside/second' }
-            : { _id: 'content-id', _path: '/content/www.nav.no/page', data: { body: 'Text' } });
-        const response = post(importRequest({
-            action: 'restore-supplements',
-            repository: childRepository,
-            branch: 'draft',
-            supplements: [first, second],
         }));
         expect(response.status).toBe(500);
         expectNoWrites();
@@ -975,260 +956,4 @@ describe('curated export import', () => {
         });
     });
 
-    it('restores a sanitized supplement with its original content id', () => {
-        getNode.mockImplementation((key: string) => {
-            if (key === '/content/www.nav.no') {
-                return { _id: 'parent-id', _path: key };
-            }
-            return {
-                _id: 'invalid-content',
-                _path: '/content/www.nav.no/invalid-content',
-                data: { body: 'Before\u0001after' },
-            };
-        });
-        const supplement = {
-            contentId: 'invalid-content',
-            contentPath: '/content/www.nav.no/invalid-content',
-            repoId: 'com.enonic.cms.default',
-            branch: 'draft',
-            invalidValuePaths: ['data.body'],
-            node: {
-                _id: 'invalid-content',
-                _path: '/content/www.nav.no/invalid-content',
-                _name: 'invalid-content',
-                _childOrder: 'displayName ASC',
-                displayName: 'Invalid content',
-                type: 'no.nav.navno:main-article',
-                data: { body: 'Beforeafter' },
-                x: {},
-            },
-        };
-
-        const response = post({
-            body: JSON.stringify({
-                action: 'restore-supplements',
-                repository: supplement.repoId,
-                branch: supplement.branch,
-                supplements: [supplement],
-            }),
-        } as never);
-
-        expect(response).toMatchObject({
-            status: 200,
-            body: {
-                restoredSupplements: [
-                    {
-                        contentId: 'invalid-content',
-                        contentPath: '/content/www.nav.no/invalid-content',
-                        invalidValuePaths: ['data.body'],
-                    },
-                ],
-            },
-        });
-        expect(deleteNode).not.toHaveBeenCalled();
-    });
-
-    it('repairs only listed string leaves while preserving typed editor values and metadata', () => {
-        const reference = { type: 'Reference', value: 'linked-id' };
-        const date = { type: 'DateTime', value: '2026-09-08T12:00:00Z' };
-        const binary = { type: 'BinaryReference', value: 'document.pdf' };
-        const target = {
-            _id: 'content-id',
-            _path: '/content/www.nav.no/page',
-            _nodeType: 'content',
-            _childOrder: '_name ASC',
-            _manualOrderValue: 10,
-            _indexConfig: { analyzer: 'document_index_default' },
-            _permissions: [{ principal: 'role:system.admin', allow: ['READ'] }],
-            modifiedTime: date,
-            processedReferences: [reference],
-            validationErrors: [],
-            archivedTime: date,
-            data: {
-                body: 'Before\u0001after',
-                link: reference,
-                items: [{ text: 'Nested\u0001text', link: reference }],
-            },
-            attachment: [{ name: 'document.pdf', binary }],
-        };
-        getNode.mockReturnValue(target);
-        modifyNode.mockImplementation(({ editor }) => editor(target));
-        const supplement = validSupplement();
-        const response = post(importRequest({
-            action: 'restore-supplements',
-            repository: childRepository,
-            branch: 'draft',
-            supplements: [{
-                ...supplement,
-                invalidValuePaths: ['data.body', 'data.items[0].text'],
-                node: {
-                    ...supplement.node,
-                    _childOrder: 'displayName ASC',
-                    _manualOrderValue: 99,
-                    modifiedTime: '2026-09-09T12:00:00Z',
-                    processedReferences: ['different-id'],
-                    validationErrors: [{ message: 'A validation message' }],
-                    originalName: 'original',
-                    originalParentPath: '/content/www.nav.no',
-                    archivedTime: '2026-09-09T12:00:00Z',
-                    archivedBy: 'user:system:source-editor',
-                    data: {
-                        body: 'Beforeafter',
-                        link: 'different-id',
-                        items: [{ text: 'Nestedtext', link: 'different-id' }],
-                    },
-                    attachment: [{ name: 'document.pdf', binary: 'document.pdf' }],
-                },
-            }],
-        }));
-        expect(response.status).toBe(200);
-        expect(target.data.body).toBe('Beforeafter');
-        expect(target.data.items[0].text).toBe('Nestedtext');
-        expect(target.data.link).toBe(reference);
-        expect(target.data.items[0].link).toBe(reference);
-        expect(target.modifiedTime).toBe(date);
-        expect(target.processedReferences[0]).toBe(reference);
-        expect(target.validationErrors).toEqual([]);
-        expect(target.archivedTime).toBe(date);
-        expect(target.attachment[0].binary).toBe(binary);
-        expect(target._childOrder).toBe('_name ASC');
-        expect(target._manualOrderValue).toBe(10);
-        expect(target._indexConfig).toEqual({ analyzer: 'document_index_default' });
-        expect(target._permissions).toEqual([{ principal: 'role:system.admin', allow: ['READ'] }]);
-        expect(createNode).not.toHaveBeenCalled();
-        expect(deleteNode).not.toHaveBeenCalled();
-    });
-
-    it.each([
-        '_permissions[0].principal',
-        '_indexConfig.analyzer',
-        'data.__proto__.body',
-        'data.constructor',
-        'data.items[-1].text',
-        'data.items[01].text',
-        'data.items[4294967295].text',
-        'data.missing',
-        'data',
-    ])('rejects invalid or non-string supplement leaf paths before any writes: %s', (path) => {
-        const response = post(importRequest({
-            action: 'restore-supplements',
-            repository: childRepository,
-            branch: 'draft',
-            supplements: [{ ...validSupplement(), invalidValuePaths: [path] }],
-        }));
-        expect(response.status).toBe(400);
-        expect(getRepoConnection).not.toHaveBeenCalled();
-        expectNoWrites();
-    });
-
-    it('checks every native-imported node before modifying the first supplement', () => {
-        const first = validSupplement();
-        const second = {
-            ...first,
-            contentId: 'second-id',
-            contentPath: '/content/www.nav.no/second',
-            node: { ...first.node, _id: 'second-id', _path: '/content/www.nav.no/second', _name: 'second' },
-        };
-        getNode.mockImplementation((key) => key === 'content-id'
-            ? { _id: 'content-id', _path: '/content/www.nav.no/page', data: { body: 'Original' } }
-            : null);
-        const response = post(importRequest({
-            action: 'restore-supplements',
-            repository: childRepository,
-            branch: 'draft',
-            supplements: [first, second],
-        }));
-        expect(response.status).toBe(500);
-        expect(response.body.message).toContain('second-id');
-        expectNoWrites();
-    });
-
-    it('checks every target leaf before modifying the first supplement', () => {
-        const first = validSupplement();
-        const second = {
-            ...first,
-            contentId: 'second-id',
-            contentPath: '/content/www.nav.no/second',
-            node: { ...first.node, _id: 'second-id', _path: '/content/www.nav.no/second', _name: 'second' },
-        };
-        getNode.mockImplementation((key) => key === 'content-id'
-            ? { _id: 'content-id', _path: '/content/www.nav.no/page', data: { body: 'Original' } }
-            : { _id: 'second-id', _path: '/content/www.nav.no/second', data: { body: 42 } });
-        const response = post(importRequest({
-            action: 'restore-supplements',
-            repository: childRepository,
-            branch: 'draft',
-            supplements: [first, second],
-        }));
-        expect(response.status).toBe(500);
-        expectNoWrites();
-    });
-
-    it('does not replace typed non-string values encountered in an XP editor', () => {
-        const supplement = validSupplement();
-        const typedReference = { type: 'Reference', value: 'linked-id' };
-        getNode.mockReturnValue({
-            _id: supplement.contentId,
-            _path: supplement.contentPath,
-            data: { body: 'Readable reference representation' },
-        });
-        const target = {
-            _id: supplement.contentId,
-            _path: supplement.contentPath,
-            data: { body: typedReference },
-        };
-        modifyNode.mockImplementation(({ editor }) => editor(target));
-        const response = post(importRequest({
-            action: 'restore-supplements',
-            repository: childRepository,
-            branch: 'draft',
-            supplements: [supplement],
-        }));
-        expect(response.status).toBe(500);
-        expect(target.data.body).toBe(typedReference);
-        expect(createNode).not.toHaveBeenCalled();
-        expect(deleteNode).not.toHaveBeenCalled();
-    });
-
-    it('fails without deleting collisions or recreating a missing native-imported ID', () => {
-        getNode.mockImplementation((key: string) => {
-            if (key === 'expected-id') {
-                return null;
-            }
-            if (key === '/content/www.nav.no/missing') {
-                return { _id: 'wrong-id', _path: key };
-            }
-            return { _id: 'parent-id', _path: key };
-        });
-        createNode.mockReturnValue({
-            _id: 'expected-id',
-            _path: '/content/www.nav.no/missing',
-        });
-
-        const response = post({
-            body: JSON.stringify({
-                action: 'restore-supplements',
-                repository: 'com.enonic.cms.default',
-                branch: 'draft',
-                supplements: [{
-                    contentId: 'expected-id',
-                    contentPath: '/content/www.nav.no/missing',
-                    repoId: 'com.enonic.cms.default',
-                    branch: 'draft',
-                    invalidValuePaths: ['data.text'],
-                    node: {
-                        _id: 'expected-id',
-                        _path: '/content/www.nav.no/missing',
-                        _name: 'missing',
-                        type: 'no.nav.navno:main-article',
-                        data: { text: 'Sanitized' },
-                    },
-                }],
-            }),
-        } as never);
-
-        expect(response.status).toBe(500);
-        expect(response.body.message).toContain('native import must preserve the exact content ID');
-        expectNoWrites();
-    });
 });

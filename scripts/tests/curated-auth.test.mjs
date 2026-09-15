@@ -70,6 +70,26 @@ test('returns credentials collected by the interactive shell prompt', () => {
     }
 });
 
+test('requires an interactive terminal for credentials', () => {
+    const originalInputTty = process.stdin.isTTY;
+    const originalErrorTty = process.stderr.isTTY;
+    Object.defineProperty(process.stdin, 'isTTY', { value: false, configurable: true });
+    Object.defineProperty(process.stderr, 'isTTY', { value: false, configurable: true });
+    try {
+        assert.throws(() => promptForAuth('Source'), /interactive terminal/);
+        assert.throws(() => promptForPassword('Target SU password'), /interactive terminal/);
+    } finally {
+        Object.defineProperty(process.stdin, 'isTTY', {
+            value: originalInputTty,
+            configurable: true,
+        });
+        Object.defineProperty(process.stderr, 'isTTY', {
+            value: originalErrorTty,
+            configurable: true,
+        });
+    }
+});
+
 test('returns a password collected silently by the interactive shell prompt', () => {
     const originalInputTty = process.stdin.isTTY;
     const originalErrorTty = process.stderr.isTTY;

@@ -13,7 +13,7 @@ import { dirname, resolve } from 'node:path';
 import { Readable, Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { updateNativeExpectation, writeNativeNodeXml } from './native-export.mjs';
-import { getXpSessionCookie } from './xp-session.mjs';
+import { getXpSessionCookie } from './curated-auth.mjs';
 import { fetchXp } from './curated-http.mjs';
 
 const BATCH_SIZE = 100;

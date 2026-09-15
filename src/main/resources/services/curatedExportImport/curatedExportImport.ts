@@ -4,7 +4,6 @@ import * as appLib from '/lib/xp/app';
 import * as authLib from '/lib/xp/auth';
 import * as nodeLib from '/lib/xp/node';
 import * as projectLib from '/lib/xp/project';
-import * as schedulerLib from '/lib/xp/scheduler';
 import { Project } from '/lib/xp/project';
 import { Content } from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
@@ -29,7 +28,6 @@ const REQUIRED_PROJECTS = [
     { id: 'navno-engelsk', language: 'en', parents: ['default'] },
     { id: 'navno-nynorsk', language: 'nn', parents: ['default'] },
 ] as const;
-const REQUIRED_REPO_IDS = REQUIRED_PROJECTS.map(({ id }) => `com.enonic.cms.${id}`);
 const MAX_RELOCATION_ENTRIES = 20000;
 const MAX_RELOCATION_DESCENDANTS = 1000;
 
@@ -41,13 +39,12 @@ type ImportEntry = {
 };
 
 type RequestBody = {
-    action?: 'configure-login' | 'configure-projects' | 'prepare-project-import' | 'normalize-import-paths' | 'restore-supplements' | 'validate-import' | 'repair-metadata' | 'validate-fidelity';
+    action?: 'configure-login' | 'configure-projects' | 'prepare-project-import' | 'normalize-import-paths' | 'repair-metadata' | 'validate-fidelity' | 'synchronize-published';
     applications?: RequiredApplication[];
     projects?: Project[];
     repository?: string;
     branch?: 'draft' | 'master';
     entries?: ImportEntry[];
-    supplements?: ImportSupplement[];
     scope?: 'full' | 'page';
     expectations?: CuratedTargetExpectation[];
     absentContentIds?: string[];
@@ -79,15 +76,6 @@ const configureLogin = () => {
     return { disabledAdminUserCreation: true, removedLegacyBootstrapUser };
 };
 
-type ImportSupplement = {
-    contentId: string;
-    contentPath: string;
-    repoId: string;
-    branch: 'draft' | 'master';
-    invalidValuePaths: string[];
-    node: RepoNode<Content>;
-};
-
 type RequiredApplication = {
     key: string;
     version: string | null;
@@ -96,105 +84,8 @@ type RequiredApplication = {
     required?: boolean;
 };
 
-const SUPPLEMENT_NODE_KEYS = [
-    '_childOrder',
-    '_inheritsPermissions',
-    '_manualOrderValue',
-    '_permissions',
-    '_indexConfig',
-    'displayName',
-    'type',
-    'data',
-    'x',
-    'page',
-    'fragment',
-    'components',
-    'language',
-    'creator',
-    'modifier',
-    'owner',
-    'createdTime',
-    'modifiedTime',
-    'originProject',
-    'childOrder',
-    'workflow',
-    'inherit',
-    'variantOf',
-];
-const READ_ONLY_NODE_KEYS = [
-    '_id',
-    '_name',
-    '_path',
-    '_versionKey',
-    '_ts',
-    '_state',
-    '_nodeType',
-    'attachment',
-    'attachments',
-    'hasChildren',
-    'valid',
-    'publish',
-    'processedReferences',
-    'validationErrors',
-    'originalName',
-    'originalParentPath',
-    'archivedTime',
-    'archivedBy',
-];
-
-const RESTORABLE_TEXT_ROOTS = [
-    'displayName',
-    'data',
-    'x',
-    'page',
-    'fragment',
-    'components',
-    'language',
-    'workflow',
-];
-
 const isRecord = (value: unknown): value is Record<string, unknown> =>
     value !== null && typeof value === 'object' && !Array.isArray(value);
-
-const parseStringLeafPath = (path: string): Array<string | number> | null => {
-    if (!/^[^.[\]]+(?:\.[^.[\]]+|\[(?:0|[1-9][0-9]*)\])*$/.test(path)) {
-        return null;
-    }
-    const segments = (path.match(/[^.[\]]+|\[\d+\]/g) || []).map((segment) =>
-        segment.startsWith('[') ? Number(segment.slice(1, -1)) : segment
-    );
-    if (
-        !RESTORABLE_TEXT_ROOTS.includes(segments[0] as string) ||
-        segments.some((segment) =>
-            typeof segment === 'number'
-                ? segment >= 4294967295
-                : ['__proto__', 'prototype', 'constructor'].includes(segment)
-        )
-    ) {
-        return null;
-    }
-    return segments;
-};
-
-const getStringLeaf = (node: unknown, segments: Array<string | number>) => {
-    let parent: unknown = node;
-    for (let index = 0; index < segments.length; index += 1) {
-        const key = segments[index];
-        if (
-            (typeof key === 'number' ? !Array.isArray(parent) : !isRecord(parent)) ||
-            !Object.prototype.hasOwnProperty.call(parent, key)
-        ) {
-            return null;
-        }
-        const object = parent as Record<string | number, unknown>;
-        const value = object[key];
-        if (index === segments.length - 1) {
-            return typeof value === 'string' ? { parent: object, key, value } : null;
-        }
-        parent = value;
-    }
-    return null;
-};
 
 const isPrincipalKey = (value: unknown) =>
     typeof value === 'string' &&
@@ -212,79 +103,6 @@ const isProjectPermissions = (value: unknown) =>
 const isProjectReadAccess = (value: unknown) =>
     isRecord(value) &&
     Object.keys(value).every((key) => key === 'public' && typeof value[key] === 'boolean');
-
-const isNodePermissions = (value: unknown) =>
-    Array.isArray(value) &&
-    value.every(
-        (permission) =>
-            isRecord(permission) &&
-            isPrincipalKey(permission.principal) &&
-            Object.keys(permission).every((key) => ['principal', 'allow', 'deny'].includes(key)) &&
-            ['allow', 'deny'].every(
-                (key) =>
-                    permission[key] === undefined ||
-                    (Array.isArray(permission[key]) &&
-                        permission[key].every((action: unknown) =>
-                            [
-                                'READ',
-                                'CREATE',
-                                'MODIFY',
-                                'DELETE',
-                                'PUBLISH',
-                                'READ_PERMISSIONS',
-                                'WRITE_PERMISSIONS',
-                            ].includes(action as string)
-                        ))
-            )
-    );
-
-const isIndexConfigEntry = (value: unknown) =>
-    isRecord(value) &&
-    Object.keys(value).every((key) => {
-        if (['languages', 'indexValueProcessors'].includes(key)) {
-            return Array.isArray(value[key]) &&
-                value[key].every((item: unknown) => typeof item === 'string');
-        }
-        return (
-            ['decideByType', 'enabled', 'nGram', 'fulltext', 'includeInAllText', 'path'].includes(key) &&
-            typeof value[key] === 'boolean'
-        );
-    });
-
-const isNodeIndexConfig = (value: unknown) =>
-    isRecord(value) &&
-    Object.keys(value).every((key) => {
-        if (key === 'analyzer') {
-            return typeof value[key] === 'string';
-        }
-        if (key === 'default' || key === 'allText') {
-            return isIndexConfigEntry(value[key]);
-        }
-        if (key === 'configs') {
-            return Array.isArray(value[key]) &&
-                value[key].every(
-                    (entry: unknown) =>
-                        isRecord(entry) &&
-                        typeof entry.path === 'string' &&
-                        isIndexConfigEntry(entry.config)
-                );
-        }
-        return false;
-    });
-
-const hasValidNodeMetadata = (node: Record<string, unknown>) =>
-    (node._permissions === undefined || isNodePermissions(node._permissions)) &&
-    (node._indexConfig === undefined || isNodeIndexConfig(node._indexConfig)) &&
-    (node._inheritsPermissions === undefined || typeof node._inheritsPermissions === 'boolean') &&
-    (node._childOrder === undefined || typeof node._childOrder === 'string') &&
-    (node._manualOrderValue === undefined ||
-        (typeof node._manualOrderValue === 'number' && isFinite(node._manualOrderValue))) &&
-    (node.originProject === undefined ||
-        REQUIRED_PROJECTS.some(({ id }) => id === node.originProject)) &&
-    (node.variantOf === undefined || isCuratedContentId(node.variantOf)) &&
-    (node.inherit === undefined ||
-        (Array.isArray(node.inherit) &&
-            node.inherit.every((value) => ['CONTENT', 'PARENT', 'NAME', 'SORT'].includes(value))));
 
 const hasUnsafeProperty = (value: unknown): boolean => {
     if (Array.isArray(value)) {
@@ -326,55 +144,13 @@ const isImportEntry = (value: unknown): value is ImportEntry => {
     );
 };
 
-const isImportSupplement = (value: unknown): value is ImportSupplement => {
-    if (
-        !isRecord(value) ||
-        !isCuratedRepository(value.repoId) ||
-        !isCuratedBranch(value.branch) ||
-        !isCuratedContentId(value.contentId) ||
-        !isCuratedContentPath(value.contentPath) ||
-        !Array.isArray(value.invalidValuePaths) ||
-        value.invalidValuePaths.length === 0 ||
-        value.invalidValuePaths.some((path) => typeof path !== 'string') ||
-        !isRecord(value.node)
-    ) {
-        return false;
-    }
-    const node = value.node;
-    return (
-        node._id === value.contentId &&
-        node._path === value.contentPath &&
-        node._name === value.contentPath.slice(value.contentPath.lastIndexOf('/') + 1) &&
-        (node._nodeType === undefined || node._nodeType === 'content') &&
-        typeof node.type === 'string' &&
-        /^(no\.nav\.navno|portal|base|media):[a-zA-Z0-9-]+$/.test(node.type) &&
-        (node.attachment === undefined ||
-            (Array.isArray(node.attachment)
-                ? node.attachment.every(isRecord)
-                : isRecord(node.attachment))) &&
-        (node.attachments === undefined || isRecord(node.attachments)) &&
-        Object.keys(node).every(
-            (key) => SUPPLEMENT_NODE_KEYS.includes(key) || READ_ONLY_NODE_KEYS.includes(key)
-        ) &&
-        value.invalidValuePaths.every((path) => {
-            const segments = parseStringLeafPath(path);
-            return segments !== null && getStringLeaf(node, segments) !== null;
-        }) &&
-        hasValidNodeMetadata(node) &&
-        !containsInvalidXmlCharacter(node)
-    );
-};
-
-const hasDuplicateTargets = (entries: ImportEntry[] | ImportSupplement[]) => {
+const hasDuplicateTargets = (entries: ImportEntry[]) => {
     const ids = new Set<string>();
     const paths = new Set<string>();
     return entries.some((entry) => {
-        const branches = 'branches' in entry ? entry.branches : [entry.branch];
-        return branches.some((branch) => {
+        return entry.branches.some((branch) => {
             const id = `${entry.repoId}:${branch}:${entry.contentId}`;
-            const path = `${entry.repoId}:${branch}:${
-                'paths' in entry ? entry.paths[branch] : entry.contentPath
-            }`;
+            const path = `${entry.repoId}:${branch}:${entry.paths[branch]}`;
             if (ids.has(id) || paths.has(path)) {
                 return true;
             }
@@ -405,24 +181,12 @@ const validateRequest = (body: RequestBody) => {
         throw new Error('Invalid import entries');
     }
     if (
-        body.supplements !== undefined &&
-        (!Array.isArray(body.supplements) ||
-            !body.supplements.every(isImportSupplement) ||
-            hasDuplicateTargets(body.supplements))
-    ) {
-        throw new Error('Invalid import supplements');
-    }
-    if (
         body.repository &&
         body.branch &&
-        (body.entries?.some(
+        body.entries?.some(
             (entry) =>
                 entry.repoId !== body.repository || !entry.branches.includes(body.branch!)
-        ) ||
-            body.supplements?.some(
-                (supplement) =>
-                    supplement.repoId !== body.repository || supplement.branch !== body.branch
-            ))
+        )
     ) {
         throw new Error('Import items do not match the requested repository and branch');
     }
@@ -877,172 +641,52 @@ const prepareProjectImport = (
     };
 };
 
-const restoreSupplements = (
-    repository: string,
-    branch: 'draft' | 'master',
-    supplements: ImportSupplement[]
-) => {
-    if (
-        supplements.some(
-            ({ repoId, branch: supplementBranch }) =>
-                repoId !== repository || supplementBranch !== branch
-        )
-    ) {
-        throw new Error(`Import supplements do not match ${repository}:${branch}`);
-    }
-
-    return runInContext({ repository, branch, asAdmin: true }, () => {
-        const connection = getRepoConnection({ repoId: repository, branch, asAdmin: true });
-        const plans = supplements.map((supplement) => {
-            const content = connection.get<Content>(supplement.contentId);
-            if (!content) {
-                throw new Error(
-                    `Native-imported supplement ${repository}:${branch}:${supplement.contentId} is missing; native import must preserve the exact content ID`
-                );
-            }
-            assertContentOwnership(content, supplement.contentId, supplement.contentPath);
-            const patches = supplement.invalidValuePaths.map((path) => {
-                const segments = parseStringLeafPath(path)!;
-                const source = getStringLeaf(supplement.node, segments)!;
-                const target = getStringLeaf(content, segments);
-                if (!target) {
-                    throw new Error(
-                        `Native-imported supplement ${supplement.contentId} has no string leaf at ${path}`
-                    );
-                }
-                return { path, segments, value: source.value };
-            });
-            return { supplement, patches };
-        });
-        return plans.map(({ supplement, patches }) => {
-            const restoredNode = connection.modify<Content>({
-                key: supplement.contentId,
-                editor: (targetNode) => {
-                    assertContentOwnership(targetNode, supplement.contentId, supplement.contentPath);
-                    const leaves = patches.map((patch) => {
-                        const leaf = getStringLeaf(targetNode, patch.segments);
-                        if (!leaf) {
-                            throw new Error(
-                                `Supplement ${supplement.contentId} cannot replace a missing or typed non-string leaf at ${patch.path}`
-                            );
-                        }
-                        return { ...patch, leaf };
-                    });
-                    // Retain XP's typed reference, date and binary editor values everywhere else.
-                    leaves.forEach(({ leaf, value }) => {
-                        leaf.parent[leaf.key] = value;
-                    });
-                    return targetNode;
-                },
-            });
-            if (restoredNode._id !== supplement.contentId || restoredNode._path !== supplement.contentPath) {
-                throw new Error(`Supplement verification failed for ${repository}:${branch}:${supplement.contentId}`);
-            }
-            return {
-                contentId: restoredNode._id,
-                contentPath: restoredNode._path,
-                invalidValuePaths: supplement.invalidValuePaths,
-            };
-        });
-    });
-};
-
 const normalizeImportPaths = (
     repository: string,
     branch: 'draft' | 'master',
     entries: ImportEntry[]
 ) => relocateImportPaths(repository, branch, entries, false).relocatedPaths;
 
-const containsInvalidXmlCharacter = (value: unknown): boolean => {
-    if (typeof value === 'string') {
-        for (let index = 0; index < value.length; index += 1) {
-            const code = value.charCodeAt(index);
-            if (code < 0x20 && code !== 0x09 && code !== 0x0a && code !== 0x0d) {
-                return true;
-            }
-        }
-        return false;
+const synchronizePublished = (repository: string, entries: ImportEntry[]) => {
+    if (
+        !isCuratedRepository(repository) ||
+        entries.length > MAX_RELOCATION_ENTRIES ||
+        entries.some(
+            (entry) =>
+                entry.repoId !== repository ||
+                !entry.branches.includes('draft') ||
+                !entry.branches.includes('master')
+        )
+    ) {
+        throw new Error(`Invalid published synchronization batch for ${repository}`);
     }
-    if (Array.isArray(value)) {
-        return value.some(containsInvalidXmlCharacter);
-    }
-    if (value && Object.prototype.toString.call(value) === '[object Object]') {
-        return Object.keys(value).some((key) =>
-            containsInvalidXmlCharacter((value as Record<string, unknown>)[key])
-        );
-    }
-    return false;
-};
 
-const validateImport = (entries: ImportEntry[], supplements: ImportSupplement[]) => {
-    const errors: string[] = [];
-    let missingEntries = 0;
-    let pathMismatches = 0;
-    REQUIRED_REPO_IDS.forEach((repository) => {
-        (['draft', 'master'] as const).forEach((branch) => {
-            const branchEntries = entries.filter(
-                (entry) => entry.repoId === repository && entry.branches.includes(branch)
-            );
-            const connection = getRepoConnection({ repoId: repository, branch, asAdmin: true });
-            runInContext({ repository, branch, asAdmin: true }, () => {
-                branchEntries.forEach((entry) => {
-                    const content = connection.get<Content>(entry.contentId);
-                    const expectedPath = entry.paths[branch];
-                    if (!content) {
-                        missingEntries += 1;
-                        if (errors.length < 20) {
-                            const pathCollision = expectedPath
-                                ? connection.get<Content>(expectedPath)
-                                : null;
-                            errors.push(
-                                `missing:${repository}:${branch}:${entry.contentId}:collision:${pathCollision?._id || 'none'}`
-                            );
-                        }
-                    } else if (content._path !== expectedPath) {
-                        pathMismatches += 1;
-                        if (errors.length < 20) {
-                            errors.push(
-                                `path:${repository}:${branch}:${entry.contentId}:${content._path}:${expectedPath}`
-                            );
-                        }
-                    }
-                });
+    return runInContext({ repository, branch: 'draft', asAdmin: true }, () => {
+        const connection = getRepoConnection({ repoId: repository, branch: 'draft', asAdmin: true });
+        let synchronizedEntries = 0;
+        for (let start = 0; start < entries.length; start += 100) {
+            const batch = entries.slice(start, start + 100);
+            batch.forEach((entry) => {
+                const content = connection.get<Content>(entry.contentId);
+                assertContentOwnership(content, entry.contentId, entry.paths.draft);
+                if (!content) {
+                    throw new Error(`Selected draft content is missing: ${entry.contentId}`);
+                }
             });
-            supplements
-                .filter((supplement) => supplement.repoId === repository && supplement.branch === branch)
-                .forEach((supplement) => {
-                    const node = connection.get<Content>(supplement.contentId);
-                    if (
-                        !node ||
-                        node._path !== supplement.contentPath ||
-                        containsInvalidXmlCharacter(node)
-                    ) {
-                        if (errors.length < 20) {
-                            errors.push(`supplement:${repository}:${branch}:${supplement.contentId}`);
-                        }
-                    }
-                });
-        });
+            const result = connection.push({
+                keys: batch.map(({ contentId }) => contentId),
+                target: 'master',
+                resolve: false,
+            });
+            if (result.failed.length > 0 || result.success.length !== batch.length) {
+                throw new Error(
+                    `Could not synchronize published content: ${JSON.stringify(result.failed)}`
+                );
+            }
+            synchronizedEntries += batch.length;
+        }
+        return synchronizedEntries;
     });
-    return {
-        validationLevel: 'identity-only',
-        checkedEntries: entries.reduce((total, entry) => total + entry.branches.length, 0),
-        checkedSupplements: supplements.length,
-        missingEntries,
-        pathMismatches,
-        errors,
-        projects: REQUIRED_PROJECTS.map(({ id }) => {
-            const project = projectLib.get({ id });
-            return { id, displayName: project?.displayName || null };
-        }),
-        officeSchedules: [
-            'office_import_schedule',
-            'legacy_office_import_schedule',
-        ].map((name) => ({
-            name,
-            enabled: schedulerLib.get({ name })?.enabled ?? false,
-        })),
-    };
 };
 
 const getImportAccessError = () => {
@@ -1063,6 +707,7 @@ export const get = () => ({
             environment: 'localhost',
             importEnabled: true,
             importFormatVersion: 2,
+            importInProgress: app.config.curatedImportInProgress === 'true',
         })),
     headers: { 'Cache-Control': 'no-store' },
 });
@@ -1140,31 +785,13 @@ export const post = (req: Request) => {
             });
         }
         if (
-            body.action === 'restore-supplements' &&
+            body.action === 'synchronize-published' &&
             typeof body.repository === 'string' &&
-            (body.branch === 'draft' || body.branch === 'master') &&
-            Array.isArray(body.supplements)
+            Array.isArray(body.entries)
         ) {
             return jsonResponse(200, {
-                restoredSupplements: restoreSupplements(
-                    body.repository,
-                    body.branch,
-                    body.supplements
-                ),
+                synchronizedPublished: synchronizePublished(body.repository, body.entries),
             });
-        }
-        if (
-            body.action === 'validate-import' &&
-            Array.isArray(body.entries) &&
-            Array.isArray(body.supplements)
-        ) {
-            const validation = validateImport(body.entries, body.supplements);
-            return jsonResponse(
-                validation.missingEntries === 0 && validation.pathMismatches === 0 && validation.errors.length === 0
-                    ? 200
-                    : 409,
-                validation
-            );
         }
         return jsonResponse(400, { message: 'Invalid curated export import action or payload' });
     } catch (error) {

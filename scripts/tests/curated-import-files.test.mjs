@@ -17,7 +17,7 @@ import {
     batchCuratedExpectations,
     loadCuratedExpectations,
 } from '../lib/curated-import-expectations.mjs';
-import { importCuratedBundle } from '../import-curated-export.mjs';
+import { getSourcePublishedEntries, importCuratedBundle } from '../import-curated-export.mjs';
 
 const fixture = (t) => {
     const directory = mkdtempSync(join(tmpdir(), 'curated-import-files-'));
@@ -223,16 +223,26 @@ test('reimports deferred IDs after normalization and then repairs and validates 
     const f = fixture(t);
     const files = f.prepare();
     const calls = [];
+    const progress = [];
     await importCuratedBundle({
         manifest: f.manifest,
         nativeExports: f.manifest.exports,
         files,
+        reportProgress: (message) => progress.push(message),
         importNative: (entry, deferred) => {
+            assert.match(progress.at(-1), /Importing nodes and binaries|Reimporting/);
             assert.ok(existsSync(join(f.targetDirectory, entry.exportName)));
             calls.push(['native', deferred]);
             rmSync(join(f.targetDirectory, entry.exportName), { recursive: true });
         },
         postAction: async (body) => {
+            const phase = {
+                'prepare-project-import': /Preparing content import/,
+                'normalize-import-paths': /Normalizing imported paths/,
+                'repair-metadata': /Restoring source metadata.*batch \d+\/\d+/,
+                'validate-fidelity': /Validating imported content fidelity.*batch \d+\/\d+/,
+            }[body.action];
+            assert.match(progress.at(-1), phase);
             calls.push([body.action, body.branch]);
             if (body.action === 'prepare-project-import') return { deferredRelocations: ['site'] };
             if (body.action === 'normalize-import-paths') return {};
@@ -254,8 +264,39 @@ test('reimports deferred IDs after normalization and then repairs and validates 
         ['validate-fidelity', 'draft'],
         ['validate-fidelity', 'master'],
     ]);
+    assert.match(progress[0], /Loading and checking source fidelity metadata/);
     assert.ok(existsSync(f.metadataPath));
     assert.ok(!existsSync(join(f.targetDirectory, 'bundle')));
+});
+
+test('selects only source entries whose draft and master versions were identical', () => {
+    const entries = [
+        {
+            repoId: 'com.enonic.cms.default',
+            contentId: 'published',
+            branches: ['draft', 'master'],
+            versions: { draft: 'same', master: 'same' },
+        },
+        {
+            repoId: 'com.enonic.cms.default',
+            contentId: 'modified',
+            branches: ['draft', 'master'],
+            versions: { draft: 'draft-version', master: 'master-version' },
+        },
+        {
+            repoId: 'com.enonic.cms.default',
+            contentId: 'draft-only',
+            branches: ['draft'],
+            versions: { draft: 'draft-version' },
+        },
+    ];
+
+    assert.deepEqual(
+        getSourcePublishedEntries(entries, 'com.enonic.cms.default').map(
+            ({ contentId }) => contentId
+        ),
+        ['published']
+    );
 });
 
 test('fails before target mutations on stale expectations and cleans up after fidelity failure', async (t) => {

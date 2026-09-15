@@ -89,9 +89,19 @@ export const installCuratedApplications = ({
                     ['app', 'install', '--url', getApplicationUrl(application), '--force'],
                     { sandbox, auth, runCommand, verifyTarget }
                 );
-                const failure = String(output || '').match(/"Failure"\s*:\s*"([^"]+)"/)?.[1];
-                if (failure) {
-                    throw new Error(failure);
+                const resultStart = output.lastIndexOf('\n{');
+                const result = JSON.parse(output.slice(resultStart < 0 ? 0 : resultStart + 1));
+                if (result.Failure) {
+                    throw new Error(result.Failure);
+                }
+                const installed = result.ApplicationInstalledJson?.Application;
+                if (
+                    installed?.Key !== application.key ||
+                    installed?.Version !== application.version
+                ) {
+                    throw new Error(
+                        `Installation did not confirm ${application.key} ${application.version}`
+                    );
                 }
                 console.log('done');
                 return true;
@@ -155,6 +165,17 @@ export const removeTemporarySuPassword = (sandboxPath) => {
     writeFileSync(systemPropertiesPath, updatedProperties);
 };
 
+export const setCuratedImportMode = (sandboxPath, enabled) => {
+    assertLocalTargetConfiguration(sandboxPath);
+    const configPath = join(sandboxPath, 'home/config/no.nav.navno.cfg');
+    const config = readFileSync(configPath, 'utf8')
+        .split(/\r?\n/)
+        .filter((line) => !/^\s*curatedImportInProgress\s*=/.test(line))
+        .join('\n')
+        .replace(/\n*$/, '\n');
+    writeFileSync(configPath, `${config}${enabled ? 'curatedImportInProgress=true\n' : ''}`);
+};
+
 export const prepareCuratedTarget = ({
     sandbox,
     xpVersion,
@@ -188,8 +209,7 @@ export const prepareCuratedTarget = ({
             sandbox,
             '--version',
             xpVersion,
-            '--template',
-            'essentials',
+            '--skip-template',
             '--force',
             '--skip-start',
         ],
@@ -233,6 +253,7 @@ export const prepareCuratedTarget = ({
             join(repositoryRoot, 'build/libs/navno.jar'),
             join(deployDirectory, 'navno.jar')
         );
+        setCuratedImportMode(sandboxPath, true);
         runCommand('enonic', ['sandbox', 'start', sandbox, '--detach', '--force'], {
             stdio: 'inherit',
             env: getLocalProcessEnvironment(),
@@ -246,6 +267,7 @@ export const prepareCuratedTarget = ({
             verifyTarget,
         });
     } catch (error) {
+        setCuratedImportMode(sandboxPath, false);
         removeTemporarySuPassword(sandboxPath);
         throw error;
     }

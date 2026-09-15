@@ -2,6 +2,7 @@ import { spawnSync } from 'node:child_process';
 import { timingSafeEqual } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { fetchXp } from './curated-http.mjs';
 
 export const parseAuth = (auth, label) => {
     const separatorIndex = auth.indexOf(':');
@@ -16,6 +17,25 @@ export const parseAuth = (auth, label) => {
         username: auth.slice(0, separatorIndex),
         password: auth.slice(separatorIndex + 1),
     };
+};
+
+export const getXpSessionCookie = async (serviceUrl, auth) => {
+    const { username, password } = parseAuth(auth, 'XP');
+    const response = await fetchXp(new URL('/_/idprovider/system', serviceUrl), {
+        method: 'POST',
+        redirect: 'error',
+        signal: AbortSignal.timeout(30000),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'login', user: username, password }),
+    });
+    const result = await response.json();
+    if (!response.ok || !result.authenticated) {
+        throw new Error('Authentication with the XP system provider failed');
+    }
+    return response.headers
+        .getSetCookie()
+        .map((cookie) => cookie.split(';', 1)[0])
+        .join('; ');
 };
 
 export const encodePropertyValue = (value) =>
@@ -49,9 +69,7 @@ export const verifyStoppedTargetAuth = (sandboxPath, auth) => {
 
 export const promptForAuth = (label, { runCommand = spawnSync } = {}) => {
     if (!process.stdin.isTTY || !process.stderr.isTTY) {
-        throw new Error(
-            `Set ${label === 'Source' ? 'CURATED_SOURCE_AUTH' : 'CURATED_TARGET_AUTH'} to user:password`
-        );
+        throw new Error(`${label} credentials require an interactive terminal`);
     }
     const result = runCommand(
         '/bin/zsh',
@@ -69,7 +87,7 @@ export const promptForAuth = (label, { runCommand = spawnSync } = {}) => {
 
 export const promptForPassword = (label, { runCommand = spawnSync } = {}) => {
     if (!process.stdin.isTTY || !process.stderr.isTTY) {
-        throw new Error('Set CURATED_TARGET_AUTH to su:password');
+        throw new Error(`${label} requires an interactive terminal`);
     }
     const result = runCommand(
         '/bin/zsh',

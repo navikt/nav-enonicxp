@@ -4,7 +4,6 @@ import { readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promptForAuth } from './lib/curated-auth.mjs';
-import { isDeferredRelocationError } from './lib/curated-import-errors.mjs';
 import { directLocalFetch } from './lib/curated-http.mjs';
 import { prepareCuratedImportFiles } from './lib/curated-import-files.mjs';
 import {
@@ -26,6 +25,20 @@ const REQUIRED_REPO_IDS = [
 ];
 const REQUIRED_BRANCHES = ['draft', 'master'];
 const MANUAL_ORDER_WARNING = 'Not able to import nodes by manual order, using default ordering';
+
+export const isDeferredRelocationError = (error, deferredContentIds) => {
+    const contentId = String(error).match(/Node ([^ ]+) already exists/)?.[1];
+    return contentId !== undefined && deferredContentIds.includes(contentId);
+};
+
+export const getSourcePublishedEntries = (entries, repository) =>
+    entries.filter(
+        (entry) =>
+            entry.repoId === repository &&
+            entry.branches.includes('draft') &&
+            entry.branches.includes('master') &&
+            entry.versions.draft === entry.versions.master
+    );
 
 const isContentPath = (path) =>
     typeof path === 'string' &&
@@ -198,10 +211,13 @@ export const importCuratedBundle = async ({
     files,
     postAction,
     importNative,
+    reportProgress = console.log,
 }) => {
     try {
+        reportProgress('Loading and checking source fidelity metadata');
         const fidelityGroups = loadCuratedExpectations(manifest, files);
         if (manifest.scope !== 'page') {
+            reportProgress('Configuring target login and projects');
             await postAction({ action: 'configure-login' });
             await postAction({
                 action: 'configure-projects',
@@ -210,6 +226,8 @@ export const importCuratedBundle = async ({
             });
         }
         for (const entry of nativeExports.slice(startIndex - 1)) {
+            const label = `${entry.repoId}:${entry.sourceBranch}`;
+            reportProgress(`Preparing content import for ${label}`);
             const preparation = await postAction({
                 action: 'prepare-project-import',
                 repository: entry.repoId,
@@ -234,8 +252,13 @@ export const importCuratedBundle = async ({
             ) {
                 throw new Error('Target returned invalid deferred relocation identities');
             }
+            reportProgress(`Staging export files for ${label}`);
             files.stage(entry.exportName);
+            reportProgress(
+                `Importing nodes and binaries for ${label}; this may take several minutes`
+            );
             await importNative(entry, deferredRelocations);
+            reportProgress(`Normalizing imported paths for ${label}`);
             await postAction({
                 action: 'normalize-import-paths',
                 repository: entry.repoId,
@@ -246,14 +269,25 @@ export const importCuratedBundle = async ({
                 ),
             });
             if (deferredRelocations.length > 0) {
+                reportProgress(
+                    `Reimporting ${deferredRelocations.length} relocated nodes for ${label}`
+                );
                 files.stage(entry.exportName);
                 await importNative(entry, []);
             }
         }
 
         for (const action of ['repair-metadata', 'validate-fidelity']) {
+            const phase =
+                action === 'repair-metadata'
+                    ? 'Restoring source metadata'
+                    : 'Validating imported content fidelity';
             for (const group of fidelityGroups) {
-                for (const batch of batchCuratedExpectations(group)) {
+                const batches = batchCuratedExpectations(group);
+                for (const [index, batch] of batches.entries()) {
+                    reportProgress(
+                        `${phase} for ${group.repository}:${group.branch} (batch ${index + 1}/${batches.length})`
+                    );
                     const result = await postAction({ action, ...batch });
                     const binaryCount = batch.expectations.reduce(
                         (total, expected) => total + expected.binaries.length,
@@ -270,6 +304,19 @@ export const importCuratedBundle = async ({
                     }
                 }
             }
+        }
+
+        for (const repository of REQUIRED_REPO_IDS) {
+            const publishedEntries = getSourcePublishedEntries(manifest.entries, repository);
+            if (publishedEntries.length === 0) {
+                continue;
+            }
+            reportProgress(`Synchronizing published content for ${repository}`);
+            await postAction({
+                action: 'synchronize-published',
+                repository,
+                entries: publishedEntries,
+            });
         }
 
         console.log(
@@ -314,12 +361,15 @@ const main = async () => {
         throw new Error(`--start-index must be between 1 and ${nativeExports.length}`);
     }
     const auth = process.env.ENONIC_AUTH || promptForAuth('Target');
+    console.log('Verifying the local import service');
     const sessionCookie = await verifyLocalImportTarget({
         sandbox: options.sandbox,
         serviceUrl: options['service-url'],
         auth,
+        requireImportMode: true,
     });
     const sandboxPath = assertLocalTargetProcess(options.sandbox);
+    console.log('Preparing local export files');
     const files = prepareCuratedImportFiles({
         exportNames: nativeExports.map(({ exportName }) => exportName),
         sourceDirectory: resolve(options['export-dir'] ?? dirname(options.manifest)),

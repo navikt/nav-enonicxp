@@ -38,6 +38,7 @@ import com.enonic.xp.node.FindNodesByParentParams;
 import com.enonic.xp.node.FindNodesByParentResult;
 import com.enonic.xp.node.Node;
 import com.enonic.xp.node.NodeId;
+import com.enonic.xp.node.NodeNotFoundException;
 import com.enonic.xp.node.NodePath;
 import com.enonic.xp.node.NodeService;
 import com.enonic.xp.node.NodeType;
@@ -119,7 +120,7 @@ public final class CuratedNodeRepair implements ScriptBean {
         int repaired = 0;
         if (repair) {
             for (final Patch patch : patches.values()) {
-                final Node current = service.get().getById(patch.node.id());
+                final Node current = getById(patch.node.id());
                 if (current == null || !current.path().equals(patch.node.path()) ||
                     !current.getNodeVersionId().equals(patch.node.getNodeVersionId())) {
                     throw new IllegalStateException("Target changed during preflight: " + patch.node.id());
@@ -180,13 +181,29 @@ public final class CuratedNodeRepair implements ScriptBean {
         final String path = text(expected, "contentPath");
         checkId(id);
         checkPath(path);
-        final Node node = service.get().getById(NodeId.from(id));
-        final Node atPath = service.get().getByPath(new NodePath(path));
+        final Node node = getById(NodeId.from(id));
+        final Node atPath = getByPath(new NodePath(path));
         if (node == null || atPath == null || !node.id().equals(atPath.id()) ||
             !node.path().toString().equals(path)) {
             throw new IllegalStateException("Missing or colliding target identity: " + id + " at " + path);
         }
         return node;
+    }
+
+    private Node getById(final NodeId id) {
+        try {
+            return service.get().getById(id);
+        } catch (final NodeNotFoundException e) {
+            return null;
+        }
+    }
+
+    private Node getByPath(final NodePath path) {
+        try {
+            return service.get().getByPath(path);
+        } catch (final NodeNotFoundException e) {
+            return null;
+        }
     }
 
     private void verifyAbsent(final JsonNode absent, final Set<String> selected) {
@@ -200,7 +217,7 @@ public final class CuratedNodeRepair implements ScriptBean {
             if (!seen.add(id) || selected.contains(id)) {
                 throw new IllegalArgumentException("Conflicting branch membership for " + id);
             }
-            if (service.get().getById(NodeId.from(id)) != null) {
+            if (getById(NodeId.from(id)) != null) {
                 throw new IllegalStateException("Unexpected target branch membership: " + id);
             }
         }
@@ -402,7 +419,7 @@ public final class CuratedNodeRepair implements ScriptBean {
             final Set<Long> unselectedRanks = new HashSet<>();
             for (final String siblingId : currentChildren) {
                 if (!desiredIds.contains(siblingId)) {
-                    final Node sibling = service.get().getById(NodeId.from(siblingId));
+                    final Node sibling = getById(NodeId.from(siblingId));
                     if (sibling == null) {
                         throw new IllegalStateException("Target sibling changed during preflight: " + siblingId);
                     }

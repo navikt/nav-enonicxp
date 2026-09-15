@@ -16,7 +16,6 @@ const directory = (t) => {
 const manifest = (sources, exportName = 'curated-test') => ({
     scope: 'full',
     xpVersion: '7.14.4',
-    sanitizedSupplements: [],
     exports: [{ exportName, repoId: repository, sourceBranch: 'master' }],
     entries: sources.map(({ node }) => ({
         repoId: repository,
@@ -204,24 +203,23 @@ test('reuses only verified content-addressed cache entries across fresh exports'
     assert.deepEqual(readFileSync(join(root, 'second/www.nav.no/page/_/bin/image.jpg')), bytes);
 });
 
-test('does not overwrite a newly fetched node with a stale manifest supplement', async (t) => {
+test('sanitizes typed text before writing native XML and fidelity metadata', async (t) => {
     const root = directory(t);
     const source = createSourceNode();
+    source.properties.push({ name: 'text', type: 'string', value: 'before\u0002after\u{1f600}' });
     mockSource(t, [source]);
     const args = options(root, [source]);
-    args.manifest.sanitizedSupplements = [
-        {
-            repoId: repository,
-            branch: 'master',
-            contentId: source.node._id,
-            node: { ...source.node, _versionKey: 'old-version' },
-        },
-    ];
     await extractCuratedSource(args);
+    const metadataDirectory = join(root, 'curated-test/www.nav.no/page/_');
+    const metadata = JSON.parse(readFileSync(join(metadataDirectory, 'curated-metadata.json')));
+    assert.equal(metadata.versionId, 'source-version');
     assert.equal(
-        JSON.parse(readFileSync(join(root, 'curated-test/www.nav.no/page/_/curated-metadata.json')))
-            .versionId,
-        'source-version'
+        metadata.properties.find(({ name }) => name === 'text').value,
+        'beforeafter\u{1f600}'
+    );
+    assert.match(
+        readFileSync(join(metadataDirectory, 'node.xml'), 'utf8'),
+        /beforeafter\u{1f600}/u
     );
 });
 
