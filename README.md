@@ -21,7 +21,7 @@ Bruk denne flyten når du trenger et representativt utvalg av innhold. Kommandoe
 pnpm sandbox:import --source prod --target navno
 ```
 
-Se [kuratert sandbox-flyt](src/main/resources/services/curatedExportManifest/README.md) for oppdatering av en eksisterende sandbox, sideimport og alternative kilder.
+Se [kuratert sandbox-flyt](scripts/sandbox/README.md) for oppdatering av en eksisterende sandbox, sideimport og alternative kilder.
 
 ### Manuelt oppsett av sandbox
 
@@ -63,7 +63,7 @@ open http://localhost:8080/admin
 
     For å få data inn til lokal sandbox så må man først og fremst opprette en datadump av hele databasen. Oppskrift på det finner du her: [Systemdumps – Confluence](https://confluence.adeo.no/spaces/ATOM/pages/387108768/Div.+jobber#Div.jobber-Systemdumps)
 
-    Du kan også opprette en dump fra en lokal sandbox med [`pnpm sandbox:dump`](src/main/resources/services/curatedExportManifest/README.md#del-en-baseline-med-enonic-systemdump).
+    Du kan også opprette en dump fra en lokal sandbox med [`pnpm sandbox:dump`](scripts/sandbox/README.md#lag-en-enonic-systemdump).
 
 2. **Last ned dumpen**
 

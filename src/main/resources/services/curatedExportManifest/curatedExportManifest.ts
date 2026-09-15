@@ -2,7 +2,7 @@ import { Request } from '@enonic-types/core';
 import {
     createCuratedExportManifest,
     CuratedExportSeed,
-} from '../../lib/exports/curated-content-export';
+} from '../../lib/exports/curated-export-manifest';
 import {
     isCuratedBranch,
     isCuratedContentId,

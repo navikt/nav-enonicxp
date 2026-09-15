@@ -21,13 +21,9 @@ import {
     isCuratedContentPath,
     isCuratedImportEnabled,
     isCuratedRepository,
+    REQUIRED_PROJECTS,
 } from '../../lib/exports/curated-safety';
 
-const REQUIRED_PROJECTS = [
-    { id: 'default', language: 'no', parents: [] },
-    { id: 'navno-engelsk', language: 'en', parents: ['default'] },
-    { id: 'navno-nynorsk', language: 'nn', parents: ['default'] },
-] as const;
 const MAX_RELOCATION_ENTRIES = 20000;
 const MAX_RELOCATION_DESCENDANTS = 1000;
 

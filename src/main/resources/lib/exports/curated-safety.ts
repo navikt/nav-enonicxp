@@ -1,8 +1,14 @@
-export const CURATED_REPOSITORIES = [
-    'com.enonic.cms.default',
-    'com.enonic.cms.navno-engelsk',
-    'com.enonic.cms.navno-nynorsk',
-];
+export const CURATED_CONTENT_ROOT_PATH = '/content/www.nav.no';
+
+export const REQUIRED_PROJECTS = [
+    { id: 'default', language: 'no', parents: [] },
+    { id: 'navno-engelsk', language: 'en', parents: ['default'] },
+    { id: 'navno-nynorsk', language: 'nn', parents: ['default'] },
+] as const;
+
+export const CURATED_REPOSITORIES: string[] = REQUIRED_PROJECTS.map(
+    ({ id }) => `com.enonic.cms.${id}`
+);
 
 export const isCuratedRepository = (value: unknown): value is string =>
     typeof value === 'string' && CURATED_REPOSITORIES.includes(value);
@@ -16,7 +22,8 @@ export const isCuratedContentId = (value: unknown): value is string =>
 export const isCuratedContentPath = (value: unknown): value is string => {
     if (
         typeof value !== 'string' ||
-        (value !== '/content/www.nav.no' && !value.startsWith('/content/www.nav.no/')) ||
+        (value !== CURATED_CONTENT_ROOT_PATH &&
+            !value.startsWith(`${CURATED_CONTENT_ROOT_PATH}/`)) ||
         /[%\\]/.test(value)
     ) {
         return false;

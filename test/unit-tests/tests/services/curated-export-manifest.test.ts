@@ -1,4 +1,4 @@
-jest.mock('@navno-app/lib/exports/curated-content-export', () => ({
+jest.mock('@navno-app/lib/exports/curated-export-manifest', () => ({
     createCuratedExportManifest: jest.fn(() => ({ entries: [] })),
 }));
 jest.mock('@navno-app/lib/utils/logging', () => ({
@@ -6,7 +6,7 @@ jest.mock('@navno-app/lib/utils/logging', () => ({
 }));
 
 import * as authLib from '/lib/xp/auth';
-import { createCuratedExportManifest } from '@navno-app/lib/exports/curated-content-export';
+import { createCuratedExportManifest } from '@navno-app/lib/exports/curated-export-manifest';
 import { post } from '@navno-app/services/curatedExportManifest/curatedExportManifest';
 
 describe('curated export manifest authorization', () => {

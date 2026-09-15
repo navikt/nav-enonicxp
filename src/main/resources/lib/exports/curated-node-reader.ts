@@ -2,6 +2,11 @@ import { Content } from '/lib/xp/content';
 import { ByteSource, RepoNode } from '/lib/xp/node';
 import { getRepoConnection } from '../repos/repo-utils';
 import { runInContext } from '../context/run-in-context';
+import {
+    isCuratedBranch,
+    isCuratedContentId,
+    isCuratedRepository,
+} from './curated-safety';
 
 export type CuratedProperty = {
     name: string;
@@ -54,14 +59,10 @@ const createReader = () => __.newBean('no.nav.navno.exports.CuratedNodeReader') 
 
 const validateSource = ({ repository, branch, contentId, versionId }: SourceVersion) => {
     if (
-        ![
-            'com.enonic.cms.default',
-            'com.enonic.cms.navno-engelsk',
-            'com.enonic.cms.navno-nynorsk',
-        ].includes(repository) ||
-        !['draft', 'master'].includes(branch) ||
-        !/^[a-zA-Z0-9-]+$/.test(contentId) ||
-        (versionId !== undefined && !/^[a-zA-Z0-9-]+$/.test(versionId))
+        !isCuratedRepository(repository) ||
+        !isCuratedBranch(branch) ||
+        !isCuratedContentId(contentId) ||
+        (versionId !== undefined && !isCuratedContentId(versionId))
     ) {
         throw new Error('Invalid curated source repository, branch, content id, or version');
     }
