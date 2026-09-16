@@ -6,7 +6,9 @@
     "test": "pnpm --filter nav-enonicxp-tests run test",
     "build": "pnpm run lint && pnpm run babel",
     "lint": "eslint ./src/main/resources --ext=ts --quiet && tsc --noemit",
-    "babel": "babel src/main/resources --out-dir=build/resources/main --no-copy-ignored --extensions \".ts\""
+    "babel": "babel src/main/resources --out-dir=build/resources/main --no-copy-ignored --extensions \".ts\"",
+    "sandbox:import": "node scripts/sandbox/import-curated-content.mjs",
+    "sandbox:dump": "node scripts/sandbox/create-dump.mjs"
   },
   "repository": {
     "type": "git",

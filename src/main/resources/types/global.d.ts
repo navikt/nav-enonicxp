@@ -5,6 +5,7 @@ declare const app: {
         env: 'p' | 'dev' | 'q6' | 'localhost' | 'test';
         serviceSecret: string;
         searchApiKey: string;
+        curatedImportInProgress?: string;
     };
 };
 
