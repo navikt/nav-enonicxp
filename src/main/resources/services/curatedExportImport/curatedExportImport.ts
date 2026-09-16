@@ -218,7 +218,7 @@ const getSelectedDescendantIds = (
     if (
         !result ||
         typeof result.total !== 'number' ||
-        !isFinite(result.total) ||
+        !Number.isFinite(result.total) ||
         result.total % 1 !== 0 ||
         result.total < 0 ||
         result.total > MAX_RELOCATION_DESCENDANTS ||
@@ -233,7 +233,7 @@ const getSelectedDescendantIds = (
         }
         const descendant = connection.get<Content>(id);
         assertContentOwnership(descendant, id);
-        if (!descendant || !descendant._path.startsWith(`${content._path}/`)) {
+        if (!descendant?._path.startsWith(`${content._path}/`)) {
             throw new Error(`Cannot verify descendant ${id} of ${content._id}`);
         }
         ids.add(id);
@@ -248,8 +248,12 @@ const jsonResponse = (status: number, body: Record<string, unknown>) => ({
     body,
 });
 
-const getParents = (project: Project) =>
-    project.parents.length > 0 ? project.parents : project.parent ? [project.parent] : [];
+const getParents = (project: Project) => {
+    if (project.parents.length > 0) {
+        return project.parents;
+    }
+    return project.parent ? [project.parent] : [];
+};
 
 const validateProjects = (projects: Project[]) => {
     if (projects.length !== REQUIRED_PROJECTS.length) {
@@ -312,7 +316,7 @@ const configureDefaultProject = (project: Project) => {
             siteConfig: project.siteConfig || [],
         });
     } catch (error) {
-        if (String(error).indexOf('Default project has no roles') === -1) {
+        if (!String(error).includes('Default project has no roles')) {
             throw error;
         }
     }

@@ -100,7 +100,7 @@ type InstalledApplication = {
 const getEntryKey = ({ contentId, repoId }: CuratedExportEntry) => `${repoId}:${contentId}`;
 
 export const escapeNoqlStringLiteral = (value: string) =>
-    value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    value.replaceAll('\\', String.raw`\\`).replaceAll('"', String.raw`\"`);
 
 const isExcludedPath = (path: string) =>
     EXCLUDED_ROOT_PATHS.some((rootPath) => path === rootPath || path.startsWith(`${rootPath}/`));
@@ -174,6 +174,13 @@ const getEntry = (
     };
 };
 
+const getProjectParents = (project: Project) => {
+    if (project.parents.length > 0) {
+        return project.parents;
+    }
+    return project.parent ? [project.parent] : [];
+};
+
 const getRequiredProjects = () => {
     const projectsById = projectLib.list().reduce<Record<string, Project>>((projects, project) => {
         projects[project.id] = project;
@@ -186,8 +193,7 @@ const getRequiredProjects = () => {
             throw new Error(`Required content project "${expectedProject.id}" was not found`);
         }
 
-        const parents =
-            project.parents.length > 0 ? project.parents : project.parent ? [project.parent] : [];
+        const parents = getProjectParents(project);
         if (
             project.language !== expectedProject.language ||
             parents.length !== expectedProject.parents.length ||
@@ -370,9 +376,7 @@ const closeContentGraph = (
     }
     initialEntries.forEach((entry) => enqueue(entry, true));
 
-    for (let cursor = 0; cursor < pendingEntries.length; cursor += 1) {
-        const { entry, branch } = pendingEntries[cursor];
-
+    for (const { entry, branch } of pendingEntries) {
         getAncestorContentPaths(entry.paths[branch]!).forEach((contentPath) => {
             const selectedAncestor = selectedEntriesByPath.get(
                 `${entry.repoId}:${branch}:${contentPath}`

@@ -26,6 +26,7 @@ import com.enonic.xp.util.BinaryReference;
 
 public final class CuratedNodeReader implements ScriptBean {
     private static final String CONTENT_ROOT = "/content/www.nav.no";
+    private static final String VALUE_FIELD = "value";
     private static final DateTimeFormatter DATE_TIME =
         new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd'T'HH:mm:ss")
             .appendFraction(ChronoField.NANO_OF_SECOND, 3, 9, true).appendLiteral('Z')
@@ -94,15 +95,15 @@ public final class CuratedNodeReader implements ScriptBean {
         gen.value("type", type);
         if (property.getValue().isNull()) {
             // XP's Nashorn map generator omits nulls unless they are written as raw values.
-            gen.rawValue("value", null);
+            gen.rawValue(VALUE_FIELD, null);
         } else if (property.getType().equals(ValueTypes.PROPERTY_SET)) {
-            gen.array("value");
+            gen.array(VALUE_FIELD);
             for (final Property child : property.getSet().getProperties()) {
                 serializeProperty(gen, child);
             }
             gen.end();
         } else {
-            gen.value("value", scalarValue(property));
+            gen.value(VALUE_FIELD, scalarValue(property));
         }
         gen.end();
     }

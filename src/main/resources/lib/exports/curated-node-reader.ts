@@ -84,8 +84,7 @@ export const getCuratedSourceNode = (source: SourceVersion): CuratedSourceNode =
                     : source.contentId
             );
             if (
-                !node ||
-                !node._versionKey ||
+                !node?._versionKey ||
                 (source.versionId && node._versionKey !== source.versionId)
             ) {
                 throw new Error(`Selected content version was not found: ${source.contentId}`);

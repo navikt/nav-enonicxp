@@ -1,7 +1,9 @@
 package no.nav.navno.exports.target;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,6 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -57,6 +60,10 @@ public final class CuratedNodeRepair implements ScriptBean {
     private static final Set<String> REPOSITORIES = Set.of(
         "com.enonic.cms.default", "com.enonic.cms.navno-engelsk", "com.enonic.cms.navno-nynorsk");
     private static final String ROOT = "/content/www.nav.no";
+    private static final String CONTENT_ID_FIELD = "contentId";
+    private static final String MANUAL_CHILD_ORDER_FIELD = "manualChildOrder";
+    private static final Pattern BINARY_HASH_PATTERN = Pattern.compile("[a-f0-9]{128}");
+    private static final Pattern BINARY_SIZE_PATTERN = Pattern.compile("0|[1-9]\\d*");
     private Supplier<NodeService> service;
 
     @Override
@@ -177,7 +184,7 @@ public final class CuratedNodeRepair implements ScriptBean {
     }
 
     private Node requireNode(final JsonNode expected) {
-        final String id = text(expected, "contentId");
+        final String id = text(expected, CONTENT_ID_FIELD);
         final String path = text(expected, "contentPath");
         checkId(id);
         checkPath(path);
@@ -328,7 +335,8 @@ public final class CuratedNodeRepair implements ScriptBean {
         }
     }
 
-    private long verifyBinaries(final JsonNode expected, final Node node) throws Exception {
+    private long verifyBinaries(final JsonNode expected, final Node node)
+            throws IOException, NoSuchAlgorithmException {
         final Map<String, String> actual = new LinkedHashMap<>();
         for (final AttachedBinary binary : node.getAttachedBinaries()) {
             actual.put(binary.getBinaryReference().toString(), binary.getBlobKey());
@@ -339,7 +347,7 @@ public final class CuratedNodeRepair implements ScriptBean {
             final String hash = text(binary, "sha512");
             final String size = text(binary, "size");
             if (!seen.add(reference) || !actual.containsKey(reference) ||
-                !hash.matches("[a-f0-9]{128}") || !size.matches("0|[1-9][0-9]*")) {
+                !BINARY_HASH_PATTERN.matcher(hash).matches() || !BINARY_SIZE_PATTERN.matcher(size).matches()) {
                 throw new IllegalArgumentException("Invalid or missing binary expectation for " + node.id());
             }
             final long expectedSize = Long.parseLong(size);
@@ -377,8 +385,8 @@ public final class CuratedNodeRepair implements ScriptBean {
 
     private void planOrder(final JsonNode expected, final Map<String, Patch> patches,
                            final boolean page, final boolean repair) {
-        final Patch parent = patches.get(text(expected, "contentId"));
-        final JsonNode order = expected.get("manualChildOrder");
+        final Patch parent = patches.get(text(expected, CONTENT_ID_FIELD));
+        final JsonNode order = expected.get(MANUAL_CHILD_ORDER_FIELD);
         if (!parent.childOrder.isManualOrder()) {
             if (order != null && !order.isNull()) {
                 throw new IllegalArgumentException("Non-manual parents must not supply manual child order");
@@ -456,13 +464,13 @@ public final class CuratedNodeRepair implements ScriptBean {
         if (!parent.getChildOrder().isManualOrder()) {
             return;
         }
-        if (array(expected, "manualChildOrder").isEmpty()) {
+        if (array(expected, MANUAL_CHILD_ORDER_FIELD).isEmpty()) {
             return;
         }
         final List<String> desired = new ArrayList<>();
-        for (final JsonNode child : array(expected, "manualChildOrder")) {
+        for (final JsonNode child : array(expected, MANUAL_CHILD_ORDER_FIELD)) {
             requireNode(child);
-            desired.add(text(child, "contentId"));
+            desired.add(text(child, CONTENT_ID_FIELD));
         }
         final Set<String> desiredIds = new HashSet<>(desired);
         final List<String> actual = children(parent, parent.getChildOrder()).stream()
