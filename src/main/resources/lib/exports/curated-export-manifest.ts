@@ -254,8 +254,10 @@ const validateRepositorySet = (entries: CuratedExportEntry[]) => {
     const selectedRepoIds = entries
         .map(({ repoId }) => repoId)
         .filter((repoId, index, repoIds) => repoIds.indexOf(repoId) === index)
-        .sort();
-    const requiredRepoIds = CURATED_REPOSITORIES.slice().sort();
+        .sort((repoIdA, repoIdB) => repoIdA.localeCompare(repoIdB));
+    const requiredRepoIds = CURATED_REPOSITORIES.slice().sort((repoIdA, repoIdB) =>
+        repoIdA.localeCompare(repoIdB)
+    );
     if (
         selectedRepoIds.length !== requiredRepoIds.length ||
         selectedRepoIds.some((repoId, index) => repoId !== requiredRepoIds[index])
