@@ -67,6 +67,14 @@ const searchApiUrls: EnvRecord = {
     test: '',
 } as const;
 
+const archiveOrigins: EnvRecord = {
+    p: '',
+    dev: 'https://cms-arkiv.intern.dev.nav.no/xp',
+    q6: '',
+    localhost: 'http://localhost:3499/xp',
+    test: '',
+} as const;
+
 export const URLS = {
     FRONTEND_ORIGIN: frontendOrigins[env],
     XP_ORIGIN: xpOrigins[env],
@@ -76,6 +84,7 @@ export const URLS = {
     NORG_OFFICE_INFORMATION_API_URL: norgOfficeInformationApiUrl[env],
     NORG_LOCAL_OFFICE_API_URL: norgLocalOfficeApiUrl[env],
     SEARCH_API_URL: searchApiUrls[env],
+    ARCHIVE_ORIGIN: archiveOrigins[env],
 } as const;
 
 export const COMPONENT_APP_KEY = 'no-nav-navno';
