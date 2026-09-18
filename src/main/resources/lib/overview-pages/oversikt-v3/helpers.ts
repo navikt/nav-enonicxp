@@ -5,7 +5,6 @@ import {
 } from '../../contenttype-lists';
 import { forceArray } from '../../utils/array-utils';
 import { Oversikt } from '@xp-types/site/content-types';
-import { logger } from '../../utils/logging';
 
 type Args = {
     oversiktType: Oversikt['oversiktType'];
@@ -22,10 +21,10 @@ const buildAudienceFilter = (audience: Oversikt['audience']) => {
             ? forceArray(audienceProviderSelection.provider.pageType.overview.provider_audience)
             : [];
 
-    const audienceIsProvider =
+    const shouldFilterByProviderSubAudience =
         audienceKeys.includes('provider') && providerSubAudienceKeys.length > 0;
 
-    if (!audienceIsProvider) {
+    if (!shouldFilterByProviderSubAudience) {
         return {
             hasValue: {
                 field: 'data.audience._selected',

@@ -369,10 +369,45 @@ export class ReferencesFinder {
                     content.data.audience.provider?.provider_audience
                 );
 
+                // An oversikt page references this content if it either targets one of the content's
+                // provider sub-audiences, or is a provider/overview page with no sub-audience set
+                // (which lists all provider content).
+                const providerAudienceOverlapRule =
+                    selectedProviderAudience.length > 0
+                        ? [
+                              {
+                                  hasValue: {
+                                      field: 'data.audience.provider.pageType.overview.provider_audience',
+                                      values: selectedProviderAudience,
+                                  },
+                              },
+                          ]
+                        : [];
+
                 return {
-                    hasValue: {
-                        field: 'data.audience.provider.pageType.overview.provider_audience',
-                        values: selectedProviderAudience,
+                    boolean: {
+                        should: [
+                            ...providerAudienceOverlapRule,
+                            {
+                                boolean: {
+                                    must: [
+                                        {
+                                            hasValue: {
+                                                field: 'data.audience.provider.pageType._selected',
+                                                values: ['overview'],
+                                            },
+                                        },
+                                    ],
+                                    mustNot: [
+                                        {
+                                            exists: {
+                                                field: 'data.audience.provider.pageType.overview.provider_audience',
+                                            },
+                                        },
+                                    ],
+                                },
+                            },
+                        ],
                     },
                 };
             }

@@ -77,6 +77,11 @@ export type OfficePage = {
           navn?: string;
 
           /**
+           * Overskrift over telefonnummer
+           */
+          phoneHeader?: string;
+
+          /**
            * Telefonnummer
            */
           telefonnummer?: string;
@@ -189,6 +194,11 @@ export type OfficePage = {
              * Overstyr teksten «Beliggenhet»
              */
             locationLabel?: string;
+
+            /**
+             * Skjul beliggenhet
+             */
+            hideLocation: boolean;
           };
 
           /**

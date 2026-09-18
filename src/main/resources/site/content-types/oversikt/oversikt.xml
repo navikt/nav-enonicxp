@@ -66,7 +66,20 @@
                                 <option name="overview">
                                     <label>Oversiktsside for underkategori</label>
                                     <items>
-                                        <mixin name="provider-audience"/>
+                                        <input name="provider_audience" type="ComboBox">
+                                            <label>Velg underkategorier</label>
+                                            <occurrences minimum="0" maximum="0"/>
+                                            <config>
+                                                <option value="doctor">Lege, tannlege eller annen behandler</option>
+                                                <option value="municipality_employed">Ansatt i kommunen eller fylkeskommunen</option>
+                                                <option value="optician">Optiker eller øyelege</option>
+                                                <option value="administrator">Bostyrer</option>
+                                                <option value="measures_organizer">Tiltaksarrangør</option>
+                                                <option value="aid_supplier">Hjelpemiddelformidler</option>
+                                                <option value="trekkmottaker">Trekkmottaker</option>
+                                                <option value="other">Andre samarbeidspartnere</option>
+                                            </config>
+                                        </input>
                                     </items>
                                 </option>
                                 <option name="links">
