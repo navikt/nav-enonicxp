@@ -100,7 +100,7 @@ type InstalledApplication = {
 const getEntryKey = ({ contentId, repoId }: CuratedExportEntry) => `${repoId}:${contentId}`;
 
 export const escapeNoqlStringLiteral = (value: string) =>
-    value.replaceAll('\\', String.raw`\\`).replaceAll('"', String.raw`\"`);
+    value.split('\\').join('\\\\').split('"').join('\\"');
 
 const isExcludedPath = (path: string) =>
     EXCLUDED_ROOT_PATHS.some((rootPath) => path === rootPath || path.startsWith(`${rootPath}/`));

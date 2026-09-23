@@ -29,8 +29,8 @@ export const isCuratedContentPath = (value: unknown): value is string => {
         return false;
     }
     for (let index = 0; index < value.length; index += 1) {
-        const code = value.codePointAt(index);
-        if (code !== undefined && (code < 0x20 || code === 0x7f)) {
+        const code = value.charCodeAt(index);
+        if (code < 0x20 || code === 0x7f) {
             return false;
         }
     }
