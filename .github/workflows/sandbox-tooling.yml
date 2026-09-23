@@ -1,0 +1,31 @@
+name: Sandbox tooling
+on:
+  pull_request:
+    paths:
+      - 'scripts/sandbox/**'
+      - '.github/workflows/sandbox-tooling.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/sandbox/**'
+      - '.github/workflows/sandbox-tooling.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      - name: Setup node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Run sandbox script tests
+        run: node --test scripts/sandbox/tests/*.test.mjs

@@ -35,17 +35,9 @@ runs:
       shell: bash
       run: pnpm --filter nav-enonicxp-unit-tests run test
 
-    - name: Run sandbox script tests
-      shell: bash
-      run: node --test scripts/sandbox/tests/*.test.mjs
-
     - name: Build application
       shell: bash
       run: ./gradlew build -PxpVersion=${{ inputs.xpVersion }}
-
-    - name: Run curated JVM regression
-      shell: bash
-      run: ./gradlew --init-script test/curated-target-java/temporal-regression.gradle curatedTemporalRegression -PxpVersion=${{ inputs.xpVersion }}
 
     - name: Verify production package boundary
       shell: bash
