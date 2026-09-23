@@ -71,15 +71,15 @@ public final class CuratedNodeRepair implements ScriptBean {
         service = context.getService(NodeService.class);
     }
 
-    public MapSerializable repair(final String json) throws Exception {
+    public MapSerializable repair(final String json) throws IOException, NoSuchAlgorithmException {
         return execute(json, true);
     }
 
-    public MapSerializable validate(final String json) throws Exception {
+    public MapSerializable validate(final String json) throws IOException, NoSuchAlgorithmException {
         return execute(json, false);
     }
 
-    private MapSerializable execute(final String json, final boolean repair) throws Exception {
+    private MapSerializable execute(final String json, final boolean repair) throws IOException, NoSuchAlgorithmException {
         final JsonNode batch = new ObjectMapper().readTree(json);
         final String repository = text(batch, "repository");
         final String branch = text(batch, "branch");
