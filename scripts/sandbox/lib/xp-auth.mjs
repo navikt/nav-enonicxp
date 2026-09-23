@@ -9,6 +9,7 @@ export const parseAuth = (auth, label) => {
     if (
         separatorIndex < 1 ||
         separatorIndex === auth.length - 1 ||
+        // eslint-disable-next-line no-control-regex -- deliberately rejecting control characters in credentials
         /[\u0000-\u001f\u007f]/.test(auth)
     ) {
         throw new Error(`${label} authentication must use the format user:password`);

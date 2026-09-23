@@ -89,6 +89,7 @@ test('rejects missing type/index metadata and JSON number coercion', (t) => {
     delete source.node._indexConfig;
     assert.throws(() => writeNativeNodeXml(path, source), /index configuration/);
     const coerced = createSourceNode();
+    // eslint-disable-next-line no-loss-of-precision -- deliberately testing rejection of precision-losing JSON numbers
     coerced.properties = [{ name: 'integer', type: 'long', value: 9223372036854775807 }];
     assert.throws(() => writeNativeNodeXml(path, coerced), /lexical XP value/);
 });

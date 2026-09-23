@@ -225,6 +225,26 @@ export default defineConfig([globalIgnores([
         radix: ["error", "as-needed"],
     },
 }, {
+    files: ["scripts/**/*.mjs"],
+    languageOptions: {
+        globals: {
+            process: true,
+            console: true,
+            Buffer: true,
+            URL: true,
+            Request: true,
+            Response: true,
+            Headers: true,
+            FormData: true,
+            Blob: true,
+            AbortSignal: true,
+            globalThis: true,
+        },
+    },
+    rules: {
+        "no-console": "off",
+    },
+}, {
     files: ["**/*.html", "**/*.ftl", "**/*.xml"],
     rules: {
         "max-len": "off",

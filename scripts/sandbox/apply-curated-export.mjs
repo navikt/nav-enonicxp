@@ -75,6 +75,7 @@ export const getSourcePublishedEntries = (entries, repository) =>
 const isContentPath = (path) =>
     typeof path === 'string' &&
     (path === CONTENT_ROOT_PATH || path.startsWith(`${CONTENT_ROOT_PATH}/`)) &&
+    // eslint-disable-next-line no-control-regex -- deliberately rejecting control characters in paths
     !/[%\\\u0000-\u001f\u007f]/.test(path) &&
     path
         .slice(1)

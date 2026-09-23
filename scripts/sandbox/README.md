@@ -2,9 +2,7 @@
 
 Oppretter en lokal sandbox med et kuratert utvalg av sider. Kan også oppdatere sidene eller importer én spesifikk side til en lokal sandbox.
 
-Kuratert import inkluderer sidene i [curated-content-urls.txt](curated-content-urls.txt), kontormapper (editorial), dekoratørmenyen og ett eller flere eksempler for hver sidetype, med nødvendige avhengigheter og foreldre.
-
-Bruk `--input <fil>` for en egen liste med én URL per linje, eller en JSON-liste av strenger.
+Kuratert import inkluderer sidene i [curated-content-urls.txt](curated-content-urls.txt), kontormapper (editorial), dekoratørmenyen og ett eller flere eksempler for hver sidetype, med nødvendige avhengigheter og foreldre. Bruk `--input <fil>` for en egen liste med én URL per linje, eller en JSON-liste av strenger.
 
 ## Viktig før du starter
 
@@ -19,9 +17,20 @@ Bruk `--input <fil>` for en egen liste med én URL per linje, eller en JSON-list
 pnpm sandbox:import --source prod --target navno
 ```
 
-Kommandoen spør etter kildebruker/passord og et nytt lokalt `su`-passord. Den planlegger utvalget, laster ned innholdet, oppretter sandboxen med samme XP-versjon som kilden og importerer `draft` og `master` for Bokmål, engelsk og nynorsk. Content Studio og nødvendige innholdsapper installeres.
+Kommandoen spør etter kildebruker/passord og et nytt lokalt `su`-passord. Den planlegger utvalget, laster ned innholdet, oppretter sandboxen med samme XP-versjon som kilden og importerer `draft` og `master` for Bokmål, engelsk og nynorsk. Den installerer også Content Studio og andre nødvendige innholdsapper. Manifest og nedlastinger lagres i en egen kjøringsmappe under `.curated` og slettes ved fullføring.
 
-Manifest og nedlastinger lagres i en egen kjøringsmappe under `.curated` og slettes ved fullføring.
+## Oppdatere importtjenesten
+
+Importtjenesten bygges når sandboxen opprettes. Hvis du senere endrer kode i importtjenesten eller annen lokal kuratert-importlogikk, deployer du den oppdaterte applikasjonen med:
+
+```bash
+pnpm sandbox:deploy navno
+```
+
+`pnpm sandbox:deploy [sandbox]` aktiverer `curatedImportEnabled=true` i sandboxens `no.nav.navno.cfg` og kjører deretter den vanlige `enonic project deploy`-kommandoen med `curatedImportLocal=true` satt som Gradle-prosjektegenskap. Du kan også bruke denne kommandoen til å oppdatere en eksisterende sandbox som ikke har importtjenesten.
+
+> [!WARNING]
+> Vanlig `enonic project deploy` bygger uten importtjenesten og bør ikke brukes når den trengs lokalt.
 
 ## Oppdater eksisterende innhold
 
@@ -32,14 +41,6 @@ pnpm sandbox:import --source prod --target navno --force
 ```
 
 Dette oppdaterer det kuraterte utvalget, ikke hele systemdatabasen. Lokale endringer i valgt innhold kan bli overskrevet. Usikre konflikter stopper importen.
-
-Importtjenesten bygges bare når sandboxen opprettes. Hvis du endrer kode i importtjenesten eller annen lokal kuratert-importlogikk, må du bygge og deploye tjenesten manuelt før du prøver igjen med `--force`.
-
-```bash
-./gradlew build -PcuratedImportLocal=true -PxpVersion=<xpVersion> -Pversion=<appVersion>
-cp build/libs/navno.jar <sandbox>/home/deploy/navno.jar
-pnpm sandbox:import --source prod --target navno --force
-```
 
 ## Importere en spesifikk side
 

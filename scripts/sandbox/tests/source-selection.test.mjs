@@ -1,9 +1,8 @@
 import assert from 'node:assert/strict';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
-import { mkdtempSync } from 'node:fs';
 import {
     inferCuratedSourceFromPage,
     parseContentStudioPageUrl,

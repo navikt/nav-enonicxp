@@ -25,7 +25,8 @@ export const assertEnonicCliAvailable = (
     } catch (error) {
         if (error?.code === 'ENOENT') {
             throw new Error(
-                'Enonic CLI not found; install it from https://developer.enonic.com/start before running sandbox scripts'
+                'Enonic CLI not found; install it from https://developer.enonic.com/start before running sandbox scripts',
+                { cause: error }
             );
         }
         throw new Error('Could not determine the installed Enonic CLI version', { cause: error });
@@ -266,7 +267,8 @@ export const runLocalXpCommand = (
                 ? 'enonic executable not found'
                 : 'command failed';
         throw new Error(
-            `Local XP ${args[0]} operation failed (${reason}); credentials and command output withheld`
+            `Local XP ${args[0]} operation failed (${reason}); credentials and command output withheld`,
+            { cause: error }
         );
     } finally {
         rmSync(cliHome, { recursive: true, force: true });
