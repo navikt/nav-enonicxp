@@ -10,6 +10,10 @@ import {
 import { getNestedValues } from '../../utils/object-utils';
 import { getExternalSearchConfig } from '../config';
 import { logger } from '../../utils/logging';
+import { getAllFormNumbers } from '../../utils/form-details-form-numbers';
+import { getRepoConnection } from '../../repos/repo-utils';
+import { getLayersData } from '../../localization/layers-data';
+import { CONTENT_ROOT_REPO_ID } from '../../constants';
 import {
     SearchDocumentFylke,
     getSearchDocumentFylke,
@@ -169,13 +173,23 @@ class ExternalSearchDocumentBuilder {
         }
 
         if (this.content.type === 'no.nav.navno:form-details') {
-            const formNumbers = forceArray(this.content.data.formNumbers);
+            const formNumbers = this.getFormDetailsFormNumbers();
             if (formNumbers.length > 0) {
                 return `${title} (${formNumbers.join(', ')})`;
             }
         }
 
         return title;
+    }
+
+    // Aggregates the legacy top-level `formNumbers` field together with the numbers from the
+    // form-details variations and their intermediate steps, so all of them become searchable.
+    // Intermediate steps are resolved in the content's own locale repo.
+    private getFormDetailsFormNumbers(): string[] {
+        const repoId = getLayersData().localeToRepoIdMap[this.locale] || CONTENT_ROOT_REPO_ID;
+        const repo = getRepoConnection({ repoId, branch: 'master', asAdmin: true });
+
+        return getAllFormNumbers(this.content.data, (id) => repo.get(id));
     }
 
     private getIngress(): string {
