@@ -48,8 +48,10 @@ export declare type CreatedNode<Data> = NodePropertiesOnCreate & NodeData<Data>;
 export declare type ModifiedNode<Data> = NodePropertiesOnModify & NodeData<Data>;
 
 // attachment property is missing from enonic-types. Remove it from here if it ever gets implemented.
+export declare type NodeAttachment = Attachment & { binary: string };
+
 export declare type RepoNode<Data> = NodePropertiesOnRead &
-    NodeData<Data> & { attachment?: Attachment & { binary: string } };
+    NodeData<Data> & { attachment?: NodeAttachment | NodeAttachment[] };
 
 export declare type CreateNodeParams<NodeData = UnknownData> = NodePropertiesOnCreate & NodeData;
 

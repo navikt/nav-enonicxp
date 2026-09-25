@@ -162,7 +162,6 @@ export const guillotineTransformSpecialComponents = ({
     components,
     baseContent,
     branch,
-    // pass this as an arg rather than import, as nashorn stack overflows on cyclic dependencies
     runSitecontentGuillotineQuery,
 }: {
     components: GuillotineComponent[];

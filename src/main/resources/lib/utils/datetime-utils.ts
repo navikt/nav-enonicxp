@@ -11,7 +11,6 @@ export const getISONowWithoutMS = () => {
     return new Date().toISOString().split('.')[0] + 'Z';
 };
 
-// Nashorn does not parse datetime-strings with higher precision than milliseconds
 export const fixDateFormat = (date: string) => {
     const [rest, fractionalSeconds] = date.split('.');
 

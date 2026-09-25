@@ -48,12 +48,12 @@ export const externalArchiveAttachmentService = (req: Request): Response => {
     }
 
     const { attachment } = content;
-    if (!attachment) {
+    if (!attachment || Array.isArray(attachment)) {
         return {
             status: 404,
             contentType: 'application/json',
             body: {
-                msg: `Content on ${id}/${locale}/${versionId} does not have an attachment`,
+                msg: `Content on ${id}/${locale}/${versionId} does not have a supported single attachment`,
             },
         };
     }
