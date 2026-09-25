@@ -211,7 +211,6 @@ export const createCuratedPlan = async ({
     }
     return {
         ...manifest,
-        formatVersion: 1,
         bundle,
         exports: createNativeExports(bundle, manifest.entries),
     };

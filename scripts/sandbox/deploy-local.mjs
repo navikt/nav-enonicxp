@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// Enables the local import service, then delegates to Enonic CLI so sandbox
+// Enables the local import service and disables clustering, then delegates to Enonic CLI so sandbox
 // selection, startup prompts and deploy options behave like `enonic project deploy`.
 
 import { execFileSync } from 'node:child_process';
@@ -49,6 +49,13 @@ export const enableCuratedImport = (sandbox, homeDirectory = homedir()) => {
         mkdirSync(configDirectory, { recursive: true });
         writeFileSync(configPath, updatedConfig);
         console.log(`Enabled curatedImportEnabled for sandbox ${sandbox}`);
+    }
+
+    // The import refuses clustered targets. Keep an existing cluster config so the check can report it.
+    const clusterConfigPath = join(configDirectory, 'com.enonic.xp.cluster.cfg');
+    if (!existsSync(clusterConfigPath)) {
+        writeFileSync(clusterConfigPath, 'cluster.enabled=false\n');
+        console.log(`Disabled clustering for sandbox ${sandbox}`);
     }
 };
 export const deployLocalApplication = (

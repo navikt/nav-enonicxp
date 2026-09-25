@@ -31,23 +31,29 @@ describe('curated export manifest authorization', () => {
     });
 
     it('forwards validated editor seeds through the options object', () => {
-        const seeds = [{
-            repository: 'com.enonic.cms.navno-engelsk',
-            branch: 'draft',
-            contentId: 'editor-content-id',
-        }];
-        expect(post({
-            body: JSON.stringify({ paths: [], scope: 'page', seeds }),
-        } as never).status).toBe(200);
+        const seeds = [
+            {
+                repository: 'com.enonic.cms.navno-engelsk',
+                branch: 'draft',
+                contentId: 'editor-content-id',
+            },
+        ];
+        expect(
+            post({
+                body: JSON.stringify({ paths: [], scope: 'page', seeds }),
+            } as never).status
+        ).toBe(200);
         expect(createCuratedExportManifest).toHaveBeenCalledWith([], 'page', { seeds });
     });
 
     it('supports a seeds-only request without public paths', () => {
-        const seeds = [{
-            repository: 'com.enonic.cms.default',
-            branch: 'master',
-            contentId: 'editor-content-id',
-        }];
+        const seeds = [
+            {
+                repository: 'com.enonic.cms.default',
+                branch: 'master',
+                contentId: 'editor-content-id',
+            },
+        ];
         expect(post({ body: JSON.stringify({ seeds, scope: 'page' }) } as never).status).toBe(200);
         expect(createCuratedExportManifest).toHaveBeenCalledWith([], 'page', { seeds });
     });
@@ -65,7 +71,11 @@ describe('curated export manifest authorization', () => {
             body: JSON.stringify({
                 paths: [],
                 seeds: [
-                    { repository: 'com.enonic.cms.default', branch: 'master', contentId: 'valid-id' },
+                    {
+                        repository: 'com.enonic.cms.default',
+                        branch: 'master',
+                        contentId: 'valid-id',
+                    },
                     invalidSeed,
                 ],
             }),

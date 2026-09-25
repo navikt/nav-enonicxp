@@ -37,7 +37,6 @@ describe('curated export source', () => {
             attachment: { name: 'document.pdf', binary: 'document.pdf' },
         });
         readTypedNode.mockImplementation(({ contentId, versionId }) => ({
-            formatVersion: 1,
             node: { ...getNode(), _id: contentId, _versionKey: versionId || 'version-id' },
             properties,
             binaryReferences: ['document.pdf'],
@@ -67,9 +66,11 @@ describe('curated export source', () => {
         };
         expect(get(request(params)).status).toBe(403);
         expect(get(request({ ...params, binaryReference: 'private.pdf' })).status).toBe(403);
-        expect(post({
-            body: JSON.stringify({ ...params, contentIds: [params.contentId] }),
-        } as never).status).toBe(403);
+        expect(
+            post({
+                body: JSON.stringify({ ...params, contentIds: [params.contentId] }),
+            } as never).status
+        ).toBe(403);
         expect(getNode).not.toHaveBeenCalled();
         expect(getBinary).not.toHaveBeenCalled();
         expect(readTypedNode).not.toHaveBeenCalled();
@@ -84,19 +85,25 @@ describe('curated export source', () => {
         '/content/other-site/page',
     ])('does not return content outside the canonical site boundary: %s', (_path) => {
         getNode.mockReturnValue({ _id: 'content-id', _path });
-        expect(get(request({
-            repository: 'com.enonic.cms.default',
-            branch: 'draft',
-            contentId: 'content-id',
-        })).status).toBe(404);
-        expect(post({
-            body: JSON.stringify({
-                repository: 'com.enonic.cms.default',
-                branch: 'draft',
-                contentIds: ['content-id'],
-                versionIds: ['version-id'],
-            }),
-        } as never).status).toBe(500);
+        expect(
+            get(
+                request({
+                    repository: 'com.enonic.cms.default',
+                    branch: 'draft',
+                    contentId: 'content-id',
+                })
+            ).status
+        ).toBe(404);
+        expect(
+            post({
+                body: JSON.stringify({
+                    repository: 'com.enonic.cms.default',
+                    branch: 'draft',
+                    contentIds: ['content-id'],
+                    versionIds: ['version-id'],
+                }),
+            } as never).status
+        ).toBe(500);
         expect(getBinary).not.toHaveBeenCalled();
     });
 
@@ -113,30 +120,35 @@ describe('curated export source', () => {
             ...override,
         };
         expect(get(request(params)).status).toBe(400);
-        expect(post({
-            body: JSON.stringify({
-                ...params,
-                contentIds: [params.contentId],
-                versionIds: ['version-id'],
-            }),
-        } as never).status).toBe(400);
+        expect(
+            post({
+                body: JSON.stringify({
+                    ...params,
+                    contentIds: [params.contentId],
+                    versionIds: ['version-id'],
+                }),
+            } as never).status
+        ).toBe(400);
         expect(getNode).not.toHaveBeenCalled();
     });
 
     it('returns a selected node and its binary references', () => {
-        const response = get(request({
-            repository: 'com.enonic.cms.default',
-            branch: 'master',
-            contentId: 'content-id',
-        }));
+        const response = get(
+            request({
+                repository: 'com.enonic.cms.default',
+                branch: 'master',
+                contentId: 'content-id',
+            })
+        );
 
         expect(response.status).toBe(200);
-        expect(responseBody(response)).toEqual(expect.objectContaining({
-            formatVersion: 1,
-            properties,
-            binaryReferences: ['document.pdf'],
-            manualOrderValue: '9007199254740993',
-        }));
+        expect(responseBody(response)).toEqual(
+            expect.objectContaining({
+                properties,
+                binaryReferences: ['document.pdf'],
+                manualOrderValue: '9007199254740993',
+            })
+        );
         expect(readTypedNode).toHaveBeenCalledWith({
             repository: 'com.enonic.cms.default',
             branch: 'master',
@@ -147,13 +159,15 @@ describe('curated export source', () => {
     it('streams only a binary attached to the requested node', () => {
         const stream = { value: 'binary-stream' };
         getBinary.mockReturnValue(stream);
-        const response = get(request({
-            repository: 'com.enonic.cms.default',
-            branch: 'master',
-            contentId: 'content-id',
-            versionId: 'version-id',
-            binaryReference: 'document.pdf',
-        }));
+        const response = get(
+            request({
+                repository: 'com.enonic.cms.default',
+                branch: 'master',
+                contentId: 'content-id',
+                versionId: 'version-id',
+                binaryReference: 'document.pdf',
+            })
+        );
 
         expect(response).toEqual(expect.objectContaining({ status: 200, body: stream }));
         expect(readTypedBinary).toHaveBeenCalledWith({
@@ -168,7 +182,6 @@ describe('curated export source', () => {
     it('exports every repeated singular attachment in GET and batch POST', () => {
         const binaryReferences = ['first.pdf', 'second.pdf', 'third.pdf'];
         readTypedNode.mockReturnValue({
-            formatVersion: 1,
             node: {
                 _id: 'content-id',
                 _versionKey: 'version-id',
@@ -209,11 +222,15 @@ describe('curated export source', () => {
 
     it('preserves the external archive single-attachment contract after widening node types', () => {
         getBinary.mockReturnValue({ stream: 'document.pdf' });
-        expect(externalArchiveAttachmentService(request({
-            id: 'content-id',
-            versionId: 'version-id',
-            locale: 'no',
-        }))).toMatchObject({
+        expect(
+            externalArchiveAttachmentService(
+                request({
+                    id: 'content-id',
+                    versionId: 'version-id',
+                    locale: 'no',
+                })
+            )
+        ).toMatchObject({
             status: 200,
             body: { stream: 'document.pdf' },
             headers: { 'Content-Disposition': 'attachment; filename="document.pdf"' },
@@ -221,37 +238,47 @@ describe('curated export source', () => {
     });
 
     it('does not pass an undefined binary reference from an unsupported archive attachment array', () => {
-        getNode.mockReturnValue({ attachment: [
-            { name: 'first.pdf', binary: 'first.pdf' },
-            { name: 'second.pdf', binary: 'second.pdf' },
-        ] });
-        expect(externalArchiveAttachmentService(request({
-            id: 'content-id',
-            versionId: 'version-id',
-            locale: 'no',
-        })).status).toBe(404);
+        getNode.mockReturnValue({
+            attachment: [
+                { name: 'first.pdf', binary: 'first.pdf' },
+                { name: 'second.pdf', binary: 'second.pdf' },
+            ],
+        });
+        expect(
+            externalArchiveAttachmentService(
+                request({
+                    id: 'content-id',
+                    versionId: 'version-id',
+                    locale: 'no',
+                })
+            ).status
+        ).toBe(404);
         expect(getBinary).not.toHaveBeenCalled();
     });
 
     it('rejects repositories outside the curated project set', () => {
-        const response = get(request({
-            repository: 'system-repo',
-            branch: 'master',
-            contentId: 'content-id',
-        }));
+        const response = get(
+            request({
+                repository: 'system-repo',
+                branch: 'master',
+                contentId: 'content-id',
+            })
+        );
 
         expect(response.status).toBe(400);
         expect(getNode).not.toHaveBeenCalled();
     });
 
     it('rejects binary references not attached to the requested node', () => {
-        const response = get(request({
-            repository: 'com.enonic.cms.default',
-            branch: 'master',
-            contentId: 'content-id',
-            versionId: 'version-id',
-            binaryReference: 'other.pdf',
-        }));
+        const response = get(
+            request({
+                repository: 'com.enonic.cms.default',
+                branch: 'master',
+                contentId: 'content-id',
+                versionId: 'version-id',
+                binaryReference: 'other.pdf',
+            })
+        );
 
         expect(response.status).toBe(404);
         expect(getBinary).not.toHaveBeenCalled();
@@ -282,54 +309,55 @@ describe('curated export source', () => {
         ['version-id', 'other-version', 'extra-version'],
         ['version-id', null],
         ['version-id', '../other'],
-    ])(
-        'rejects invalid or non-parallel batch versions before any read: %j',
-        (versionIds) => {
-            const response = post({
-                body: JSON.stringify({
-                    repository: 'com.enonic.cms.default',
-                    branch: 'draft',
-                    contentIds: ['content-id', 'other-id'],
-                    versionIds,
-                }),
-            } as never);
-            expect(response.status).toBe(400);
-            expect(readTypedNode).not.toHaveBeenCalled();
-        }
-    );
+    ])('rejects invalid or non-parallel batch versions before any read: %j', (versionIds) => {
+        const response = post({
+            body: JSON.stringify({
+                repository: 'com.enonic.cms.default',
+                branch: 'draft',
+                contentIds: ['content-id', 'other-id'],
+                versionIds,
+            }),
+        } as never);
+        expect(response.status).toBe(400);
+        expect(readTypedNode).not.toHaveBeenCalled();
+    });
 
     it.each([
         { _id: 'wrong-id', _versionKey: 'version-id' },
         { _id: 'content-id', _versionKey: 'wrong-version' },
     ])('refuses mismatched typed-reader identities before streaming bytes: %j', (identity) => {
         readTypedNode.mockReturnValue({
-            formatVersion: 1,
             node: { ...identity, _path: '/content/www.nav.no/page' },
             properties: [],
             binaryReferences: ['document.pdf'],
             manualOrderValue: null,
         });
-        expect(get(request({
-            repository: 'com.enonic.cms.default',
-            branch: 'draft',
-            contentId: 'content-id',
-            versionId: 'version-id',
-            binaryReference: 'document.pdf',
-        })).status).toBe(409);
+        expect(
+            get(
+                request({
+                    repository: 'com.enonic.cms.default',
+                    branch: 'draft',
+                    contentId: 'content-id',
+                    versionId: 'version-id',
+                    binaryReference: 'document.pdf',
+                })
+            ).status
+        ).toBe(409);
         expect(readTypedBinary).not.toHaveBeenCalled();
-        expect(post({
-            body: JSON.stringify({
-                repository: 'com.enonic.cms.default',
-                branch: 'draft',
-                contentIds: ['content-id'],
-                versionIds: ['version-id'],
-            }),
-        } as never).status).toBe(500);
+        expect(
+            post({
+                body: JSON.stringify({
+                    repository: 'com.enonic.cms.default',
+                    branch: 'draft',
+                    contentIds: ['content-id'],
+                    versionIds: ['version-id'],
+                }),
+            } as never).status
+        ).toBe(500);
     });
 
     it('checks the versioned node root before allowing an otherwise attached binary', () => {
         readTypedNode.mockReturnValue({
-            formatVersion: 1,
             node: {
                 _id: 'content-id',
                 _versionKey: 'version-id',
@@ -339,13 +367,17 @@ describe('curated export source', () => {
             binaryReferences: ['document.pdf'],
             manualOrderValue: null,
         });
-        expect(get(request({
-            repository: 'com.enonic.cms.default',
-            branch: 'draft',
-            contentId: 'content-id',
-            versionId: 'version-id',
-            binaryReference: 'document.pdf',
-        })).status).toBe(404);
+        expect(
+            get(
+                request({
+                    repository: 'com.enonic.cms.default',
+                    branch: 'draft',
+                    contentId: 'content-id',
+                    versionId: 'version-id',
+                    binaryReference: 'document.pdf',
+                })
+            ).status
+        ).toBe(404);
         expect(readTypedBinary).not.toHaveBeenCalled();
     });
 
@@ -376,15 +408,14 @@ describe('curated export source', () => {
         });
         expect(responseBody(response)).toMatchObject({
             nodes: [
-                { formatVersion: 1, properties, manualOrderValue: '9007199254740993' },
-                { formatVersion: 1, properties, manualOrderValue: '9007199254740993' },
+                { properties, manualOrderValue: '9007199254740993' },
+                { properties, manualOrderValue: '9007199254740993' },
             ],
         });
     });
 
     it('serializes GET and POST as JSON strings to preserve typed nulls across the XP response boundary', () => {
         const source = {
-            formatVersion: 1,
             node: {
                 _id: 'content-id',
                 _versionKey: 'version-id',
@@ -393,10 +424,14 @@ describe('curated export source', () => {
             properties: [
                 { name: 'to', type: 'dateTime', value: null },
                 { name: 'group', type: 'property-set', value: null },
-                { name: 'nested', type: 'property-set', value: [
-                    { name: 'to', type: 'dateTime', value: null },
-                    { name: 'maximum', type: 'long', value: '9223372036854775807' },
-                ] },
+                {
+                    name: 'nested',
+                    type: 'property-set',
+                    value: [
+                        { name: 'to', type: 'dateTime', value: null },
+                        { name: 'maximum', type: 'long', value: '9223372036854775807' },
+                    ],
+                },
             ],
             binaryReferences: [],
             manualOrderValue: null,

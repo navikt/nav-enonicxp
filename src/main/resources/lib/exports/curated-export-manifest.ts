@@ -3,10 +3,7 @@ import { Content } from '/lib/xp/content';
 import * as appLib from '/lib/xp/app';
 import * as projectLib from '/lib/xp/project';
 import { Project } from '/lib/xp/project';
-import {
-    dynamicPageContentTypes,
-    legacyPageContentTypes,
-} from '../contenttype-lists';
+import { dynamicPageContentTypes, legacyPageContentTypes } from '../contenttype-lists';
 import { findTargetContentAndLocale } from '../../services/sitecontent/common/find-target-content-and-locale';
 import { getLayersData } from '../localization/layers-data';
 import { runInLocaleContext } from '../localization/locale-context';
@@ -106,8 +103,7 @@ const isExcludedPath = (path: string) =>
     EXCLUDED_ROOT_PATHS.some((rootPath) => path === rootPath || path.startsWith(`${rootPath}/`));
 
 const isAllowedNodePath = (path: string) =>
-    isCuratedContentPath(path) &&
-    !isExcludedPath(path.slice('/content'.length));
+    isCuratedContentPath(path) && !isExcludedPath(path.slice('/content'.length));
 
 const getEntry = (
     content: Content,
@@ -350,10 +346,7 @@ const closeContentGraph = (
         const shouldExpandDependencies = expandableEntryKeys.has(entryKey);
         entry.branches.forEach((branch) => {
             const key = `${entryKey}:${branch}:${shouldExpandDependencies ? 'expand' : 'include'}`;
-            selectedEntriesByPath.set(
-                `${entry.repoId}:${branch}:${entry.paths[branch]}`,
-                entry
-            );
+            selectedEntriesByPath.set(`${entry.repoId}:${branch}:${entry.paths[branch]}`, entry);
             if (!queuedBranches.has(key)) {
                 queuedBranches.add(key);
                 pendingEntries.push({ entry, branch });
@@ -396,7 +389,6 @@ const closeContentGraph = (
             select(ancestorEntry, true);
         });
 
-        // Dependency pages are included as link targets, but are not new page-graph roots.
         if (!expandableEntryKeys.has(getEntryKey(entry))) {
             continue;
         }

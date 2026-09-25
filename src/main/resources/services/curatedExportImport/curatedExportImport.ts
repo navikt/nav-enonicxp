@@ -1,7 +1,6 @@
 import { Request } from '@enonic-types/core';
 import { userCanManageCuratedExports } from '../../lib/utils/auth-utils';
 import * as appLib from '/lib/xp/app';
-import * as authLib from '/lib/xp/auth';
 import * as nodeLib from '/lib/xp/node';
 import * as projectLib from '/lib/xp/project';
 import { Project } from '/lib/xp/project';
@@ -12,9 +11,8 @@ import { logger } from '../../lib/utils/logging';
 import { getRepoConnection } from '../../lib/repos/repo-utils';
 import {
     CuratedTargetExpectation,
-    repairCuratedTargetBatch,
-    validateCuratedTargetBatch,
-} from '../../lib/exports/target/curated-target-fidelity';
+    restoreCuratedTargetMetadata,
+} from '../../lib/exports/target/curated-target-metadata';
 import {
     isCuratedBranch,
     isCuratedContentId,
@@ -35,21 +33,22 @@ type ImportEntry = {
 };
 
 type RequestBody = {
-    action?: 'configure-login' | 'configure-projects' | 'prepare-project-import' | 'normalize-import-paths' | 'repair-metadata' | 'validate-fidelity' | 'synchronize-published';
+    action?:
+        | 'configure-login'
+        | 'configure-projects'
+        | 'prepare-project-import'
+        | 'normalize-import-paths'
+        | 'restore-metadata'
+        | 'synchronize-published';
     applications?: RequiredApplication[];
     projects?: Project[];
     repository?: string;
     branch?: 'draft' | 'master';
     entries?: ImportEntry[];
-    scope?: 'full' | 'page';
     expectations?: CuratedTargetExpectation[];
-    absentContentIds?: string[];
 };
 
 const configureLogin = () => {
-    const removedLegacyBootstrapUser = authLib.deletePrincipal(
-        'user:system:curated-login-bootstrap'
-    );
     const connection = nodeLib.connect({
         repoId: 'system-repo',
         branch: 'master',
@@ -59,7 +58,7 @@ const configureLogin = () => {
         idProvider?: { config?: { adminUserCreationEnabled?: boolean } };
     } | null;
     if (!idProvider?.idProvider?.config?.adminUserCreationEnabled) {
-        return { disabledAdminUserCreation: false, removedLegacyBootstrapUser };
+        return { disabledAdminUserCreation: false };
     }
     connection.modify({
         key: '/identity/system',
@@ -69,7 +68,7 @@ const configureLogin = () => {
             return systemIdProvider;
         },
     });
-    return { disabledAdminUserCreation: true, removedLegacyBootstrapUser };
+    return { disabledAdminUserCreation: true };
 };
 
 type RequiredApplication = {
@@ -135,8 +134,7 @@ const isImportEntry = (value: unknown): value is ImportEntry => {
                 isCuratedBranch(branch) &&
                 branches.includes(branch) &&
                 isCuratedContentPath(paths[branch])
-        ) &&
-        branches.every((branch) => isCuratedContentPath(paths[branch]))
+        ) && branches.every((branch) => isCuratedContentPath(paths[branch]))
     );
 };
 
@@ -163,8 +161,7 @@ const validateRequest = (body: RequestBody) => {
     }
     if (
         (body.repository !== undefined && !isCuratedRepository(body.repository)) ||
-        (body.branch !== undefined && !isCuratedBranch(body.branch)) ||
-        (body.scope !== undefined && body.scope !== 'full' && body.scope !== 'page')
+        (body.branch !== undefined && !isCuratedBranch(body.branch))
     ) {
         throw new Error('Invalid import repository or branch');
     }
@@ -180,8 +177,7 @@ const validateRequest = (body: RequestBody) => {
         body.repository &&
         body.branch &&
         body.entries?.some(
-            (entry) =>
-                entry.repoId !== body.repository || !entry.branches.includes(body.branch!)
+            (entry) => entry.repoId !== body.repository || !entry.branches.includes(body.branch!)
         )
     ) {
         throw new Error('Import items do not match the requested repository and branch');
@@ -218,18 +214,22 @@ const getSelectedDescendantIds = (
     if (
         !result ||
         typeof result.total !== 'number' ||
-        !Number.isFinite(result.total) ||
+        !isFinite(result.total) ||
         result.total % 1 !== 0 ||
         result.total < 0 ||
         result.total > MAX_RELOCATION_DESCENDANTS ||
         result.hits.length !== result.total
     ) {
-        throw new Error(`Cannot completely inspect descendants of ${content._id}; limit is ${MAX_RELOCATION_DESCENDANTS}`);
+        throw new Error(
+            `Cannot completely inspect descendants of ${content._id}; limit is ${MAX_RELOCATION_DESCENDANTS}`
+        );
     }
     const ids = new Set<string>();
     result.hits.forEach(({ id }) => {
         if (!selectedIds.has(id) || ids.has(id) || id === content._id) {
-            throw new Error(`Cannot relocate ${content._id}: unselected or inconsistent descendant ${id}`);
+            throw new Error(
+                `Cannot relocate ${content._id}: unselected or inconsistent descendant ${id}`
+            );
         }
         const descendant = connection.get<Content>(id);
         assertContentOwnership(descendant, id);
@@ -276,10 +276,8 @@ const validateProjects = (projects: Project[]) => {
                             typeof config.applicationKey !== 'string' ||
                             (config.config !== undefined && !isRecord(config.config))
                     ))) ||
-            (project.permissions !== undefined &&
-                !isProjectPermissions(project.permissions)) ||
-            (project.readAccess !== undefined &&
-                !isProjectReadAccess(project.readAccess))
+            (project.permissions !== undefined && !isProjectPermissions(project.permissions)) ||
+            (project.readAccess !== undefined && !isProjectReadAccess(project.readAccess))
         ) {
             throw new Error(`Invalid project configuration for "${expectedProject.id}"`);
         }
@@ -290,7 +288,9 @@ const validateProjects = (projects: Project[]) => {
             parents.length !== expectedProject.parents.length ||
             parents.some((parent, parentIndex) => parent !== expectedProject.parents[parentIndex])
         ) {
-            throw new Error(`Project topology mismatch for expected project "${expectedProject.id}"`);
+            throw new Error(
+                `Project topology mismatch for expected project "${expectedProject.id}"`
+            );
         }
     });
 };
@@ -326,7 +326,11 @@ const configureDefaultProject = (project: Project) => {
         throw new Error('Default project was not found after configuration');
     }
 
-    const expected = comparableProject({ ...project, permissions: undefined, readAccess: undefined });
+    const expected = comparableProject({
+        ...project,
+        permissions: undefined,
+        readAccess: undefined,
+    });
     const actual = comparableProject({
         ...configuredProject,
         permissions: undefined,
@@ -350,7 +354,8 @@ const configureChildProject = (project: Project) => {
         const configuredProject = projectLib.get({ id: project.id });
         if (
             !configuredProject ||
-            JSON.stringify(comparableProject(configuredProject)) !== JSON.stringify(comparableProject(project))
+            JSON.stringify(comparableProject(configuredProject)) !==
+                JSON.stringify(comparableProject(project))
         ) {
             throw new Error(`Existing project "${project.id}" does not match the manifest`);
         }
@@ -371,7 +376,8 @@ const configureChildProject = (project: Project) => {
     const configuredProject = projectLib.get({ id: project.id });
     if (
         !configuredProject ||
-        JSON.stringify(comparableProject(configuredProject)) !== JSON.stringify(comparableProject(project))
+        JSON.stringify(comparableProject(configuredProject)) !==
+            JSON.stringify(comparableProject(project))
     ) {
         throw new Error(`Created project "${project.id}" does not match the manifest`);
     }
@@ -398,25 +404,33 @@ const configureProjects = (projects: Project[]) => {
 };
 
 const validateApplications = (applications: RequiredApplication[]) => {
-    applications.filter(({ required }) => required !== false).forEach((expectedApplication) => {
-        if (!expectedApplication.installed || !expectedApplication.started || !expectedApplication.version) {
-            throw new Error(
-                `Source application "${expectedApplication.key}" was not installed, started, and versioned`
-            );
-        }
-        const application = appLib.get({ key: expectedApplication.key });
-        if (!application) {
-            throw new Error(`Required application "${expectedApplication.key}" is not installed`);
-        }
-        if (!application.started) {
-            throw new Error(`Required application "${expectedApplication.key}" is not started`);
-        }
-        if (application.version !== expectedApplication.version) {
-            throw new Error(
-                `Required application "${expectedApplication.key}" has version "${application.version}", expected "${expectedApplication.version}"`
-            );
-        }
-    });
+    applications
+        .filter(({ required }) => required !== false)
+        .forEach((expectedApplication) => {
+            if (
+                !expectedApplication.installed ||
+                !expectedApplication.started ||
+                !expectedApplication.version
+            ) {
+                throw new Error(
+                    `Source application "${expectedApplication.key}" was not installed, started, and versioned`
+                );
+            }
+            const application = appLib.get({ key: expectedApplication.key });
+            if (!application) {
+                throw new Error(
+                    `Required application "${expectedApplication.key}" is not installed`
+                );
+            }
+            if (!application.started) {
+                throw new Error(`Required application "${expectedApplication.key}" is not started`);
+            }
+            if (application.version !== expectedApplication.version) {
+                throw new Error(
+                    `Required application "${expectedApplication.key}" has version "${application.version}", expected "${expectedApplication.version}"`
+                );
+            }
+        });
 };
 
 const getParentPath = (path: string) => path.slice(0, path.lastIndexOf('/'));
@@ -479,7 +493,10 @@ const orderRelocationEntries = (entries: RelocationEntry[]) => {
         visited.add(entry.contentId);
         ordered.push(entry);
     };
-    entries.slice().sort((left, right) => left.targetPath.length - right.targetPath.length).forEach(visit);
+    entries
+        .slice()
+        .sort((left, right) => left.targetPath.length - right.targetPath.length)
+        .forEach(visit);
     return ordered;
 };
 
@@ -525,7 +542,9 @@ const planImportRelocations = (
     orderRelocationEntries(selected).forEach((entry) => {
         const occupant = occupantAt(entry.targetPath);
         if (occupant && occupant !== entry.contentId) {
-            throw new Error(`Cannot relocate ${entry.contentId}: target ${entry.targetPath} is occupied by ${occupant}; no content will be deleted`);
+            throw new Error(
+                `Cannot relocate ${entry.contentId}: target ${entry.targetPath} is occupied by ${occupant}; no content will be deleted`
+            );
         }
         const sourcePath = positions.get(entry.contentId);
         if (!entry.content || !sourcePath || sourcePath === entry.targetPath) {
@@ -537,7 +556,9 @@ const planImportRelocations = (
         getSelectedDescendantIds(connection, entry.content, selectedIds);
         if (!occupantAt(getParentPath(entry.targetPath))) {
             if (!allowMissing) {
-                throw new Error(`Destination parent is missing for selected content ${entry.contentId}`);
+                throw new Error(
+                    `Destination parent is missing for selected content ${entry.contentId}`
+                );
             }
             deferredRelocations.push(entry.contentId);
             return;
@@ -545,7 +566,10 @@ const planImportRelocations = (
         const affected: Relocation['affected'] = [];
         positions.forEach((path, contentId) => {
             if (path === sourcePath || path.startsWith(`${sourcePath}/`)) {
-                affected.push({ contentId, targetPath: `${entry.targetPath}${path.slice(sourcePath.length)}` });
+                affected.push({
+                    contentId,
+                    targetPath: `${entry.targetPath}${path.slice(sourcePath.length)}`,
+                });
             }
         });
         affected.forEach(({ contentId }) => idsAtPaths.delete(positions.get(contentId)!));
@@ -553,7 +577,12 @@ const planImportRelocations = (
             positions.set(contentId, targetPath);
             idsAtPaths.set(targetPath, contentId);
         });
-        relocations.push({ contentId: entry.contentId, sourcePath, targetPath: entry.targetPath, affected });
+        relocations.push({
+            contentId: entry.contentId,
+            sourcePath,
+            targetPath: entry.targetPath,
+            affected,
+        });
     });
     selected.forEach((entry) => {
         if (
@@ -561,7 +590,9 @@ const planImportRelocations = (
             positions.get(entry.contentId) !== entry.targetPath &&
             !deferredRelocations.includes(entry.contentId)
         ) {
-            throw new Error(`Relocation would displace selected content ${entry.contentId} from its required path`);
+            throw new Error(
+                `Relocation would displace selected content ${entry.contentId} from its required path`
+            );
         }
     });
     return { relocations, deferredRelocations, selectedIds };
@@ -591,7 +622,9 @@ const relocateImportPaths = (
             const content = connection.get<Content>(relocation.contentId);
             assertContentOwnership(content, relocation.contentId, relocation.sourcePath);
             if (!content) {
-                throw new Error(`Selected content disappeared before relocation: ${relocation.contentId}`);
+                throw new Error(
+                    `Selected content disappeared before relocation: ${relocation.contentId}`
+                );
             }
             const target = connection.get<Content>(relocation.targetPath);
             const parentPath = getParentPath(relocation.targetPath);
@@ -606,7 +639,8 @@ const relocateImportPaths = (
             if (
                 descendants.size !== relocation.affected.length - 1 ||
                 relocation.affected.some(
-                    ({ contentId }) => contentId !== relocation.contentId && !descendants.has(contentId)
+                    ({ contentId }) =>
+                        contentId !== relocation.contentId && !descendants.has(contentId)
                 )
             ) {
                 throw new Error(`Subtree changed before relocation of ${relocation.contentId}`);
@@ -662,7 +696,11 @@ const synchronizePublished = (repository: string, entries: ImportEntry[]) => {
     }
 
     return runInContext({ repository, branch: 'draft', asAdmin: true }, () => {
-        const connection = getRepoConnection({ repoId: repository, branch: 'draft', asAdmin: true });
+        const connection = getRepoConnection({
+            repoId: repository,
+            branch: 'draft',
+            asAdmin: true,
+        });
         let synchronizedEntries = 0;
         for (let start = 0; start < entries.length; start += 100) {
             const batch = entries.slice(start, start + 100);
@@ -706,7 +744,6 @@ export const get = () => ({
         jsonResponse(200, {
             environment: 'localhost',
             importEnabled: true,
-            importFormatVersion: 2,
             importInProgress: app.config.curatedImportInProgress === 'true',
         })),
     headers: { 'Cache-Control': 'no-store' },
@@ -734,23 +771,19 @@ export const post = (req: Request) => {
 
     try {
         if (
-            (body.action === 'repair-metadata' || body.action === 'validate-fidelity') &&
+            body.action === 'restore-metadata' &&
             body.repository &&
             body.branch &&
-            body.scope &&
             Array.isArray(body.expectations)
         ) {
-            const batch = {
-                repository: body.repository,
-                branch: body.branch,
-                scope: body.scope,
-                expectations: body.expectations,
-                absentContentIds: body.absentContentIds,
-            };
-            const result = body.action === 'repair-metadata'
-                ? repairCuratedTargetBatch(batch)
-                : validateCuratedTargetBatch(batch);
-            return jsonResponse(200, result);
+            return jsonResponse(
+                200,
+                restoreCuratedTargetMetadata({
+                    repository: body.repository,
+                    branch: body.branch,
+                    expectations: body.expectations,
+                })
+            );
         }
         if (body.action === 'configure-login') {
             return jsonResponse(200, configureLogin());

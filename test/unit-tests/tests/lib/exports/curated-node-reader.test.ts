@@ -52,7 +52,6 @@ test('combines exact-version metadata with typed properties without number conve
     expect(getNode).toHaveBeenCalledWith({ key: source.contentId, versionId: source.versionId });
     expect(describe).toHaveBeenCalledWith(source.contentId, source.versionId);
     expect(result).toMatchObject({
-        formatVersion: 1,
         properties: [{ name: 'long', type: 'long', value: '9223372036854775807' }],
         manualOrderValue: '9223372036854775806',
         binaryReferences: ['first.pdf', 'second.pdf'],

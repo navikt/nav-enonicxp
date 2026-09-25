@@ -13,10 +13,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import { prepareCuratedImportFiles } from '../lib/import-files.mjs';
-import {
-    batchCuratedExpectations,
-    loadCuratedExpectations,
-} from '../lib/import-expectations.mjs';
+import { batchCuratedExpectations, loadCuratedExpectations } from '../lib/import-expectations.mjs';
 import { getSourcePublishedEntries, importCuratedBundle } from '../apply-curated-export.mjs';
 
 const fixture = (t) => {
@@ -28,7 +25,6 @@ const fixture = (t) => {
     mkdirSync(nodeDirectory, { recursive: true });
     writeFileSync(join(nodeDirectory, 'node.xml'), '<node/>');
     const expected = {
-        formatVersion: 2,
         contentId: 'site',
         contentPath: '/content/www.nav.no',
         versionId: 'source-version',
@@ -36,14 +32,10 @@ const fixture = (t) => {
         manualOrderValue: null,
         indexConfig: { default: 'byType', configs: [] },
         nodeType: 'content',
-        properties: [{ name: 'title', type: 'string', value: 'Selected site' }],
-        binaries: [],
-        manualChildOrder: null,
     };
     const metadataPath = join(nodeDirectory, 'curated-metadata.json');
     writeFileSync(metadataPath, JSON.stringify(expected));
     const manifest = {
-        formatVersion: 1,
         scope: 'page',
         bundle: 'fixture',
         entries: [
@@ -160,29 +152,23 @@ test('requires local verification before any staging', (t) => {
     files.cleanup();
 });
 
-test('loads exact expectations and negative branch membership before native import', (t) => {
+test('loads exact metadata expectations only for exported branches', (t) => {
     const f = fixture(t);
     const files = f.prepare();
     t.after(files.cleanup);
     const groups = loadCuratedExpectations(f.manifest, files);
-    assert.equal(groups.length, 2);
-    assert.deepEqual(groups[0].expectations, [f.expected]);
-    assert.deepEqual(groups[1].expectations, []);
-    assert.deepEqual(groups[1].absentContentIds, ['site']);
+    assert.deepEqual(groups, [
+        { repository: 'com.enonic.cms.default', branch: 'draft', expectations: [f.expected] },
+    ]);
     for (const change of [
-        { formatVersion: 1 },
         { versionId: 'stale' },
         { contentId: 'other' },
         { contentPath: '/content/www.nav.no/other' },
-        { binaries: [{ reference: 'file', size: '2', sha512: null }] },
-        {
-            manualChildOrder: [
-                { contentId: 'unselected', contentPath: '/content/www.nav.no/child' },
-            ],
-        },
+        { manualOrderValue: 12 },
+        { indexConfig: [] },
     ]) {
         writeFileSync(f.metadataPath, JSON.stringify({ ...f.expected, ...change }));
-        assert.throws(() => loadCuratedExpectations(f.manifest, files), /typed expectation/);
+        assert.throws(() => loadCuratedExpectations(f.manifest, files), /metadata expectation/);
     }
 });
 
@@ -196,30 +182,22 @@ test('rejects unselected native nodes including an unexpected export-root node',
     }
 });
 
-test('batches explicit and absent nodes without splitting manual-child expectations', () => {
-    const children = Array.from({ length: 150 }, (_, i) => ({ contentId: String(i) }));
+test('batches metadata expectations', () => {
     const group = {
         repository: 'com.enonic.cms.default',
         branch: 'draft',
-        scope: 'page',
-        expectations: [{ manualChildOrder: children }, {}, {}],
-        absentContentIds: ['absent-1', 'absent-2', 'absent-3'],
+        expectations: [{ contentId: 'a' }, { contentId: 'b' }, { contentId: 'c' }],
     };
     const batches = batchCuratedExpectations(group, 2);
     assert.deepEqual(
-        batches.map((batch) => [batch.expectations.length, batch.absentContentIds.length]),
-        [
-            [2, 0],
-            [1, 0],
-            [0, 2],
-            [0, 1],
-        ]
+        batches.map((batch) => batch.expectations.map(({ contentId }) => contentId)),
+        [['a', 'b'], ['c']]
     );
-    assert.equal(batches[0].expectations[0].manualChildOrder, children);
+    assert.equal(batches[0].repository, group.repository);
     assert.throws(() => batchCuratedExpectations(group, 101), /between 1 and 100/);
 });
 
-test('reimports deferred IDs after normalization and then repairs and validates fidelity', async (t) => {
+test('reimports deferred IDs after normalization and then restores metadata', async (t) => {
     const f = fixture(t);
     const files = f.prepare();
     const calls = [];
@@ -239,19 +217,13 @@ test('reimports deferred IDs after normalization and then repairs and validates 
             const phase = {
                 'prepare-project-import': /Preparing content import/,
                 'normalize-import-paths': /Normalizing imported paths/,
-                'repair-metadata': /Restoring source metadata.*batch \d+\/\d+/,
-                'validate-fidelity': /Validating imported content fidelity.*batch \d+\/\d+/,
+                'restore-metadata': /Restoring source metadata.*batch \d+\/\d+/,
             }[body.action];
             assert.match(progress.at(-1), phase);
             calls.push([body.action, body.branch]);
             if (body.action === 'prepare-project-import') return { deferredRelocations: ['site'] };
             if (body.action === 'normalize-import-paths') return {};
-            return {
-                checkedNodes: body.expectations.length,
-                checkedBinaries: 0,
-                checkedAbsentEntries: body.absentContentIds.length,
-                repairedNodes: 0,
-            };
+            return { checkedNodes: body.expectations.length, restoredNodes: 0 };
         },
     });
     assert.deepEqual(calls, [
@@ -259,12 +231,9 @@ test('reimports deferred IDs after normalization and then repairs and validates 
         ['native', ['site']],
         ['normalize-import-paths', 'draft'],
         ['native', []],
-        ['repair-metadata', 'draft'],
-        ['repair-metadata', 'master'],
-        ['validate-fidelity', 'draft'],
-        ['validate-fidelity', 'master'],
+        ['restore-metadata', 'draft'],
     ]);
-    assert.match(progress[0], /Loading and checking source fidelity metadata/);
+    assert.match(progress[0], /Loading source metadata/);
     assert.ok(existsSync(f.metadataPath));
     assert.ok(!existsSync(join(f.targetDirectory, 'bundle')));
 });
@@ -299,7 +268,7 @@ test('selects only source entries whose draft and master versions were identical
     );
 });
 
-test('fails before target mutations on stale expectations and cleans up after fidelity failure', async (t) => {
+test('fails before target mutations on stale expectations and cleans up after restore failure', async (t) => {
     const f = fixture(t);
     let files = f.prepare();
     writeFileSync(f.metadataPath, JSON.stringify({ ...f.expected, versionId: 'stale' }));
@@ -312,7 +281,7 @@ test('fails before target mutations on stale expectations and cleans up after fi
             postAction: async () => calls.push('mutation'),
             importNative: () => calls.push('native'),
         }),
-        /typed expectation/
+        /metadata expectation/
     );
     assert.deepEqual(calls, []);
     writeFileSync(f.metadataPath, JSON.stringify(f.expected));
@@ -326,7 +295,7 @@ test('fails before target mutations on stale expectations and cleans up after fi
             postAction: async ({ action }) =>
                 action === 'prepare-project-import' ? { deferredRelocations: [] } : {},
         }),
-        /Incomplete target fidelity/
+        /Incomplete metadata restore/
     );
     assert.ok(!existsSync(join(f.targetDirectory, 'bundle')));
     assert.ok(existsSync(f.metadataPath));

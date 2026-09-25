@@ -10,9 +10,7 @@ export const LOCAL_MANAGEMENT_URL = 'http://localhost:4848';
 export const LOCAL_IMPORT_SERVICE_URL =
     'http://localhost:8080/_/service/no.nav.navno/curatedExportImport';
 
-// Sandbox scripts shell out to the Enonic CLI throughout; fail fast with a clear
-// message instead of a confusing ENOENT deep inside a later step, and warn (without
-// stopping) when the installed CLI major version does not match what we develop against.
+// Fail fast when the Enonic CLI is missing; only warn on an unexpected major version.
 export const EXPECTED_ENONIC_CLI_MAJOR_VERSION = 4;
 
 export const assertEnonicCliAvailable = (
@@ -142,11 +140,7 @@ export const getLocalCliEnvironment = (auth, environment = process.env) => {
 // Checking URLs alone cannot distinguish a local XP process from a tunnel to production.
 export const assertLocalTargetProcess = (
     sandbox,
-    {
-        homeDirectory = homedir(),
-        runCommand = execFileSync,
-        requireCuratedImport = true,
-    } = {}
+    { homeDirectory = homedir(), runCommand = execFileSync, requireCuratedImport = true } = {}
 ) => {
     assertSandboxName(sandbox);
     const state = readFileSync(join(homeDirectory, '.enonic/.enonic'), 'utf8');
@@ -221,15 +215,8 @@ export const verifyLocalImportTarget = async ({
         signal: AbortSignal.timeout(30000),
     });
     const result = await response.json();
-    if (
-        !response.ok ||
-        result.environment !== 'localhost' ||
-        result.importEnabled !== true ||
-        result.importFormatVersion !== 2
-    ) {
-        throw new Error(
-            'Target has not enabled the compatible local-only curated import service (format 2)'
-        );
+    if (!response.ok || result.environment !== 'localhost' || result.importEnabled !== true) {
+        throw new Error('Target has not enabled the local-only curated import service');
     }
     if (requireImportMode && result.importInProgress !== true) {
         throw new Error(
@@ -244,7 +231,7 @@ export const runLocalXpCommand = (
     { sandbox, auth, runCommand = execFileSync, verifyTarget = assertLocalTargetProcess } = {}
 ) => {
     verifyTarget(sandbox);
-    // CLI 4 reuses cached sessions before considering environment credentials.
+    // CLI 4 prefers cached sessions over environment credentials, so use a throwaway CLI home.
     const cliHome = mkdtempSync(join(tmpdir(), 'curated-local-cli-'));
     try {
         return runCommand('enonic', args, {

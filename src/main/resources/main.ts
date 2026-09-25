@@ -57,7 +57,8 @@ if (!curatedImportInProgress) {
     activateSchedulerCleanupSchedule();
     initArchiveContentTrees();
 
-    // Avoid regenerating the sitemap on every local redeploy.
+    // This is somewhat annoying for local development, as it will run a fairly heavy task and spam
+    // the logs when generating the sitemap. This happens on every redeploy of the app.
     if (app.config.env !== 'localhost' && app.config.env !== 'test') {
         generateSitemapDataAndActivateSchedule();
     }

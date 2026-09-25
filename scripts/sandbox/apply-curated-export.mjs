@@ -6,10 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { promptForAuth } from './lib/xp-auth.mjs';
 import { directLocalFetch } from './lib/xp-http.mjs';
 import { prepareCuratedImportFiles } from './lib/import-files.mjs';
-import {
-    batchCuratedExpectations,
-    loadCuratedExpectations,
-} from './lib/import-expectations.mjs';
+import { batchCuratedExpectations, loadCuratedExpectations } from './lib/import-expectations.mjs';
 import {
     assertLocalTargetProcess,
     runLocalXpCommand,
@@ -247,8 +244,8 @@ export const importCuratedBundle = async ({
     reportProgress = console.log,
 }) => {
     try {
-        reportProgress('Loading and checking source fidelity metadata');
-        const fidelityGroups = loadCuratedExpectations(manifest, files);
+        reportProgress('Loading source metadata');
+        const metadataGroups = loadCuratedExpectations(manifest, files);
         if (manifest.scope !== 'page') {
             reportProgress('Configuring target login and projects');
             await postAction({ action: 'configure-login' });
@@ -310,31 +307,17 @@ export const importCuratedBundle = async ({
             }
         }
 
-        for (const action of ['repair-metadata', 'validate-fidelity']) {
-            const phase =
-                action === 'repair-metadata'
-                    ? 'Restoring source metadata'
-                    : 'Validating imported content fidelity';
-            for (const group of fidelityGroups) {
-                const batches = batchCuratedExpectations(group);
-                for (const [index, batch] of batches.entries()) {
-                    reportProgress(
-                        `${phase} for ${group.repository}:${group.branch} (batch ${index + 1}/${batches.length})`
+        for (const group of metadataGroups) {
+            const batches = batchCuratedExpectations(group);
+            for (const [index, batch] of batches.entries()) {
+                reportProgress(
+                    `Restoring source metadata for ${group.repository}:${group.branch} (batch ${index + 1}/${batches.length})`
+                );
+                const result = await postAction({ action: 'restore-metadata', ...batch });
+                if (result.checkedNodes !== batch.expectations.length) {
+                    throw new Error(
+                        `Incomplete metadata restore for ${group.repository}:${group.branch}`
                     );
-                    const result = await postAction({ action, ...batch });
-                    const binaryCount = batch.expectations.reduce(
-                        (total, expected) => total + expected.binaries.length,
-                        0
-                    );
-                    if (
-                        result.checkedNodes !== batch.expectations.length ||
-                        result.checkedBinaries !== binaryCount ||
-                        result.checkedAbsentEntries !== batch.absentContentIds.length
-                    ) {
-                        throw new Error(
-                            `Incomplete target fidelity result for ${group.repository}:${group.branch}`
-                        );
-                    }
                 }
             }
         }
@@ -371,14 +354,11 @@ const main = async () => {
     const manifest = JSON.parse(readFileSync(options.manifest, 'utf8'));
     validateNativeExports(manifest.exports, manifest.scope ?? 'full');
     if (
-        manifest.formatVersion !== 1 ||
         !Array.isArray(manifest.entries) ||
         manifest.entries.length === 0 ||
         !manifest.entries.every(isPinnedEntry)
     ) {
-        throw new Error(
-            'A version-pinned typed export manifest is required; regenerate legacy archives'
-        );
+        throw new Error('A version-pinned typed export manifest is required');
     }
     assertUniqueTargets(manifest.entries);
     const nativeExports = manifest.exports

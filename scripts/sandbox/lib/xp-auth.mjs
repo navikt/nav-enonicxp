@@ -31,7 +31,9 @@ export const getXpSessionCookie = async (serviceUrl, auth) => {
     });
     const result = await response.json();
     if (!response.ok || !result.authenticated) {
-        throw new Error('Authentication with the XP system provider failed');
+        throw new Error(
+            `Authentication with the XP system provider failed (HTTP ${response.status}, authenticated: ${Boolean(result.authenticated)})`
+        );
     }
     return response.headers
         .getSetCookie()

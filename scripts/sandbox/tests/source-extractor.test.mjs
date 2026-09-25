@@ -125,21 +125,6 @@ test('pins both node and binary reads to the manifest version, including multipl
         readFileSync(join(root, 'curated-test/www.nav.no/page/_/bin/second.png')),
         second
     );
-    const sidecar = JSON.parse(
-        readFileSync(join(root, 'curated-test/www.nav.no/page/_/curated-metadata.json'))
-    );
-    assert.deepEqual(sidecar.binaries, [
-        {
-            reference: 'first.pdf',
-            sha512: createHash('sha512').update(first).digest('hex'),
-            size: String(first.length),
-        },
-        {
-            reference: 'second.png',
-            sha512: createHash('sha512').update(second).digest('hex'),
-            size: String(second.length),
-        },
-    ]);
 });
 
 test('fails instead of mixing source versions and removes the incomplete export', async (t) => {
@@ -203,7 +188,7 @@ test('reuses only verified content-addressed cache entries across fresh exports'
     assert.deepEqual(readFileSync(join(root, 'second/www.nav.no/page/_/bin/image.jpg')), bytes);
 });
 
-test('sanitizes typed text before writing native XML and fidelity metadata', async (t) => {
+test('sanitizes typed text before writing native XML', async (t) => {
     const root = directory(t);
     const source = createSourceNode();
     source.properties.push({ name: 'text', type: 'string', value: 'before\u0002after\u{1f600}' });
@@ -213,24 +198,9 @@ test('sanitizes typed text before writing native XML and fidelity metadata', asy
     const metadataDirectory = join(root, 'curated-test/www.nav.no/page/_');
     const metadata = JSON.parse(readFileSync(join(metadataDirectory, 'curated-metadata.json')));
     assert.equal(metadata.versionId, 'source-version');
-    assert.equal(
-        metadata.properties.find(({ name }) => name === 'text').value,
-        'beforeafter\u{1f600}'
-    );
     assert.match(
         readFileSync(join(metadataDirectory, 'node.xml'), 'utf8'),
         /beforeafter\u{1f600}/u
-    );
-});
-
-test('rejects zero workers instead of claiming binaries were copied', async (t) => {
-    const root = directory(t);
-    await assert.rejects(
-        extractCuratedSource({
-            ...options(root, [createSourceNode()]),
-            binaryConcurrency: 0,
-        }),
-        /concurrency/
     );
 });
 

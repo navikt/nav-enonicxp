@@ -1,5 +1,4 @@
 export const createSourceNode = (overrides = {}) => ({
-    formatVersion: 1,
     node: {
         _id: 'content-id',
         _path: '/content/www.nav.no/page',

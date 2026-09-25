@@ -48,7 +48,7 @@ for (const fail of [false, true]) {
     });
 }
 
-test('rejects unsafe names, existing artifacts and symlinks without touching them', async (t) => {
+test('rejects unsafe names, existing directories and symlinks without touching them', async (t) => {
     const root = fixture(t);
     const mustNotRun = () => assert.fail('must not start import');
     for (const bundle of ['../escape', '..', '/absolute', 'nested/run', '', 'a\\b']) {
@@ -59,9 +59,8 @@ test('rejects unsafe names, existing artifacts and symlinks without touching the
     }
     mkdirSync(join(root, 'existing'));
     writeFileSync(join(root, 'existing', 'keep'), 'keep');
-    writeFileSync(join(root, 'legacy.manifest.json'), '{}');
     symlinkSync(join(root, 'existing'), join(root, 'linked'));
-    for (const bundle of ['existing', 'legacy', 'linked']) {
+    for (const bundle of ['existing', 'linked']) {
         await assert.rejects(withCuratedWorkspace({ bundle, outputDirectory: root }, mustNotRun));
     }
     await assert.rejects(
@@ -69,7 +68,6 @@ test('rejects unsafe names, existing artifacts and symlinks without touching the
         /symlink/
     );
     assert.equal(readFileSync(join(root, 'existing', 'keep'), 'utf8'), 'keep');
-    assert.equal(readFileSync(join(root, 'legacy.manifest.json'), 'utf8'), '{}');
 });
 
 test('does not remove a replacement directory or leave lifecycle listeners installed', async (t) => {

@@ -49,12 +49,7 @@ export const getImportOptions = (args, getCurrentSandbox = () => null) => {
             options[argument.slice(2)] = true;
             continue;
         }
-        if (argument === '--dump-name') {
-            throw new Error(
-                '--dump-name is no longer an import option. Use pnpm sandbox:dump after setting up the sandbox.'
-            );
-        }
-        if (!['--source', '--target', '--page', '--input', '--concurrency'].includes(argument)) {
+        if (!['--source', '--target', '--page', '--input'].includes(argument)) {
             throw new Error(`Unsupported argument: ${argument}`);
         }
         if (!args[index + 1] || args[index + 1].startsWith('--')) {
@@ -174,8 +169,7 @@ const main = async () => {
     }
     console.log('Credentials verified');
 
-    const defaultInputPath =
-        'scripts/sandbox/curated-content-urls.txt';
+    const defaultInputPath = 'scripts/sandbox/curated-content-urls.txt';
     const pageSelection = options.page ? resolveCuratedPage({ page: options.page }) : null;
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const bundle = `${pageSelection ? 'curated-page' : 'curated-plan'}-${timestamp}`;
@@ -231,7 +225,6 @@ const main = async () => {
             sourceServiceUrl: source.sourceServiceUrl,
             auth: sourceAuth,
             exportDirectory,
-            binaryConcurrency: options.concurrency ? Number(options.concurrency) : 4,
         });
         console.log(
             `Extracted ${extraction.nodeCount} nodes and ${extraction.binaryCount} binary occurrences`
@@ -302,6 +295,9 @@ const main = async () => {
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
     main().catch((error) => {
         console.error(error instanceof Error ? error.message : error);
+        for (let cause = error?.cause; cause; cause = cause.cause) {
+            console.error(`  Caused by: ${cause instanceof Error ? cause.message : cause}`);
+        }
         process.exitCode = 1;
     });
 }

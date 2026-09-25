@@ -94,7 +94,6 @@ public final class CuratedNodeReader implements ScriptBean {
         gen.value("name", property.getName());
         gen.value("type", type);
         if (property.getValue().isNull()) {
-            // XP's Nashorn map generator omits nulls unless they are written as raw values.
             gen.rawValue(VALUE_FIELD, null);
         } else if (property.getType().equals(ValueTypes.PROPERTY_SET)) {
             gen.array(VALUE_FIELD);

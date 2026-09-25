@@ -12,7 +12,7 @@ import {
 import { dirname, resolve } from 'node:path';
 import { Readable, Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
-import { updateNativeExpectation, writeNativeNodeXml } from './native-export.mjs';
+import { writeNativeNodeXml } from './native-export.mjs';
 import { getXpSessionCookie } from './xp-auth.mjs';
 import { fetchXp } from './xp-http.mjs';
 
@@ -109,12 +109,6 @@ export const writeManualChildOrders = (exportRoot, sources) => {
                 resolve(getNodeDirectory(exportRoot, parent._path), 'manualChildOrder.txt'),
                 children.length > 0 ? `${children.map(({ node }) => node._name).join('\n')}\n` : ''
             );
-            updateNativeExpectation(getNodeDirectory(exportRoot, parent._path), (expectation) => {
-                expectation.manualChildOrder = children.map(({ node }) => ({
-                    contentId: node._id,
-                    contentPath: node._path,
-                }));
-            });
         });
 };
 
@@ -205,6 +199,8 @@ const downloadBinary = async ({ sourceServiceUrl, cookie, request, cacheDirector
     }
 };
 
+const BINARY_CONCURRENCY = 4;
+
 const runWorkers = async (items, concurrency, worker) => {
     let nextIndex = 0;
     let failure;
@@ -253,13 +249,9 @@ export const extractCuratedSource = async ({
     sourceServiceUrl,
     auth,
     exportDirectory,
-    binaryConcurrency = 4,
     fetchImpl = fetchXp,
     getSessionCookie = getXpSessionCookie,
 }) => {
-    if (!Number.isInteger(binaryConcurrency) || binaryConcurrency < 1 || binaryConcurrency > 16) {
-        throw new Error('Binary concurrency must be an integer between 1 and 16');
-    }
     const exportRoots = manifest.exports.map(({ exportName }) => {
         if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(exportName)) {
             throw new Error(`Invalid native export name: ${exportName}`);
@@ -365,18 +357,13 @@ export const extractCuratedSource = async ({
 
         const cacheDirectory = resolve(exportDirectory, '.binary-cache');
         let completedBinaries = 0;
-        await runWorkers(binaryRequests, binaryConcurrency, async (request) => {
-            const binary = await downloadBinary({
+        await runWorkers(binaryRequests, BINARY_CONCURRENCY, async (request) => {
+            await downloadBinary({
                 sourceServiceUrl,
                 cookie,
                 request,
                 cacheDirectory,
                 fetchImpl,
-            });
-            updateNativeExpectation(request.nodeDirectory, (expectation) => {
-                expectation.binaries = expectation.binaries.map((expected) =>
-                    expected.reference === binary.reference ? binary : expected
-                );
             });
             completedBinaries += 1;
             if (completedBinaries % 100 === 0 || completedBinaries === binaryRequests.length) {

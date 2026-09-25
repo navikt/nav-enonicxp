@@ -30,9 +30,6 @@ export const withCuratedWorkspace = async (
         throw new Error('Curated output directory must not be a symlink');
     }
     const directory = join(outputDirectory, bundle);
-    if (statIfPresent(join(outputDirectory, `${bundle}.manifest.json`))) {
-        throw new Error(`Artifacts already exist for bundle ${bundle}`);
-    }
     // Exclusive creation is the ownership boundary: never reuse an earlier run.
     mkdirSync(directory, { mode: 0o700 });
     const owned = lstatSync(directory);

@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const PROPERTY_TYPES = new Set([
@@ -41,25 +41,6 @@ const escapeXml = (value) =>
         .replaceAll('"', '&quot;')
         .replaceAll("'", '&apos;')
         .replaceAll('\r', '&#13;');
-
-export const canonicalProperties = (properties) =>
-    properties.map(({ name, type, value }) => ({
-        name,
-        type,
-        value:
-            type === 'property-set' && value !== null
-                ? canonicalProperties(value)
-                : (type === 'string' || type === 'xml') && value !== null
-                  ? sanitizeXmlString(value)
-                  : value,
-    }));
-
-export const updateNativeExpectation = (nodeDirectory, update) => {
-    const path = resolve(nodeDirectory, 'curated-metadata.json');
-    const expectation = JSON.parse(readFileSync(path, 'utf8'));
-    update(expectation);
-    writeFileSync(path, JSON.stringify(expectation));
-};
 
 const serializeProperty = (property, indentation, parentPath) => {
     if (!property || typeof property.name !== 'string' || !PROPERTY_TYPES.has(property.type)) {
@@ -121,9 +102,9 @@ const serializeIndexConfig = (config, indentation) => {
 };
 
 export const writeNativeNodeXml = (nodeDirectory, source) => {
-    if (source?.formatVersion !== 1 || !source.node || !Array.isArray(source.properties)) {
+    if (!source?.node || !Array.isArray(source.properties)) {
         throw new Error(
-            'A versioned, typed curated source envelope is required; untyped JSON cannot be exported faithfully'
+            'A typed curated source envelope is required; untyped JSON cannot be exported faithfully'
         );
     }
     const sourceNode = source.node;
@@ -187,26 +168,17 @@ ${data}    </data>
 </node>\n`;
     mkdirSync(nodeDirectory, { recursive: true });
     writeFileSync(resolve(nodeDirectory, 'node.xml'), xml);
-    // Retain typed expectations before XP consumes the native import directory.
+    // Native import skips this metadata on pre-existing nodes, so keep it for the restore step.
     writeFileSync(
         resolve(nodeDirectory, 'curated-metadata.json'),
         JSON.stringify({
-            formatVersion: 2,
             contentId: sourceNode._id,
             contentPath: sourceNode._path,
             versionId: sourceNode._versionKey,
-            timestamp: sourceNode._ts,
             childOrder: sourceNode._childOrder,
             manualOrderValue: source.manualOrderValue,
             indexConfig,
             nodeType: sourceNode._nodeType,
-            properties: canonicalProperties(source.properties),
-            binaries: source.binaryReferences.map((reference) => ({
-                reference,
-                sha512: null,
-                size: null,
-            })),
-            manualChildOrder: null,
         })
     );
 };

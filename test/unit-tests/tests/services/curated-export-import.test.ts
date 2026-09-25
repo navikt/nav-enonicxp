@@ -11,12 +11,10 @@ const createProject = jest.fn();
 const findChildren = jest.fn();
 const refresh = jest.fn();
 const pushNode = jest.fn();
-const repairTarget = jest.fn();
-const validateTarget = jest.fn();
+const restoreTarget = jest.fn();
 
-jest.mock('@navno-app/lib/exports/target/curated-target-fidelity', () => ({
-    repairCuratedTargetBatch: repairTarget,
-    validateCuratedTargetBatch: validateTarget,
+jest.mock('@navno-app/lib/exports/target/curated-target-metadata', () => ({
+    restoreCuratedTargetMetadata: restoreTarget,
 }));
 
 jest.mock('/lib/xp/node', () => ({
@@ -70,13 +68,14 @@ const mockNodeTree = (initial: Array<{ _id: string; _path: string }>) => {
     if (!initial.some((node) => node._path === rootPath)) {
         nodes.set('site-root-id', { _id: 'site-root-id', _path: rootPath });
     }
-    getNode.mockImplementation((key) =>
-        nodes.get(key) || Array.from(nodes.values()).find((node) => node._path === key) || null
+    getNode.mockImplementation(
+        (key) =>
+            nodes.get(key) || Array.from(nodes.values()).find((node) => node._path === key) || null
     );
     findChildren.mockImplementation(({ parentKey, count }) => {
         const parent = nodes.get(parentKey)!;
-        const descendants = Array.from(nodes.values()).filter(
-            (node) => node._path.startsWith(`${parent._path}/`)
+        const descendants = Array.from(nodes.values()).filter((node) =>
+            node._path.startsWith(`${parent._path}/`)
         );
         return {
             total: descendants.length,
@@ -101,9 +100,17 @@ const mockNodeTree = (initial: Array<{ _id: string; _path: string }>) => {
 };
 const importRequest = (body: unknown) => ({ body: JSON.stringify(body) }) as never;
 const expectNoWrites = () => {
-    [moveNode, deleteNode, modifyNode, createNode, pushNode, modifySystemNode, authLib.deletePrincipal,
-        modifyProject, createProject, repairTarget]
-        .forEach((write) => expect(write).not.toHaveBeenCalled());
+    [
+        moveNode,
+        deleteNode,
+        modifyNode,
+        createNode,
+        pushNode,
+        modifySystemNode,
+        modifyProject,
+        createProject,
+        restoreTarget,
+    ].forEach((write) => expect(write).not.toHaveBeenCalled());
 };
 
 describe('curated export import', () => {
@@ -146,7 +153,6 @@ describe('curated export import', () => {
             body: {
                 environment: 'localhost',
                 importEnabled: true,
-                importFormatVersion: 2,
                 importInProgress: false,
             },
         });
@@ -201,28 +207,34 @@ describe('curated export import', () => {
         }
     );
 
-    it.each(['configure-login', 'configure-projects', 'prepare-project-import', 'normalize-import-paths', 'repair-metadata', 'validate-fidelity', 'synchronize-published'])(
-        'rejects arbitrary repositories and branches for %s before connecting',
-        (action) => {
-            for (const override of [
-                { repository: 'system-repo' },
-                { repository: 'com.enonic.cms.other' },
-                { branch: 'other' },
-                { branch: '../master' },
-            ]) {
-                const response = post(importRequest({
+    it.each([
+        'configure-login',
+        'configure-projects',
+        'prepare-project-import',
+        'normalize-import-paths',
+        'restore-metadata',
+        'synchronize-published',
+    ])('rejects arbitrary repositories and branches for %s before connecting', (action) => {
+        for (const override of [
+            { repository: 'system-repo' },
+            { repository: 'com.enonic.cms.other' },
+            { branch: 'other' },
+            { branch: '../master' },
+        ]) {
+            const response = post(
+                importRequest({
                     action,
                     repository: childRepository,
                     branch: 'draft',
                     entries: [],
                     ...override,
-                }));
-                expect(response.status).toBe(400);
-            }
-            expect(getRepoConnection).not.toHaveBeenCalled();
-            expectNoWrites();
+                })
+            );
+            expect(response.status).toBe(400);
         }
-    );
+        expect(getRepoConnection).not.toHaveBeenCalled();
+        expectNoWrites();
+    });
 
     it.each([
         '/content/www.nav.no.evil/page',
@@ -240,12 +252,14 @@ describe('curated export import', () => {
             repoId: childRepository,
             branches: ['draft'],
         };
-        const response = post(importRequest({
-            action: 'normalize-import-paths',
-            repository: childRepository,
-            branch: 'draft',
-            entries: [entry, { ...entry, contentId: 'second-id', paths: { draft: path } }],
-        }));
+        const response = post(
+            importRequest({
+                action: 'normalize-import-paths',
+                repository: childRepository,
+                branch: 'draft',
+                entries: [entry, { ...entry, contentId: 'second-id', paths: { draft: path } }],
+            })
+        );
         expect(response.status).toBe(400);
         expect(getRepoConnection).not.toHaveBeenCalled();
         expectNoWrites();
@@ -264,11 +278,15 @@ describe('curated export import', () => {
         getNode.mockReturnValue({ _id: entry.contentId, _path: entry.paths.draft });
         pushNode.mockReturnValue({ success: [entry.contentId], failed: [] });
 
-        expect(post(importRequest({
-            action: 'synchronize-published',
-            repository: childRepository,
-            entries: [entry],
-        }))).toMatchObject({
+        expect(
+            post(
+                importRequest({
+                    action: 'synchronize-published',
+                    repository: childRepository,
+                    entries: [entry],
+                })
+            )
+        ).toMatchObject({
             status: 200,
             body: { synchronizedPublished: 1 },
         });
@@ -279,41 +297,26 @@ describe('curated export import', () => {
         });
     });
 
-    it.each(['restore-supplements', 'validate-import', 'unknown-action'])(
-        'rejects removed or unknown action %s without reading or writing repositories',
-        (action) => {
-            const response = post(importRequest({
+    it('rejects an unknown action without reading or writing repositories', () => {
+        const action = 'unknown-action';
+        const response = post(
+            importRequest({
                 action,
                 repository: childRepository,
                 branch: 'draft',
                 entries: [relocationEntry('content-id', `${rootPath}/page`)],
-                supplements: [{
-                    contentId: 'content-id',
-                    contentPath: `${rootPath}/page`,
-                    repoId: childRepository,
-                    branch: 'draft',
-                    invalidValuePaths: ['data.body'],
-                    node: {
-                        _id: 'content-id',
-                        _path: `${rootPath}/page`,
-                        _name: 'page',
-                        type: 'no.nav.navno:main-article',
-                        data: { body: 'Sanitized content' },
-                    },
-                }],
-            }));
-            expect(response).toMatchObject({
-                status: 400,
-                headers: { 'Cache-Control': 'no-store' },
-                body: { message: 'Invalid curated export import action or payload' },
-            });
-            expect(getRepoConnection).not.toHaveBeenCalled();
-            expect(nodeLib.connect).not.toHaveBeenCalled();
-            expect(getProject).not.toHaveBeenCalled();
-            expect(validateTarget).not.toHaveBeenCalled();
-            expectNoWrites();
-        }
-    );
+            })
+        );
+        expect(response).toMatchObject({
+            status: 400,
+            headers: { 'Cache-Control': 'no-store' },
+            body: { message: 'Invalid curated export import action or payload' },
+        });
+        expect(getRepoConnection).not.toHaveBeenCalled();
+        expect(nodeLib.connect).not.toHaveBeenCalled();
+        expect(getProject).not.toHaveBeenCalled();
+        expectNoWrites();
+    });
 
     it('rejects prototype-changing payload properties', () => {
         const response = post({
@@ -332,39 +335,48 @@ describe('curated export import', () => {
                 repoId: childRepository,
                 branches: ['draft'],
             };
-            getNode.mockImplementation((key) => key === 'second-id'
-                ? { _id: 'second-id', _path: '/outside/second' }
-                : null);
-            const response = post(importRequest({
-                action,
-                repository: childRepository,
-                branch: 'draft',
-                entries: [entry, {
-                    ...entry,
-                    contentId: 'second-id',
-                    paths: { draft: '/content/www.nav.no/second' },
-                }],
-            }));
+            getNode.mockImplementation((key) =>
+                key === 'second-id' ? { _id: 'second-id', _path: '/outside/second' } : null
+            );
+            const response = post(
+                importRequest({
+                    action,
+                    repository: childRepository,
+                    branch: 'draft',
+                    entries: [
+                        entry,
+                        {
+                            ...entry,
+                            contentId: 'second-id',
+                            paths: { draft: '/content/www.nav.no/second' },
+                        },
+                    ],
+                })
+            );
             expect(response.status).toBe(500);
             expectNoWrites();
         }
     );
 
     it('never relocates a colliding site root to a sibling outside the site', () => {
-        getNode.mockImplementation((key) => key === '/content/www.nav.no'
-            ? { _id: 'wrong-root-id', _path: key }
-            : null);
-        const response = post(importRequest({
-            action: 'prepare-project-import',
-            repository: childRepository,
-            branch: 'draft',
-            entries: [{
-                contentId: 'expected-root-id',
-                paths: { draft: '/content/www.nav.no' },
-                repoId: childRepository,
-                branches: ['draft'],
-            }],
-        }));
+        getNode.mockImplementation((key) =>
+            key === '/content/www.nav.no' ? { _id: 'wrong-root-id', _path: key } : null
+        );
+        const response = post(
+            importRequest({
+                action: 'prepare-project-import',
+                repository: childRepository,
+                branch: 'draft',
+                entries: [
+                    {
+                        contentId: 'expected-root-id',
+                        paths: { draft: '/content/www.nav.no' },
+                        repoId: childRepository,
+                        branches: ['draft'],
+                    },
+                ],
+            })
+        );
         expect(response.status).toBe(500);
         expectNoWrites();
         expect(getNode).not.toHaveBeenCalledWith('/content/www.nav.no-curated-import-collision');
@@ -375,15 +387,20 @@ describe('curated export import', () => {
             { id: 'default', language: 'no', parents: [], displayName: 'Nav.no' },
             { id: 'navno-engelsk', language: 'en', parents: ['default'], displayName: 'English' },
             {
-                id: 'navno-nynorsk', language: 'nn', parents: ['default'], displayName: 'Nynorsk',
+                id: 'navno-nynorsk',
+                language: 'nn',
+                parents: ['default'],
+                displayName: 'Nynorsk',
                 permissions: { 'system.admin': ['user:system:attacker'] },
             },
         ];
-        const response = post(importRequest({
-            action: 'configure-projects',
-            applications: [],
-            projects,
-        }));
+        const response = post(
+            importRequest({
+                action: 'configure-projects',
+                applications: [],
+                projects,
+            })
+        );
         expect(response.status).toBe(400);
         expectNoWrites();
     });
@@ -394,20 +411,23 @@ describe('curated export import', () => {
             { id: 'navno-engelsk', language: 'en', parents: ['default'], displayName: 'English' },
             { id: 'navno-nynorsk', language: 'nn', parents: ['default'], displayName: 'Nynorsk' },
         ];
-        getProject.mockImplementation(({ id }) => id === 'navno-nynorsk'
-            ? { ...projects[2], permissions: { owner: ['user:system:local-owner'] } }
-            : null);
-        const response = post(importRequest({
-            action: 'configure-projects',
-            applications: [],
-            projects,
-        }));
+        getProject.mockImplementation(({ id }) =>
+            id === 'navno-nynorsk'
+                ? { ...projects[2], permissions: { owner: ['user:system:local-owner'] } }
+                : null
+        );
+        const response = post(
+            importRequest({
+                action: 'configure-projects',
+                applications: [],
+                projects,
+            })
+        );
         expect(response.status).toBe(500);
         expectNoWrites();
     });
 
     it('disables the first-run wizard for the regular SU login form', () => {
-        jest.mocked(authLib.deletePrincipal).mockReturnValue(true);
         getSystemNode.mockReturnValue({
             idProvider: { config: { adminUserCreationEnabled: true } },
         });
@@ -421,14 +441,8 @@ describe('curated export import', () => {
 
         expect(response).toMatchObject({
             status: 200,
-            body: {
-                disabledAdminUserCreation: true,
-                removedLegacyBootstrapUser: true,
-            },
+            body: { disabledAdminUserCreation: true },
         });
-        expect(authLib.deletePrincipal).toHaveBeenCalledWith(
-            'user:system:curated-login-bootstrap'
-        );
         expect(modifySystemNode).toHaveBeenCalledWith({
             key: '/identity/system',
             editor: expect.any(Function),
@@ -484,7 +498,9 @@ describe('curated export import', () => {
         expect(response.status).toBe(200);
         expect(nodes.get('content-id')?._path).toBe(`${rootPath}/new-name`);
         expect(getRepoConnection).toHaveBeenCalledWith({
-            repoId: repository, branch: 'draft', asAdmin: true,
+            repoId: repository,
+            branch: 'draft',
+            asAdmin: true,
         });
         expect(deleteNode).not.toHaveBeenCalled();
     });
@@ -502,12 +518,14 @@ describe('curated export import', () => {
                 action: 'prepare-project-import',
                 repository: childRepository,
                 branch: 'draft',
-                entries: [{
-                    contentId: 'moved-child',
-                    paths: { draft: '/content/www.nav.no/no/new-parent/moved-child' },
-                    repoId: childRepository,
-                    branches: ['draft'],
-                }],
+                entries: [
+                    {
+                        contentId: 'moved-child',
+                        paths: { draft: '/content/www.nav.no/no/new-parent/moved-child' },
+                        repoId: childRepository,
+                        branches: ['draft'],
+                    },
+                ],
             }),
         } as never);
 
@@ -545,12 +563,14 @@ describe('curated export import', () => {
                 action: 'normalize-import-paths',
                 repository: 'com.enonic.cms.default',
                 branch: 'draft',
-                entries: [{
-                    contentId: 'content-id',
-                    paths: { draft: '/content/www.nav.no/Når' },
-                    repoId: 'com.enonic.cms.default',
-                    branches: ['draft'],
-                }],
+                entries: [
+                    {
+                        contentId: 'content-id',
+                        paths: { draft: '/content/www.nav.no/Når' },
+                        repoId: 'com.enonic.cms.default',
+                        branches: ['draft'],
+                    },
+                ],
             }),
         } as never);
 
@@ -570,20 +590,24 @@ describe('curated export import', () => {
                 { _id: 'unselected-id', _path: `${rootPath}/second-new` },
                 { _id: 'suffix-id', _path: `${rootPath}/second-new-curated-import-collision` },
             ]);
-            const response = post(importRequest({
-                action,
-                repository: childRepository,
-                branch: 'draft',
-                entries: [
-                    relocationEntry('first-id', `${rootPath}/first-new`),
-                    relocationEntry('second-id', `${rootPath}/second-new`),
-                ],
-            }));
+            const response = post(
+                importRequest({
+                    action,
+                    repository: childRepository,
+                    branch: 'draft',
+                    entries: [
+                        relocationEntry('first-id', `${rootPath}/first-new`),
+                        relocationEntry('second-id', `${rootPath}/second-new`),
+                    ],
+                })
+            );
             expect(response.status).toBe(500);
             expect(response.body.message).toContain('occupied by unselected-id');
             expect(nodes.get('first-id')?._path).toBe(`${rootPath}/first-old`);
             expect(nodes.get('unselected-id')?._path).toBe(`${rootPath}/second-new`);
-            expect(nodes.get('suffix-id')?._path).toBe(`${rootPath}/second-new-curated-import-collision`);
+            expect(nodes.get('suffix-id')?._path).toBe(
+                `${rootPath}/second-new-curated-import-collision`
+            );
             expectNoWrites();
         }
     );
@@ -597,12 +621,16 @@ describe('curated export import', () => {
                 { _id: 'suffix-id', _path: suffixPath },
                 { _id: 'suffix-child', _path: `${suffixPath}/child` },
             ]);
-            expect(post(importRequest({
-                action,
-                repository: childRepository,
-                branch: 'draft',
-                entries: [relocationEntry('selected-id', `${rootPath}/new`)],
-            })).status).toBe(200);
+            expect(
+                post(
+                    importRequest({
+                        action,
+                        repository: childRepository,
+                        branch: 'draft',
+                        entries: [relocationEntry('selected-id', `${rootPath}/new`)],
+                    })
+                ).status
+            ).toBe(200);
             expect(nodes.get('selected-id')?._path).toBe(`${rootPath}/new`);
             expect(nodes.get('suffix-id')?._path).toBe(suffixPath);
             expect(nodes.get('suffix-child')?._path).toBe(`${suffixPath}/child`);
@@ -620,23 +648,29 @@ describe('curated export import', () => {
                 { _id: 'child-id', _path: `${rootPath}/old/child` },
                 { _id: 'unselected-id', _path: `${rootPath}/old/child/grandchild` },
             ]);
-            const response = post(importRequest({
-                action,
-                repository: childRepository,
-                branch: 'draft',
-                scope: 'page',
-                entries: [
-                    relocationEntry('first-id', `${rootPath}/first-new`),
-                    relocationEntry('parent-id', `${rootPath}/new`),
-                    relocationEntry('child-id', `${rootPath}/new/child`),
-                ],
-            }));
+            const response = post(
+                importRequest({
+                    action,
+                    repository: childRepository,
+                    branch: 'draft',
+                    entries: [
+                        relocationEntry('first-id', `${rootPath}/first-new`),
+                        relocationEntry('parent-id', `${rootPath}/new`),
+                        relocationEntry('child-id', `${rootPath}/new/child`),
+                    ],
+                })
+            );
             expect(response.status).toBe(500);
-            expect(response.body.message).toContain('unselected or inconsistent descendant unselected-id');
+            expect(response.body.message).toContain(
+                'unselected or inconsistent descendant unselected-id'
+            );
             expect(nodes.get('parent-id')?._path).toBe(`${rootPath}/old`);
             expect(nodes.get('unselected-id')?._path).toBe(`${rootPath}/old/child/grandchild`);
             expect(findChildren).toHaveBeenCalledWith({
-                parentKey: 'parent-id', recursive: true, start: 0, count: 1001,
+                parentKey: 'parent-id',
+                recursive: true,
+                start: 0,
+                count: 1001,
             });
             expectNoWrites();
         }
@@ -651,20 +685,27 @@ describe('curated export import', () => {
                 { _id: 'child-id', _path: `${oldPath}/child` },
                 { _id: 'grandchild-id', _path: `${oldPath}/child/grandchild` },
             ]);
-            const response = post(importRequest({
-                action,
-                repository: childRepository,
-                branch: 'draft',
-                scope: 'page',
-                entries: [
-                    relocationEntry('grandchild-id', `${rootPath}/new/renamed/grandchild`),
-                    relocationEntry('child-id', `${rootPath}/new/renamed`),
-                    relocationEntry('parent-id', `${rootPath}/new`),
-                ],
-            }));
+            const response = post(
+                importRequest({
+                    action,
+                    repository: childRepository,
+                    branch: 'draft',
+                    entries: [
+                        relocationEntry('grandchild-id', `${rootPath}/new/renamed/grandchild`),
+                        relocationEntry('child-id', `${rootPath}/new/renamed`),
+                        relocationEntry('parent-id', `${rootPath}/new`),
+                    ],
+                })
+            );
             expect(response.status).toBe(200);
-            expect(moveNode).toHaveBeenNthCalledWith(1, { source: 'parent-id', target: `${rootPath}/new` });
-            expect(moveNode).toHaveBeenNthCalledWith(2, { source: 'child-id', target: `${rootPath}/new/renamed` });
+            expect(moveNode).toHaveBeenNthCalledWith(1, {
+                source: 'parent-id',
+                target: `${rootPath}/new`,
+            });
+            expect(moveNode).toHaveBeenNthCalledWith(2, {
+                source: 'child-id',
+                target: `${rootPath}/new/renamed`,
+            });
             expect(moveNode).toHaveBeenCalledTimes(2);
             expect(nodes.get('parent-id')?._path).toBe(`${rootPath}/new`);
             expect(nodes.get('child-id')?._path).toBe(`${rootPath}/new/renamed`);
@@ -685,16 +726,17 @@ describe('curated export import', () => {
             status: 200,
             body: { relocatedInheritedCollisions: 0, deferredRelocations: [] },
         });
-        const response = post(importRequest({
-            ...batch,
-            action: 'normalize-import-paths',
-            entries: [
-                relocationEntry('first-id', `${rootPath}/first-new`),
-                ...batch.entries,
-            ],
-        }));
+        const response = post(
+            importRequest({
+                ...batch,
+                action: 'normalize-import-paths',
+                entries: [relocationEntry('first-id', `${rootPath}/first-new`), ...batch.entries],
+            })
+        );
         expect(response.status).toBe(500);
-        expect(response.body.message).toContain('Native-imported selected content is missing: missing-id');
+        expect(response.body.message).toContain(
+            'Native-imported selected content is missing: missing-id'
+        );
         expectNoWrites();
     });
 
@@ -710,7 +752,10 @@ describe('curated export import', () => {
             entries: [relocationEntry('selected-id', `${rootPath}/selected`)],
         };
         for (let index = 0; index < 2; index += 1) {
-            expect(post(importRequest(body))).toMatchObject({ status: 200, body: { normalizedPaths: 0 } });
+            expect(post(importRequest(body))).toMatchObject({
+                status: 200,
+                body: { normalizedPaths: 0 },
+            });
         }
         expect(nodes.get('unselected-id')?._path).toBe(`${rootPath}/selected/child`);
         expect(findChildren).not.toHaveBeenCalled();
@@ -725,18 +770,23 @@ describe('curated export import', () => {
             { _id: 'child-id', _path: `${suffixPath}/child` },
             { _id: 'unselected-sibling', _path: `${suffixPath}/keep` },
         ]);
-        const response = post(importRequest({
-            action: 'normalize-import-paths',
-            repository: childRepository,
-            branch: 'draft',
-            entries: [
-                relocationEntry('parent-id', `${rootPath}/parent`),
-                relocationEntry('child-id', `${rootPath}/parent/child`),
-            ],
-        }));
+        const response = post(
+            importRequest({
+                action: 'normalize-import-paths',
+                repository: childRepository,
+                branch: 'draft',
+                entries: [
+                    relocationEntry('parent-id', `${rootPath}/parent`),
+                    relocationEntry('child-id', `${rootPath}/parent/child`),
+                ],
+            })
+        );
         expect(response.status).toBe(200);
         expect(moveNode).toHaveBeenCalledTimes(1);
-        expect(moveNode).toHaveBeenCalledWith({ source: 'child-id', target: `${rootPath}/parent/child` });
+        expect(moveNode).toHaveBeenCalledWith({
+            source: 'child-id',
+            target: `${rootPath}/parent/child`,
+        });
         expect(nodes.get('child-id')?._path).toBe(`${rootPath}/parent/child`);
         expect(nodes.get('unselected-container')?._path).toBe(suffixPath);
         expect(nodes.get('unselected-sibling')?._path).toBe(`${suffixPath}/keep`);
@@ -749,12 +799,14 @@ describe('curated export import', () => {
     ])('fails closed when a subtree cannot be fully enumerated: %j', (result) => {
         mockNodeTree([{ _id: 'selected-id', _path: `${rootPath}/old` }]);
         findChildren.mockReturnValue(result);
-        const response = post(importRequest({
-            action: 'normalize-import-paths',
-            repository: childRepository,
-            branch: 'draft',
-            entries: [relocationEntry('selected-id', `${rootPath}/new`)],
-        }));
+        const response = post(
+            importRequest({
+                action: 'normalize-import-paths',
+                repository: childRepository,
+                branch: 'draft',
+                entries: [relocationEntry('selected-id', `${rootPath}/new`)],
+            })
+        );
         expect(response.status).toBe(500);
         expect(response.body.message).toContain('Cannot completely inspect descendants');
         expectNoWrites();
@@ -765,15 +817,19 @@ describe('curated export import', () => {
             { _id: 'a-id', _path: `${rootPath}/a` },
             { _id: 'b-id', _path: `${rootPath}/b` },
         ]);
-        expect(post(importRequest({
-            action: 'normalize-import-paths',
-            repository: childRepository,
-            branch: 'draft',
-            entries: [
-                relocationEntry('a-id', `${rootPath}/b`),
-                relocationEntry('b-id', `${rootPath}/a`),
-            ],
-        })).status).toBe(500);
+        expect(
+            post(
+                importRequest({
+                    action: 'normalize-import-paths',
+                    repository: childRepository,
+                    branch: 'draft',
+                    entries: [
+                        relocationEntry('a-id', `${rootPath}/b`),
+                        relocationEntry('b-id', `${rootPath}/a`),
+                    ],
+                })
+            ).status
+        ).toBe(500);
         expectNoWrites();
     });
 
@@ -782,18 +838,26 @@ describe('curated export import', () => {
             { _id: 'first-id', _path: `${rootPath}/occupied-target` },
             { _id: 'second-id', _path: `${rootPath}/old` },
         ]);
-        const response = post(importRequest({
-            action: 'normalize-import-paths',
-            repository: childRepository,
-            branch: 'draft',
-            entries: [
-                relocationEntry('second-id', `${rootPath}/occupied-target`),
-                relocationEntry('first-id', `${rootPath}/x`),
-            ],
-        }));
+        const response = post(
+            importRequest({
+                action: 'normalize-import-paths',
+                repository: childRepository,
+                branch: 'draft',
+                entries: [
+                    relocationEntry('second-id', `${rootPath}/occupied-target`),
+                    relocationEntry('first-id', `${rootPath}/x`),
+                ],
+            })
+        );
         expect(response.status).toBe(200);
-        expect(moveNode).toHaveBeenNthCalledWith(1, { source: 'first-id', target: `${rootPath}/x` });
-        expect(moveNode).toHaveBeenNthCalledWith(2, { source: 'second-id', target: `${rootPath}/occupied-target` });
+        expect(moveNode).toHaveBeenNthCalledWith(1, {
+            source: 'first-id',
+            target: `${rootPath}/x`,
+        });
+        expect(moveNode).toHaveBeenNthCalledWith(2, {
+            source: 'second-id',
+            target: `${rootPath}/occupied-target`,
+        });
         expect(nodes.get('first-id')?._path).toBe(`${rootPath}/x`);
         expect(nodes.get('second-id')?._path).toBe(`${rootPath}/occupied-target`);
         expect(deleteNode).not.toHaveBeenCalled();
@@ -802,19 +866,27 @@ describe('curated export import', () => {
     it('preserves master-branch ownership in the Nynorsk repository', () => {
         const repository = 'com.enonic.cms.navno-nynorsk';
         const nodes = mockNodeTree([{ _id: 'selected-id', _path: `${rootPath}/old` }]);
-        expect(post(importRequest({
-            action: 'normalize-import-paths',
-            repository,
-            branch: 'master',
-            entries: [{
-                contentId: 'selected-id',
-                repoId: repository,
-                paths: { master: `${rootPath}/new` },
-                branches: ['master'],
-            }],
-        })).status).toBe(200);
+        expect(
+            post(
+                importRequest({
+                    action: 'normalize-import-paths',
+                    repository,
+                    branch: 'master',
+                    entries: [
+                        {
+                            contentId: 'selected-id',
+                            repoId: repository,
+                            paths: { master: `${rootPath}/new` },
+                            branches: ['master'],
+                        },
+                    ],
+                })
+            ).status
+        ).toBe(200);
         expect(getRepoConnection).toHaveBeenCalledWith({
-            repoId: repository, branch: 'master', asAdmin: true,
+            repoId: repository,
+            branch: 'master',
+            asAdmin: true,
         });
         expect(nodes.get('selected-id')?._path).toBe(`${rootPath}/new`);
         expect(deleteNode).not.toHaveBeenCalled();
@@ -825,15 +897,17 @@ describe('curated export import', () => {
             { _id: 'a-id', _path: `${rootPath}/a` },
             { _id: 'b-id', _path: `${rootPath}/a/b` },
         ]);
-        const response = post(importRequest({
-            action: 'normalize-import-paths',
-            repository: childRepository,
-            branch: 'draft',
-            entries: [
-                relocationEntry('a-id', `${rootPath}/new/b/a`),
-                relocationEntry('b-id', `${rootPath}/new/b`),
-            ],
-        }));
+        const response = post(
+            importRequest({
+                action: 'normalize-import-paths',
+                repository: childRepository,
+                branch: 'draft',
+                entries: [
+                    relocationEntry('a-id', `${rootPath}/new/b/a`),
+                    relocationEntry('b-id', `${rootPath}/new/b`),
+                ],
+            })
+        );
         expect(response.status).toBe(500);
         expect(response.body.message).toContain('Cannot safely order');
         expectNoWrites();
@@ -844,12 +918,14 @@ describe('curated export import', () => {
         findChildren
             .mockReturnValueOnce({ total: 0, count: 0, hits: [] })
             .mockReturnValueOnce({ total: 1, count: 1, hits: [{ id: 'unexpected-id' }] });
-        const response = post(importRequest({
-            action: 'normalize-import-paths',
-            repository: childRepository,
-            branch: 'draft',
-            entries: [relocationEntry('selected-id', `${rootPath}/new`)],
-        }));
+        const response = post(
+            importRequest({
+                action: 'normalize-import-paths',
+                repository: childRepository,
+                branch: 'draft',
+                entries: [relocationEntry('selected-id', `${rootPath}/new`)],
+            })
+        );
         expect(response.status).toBe(500);
         expectNoWrites();
     });
@@ -866,57 +942,56 @@ describe('curated export import', () => {
                     paths: { master: `${rootPath}/wrong` },
                 },
             ]) {
-                expect(post(importRequest({
-                    action,
-                    repository: childRepository,
-                    branch: 'draft',
-                    entries: [invalid],
-                })).status).toBe(400);
+                expect(
+                    post(
+                        importRequest({
+                            action,
+                            repository: childRepository,
+                            branch: 'draft',
+                            entries: [invalid],
+                        })
+                    ).status
+                ).toBe(400);
             }
             expect(getRepoConnection).not.toHaveBeenCalled();
             expectNoWrites();
         }
     );
 
-    describe('target fidelity dispatch', () => {
+    describe('target metadata dispatch', () => {
         const batch = {
             repository: childRepository,
             branch: 'draft',
-            scope: 'page',
-            expectations: [{
-                formatVersion: 2,
-                contentId: 'selected-id',
-                contentPath: `${rootPath}/selected`,
-                nodeType: 'content',
-                childOrder: '_name ASC',
-                manualOrderValue: null,
-                indexConfig: {},
-                properties: [],
-                binaries: [],
-                manualChildOrder: null,
-            }],
-            absentContentIds: ['absent-id'],
+            expectations: [
+                {
+                    contentId: 'selected-id',
+                    contentPath: `${rootPath}/selected`,
+                    nodeType: 'content',
+                    childOrder: '_name ASC',
+                    manualOrderValue: null,
+                    indexConfig: {},
+                },
+            ],
         };
 
-        it.each(['repair-metadata', 'validate-fidelity'])('forwards %s through the guarded no-store dispatch', (action) => {
-            const helper = action === 'repair-metadata' ? repairTarget : validateTarget;
-            const other = action === 'repair-metadata' ? validateTarget : repairTarget;
-            const result = { checkedNodes: 1, checkedBinaries: 0, checkedAbsentEntries: 1, repairedNodes: 0 };
-            helper.mockReturnValue(result);
-            expect(post(importRequest({ ...batch, action }))).toEqual({
+        it('forwards restore-metadata through the guarded no-store dispatch', () => {
+            const result = { checkedNodes: 1, restoredNodes: 0 };
+            restoreTarget.mockReturnValue(result);
+            expect(post(importRequest({ ...batch, action: 'restore-metadata' }))).toEqual({
                 status: 200,
                 contentType: 'application/json',
                 headers: { 'Cache-Control': 'no-store' },
                 body: result,
             });
-            expect(helper).toHaveBeenCalledWith(batch);
-            expect(other).not.toHaveBeenCalled();
+            expect(restoreTarget).toHaveBeenCalledWith(batch);
             expect(getRepoConnection).not.toHaveBeenCalled();
         });
 
-        it.each(['repair-metadata', 'validate-fidelity'])('retains administrator and trusted localhost guards for %s', (action) => {
-            jest.mocked(authLib.hasRole).mockImplementation((role) => role === 'role:system.admin.login');
-            expect(post(importRequest({ ...batch, action })).status).toBe(403);
+        it('retains administrator and trusted localhost guards', () => {
+            jest.mocked(authLib.hasRole).mockImplementation(
+                (role) => role === 'role:system.admin.login'
+            );
+            expect(post(importRequest({ ...batch, action: 'restore-metadata' })).status).toBe(403);
             jest.mocked(authLib.hasRole).mockReturnValue(true);
             for (const config of [
                 { env: 'dev', curatedImportEnabled: 'true' },
@@ -925,35 +1000,36 @@ describe('curated export import', () => {
                 { env: 'localhost', curatedImportEnabled: 'false' },
             ]) {
                 Object.assign(app.config, config);
-                expect(post(importRequest({ ...batch, action })).status).toBe(403);
+                expect(post(importRequest({ ...batch, action: 'restore-metadata' })).status).toBe(
+                    403
+                );
             }
-            expect(repairTarget).not.toHaveBeenCalled();
-            expect(validateTarget).not.toHaveBeenCalled();
+            expect(restoreTarget).not.toHaveBeenCalled();
         });
 
-        it.each(['repair-metadata', 'validate-fidelity'])('rejects invalid dispatch scope and missing payload fields for %s', (action) => {
+        it('rejects missing or invalid payload fields', () => {
             for (const invalid of [
-                { scope: 'other' },
-                { scope: undefined },
                 { repository: 'system-repo' },
+                { repository: undefined },
                 { branch: 'other' },
                 { expectations: null },
             ]) {
-                expect(post(importRequest({ ...batch, action, ...invalid })).status).toBe(400);
+                expect(
+                    post(importRequest({ ...batch, action: 'restore-metadata', ...invalid })).status
+                ).toBe(400);
             }
-            expect(repairTarget).not.toHaveBeenCalled();
-            expect(validateTarget).not.toHaveBeenCalled();
+            expect(restoreTarget).not.toHaveBeenCalled();
         });
 
         it('surfaces target helper failure without falling back to another mutation path', () => {
-            repairTarget.mockImplementation(() => { throw new Error('Target fingerprint mismatch'); });
-            const response = post(importRequest({ ...batch, action: 'repair-metadata' }));
+            restoreTarget.mockImplementation(() => {
+                throw new Error('Missing or misplaced target node');
+            });
+            const response = post(importRequest({ ...batch, action: 'restore-metadata' }));
             expect(response.status).toBe(500);
-            expect(response.body.message).toContain('Target fingerprint mismatch');
+            expect(response.body.message).toContain('Missing or misplaced target node');
             expect(moveNode).not.toHaveBeenCalled();
             expect(deleteNode).not.toHaveBeenCalled();
-            expect(validateTarget).not.toHaveBeenCalled();
         });
     });
-
 });

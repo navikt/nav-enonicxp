@@ -68,7 +68,7 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 jar.dependsOn(babelJs)
-// Writable migration helpers must never be included in the normal application artifact.
+// Local-only curated import code must never be packaged for deployment.
 jar {
     if (project.findProperty('curatedImportLocal') != 'true') {
         exclude 'services/curatedExportImport/**'

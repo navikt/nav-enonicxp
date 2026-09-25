@@ -78,8 +78,15 @@ test('sanitizes text values including attachment text without damaging supplemen
     assert.match(xml, /<binaryReference name="binary">file.pdf<\/binaryReference>/);
     assert.equal(sanitizeXmlString('\ud800\udc00\ud800\u0000\ufffe'), '𐀀');
     const expectation = JSON.parse(readFileSync(join(path, 'curated-metadata.json'), 'utf8'));
-    assert.equal(expectation.formatVersion, 2);
-    assert.equal(expectation.properties[0].value[1].value, '😀beforeafter𐐷');
+    assert.deepEqual(Object.keys(expectation).sort(), [
+        'childOrder',
+        'contentId',
+        'contentPath',
+        'indexConfig',
+        'manualOrderValue',
+        'nodeType',
+        'versionId',
+    ]);
 });
 
 test('rejects missing type/index metadata and JSON number coercion', (t) => {
@@ -106,7 +113,7 @@ test('identifies the node, nested property and value shape when a null was omitt
     );
 });
 
-test('persists metadata for existing-node repair instead of inventing a manualOrderValue data property', (t) => {
+test('persists metadata for existing-node restore instead of inventing a manualOrderValue data property', (t) => {
     const path = directory(t);
     const source = createSourceNode({ _ts: '2026-09-08T08:00:00.123456789Z' });
     source.manualOrderValue = '9223372036854775807';
@@ -150,13 +157,6 @@ for (const direction of ['DESC', 'ASC']) {
         assert.equal(
             readFileSync(join(root, 'www.nav.no/menu/_/manualChildOrder.txt'), 'utf8'),
             direction === 'DESC' ? 'first\nsecond\n' : 'second\nfirst\n'
-        );
-        const metadata = JSON.parse(
-            readFileSync(join(root, 'www.nav.no/menu/_/curated-metadata.json'), 'utf8')
-        );
-        assert.deepEqual(
-            metadata.manualChildOrder.map(({ contentId }) => contentId),
-            direction === 'DESC' ? ['first', 'second'] : ['second', 'first']
         );
     });
 }

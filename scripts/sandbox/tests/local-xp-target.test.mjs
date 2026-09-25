@@ -216,7 +216,6 @@ test('requires authenticated live localhost opt-in before import', async () => {
                 json: async () => ({
                     environment: 'localhost',
                     importEnabled: true,
-                    importFormatVersion: 2,
                 }),
             };
         },
@@ -235,7 +234,6 @@ test('requires authenticated live localhost opt-in before import', async () => {
                 json: async () => ({
                     environment: 'localhost',
                     importEnabled: true,
-                    importFormatVersion: 2,
                     importInProgress: true,
                 }),
             }),
@@ -248,16 +246,6 @@ test('requires authenticated live localhost opt-in before import', async () => {
             fetchRequest: async () => ({ ok: false, json: async () => ({}) }),
         }),
         /has not enabled/
-    );
-    await assert.rejects(
-        verifyLocalImportTarget({
-            ...options,
-            fetchRequest: async () => ({
-                ok: true,
-                json: async () => ({ environment: 'localhost', importEnabled: true }),
-            }),
-        }),
-        /compatible.*format 2/
     );
 });
 

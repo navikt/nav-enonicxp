@@ -49,10 +49,9 @@ const fixture = (t, scope = 'full') => {
     };
 };
 
-test('plans all six branches without legacy supplements, extraction or target requests', async (t) => {
+test('plans all six branches without extraction or target requests', async (t) => {
     const f = fixture(t);
     const plan = await createCuratedPlan({ ...f.options, paths: ['/arbeid'] });
-    assert.equal(plan.formatVersion, 1);
     assert.equal(plan.exports.length, 6);
     assert.equal(new Set(plan.exports.map(({ exportName }) => exportName)).size, 6);
     assert.deepEqual(plan.entries, f.body.entries);

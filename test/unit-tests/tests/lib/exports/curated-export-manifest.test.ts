@@ -118,9 +118,7 @@ const setReferences = (
 const selectPage = () => createCuratedExportManifest(['/www.nav.no/page'], 'page');
 
 test('escapes backslashes before quotes in NoQL string literals', () => {
-    expect(escapeNoqlStringLiteral('path\\segment"suffix')).toBe(
-        'path\\\\segment\\"suffix'
-    );
+    expect(escapeNoqlStringLiteral('path\\segment"suffix')).toBe('path\\\\segment\\"suffix');
     expect(escapeNoqlStringLiteral('trailing\\')).toBe('trailing\\\\');
 });
 
@@ -277,9 +275,7 @@ test('includes direct references from ancestors without traversing their referen
     setReferences('icon', 'master', ['unrelated']);
     const entries = selectPage().entries;
     expect(entries).toContainEqual(expect.objectContaining({ contentId: 'icon' }));
-    expect(entries).not.toContainEqual(
-        expect.objectContaining({ contentId: 'unrelated' })
-    );
+    expect(entries).not.toContainEqual(expect.objectContaining({ contentId: 'unrelated' }));
 });
 
 test('expands dependencies from content later selected as an ancestor', () => {
@@ -430,9 +426,11 @@ describe.each(['draft', 'master'] as const)('source consistency on %s', (branch)
                         nodes.delete(key(repositories.no, branch, id));
                     } else if (node) {
                         if (change === 'version' || change === 'missing-version') {
-                            node._versionKey = change === 'version' ? 'changed-version' : undefined!;
+                            node._versionKey =
+                                change === 'version' ? 'changed-version' : undefined!;
                         } else {
-                            node._path = change === 'path' ? '/content/www.nav.no/moved' : undefined!;
+                            node._path =
+                                change === 'path' ? '/content/www.nav.no/moved' : undefined!;
                         }
                     }
                 }

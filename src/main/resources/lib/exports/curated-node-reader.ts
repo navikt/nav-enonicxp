@@ -2,11 +2,7 @@ import { Content } from '/lib/xp/content';
 import { ByteSource, RepoNode } from '/lib/xp/node';
 import { getRepoConnection } from '../repos/repo-utils';
 import { runInContext } from '../context/run-in-context';
-import {
-    isCuratedBranch,
-    isCuratedContentId,
-    isCuratedRepository,
-} from './curated-safety';
+import { isCuratedBranch, isCuratedContentId, isCuratedRepository } from './curated-safety';
 
 export type CuratedProperty = {
     name: string;
@@ -29,7 +25,6 @@ export type CuratedProperty = {
 };
 
 export type CuratedSourceNode = {
-    formatVersion: 1;
     node: RepoNode<Content>;
     properties: CuratedProperty[];
     binaryReferences: string[];
@@ -83,10 +78,7 @@ export const getCuratedSourceNode = (source: SourceVersion): CuratedSourceNode =
                     ? { key: source.contentId, versionId: source.versionId }
                     : source.contentId
             );
-            if (
-                !node?._versionKey ||
-                (source.versionId && node._versionKey !== source.versionId)
-            ) {
+            if (!node?._versionKey || (source.versionId && node._versionKey !== source.versionId)) {
                 throw new Error(`Selected content version was not found: ${source.contentId}`);
             }
             const description = __.toNativeObject(
@@ -96,7 +88,6 @@ export const getCuratedSourceNode = (source: SourceVersion): CuratedSourceNode =
                 throw new Error(`Content version changed during extraction: ${source.contentId}`);
             }
             return {
-                formatVersion: 1,
                 node,
                 properties: description.properties,
                 binaryReferences: description.binaryReferences,

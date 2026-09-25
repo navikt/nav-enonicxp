@@ -38,12 +38,8 @@ test('page import defaults to the running target but allows explicit overrides',
     assert.throws(() => getImportOptions(['--page', page]), /Only --page defaults/);
 });
 
-test('rejects removed dump options and malformed arguments before any work', () => {
-    assert.throws(
-        () =>
-            getImportOptions(['--source', 'prod', '--target', 'target', '--dump-name', 'old_dump']),
-        /Use pnpm sandbox:dump/
-    );
+test('rejects unsupported and malformed arguments before any work', () => {
+    assert.throws(() => getImportOptions(['--dump-name', 'old_dump']), /Unsupported argument/);
     assert.throws(() => getImportOptions(['--plan-only']), /Unsupported argument/);
     assert.throws(() => getImportOptions(['--unknown', 'value']), /Unsupported argument/);
     assert.throws(() => getImportOptions(['--target', '--force']), /Invalid argument/);
@@ -148,7 +144,6 @@ test('rejects unsafe import manifests before authenticating or mutating a target
         [{ scope: 'page', exports: [exportEntry], entries: [] }, /typed export manifest/],
         [
             {
-                formatVersion: 1,
                 scope: 'page',
                 exports: [exportEntry],
                 entries: [pinnedEntry, pinnedEntry],
@@ -157,7 +152,6 @@ test('rejects unsafe import manifests before authenticating or mutating a target
         ],
         [
             {
-                formatVersion: 1,
                 scope: 'page',
                 exports: [exportEntry],
                 entries: [pinnedEntry, { ...pinnedEntry, contentId: 'different-id' }],
