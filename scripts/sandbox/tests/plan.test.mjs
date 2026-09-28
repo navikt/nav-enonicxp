@@ -3,6 +3,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
+import { clearInterval, setInterval } from 'node:timers';
 import { createCuratedPlan } from '../lib/plan.mjs';
 
 const projects = [
@@ -141,6 +142,9 @@ test('rejects incomplete or mismatching plans', async (t) => {
 
 test('allows long-running manifest requests and reports their timeout clearly', async (t) => {
     const f = fixture(t);
+    // AbortSignal.timeout does not keep the event loop alive on its own.
+    const keepAlive = setInterval(() => {}, 1000);
+    t.after(() => clearInterval(keepAlive));
     t.mock.restoreAll();
     t.mock.method(globalThis, 'fetch', async (url, options) => {
         if (String(url).endsWith('/_/idprovider/system')) {

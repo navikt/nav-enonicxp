@@ -8,6 +8,7 @@ const fixture = () => {
     const calls = [];
     const result = { repositories: [{ versionsErrors: [], branches: [{ errors: [] }] }] };
     const dependencies = {
+        checkCli: () => {},
         verifyTarget: (sandbox) => calls.push(['local', sandbox]),
         getAuth: () => {
             calls.push(['credentials']);

@@ -58,12 +58,13 @@ export const createSandboxDump = async (
         verifyAuth = (auth) => getXpSessionCookie('http://localhost:8080', auth),
         requestApi = request,
         waitForNextPoll = wait,
+        checkCli = assertEnonicCliAvailable,
     } = {}
 ) => {
     if (!options.name || !options.sandbox) {
         throw new Error('Usage: pnpm sandbox:dump --sandbox NAME --name DUMP_NAME');
     }
-    assertEnonicCliAvailable();
+    checkCli();
     if (!/^[a-zA-Z0-9._]+$/.test(options.name)) {
         throw new Error('--name may only contain letters, numbers, dots, and underscores');
     }
