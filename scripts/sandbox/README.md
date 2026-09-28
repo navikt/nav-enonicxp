@@ -63,6 +63,13 @@ En eksisterende sandbox stoppes og startes før både full import og sideimport.
 pnpm sandbox:import --source lokal-kilde --target navno
 ```
 
+Første gang du bruker en eksisterende lokal sandbox som kilde, må du deploye den, slik at den får eksporttjenestene som importen leser fra:
+
+```bash
+enonic sandbox start lokal-kilde
+enonic project deploy lokal-kilde
+```
+
 Dersom kilden er en lokal sandbox opprettet fra et Snapshotter-snapshot, trenger du både snapshotet av metadata/indeks og tilhørende blobstore med selve filene, som bilder og PDF-er.
 
 ## Lag en Enonic-systemdump
