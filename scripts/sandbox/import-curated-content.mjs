@@ -189,7 +189,7 @@ const main = async () => {
             flag: 'wx',
         });
         console.log(
-            `Planned ${manifest.entries.length} entries in ${manifest.exports.length} branch exports; manifest written to ${manifestPath}`
+            `Planned ${manifest.entries.length} entries in ${manifest.exports.length} branch exports`
         );
         if (manifest.excludedDependencies.length > 0) {
             console.warn(
@@ -219,7 +219,7 @@ const main = async () => {
                   auth: sourceAuth,
               });
 
-        console.log(`Extracting curated source into ${exportDirectory}`);
+        console.log(`Downloading content from ${source.name}`);
         const extraction = await extractCuratedSource({
             manifest,
             sourceServiceUrl: source.sourceServiceUrl,
@@ -258,7 +258,6 @@ const main = async () => {
                     });
                 }
             }
-            console.log(`Starting content import into ${options.target}`);
             runNodeScript(
                 'scripts/sandbox/apply-curated-export.mjs',
                 [

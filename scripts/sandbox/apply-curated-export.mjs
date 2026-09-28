@@ -205,15 +205,6 @@ const importNativeExport = (entry, auth, sandbox, deferredRelocations = []) => {
         ],
         { auth, sandbox }
     );
-    const summaries = output
-        .split(/[\r\n]+/)
-        .filter((line) =>
-            /^Added \d+ nodes, updated \d+ nodes, imported \d+ binaries with \d+ errors/.test(line)
-        );
-    const summary = summaries[summaries.length - 1];
-    if (summary) {
-        console.log(summary);
-    }
     const resultStart = output.lastIndexOf('\n{');
     const result = JSON.parse(output.slice(resultStart < 0 ? 0 : resultStart + 1));
     if (!Array.isArray(result.importErrors)) {
@@ -229,9 +220,10 @@ const importNativeExport = (entry, auth, sandbox, deferredRelocations = []) => {
             `XP reported ${unexpectedErrors.length} node import errors for ${entry.exportName}: ${unexpectedErrors.slice(0, 3).join('; ')}`
         );
     }
-    if (result.importErrors.length > 0) {
-        console.log(`Accepted ${result.importErrors.length} expected import warnings`);
-    }
+    const warnings = result.importErrors.length;
+    console.log(
+        `added ${result.addedNodes?.length ?? 0} nodes, updated ${result.updateNodes?.length ?? 0}, imported ${result.importedBinaries?.length ?? 0} binaries${warnings > 0 ? `, accepted ${warnings} expected warnings` : ''}`
+    );
 };
 
 export const importCuratedBundle = async ({
@@ -242,9 +234,9 @@ export const importCuratedBundle = async ({
     postAction,
     importNative,
     reportProgress = console.log,
+    reportCounter = (text) => process.stdout.write(text),
 }) => {
     try {
-        reportProgress('Loading source metadata');
         const metadataGroups = loadCuratedExpectations(manifest, files);
         if (manifest.scope !== 'page') {
             reportProgress('Configuring target login and projects');
@@ -257,7 +249,7 @@ export const importCuratedBundle = async ({
         }
         for (const entry of nativeExports.slice(startIndex - 1)) {
             const label = `${entry.repoId}:${entry.sourceBranch}`;
-            reportProgress(`Preparing content import for ${label}`);
+            reportCounter(`Importing ${label}; this may take several minutes... `);
             const preparation = await postAction({
                 action: 'prepare-project-import',
                 repository: entry.repoId,
@@ -282,13 +274,8 @@ export const importCuratedBundle = async ({
             ) {
                 throw new Error('Target returned invalid deferred relocation identities');
             }
-            reportProgress(`Staging export files for ${label}`);
             files.stage(entry.exportName);
-            reportProgress(
-                `Importing nodes and binaries for ${label}; this may take several minutes`
-            );
             await importNative(entry, deferredRelocations);
-            reportProgress(`Normalizing imported paths for ${label}`);
             await postAction({
                 action: 'normalize-import-paths',
                 repository: entry.repoId,
@@ -310,8 +297,8 @@ export const importCuratedBundle = async ({
         for (const group of metadataGroups) {
             const batches = batchCuratedExpectations(group);
             for (const [index, batch] of batches.entries()) {
-                reportProgress(
-                    `Restoring source metadata for ${group.repository}:${group.branch} (batch ${index + 1}/${batches.length})`
+                reportCounter(
+                    `\rRestoring source metadata for ${group.repository}:${group.branch} (${index + 1}/${batches.length})`
                 );
                 const result = await postAction({ action: 'restore-metadata', ...batch });
                 if (result.checkedNodes !== batch.expectations.length) {
@@ -320,6 +307,7 @@ export const importCuratedBundle = async ({
                     );
                 }
             }
+            reportCounter('\n');
         }
 
         for (const repository of REQUIRED_REPO_IDS) {
@@ -334,10 +322,6 @@ export const importCuratedBundle = async ({
                 entries: publishedEntries,
             });
         }
-
-        console.log(
-            `Imported ${nativeExports.length - startIndex + 1} repository branch exports from ${manifest.bundle}`
-        );
     } finally {
         files.cleanup();
     }
@@ -374,7 +358,6 @@ const main = async () => {
         throw new Error(`--start-index must be between 1 and ${nativeExports.length}`);
     }
     const auth = process.env.ENONIC_AUTH || promptForAuth('Target');
-    console.log('Verifying the local import service');
     const sessionCookie = await verifyLocalImportTarget({
         sandbox: options.sandbox,
         serviceUrl: options['service-url'],
@@ -382,7 +365,6 @@ const main = async () => {
         requireImportMode: true,
     });
     const sandboxPath = assertLocalTargetProcess(options.sandbox);
-    console.log('Preparing local export files');
     const files = prepareCuratedImportFiles({
         exportNames: nativeExports.map(({ exportName }) => exportName),
         sourceDirectory: resolve(options['export-dir'] ?? dirname(options.manifest)),

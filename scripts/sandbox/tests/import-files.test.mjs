@@ -207,17 +207,18 @@ test('reimports deferred IDs after normalization and then restores metadata', as
         nativeExports: f.manifest.exports,
         files,
         reportProgress: (message) => progress.push(message),
+        reportCounter: (text) => progress.push(text),
         importNative: (entry, deferred) => {
-            assert.match(progress.at(-1), /Importing nodes and binaries|Reimporting/);
+            assert.match(progress.at(-1), /Importing .*several minutes|Reimporting/);
             assert.ok(existsSync(join(f.targetDirectory, entry.exportName)));
             calls.push(['native', deferred]);
             rmSync(join(f.targetDirectory, entry.exportName), { recursive: true });
         },
         postAction: async (body) => {
             const phase = {
-                'prepare-project-import': /Preparing content import/,
-                'normalize-import-paths': /Normalizing imported paths/,
-                'restore-metadata': /Restoring source metadata.*batch \d+\/\d+/,
+                'prepare-project-import': /Importing .*several minutes/,
+                'normalize-import-paths': /Importing .*several minutes/,
+                'restore-metadata': /Restoring source metadata.*\(\d+\/\d+\)/,
             }[body.action];
             assert.match(progress.at(-1), phase);
             calls.push([body.action, body.branch]);
@@ -233,7 +234,7 @@ test('reimports deferred IDs after normalization and then restores metadata', as
         ['native', []],
         ['restore-metadata', 'draft'],
     ]);
-    assert.match(progress[0], /Loading source metadata/);
+    assert.match(progress[0], /Importing com.enonic.cms.default:draft/);
     assert.ok(existsSync(f.metadataPath));
     assert.ok(!existsSync(join(f.targetDirectory, 'bundle')));
 });

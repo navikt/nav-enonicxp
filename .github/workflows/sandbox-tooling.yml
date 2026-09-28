@@ -3,12 +3,14 @@ on:
   pull_request:
     paths:
       - 'scripts/sandbox/**'
+      - 'eslint.config.mjs'
       - '.github/workflows/sandbox-tooling.yml'
   push:
     branches:
       - main
     paths:
       - 'scripts/sandbox/**'
+      - 'eslint.config.mjs'
       - '.github/workflows/sandbox-tooling.yml'
   workflow_dispatch:
 
@@ -22,10 +24,20 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v6
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Setup node.js
         uses: actions/setup-node@v6
         with:
           node-version: 22
+          cache: pnpm
+
+      - name: Install node.js dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint sandbox scripts
+        run: pnpm run sandbox:lint
 
       - name: Run sandbox script tests
-        run: node --test scripts/sandbox/tests/*.test.mjs
+        run: pnpm run sandbox:test

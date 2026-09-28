@@ -223,6 +223,7 @@ test('creates and prepares a missing target sandbox', () => {
     ]);
     assert.deepEqual(commands[1].args, [
         'build',
+        '--quiet',
         '-PcuratedImportLocal=true',
         '-PxpVersion=7.16.6',
         '-Pversion=2.3.4-test',

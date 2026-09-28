@@ -235,6 +235,7 @@ export const prepareCuratedTarget = ({
             join(repositoryRoot, 'gradlew'),
             [
                 'build',
+                '--quiet',
                 '-PcuratedImportLocal=true',
                 `-PxpVersion=${xpVersion}`,
                 `-Pversion=${appVersion}`,

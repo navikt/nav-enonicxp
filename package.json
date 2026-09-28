@@ -9,7 +9,9 @@
     "babel": "babel src/main/resources --out-dir=build/resources/main --no-copy-ignored --extensions \".ts\"",
     "sandbox:import": "node scripts/sandbox/import-curated-content.mjs",
     "sandbox:dump": "node scripts/sandbox/create-dump.mjs",
-    "sandbox:deploy": "node scripts/sandbox/deploy-local.mjs"
+    "sandbox:deploy": "node scripts/sandbox/deploy-local.mjs",
+    "sandbox:test": "node --test scripts/sandbox/tests/*.test.mjs",
+    "sandbox:lint": "eslint scripts/sandbox --quiet"
   },
   "repository": {
     "type": "git",
