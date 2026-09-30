@@ -18,3 +18,12 @@ export const readSandboxXpVersion = (sandboxPath) => {
     }
     return { distro, version };
 };
+
+export const assertSandboxXpVersion = (sandboxPath, sandbox, xpVersion) => {
+    const { version } = readSandboxXpVersion(sandboxPath);
+    if (version !== xpVersion) {
+        throw new Error(
+            `Target sandbox ${sandbox} uses XP ${version}; curated source uses XP ${xpVersion}`
+        );
+    }
+};

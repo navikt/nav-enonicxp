@@ -4,7 +4,11 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import { parseCliJsonOutput } from '../lib/local-xp-target.mjs';
-import { readRunningSandbox, readSandboxXpVersion } from '../lib/sandbox-files.mjs';
+import {
+    assertSandboxXpVersion,
+    readRunningSandbox,
+    readSandboxXpVersion,
+} from '../lib/sandbox-files.mjs';
 
 const tempDirectory = (t) => {
     const root = mkdtempSync(join(tmpdir(), 'curated-sandbox-files-'));
@@ -22,11 +26,18 @@ test('reads the running sandbox and sandbox XP version', (t) => {
         'distro = "enonic-xp-mac-arm64-sdk-7.16.6"\n'
     );
 
+    const sandboxPath = join(home, '.enonic/sandboxes/navno');
+
     assert.equal(readRunningSandbox(home), 'navno');
-    assert.deepEqual(readSandboxXpVersion(join(home, '.enonic/sandboxes/navno')), {
+    assert.deepEqual(readSandboxXpVersion(sandboxPath), {
         distro: 'enonic-xp-mac-arm64-sdk-7.16.6',
         version: '7.16.6',
     });
+    assert.doesNotThrow(() => assertSandboxXpVersion(sandboxPath, 'navno', '7.16.6'));
+    assert.throws(
+        () => assertSandboxXpVersion(sandboxPath, 'navno', '7.17.0'),
+        /uses XP 7\.16\.6; curated source uses XP 7\.17\.0/
+    );
 });
 
 test('parses the final JSON document from Enonic CLI output', () => {

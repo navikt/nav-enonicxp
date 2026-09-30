@@ -39,7 +39,7 @@ import {
     waitForManagementApi,
 } from './lib/target.mjs';
 import { LOOPBACK_HOSTS } from './lib/curated-constants.mjs';
-import { readRunningSandbox } from './lib/sandbox-files.mjs';
+import { assertSandboxXpVersion, readRunningSandbox } from './lib/sandbox-files.mjs';
 
 const IMPORT_SERVICE_URL = LOCAL_IMPORT_SERVICE_URL;
 
@@ -151,11 +151,8 @@ const main = async () => {
     }
     if (targetExists && targetIsRunning) {
         try {
-            await verifyLocalImportTarget({
-                sandbox: options.target,
-                auth: targetAuth,
-                requireImportMode: true,
-            });
+            // Import mode is enabled later, when the target is restarted for the import.
+            await verifyLocalImportTarget({ sandbox: options.target, auth: targetAuth });
         } catch (error) {
             throw new Error('Target authentication failed', { cause: error });
         }
@@ -190,6 +187,10 @@ const main = async () => {
             console.warn(
                 `Excluded broad container dependencies: ${manifest.excludedDependencies.length}`
             );
+        }
+        if (targetExists) {
+            // Fail before downloading anything if the target cannot run the source version.
+            assertSandboxXpVersion(targetPath, options.target, manifest.xpVersion);
         }
         const navApplication = manifest.applications.find(({ key }) => key === 'no.nav.navno');
         const contentStudio = manifest.applications.find(
@@ -236,12 +237,22 @@ const main = async () => {
             applications: manifest.applications,
             suPassword: targetAuth.slice(targetAuth.indexOf(':') + 1),
         });
+        // A new sandbox is started in import mode. Signals skip finally blocks, so also
+        // leave import mode on exit.
+        let importModeEnabled = target.created;
+        const disableImportMode = () => {
+            if (importModeEnabled) {
+                setCuratedImportMode(target.sandboxPath, false);
+            }
+        };
+        process.once('exit', disableImportMode);
         try {
             if (!target.created) {
                 if (getRunningSandbox() === options.target) {
                     stopRunningSandbox();
                 }
                 setCuratedImportMode(target.sandboxPath, true);
+                importModeEnabled = true;
                 startSandbox(options.target);
                 waitForManagementApi();
                 await verifyLocalImportTarget({ sandbox: options.target, auth: targetAuth });
@@ -275,7 +286,9 @@ const main = async () => {
                 auth: targetAuth,
             });
         } finally {
+            process.removeListener('exit', disableImportMode);
             setCuratedImportMode(target.sandboxPath, false);
+            importModeEnabled = false;
             if (getRunningSandbox() === options.target) {
                 stopRunningSandbox();
                 startSandbox(options.target);
