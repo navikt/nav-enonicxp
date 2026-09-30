@@ -72,6 +72,7 @@ export const contentTypesWithDeepReferences = [
     `${APP_DESCRIPTOR}:product-details`,
     `${APP_DESCRIPTOR}:payout-dates`,
     `${APP_DESCRIPTOR}:contact-information`,
+    `${APP_DESCRIPTOR}:form-details`,
 ] as const satisfies ContentTypeList;
 
 export const contentTypesWithBreadcrumbs = [
