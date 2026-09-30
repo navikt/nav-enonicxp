@@ -2,7 +2,7 @@
     "name": "nav-enonicxp-tests",
     "version": "1.0.0",
     "scripts": {
-        "test": "pnpm run '/^test:.*$/' --parallel",
+        "test": "pnpm --parallel run '/^test:.*$/'",
         "test:e2e": "pnpm --filter nav-enonicxp-e2e-tests run prepare-and-test",
         "test:unit": "pnpm --filter nav-enonicxp-unit-tests run test"
     },

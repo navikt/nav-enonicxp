@@ -13,7 +13,7 @@ export const startXpTestContainer = async (withLogs?: boolean) => {
         .withReuse()
         .withExposedPorts(8080)
         .withWaitStrategy(Wait.forLogMessage(/.*Finished running main.*/, 1))
-        .withStartupTimeout(90000)
+        .withStartupTimeout(120000)
         .start();
 
     const logs = await container.logs();

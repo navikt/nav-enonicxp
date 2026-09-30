@@ -42,13 +42,7 @@ export const sitecontentContentResponse = ({
                 baseContentLocale: locale,
             });
             queryResult.contentLayer = locale;
-            const start = Date.now();
             const replacedResult = replaceNAVwithNav(queryResult);
-            const end = Date.now();
-
-            log.info(
-                `NAVREPLACEMENT ${baseContent.data.customPath}: Time to replace NAV with Nav: ${end - start}ms`
-            );
 
             return replacedResult;
         }

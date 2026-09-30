@@ -4,4 +4,9 @@ export type AnnouncementToEditors = {
    * Brødtekst
    */
   text: string;
+
+  /**
+   * Tekst etter ekspanderbarpaneler
+   */
+  subText?: string;
 };

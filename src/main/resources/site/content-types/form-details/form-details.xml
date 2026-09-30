@@ -30,6 +30,9 @@
                 </input>
                 <input name="ingress" type="HtmlArea">
                     <label>Ingress</label>
+                    <config>
+                        <include>Undo Redo</include>
+                    </config>
                 </input>
                 <input name="languageDisclaimer" type="TextArea">
                     <label>Informasjon om språk</label>

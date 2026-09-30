@@ -11,10 +11,10 @@ import { removeUnpublishedFromAllContentLists } from '../lib/contentlists/remove
 import { userIsAdmin } from '../lib/utils/auth-utils';
 import { externalSearchUpdateAll } from '../lib/search/update-all';
 import { URLS } from '../lib/constants';
-import { fetchAndUpdateOfficeInfo } from '../lib/office-pages/_legacy-office-information/legacy-office-update';
 import { runSchedulerCleanup } from '../lib/scheduling/schedule-cleanup';
 import { NAVOccurences } from '../lib/reporting/NAVOccurrences';
 import { archiveOldNews } from '../lib/archiving/archive-old-news';
+import { manageScheduledJobs } from '../lib/scheduling/manage-scheduled-jobs';
 
 type ActionsMap = Record<string, { description: string; callback: () => any }>;
 
@@ -23,10 +23,7 @@ const view = resolve('webapp.html');
 const validActions: ActionsMap = {
     norg: {
         description: 'Oppdater kontor fra norg',
-        callback: () => {
-            runOfficeFetchTask();
-            fetchAndUpdateOfficeInfo();
-        },
+        callback: runOfficeFetchTask,
     },
     wipeCache: {
         description: 'Slett frontend-cache',
@@ -83,12 +80,37 @@ type Params = {
     cmd: keyof typeof validActions;
 };
 
+const accessDeniedResponse = {
+    body: '<div>Administrator-tilgang er påkrevd</div>',
+    contentType: 'text/html; charset=UTF-8',
+};
+
+const renderWebapp = (runningCmd?: string, schedulerMessage?: string) => {
+    const { selectedJobs: obsoleteJobs } = runInContext({ asAdmin: true }, () =>
+        manageScheduledJobs({ operation: 'list-obsolete' })
+    );
+
+    const model = {
+        actionUrl: '/webapp/' + app.name,
+        cmds: Object.entries(validActions).map(([name, action]) => ({
+            cmd: name,
+            description: action.description,
+        })),
+        runningCmd,
+        obsoleteJobs,
+        hasObsoleteJobs: obsoleteJobs.length > 0,
+        schedulerMessage,
+    };
+
+    return {
+        body: thymeleafLib.render(view, model),
+        contentType: 'text/html; charset=UTF-8',
+    };
+};
+
 export const get = (req: Request) => {
     if (!userIsAdmin()) {
-        return {
-            body: '<div>Administrator-tilgang er påkrevd</div>',
-            contentType: 'text/html; charset=UTF-8',
-        };
+        return accessDeniedResponse;
     }
 
     const { cmd } = req.params as Params;
@@ -104,17 +126,30 @@ export const get = (req: Request) => {
         });
     }
 
-    const model = {
-        actionUrl: '/webapp/' + app.name,
-        cmds: Object.entries(validActions).map(([name, action]) => ({
-            cmd: name,
-            description: action.description,
-        })),
-        runningCmd: actionToRun ? cmd : undefined,
+    return renderWebapp(actionToRun ? cmd : undefined);
+};
+
+export const post = (req: Request) => {
+    if (!userIsAdmin()) {
+        return accessDeniedResponse;
+    }
+
+    const { cmd, confirmDelete } = req.params as {
+        cmd?: string;
+        confirmDelete?: string;
     };
 
-    return {
-        body: thymeleafLib.render(view, model),
-        contentType: 'text/html; charset=UTF-8',
-    };
+    if (cmd !== 'deleteObsoleteSchedulerJobs' || confirmDelete !== 'true') {
+        return renderWebapp(undefined, 'Sletting ble ikke utført: bekreftelse mangler.');
+    }
+
+    const { deletedJobNames } = runInContext({ asAdmin: true }, () =>
+        manageScheduledJobs({ operation: 'delete-obsolete', confirmDelete: true })
+    );
+    const schedulerMessage =
+        deletedJobNames.length > 0
+            ? `Slettet scheduler-jobber: ${deletedJobNames.join(', ')}`
+            : 'Fant ingen utdaterte scheduler-jobber å slette.';
+
+    return renderWebapp(undefined, schedulerMessage);
 };

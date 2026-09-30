@@ -3,6 +3,17 @@
     <description>Responsive flexbox-kolonner</description>
     <form>
         <mixin name="header-with-anchor"/>
+        <input type="HtmlArea" name="ingress">
+            <label>Ingress</label>
+            <occurrences minimum="0" maximum="1"/>
+            <config>
+                <include>Undo Redo Bold</include>
+                <exclude>JustifyBlock JustifyLeft JustifyCenter JustifyRight BulletedList NumberedList
+                    Outdent Indent Anchor Image Macro Table Underline
+                </exclude>
+                <allowHeadings>normal</allowHeadings>
+            </config>
+        </input>
         <input type="Long" name="numCols">
             <label>Antall kolonner ved full skjermbredde</label>
             <config>

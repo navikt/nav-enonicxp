@@ -9,6 +9,9 @@
         <input name="html" type="HtmlArea">
             <label>Innhold</label>
             <occurrences minimum="1" maximum="1" />
+            <config>
+                <include>Undo Redo</include>
+            </config>
         </input>
         <mixin name="auth-render-option"/>
     </form>

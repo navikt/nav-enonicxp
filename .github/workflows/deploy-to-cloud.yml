@@ -1,0 +1,9 @@
+name: Deploy to dev3/Enonic Cloud (PoC)
+on: workflow_dispatch
+
+jobs:
+  deploy-to-dev3:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder
+        run: echo "Placeholder workflow - not yet implemented"
