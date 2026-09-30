@@ -34,15 +34,6 @@ const mediaResponse = (content: Content) => {
     };
 };
 
-// The legacy health check expects an html-response on /no/person
-// "Nyheter" must be part of the response!
-const healthCheckDummyResponse = () => {
-    return {
-        contentType: 'text/html; charset=UTF-8',
-        body: '<html lang="no"><head><meta charset="utf-8"><title>Nav.no</title></head><body><div>Hei, jeg er en ex-forside. Her var det blant annet Nyheter og nyheter.</div></body></html>',
-    };
-};
-
 const getFrontendUrl = (req: Request, path?: string) => {
     if (!req.branch) {
         return null;
