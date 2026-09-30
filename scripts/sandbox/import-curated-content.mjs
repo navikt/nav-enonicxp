@@ -2,7 +2,7 @@
 
 import { spawnSync } from 'node:child_process';
 import console from 'node:console';
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import process from 'node:process';
@@ -38,6 +38,8 @@ import {
     setCuratedImportMode,
     waitForManagementApi,
 } from './lib/target.mjs';
+import { LOOPBACK_HOSTS } from './lib/curated-constants.mjs';
+import { readRunningSandbox } from './lib/sandbox-files.mjs';
 
 const IMPORT_SERVICE_URL = LOCAL_IMPORT_SERVICE_URL;
 
@@ -102,21 +104,14 @@ const stopRunningSandbox = () => {
     }
 };
 
-const getRunningSandbox = () => {
-    const statePath = join(homedir(), '.enonic/.enonic');
-    return existsSync(statePath)
-        ? (readFileSync(statePath, 'utf8').match(/^running = "([^"]+)"$/m)?.[1] ?? null)
-        : null;
-};
+const getRunningSandbox = () => readRunningSandbox(homedir());
 
 const main = async () => {
     assertEnonicCliAvailable();
     const options = getImportOptions(process.argv.slice(2), getRunningSandbox);
     assertSandboxName(options.target);
     const source = resolveCuratedSource(options.source);
-    const sourceIsLoopback = ['localhost', '127.0.0.1', '[::1]'].includes(
-        new URL(source.origin).hostname
-    );
+    const sourceIsLoopback = LOOPBACK_HOSTS.has(new URL(source.origin).hostname);
     if (
         (source.kind === 'local' && source.name === options.target) ||
         (sourceIsLoopback && getRunningSandbox() === options.target)

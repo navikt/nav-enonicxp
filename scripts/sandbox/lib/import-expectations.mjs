@@ -1,11 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-
-const REPOSITORIES = [
-    'com.enonic.cms.default',
-    'com.enonic.cms.navno-engelsk',
-    'com.enonic.cms.navno-nynorsk',
-];
+import { CURATED_BRANCHES, CURATED_REPOSITORIES } from './curated-constants.mjs';
 
 const isValidExpectation = (expected, entry, branch) =>
     expected.contentId === entry.contentId &&
@@ -40,8 +35,8 @@ const assertExportMatchesSelection = (nativeExport, entries, branch, files) => {
 
 export const loadCuratedExpectations = (manifest, files) => {
     const groups = [];
-    for (const repository of REPOSITORIES) {
-        for (const branch of ['draft', 'master']) {
+    for (const repository of CURATED_REPOSITORIES) {
+        for (const branch of CURATED_BRANCHES) {
             const entries = manifest.entries.filter(
                 (entry) => entry.repoId === repository && entry.branches.includes(branch)
             );

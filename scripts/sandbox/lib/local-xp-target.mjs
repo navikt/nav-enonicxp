@@ -226,6 +226,12 @@ export const verifyLocalImportTarget = async ({
     return cookie;
 };
 
+// Enonic CLI may print progress before its final JSON result.
+export const parseCliJsonOutput = (output) => {
+    const resultStart = output.lastIndexOf('\n{');
+    return JSON.parse(output.slice(resultStart < 0 ? 0 : resultStart + 1));
+};
+
 export const runLocalXpCommand = (
     args,
     { sandbox, auth, runCommand = execFileSync, verifyTarget = assertLocalTargetProcess } = {}

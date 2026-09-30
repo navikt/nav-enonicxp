@@ -10,7 +10,9 @@ import {
     isCuratedContentId,
     isCuratedContentPath,
     isCuratedRepository,
+    isRecord,
 } from '../../lib/exports/curated-safety';
+
 const MAX_BATCH_SIZE = 100;
 
 const jsonResponse = (status: number, body: Record<string, unknown>): Response => ({
@@ -129,7 +131,7 @@ export const post = (req: Request): Response => {
             contentIds?: unknown;
             versionIds?: unknown;
         };
-        if (!body || typeof body !== 'object' || Array.isArray(body)) {
+        if (!isRecord(body)) {
             return jsonResponse(400, { message: 'A JSON object is required' });
         }
         const source = getRepositoryAndBranch(body.repository, body.branch);

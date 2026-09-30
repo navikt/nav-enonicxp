@@ -14,6 +14,7 @@ import {
     CURATED_CONTENT_ROOT_PATH,
     CURATED_REPOSITORIES,
     REQUIRED_PROJECTS,
+    getProjectParents,
     isCuratedContentPath,
 } from './curated-safety';
 
@@ -167,13 +168,6 @@ const getEntry = (
         descendantCount,
         branches,
     };
-};
-
-const getProjectParents = (project: Project) => {
-    if (project.parents.length > 0) {
-        return project.parents;
-    }
-    return project.parent ? [project.parent] : [];
 };
 
 const getRequiredProjects = () => {

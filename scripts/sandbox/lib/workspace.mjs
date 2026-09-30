@@ -1,9 +1,10 @@
 import { lstatSync, mkdirSync, rmSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import process from 'node:process';
+import { isSafeName } from './curated-constants.mjs';
 
 export const assertCuratedBundleName = (bundle) => {
-    if (typeof bundle !== 'string' || !/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(bundle)) {
+    if (!isSafeName(bundle)) {
         throw new Error('Bundle must be a safe directory name');
     }
 };

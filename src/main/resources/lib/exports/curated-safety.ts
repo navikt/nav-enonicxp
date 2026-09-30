@@ -1,3 +1,5 @@
+import { Project } from '/lib/xp/project';
+
 export const CURATED_CONTENT_ROOT_PATH = '/content/www.nav.no';
 
 export const REQUIRED_PROJECTS = [
@@ -39,6 +41,23 @@ export const isCuratedContentPath = (value: unknown): value is string => {
         .split('/')
         .every((segment) => segment !== '' && segment !== '.' && segment !== '..');
 };
+
+export const isRecord = (value: unknown): value is Record<string, unknown> =>
+    value !== null && typeof value === 'object' && !Array.isArray(value);
+
+export const getProjectParents = (project: Project) => {
+    if (project.parents.length > 0) {
+        return project.parents;
+    }
+    return project.parent ? [project.parent] : [];
+};
+
+export const curatedJsonResponse = (status: number, body: Record<string, unknown>) => ({
+    status,
+    contentType: 'application/json',
+    headers: { 'Cache-Control': 'no-store' },
+    body,
+});
 
 export const isCuratedImportEnabled = () => {
     const config = app.config as typeof app.config & { curatedImportEnabled?: unknown };

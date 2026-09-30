@@ -14,11 +14,14 @@ import {
     restoreCuratedTargetMetadata,
 } from '../../lib/exports/target/curated-target-metadata';
 import {
+    curatedJsonResponse as jsonResponse,
+    getProjectParents as getParents,
     isCuratedBranch,
     isCuratedContentId,
     isCuratedContentPath,
     isCuratedImportEnabled,
     isCuratedRepository,
+    isRecord,
     REQUIRED_PROJECTS,
 } from '../../lib/exports/curated-safety';
 
@@ -48,6 +51,7 @@ type RequestBody = {
     expectations?: CuratedTargetExpectation[];
 };
 
+// Turns off the system id provider's first-run admin creation wizard so the regular su login form is shown.
 const configureLogin = () => {
     const connection = nodeLib.connect({
         repoId: 'system-repo',
@@ -78,9 +82,6 @@ type RequiredApplication = {
     started: boolean;
     required?: boolean;
 };
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-    value !== null && typeof value === 'object' && !Array.isArray(value);
 
 const isPrincipalKey = (value: unknown) =>
     typeof value === 'string' &&
@@ -239,20 +240,6 @@ const getSelectedDescendantIds = (
         ids.add(id);
     });
     return ids;
-};
-
-const jsonResponse = (status: number, body: Record<string, unknown>) => ({
-    status,
-    contentType: 'application/json',
-    headers: { 'Cache-Control': 'no-store' },
-    body,
-});
-
-const getParents = (project: Project) => {
-    if (project.parents.length > 0) {
-        return project.parents;
-    }
-    return project.parent ? [project.parent] : [];
 };
 
 const validateProjects = (projects: Project[]) => {
@@ -739,15 +726,13 @@ const getImportAccessError = () => {
     return null;
 };
 
-export const get = () => ({
-    ...(getImportAccessError() ||
-        jsonResponse(200, {
-            environment: 'localhost',
-            importEnabled: true,
-            importInProgress: app.config.curatedImportInProgress === 'true',
-        })),
-    headers: { 'Cache-Control': 'no-store' },
-});
+export const get = () =>
+    getImportAccessError() ||
+    jsonResponse(200, {
+        environment: 'localhost',
+        importEnabled: true,
+        importInProgress: app.config.curatedImportInProgress === 'true',
+    });
 
 export const post = (req: Request) => {
     const accessError = getImportAccessError();

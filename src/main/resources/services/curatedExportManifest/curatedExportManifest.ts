@@ -4,9 +4,11 @@ import {
     CuratedExportSeed,
 } from '../../lib/exports/curated-export-manifest';
 import {
+    curatedJsonResponse as jsonResponse,
     isCuratedBranch,
     isCuratedContentId,
     isCuratedRepository,
+    isRecord,
 } from '../../lib/exports/curated-safety';
 import { userCanManageCuratedExports } from '../../lib/utils/auth-utils';
 import { logger } from '../../lib/utils/logging';
@@ -17,22 +19,12 @@ type RequestBody = {
     seeds?: unknown;
 };
 
-const jsonResponse = (status: number, body: Record<string, unknown>) => ({
-    status,
-    contentType: 'application/json',
-    headers: { 'Cache-Control': 'no-store' },
-    body,
-});
-
 const isSeed = (value: unknown): value is CuratedExportSeed => {
-    if (!value || typeof value !== 'object' || Array.isArray(value)) {
-        return false;
-    }
-    const seed = value as Record<string, unknown>;
     return (
-        isCuratedRepository(seed.repository) &&
-        isCuratedBranch(seed.branch) &&
-        isCuratedContentId(seed.contentId)
+        isRecord(value) &&
+        isCuratedRepository(value.repository) &&
+        isCuratedBranch(value.branch) &&
+        isCuratedContentId(value.contentId)
     );
 };
 

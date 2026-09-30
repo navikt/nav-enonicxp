@@ -1,6 +1,8 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
+import { PROJECT_REPOSITORIES } from './curated-constants.mjs';
+import { readRunningSandbox, readSandboxXpVersion } from './sandbox-files.mjs';
 
 const DEPLOYED_SOURCES = {
     prod: 'https://portal-admin.oera.no',
@@ -10,37 +12,12 @@ const DEPLOYED_SOURCES = {
 
 const SERVICE_PATH = '/_/service/no.nav.navno/curatedExportManifest';
 const SOURCE_SERVICE_PATH = '/_/service/no.nav.navno/curatedExportSource';
-const PROJECT_REPOSITORIES = {
-    default: 'com.enonic.cms.default',
-    'navno-engelsk': 'com.enonic.cms.navno-engelsk',
-    'navno-nynorsk': 'com.enonic.cms.navno-nynorsk',
-};
 const DEPLOYED_SOURCE_BY_HOST = {
     'www.nav.no': 'prod',
     'nav.no': 'prod',
     'portal-admin.oera.no': 'prod',
     'portal-admin-dev.oera.no': 'dev1',
     'portal-admin-q6.oera.no': 'dev2',
-};
-
-const readRunningSandbox = (homeDirectory) => {
-    const cliStatePath = join(homeDirectory, '.enonic', '.enonic');
-    if (!existsSync(cliStatePath)) {
-        return null;
-    }
-
-    return readFileSync(cliStatePath, 'utf8').match(/^running = "([^"]+)"$/m)?.[1] ?? null;
-};
-
-const getSandboxVersion = (sandboxPath) => {
-    const metadata = readFileSync(join(sandboxPath, '.enonic'), 'utf8');
-    const distro = metadata.match(/^distro = "([^"]+)"$/m)?.[1];
-    const version = distro?.match(/(\d+\.\d+\.\d+(?:[-.][a-zA-Z0-9]+)?)$/)?.[1];
-    if (!distro || !version) {
-        throw new Error(`Could not determine the XP version from ${sandboxPath}/.enonic`);
-    }
-
-    return { distro, version };
 };
 
 const createDeployedSource = (name, origin) => ({
@@ -92,7 +69,7 @@ export const resolveCuratedSource = (
         serviceUrl: `http://localhost:8080${SERVICE_PATH}`,
         sourceServiceUrl: `http://localhost:8080${SOURCE_SERVICE_PATH}`,
         sandboxPath,
-        ...getSandboxVersion(sandboxPath),
+        ...readSandboxXpVersion(sandboxPath),
     };
 };
 

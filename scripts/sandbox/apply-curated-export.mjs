@@ -9,17 +9,18 @@ import { prepareCuratedImportFiles } from './lib/import-files.mjs';
 import { batchCuratedExpectations, loadCuratedExpectations } from './lib/import-expectations.mjs';
 import {
     assertLocalTargetProcess,
+    parseCliJsonOutput,
     runLocalXpCommand,
     verifyLocalImportTarget,
 } from './lib/local-xp-target.mjs';
+import {
+    CONTENT_ROOT_PATH,
+    CURATED_BRANCHES as REQUIRED_BRANCHES,
+    CURATED_REPOSITORIES as REQUIRED_REPO_IDS,
+    isCuratedContentPath as isContentPath,
+    isCuratedId,
+} from './lib/curated-constants.mjs';
 
-const CONTENT_ROOT_PATH = '/content/www.nav.no';
-const REQUIRED_REPO_IDS = [
-    'com.enonic.cms.default',
-    'com.enonic.cms.navno-engelsk',
-    'com.enonic.cms.navno-nynorsk',
-];
-const REQUIRED_BRANCHES = ['draft', 'master'];
 const MANUAL_ORDER_WARNING = 'Not able to import nodes by manual order, using default ordering';
 
 const formatProductionCopyDate = (generatedAt) => {
@@ -69,22 +70,11 @@ export const getSourcePublishedEntries = (entries, repository) =>
             entry.versions.draft === entry.versions.master
     );
 
-const isContentPath = (path) =>
-    typeof path === 'string' &&
-    (path === CONTENT_ROOT_PATH || path.startsWith(`${CONTENT_ROOT_PATH}/`)) &&
-    // eslint-disable-next-line no-control-regex -- deliberately rejecting control characters in paths
-    !/[%\\\u0000-\u001f\u007f]/.test(path) &&
-    path
-        .slice(1)
-        .split('/')
-        .every((segment) => segment && segment !== '.' && segment !== '..');
-
 const isPinnedEntry = (entry) =>
     entry &&
     typeof entry === 'object' &&
     REQUIRED_REPO_IDS.includes(entry.repoId) &&
-    typeof entry.contentId === 'string' &&
-    /^[a-zA-Z0-9-]{1,100}$/.test(entry.contentId) &&
+    isCuratedId(entry.contentId) &&
     Array.isArray(entry.branches) &&
     entry.branches.length > 0 &&
     new Set(entry.branches).size === entry.branches.length &&
@@ -92,8 +82,7 @@ const isPinnedEntry = (entry) =>
         (branch) =>
             REQUIRED_BRANCHES.includes(branch) &&
             isContentPath(entry.paths?.[branch]) &&
-            typeof entry.versions?.[branch] === 'string' &&
-            /^[a-zA-Z0-9-]{1,100}$/.test(entry.versions[branch])
+            isCuratedId(entry.versions?.[branch])
     );
 
 const assertUniqueTargets = (entries) => {
@@ -205,8 +194,7 @@ const importNativeExport = (entry, auth, sandbox, deferredRelocations = []) => {
         ],
         { auth, sandbox }
     );
-    const resultStart = output.lastIndexOf('\n{');
-    const result = JSON.parse(output.slice(resultStart < 0 ? 0 : resultStart + 1));
+    const result = parseCliJsonOutput(output);
     if (!Array.isArray(result.importErrors)) {
         throw new Error(`XP returned no import error details for ${entry.exportName}`);
     }

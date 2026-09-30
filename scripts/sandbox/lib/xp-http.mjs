@@ -1,6 +1,5 @@
 import { Agent, request as httpRequest } from 'node:http';
-
-const loopbackHosts = new Set(['localhost', '127.0.0.1', '[::1]']);
+import { LOOPBACK_HOSTS as loopbackHosts } from './curated-constants.mjs';
 const directAgent = new Agent({ keepAlive: false, proxyEnv: {} });
 
 // A dedicated HTTP agent bypasses Node's process-wide environment proxy dispatcher.

@@ -1,15 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { dirname } from 'node:path';
+import { CONTENT_ROOT_PATH, REQUIRED_PROJECTS } from './curated-constants.mjs';
 import { getXpSessionCookie } from './xp-auth.mjs';
 import { fetchXp } from './xp-http.mjs';
 
-const CONTENT_ROOT_PATH = '/content/www.nav.no';
 const MANIFEST_REQUEST_TIMEOUT_MS = 5 * 60 * 1000;
-const REQUIRED_PROJECTS = [
-    { id: 'default', language: 'no', parents: [] },
-    { id: 'navno-engelsk', language: 'en', parents: ['default'] },
-    { id: 'navno-nynorsk', language: 'nn', parents: ['default'] },
-];
 
 const normalizePath = (value) => {
     const trimmed = value.trim();

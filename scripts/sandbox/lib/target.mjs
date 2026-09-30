@@ -17,6 +17,7 @@ import {
     assertLocalTargetConfiguration,
     assertLocalTargetProcess,
     getLocalProcessEnvironment,
+    parseCliJsonOutput,
     runLocalXpCommand,
 } from './local-xp-target.mjs';
 
@@ -89,8 +90,7 @@ export const installCuratedApplications = ({
                     ['app', 'install', '--url', getApplicationUrl(application), '--force'],
                     { sandbox, auth, runCommand, verifyTarget }
                 );
-                const resultStart = output.lastIndexOf('\n{');
-                const result = JSON.parse(output.slice(resultStart < 0 ? 0 : resultStart + 1));
+                const result = parseCliJsonOutput(output);
                 if (result.Failure) {
                     throw new Error(result.Failure);
                 }
