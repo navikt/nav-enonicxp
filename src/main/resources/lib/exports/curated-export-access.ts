@@ -38,6 +38,7 @@ type CredentialNode = {
 
 const toHex = (bytes: number[]) => {
     let hex = '';
+    // bytes is a Java byte[], which Babel's for-of helper cannot iterate on Nashorn.
     for (let index = 0; index < bytes.length; index++) {
         hex += ('0' + (bytes[index] & 0xff).toString(16)).slice(-2);
     }
@@ -98,7 +99,7 @@ const readCredential = (secret: unknown, credentialType: CredentialType) => {
     }
     const repo = getRepo();
     const node = repo.get<CredentialNode>(`${TOKEN_ROOT_PATH}/${sha256Hex(secret)}`);
-    if (!node || node.credentialType !== credentialType || node.expiresAtMs <= Date.now()) {
+    if (node?.credentialType !== credentialType || node.expiresAtMs <= Date.now()) {
         return null;
     }
     return { repo, node };
@@ -124,23 +125,26 @@ const escapeHtml = (value: string) =>
             ] as string
     );
 
-const htmlResponse = (status: number, body: string, port?: number): Response => ({
-    status,
-    contentType: 'text/html; charset=UTF-8',
-    headers: {
-        'Cache-Control': 'no-store',
-        'X-Frame-Options': 'DENY',
-        'Content-Security-Policy': `default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'none'; form-action 'self'${port ? ` http://127.0.0.1:${port}` : ''}`,
-    },
-    body: `<!DOCTYPE html><html lang="no"><head><meta charset="utf-8"><title>Kuratert eksport</title></head><body style="font-family: sans-serif; max-width: 40rem; margin: 3rem auto">${body}</body></html>`,
-});
+const htmlResponse = (status: number, body: string, port?: number): Response => {
+    const formAction = port ? `'self' http://127.0.0.1:${port}` : `'self'`;
+    return {
+        status,
+        contentType: 'text/html; charset=UTF-8',
+        headers: {
+            'Cache-Control': 'no-store',
+            'X-Frame-Options': 'DENY',
+            'Content-Security-Policy': `default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'none'; form-action ${formAction}`,
+        },
+        body: `<!DOCTYPE html><html lang="no"><head><meta charset="utf-8"><title>Kuratert eksport</title></head><body style="font-family: sans-serif; max-width: 40rem; margin: 3rem auto">${body}</body></html>`,
+    };
+};
 
 const getAuthorizeParams = (req: Request) => {
     const { state, challenge } = req.params;
     const port = Number(req.params.port);
     if (
         typeof req.params.port !== 'string' ||
-        !/^[0-9]{4,5}$/.test(req.params.port) ||
+        !/^\d{4,5}$/.test(req.params.port) ||
         port < 1024 ||
         port > 65535 ||
         typeof state !== 'string' ||
@@ -217,7 +221,7 @@ const handleTokenExchange = (req: Request): Response => {
         return jsonResponse(400, { message: '"code" and "verifier" are required' });
     }
     const credential = readCredential(body.code, 'code');
-    if (!credential || credential.node.challenge !== sha256Hex(body.verifier)) {
+    if (credential?.node.challenge !== sha256Hex(body.verifier)) {
         return jsonResponse(401, { message: 'Invalid or expired code' });
     }
     // Deleting the code makes it single-use, also when two exchanges race.
