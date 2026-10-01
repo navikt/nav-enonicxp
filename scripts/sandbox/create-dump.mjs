@@ -2,16 +2,15 @@
 
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { setTimeout as wait } from 'node:timers/promises';
-import { getXpSessionCookie, promptForAuth } from './lib/xp-auth.mjs';
-import { directLocalFetch } from './lib/xp-http.mjs';
+import { fileURLToPath } from 'node:url';
+import { directLocalFetch, getXpSessionCookie, promptForAuth } from './lib/common.mjs';
 import {
     assertEnonicCliAvailable,
     assertLocalTargetProcess,
     assertSandboxName,
     LOCAL_MANAGEMENT_URL,
-} from './lib/local-xp-target.mjs';
+} from './lib/target.mjs';
 
 export const getDumpOptions = (args) => {
     const options = {};

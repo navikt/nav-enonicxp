@@ -2,46 +2,43 @@
 
 import { spawnSync } from 'node:child_process';
 import console from 'node:console';
-import { existsSync, writeFileSync } from 'node:fs';
-import { constants, homedir } from 'node:os';
+import { existsSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import {
-    parseAuth,
+    assertSandboxXpVersion,
     getXpSessionCookie,
+    LOOPBACK_HOSTS,
+    parseAuth,
     promptForAuth,
     promptForPassword,
+    readRunningSandbox,
     verifyStoppedTargetAuth,
-} from './lib/xp-auth.mjs';
+    withCuratedWorkspace,
+} from './lib/common.mjs';
 import {
+    createCuratedPlan,
     inferCuratedSourceFromPage,
     resolveCuratedPage,
     resolveCuratedSource,
-} from './lib/source-selection.mjs';
-import { createCuratedPlan } from './lib/plan.mjs';
-import { downloadProjectIcons, uploadProjectIcons } from './lib/project-icons.mjs';
-import { extractCuratedSource } from './lib/source-extractor.mjs';
-import { SIGNAL_EXIT_CODES, withCuratedWorkspace } from './lib/workspace.mjs';
+} from './lib/source.mjs';
+import { applyCuratedImport } from './lib/apply.mjs';
+import { downloadProjectIcons, extractCuratedSource, uploadProjectIcons } from './lib/extract.mjs';
 import {
     assertEnonicCliAvailable,
     assertLocalTargetConfiguration,
     assertLocalTargetProcess,
     assertSandboxName,
     getLocalProcessEnvironment,
-    LOCAL_IMPORT_SERVICE_URL,
-    verifyLocalImportTarget,
-} from './lib/local-xp-target.mjs';
-import {
     installCuratedApplications,
+    LOCAL_IMPORT_SERVICE_URL,
     prepareCuratedTarget,
     setCuratedImportMode,
+    verifyLocalImportTarget,
     waitForManagementApi,
 } from './lib/target.mjs';
-import { LOOPBACK_HOSTS } from './lib/curated-constants.mjs';
-import { assertSandboxXpVersion, readRunningSandbox } from './lib/sandbox-files.mjs';
-
-const IMPORT_SERVICE_URL = LOCAL_IMPORT_SERVICE_URL;
 
 export const getImportOptions = (args, getCurrentSandbox = () => null) => {
     const options = {};
@@ -68,26 +65,6 @@ export const getImportOptions = (args, getCurrentSandbox = () => null) => {
         );
     }
     return options;
-};
-
-export const runNodeScript = (script, args, { cwd, env = process.env } = {}) => {
-    const result = spawnSync(process.execPath, [resolve(script), ...args], {
-        cwd,
-        env,
-        encoding: 'utf8',
-        stdio: 'inherit',
-    });
-    const signal =
-        result.signal ??
-        Object.keys(SIGNAL_EXIT_CODES).find((name) => SIGNAL_EXIT_CODES[name] === result.status);
-    if (signal) {
-        throw Object.assign(new Error(`${script} was interrupted (${signal})`), {
-            exitCode: SIGNAL_EXIT_CODES[signal] ?? 128 + constants.signals[signal],
-        });
-    }
-    if (result.status !== 0) {
-        throw new Error(`${script} failed`);
-    }
 };
 
 const startSandbox = (sandbox) => {
@@ -180,7 +157,7 @@ const main = async () => {
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const bundle = `${pageSelection ? 'curated-page' : 'curated-plan'}-${timestamp}`;
-    return withCuratedWorkspace({ bundle }, async ({ manifestPath, exportDirectory }) => {
+    return withCuratedWorkspace({ bundle }, async ({ exportDirectory }) => {
         console.log(`Planning curated import from ${source.name} to ${options.target}`);
         const manifest = await createCuratedPlan({
             inputPath,
@@ -191,10 +168,6 @@ const main = async () => {
             bundle,
             scope: options.page ? 'page' : 'full',
             includeDrafts: options['include-drafts'] === true,
-        });
-        writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, {
-            mode: 0o600,
-            flag: 'wx',
         });
         console.log(
             `Planned ${manifest.entries.length} entries in ${manifest.exports.length} branch exports`
@@ -275,24 +248,16 @@ const main = async () => {
                     });
                 }
             }
-            runNodeScript(
-                'scripts/sandbox/apply-curated-export.mjs',
-                [
-                    '--manifest',
-                    manifestPath,
-                    '--service-url',
-                    IMPORT_SERVICE_URL,
-                    '--sandbox',
-                    options.target,
-                    '--export-dir',
-                    exportDirectory,
-                ],
-                { env: { ...getLocalProcessEnvironment(), ENONIC_AUTH: targetAuth } }
-            );
+            await applyCuratedImport({
+                manifest,
+                exportDirectory,
+                sandbox: options.target,
+                auth: targetAuth,
+            });
             assertLocalTargetProcess(options.target);
             console.log('Uploading project icons');
             await uploadProjectIcons({
-                targetServiceUrl: IMPORT_SERVICE_URL,
+                targetServiceUrl: LOCAL_IMPORT_SERVICE_URL,
                 icons: projectIcons,
                 auth: targetAuth,
             });

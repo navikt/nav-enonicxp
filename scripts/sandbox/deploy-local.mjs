@@ -10,8 +10,8 @@ import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
-import { assertEnonicCliAvailable, assertSandboxName } from './lib/local-xp-target.mjs';
-import { setPropertiesEntry } from './lib/sandbox-files.mjs';
+import { setPropertiesEntry } from './lib/common.mjs';
+import { assertEnonicCliAvailable, assertSandboxName } from './lib/target.mjs';
 
 const HELP_FLAGS = new Set(['--help', '-h']);
 

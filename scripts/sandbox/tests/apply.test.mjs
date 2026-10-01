@@ -12,9 +12,15 @@ import {
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
-import { prepareCuratedImportFiles } from '../lib/import-files.mjs';
-import { batchCuratedExpectations, loadCuratedExpectations } from '../lib/import-expectations.mjs';
-import { getSourcePublishedEntries, importCuratedBundle } from '../apply-curated-export.mjs';
+import {
+    batchCuratedExpectations,
+    getSourcePublishedEntries,
+    importCuratedBundle,
+    isDeferredRelocationError,
+    labelCuratedProjects,
+    loadCuratedExpectations,
+    prepareCuratedImportFiles,
+} from '../lib/apply.mjs';
 
 const fixture = (t) => {
     const directory = mkdtempSync(join(tmpdir(), 'curated-import-files-'));
@@ -300,4 +306,45 @@ test('fails before target mutations on stale expectations and cleans up after re
     );
     assert.ok(!existsSync(join(f.targetDirectory, 'bundle')));
     assert.ok(existsSync(f.metadataPath));
+});
+
+test('labels curated projects as a dated production subset', () => {
+    const projects = [
+        { id: 'default', displayName: 'nav.no (dev) - kopi prod 20. april' },
+        { id: 'navno-engelsk', displayName: 'nav.no engelsk' },
+    ];
+
+    assert.deepEqual(labelCuratedProjects(projects, '2026-08-14T12:44:11.501Z'), [
+        {
+            id: 'default',
+            displayName: 'nav.no (dev) - utvalg fra prod 20. april',
+        },
+        {
+            id: 'navno-engelsk',
+            displayName: 'nav.no engelsk',
+        },
+    ]);
+});
+
+test('preserves a production subset date from a local source', () => {
+    const projects = [{ id: 'default', displayName: 'nav.no (dev) - utvalg fra prod 20. april' }];
+
+    assert.equal(
+        labelCuratedProjects(projects, '2026-08-31T12:44:11.501Z')[0].displayName,
+        'nav.no (dev) - utvalg fra prod 20. april'
+    );
+});
+
+test('rejects an invalid manifest generation date', () => {
+    assert.throws(() => labelCuratedProjects([], 'invalid'), /Invalid manifest generation date/);
+});
+
+test('accepts duplicate-id errors only for explicitly deferred content', () => {
+    const error = 'Could not import node: Node deferred-id already exists - NodeIdExistsException';
+    assert.equal(isDeferredRelocationError(error, ['deferred-id']), true);
+    assert.equal(isDeferredRelocationError(error, ['different-id']), false);
+    assert.equal(
+        isDeferredRelocationError('Could not import node: invalid data', ['deferred-id']),
+        false
+    );
 });

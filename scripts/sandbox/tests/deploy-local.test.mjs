@@ -3,9 +3,9 @@ import { spawnSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { fileURLToPath, URL } from 'node:url';
 import process from 'node:process';
 import test from 'node:test';
+import { fileURLToPath, URL } from 'node:url';
 import {
     deployLocalApplication,
     enableCuratedImport,

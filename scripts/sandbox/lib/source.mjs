@@ -1,13 +1,130 @@
-import { readFileSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
+import { homedir } from 'node:os';
+import { dirname, join } from 'node:path';
 import {
     CONTENT_ROOT_PATH,
-    REQUIRED_PROJECTS,
+    CURATED_BRANCHES,
+    CURATED_REPOSITORIES,
+    fetchXp,
+    getXpSessionCookie,
     isCuratedContentPath,
+    isCuratedId,
     isSafeName,
-} from './curated-constants.mjs';
-import { getXpSessionCookie } from './xp-auth.mjs';
-import { fetchXp } from './xp-http.mjs';
+    LOOPBACK_HOSTS,
+    PROJECT_REPOSITORIES,
+    readRunningSandbox,
+    readSandboxXpVersion,
+    REQUIRED_PROJECTS,
+} from './common.mjs';
+
+const DEPLOYED_SOURCES = {
+    prod: 'https://portal-admin.oera.no',
+    dev1: 'https://portal-admin-dev.oera.no',
+    dev2: 'https://portal-admin-q6.oera.no',
+};
+
+const SERVICE_PATH = '/_/service/no.nav.navno/curatedExportManifest';
+const SOURCE_SERVICE_PATH = '/_/service/no.nav.navno/curatedExportSource';
+const DEPLOYED_SOURCE_BY_HOST = {
+    'www.nav.no': 'prod',
+    'nav.no': 'prod',
+    'portal-admin.oera.no': 'prod',
+    'portal-admin-dev.oera.no': 'dev1',
+    'portal-admin-q6.oera.no': 'dev2',
+};
+
+const createDeployedSource = (name, origin) => ({
+    kind: 'deployed',
+    name,
+    origin,
+    serviceUrl: `${origin}${SERVICE_PATH}`,
+    sourceServiceUrl: `${origin}${SOURCE_SERVICE_PATH}`,
+});
+
+export const resolveCuratedSource = (
+    source,
+    { homeDirectory = homedir(), runningSandbox = readRunningSandbox(homeDirectory) } = {}
+) => {
+    const deployedOrigin = DEPLOYED_SOURCES[source];
+    if (deployedOrigin) {
+        return createDeployedSource(source, deployedOrigin);
+    }
+
+    if (/^https?:\/\//.test(source)) {
+        const url = new URL(source);
+        if (url.username || url.password) {
+            throw new Error('--source URLs must not contain credentials');
+        }
+        if ((url.pathname && url.pathname !== '/') || url.search || url.hash) {
+            throw new Error('--source URL must contain only the XP origin');
+        }
+        return createDeployedSource(source, url.origin);
+    }
+
+    if (!/^[a-zA-Z0-9._-]+$/.test(source)) {
+        throw new Error(`Unsupported source sandbox name: ${source}`);
+    }
+
+    const sandboxPath = join(homeDirectory, '.enonic', 'sandboxes', source);
+    if (!existsSync(join(sandboxPath, '.enonic'))) {
+        throw new Error(`Source is neither a known environment nor a local sandbox: ${source}`);
+    }
+    if (runningSandbox !== source) {
+        throw new Error(
+            `Start source sandbox ${source}; currently running: ${runningSandbox ?? 'none'}`
+        );
+    }
+
+    return {
+        kind: 'local',
+        name: source,
+        origin: 'http://localhost:8080',
+        serviceUrl: `http://localhost:8080${SERVICE_PATH}`,
+        sourceServiceUrl: `http://localhost:8080${SOURCE_SERVICE_PATH}`,
+        sandboxPath,
+        ...readSandboxXpVersion(sandboxPath),
+    };
+};
+
+export const inferCuratedSourceFromPage = (value) => {
+    const url = new URL(value);
+    const deployedSource = DEPLOYED_SOURCE_BY_HOST[url.hostname];
+    if (deployedSource) {
+        return deployedSource;
+    }
+    if (parseContentStudioPageUrl(value) && !LOOPBACK_HOSTS.has(url.hostname)) {
+        return url.origin;
+    }
+    throw new Error(`Could not infer source from ${url.origin}; pass --source explicitly`);
+};
+
+export const parseContentStudioPageUrl = (value) => {
+    const url = new URL(value);
+    const match = url.pathname.match(
+        /^\/admin\/tool\/com\.enonic\.app\.contentstudio\/main\/([^/]+)\/edit\/([a-zA-Z0-9-]+)\/?$/
+    );
+    if (!match) {
+        return null;
+    }
+
+    const project = decodeURIComponent(match[1]);
+    const repository = PROJECT_REPOSITORIES[project];
+    if (!repository) {
+        throw new Error(`Unsupported Content Studio project: ${project}`);
+    }
+    return { repository, branch: 'draft', contentId: match[2] };
+};
+
+export const resolveCuratedPage = ({ page }) => {
+    const contentStudioPage = parseContentStudioPageUrl(page);
+    if (contentStudioPage) {
+        return contentStudioPage;
+    }
+    if (!['http:', 'https:'].includes(new URL(page).protocol)) {
+        throw new Error('Page URLs must use HTTP or HTTPS');
+    }
+    return page;
+};
 
 const MANIFEST_REQUEST_TIMEOUT_MS = 5 * 60 * 1000;
 
@@ -85,6 +202,25 @@ const createNativeExports = (bundle, entries) => {
     });
 };
 
+const assertUniqueTargets = (entries) => {
+    const identities = new Set();
+    const paths = new Set();
+    entries.forEach((entry) => {
+        const identity = `${entry.repoId}:${entry.contentId}`;
+        if (identities.has(identity)) {
+            throw new Error('Manifest contains duplicate target identities or paths');
+        }
+        identities.add(identity);
+        entry.branches.forEach((branch) => {
+            const path = `${entry.repoId}:${branch}:${entry.paths[branch]}`;
+            if (paths.has(path)) {
+                throw new Error('Manifest contains duplicate target identities or paths');
+            }
+            paths.add(path);
+        });
+    });
+};
+
 const validateManifest = (manifest) => {
     if (manifest.unresolvedPaths.length > 0) {
         throw new Error(`Manifest has ${manifest.unresolvedPaths.length} unresolved paths`);
@@ -110,7 +246,17 @@ const validateManifest = (manifest) => {
         throw new Error(`Manifest has unexpected project topology: ${JSON.stringify(projects)}`);
     }
 
+    if (!Array.isArray(manifest.entries) || manifest.entries.length === 0) {
+        throw new Error('Manifest contains no entries');
+    }
     manifest.entries.forEach((entry) => {
+        if (
+            !entry ||
+            !CURATED_REPOSITORIES.includes(entry.repoId) ||
+            !isCuratedId(entry.contentId)
+        ) {
+            throw new Error(`Manifest entry ${entry?.repoId}:${entry?.contentId} is invalid`);
+        }
         const validBranches =
             JSON.stringify(entry.branches) === JSON.stringify(['draft', 'master']) ||
             JSON.stringify(entry.branches) === JSON.stringify(['draft']) ||
@@ -129,7 +275,24 @@ const validateManifest = (manifest) => {
                 `Manifest entry ${entry.repoId}:${entry.contentId} has invalid branch paths`
             );
         }
+        if (entry.branches.some((branch) => !isCuratedId(entry.versions?.[branch]))) {
+            throw new Error(
+                `Manifest entry ${entry.repoId}:${entry.contentId} is not version-pinned`
+            );
+        }
     });
+    assertUniqueTargets(manifest.entries);
+};
+
+// A full import replaces every curated repository branch, so each one needs an export.
+const assertFullScopeCoverage = (nativeExports) => {
+    const actualKeys = nativeExports.map(({ repoId, sourceBranch }) => `${repoId}:${sourceBranch}`);
+    const missingKeys = CURATED_REPOSITORIES.flatMap((repoId) =>
+        CURATED_BRANCHES.map((branch) => `${repoId}:${branch}`)
+    ).filter((key) => !actualKeys.includes(key));
+    if (missingKeys.length > 0) {
+        throw new Error(`Manifest has no entries for ${missingKeys.join(', ')}`);
+    }
 };
 
 const postJson = async (url, body, headers = {}, timeoutMs = MANIFEST_REQUEST_TIMEOUT_MS) => {
@@ -211,9 +374,9 @@ export const createCuratedPlan = async ({
     if (manifest.includeDrafts !== includeDrafts) {
         throw new Error('Manifest service returned a different draft selection');
     }
-    return {
-        ...manifest,
-        bundle,
-        exports: createNativeExports(bundle, manifest.entries),
-    };
+    const nativeExports = createNativeExports(bundle, manifest.entries);
+    if (scope === 'full') {
+        assertFullScopeCoverage(nativeExports);
+    }
+    return { ...manifest, bundle, exports: nativeExports };
 };
