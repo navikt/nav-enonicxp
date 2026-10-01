@@ -190,11 +190,6 @@ const main = async () => {
         console.log(
             `Planned ${manifest.entries.length} entries in ${manifest.exports.length} branch exports`
         );
-        if (manifest.excludedDependencies.length > 0) {
-            console.warn(
-                `Excluded broad container dependencies: ${manifest.excludedDependencies.length}`
-            );
-        }
         if (targetExists) {
             // Fail before downloading anything if the target cannot run the source version.
             assertSandboxXpVersion(targetPath, options.target, manifest.xpVersion);

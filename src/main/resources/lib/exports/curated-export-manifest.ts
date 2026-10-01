@@ -86,7 +86,6 @@ export type CuratedExportManifest = {
     }>;
     projects: Project[];
     entries: CuratedExportEntry[];
-    excludedDependencies: CuratedExportEntry[];
     unresolvedPaths: string[];
     missingContentTypes: string[];
 };
@@ -117,6 +116,10 @@ const getEntry = (
     const repoId = getLayersData().localeToRepoIdMap[locale];
     if (!repoId) {
         throw new Error(`No content repository found for locale "${locale}"`);
+    }
+    // Layers outside the curated project set (e.g. a newly added layer) are out of scope.
+    if (!isCuratedRepository(repoId)) {
+        return null;
     }
 
     const paths: CuratedExportEntry['paths'] = {};
@@ -294,7 +297,8 @@ const findTypeRepresentative = (contentType: ContentDescriptor): CuratedExportEn
         state: 'localized',
         resolveContent: true,
         queryParams: {
-            count: 1,
+            // The query spans every layer, so leave room for hits in non-curated layers.
+            count: 50,
             query: `_path LIKE "/content/www.nav.no/*"${EXCLUDED_ROOT_PATHS.map(
                 (path) => ` AND NOT _path LIKE "/content${path}*"`
             ).join('')}`,
@@ -313,8 +317,8 @@ const findTypeRepresentative = (contentType: ContentDescriptor): CuratedExportEn
     });
     const { repoIdToLocaleMap } = getLayersData();
 
-    for (const [repoId, contents] of Object.entries(contentByRepoId)) {
-        const content = contents[0];
+    for (const repoId of CURATED_REPOSITORIES) {
+        const content = contentByRepoId[repoId]?.[0];
         const locale = repoIdToLocaleMap[repoId];
         if (content && locale) {
             return getEntry(content, locale, 'type-coverage');
@@ -573,7 +577,6 @@ export const createCuratedExportManifest = (
         applications,
         projects,
         entries,
-        excludedDependencies: [],
         unresolvedPaths,
         missingContentTypes,
     };

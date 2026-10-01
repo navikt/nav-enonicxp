@@ -29,11 +29,13 @@ jest.mock('@navno-app/lib/localization/layers-data', () => ({
             no: 'com.enonic.cms.default',
             en: 'com.enonic.cms.navno-engelsk',
             nn: 'com.enonic.cms.navno-nynorsk',
+            se: 'com.enonic.cms.navno-samisk',
         },
         repoIdToLocaleMap: {
             'com.enonic.cms.default': 'no',
             'com.enonic.cms.navno-engelsk': 'en',
             'com.enonic.cms.navno-nynorsk': 'nn',
+            'com.enonic.cms.navno-samisk': 'se',
         },
     }),
 }));
@@ -390,6 +392,37 @@ test('does not use unselected descendants as content-type representatives', () =
         })
     );
     expect(manifest.missingContentTypes).toEqual([]);
+});
+
+test('ignores content in layers outside the curated project set', () => {
+    (Object.keys(repositories) as Array<keyof typeof repositories>).forEach((locale) =>
+        addNode(`page-${locale}`, '/www.nav.no/page', { locale })
+    );
+    const samiskContent = {
+        _id: 'samisk-page',
+        _path: '/www.nav.no/se',
+        type: 'no.nav.navno:main-article',
+    } as Content;
+    jest.mocked(findTargetContentAndLocale).mockImplementation(({ path }) =>
+        path === '/www.nav.no/se' ? { content: samiskContent, locale: 'se' } : null
+    );
+    jest.mocked(queryAllLayersToRepoIdBuckets).mockReturnValue({
+        'com.enonic.cms.navno-samisk': [samiskContent],
+        [repositories.en]: [toContent(getNode(repositories.en, 'master', 'page-en')!)],
+    });
+
+    const manifest = createCuratedExportManifest(['/www.nav.no/se'], 'full', {
+        seeds: (Object.keys(repositories) as Array<keyof typeof repositories>).map((locale) => ({
+            repository: repositories[locale],
+            branch: 'master',
+            contentId: `page-${locale}`,
+        })),
+    });
+
+    expect(manifest.entries.map(({ repoId }) => repoId)).not.toContain(
+        'com.enonic.cms.navno-samisk'
+    );
+    expect(manifest.unresolvedPaths).not.toContain('/www.nav.no/se');
 });
 
 test('enumerates recursive editorial descendants as actual entries', () => {

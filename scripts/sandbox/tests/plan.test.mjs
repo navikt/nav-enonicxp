@@ -4,13 +4,9 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import { clearInterval, setInterval } from 'node:timers';
+import { REQUIRED_PROJECTS as projects } from '../lib/curated-constants.mjs';
 import { createCuratedPlan } from '../lib/plan.mjs';
 
-const projects = [
-    { id: 'default', language: 'no', parents: [] },
-    { id: 'navno-engelsk', language: 'en', parents: ['default'] },
-    { id: 'navno-nynorsk', language: 'nn', parents: ['default'] },
-];
 const fixture = (t, scope = 'full') => {
     const requests = [];
     const body = {
@@ -20,7 +16,6 @@ const fixture = (t, scope = 'full') => {
         applications: [],
         unresolvedPaths: [],
         missingContentTypes: [],
-        excludedDependencies: [],
         entries: projects.map(({ id, language }) => ({
             repoId: `com.enonic.cms.${id}`,
             locale: language,
@@ -50,11 +45,14 @@ const fixture = (t, scope = 'full') => {
     };
 };
 
-test('plans all six branches without extraction or target requests', async (t) => {
+test('plans both branches of every project without extraction or target requests', async (t) => {
     const f = fixture(t);
     const plan = await createCuratedPlan({ ...f.options, paths: ['/arbeid'] });
-    assert.equal(plan.exports.length, 6);
-    assert.equal(new Set(plan.exports.map(({ exportName }) => exportName)).size, 6);
+    assert.equal(plan.exports.length, projects.length * 2);
+    assert.equal(
+        new Set(plan.exports.map(({ exportName }) => exportName)).size,
+        projects.length * 2
+    );
     assert.deepEqual(plan.entries, f.body.entries);
     assert.equal(f.requests.length, 2);
     assert.equal(f.requests[1].url, f.options.serviceUrl);
