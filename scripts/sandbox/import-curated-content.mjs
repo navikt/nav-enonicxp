@@ -3,7 +3,7 @@
 import { spawnSync } from 'node:child_process';
 import console from 'node:console';
 import { existsSync, writeFileSync } from 'node:fs';
-import { homedir } from 'node:os';
+import { constants, homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
@@ -22,7 +22,7 @@ import {
 import { createCuratedPlan } from './lib/plan.mjs';
 import { downloadProjectIcons, uploadProjectIcons } from './lib/project-icons.mjs';
 import { extractCuratedSource } from './lib/source-extractor.mjs';
-import { withCuratedWorkspace } from './lib/workspace.mjs';
+import { SIGNAL_EXIT_CODES, withCuratedWorkspace } from './lib/workspace.mjs';
 import {
     assertEnonicCliAvailable,
     assertLocalTargetConfiguration,
@@ -77,6 +77,14 @@ export const runNodeScript = (script, args, { cwd, env = process.env } = {}) => 
         encoding: 'utf8',
         stdio: 'inherit',
     });
+    const signal =
+        result.signal ??
+        Object.keys(SIGNAL_EXIT_CODES).find((name) => SIGNAL_EXIT_CODES[name] === result.status);
+    if (signal) {
+        throw Object.assign(new Error(`${script} was interrupted (${signal})`), {
+            exitCode: SIGNAL_EXIT_CODES[signal] ?? 128 + constants.signals[signal],
+        });
+    }
     if (result.status !== 0) {
         throw new Error(`${script} failed`);
     }
@@ -308,6 +316,6 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
         for (let cause = error?.cause; cause; cause = cause.cause) {
             console.error(`  Caused by: ${cause instanceof Error ? cause.message : cause}`);
         }
-        process.exitCode = 1;
+        process.exitCode = error?.exitCode ?? 1;
     });
 }

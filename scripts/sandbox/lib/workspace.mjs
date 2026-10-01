@@ -3,6 +3,9 @@ import { join, resolve } from 'node:path';
 import process from 'node:process';
 import { isSafeName } from './curated-constants.mjs';
 
+// Exit codes follow the 128 + signal number convention, so callers can tell interrupts from failures.
+export const SIGNAL_EXIT_CODES = { SIGINT: 130, SIGTERM: 143, SIGHUP: 129 };
+
 export const assertCuratedBundleName = (bundle) => {
     if (!isSafeName(bundle)) {
         throw new Error('Bundle must be a safe directory name');
@@ -47,8 +50,7 @@ export const withCuratedWorkspace = async (
             rmSync(directory, { recursive: true, force: true });
         }
     };
-    const signals = { SIGINT: 130, SIGTERM: 143, SIGHUP: 129 };
-    const handlers = Object.entries(signals).map(([signal, code]) => {
+    const handlers = Object.entries(SIGNAL_EXIT_CODES).map(([signal, code]) => {
         const handler = () => lifecycle.exit(code);
         lifecycle.on(signal, handler);
         return [signal, handler];

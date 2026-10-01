@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { isDeferredRelocationError } from '../apply-curated-export.mjs';
-import { getImportOptions } from '../import-curated-content.mjs';
+import { getImportOptions, runNodeScript } from '../import-curated-content.mjs';
 
 test('full import and refresh require an explicit target even if one is running', () => {
     for (const flags of [[], ['--force']]) {
@@ -123,6 +123,26 @@ test('rejects local input mistakes before checking the CLI or prompting', (t) =>
     });
     assert.equal(result.status, 1);
     assert.match(result.stderr, /Target sandbox local already exists; pass --force/);
+});
+
+test('reports an interrupted child script with the signal exit code', (t) => {
+    const directory = mkdtempSync(join(tmpdir(), 'curated-import-interrupt-'));
+    t.after(() => rmSync(directory, { recursive: true, force: true }));
+    const cases = [
+        ['handled.mjs', 'process.exit(130);', 'SIGINT', 130],
+        ['killed.mjs', "process.kill(process.pid, 'SIGTERM');", 'SIGTERM', 143],
+        ['failed.mjs', 'process.exit(1);', null, undefined],
+    ];
+    for (const [name, source, signal, exitCode] of cases) {
+        const script = join(directory, name);
+        writeFileSync(script, `${source}\n`);
+        assert.throws(
+            () => runNodeScript(script, []),
+            (error) =>
+                error.exitCode === exitCode &&
+                error.message.endsWith(signal ? `was interrupted (${signal})` : 'failed')
+        );
+    }
 });
 
 test('streams import progress before the child script finishes', async (t) => {

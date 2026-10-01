@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { promptForAuth } from './lib/xp-auth.mjs';
 import { directLocalFetch } from './lib/xp-http.mjs';
 import { prepareCuratedImportFiles } from './lib/import-files.mjs';
+import { SIGNAL_EXIT_CODES } from './lib/workspace.mjs';
 import { batchCuratedExpectations, loadCuratedExpectations } from './lib/import-expectations.mjs';
 import {
     assertLocalTargetProcess,
@@ -365,8 +366,8 @@ const main = async () => {
     });
     // Signals skip finally blocks, so remove staged exports from the sandbox on exit as well.
     process.once('exit', files.cleanup);
-    ['SIGINT', 'SIGTERM', 'SIGHUP'].forEach((signal) =>
-        process.once(signal, () => process.exit(1))
+    Object.entries(SIGNAL_EXIT_CODES).forEach(([signal, code]) =>
+        process.once(signal, () => process.exit(code))
     );
     await importCuratedBundle({
         manifest,
