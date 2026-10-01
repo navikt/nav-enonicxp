@@ -37,14 +37,6 @@ jest.mock('@navno-app/services/curatedExportSource/curatedExportSource', () => (
     get: jest.fn(() => ({ status: 200, body: 'node' })),
     post: jest.fn(() => ({ status: 200, body: 'batch' })),
 }));
-jest.mock('/lib/xp/auth', () => ({ getUser: jest.fn(), hasRole: jest.fn() }), {
-    virtual: true,
-});
-jest.mock(
-    '/lib/xp/context',
-    () => ({ run: jest.fn((_context: unknown, callback: () => unknown) => callback()) }),
-    { virtual: true }
-);
 
 import * as authLib from '/lib/xp/auth';
 import * as contextLib from '/lib/xp/context';
@@ -121,6 +113,8 @@ describe('curated export access', () => {
         nodes.clear();
         jest.mocked(authLib.getUser).mockReturnValue(ADMIN as never);
         jest.mocked(authLib.hasRole).mockImplementation((role) => role === 'role:system.admin');
+        // mock-xp only knows its own users, so run the callback directly.
+        jest.mocked(contextLib.run).mockImplementation((_context, callback) => callback());
     });
 
     afterEach(() => {
