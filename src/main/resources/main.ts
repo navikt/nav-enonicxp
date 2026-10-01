@@ -39,7 +39,11 @@ if (clusterLib.isMaster()) {
 const curatedImportInProgress =
     app.config.env === 'localhost' && app.config.curatedImportInProgress === 'true';
 
-if (!curatedImportInProgress) {
+if (curatedImportInProgress) {
+    log.warning(
+        'Curated import mode is active: content event listeners and schedules are disabled. Remove curatedImportInProgress from no.nav.navno.cfg if no import is running.'
+    );
+} else {
     if (app.config.env !== 'test') {
         createOfficeImportSchedule();
         activateSitemapDataUpdateEventListener();

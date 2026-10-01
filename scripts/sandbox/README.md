@@ -20,6 +20,8 @@ pnpm sandbox:import --source prod --target navno
 
 Kommandoen spør etter kildebruker/passord og et nytt lokalt `su`-passord. Den planlegger utvalget, laster ned innholdet, oppretter sandboxen med samme XP-versjon som kilden og importerer `draft` og `master` for Bokmål, engelsk og nynorsk. Den installerer også de samme applikasjonene og versjonene som kjører i kilden, blant annet Content Studio. Hvis en versjon ikke kan installeres, brukes nyeste patch-versjon med samme minor-versjon, og importen viser en advarsel. Content Studio og apper som eier innholdstyper i utvalget, må installeres. Andre apper hoppes over med en advarsel hvis ingen versjon kan installeres. Manifest og nedlastinger lagres i en egen kjøringsmappe under `.curated` og slettes når kommandoen avslutter, også ved feil.
 
+Hvis oppsettet av en ny sandbox feiler, beholdes `su`-passordet. Kjør kommandoen på nytt med `--force` og samme passord, eller slett sandboxen med `enonic sandbox delete navno`.
+
 ## Oppdatere importtjenesten
 
 Importtjenesten bygges når sandboxen opprettes. Hvis du senere endrer kode i importtjenesten eller annen lokal kuratert-importlogikk, deployer du den oppdaterte applikasjonen med:

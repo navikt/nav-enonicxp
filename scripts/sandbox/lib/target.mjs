@@ -207,16 +207,6 @@ export const waitForManagementApi = (runCommand = execFileSync) => {
     );
 };
 
-const setSuPassword = (systemPropertiesPath, password) => {
-    setPropertiesEntry(systemPropertiesPath, 'xp.suPassword', encodePropertyValue(password), {
-        mode: 0o600,
-    });
-};
-
-export const removeTemporarySuPassword = (sandboxPath) => {
-    setPropertiesEntry(join(sandboxPath, 'home/config/system.properties'), 'xp.suPassword', null);
-};
-
 export const setCuratedImportMode = (sandboxPath, enabled) => {
     assertLocalTargetConfiguration(sandboxPath);
     setPropertiesEntry(
@@ -271,7 +261,13 @@ export const prepareCuratedTarget = ({
         join(configDirectory, 'com.enonic.xp.app.standardidprovider.cfg'),
         'loginWithoutUser=false\n'
     );
-    setSuPassword(join(configDirectory, 'system.properties'), suPassword);
+    // The su password is the only login on a fresh sandbox, so it is kept for later imports.
+    setPropertiesEntry(
+        join(configDirectory, 'system.properties'),
+        'xp.suPassword',
+        encodePropertyValue(suPassword),
+        { mode: 0o600 }
+    );
 
     try {
         const { distro } = readSandboxXpVersion(sandboxPath);
@@ -313,9 +309,13 @@ export const prepareCuratedTarget = ({
             verifyTarget,
         });
     } catch (error) {
-        setCuratedImportMode(sandboxPath, false);
-        removeTemporarySuPassword(sandboxPath);
-        throw error;
+        if (existsSync(join(configDirectory, 'com.enonic.xp.cluster.cfg'))) {
+            setCuratedImportMode(sandboxPath, false);
+        }
+        throw new Error(
+            `Setting up new sandbox ${sandbox} failed. Retry with --force and the same SU password, or delete it with \`enonic sandbox delete ${sandbox}\``,
+            { cause: error }
+        );
     }
 
     return { created: true, sandboxPath };

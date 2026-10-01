@@ -9,7 +9,6 @@ import {
     findSameMinorVersion,
     installCuratedApplications,
     prepareCuratedTarget,
-    removeTemporarySuPassword,
     setCuratedImportMode,
     waitForManagementApi,
 } from '../lib/target.mjs';
@@ -337,12 +336,6 @@ test('creates and prepares a missing target sandbox', () => {
         'loginWithoutUser=false\n'
     );
     assert.equal(readFileSync(join(sandboxPath, 'home/deploy/navno.jar'), 'utf8'), 'app');
-
-    removeTemporarySuPassword(sandboxPath);
-    assert.equal(
-        readFileSync(join(sandboxPath, 'home/config/system.properties'), 'utf8'),
-        'existing.property=true\n'
-    );
 });
 
 test('rejects an existing target with a different XP version', () => {
@@ -372,7 +365,7 @@ test('rejects an existing target with a different XP version', () => {
     );
 });
 
-test('removes the temporary SU password when provisioning fails', () => {
+test('keeps the SU password and explains recovery when provisioning fails', () => {
     const root = mkdtempSync(join(tmpdir(), 'curated-target-'));
     const repositoryRoot = join(root, 'repository');
     const sandboxPath = join(root, '.enonic/sandboxes/target');
@@ -388,34 +381,36 @@ test('removes the temporary SU password when provisioning fails', () => {
         )
     );
 
-    assert.throws(() =>
-        prepareCuratedTarget({
-            sandbox: 'target',
-            xpVersion: '7.16.6',
-            appVersion: '2.3.4-test',
-            contentStudioVersion: '5.3.2',
-            suPassword: 'temporary-password',
-            repositoryRoot,
-            homeDirectory: root,
-            runCommand(_command, args) {
-                if (args[0] === 'sandbox' && args[1] === 'create') {
-                    writeFile(
-                        join(sandboxPath, '.enonic'),
-                        'distro = "enonic-xp-mac-arm64-sdk-7.16.6"\n'
-                    );
-                    writeFile(
-                        join(sandboxPath, 'home/config/system.properties'),
-                        'existing.property=true\n'
-                    );
-                    return;
-                }
-                throw new Error('build failed');
-            },
-        })
+    assert.throws(
+        () =>
+            prepareCuratedTarget({
+                sandbox: 'target',
+                xpVersion: '7.16.6',
+                appVersion: '2.3.4-test',
+                contentStudioVersion: '5.3.2',
+                suPassword: 'temporary-password',
+                repositoryRoot,
+                homeDirectory: root,
+                runCommand(_command, args) {
+                    if (args[0] === 'sandbox' && args[1] === 'create') {
+                        writeFile(
+                            join(sandboxPath, '.enonic'),
+                            'distro = "enonic-xp-mac-arm64-sdk-7.16.6"\n'
+                        );
+                        writeFile(
+                            join(sandboxPath, 'home/config/system.properties'),
+                            'existing.property=true\n'
+                        );
+                        return;
+                    }
+                    throw new Error('build failed');
+                },
+            }),
+        /Retry with --force and the same SU password, or delete it with `enonic sandbox delete target`/
     );
     assert.equal(
         readFileSync(join(sandboxPath, 'home/config/system.properties'), 'utf8'),
-        'existing.property=true\n'
+        'existing.property=true\nxp.suPassword=temporary-password\n'
     );
     assert.doesNotMatch(
         readFileSync(join(sandboxPath, 'home/config/no.nav.navno.cfg'), 'utf8'),

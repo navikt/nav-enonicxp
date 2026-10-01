@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { readFileSync } from 'node:fs';
+import process from 'node:process';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promptForAuth } from './lib/xp-auth.mjs';
@@ -362,6 +363,11 @@ const main = async () => {
         targetDirectory: join(sandboxPath, 'home/data/export'),
         verifyTarget: () => assertLocalTargetProcess(options.sandbox),
     });
+    // Signals skip finally blocks, so remove staged exports from the sandbox on exit as well.
+    process.once('exit', files.cleanup);
+    ['SIGINT', 'SIGTERM', 'SIGHUP'].forEach((signal) =>
+        process.once(signal, () => process.exit(1))
+    );
     await importCuratedBundle({
         manifest,
         nativeExports,
