@@ -3,6 +3,7 @@ import { Request } from '@enonic-types/core';
 const mockRender = jest.fn((_view, model) => JSON.stringify(model));
 const mockUserIsAdmin = jest.fn();
 const mockManageScheduledJobs = jest.fn();
+const mockHandleCuratedExportRequest = jest.fn();
 
 jest.mock(
     '/lib/thymeleaf',
@@ -49,6 +50,9 @@ jest.mock('@navno-app/lib/archiving/archive-old-news', () => ({ archiveOldNews: 
 jest.mock('@navno-app/lib/scheduling/manage-scheduled-jobs', () => ({
     manageScheduledJobs: mockManageScheduledJobs,
 }));
+jest.mock('@navno-app/lib/exports/curated-export-access', () => ({
+    handleCuratedExportRequest: mockHandleCuratedExportRequest,
+}));
 
 type PostHandler = typeof import('@navno-app/webapp/webapp').post;
 
@@ -63,6 +67,7 @@ beforeAll(async () => {
 
 beforeEach(() => {
     mockUserIsAdmin.mockReturnValue(true);
+    mockHandleCuratedExportRequest.mockReturnValue(null);
     mockManageScheduledJobs.mockReturnValue({
         selectedJobs: [],
         missingJobNames: [],
@@ -128,5 +133,15 @@ describe('Webapp scheduler cleanup', () => {
                 schedulerMessage: 'Slettet scheduler-jobber: legacy_office_import_schedule',
             })
         );
+    });
+});
+
+describe('Webapp curated export routes', () => {
+    test('are handled before the session admin check, since they use their own token', () => {
+        mockUserIsAdmin.mockReturnValue(false);
+        mockHandleCuratedExportRequest.mockReturnValue({ status: 401 });
+
+        expect(post(request())).toEqual({ status: 401 });
+        expect(mockManageScheduledJobs).not.toHaveBeenCalled();
     });
 });

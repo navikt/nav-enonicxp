@@ -19,6 +19,7 @@ import {
     withCuratedWorkspace,
 } from './lib/common.mjs';
 import {
+    authorizeDeployedSource,
     createCuratedPlan,
     inferCuratedSourceFromPage,
     resolveCuratedPage,
@@ -124,8 +125,10 @@ const main = async () => {
     ) {
         throw new Error('Source and target sandbox must be different');
     }
+    const sourceIsDeployed = source.kind === 'deployed';
     // Show where the credentials go, since --page may infer the source host from a pasted URL.
-    const sourceAuth = promptForAuth(`Source (${source.origin})`);
+    // Deployed sources are approved in the browser instead.
+    let sourceAuth = sourceIsDeployed ? null : promptForAuth(`Source (${source.origin})`);
     const targetIsRunning = getRunningSandbox() === options.target;
     const targetAuth = targetExists
         ? targetIsRunning
@@ -135,11 +138,17 @@ const main = async () => {
     if (!targetExists && !targetAuth.startsWith('su:')) {
         throw new Error('A new target sandbox must use the built-in su user');
     }
-    parseAuth(sourceAuth, 'Source');
+    if (!sourceIsDeployed) {
+        parseAuth(sourceAuth, 'Source');
+    }
     parseAuth(targetAuth, 'Target');
     console.log('Verifying source and target credentials');
     try {
-        await getXpSessionCookie(source.sourceServiceUrl, sourceAuth);
+        if (sourceIsDeployed) {
+            sourceAuth = await authorizeDeployedSource(source);
+        } else {
+            await getXpSessionCookie(source.sourceServiceUrl, sourceAuth);
+        }
     } catch (error) {
         throw new Error('Source authentication failed', { cause: error });
     }
@@ -191,13 +200,18 @@ const main = async () => {
                 'Manifest must contain the XP version and started, versioned NAV and Content Studio apps'
             );
         }
-        const projectIcons = options.page
-            ? []
-            : await downloadProjectIcons({
-                  sourceServiceUrl: source.sourceServiceUrl,
-                  projects: manifest.projects,
-                  auth: sourceAuth,
-              });
+        if (sourceIsDeployed && !options.page) {
+            // Icons come from Content Studio's admin API, which the export token cannot reach.
+            console.log('Skipping project icons from deployed sources');
+        }
+        const projectIcons =
+            options.page || sourceIsDeployed
+                ? []
+                : await downloadProjectIcons({
+                      sourceServiceUrl: source.sourceServiceUrl,
+                      projects: manifest.projects,
+                      auth: sourceAuth,
+                  });
 
         console.log(`Downloading content from ${source.name}`);
         const extraction = await extractCuratedSource({

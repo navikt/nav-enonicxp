@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import { clearInterval, setInterval } from 'node:timers';
 import {
+    authorizeDeployedSource,
     createCuratedPlan,
     inferCuratedSourceFromPage,
     parseContentStudioPageUrl,
@@ -22,13 +24,84 @@ test('resolves deployed source profiles', () => {
 test('resolves an explicit XP origin', () => {
     const source = resolveCuratedSource('https://xp.example.no/');
     assert.equal(source.origin, 'https://xp.example.no');
-    assert.equal(
-        source.serviceUrl,
-        'https://xp.example.no/_/service/no.nav.navno/curatedExportManifest'
+    const base = 'https://xp.example.no/webapp/no.nav.navno/curated-export';
+    assert.equal(source.serviceUrl, `${base}/manifest`);
+    assert.equal(source.sourceServiceUrl, `${base}/source`);
+    assert.equal(source.authorizeUrl, `${base}/authorize`);
+    assert.equal(source.tokenUrl, `${base}/token`);
+});
+
+test('gets a deployed source token through browser approval with PKCE', async () => {
+    const source = resolveCuratedSource('dev2');
+    const browserResults = [];
+    let browser;
+    const auth = await authorizeDeployedSource(source, {
+        log: () => {},
+        openBrowser: (href) => {
+            browser = simulateBrowser(href);
+        },
+        fetchImpl: async (url, options) => {
+            assert.equal(url, source.tokenUrl);
+            const { code, verifier } = JSON.parse(options.body);
+            assert.equal(code, 'a'.repeat(64));
+            assert.match(verifier, /^[A-Za-z0-9_-]{43}$/);
+            return Response.json({ token: 'b'.repeat(64) });
+        },
+    });
+    await browser;
+    // The forged state is ignored, and the handoff completes on the real redirect.
+    assert.deepEqual(browserResults, [400, 200]);
+    assert.deepEqual(auth, { token: 'b'.repeat(64) });
+
+    async function simulateBrowser(href) {
+        const url = new URL(href);
+        assert.equal(url.origin + url.pathname, source.authorizeUrl);
+        const callback = new URL(`http://127.0.0.1:${url.searchParams.get('port')}/callback`);
+        callback.searchParams.set('code', 'a'.repeat(64));
+        callback.searchParams.set('state', 'forged-state');
+        browserResults.push((await fetch(callback)).status);
+        callback.searchParams.set('state', url.searchParams.get('state'));
+        browserResults.push((await fetch(callback)).status);
+    }
+});
+
+test('sends the challenge for the verifier that is later exchanged', async () => {
+    let challenge;
+    await authorizeDeployedSource(resolveCuratedSource('dev2'), {
+        log: () => {},
+        openBrowser: async (href) => {
+            const url = new URL(href);
+            challenge = url.searchParams.get('challenge');
+            await fetch(
+                `http://127.0.0.1:${url.searchParams.get('port')}/callback?code=${'c'.repeat(64)}&state=${url.searchParams.get('state')}`
+            );
+        },
+        fetchImpl: async (_url, options) => {
+            const { verifier } = JSON.parse(options.body);
+            assert.equal(createHash('sha256').update(verifier).digest('hex'), challenge);
+            return Response.json({ token: 'd'.repeat(64) });
+        },
+    });
+});
+
+test('fails when browser approval times out or the token exchange is rejected', async () => {
+    const source = resolveCuratedSource('dev2');
+    await assert.rejects(
+        authorizeDeployedSource(source, { log: () => {}, openBrowser: () => {}, timeoutMs: 20 }),
+        /Timed out waiting for approval/
     );
-    assert.equal(
-        source.sourceServiceUrl,
-        'https://xp.example.no/_/service/no.nav.navno/curatedExportSource'
+    await assert.rejects(
+        authorizeDeployedSource(source, {
+            log: () => {},
+            openBrowser: async (href) => {
+                const url = new URL(href);
+                await fetch(
+                    `http://127.0.0.1:${url.searchParams.get('port')}/callback?code=${'e'.repeat(64)}&state=${url.searchParams.get('state')}`
+                );
+            },
+            fetchImpl: async () => Response.json({ message: 'Invalid' }, { status: 401 }),
+        }),
+        /Token exchange with https:\/\/portal-admin-q6.oera.no failed \(HTTP 401\)/
     );
 });
 
@@ -154,6 +227,14 @@ const fixture = (t, scope = 'full', includeDrafts = false) => {
         },
     };
 };
+
+test('plans a deployed source with its token instead of a password login', async (t) => {
+    const f = fixture(t);
+    await createCuratedPlan({ ...f.options, auth: { token: 'f'.repeat(64) }, paths: ['/arbeid'] });
+    assert.equal(f.requests.length, 1);
+    assert.equal(f.requests[0].headers['X-Curated-Export-Token'], 'f'.repeat(64));
+    assert.equal(f.requests[0].headers.Cookie, undefined);
+});
 
 test('plans both branches of every project without extraction or target requests', async (t) => {
     const f = fixture(t);

@@ -403,9 +403,9 @@ test('allows injected metadata, binary, and session transports without reaching 
     let sessionRequests = 0;
     const result = await extractCuratedSource({
         ...options(root, [source]),
-        getSessionCookie: async () => {
+        getAuthHeaders: async () => {
             sessionRequests += 1;
-            return 'session=injected';
+            return { Cookie: 'session=injected' };
         },
         fetchImpl: async (input, request) => {
             requests.push({ url: new URL(input), request });

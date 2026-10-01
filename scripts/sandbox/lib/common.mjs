@@ -158,6 +158,14 @@ export const getXpSessionCookie = async (serviceUrl, auth) => {
         .join('; ');
 };
 
+export const CURATED_EXPORT_TOKEN_HEADER = 'X-Curated-Export-Token';
+
+// Local sources log in with a password; deployed sources use a token approved in the browser.
+export const getSourceAuthHeaders = async (serviceUrl, auth) =>
+    typeof auth?.token === 'string'
+        ? { [CURATED_EXPORT_TOKEN_HEADER]: auth.token }
+        : { Cookie: await getXpSessionCookie(serviceUrl, auth) };
+
 export const encodePropertyValue = (value) =>
     value.replace(/[\\ \u0080-\uffff]/g, (character) =>
         character === '\\' || character === ' '

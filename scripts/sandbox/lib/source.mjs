@@ -1,4 +1,8 @@
+import { spawn } from 'node:child_process';
+import { createHash, randomBytes } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
+import { createServer } from 'node:http';
+import { clearTimeout, setTimeout } from 'node:timers';
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 import {
@@ -6,7 +10,7 @@ import {
     CURATED_BRANCHES,
     CURATED_REPOSITORIES,
     fetchXp,
-    getXpSessionCookie,
+    getSourceAuthHeaders,
     isCuratedContentPath,
     isCuratedId,
     isSafeName,
@@ -25,6 +29,9 @@ const DEPLOYED_SOURCES = {
 
 const SERVICE_PATH = '/_/service/no.nav.navno/curatedExportManifest';
 const SOURCE_SERVICE_PATH = '/_/service/no.nav.navno/curatedExportSource';
+// Deployed admin hosts only route /webapp, and accept the browser-approved token there.
+const WEBAPP_EXPORT_PATH = '/webapp/no.nav.navno/curated-export';
+const AUTHORIZATION_TIMEOUT_MS = 5 * 60 * 1000;
 const DEPLOYED_SOURCE_BY_HOST = {
     'www.nav.no': 'prod',
     'nav.no': 'prod',
@@ -37,9 +44,99 @@ const createDeployedSource = (name, origin) => ({
     kind: 'deployed',
     name,
     origin,
-    serviceUrl: `${origin}${SERVICE_PATH}`,
-    sourceServiceUrl: `${origin}${SOURCE_SERVICE_PATH}`,
+    serviceUrl: `${origin}${WEBAPP_EXPORT_PATH}/manifest`,
+    sourceServiceUrl: `${origin}${WEBAPP_EXPORT_PATH}/source`,
+    authorizeUrl: `${origin}${WEBAPP_EXPORT_PATH}/authorize`,
+    tokenUrl: `${origin}${WEBAPP_EXPORT_PATH}/token`,
 });
+
+const openInBrowser = (url) => {
+    const command = { darwin: 'open', linux: 'xdg-open' }[process.platform];
+    if (!command) {
+        return;
+    }
+    const child = spawn(command, [url], { stdio: 'ignore', detached: true });
+    child.on('error', () => {});
+    child.unref();
+};
+
+const waitForAuthorizationCode = ({ state, timeoutMs, onListening }) =>
+    new Promise((resolvePromise, reject) => {
+        let timer;
+        const server = createServer((request, response) => {
+            const url = new URL(request.url, 'http://127.0.0.1');
+            const code = url.searchParams.get('code');
+            if (url.pathname !== '/callback') {
+                response.writeHead(404).end();
+                return;
+            }
+            // Ignore stray requests; only the redirect carrying our state completes the handoff.
+            if (url.searchParams.get('state') !== state || !/^[0-9a-f]{64}$/.test(code ?? '')) {
+                response.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
+                response.end('Ugyldig svar fra XP. Start importen på nytt.');
+                return;
+            }
+            response.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+            response.end('Tilgang godkjent. Du kan lukke fanen og gå tilbake til terminalen.');
+            finish(null, code);
+        });
+        const finish = (error, code) => {
+            clearTimeout(timer);
+            server.close();
+            server.closeAllConnections();
+            if (error) {
+                reject(error);
+            } else {
+                resolvePromise(code);
+            }
+        };
+        timer = setTimeout(
+            () => finish(new Error('Timed out waiting for approval in the browser')),
+            timeoutMs
+        );
+        server.on('error', (error) => finish(error));
+        server.listen(0, '127.0.0.1', () => onListening(server.address().port));
+    });
+
+// Opens the source's approval page and exchanges the returned one-time code for a short-lived
+// read token. The PKCE verifier never leaves this process, so an intercepted code is useless.
+export const authorizeDeployedSource = async (
+    source,
+    {
+        openBrowser = openInBrowser,
+        fetchImpl = fetchXp,
+        timeoutMs = AUTHORIZATION_TIMEOUT_MS,
+        log = console.log,
+    } = {}
+) => {
+    const state = randomBytes(32).toString('base64url');
+    const verifier = randomBytes(32).toString('base64url');
+    const challenge = createHash('sha256').update(verifier).digest('hex');
+    const code = await waitForAuthorizationCode({
+        state,
+        timeoutMs,
+        onListening: (port) => {
+            const url = new URL(source.authorizeUrl);
+            url.searchParams.set('port', String(port));
+            url.searchParams.set('state', state);
+            url.searchParams.set('challenge', challenge);
+            log(`Approve read access to ${source.origin} in your browser:\n${url}`);
+            openBrowser(url.href);
+        },
+    });
+    const response = await fetchImpl(source.tokenUrl, {
+        method: 'POST',
+        redirect: 'error',
+        signal: AbortSignal.timeout(30000),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, verifier }),
+    });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok || typeof body.token !== 'string') {
+        throw new Error(`Token exchange with ${source.origin} failed (HTTP ${response.status})`);
+    }
+    return { token: body.token };
+};
 
 export const resolveCuratedSource = (
     source,
@@ -353,11 +450,11 @@ export const createCuratedPlan = async ({
         throw new Error('includeDrafts must be a boolean');
     }
     const selectedPaths = inputPath ? readPaths(inputPath) : normalizePaths(paths);
-    const sessionCookie = await getXpSessionCookie(serviceUrl, auth);
+    const authHeaders = await getSourceAuthHeaders(serviceUrl, auth);
     const response = await postJson(
         serviceUrl,
         { paths: selectedPaths, seeds, scope, includeDrafts },
-        { Cookie: sessionCookie },
+        authHeaders,
         requestTimeoutMs
     );
 

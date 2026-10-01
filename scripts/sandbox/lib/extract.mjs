@@ -15,6 +15,7 @@ import { pipeline } from 'node:stream/promises';
 import {
     directLocalFetch,
     fetchXp,
+    getSourceAuthHeaders,
     getXpSessionCookie,
     isCuratedContentPath,
     isSafeName,
@@ -212,13 +213,13 @@ const chunks = (values, size) => {
     return result;
 };
 
-const requestJson = async (url, cookie, options, fetchImpl) => {
+const requestJson = async (url, authHeaders, options, fetchImpl) => {
     const response = await fetchImpl(url, {
         ...options,
         redirect: 'error',
         signal: AbortSignal.timeout(120000),
         headers: {
-            Cookie: cookie,
+            ...authHeaders,
             'Content-Type': 'application/json',
             ...options?.headers,
         },
@@ -293,7 +294,13 @@ export const writeManualChildOrders = (exportRoot, sources) => {
         });
 };
 
-const downloadBinary = async ({ sourceServiceUrl, cookie, request, cacheDirectory, fetchImpl }) => {
+const downloadBinary = async ({
+    sourceServiceUrl,
+    authHeaders,
+    request,
+    cacheDirectory,
+    fetchImpl,
+}) => {
     const destination = resolve(request.nodeDirectory, 'bin', request.binaryReference);
     if (dirname(destination) !== resolve(request.nodeDirectory, 'bin')) {
         throw new Error(`Unsafe binary reference: ${request.binaryReference}`);
@@ -334,7 +341,7 @@ const downloadBinary = async ({ sourceServiceUrl, cookie, request, cacheDirector
     url.searchParams.set('versionId', request.versionId);
     url.searchParams.set('binaryReference', request.binaryReference);
     const response = await fetchImpl(url, {
-        headers: { Cookie: cookie },
+        headers: authHeaders,
         redirect: 'error',
         signal: AbortSignal.timeout(120000),
     });
@@ -431,7 +438,7 @@ export const extractCuratedSource = async ({
     auth,
     exportDirectory,
     fetchImpl = fetchXp,
-    getSessionCookie = getXpSessionCookie,
+    getAuthHeaders = getSourceAuthHeaders,
 }) => {
     const exportRoots = manifest.exports.map(({ exportName }) => {
         if (!isSafeName(exportName)) {
@@ -452,7 +459,7 @@ export const extractCuratedSource = async ({
             mkdirSync(exportRoot);
             createdRoots.push(exportRoot);
         }
-        const cookie = await getSessionCookie(sourceServiceUrl, auth);
+        const authHeaders = await getAuthHeaders(sourceServiceUrl, auth);
         for (const nativeExport of manifest.exports) {
             const exportRoot = resolve(exportDirectory, nativeExport.exportName);
             writeFileSync(
@@ -481,7 +488,7 @@ export const extractCuratedSource = async ({
                 });
                 const result = await requestJson(
                     sourceServiceUrl,
-                    cookie,
+                    authHeaders,
                     {
                         method: 'POST',
                         body: JSON.stringify({
@@ -544,7 +551,7 @@ export const extractCuratedSource = async ({
         await runWorkers(binaryRequests, BINARY_CONCURRENCY, async (request) => {
             await downloadBinary({
                 sourceServiceUrl,
-                cookie,
+                authHeaders,
                 request,
                 cacheDirectory,
                 fetchImpl,

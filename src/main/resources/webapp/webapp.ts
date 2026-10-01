@@ -15,6 +15,7 @@ import { runSchedulerCleanup } from '../lib/scheduling/schedule-cleanup';
 import { NAVOccurences } from '../lib/reporting/NAVOccurrences';
 import { archiveOldNews } from '../lib/archiving/archive-old-news';
 import { manageScheduledJobs } from '../lib/scheduling/manage-scheduled-jobs';
+import { handleCuratedExportRequest } from '../lib/exports/curated-export-access';
 
 type ActionsMap = Record<string, { description: string; callback: () => any }>;
 
@@ -109,6 +110,11 @@ const renderWebapp = (runningCmd?: string, schedulerMessage?: string) => {
 };
 
 export const get = (req: Request) => {
+    const curatedExportResponse = handleCuratedExportRequest(req);
+    if (curatedExportResponse) {
+        return curatedExportResponse;
+    }
+
     if (!userIsAdmin()) {
         return accessDeniedResponse;
     }
@@ -130,6 +136,11 @@ export const get = (req: Request) => {
 };
 
 export const post = (req: Request) => {
+    const curatedExportResponse = handleCuratedExportRequest(req);
+    if (curatedExportResponse) {
+        return curatedExportResponse;
+    }
+
     if (!userIsAdmin()) {
         return accessDeniedResponse;
     }
