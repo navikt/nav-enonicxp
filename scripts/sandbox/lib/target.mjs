@@ -144,9 +144,10 @@ export const installCuratedApplications = ({
                 application.required === false &&
                 (application.started === false || !application.version)
             ) {
-                console.log(
-                    `Skipping inactive or unversioned optional application ${application.key}`
-                );
+                // Apps stopped in the source may be disabled on purpose; installing would start them.
+                const reason = application.version ? 'stopped in the source' : 'no source version';
+                console.log(`Skipping optional application ${application.key} (${reason})`);
+                warnings.push(`${application.key}: not installed, ${reason}`);
                 return false;
             }
             process.stdout.write(`Installing ${application.key} ${application.version}... `);

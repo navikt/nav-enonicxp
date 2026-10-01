@@ -198,7 +198,9 @@ test('skips an optional application with a warning when no version can be instal
     );
 });
 
-test('does not start an optional application which is stopped in the source', () => {
+test('does not start an optional application which is stopped in the source', (t) => {
+    const warn = t.mock.method(console, 'warn', () => {});
+    t.mock.method(console, 'log', () => {});
     let commands = 0;
     installCuratedApplications({
         applications: [
@@ -212,6 +214,10 @@ test('does not start an optional application which is stopped in the source', ()
         },
     });
     assert.equal(commands, 0);
+    assert.match(
+        warn.mock.calls[0].arguments[0],
+        /com\.enonic\.app\.xpdoctor: not installed, stopped in the source/
+    );
 });
 
 test('creates and prepares a missing target sandbox', () => {
