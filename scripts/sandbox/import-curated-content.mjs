@@ -108,18 +108,15 @@ const getRunningSandbox = () => readRunningSandbox(homedir());
 
 const main = async () => {
     const options = getImportOptions(process.argv.slice(2), getRunningSandbox);
+    // Local checks run before any prompt or network call, so mistakes fail right away.
     assertSandboxName(options.target);
-    assertEnonicCliAvailable();
-    const source = resolveCuratedSource(options.source);
-    const sourceIsLoopback = LOOPBACK_HOSTS.has(new URL(source.origin).hostname);
-    if (
-        (source.kind === 'local' && source.name === options.target) ||
-        (sourceIsLoopback && getRunningSandbox() === options.target)
-    ) {
-        throw new Error('Source and target sandbox must be different');
+    const pageSelection = options.page ? resolveCuratedPage({ page: options.page }) : null;
+    const inputPath = pageSelection
+        ? undefined
+        : resolve(options.input ?? 'scripts/sandbox/curated-content-urls.txt');
+    if (inputPath && !existsSync(inputPath)) {
+        throw new Error(`URL list not found: ${inputPath}`);
     }
-    // Show where the credentials go, since --page may infer the source host from a pasted URL.
-    const sourceAuth = promptForAuth(`Source (${source.origin})`);
     const targetPath = join(homedir(), '.enonic/sandboxes', options.target);
     const targetExists = existsSync(join(targetPath, '.enonic'));
     if (options.page && !targetExists) {
@@ -133,6 +130,17 @@ const main = async () => {
     if (targetExists) {
         assertLocalTargetConfiguration(targetPath);
     }
+    assertEnonicCliAvailable();
+    const source = resolveCuratedSource(options.source);
+    const sourceIsLoopback = LOOPBACK_HOSTS.has(new URL(source.origin).hostname);
+    if (
+        (source.kind === 'local' && source.name === options.target) ||
+        (sourceIsLoopback && getRunningSandbox() === options.target)
+    ) {
+        throw new Error('Source and target sandbox must be different');
+    }
+    // Show where the credentials go, since --page may infer the source host from a pasted URL.
+    const sourceAuth = promptForAuth(`Source (${source.origin})`);
     const targetIsRunning = getRunningSandbox() === options.target;
     const targetAuth = targetExists
         ? targetIsRunning
@@ -162,14 +170,12 @@ const main = async () => {
     }
     console.log('Credentials verified');
 
-    const defaultInputPath = 'scripts/sandbox/curated-content-urls.txt';
-    const pageSelection = options.page ? resolveCuratedPage({ page: options.page }) : null;
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const bundle = `${pageSelection ? 'curated-page' : 'curated-plan'}-${timestamp}`;
     return withCuratedWorkspace({ bundle }, async ({ manifestPath, exportDirectory }) => {
         console.log(`Planning curated import from ${source.name} to ${options.target}`);
         const manifest = await createCuratedPlan({
-            inputPath: pageSelection ? undefined : resolve(options.input ?? defaultInputPath),
+            inputPath,
             paths: typeof pageSelection === 'string' ? [pageSelection] : [],
             seeds: pageSelection && typeof pageSelection !== 'string' ? [pageSelection] : [],
             serviceUrl: source.serviceUrl,

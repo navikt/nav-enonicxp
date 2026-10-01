@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -73,6 +73,47 @@ test('the public create/update command loads without removed CLI modules', () =>
     // The sandbox name is rejected before the Enonic CLI check (no PATH here) or any prompt.
     assert.match(result.stderr, /A valid, explicit local target sandbox name is required/);
     assert.doesNotMatch(result.stderr, /ERR_MODULE_NOT_FOUND/);
+});
+
+// No PATH and an empty HOME, so each error must come before the Enonic CLI check and any prompt.
+const runImportWithoutCli = (t, args, setupHome = () => {}) => {
+    const home = mkdtempSync(join(tmpdir(), 'curated-import-home-'));
+    t.after(() => rmSync(home, { recursive: true, force: true }));
+    setupHome(home);
+    return spawnSync(
+        process.execPath,
+        [fileURLToPath(new URL('../import-curated-content.mjs', import.meta.url)), ...args],
+        { encoding: 'utf8', env: { HOME: home } }
+    );
+};
+
+test('rejects local input mistakes before checking the CLI or prompting', (t) => {
+    const cases = [
+        [
+            ['--source', 'prod', '--target', 'local', '--input', '/does/not/exist.txt'],
+            /URL list not found: \/does\/not\/exist\.txt/,
+        ],
+        [
+            ['--source', 'prod', '--target', 'local', '--page', 'ftp://www.nav.no/'],
+            /Page URLs must use HTTP or HTTPS/,
+        ],
+        [
+            ['--source', 'prod', '--target', 'local', '--page', 'https://www.nav.no/'],
+            /--page requires an existing target sandbox/,
+        ],
+    ];
+    cases.forEach(([args, expected]) => {
+        const result = runImportWithoutCli(t, args);
+        assert.equal(result.status, 1);
+        assert.match(result.stderr, expected);
+    });
+
+    const result = runImportWithoutCli(t, ['--source', 'prod', '--target', 'local'], (home) => {
+        mkdirSync(join(home, '.enonic/sandboxes/local'), { recursive: true });
+        writeFileSync(join(home, '.enonic/sandboxes/local/.enonic'), '');
+    });
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /Target sandbox local already exists; pass --force/);
 });
 
 test('streams import progress before the child script finishes', async (t) => {
