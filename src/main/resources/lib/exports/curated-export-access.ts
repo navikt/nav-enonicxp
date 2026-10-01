@@ -172,6 +172,7 @@ const handleAuthorize = (req: Request): Response => {
     }
 
     if (req.method === 'GET') {
+        // Post without the query string: XP merges repeated query and form values into arrays.
         const hiddenFields = (['port', 'state', 'challenge'] as const)
             .map(
                 (name) =>
@@ -183,7 +184,7 @@ const handleAuthorize = (req: Request): Response => {
             `<h1>Gi importverktøyet lesetilgang?</h1>
 <p>Importverktøyet for kuratert innhold på maskinen din ber om å lese innhold, inkludert upublisert innhold, som ${escapeHtml(user.displayName || user.key)}. Tilgangen varer i to timer.</p>
 <p>Godkjenn bare hvis du nettopp startet importen selv.</p>
-<form method="post">${hiddenFields}<button type="submit">Godkjenn</button></form>`,
+<form method="post" action="authorize">${hiddenFields}<button type="submit">Godkjenn</button></form>`,
             params.port
         );
     }

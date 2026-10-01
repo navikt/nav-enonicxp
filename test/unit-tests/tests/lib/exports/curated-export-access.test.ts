@@ -146,9 +146,22 @@ describe('curated export access', () => {
     it('asks for confirmation before issuing a code', () => {
         const response = request('authorize', { params: authorizeParams });
         expect(response?.status).toBe(200);
-        expect(response?.body).toContain('<form method="post">');
+        expect(response?.body).toContain('<form method="post" action="authorize">');
         expect(response?.headers?.['X-Frame-Options']).toBe('DENY');
         expect(nodes.size).toBe(0);
+    });
+
+    it('rejects parameters repeated in the query string and the form', () => {
+        const repeated = Object.fromEntries(
+            Object.entries(authorizeParams).map(([name, value]) => [name, [value, value]])
+        );
+        expect(
+            request('authorize', {
+                method: 'POST',
+                params: repeated,
+                headers: { 'Sec-Fetch-Site': 'same-origin' },
+            })?.status
+        ).toBe(400);
     });
 
     it('rejects cross-site approvals', () => {
