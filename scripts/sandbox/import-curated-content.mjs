@@ -118,7 +118,8 @@ const main = async () => {
     ) {
         throw new Error('Source and target sandbox must be different');
     }
-    const sourceAuth = promptForAuth('Source');
+    // Show where the credentials go, since --page may infer the source host from a pasted URL.
+    const sourceAuth = promptForAuth(`Source (${source.origin})`);
     const targetPath = join(homedir(), '.enonic/sandboxes', options.target);
     const targetExists = existsSync(join(targetPath, '.enonic'));
     if (options.page && !targetExists) {

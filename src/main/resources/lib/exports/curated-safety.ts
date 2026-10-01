@@ -1,3 +1,4 @@
+import { Request } from '@enonic-types/core';
 import { Project } from '/lib/xp/project';
 
 export const CURATED_CONTENT_ROOT_PATH = '/content/www.nav.no';
@@ -58,6 +59,11 @@ export const curatedJsonResponse = (status: number, body: Record<string, unknown
     headers: { 'Cache-Control': 'no-store' },
     body,
 });
+
+// Browsers cannot send cross-site application/json without a CORS preflight, so requiring it
+// blocks CSRF against these cookie-authenticated endpoints.
+export const isJsonRequest = (req: Request) =>
+    typeof req.contentType === 'string' && /^application\/json\s*(;|$)/i.test(req.contentType);
 
 export const isCuratedImportEnabled = () => {
     const config = app.config as typeof app.config & { curatedImportEnabled?: unknown };

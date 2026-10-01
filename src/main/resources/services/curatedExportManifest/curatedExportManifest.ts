@@ -8,6 +8,7 @@ import {
     isCuratedBranch,
     isCuratedContentId,
     isCuratedRepository,
+    isJsonRequest,
     isRecord,
 } from '../../lib/exports/curated-safety';
 import { userCanManageCuratedExports } from '../../lib/utils/auth-utils';
@@ -31,6 +32,9 @@ const isSeed = (value: unknown): value is CuratedExportSeed => {
 export const post = (req: Request) => {
     if (!userCanManageCuratedExports()) {
         return jsonResponse(403, { message: 'System administrator access is required' });
+    }
+    if (!isJsonRequest(req)) {
+        return jsonResponse(415, { message: 'Content-Type must be application/json' });
     }
     if (!req.body) {
         return jsonResponse(400, {

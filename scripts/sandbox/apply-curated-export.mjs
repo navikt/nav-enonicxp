@@ -21,6 +21,7 @@ import {
     isCuratedId,
 } from './lib/curated-constants.mjs';
 
+const ARGUMENTS = new Set(['manifest', 'sandbox', 'service-url', 'export-dir', 'start-index']);
 const MANUAL_ORDER_WARNING = 'Not able to import nodes by manual order, using default ordering';
 
 const formatProductionCopyDate = (generatedAt) => {
@@ -111,7 +112,7 @@ const getArguments = () => {
     for (let index = 0; index < args.length; index += 2) {
         const argument = args[index];
         const value = args[index + 1];
-        if (!argument?.startsWith('--') || !value) {
+        if (!argument?.startsWith('--') || !ARGUMENTS.has(argument.slice(2)) || !value) {
             throw new Error(`Invalid argument: ${argument || ''}`);
         }
         options[argument.slice(2)] = value;

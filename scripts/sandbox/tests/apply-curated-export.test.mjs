@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import process from 'node:process';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 import { labelCuratedProjects } from '../apply-curated-export.mjs';
 
 test('labels curated projects as a dated production subset', () => {
@@ -31,4 +34,18 @@ test('preserves a production subset date from a local source', () => {
 
 test('rejects an invalid manifest generation date', () => {
     assert.throws(() => labelCuratedProjects([], 'invalid'), /Invalid manifest generation date/);
+});
+
+test('rejects unknown command line flags instead of ignoring them', () => {
+    const result = spawnSync(
+        process.execPath,
+        [
+            fileURLToPath(new URL('../apply-curated-export.mjs', import.meta.url)),
+            '--start-idx',
+            '3',
+        ],
+        { encoding: 'utf8' }
+    );
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /Invalid argument: --start-idx/);
 });

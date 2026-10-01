@@ -100,7 +100,8 @@ const mockNodeTree = (initial: Array<{ _id: string; _path: string }>) => {
     });
     return nodes;
 };
-const importRequest = (body: unknown) => ({ body: JSON.stringify(body) }) as never;
+const importRequest = (body: unknown) =>
+    ({ contentType: 'application/json', body: JSON.stringify(body) }) as never;
 const expectNoWrites = () => {
     [
         moveNode,
@@ -140,12 +141,26 @@ describe('curated export import', () => {
     it('rejects users without an administrative role', () => {
         jest.mocked(authLib.hasRole).mockReturnValue(false);
 
-        const response = post({ body: '{}' } as never);
+        const response = post({ contentType: 'application/json', body: '{}' } as never);
 
         expect(response.status).toBe(403);
         expect(get().status).toBe(403);
         expect(modifyNode).not.toHaveBeenCalled();
     });
+
+    it.each([undefined, 'text/plain', 'multipart/form-data'])(
+        'rejects cross-site capable content type %s before any repository access',
+        (contentType) => {
+            const response = post({
+                contentType,
+                body: JSON.stringify({ action: 'configure-login' }),
+            } as never);
+
+            expect(response.status).toBe(415);
+            expect(nodeLib.connect).not.toHaveBeenCalled();
+            expectNoWrites();
+        }
+    );
 
     it('returns a live administrator-only localhost preflight without repository access or writes', () => {
         expect(get()).toEqual({
@@ -189,6 +204,7 @@ describe('curated export import', () => {
         (env) => {
             Object.assign(app.config, { env, curatedImportEnabled: 'true' });
             const response = post({
+                contentType: 'application/json',
                 body: JSON.stringify({ action: 'configure-login' }),
                 headers: { host: 'localhost:8080' },
             } as never);
@@ -322,6 +338,7 @@ describe('curated export import', () => {
 
     it('rejects prototype-changing payload properties', () => {
         const response = post({
+            contentType: 'application/json',
             body: '{"action":"configure-login","__proto__":{"member":"attacker"}}',
         } as never);
         expect(response.status).toBe(400);
@@ -480,6 +497,7 @@ describe('curated export import', () => {
         );
 
         const response = post({
+            contentType: 'application/json',
             body: JSON.stringify({ action: 'configure-login' }),
         } as never);
 
@@ -503,6 +521,7 @@ describe('curated export import', () => {
         ]);
 
         const response = post({
+            contentType: 'application/json',
             body: JSON.stringify({
                 action: 'prepare-project-import',
                 repository: childRepository,
@@ -531,6 +550,7 @@ describe('curated export import', () => {
         const repository = 'com.enonic.cms.default';
         const nodes = mockNodeTree([{ _id: 'content-id', _path: `${rootPath}/old-name` }]);
         const response = post({
+            contentType: 'application/json',
             body: JSON.stringify({
                 action: 'prepare-project-import',
                 repository,
@@ -558,6 +578,7 @@ describe('curated export import', () => {
         });
 
         const response = post({
+            contentType: 'application/json',
             body: JSON.stringify({
                 action: 'prepare-project-import',
                 repository: childRepository,
@@ -603,6 +624,7 @@ describe('curated export import', () => {
         });
 
         const response = post({
+            contentType: 'application/json',
             body: JSON.stringify({
                 action: 'normalize-import-paths',
                 repository: 'com.enonic.cms.default',

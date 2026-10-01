@@ -21,6 +21,7 @@ import {
     isCuratedContentPath,
     isCuratedImportEnabled,
     isCuratedRepository,
+    isJsonRequest,
     isRecord,
     REQUIRED_PROJECTS,
 } from '../../lib/exports/curated-safety';
@@ -749,6 +750,9 @@ export const post = (req: Request) => {
     const accessError = getImportAccessError();
     if (accessError) {
         return accessError;
+    }
+    if (!isJsonRequest(req)) {
+        return jsonResponse(415, { message: 'Content-Type must be application/json' });
     }
     if (!req.body) {
         return jsonResponse(400, { message: 'A JSON request body is required' });

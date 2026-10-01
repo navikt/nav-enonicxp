@@ -19,16 +19,28 @@ describe('curated export manifest authorization', () => {
         'does not grant export capability to %s',
         (grantedRole) => {
             jest.mocked(authLib.hasRole).mockImplementation((role) => role === grantedRole);
-            expect(post({ body: '{"paths":["/"]}' } as never).status).toBe(403);
+            expect(
+                post({ contentType: 'application/json', body: '{"paths":["/"]}' } as never).status
+            ).toBe(403);
             expect(createCuratedExportManifest).not.toHaveBeenCalled();
         }
     );
 
     it('allows actual system administrators', () => {
         jest.mocked(authLib.hasRole).mockImplementation((role) => role === 'role:system.admin');
-        expect(post({ body: '{"paths":["/"]}' } as never).status).toBe(200);
+        expect(
+            post({ contentType: 'application/json', body: '{"paths":["/"]}' } as never).status
+        ).toBe(200);
         expect(createCuratedExportManifest).toHaveBeenCalledWith(['/'], 'full', { seeds: [] });
     });
+
+    it.each([undefined, 'text/plain', 'application/x-www-form-urlencoded'])(
+        'rejects cross-site capable content type %s before building a manifest',
+        (contentType) => {
+            expect(post({ contentType, body: '{"paths":["/"]}' } as never).status).toBe(415);
+            expect(createCuratedExportManifest).not.toHaveBeenCalled();
+        }
+    );
 
     it('forwards validated editor seeds through the options object', () => {
         const seeds = [
@@ -40,6 +52,7 @@ describe('curated export manifest authorization', () => {
         ];
         expect(
             post({
+                contentType: 'application/json',
                 body: JSON.stringify({ paths: [], scope: 'page', seeds }),
             } as never).status
         ).toBe(200);
@@ -54,7 +67,12 @@ describe('curated export manifest authorization', () => {
                 contentId: 'editor-content-id',
             },
         ];
-        expect(post({ body: JSON.stringify({ seeds, scope: 'page' }) } as never).status).toBe(200);
+        expect(
+            post({
+                contentType: 'application/json',
+                body: JSON.stringify({ seeds, scope: 'page' }),
+            } as never).status
+        ).toBe(200);
         expect(createCuratedExportManifest).toHaveBeenCalledWith([], 'page', { seeds });
     });
 
@@ -68,6 +86,7 @@ describe('curated export manifest authorization', () => {
         { repository: 'com.enonic.cms.default', branch: 'draft', contentId: '/outside' },
     ])('rejects an invalid later seed before invoking the manifest builder: %j', (invalidSeed) => {
         const response = post({
+            contentType: 'application/json',
             body: JSON.stringify({
                 paths: [],
                 seeds: [
