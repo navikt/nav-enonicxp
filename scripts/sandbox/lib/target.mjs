@@ -64,6 +64,84 @@ const getApplicationUrl = ({ key, version }) => {
     return `https://repo.enonic.com/repository/public/${artifactPath}/${version}/${artifact}-${version}.jar`;
 };
 
+// Application URLs end in /<version>/<artifact>-<version>.jar, next to the Maven version list.
+const getVersionListUrl = (application) =>
+    getApplicationUrl(application).replace(/\/[^/]+\/[^/]+$/, '/maven-metadata.xml');
+
+const getMinorVersion = (version) => version?.match(/^(\d+\.\d+)\.\d+$/)?.[1] ?? null;
+
+const comparePatchVersions = (versionA, versionB) =>
+    Number(versionA.split('.')[2]) - Number(versionB.split('.')[2]);
+
+export const findSameMinorVersion = (publishedVersions, version) => {
+    const minorVersion = getMinorVersion(version);
+    if (!minorVersion) {
+        return null;
+    }
+    return (
+        publishedVersions
+            .filter(
+                (candidate) => candidate !== version && getMinorVersion(candidate) === minorVersion
+            )
+            .sort(comparePatchVersions)
+            .at(-1) ?? null
+    );
+};
+
+const listPublishedVersions = (application, runCommand) => {
+    const metadata = String(
+        runCommand(
+            'curl',
+            [
+                '--silent',
+                '--show-error',
+                '--fail',
+                '--location',
+                '--max-time',
+                '30',
+                getVersionListUrl(application),
+            ],
+            { encoding: 'utf8' }
+        )
+    );
+    return [...metadata.matchAll(/<version>([^<]+)<\/version>/g)].map(([, version]) => version);
+};
+
+const getErrorMessage = (error) =>
+    error instanceof Error ? error.message.split('\n')[0] : String(error);
+
+const installApplicationVersion = (
+    application,
+    version,
+    { sandbox, auth, runCommand, verifyTarget }
+) => {
+    const output = runLocalXpCommand(
+        ['app', 'install', '--url', getApplicationUrl({ ...application, version }), '--force'],
+        { sandbox, auth, runCommand, verifyTarget }
+    );
+    const result = parseCliJsonOutput(output);
+    if (result.Failure) {
+        throw new Error(result.Failure);
+    }
+    const installed = result.ApplicationInstalledJson?.Application;
+    if (installed?.Key !== application.key || installed?.Version !== version) {
+        throw new Error(`Installation did not confirm ${application.key} ${version}`);
+    }
+};
+
+// Falls back to the newest other patch of the same minor version when the exact version fails.
+const installSameMinorVersion = (application, context) => {
+    const fallbackVersion = findSameMinorVersion(
+        listPublishedVersions(application, context.runCommand),
+        application.version
+    );
+    if (!fallbackVersion) {
+        throw new Error(`No other ${getMinorVersion(application.version)}.x version was found`);
+    }
+    installApplicationVersion(application, fallbackVersion, context);
+    return fallbackVersion;
+};
+
 export const installCuratedApplications = ({
     applications,
     auth,
@@ -71,6 +149,8 @@ export const installCuratedApplications = ({
     runCommand = execFileSync,
     verifyTarget = assertLocalTargetProcess,
 }) => {
+    const context = { sandbox, auth, runCommand, verifyTarget };
+    const warnings = [];
     const results = applications
         .filter(({ key }) => key !== 'no.nav.navno')
         .map((application) => {
@@ -85,41 +165,43 @@ export const installCuratedApplications = ({
                 return false;
             }
             process.stdout.write(`Installing ${application.key} ${application.version}... `);
+            let exactError;
             try {
-                const output = runLocalXpCommand(
-                    ['app', 'install', '--url', getApplicationUrl(application), '--force'],
-                    { sandbox, auth, runCommand, verifyTarget }
-                );
-                const result = parseCliJsonOutput(output);
-                if (result.Failure) {
-                    throw new Error(result.Failure);
-                }
-                const installed = result.ApplicationInstalledJson?.Application;
-                if (
-                    installed?.Key !== application.key ||
-                    installed?.Version !== application.version
-                ) {
-                    throw new Error(
-                        `Installation did not confirm ${application.key} ${application.version}`
-                    );
-                }
+                installApplicationVersion(application, application.version, context);
                 console.log('done');
                 return true;
             } catch (error) {
-                const message =
-                    error instanceof Error ? error.message.split('\n')[0] : String(error);
+                exactError = error;
+            }
+            try {
+                const fallbackVersion = installSameMinorVersion(application, context);
+                console.log(`installed ${fallbackVersion} instead`);
+                warnings.push(
+                    `${application.key}: installed ${fallbackVersion}, source has ${application.version} (${getErrorMessage(exactError)})`
+                );
+                return true;
+            } catch (fallbackError) {
+                const message = `${getErrorMessage(exactError)}; fallback: ${getErrorMessage(fallbackError)}`;
                 if (application.required !== false) {
                     console.log('failed');
                     throw new Error(
-                        `Could not install required application ${application.key}: ${message}`,
-                        { cause: error }
+                        `Could not install required application ${application.key} ${application.version}: ${message}`,
+                        { cause: fallbackError }
                     );
                 }
-                console.log(`skipped (${message})`);
+                console.log('skipped');
+                warnings.push(
+                    `${application.key}: not installed, source has ${application.version} (${message})`
+                );
                 return false;
             }
         });
     console.log(`Applications installed: ${results.filter(Boolean).length}/${results.length}`);
+    if (warnings.length > 0) {
+        console.warn(
+            `Warning: ${warnings.length} applications differ from the source:\n${warnings.map((warning) => `  - ${warning}`).join('\n')}`
+        );
+    }
 };
 
 export const waitForManagementApi = (runCommand = execFileSync) => {

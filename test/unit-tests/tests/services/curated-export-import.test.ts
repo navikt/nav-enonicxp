@@ -12,6 +12,8 @@ const findChildren = jest.fn();
 const refresh = jest.fn();
 const pushNode = jest.fn();
 const restoreTarget = jest.fn();
+const getApplication = jest.fn();
+const logWarning = jest.fn();
 
 jest.mock('@navno-app/lib/exports/target/curated-target-metadata', () => ({
     restoreCuratedTargetMetadata: restoreTarget,
@@ -25,7 +27,7 @@ jest.mock('/lib/xp/node', () => ({
 }));
 jest.mock('/lib/xp/auth');
 
-jest.mock('/lib/xp/app', () => ({}));
+jest.mock('/lib/xp/app', () => ({ get: getApplication }));
 jest.mock('/lib/xp/project', () => ({
     get: getProject,
     modify: modifyProject,
@@ -35,7 +37,7 @@ jest.mock('@navno-app/lib/context/run-in-context', () => ({
     runInContext: (_context: unknown, callback: () => unknown) => callback(),
 }));
 jest.mock('@navno-app/lib/utils/logging', () => ({
-    logger: { error: jest.fn() },
+    logger: { error: jest.fn(), warning: logWarning },
 }));
 jest.mock('@navno-app/lib/repos/repo-utils', () => ({
     getRepoConnection: jest.fn(() => ({
@@ -425,6 +427,48 @@ describe('curated export import', () => {
         );
         expect(response.status).toBe(500);
         expectNoWrites();
+    });
+
+    it('accepts another patch of a required application with a warning, but not another minor', () => {
+        const application = {
+            key: 'no.item.partfinder',
+            version: '1.2.0',
+            installed: true,
+            started: true,
+            required: true,
+        };
+        const configure = () =>
+            post(
+                importRequest({
+                    action: 'configure-projects',
+                    applications: [application],
+                    projects: [
+                        { id: 'default', language: 'no', parents: [], displayName: 'Nav.no' },
+                        {
+                            id: 'navno-engelsk',
+                            language: 'en',
+                            parents: ['default'],
+                            displayName: 'English',
+                        },
+                        {
+                            id: 'navno-nynorsk',
+                            language: 'nn',
+                            parents: ['default'],
+                            displayName: 'Nynorsk',
+                        },
+                    ],
+                })
+            );
+
+        getApplication.mockReturnValue({ version: '1.3.0', started: true });
+        expect(configure().body.message).toMatch(/has version "1\.3\.0", expected "1\.2\.0"/);
+        expect(logWarning).not.toHaveBeenCalled();
+
+        getApplication.mockReturnValue({ version: '1.2.2', started: true });
+        expect(configure().body.message).not.toMatch(/has version/);
+        expect(logWarning).toHaveBeenCalledWith(
+            expect.stringContaining('has version "1.2.2", source has "1.2.0"')
+        );
     });
 
     it('disables the first-run wizard for the regular SU login form', () => {

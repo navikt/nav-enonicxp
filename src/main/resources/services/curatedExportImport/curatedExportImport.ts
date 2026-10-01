@@ -390,6 +390,8 @@ const configureProjects = (projects: Project[]) => {
     return projects.map(({ id }) => projectLib.get({ id }));
 };
 
+const getMinorVersion = (version: string | null) => version?.split('.').slice(0, 2).join('.');
+
 const validateApplications = (applications: RequiredApplication[]) => {
     applications
         .filter(({ required }) => required !== false)
@@ -413,8 +415,17 @@ const validateApplications = (applications: RequiredApplication[]) => {
                 throw new Error(`Required application "${expectedApplication.key}" is not started`);
             }
             if (application.version !== expectedApplication.version) {
-                throw new Error(
-                    `Required application "${expectedApplication.key}" has version "${application.version}", expected "${expectedApplication.version}"`
+                // The sandbox scripts may install another patch of the same minor version.
+                if (
+                    getMinorVersion(application.version) !==
+                    getMinorVersion(expectedApplication.version)
+                ) {
+                    throw new Error(
+                        `Required application "${expectedApplication.key}" has version "${application.version}", expected "${expectedApplication.version}"`
+                    );
+                }
+                logger.warning(
+                    `Required application "${expectedApplication.key}" has version "${application.version}", source has "${expectedApplication.version}"`
                 );
             }
         });

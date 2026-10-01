@@ -1,9 +1,12 @@
 import assert from 'node:assert/strict';
+import console from 'node:console';
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import process from 'node:process';
 import test from 'node:test';
 import {
+    findSameMinorVersion,
     installCuratedApplications,
     prepareCuratedTarget,
     removeTemporarySuPassword,
@@ -133,6 +136,66 @@ test('requires the installer to confirm the exact application key and pinned ver
     assert.throws(
         () => installCuratedApplications({ ...options, runCommand: () => 'invalid response' }),
         /Could not install required application/
+    );
+});
+
+const versionList = (...versions) =>
+    `<metadata><versioning><versions>${versions.map((version) => `<version>${version}</version>`).join('')}</versions></versioning></metadata>`;
+
+test('finds the newest other patch of the same minor version', () => {
+    const published = ['1.2.0', '1.2.3', '1.2.10', '1.3.0', '2.2.11', '1.2.11-SNAPSHOT'];
+    assert.equal(findSameMinorVersion(published, '1.2.3'), '1.2.10');
+    assert.equal(findSameMinorVersion(['1.2.3', '1.3.0'], '1.2.3'), null);
+    assert.equal(findSameMinorVersion(published, 'not-a-version'), null);
+});
+
+test('installs another patch of the same minor version with a warning when the exact version fails', (t) => {
+    const warn = t.mock.method(console, 'warn', () => {});
+    t.mock.method(console, 'log', () => {});
+    t.mock.method(process.stdout, 'write', () => true);
+    const key = 'no.item.partfinder';
+    const requests = [];
+    installCuratedApplications({
+        applications: [{ key, version: '1.2.0', required: true }],
+        auth: 'su:synthetic',
+        sandbox: 'target',
+        verifyTarget: () => {},
+        runCommand: (command, args) => {
+            requests.push([command, args.at(-1)]);
+            if (command === 'curl') {
+                return versionList('1.1.9', '1.2.0', '1.2.2', '1.3.0');
+            }
+            const url = args[args.indexOf('--url') + 1];
+            return url.includes('/1.2.2/')
+                ? installResult(key, '1.2.2')
+                : '{"Failure":"not found"}';
+        },
+    });
+    assert.match(
+        requests.find(([command]) => command === 'curl')[1],
+        /\/no\/item\/xp-part-finder\/maven-metadata\.xml$/
+    );
+    assert.match(
+        warn.mock.calls[0].arguments[0],
+        /no\.item\.partfinder: installed 1\.2\.2, source has 1\.2\.0/
+    );
+});
+
+test('skips an optional application with a warning when no version can be installed', (t) => {
+    const warn = t.mock.method(console, 'warn', () => {});
+    t.mock.method(console, 'log', () => {});
+    t.mock.method(process.stdout, 'write', () => true);
+    installCuratedApplications({
+        applications: [{ key: 'com.enonic.app.contentstudio', version: '5.3.2', required: false }],
+        auth: 'su:synthetic',
+        sandbox: 'target',
+        verifyTarget: () => {},
+        runCommand: (command) =>
+            command === 'curl' ? versionList('5.3.2', '5.4.0') : '{"Failure":"offline"}',
+    });
+    assert.match(
+        warn.mock.calls[0].arguments[0],
+        /com\.enonic\.app\.contentstudio: not installed, source has 5\.3\.2 \(offline; fallback: No other 5\.3\.x version was found\)/
     );
 });
 

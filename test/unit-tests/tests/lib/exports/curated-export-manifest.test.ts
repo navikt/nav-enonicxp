@@ -450,7 +450,7 @@ test('does not embed legacy sanitized supplements or mutate source text', () => 
     expect(page.data).toEqual({ body: 'before\u0002after' });
 });
 
-test('keeps stopped optional apps without including system applications', () => {
+test('requires Content Studio, keeps stopped apps optional and skips system apps', () => {
     addNode('page', '/www.nav.no/page');
     const manifest = selectPage();
     expect(manifest.xpVersion).toBe('7.14.4');
@@ -462,4 +462,7 @@ test('keeps stopped optional apps without including system applications', () => 
         })
     );
     expect(manifest.applications.every(({ system }) => !system)).toBe(true);
+    expect(manifest.applications).toContainEqual(
+        expect.objectContaining({ key: 'com.enonic.app.contentstudio', required: true })
+    );
 });

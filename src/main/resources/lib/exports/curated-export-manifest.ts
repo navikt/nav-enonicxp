@@ -224,6 +224,7 @@ const getRequiredApplications = (entries: CuratedExportEntry[]) => {
             installed: true,
             started: Boolean(application.started),
             system: false,
+            // Content Studio and apps owning imported content types must install; other apps only warn.
             required:
                 application.key === 'com.enonic.app.contentstudio' ||
                 application.key === app.name ||
