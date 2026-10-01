@@ -5,12 +5,13 @@
 
 import { execFileSync } from 'node:child_process';
 import console from 'node:console';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { assertEnonicCliAvailable, assertSandboxName } from './lib/local-xp-target.mjs';
+import { setPropertiesEntry } from './lib/sandbox-files.mjs';
 
 const HELP_FLAGS = new Set(['--help', '-h']);
 
@@ -37,17 +38,13 @@ export const enableCuratedImport = (sandbox, homeDirectory = homedir()) => {
     }
 
     const configDirectory = join(sandboxPath, 'home/config');
-    const configPath = join(configDirectory, 'no.nav.navno.cfg');
-    const currentConfig = existsSync(configPath) ? readFileSync(configPath, 'utf8') : '';
-    const configLines = currentConfig
-        .split(/\r?\n/)
-        .filter((line) => line && !/^\s*curatedImportEnabled\s*=/.test(line));
-    const updatedConfig =
-        (configLines.length > 0 ? configLines.join('\n') + '\n' : '') +
-        'curatedImportEnabled=true\n';
-    if (updatedConfig !== currentConfig) {
-        mkdirSync(configDirectory, { recursive: true });
-        writeFileSync(configPath, updatedConfig);
+    if (
+        setPropertiesEntry(
+            join(configDirectory, 'no.nav.navno.cfg'),
+            'curatedImportEnabled',
+            'true'
+        )
+    ) {
         console.log(`Enabled curatedImportEnabled for sandbox ${sandbox}`);
     }
 

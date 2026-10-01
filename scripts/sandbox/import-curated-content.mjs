@@ -107,9 +107,9 @@ const stopRunningSandbox = () => {
 const getRunningSandbox = () => readRunningSandbox(homedir());
 
 const main = async () => {
-    assertEnonicCliAvailable();
     const options = getImportOptions(process.argv.slice(2), getRunningSandbox);
     assertSandboxName(options.target);
+    assertEnonicCliAvailable();
     const source = resolveCuratedSource(options.source);
     const sourceIsLoopback = LOOPBACK_HOSTS.has(new URL(source.origin).hostname);
     if (

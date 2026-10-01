@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { PROJECT_REPOSITORIES } from './curated-constants.mjs';
+import { LOOPBACK_HOSTS, PROJECT_REPOSITORIES } from './curated-constants.mjs';
 import { readRunningSandbox, readSandboxXpVersion } from './sandbox-files.mjs';
 
 const DEPLOYED_SOURCES = {
@@ -79,7 +79,7 @@ export const inferCuratedSourceFromPage = (value) => {
     if (deployedSource) {
         return deployedSource;
     }
-    if (parseContentStudioPageUrl(value) && !['localhost', '127.0.0.1'].includes(url.hostname)) {
+    if (parseContentStudioPageUrl(value) && !LOOPBACK_HOSTS.has(url.hostname)) {
         return url.origin;
     }
     throw new Error(`Could not infer source from ${url.origin}; pass --source explicitly`);

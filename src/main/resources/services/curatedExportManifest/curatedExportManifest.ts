@@ -44,12 +44,7 @@ export const post = (req: Request) => {
 
     try {
         const body = JSON.parse(req.body) as RequestBody;
-        if (
-            !body ||
-            typeof body !== 'object' ||
-            Array.isArray(body) ||
-            (body.paths === undefined && body.seeds === undefined)
-        ) {
+        if (!isRecord(body) || (body.paths === undefined && body.seeds === undefined)) {
             return jsonResponse(400, { message: 'A "paths" or "seeds" array is required' });
         }
         const { paths = [], seeds = [], scope = 'full' } = body;

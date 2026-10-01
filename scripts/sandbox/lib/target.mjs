@@ -1,14 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import console from 'node:console';
-import {
-    copyFileSync,
-    chmodSync,
-    existsSync,
-    mkdirSync,
-    readFileSync,
-    rmSync,
-    writeFileSync,
-} from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import process from 'node:process';
@@ -20,6 +12,11 @@ import {
     parseCliJsonOutput,
     runLocalXpCommand,
 } from './local-xp-target.mjs';
+import {
+    assertSandboxXpVersion,
+    readSandboxXpVersion,
+    setPropertiesEntry,
+} from './sandbox-files.mjs';
 
 const CONFIG_FILES = [
     ['config/com.enonic.xp.content.cfg', 'com.enonic.xp.content.cfg'],
@@ -27,18 +24,6 @@ const CONFIG_FILES = [
     ['config/localhost/com.enonic.xp.web.vhost.cfg', 'com.enonic.xp.web.vhost.cfg'],
     ['config/com.enonic.app.contentstudio.cfg', 'com.enonic.app.contentstudio.cfg'],
 ];
-
-const readSandboxDistro = (sandboxPath) => {
-    const metadata = readFileSync(join(sandboxPath, '.enonic'), 'utf8');
-    const distro = metadata.match(/^distro = "([^"]+)"$/m)?.[1];
-    if (!distro) {
-        throw new Error(`Could not determine the XP distribution from ${sandboxPath}/.enonic`);
-    }
-    return distro;
-};
-
-const getDistroVersion = (distro) =>
-    distro.match(/(\d+\.\d+\.\d+(?:[-.][a-zA-Z0-9]+)?)$/)?.[1] ?? null;
 
 const getApplicationUrl = ({ key, version }) => {
     const vendorUrlTemplates = {
@@ -223,39 +208,22 @@ export const waitForManagementApi = (runCommand = execFileSync) => {
 };
 
 const setSuPassword = (systemPropertiesPath, password) => {
-    const properties = readFileSync(systemPropertiesPath, 'utf8');
-    const withoutPassword = properties
-        .split(/\r?\n/)
-        .filter((line) => !/^xp\.suPassword=/.test(line))
-        .join('\n')
-        .replace(/\n*$/, '\n');
-    writeFileSync(
-        systemPropertiesPath,
-        `${withoutPassword}xp.suPassword=${encodePropertyValue(password)}\n`
-    );
-    chmodSync(systemPropertiesPath, 0o600);
+    setPropertiesEntry(systemPropertiesPath, 'xp.suPassword', encodePropertyValue(password), {
+        mode: 0o600,
+    });
 };
 
 export const removeTemporarySuPassword = (sandboxPath) => {
-    const systemPropertiesPath = join(sandboxPath, 'home/config/system.properties');
-    const properties = readFileSync(systemPropertiesPath, 'utf8');
-    const updatedProperties = properties
-        .split(/\r?\n/)
-        .filter((line) => !/^xp\.suPassword=/.test(line))
-        .join('\n')
-        .replace(/\n*$/, '\n');
-    writeFileSync(systemPropertiesPath, updatedProperties);
+    setPropertiesEntry(join(sandboxPath, 'home/config/system.properties'), 'xp.suPassword', null);
 };
 
 export const setCuratedImportMode = (sandboxPath, enabled) => {
     assertLocalTargetConfiguration(sandboxPath);
-    const configPath = join(sandboxPath, 'home/config/no.nav.navno.cfg');
-    const config = readFileSync(configPath, 'utf8')
-        .split(/\r?\n/)
-        .filter((line) => !/^\s*curatedImportInProgress\s*=/.test(line))
-        .join('\n')
-        .replace(/\n*$/, '\n');
-    writeFileSync(configPath, `${config}${enabled ? 'curatedImportInProgress=true\n' : ''}`);
+    setPropertiesEntry(
+        join(sandboxPath, 'home/config/no.nav.navno.cfg'),
+        'curatedImportInProgress',
+        enabled ? 'true' : null
+    );
 };
 
 export const prepareCuratedTarget = ({
@@ -274,12 +242,7 @@ export const prepareCuratedTarget = ({
     const sandboxMetadataPath = join(sandboxPath, '.enonic');
     if (existsSync(sandboxMetadataPath)) {
         assertLocalTargetConfiguration(sandboxPath);
-        const installedVersion = getDistroVersion(readSandboxDistro(sandboxPath));
-        if (installedVersion !== xpVersion) {
-            throw new Error(
-                `Target sandbox ${sandbox} uses XP ${installedVersion}; curated source uses XP ${xpVersion}`
-            );
-        }
+        assertSandboxXpVersion(sandboxPath, sandbox, xpVersion);
         return { created: false, sandboxPath };
     }
 
@@ -311,7 +274,7 @@ export const prepareCuratedTarget = ({
     setSuPassword(join(configDirectory, 'system.properties'), suPassword);
 
     try {
-        const distro = readSandboxDistro(sandboxPath);
+        const { distro } = readSandboxXpVersion(sandboxPath);
         const javaHome = join(homeDirectory, '.enonic/distributions', distro, 'jdk');
         runCommand(
             join(repositoryRoot, 'gradlew'),

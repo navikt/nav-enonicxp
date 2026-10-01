@@ -9,6 +9,7 @@ import { prepareCuratedImportFiles } from './lib/import-files.mjs';
 import { batchCuratedExpectations, loadCuratedExpectations } from './lib/import-expectations.mjs';
 import {
     assertLocalTargetProcess,
+    assertSandboxName,
     parseCliJsonOutput,
     runLocalXpCommand,
     verifyLocalImportTarget,
@@ -19,6 +20,7 @@ import {
     CURATED_REPOSITORIES as REQUIRED_REPO_IDS,
     isCuratedContentPath as isContentPath,
     isCuratedId,
+    isSafeName,
 } from './lib/curated-constants.mjs';
 
 const ARGUMENTS = new Set(['manifest', 'sandbox', 'service-url', 'export-dir', 'start-index']);
@@ -173,8 +175,7 @@ const validateNativeExports = (nativeExports, scope) => {
             ({ contentPath, importPath, exportName }) =>
                 contentPath !== CONTENT_ROOT_PATH ||
                 importPath !== '/content' ||
-                typeof exportName !== 'string' ||
-                !/^(?!\.{1,2}$)[a-zA-Z0-9._-]+$/.test(exportName)
+                !isSafeName(exportName)
         )
     ) {
         throw new Error(
@@ -324,6 +325,7 @@ const main = async () => {
             'Usage: node scripts/sandbox/apply-curated-export.mjs --manifest <manifest.json> --sandbox <local target> --service-url <curatedExportImport URL> [--export-dir <unpacked directory>]'
         );
     }
+    assertSandboxName(options.sandbox);
     const manifest = JSON.parse(readFileSync(options.manifest, 'utf8'));
     validateNativeExports(manifest.exports, manifest.scope ?? 'full');
     if (

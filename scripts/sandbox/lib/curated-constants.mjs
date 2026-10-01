@@ -20,7 +20,7 @@ export const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]']);
 export const isCuratedId = (value) =>
     typeof value === 'string' && /^[a-zA-Z0-9-]{1,100}$/.test(value);
 
-// Used for bundle and export names that become directory names.
+// Used for sandbox, bundle and export names that become directory names.
 export const isSafeName = (value) =>
     typeof value === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(value);
 

@@ -60,13 +60,18 @@ test('rejects unsupported and malformed arguments before any work', () => {
 test('the public create/update command loads without removed CLI modules', () => {
     const result = spawnSync(
         process.execPath,
-        [fileURLToPath(new URL('../import-curated-content.mjs', import.meta.url))],
+        [
+            fileURLToPath(new URL('../import-curated-content.mjs', import.meta.url)),
+            '--source',
+            'prod',
+            '--target',
+            '../navno',
+        ],
         { encoding: 'utf8', env: {} }
     );
     assert.equal(result.status, 1);
-    // With an empty environment there is no PATH, so the Enonic CLI availability
-    // check fails before argument parsing; that still proves the module graph loads.
-    assert.match(result.stderr, /Enonic CLI not found/);
+    // The sandbox name is rejected before the Enonic CLI check (no PATH here) or any prompt.
+    assert.match(result.stderr, /A valid, explicit local target sandbox name is required/);
     assert.doesNotMatch(result.stderr, /ERR_MODULE_NOT_FOUND/);
 });
 

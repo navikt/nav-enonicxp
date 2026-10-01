@@ -12,6 +12,7 @@ import {
 import { dirname, resolve } from 'node:path';
 import { Readable, Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
+import { isCuratedContentPath, isSafeName } from './curated-constants.mjs';
 import { writeNativeNodeXml } from './native-export.mjs';
 import { getXpSessionCookie } from './xp-auth.mjs';
 import { fetchXp } from './xp-http.mjs';
@@ -45,12 +46,7 @@ const requestJson = async (url, cookie, options, fetchImpl) => {
 };
 
 const getNodeDirectory = (exportRoot, contentPath) => {
-    if (
-        !(
-            contentPath === '/content/www.nav.no' || contentPath.startsWith('/content/www.nav.no/')
-        ) ||
-        contentPath.split('/').some((segment) => segment === '.' || segment === '..')
-    ) {
+    if (!isCuratedContentPath(contentPath)) {
         throw new Error(`Node path is outside the curated root: ${contentPath}`);
     }
     return resolve(exportRoot, contentPath.slice('/content/'.length), '_');
@@ -253,7 +249,7 @@ export const extractCuratedSource = async ({
     getSessionCookie = getXpSessionCookie,
 }) => {
     const exportRoots = manifest.exports.map(({ exportName }) => {
-        if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(exportName)) {
+        if (!isSafeName(exportName)) {
             throw new Error(`Invalid native export name: ${exportName}`);
         }
         return resolve(exportDirectory, exportName);

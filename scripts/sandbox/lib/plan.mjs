@@ -1,6 +1,11 @@
 import { readFileSync } from 'node:fs';
 import { dirname } from 'node:path';
-import { CONTENT_ROOT_PATH, REQUIRED_PROJECTS } from './curated-constants.mjs';
+import {
+    CONTENT_ROOT_PATH,
+    REQUIRED_PROJECTS,
+    isCuratedContentPath,
+    isSafeName,
+} from './curated-constants.mjs';
 import { getXpSessionCookie } from './xp-auth.mjs';
 import { fetchXp } from './xp-http.mjs';
 
@@ -118,12 +123,7 @@ const validateManifest = (manifest) => {
         const pathBranches = Object.keys(entry.paths || {}).filter((branch) => entry.paths[branch]);
         if (
             JSON.stringify(pathBranches) !== JSON.stringify(entry.branches) ||
-            entry.branches.some(
-                (branch) =>
-                    typeof entry.paths[branch] !== 'string' ||
-                    (!entry.paths[branch].startsWith(`${CONTENT_ROOT_PATH}/`) &&
-                        entry.paths[branch] !== CONTENT_ROOT_PATH)
-            )
+            entry.branches.some((branch) => !isCuratedContentPath(entry.paths[branch]))
         ) {
             throw new Error(
                 `Manifest entry ${entry.repoId}:${entry.contentId} has invalid branch paths`
@@ -179,7 +179,7 @@ export const createCuratedPlan = async ({
     scope = 'full',
     requestTimeoutMs = MANIFEST_REQUEST_TIMEOUT_MS,
 }) => {
-    if (typeof bundle !== 'string' || !/^(?!\.{1,2}$)[a-zA-Z0-9._-]+$/.test(bundle)) {
+    if (!isSafeName(bundle)) {
         throw new Error('bundle may only contain letters, numbers, dots, underscores, and hyphens');
     }
     if (!['full', 'page'].includes(scope) || !Array.isArray(paths) || !Array.isArray(seeds)) {

@@ -15,7 +15,10 @@ import {
     CURATED_REPOSITORIES,
     REQUIRED_PROJECTS,
     getProjectParents,
+    isCuratedBranch,
+    isCuratedContentId,
     isCuratedContentPath,
+    isCuratedRepository,
 } from './curated-safety';
 
 const MAX_INPUT_PATHS = 1000;
@@ -482,10 +485,10 @@ export const createCuratedExportManifest = (
     seeds.forEach((seed) => {
         const locale = getLayersData().repoIdToLocaleMap[seed.repository];
         if (
-            !CURATED_REPOSITORIES.includes(seed.repository) ||
+            !isCuratedRepository(seed.repository) ||
             !locale ||
-            !['draft', 'master'].includes(seed.branch) ||
-            !/^[a-zA-Z0-9-]+$/.test(seed.contentId)
+            !isCuratedBranch(seed.branch) ||
+            !isCuratedContentId(seed.contentId)
         ) {
             throw new Error('Invalid structured content seed');
         }

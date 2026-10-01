@@ -3,6 +3,8 @@ import console from 'node:console';
 import { mkdtempSync, readFileSync, realpathSync, rmSync } from 'node:fs';
 import { homedir, tmpdir } from 'node:os';
 import { basename, join } from 'node:path';
+import { isSafeName } from './curated-constants.mjs';
+import { readRunningSandbox } from './sandbox-files.mjs';
 import { getXpSessionCookie, parseAuth } from './xp-auth.mjs';
 import { directLocalFetch } from './xp-http.mjs';
 
@@ -48,7 +50,7 @@ export const assertLocalUrl = (value, expected) => {
 };
 
 export const assertSandboxName = (sandbox) => {
-    if (!/^(?!\.{1,2}$)[a-zA-Z0-9._-]+$/.test(sandbox || '')) {
+    if (!isSafeName(sandbox)) {
         throw new Error('A valid, explicit local target sandbox name is required');
     }
 };
@@ -143,8 +145,7 @@ export const assertLocalTargetProcess = (
     { homeDirectory = homedir(), runCommand = execFileSync, requireCuratedImport = true } = {}
 ) => {
     assertSandboxName(sandbox);
-    const state = readFileSync(join(homeDirectory, '.enonic/.enonic'), 'utf8');
-    if (state.match(/^running = "([^"]+)"$/m)?.[1] !== sandbox) {
+    if (readRunningSandbox(homeDirectory) !== sandbox) {
         throw new Error(`The selected target sandbox ${sandbox} must be running`);
     }
     const sandboxPath = join(homeDirectory, '.enonic/sandboxes', sandbox);

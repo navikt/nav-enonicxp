@@ -49,3 +49,21 @@ test('rejects unknown command line flags instead of ignoring them', () => {
     assert.equal(result.status, 1);
     assert.match(result.stderr, /Invalid argument: --start-idx/);
 });
+
+test('rejects an invalid sandbox name before reading the manifest or prompting', () => {
+    const result = spawnSync(
+        process.execPath,
+        [
+            fileURLToPath(new URL('../apply-curated-export.mjs', import.meta.url)),
+            '--manifest',
+            '/does/not/exist.json',
+            '--service-url',
+            'http://localhost:8080/_/service/no.nav.navno/curatedExportImport',
+            '--sandbox',
+            '../navno',
+        ],
+        { encoding: 'utf8', env: { ...process.env, ENONIC_AUTH: '' } }
+    );
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /A valid, explicit local target sandbox name is required/);
+});
