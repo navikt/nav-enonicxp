@@ -127,6 +127,38 @@ test('pins both node and binary reads to the manifest version, including multipl
     );
 });
 
+const draftExportOptions = (root, source, includeDrafts) => {
+    const args = options(root, [source]);
+    args.manifest.includeDrafts = includeDrafts;
+    args.manifest.exports[0].sourceBranch = 'draft';
+    args.manifest.entries[0] = {
+        ...args.manifest.entries[0],
+        paths: { draft: source.node._path, master: source.node._path },
+        versions: { draft: source.node._versionKey, master: source.node._versionKey },
+        branches: ['draft', 'master'],
+    };
+    return args;
+};
+
+test('reads the draft export from master unless drafts are included', async (t) => {
+    for (const [includeDrafts, expectedBranch] of [
+        [false, 'master'],
+        [true, 'draft'],
+    ]) {
+        const root = directory(t);
+        const source = createSourceNode();
+        const bytes = Buffer.from('binary');
+        attach(source, 'file.pdf', bytes);
+        const requests = mockSource(t, [source], { 'file.pdf': bytes });
+        await extractCuratedSource(draftExportOptions(root, source, includeDrafts));
+        const batch = requests.find(({ url }) => url.pathname.endsWith('/curatedExportSource'));
+        assert.equal(JSON.parse(batch.request.body).branch, expectedBranch);
+        const binary = requests.find(({ url }) => url.searchParams.has('binaryReference'));
+        assert.equal(binary.url.searchParams.get('branch'), expectedBranch);
+        t.mock.restoreAll();
+    }
+});
+
 test('fails instead of mixing source versions and removes the incomplete export', async (t) => {
     const root = directory(t);
     const source = createSourceNode();

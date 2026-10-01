@@ -38,6 +38,15 @@ test('page import defaults to the running target but allows explicit overrides',
     assert.throws(() => getImportOptions(['--page', page]), /Only --page defaults/);
 });
 
+test('include-drafts is an opt-in boolean flag', () => {
+    const page = 'https://www.nav.no/arbeid';
+    assert.notEqual(getImportOptions(['--page', page], () => 'target')['include-drafts'], true);
+    assert.equal(
+        getImportOptions(['--page', page, '--include-drafts'], () => 'target')['include-drafts'],
+        true
+    );
+});
+
 test('rejects unsupported and malformed arguments before any work', () => {
     assert.throws(() => getImportOptions(['--dump-name', 'old_dump']), /Unsupported argument/);
     assert.throws(() => getImportOptions(['--plan-only']), /Unsupported argument/);

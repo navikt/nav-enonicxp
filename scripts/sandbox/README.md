@@ -18,7 +18,7 @@ Kuratert import inkluderer sidene i [curated-content-urls.txt](curated-content-u
 pnpm sandbox:import --source prod --target navno
 ```
 
-Kommandoen spør etter kildebruker/passord og et nytt lokalt `su`-passord. Den planlegger utvalget, laster ned innholdet, oppretter sandboxen med samme XP-versjon som kilden og importerer `draft` og `master` for Bokmål, engelsk og nynorsk. Den installerer også de samme applikasjonene og versjonene som kjører i kilden, blant annet Content Studio. Hvis en versjon ikke kan installeres, brukes nyeste patch-versjon med samme minor-versjon, og importen viser en advarsel. Content Studio og apper som eier innholdstyper i utvalget, må installeres. Andre apper hoppes over med en advarsel hvis ingen versjon kan installeres. Manifest og nedlastinger lagres i en egen kjøringsmappe under `.curated` og slettes når kommandoen avslutter, også ved feil.
+Kommandoen spør etter kildebruker/passord og et nytt lokalt `su`-passord. Den planlegger utvalget, laster ned innholdet, oppretter sandboxen med samme XP-versjon som kilden og importerer innholdet for Bokmål, engelsk og nynorsk. Som standard tas bare publisert innhold med: den publiserte versjonen legges i både `draft` og `master` lokalt, så upubliserte endringer og innhold som aldri er publisert blir igjen i kilden. Legg til `--include-drafts` for å også hente upubliserte endringer og innhold som aldri er publisert. Den installerer også de samme applikasjonene og versjonene som kjører i kilden, blant annet Content Studio. Hvis en versjon ikke kan installeres, brukes nyeste patch-versjon med samme minor-versjon, og importen viser en advarsel. Content Studio og apper som eier innholdstyper i utvalget, må installeres. Andre apper hoppes over med en advarsel hvis ingen versjon kan installeres. Manifest og nedlastinger lagres i en egen kjøringsmappe under `.curated` og slettes når kommandoen avslutter, også ved feil.
 
 Innhold i andre lag enn disse tre, for eksempel samisk, tas ikke med.
 
@@ -55,7 +55,7 @@ Bruk en offentlig URL eller en redigerings-URL fra Content Studio:
 pnpm sandbox:import --page 'https://www.nav.no/arbeid'
 ```
 
-`--page` utleder siden fra URL-en og importerer til den lokale sandboxen som kjører. Den krever et eksisterende mål, så `--force` er ikke nødvendig. Du kan overstyre kilden og målet med `--source` og `--target`. Content Studio-URL-er beholder prosjekt, innholds-ID og `draft`-gren.
+`--page` utleder siden fra URL-en og importerer til den lokale sandboxen som kjører. Den krever et eksisterende mål, så `--force` er ikke nødvendig. Du kan overstyre kilden og målet med `--source` og `--target`. Content Studio-URL-er beholder prosjekt og innholds-ID, men importerer den publiserte versjonen. Innhold som aldri er publisert, kan bare importeres med `--include-drafts`.
 
 En eksisterende sandbox stoppes og startes før både full import og sideimport. Importen kan også oppdatere innhold i lokale språkprosjekter som arver fra det valgte innholdet. «Én side» betyr derfor ikke at bare én node endres.
 

@@ -31,7 +31,10 @@ describe('curated export manifest authorization', () => {
         expect(
             post({ contentType: 'application/json', body: '{"paths":["/"]}' } as never).status
         ).toBe(200);
-        expect(createCuratedExportManifest).toHaveBeenCalledWith(['/'], 'full', { seeds: [] });
+        expect(createCuratedExportManifest).toHaveBeenCalledWith(['/'], 'full', {
+            seeds: [],
+            includeDrafts: false,
+        });
     });
 
     it.each([undefined, 'text/plain', 'application/x-www-form-urlencoded'])(
@@ -56,7 +59,10 @@ describe('curated export manifest authorization', () => {
                 body: JSON.stringify({ paths: [], scope: 'page', seeds }),
             } as never).status
         ).toBe(200);
-        expect(createCuratedExportManifest).toHaveBeenCalledWith([], 'page', { seeds });
+        expect(createCuratedExportManifest).toHaveBeenCalledWith([], 'page', {
+            seeds,
+            includeDrafts: false,
+        });
     });
 
     it('supports a seeds-only request without public paths', () => {
@@ -73,7 +79,32 @@ describe('curated export manifest authorization', () => {
                 body: JSON.stringify({ seeds, scope: 'page' }),
             } as never).status
         ).toBe(200);
-        expect(createCuratedExportManifest).toHaveBeenCalledWith([], 'page', { seeds });
+        expect(createCuratedExportManifest).toHaveBeenCalledWith([], 'page', {
+            seeds,
+            includeDrafts: false,
+        });
+    });
+
+    it('forwards includeDrafts to the manifest builder', () => {
+        expect(
+            post({
+                contentType: 'application/json',
+                body: JSON.stringify({ paths: ['/'], includeDrafts: true }),
+            } as never).status
+        ).toBe(200);
+        expect(createCuratedExportManifest).toHaveBeenCalledWith(['/'], 'full', {
+            seeds: [],
+            includeDrafts: true,
+        });
+    });
+
+    it.each(['true', 1, null])('rejects a non-boolean includeDrafts value %j', (includeDrafts) => {
+        const response = post({
+            contentType: 'application/json',
+            body: JSON.stringify({ paths: ['/'], includeDrafts }),
+        } as never);
+        expect(response.status).toBe(400);
+        expect(createCuratedExportManifest).not.toHaveBeenCalled();
     });
 
     it.each([

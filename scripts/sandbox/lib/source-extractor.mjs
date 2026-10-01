@@ -280,6 +280,9 @@ export const extractCuratedSource = async ({
                     entry.branches.includes(nativeExport.sourceBranch)
             );
             const exportedSources = [];
+            // Without drafts, the manifest mirrors master into draft, so draft data is read from master.
+            const readBranch =
+                manifest.includeDrafts === true ? nativeExport.sourceBranch : 'master';
 
             for (const batch of chunks(entries, BATCH_SIZE)) {
                 const versionIds = batch.map((entry) => {
@@ -298,7 +301,7 @@ export const extractCuratedSource = async ({
                         method: 'POST',
                         body: JSON.stringify({
                             repository: nativeExport.repoId,
-                            branch: nativeExport.sourceBranch,
+                            branch: readBranch,
                             contentIds: batch.map(({ contentId }) => contentId),
                             versionIds,
                         }),
@@ -337,7 +340,7 @@ export const extractCuratedSource = async ({
                     [...new Set(binaryReferences)].forEach((binaryReference) =>
                         binaryRequests.push({
                             repository: nativeExport.repoId,
-                            branch: nativeExport.sourceBranch,
+                            branch: readBranch,
                             contentId: entry.contentId,
                             versionId: versionIds[index],
                             binaryReference,

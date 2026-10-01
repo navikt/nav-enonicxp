@@ -70,10 +70,12 @@ export type CuratedExportSeed = {
 
 export type CuratedExportOptions = {
     seeds?: CuratedExportSeed[];
+    includeDrafts?: boolean;
 };
 
 export type CuratedExportManifest = {
     scope: 'full' | 'page';
+    includeDrafts: boolean;
     generatedAt: string;
     xpVersion: string;
     applications: Array<{
@@ -107,11 +109,19 @@ const isExcludedPath = (path: string) =>
 const isAllowedNodePath = (path: string) =>
     isCuratedContentPath(path) && !isExcludedPath(path.slice('/content'.length));
 
+type SourceBranch = 'draft' | 'master';
+
+// By default only published content is exported: master is read and mirrored into the local draft
+// branch, so unpublished changes stay in the source. With includeDrafts, both branches are read.
+const getSourceBranches = (includeDrafts: boolean): SourceBranch[] =>
+    includeDrafts ? ['draft', 'master'] : ['master'];
+
 const getEntry = (
     content: Content,
     locale: string,
     reason: CuratedExportReason,
-    sourceBranch: 'draft' | 'master' = 'master'
+    sourceBranches: SourceBranch[],
+    sourceBranch: SourceBranch = 'master'
 ): CuratedExportEntry | null => {
     const repoId = getLayersData().localeToRepoIdMap[locale];
     if (!repoId) {
@@ -126,7 +136,7 @@ const getEntry = (
     const versions: CuratedExportEntry['versions'] = {};
     const branches: CuratedExportEntry['branches'] = [];
     let contentType = content.type;
-    (['draft', 'master'] as const).forEach((branch) => {
+    sourceBranches.forEach((branch) => {
         const node = getRepoConnection({ repoId, branch, asAdmin: true }).get<Content>(content._id);
         if (!node || !isAllowedNodePath(node._path)) {
             return;
@@ -163,18 +173,23 @@ const getEntry = (
         );
     }, 0);
 
+    const isMirrored = !sourceBranches.includes('draft');
     return {
         contentId: content._id,
-        paths,
-        versions,
+        paths: isMirrored ? { draft: paths.master, master: paths.master } : paths,
+        versions: isMirrored ? { draft: versions.master, master: versions.master } : versions,
         contentType,
         locale,
         repoId,
         reason,
         descendantCount,
-        branches,
+        branches: isMirrored ? ['draft', 'master'] : branches,
     };
 };
+
+// Mirrored draft data is a copy of master, so only branches that were actually read are walked.
+const getReadBranches = (entry: CuratedExportEntry, sourceBranches: SourceBranch[]) =>
+    entry.branches.filter((branch) => sourceBranches.includes(branch));
 
 const getRequiredProjects = () => {
     const projectsById = projectLib.list().reduce<Record<string, Project>>((projects, project) => {
@@ -270,9 +285,12 @@ const validateRepositorySet = (entries: CuratedExportEntry[]) => {
     }
 };
 
-const assertSelectedSourceConsistency = (entries: CuratedExportEntry[]) => {
+const assertSelectedSourceConsistency = (
+    entries: CuratedExportEntry[],
+    sourceBranches: SourceBranch[]
+) => {
     entries.forEach((entry) => {
-        entry.branches.forEach((branch) => {
+        getReadBranches(entry, sourceBranches).forEach((branch) => {
             const node = getRepoConnection({
                 repoId: entry.repoId,
                 branch,
@@ -291,7 +309,10 @@ const assertSelectedSourceConsistency = (entries: CuratedExportEntry[]) => {
     });
 };
 
-const findTypeRepresentative = (contentType: ContentDescriptor): CuratedExportEntry | null => {
+const findTypeRepresentative = (
+    contentType: ContentDescriptor,
+    sourceBranches: SourceBranch[]
+): CuratedExportEntry | null => {
     const contentByRepoId = queryAllLayersToRepoIdBuckets({
         branch: 'master',
         state: 'localized',
@@ -321,7 +342,7 @@ const findTypeRepresentative = (contentType: ContentDescriptor): CuratedExportEn
         const content = contentByRepoId[repoId]?.[0];
         const locale = repoIdToLocaleMap[repoId];
         if (content && locale) {
-            return getEntry(content, locale, 'type-coverage');
+            return getEntry(content, locale, 'type-coverage', sourceBranches);
         }
     }
 
@@ -330,9 +351,10 @@ const findTypeRepresentative = (contentType: ContentDescriptor): CuratedExportEn
 
 const closeContentGraph = (
     initialEntries: CuratedExportEntry[],
-    entriesByKey: Record<string, CuratedExportEntry>
+    entriesByKey: Record<string, CuratedExportEntry>,
+    sourceBranches: SourceBranch[]
 ) => {
-    const pendingEntries: Array<{ entry: CuratedExportEntry; branch: 'draft' | 'master' }> = [];
+    const pendingEntries: Array<{ entry: CuratedExportEntry; branch: SourceBranch }> = [];
     const queuedBranches = new Set<string>();
     const expandableEntryKeys = new Set<string>();
     const selectedEntriesByPath = new Map<string, CuratedExportEntry>();
@@ -345,7 +367,7 @@ const closeContentGraph = (
             expandableEntryKeys.add(entryKey);
         }
         const shouldExpandDependencies = expandableEntryKeys.has(entryKey);
-        entry.branches.forEach((branch) => {
+        getReadBranches(entry, sourceBranches).forEach((branch) => {
             const key = `${entryKey}:${branch}:${shouldExpandDependencies ? 'expand' : 'include'}`;
             selectedEntriesByPath.set(`${entry.repoId}:${branch}:${entry.paths[branch]}`, entry);
             if (!queuedBranches.has(key)) {
@@ -383,7 +405,8 @@ const closeContentGraph = (
                 { locale: entry.locale, branch, asAdmin: true },
                 () => contentLib.get({ key: contentPath.slice('/content'.length) })
             );
-            const ancestorEntry = ancestor && getEntry(ancestor, entry.locale, 'ancestor', branch);
+            const ancestorEntry =
+                ancestor && getEntry(ancestor, entry.locale, 'ancestor', sourceBranches, branch);
             if (!ancestorEntry) {
                 throw new Error(`Missing ancestor ${contentPath} in ${entry.repoId}:${branch}`);
             }
@@ -417,7 +440,13 @@ const closeContentGraph = (
                 return;
             }
 
-            const dependencyEntry = getEntry(dependency, entry.locale, 'dependency', branch);
+            const dependencyEntry = getEntry(
+                dependency,
+                entry.locale,
+                'dependency',
+                sourceBranches,
+                branch
+            );
             if (!dependencyEntry) {
                 return;
             }
@@ -443,9 +472,10 @@ export const getAncestorContentPaths = (contentPath: string) => {
 
 const addRecursiveDescendants = (
     rootEntry: CuratedExportEntry,
-    entriesByKey: Record<string, CuratedExportEntry>
+    entriesByKey: Record<string, CuratedExportEntry>,
+    sourceBranches: SourceBranch[]
 ) => {
-    rootEntry.branches.forEach((branch) => {
+    getReadBranches(rootEntry, sourceBranches).forEach((branch) => {
         const rootPath = rootEntry.paths[branch];
         if (!rootPath) {
             return;
@@ -465,7 +495,13 @@ const addRecursiveDescendants = (
             );
         }
         descendants.hits.forEach((content) => {
-            const descendantEntry = getEntry(content, rootEntry.locale, rootEntry.reason, branch);
+            const descendantEntry = getEntry(
+                content,
+                rootEntry.locale,
+                rootEntry.reason,
+                sourceBranches,
+                branch
+            );
             if (descendantEntry) {
                 entriesByKey[getEntryKey(descendantEntry)] = descendantEntry;
             }
@@ -476,8 +512,9 @@ const addRecursiveDescendants = (
 export const createCuratedExportManifest = (
     paths: string[],
     scope: 'full' | 'page' = 'full',
-    { seeds = [] }: CuratedExportOptions = {}
+    { seeds = [], includeDrafts = false }: CuratedExportOptions = {}
 ): CuratedExportManifest => {
+    const sourceBranches = getSourceBranches(includeDrafts);
     if (paths.length + seeds.length > MAX_INPUT_PATHS) {
         throw new Error(`A maximum of ${MAX_INPUT_PATHS} popular paths is allowed`);
     }
@@ -496,13 +533,15 @@ export const createCuratedExportManifest = (
         ) {
             throw new Error('Invalid structured content seed');
         }
-        const content = runInLocaleContext({ locale, branch: seed.branch, asAdmin: true }, () =>
+        // Without drafts, draft seeds (e.g. Content Studio URLs) resolve to their published version.
+        const seedBranch = sourceBranches.includes(seed.branch) ? seed.branch : 'master';
+        const content = runInLocaleContext({ locale, branch: seedBranch, asAdmin: true }, () =>
             contentLib.get({ key: seed.contentId })
         );
-        const entry = content && getEntry(content, locale, 'popular', seed.branch);
+        const entry = content && getEntry(content, locale, 'popular', sourceBranches, seedBranch);
         if (!entry) {
             throw new Error(
-                `Structured content seed was not found or is excluded: ${seed.repository}:${seed.branch}:${seed.contentId}`
+                `Structured content seed is ${includeDrafts ? 'missing' : 'unpublished, missing'} or excluded: ${seed.repository}:${seedBranch}:${seed.contentId}`
             );
         }
         entriesByKey[getEntryKey(entry)] = entry;
@@ -519,7 +558,7 @@ export const createCuratedExportManifest = (
             return;
         }
 
-        const entry = getEntry(target.content, target.locale, 'popular');
+        const entry = getEntry(target.content, target.locale, 'popular', sourceBranches);
         if (entry) {
             entriesByKey[getEntryKey(entry)] = entry;
         }
@@ -533,10 +572,10 @@ export const createCuratedExportManifest = (
                 return;
             }
 
-            const entry = getEntry(target.content, target.locale, reason);
+            const entry = getEntry(target.content, target.locale, reason, sourceBranches);
             if (entry) {
                 entriesByKey[getEntryKey(entry)] = entry;
-                addRecursiveDescendants(entry, entriesByKey);
+                addRecursiveDescendants(entry, entriesByKey, sourceBranches);
             }
         });
     }
@@ -551,7 +590,7 @@ export const createCuratedExportManifest = (
                 return;
             }
 
-            const representative = findTypeRepresentative(contentType);
+            const representative = findTypeRepresentative(contentType, sourceBranches);
             if (!representative) {
                 missingContentTypes.push(contentType);
                 return;
@@ -562,16 +601,17 @@ export const createCuratedExportManifest = (
         });
     }
 
-    closeContentGraph(Object.values(entriesByKey), entriesByKey);
+    closeContentGraph(Object.values(entriesByKey), entriesByKey, sourceBranches);
     const entries = Object.values(entriesByKey);
     if (scope === 'full') {
         validateRepositorySet(entries);
     }
     const applications = getRequiredApplications(entries);
-    assertSelectedSourceConsistency(entries);
+    assertSelectedSourceConsistency(entries, sourceBranches);
 
     return {
         scope,
+        includeDrafts,
         generatedAt: new Date().toISOString(),
         xpVersion: getXpVersion(),
         applications,

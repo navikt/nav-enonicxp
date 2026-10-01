@@ -177,6 +177,7 @@ export const createCuratedPlan = async ({
     auth,
     bundle,
     scope = 'full',
+    includeDrafts = false,
     requestTimeoutMs = MANIFEST_REQUEST_TIMEOUT_MS,
 }) => {
     if (!isSafeName(bundle)) {
@@ -185,11 +186,14 @@ export const createCuratedPlan = async ({
     if (!['full', 'page'].includes(scope) || !Array.isArray(paths) || !Array.isArray(seeds)) {
         throw new Error('A full/page selection with paths and seeds arrays is required');
     }
+    if (typeof includeDrafts !== 'boolean') {
+        throw new Error('includeDrafts must be a boolean');
+    }
     const selectedPaths = inputPath ? readPaths(inputPath) : normalizePaths(paths);
     const sessionCookie = await getXpSessionCookie(serviceUrl, auth);
     const response = await postJson(
         serviceUrl,
-        { paths: selectedPaths, seeds, scope },
+        { paths: selectedPaths, seeds, scope, includeDrafts },
         { Cookie: sessionCookie },
         requestTimeoutMs
     );
@@ -203,6 +207,9 @@ export const createCuratedPlan = async ({
     validateManifest(manifest);
     if (manifest.scope !== scope) {
         throw new Error('Manifest service returned a different selection scope');
+    }
+    if (manifest.includeDrafts !== includeDrafts) {
+        throw new Error('Manifest service returned a different draft selection');
     }
     return {
         ...manifest,

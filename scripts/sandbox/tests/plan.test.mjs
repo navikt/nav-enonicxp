@@ -7,10 +7,11 @@ import { clearInterval, setInterval } from 'node:timers';
 import { REQUIRED_PROJECTS as projects } from '../lib/curated-constants.mjs';
 import { createCuratedPlan } from '../lib/plan.mjs';
 
-const fixture = (t, scope = 'full') => {
+const fixture = (t, scope = 'full', includeDrafts = false) => {
     const requests = [];
     const body = {
         scope,
+        includeDrafts,
         projects,
         xpVersion: '7.16.6',
         applications: [],
@@ -41,6 +42,7 @@ const fixture = (t, scope = 'full') => {
             auth: 'synthetic:password',
             bundle: 'curated-plan',
             scope,
+            includeDrafts,
         },
     };
 };
@@ -62,11 +64,12 @@ test('plans both branches of every project without extraction or target requests
         paths: ['/www.nav.no/arbeid'],
         seeds: [],
         scope: 'full',
+        includeDrafts: false,
     });
 });
 
 test('normalizes public page URLs and preserves exact editor identity', async (t) => {
-    const f = fixture(t, 'page');
+    const f = fixture(t, 'page', true);
     f.body.entries = [
         {
             ...f.body.entries[1],
@@ -85,10 +88,20 @@ test('normalizes public page URLs and preserves exact editor identity', async (t
         paths: ['/www.nav.no/arbeid'],
         seeds: [seed],
         scope: 'page',
+        includeDrafts: true,
     });
     assert.equal(plan.exports.length, 1);
     assert.equal(plan.exports[0].sourceBranch, 'draft');
     assert.equal(plan.exports[0].repoId, seed.repository);
+});
+
+test('rejects a manifest with a different draft selection', async (t) => {
+    const f = fixture(t);
+    f.body.includeDrafts = true;
+    await assert.rejects(
+        () => createCuratedPlan({ ...f.options, paths: ['/www.nav.no/arbeid'] }),
+        /different draft selection/
+    );
 });
 
 test('accepts text and JSON URL lists, ignoring comments and duplicates', async (t) => {

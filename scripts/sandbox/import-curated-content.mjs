@@ -47,7 +47,7 @@ export const getImportOptions = (args, getCurrentSandbox = () => null) => {
     const options = {};
     for (let index = 0; index < args.length; index += 1) {
         const argument = args[index];
-        if (argument === '--force') {
+        if (argument === '--force' || argument === '--include-drafts') {
             options[argument.slice(2)] = true;
             continue;
         }
@@ -64,7 +64,7 @@ export const getImportOptions = (args, getCurrentSandbox = () => null) => {
     options.target ||= options.page ? getCurrentSandbox() : null;
     if (!options.source || !options.target) {
         throw new Error(
-            'Usage: pnpm sandbox:import --source <prod|dev1|dev2|URL|sandbox> --target <sandbox> [--page <URL>] [--force]. Only --page defaults to the running target.'
+            'Usage: pnpm sandbox:import --source <prod|dev1|dev2|URL|sandbox> --target <sandbox> [--page <URL>] [--force] [--include-drafts]. Only --page defaults to the running target.'
         );
     }
     return options;
@@ -182,6 +182,7 @@ const main = async () => {
             auth: sourceAuth,
             bundle,
             scope: options.page ? 'page' : 'full',
+            includeDrafts: options['include-drafts'] === true,
         });
         writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, {
             mode: 0o600,

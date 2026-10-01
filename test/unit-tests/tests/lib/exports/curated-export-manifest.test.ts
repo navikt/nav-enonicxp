@@ -56,6 +56,7 @@ jest.mock('/lib/xp/app', () => ({
         { key: 'no.nav.navno', version: '1.0.0', started: true, system: false },
         { key: 'com.enonic.app.contentstudio', version: '5.3.2', started: true, system: false },
         { key: 'com.enonic.app.xpdoctor', version: '2.3.0', started: false, system: false },
+        { key: 'no.item.partfinder', version: '1.2.0', started: true, system: false },
         {
             key: 'com.enonic.xp.app.standardidprovider',
             version: '7.14.4',
@@ -117,7 +118,8 @@ const setReferences = (
     locale: keyof typeof repositories = 'no'
 ) => references.set(key(repositories[locale], branch, id), ids);
 
-const selectPage = () => createCuratedExportManifest(['/www.nav.no/page'], 'page');
+const selectPage = (includeDrafts = false) =>
+    createCuratedExportManifest(['/www.nav.no/page'], 'page', { includeDrafts });
 
 test('escapes backslashes before quotes in NoQL string literals', () => {
     expect(escapeNoqlStringLiteral('path\\segment"suffix')).toBe('path\\\\segment\\"suffix');
@@ -206,27 +208,32 @@ test('includes pinned source versions and only selected graph nodes in page scop
     addNode('page', '/www.nav.no/page');
     addNode('unselected', '/www.nav.no/unselected');
     const manifest = selectPage();
+    expect(manifest.includeDrafts).toBe(false);
     expect(manifest.entries.map(({ contentId }) => contentId).sort()).toEqual(['page', 'root']);
     expect(manifest.entries.find(({ contentId }) => contentId === 'page')?.versions).toEqual({
-        draft: 'page-draft-version',
+        draft: 'page-master-version',
         master: 'page-master-version',
     });
     expect(queryAllLayersToRepoIdBuckets).not.toHaveBeenCalled();
 });
 
-test('traverses both branches of dependencies discovered from only one branch', () => {
+test('exports published content only, mirroring master into the draft branch', () => {
     addNode('page', '/www.nav.no/page');
+    addNode('page', '/www.nav.no/renamed-draft', { branches: ['draft'] });
     addNode('shared', '/www.nav.no/shared', { type: 'portal:fragment' });
     addNode('draft-image', '/www.nav.no/draft-image', { branches: ['draft'] });
     setReferences('page', 'master', ['shared']);
+    setReferences('page', 'draft', ['draft-image']);
     setReferences('shared', 'draft', ['draft-image']);
-    expect(selectPage().entries).toContainEqual(
-        expect.objectContaining({
-            contentId: 'draft-image',
-            branches: ['draft'],
-            reason: 'dependency',
-        })
-    );
+    const entries = selectPage().entries;
+    expect(entries).not.toContainEqual(expect.objectContaining({ contentId: 'draft-image' }));
+    expect(entries.find(({ contentId }) => contentId === 'page')).toMatchObject({
+        branches: ['draft', 'master'],
+        paths: {
+            draft: '/content/www.nav.no/page',
+            master: '/content/www.nav.no/page',
+        },
+    });
 });
 
 test('includes linked pages without recursively selecting the rest of their link graph', () => {
@@ -295,22 +302,21 @@ test('expands dependencies from content later selected as an ancestor', () => {
     expect(contentIds).toContain('section-image');
 });
 
-test('closes the opposite-branch parent chain of a newly discovered moved ancestor', () => {
+test('ignores unpublished moves of ancestors', () => {
     addNode('page', '/www.nav.no/old/page', { branches: ['master'] });
     addNode('parent', '/www.nav.no/old', { branches: ['master'], type: 'base:folder' });
     addNode('parent', '/www.nav.no/new/moved', { branches: ['draft'], type: 'base:folder' });
     addNode('draft-parent', '/www.nav.no/new', { branches: ['draft'], type: 'base:folder' });
     const manifest = createCuratedExportManifest(['/www.nav.no/old/page'], 'page');
     expect(manifest.entries).toContainEqual(
-        expect.objectContaining({
-            contentId: 'draft-parent',
-            branches: ['draft'],
-            reason: 'ancestor',
-        })
+        expect.objectContaining({ contentId: 'parent', reason: 'ancestor' })
+    );
+    expect(manifest.entries).not.toContainEqual(
+        expect.objectContaining({ contentId: 'draft-parent' })
     );
 });
 
-test('filters excluded resolved aliases and opposite-branch paths', () => {
+test('filters excluded resolved aliases and ignores unpublished paths', () => {
     addNode('excluded', '/www.nav.no/testsider/demo');
     jest.mocked(findTargetContentAndLocale).mockReturnValueOnce({
         content: toContent(getNode(repositories.no, 'master', 'excluded')!),
@@ -321,9 +327,8 @@ test('filters excluded resolved aliases and opposite-branch paths', () => {
     addNode('page', '/www.nav.no/page', { branches: ['master'] });
     addNode('page', '/www.nav.no/brukertester/page', { branches: ['draft'] });
     const entry = selectPage().entries.find(({ contentId }) => contentId === 'page');
-    expect(entry?.branches).toEqual(['master']);
-    expect(entry?.paths.draft).toBeUndefined();
-    expect(entry?.versions.draft).toBeUndefined();
+    expect(entry?.paths.draft).toBe('/content/www.nav.no/page');
+    expect(entry?.versions.draft).toBe('page-master-version');
 });
 
 test('rejects a requested structured seed outside the curated selection', () => {
@@ -341,11 +346,20 @@ test('rejects a requested structured seed outside the curated selection', () => 
     ).toThrow(/excluded/);
 });
 
+test('rejects a draft seed that has never been published', () => {
+    addNode('draft-page', '/www.nav.no/draft-page', { branches: ['draft'] });
+    expect(() =>
+        createCuratedExportManifest([], 'page', {
+            seeds: [{ repository: repositories.no, branch: 'draft', contentId: 'draft-page' }],
+        })
+    ).toThrow(/unpublished/);
+});
+
 test.each(['en', 'nn'] as const)(
-    'preserves draft-only %s editor identity despite a default path collision',
+    'preserves %s seed identity despite a default path collision',
     (locale) => {
         addNode('default-page', '/www.nav.no/page');
-        addNode('translated-page', '/www.nav.no/page', { locale, branches: ['draft'] });
+        addNode('translated-page', '/www.nav.no/page', { locale });
         const manifest = createCuratedExportManifest([], 'page', {
             seeds: [
                 {
@@ -359,7 +373,7 @@ test.each(['en', 'nn'] as const)(
             expect.objectContaining({
                 contentId: 'translated-page',
                 repoId: repositories[locale],
-                branches: ['draft'],
+                branches: ['draft', 'master'],
             })
         );
         expect(manifest.entries.every(({ repoId }) => repoId === repositories[locale])).toBe(true);
@@ -469,9 +483,73 @@ describe.each(['draft', 'master'] as const)('source consistency on %s', (branch)
                 }
                 return [];
             });
-            expect(selectPage).toThrow(/changed while planning/);
+            expect(() => selectPage(true)).toThrow(/changed while planning/);
         }
     );
+});
+
+describe('with includeDrafts', () => {
+    test('pins separate draft and master versions', () => {
+        addNode('page', '/www.nav.no/page');
+        const manifest = selectPage(true);
+        expect(manifest.includeDrafts).toBe(true);
+        expect(manifest.entries.find(({ contentId }) => contentId === 'page')?.versions).toEqual({
+            draft: 'page-draft-version',
+            master: 'page-master-version',
+        });
+    });
+
+    test('traverses both branches of dependencies discovered from only one branch', () => {
+        addNode('page', '/www.nav.no/page');
+        addNode('shared', '/www.nav.no/shared', { type: 'portal:fragment' });
+        addNode('draft-image', '/www.nav.no/draft-image', { branches: ['draft'] });
+        setReferences('page', 'master', ['shared']);
+        setReferences('shared', 'draft', ['draft-image']);
+        expect(selectPage(true).entries).toContainEqual(
+            expect.objectContaining({
+                contentId: 'draft-image',
+                branches: ['draft'],
+                reason: 'dependency',
+            })
+        );
+    });
+
+    test('closes the opposite-branch parent chain of a newly discovered moved ancestor', () => {
+        addNode('page', '/www.nav.no/old/page', { branches: ['master'] });
+        addNode('parent', '/www.nav.no/old', { branches: ['master'], type: 'base:folder' });
+        addNode('parent', '/www.nav.no/new/moved', { branches: ['draft'], type: 'base:folder' });
+        addNode('draft-parent', '/www.nav.no/new', { branches: ['draft'], type: 'base:folder' });
+        const manifest = createCuratedExportManifest(['/www.nav.no/old/page'], 'page', {
+            includeDrafts: true,
+        });
+        expect(manifest.entries).toContainEqual(
+            expect.objectContaining({
+                contentId: 'draft-parent',
+                branches: ['draft'],
+                reason: 'ancestor',
+            })
+        );
+    });
+
+    test('filters excluded opposite-branch paths', () => {
+        addNode('page', '/www.nav.no/page', { branches: ['master'] });
+        addNode('page', '/www.nav.no/brukertester/page', { branches: ['draft'] });
+        const entry = selectPage(true).entries.find(({ contentId }) => contentId === 'page');
+        expect(entry?.branches).toEqual(['master']);
+        expect(entry?.paths.draft).toBeUndefined();
+        expect(entry?.versions.draft).toBeUndefined();
+    });
+
+    test('imports a never-published draft seed', () => {
+        addNode('draft-page', '/www.nav.no/draft-page', { branches: ['draft'] });
+        const manifest = createCuratedExportManifest([], 'page', {
+            includeDrafts: true,
+            seeds: [{ repository: repositories.no, branch: 'draft', contentId: 'draft-page' }],
+        });
+        expect(manifest.entries).toContainEqual(
+            expect.objectContaining({ contentId: 'draft-page', branches: ['draft'] })
+        );
+    });
 });
 
 test('does not embed legacy sanitized supplements or mutate source text', () => {
@@ -483,7 +561,7 @@ test('does not embed legacy sanitized supplements or mutate source text', () => 
     expect(page.data).toEqual({ body: 'before\u0002after' });
 });
 
-test('requires Content Studio, keeps stopped apps optional and skips system apps', () => {
+test('requires Content Studio and content type owners, but not other apps', () => {
     addNode('page', '/www.nav.no/page');
     const manifest = selectPage();
     expect(manifest.xpVersion).toBe('7.14.4');
@@ -497,5 +575,8 @@ test('requires Content Studio, keeps stopped apps optional and skips system apps
     expect(manifest.applications.every(({ system }) => !system)).toBe(true);
     expect(manifest.applications).toContainEqual(
         expect.objectContaining({ key: 'com.enonic.app.contentstudio', required: true })
+    );
+    expect(manifest.applications).toContainEqual(
+        expect.objectContaining({ key: 'no.item.partfinder', started: true, required: false })
     );
 });
