@@ -1,0 +1,300 @@
+#!/usr/bin/env node
+
+import { spawnSync } from 'node:child_process';
+import console from 'node:console';
+import { existsSync } from 'node:fs';
+import { homedir } from 'node:os';
+import { join, resolve } from 'node:path';
+import process from 'node:process';
+import { fileURLToPath } from 'node:url';
+import {
+    assertSandboxXpVersion,
+    getXpSessionCookie,
+    LOOPBACK_HOSTS,
+    parseAuth,
+    promptForAuth,
+    promptForPassword,
+    readRunningSandbox,
+    verifyStoppedTargetAuth,
+    withCuratedWorkspace,
+} from './lib/common.mjs';
+import {
+    authorizeDeployedSource,
+    createCuratedPlan,
+    inferCuratedSourceFromPage,
+    resolveCuratedPage,
+    resolveCuratedSource,
+} from './lib/source.mjs';
+import { applyCuratedImport } from './lib/apply.mjs';
+import { downloadProjectIcons, extractCuratedSource, uploadProjectIcons } from './lib/extract.mjs';
+import {
+    assertEnonicCliAvailable,
+    assertLocalTargetConfiguration,
+    assertLocalTargetProcess,
+    assertSandboxName,
+    getLocalProcessEnvironment,
+    installCuratedApplications,
+    LOCAL_IMPORT_SERVICE_URL,
+    prepareCuratedTarget,
+    setCuratedImportMode,
+    verifyLocalImportTarget,
+    waitForManagementApi,
+} from './lib/target.mjs';
+
+export const getImportOptions = (args, getCurrentSandbox = () => null) => {
+    const options = {};
+    for (let index = 0; index < args.length; index += 1) {
+        const argument = args[index];
+        if (argument === '--force' || argument === '--include-drafts') {
+            options[argument.slice(2)] = true;
+            continue;
+        }
+        if (!['--source', '--target', '--page', '--input'].includes(argument)) {
+            throw new Error(`Unsupported argument: ${argument}`);
+        }
+        if (!args[index + 1] || args[index + 1].startsWith('--')) {
+            throw new Error(`Invalid argument: ${argument}`);
+        }
+        options[argument.slice(2)] = args[index + 1];
+        index += 1;
+    }
+    options.source ||= options.page ? inferCuratedSourceFromPage(options.page) : null;
+    options.target ||= options.page ? getCurrentSandbox() : null;
+    if (!options.source || !options.target) {
+        throw new Error(
+            'Usage: pnpm sandbox:import --source <prod|dev1|dev2|URL|sandbox> --target <sandbox> [--page <URL>] [--force] [--include-drafts]. Only --page defaults to the running target.'
+        );
+    }
+    return options;
+};
+
+const startSandbox = (sandbox) => {
+    const result = spawnSync('enonic', ['sandbox', 'start', sandbox, '--detach', '--force'], {
+        encoding: 'utf8',
+        stdio: 'inherit',
+        env: getLocalProcessEnvironment(),
+    });
+    if (result.status !== 0) {
+        throw new Error(`Could not start target sandbox ${sandbox}`);
+    }
+};
+
+const stopRunningSandbox = () => {
+    const result = spawnSync('enonic', ['sandbox', 'stop', '--force'], {
+        encoding: 'utf8',
+        stdio: 'inherit',
+        env: getLocalProcessEnvironment(),
+    });
+    if (result.status !== 0) {
+        throw new Error('Could not stop the running local sandbox');
+    }
+};
+
+const getRunningSandbox = () => readRunningSandbox(homedir());
+
+const main = async () => {
+    const options = getImportOptions(process.argv.slice(2), getRunningSandbox);
+    // Local checks run before any prompt or network call, so mistakes fail right away.
+    assertSandboxName(options.target);
+    const pageSelection = options.page ? resolveCuratedPage({ page: options.page }) : null;
+    const inputPath = pageSelection
+        ? undefined
+        : resolve(options.input ?? 'scripts/sandbox/curated-content-urls.txt');
+    if (inputPath && !existsSync(inputPath)) {
+        throw new Error(`URL list not found: ${inputPath}`);
+    }
+    const targetPath = join(homedir(), '.enonic/sandboxes', options.target);
+    const targetExists = existsSync(join(targetPath, '.enonic'));
+    if (options.page && !targetExists) {
+        throw new Error('--page requires an existing target sandbox');
+    }
+    if (targetExists && !options.force && !options.page) {
+        throw new Error(
+            `Target sandbox ${options.target} already exists; pass --force to import into it`
+        );
+    }
+    if (targetExists) {
+        assertLocalTargetConfiguration(targetPath);
+    }
+    assertEnonicCliAvailable();
+    const source = resolveCuratedSource(options.source);
+    const sourceIsLoopback = LOOPBACK_HOSTS.has(new URL(source.origin).hostname);
+    if (
+        (source.kind === 'local' && source.name === options.target) ||
+        (sourceIsLoopback && getRunningSandbox() === options.target)
+    ) {
+        throw new Error('Source and target sandbox must be different');
+    }
+    const sourceIsDeployed = source.kind === 'deployed';
+    // Show where the credentials go, since --page may infer the source host from a pasted URL.
+    // Deployed sources are approved in the browser instead.
+    let sourceAuth = sourceIsDeployed ? null : promptForAuth(`Source (${source.origin})`);
+    const targetIsRunning = getRunningSandbox() === options.target;
+    const targetAuth = targetExists
+        ? targetIsRunning
+            ? promptForAuth('Target')
+            : `su:${promptForPassword('Target SU password')}`
+        : `su:${promptForPassword('New local SU password')}`;
+    if (!targetExists && !targetAuth.startsWith('su:')) {
+        throw new Error('A new target sandbox must use the built-in su user');
+    }
+    if (!sourceIsDeployed) {
+        parseAuth(sourceAuth, 'Source');
+    }
+    parseAuth(targetAuth, 'Target');
+    console.log('Verifying source and target credentials');
+    try {
+        if (sourceIsDeployed) {
+            sourceAuth = await authorizeDeployedSource(source);
+        } else {
+            await getXpSessionCookie(source.sourceServiceUrl, sourceAuth);
+        }
+    } catch (error) {
+        throw new Error('Source authentication failed', { cause: error });
+    }
+    if (targetExists && targetIsRunning) {
+        try {
+            // Import mode is enabled later, when the target is restarted for the import.
+            await verifyLocalImportTarget({ sandbox: options.target, auth: targetAuth });
+        } catch (error) {
+            throw new Error('Target authentication failed', { cause: error });
+        }
+    } else if (targetExists) {
+        verifyStoppedTargetAuth(targetPath, targetAuth);
+    }
+    console.log('Credentials verified');
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const bundle = `${pageSelection ? 'curated-page' : 'curated-plan'}-${timestamp}`;
+    return withCuratedWorkspace({ bundle }, async ({ exportDirectory }) => {
+        console.log(`Planning curated import from ${source.name} to ${options.target}`);
+        const manifest = await createCuratedPlan({
+            inputPath,
+            paths: typeof pageSelection === 'string' ? [pageSelection] : [],
+            seeds: pageSelection && typeof pageSelection !== 'string' ? [pageSelection] : [],
+            serviceUrl: source.serviceUrl,
+            auth: sourceAuth,
+            bundle,
+            scope: options.page ? 'page' : 'full',
+            includeDrafts: options['include-drafts'] === true,
+        });
+        console.log(
+            `Planned ${manifest.entries.length} entries in ${manifest.exports.length} branch exports`
+        );
+        if (targetExists) {
+            // Fail before downloading anything if the target cannot run the source version.
+            assertSandboxXpVersion(targetPath, options.target, manifest.xpVersion);
+        }
+        const navApplication = manifest.applications.find(({ key }) => key === 'no.nav.navno');
+        const contentStudio = manifest.applications.find(
+            ({ key }) => key === 'com.enonic.app.contentstudio'
+        );
+        if (
+            !manifest.xpVersion ||
+            !navApplication?.version ||
+            !navApplication.started ||
+            !contentStudio?.version ||
+            !contentStudio.started
+        ) {
+            throw new Error(
+                'Manifest must contain the XP version and started, versioned NAV and Content Studio apps'
+            );
+        }
+        if (sourceIsDeployed && !options.page) {
+            // Icons come from Content Studio's admin API, which the export token cannot reach.
+            console.log('Skipping project icons from deployed sources');
+        }
+        const projectIcons =
+            options.page || sourceIsDeployed
+                ? []
+                : await downloadProjectIcons({
+                      sourceServiceUrl: source.sourceServiceUrl,
+                      projects: manifest.projects,
+                      auth: sourceAuth,
+                  });
+
+        console.log(`Downloading content from ${source.name}`);
+        const extraction = await extractCuratedSource({
+            manifest,
+            sourceServiceUrl: source.sourceServiceUrl,
+            auth: sourceAuth,
+            exportDirectory,
+        });
+        console.log(
+            `Extracted ${extraction.nodeCount} nodes and ${extraction.binaryCount} binary occurrences`
+        );
+
+        if (source.kind === 'local') {
+            stopRunningSandbox();
+        }
+        const target = prepareCuratedTarget({
+            sandbox: options.target,
+            xpVersion: manifest.xpVersion,
+            appVersion: navApplication.version,
+            contentStudioVersion: contentStudio.version,
+            applications: manifest.applications,
+            suPassword: targetAuth.slice(targetAuth.indexOf(':') + 1),
+        });
+        // A new sandbox is started in import mode. Signals skip finally blocks, so also
+        // leave import mode on exit.
+        let importModeEnabled = target.created;
+        const disableImportMode = () => {
+            if (importModeEnabled) {
+                setCuratedImportMode(target.sandboxPath, false);
+            }
+        };
+        process.once('exit', disableImportMode);
+        try {
+            if (!target.created) {
+                if (getRunningSandbox() === options.target) {
+                    stopRunningSandbox();
+                }
+                setCuratedImportMode(target.sandboxPath, true);
+                importModeEnabled = true;
+                startSandbox(options.target);
+                waitForManagementApi();
+                await verifyLocalImportTarget({ sandbox: options.target, auth: targetAuth });
+                if (!options.page) {
+                    installCuratedApplications({
+                        applications: manifest.applications,
+                        auth: targetAuth,
+                        sandbox: options.target,
+                    });
+                }
+            }
+            await applyCuratedImport({
+                manifest,
+                exportDirectory,
+                sandbox: options.target,
+                auth: targetAuth,
+            });
+            assertLocalTargetProcess(options.target);
+            console.log('Uploading project icons');
+            await uploadProjectIcons({
+                targetServiceUrl: LOCAL_IMPORT_SERVICE_URL,
+                icons: projectIcons,
+                auth: targetAuth,
+            });
+        } finally {
+            process.removeListener('exit', disableImportMode);
+            setCuratedImportMode(target.sandboxPath, false);
+            importModeEnabled = false;
+            if (getRunningSandbox() === options.target) {
+                stopRunningSandbox();
+                startSandbox(options.target);
+            }
+        }
+
+        console.log(`Curated import completed in sandbox ${options.target}`);
+    });
+};
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+    main().catch((error) => {
+        console.error(error instanceof Error ? error.message : error);
+        for (let cause = error?.cause; cause; cause = cause.cause) {
+            console.error(`  Caused by: ${cause instanceof Error ? cause.message : cause}`);
+        }
+        process.exitCode = error?.exitCode ?? 1;
+    });
+}

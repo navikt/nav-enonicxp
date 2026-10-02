@@ -12,6 +12,8 @@ repositories {
 
 node {
     version = '22.15.0'
+    pnpmVersion = new groovy.json.JsonSlurper().parse(file('package.json'))
+        .packageManager.tokenize('@')[1].tokenize('+')[0]
 }
 
 app {
@@ -23,6 +25,7 @@ app {
 dependencies {
     implementation "com.enonic.xp:core-api:${xpVersion}"
     implementation "com.enonic.xp:portal-api:${xpVersion}"
+    include "com.enonic.xp:lib-app:${xpVersion}"
     include "com.enonic.xp:lib-auditlog:${xpVersion}"
     include "com.enonic.xp:lib-auth:${xpVersion}"
     include "com.enonic.xp:lib-cluster:${xpVersion}"
@@ -60,6 +63,17 @@ tasks.register('babelJs', PnpmTask) {
     args = ['run', 'build']
 }
 
+tasks.withType(JavaCompile).configureEach {
+    options.release = 11
+}
 
 jar.dependsOn(babelJs)
+// Local-only curated import code must never be packaged for deployment.
+jar {
+    if (project.findProperty('curatedImportLocal') != 'true') {
+        exclude 'services/curatedExportImport/**'
+        exclude 'lib/exports/target/**'
+        exclude 'no/nav/navno/exports/target/**'
+    }
+}
 processResources.dependsOn(generateTypeScript)

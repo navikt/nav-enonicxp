@@ -34,27 +34,38 @@ if (clusterLib.isMaster()) {
     initMiscRepo();
 }
 
-if (app.config.env !== 'test') {
-    createOfficeImportSchedule();
-    activateSitemapDataUpdateEventListener();
-}
+// Native imports emit normal node events. Editing those nodes here would corrupt
+// the source snapshot (for example, custom-path cleanup drops typed null values).
+const curatedImportInProgress =
+    app.config.env === 'localhost' && app.config.curatedImportInProgress === 'true';
 
-activateLayersEventListeners();
-activateCacheEventListeners();
-activateContentListItemUnpublishedListener();
-activateExternalSearchIndexEventHandlers();
+if (curatedImportInProgress) {
+    log.warning(
+        'Curated import mode is active: content event listeners and schedules are disabled. Remove curatedImportInProgress from no.nav.navno.cfg if no import is running.'
+    );
+} else {
+    if (app.config.env !== 'test') {
+        createOfficeImportSchedule();
+        activateSitemapDataUpdateEventListener();
+    }
 
-activateArchiveNewsSchedule();
+    activateLayersEventListeners();
+    activateCacheEventListeners();
+    activateContentListItemUnpublishedListener();
+    activateExternalSearchIndexEventHandlers();
 
-activateCustomPathNodeListeners();
-activateContentUpdateListener();
-activateSchedulerCleanupSchedule();
-initArchiveContentTrees();
+    activateArchiveNewsSchedule();
 
-// This is somewhat annoying for local development, as it will run a fairly heavy task and spam
-// the logs when generating the sitemap. This happens on every redeploy of the app.
-if (app.config.env !== 'localhost' && app.config.env !== 'test') {
-    generateSitemapDataAndActivateSchedule();
+    activateCustomPathNodeListeners();
+    activateContentUpdateListener();
+    activateSchedulerCleanupSchedule();
+    initArchiveContentTrees();
+
+    // This is somewhat annoying for local development, as it will run a fairly heavy task and spam
+    // the logs when generating the sitemap. This happens on every redeploy of the app.
+    if (app.config.env !== 'localhost' && app.config.env !== 'test') {
+        generateSitemapDataAndActivateSchedule();
+    }
 }
 
 log.info('Finished running main');
