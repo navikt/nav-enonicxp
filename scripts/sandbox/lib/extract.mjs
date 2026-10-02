@@ -643,47 +643,31 @@ export const extractCuratedSource = async ({
     }
 };
 
-const getIconUrl = (serviceUrl, projectId) =>
-    new URL(`/admin/rest-v2/cs/project/icon/${encodeURIComponent(projectId)}`, serviceUrl);
-
+// Reads icons through the curated source endpoint so local and deployed sources share one path.
+// The source answers 204 for projects without an icon; Content Studio then shows the language flag.
 export const downloadProjectIcons = async ({
     sourceServiceUrl,
     projects,
     auth,
-    fetchRequest = fetchXp,
-    getSessionCookie = getXpSessionCookie,
+    fetchImpl = fetchXp,
+    getAuthHeaders = getSourceAuthHeaders,
 }) => {
     if (projects.length === 0) {
         return [];
     }
-    const cookie = await getSessionCookie(sourceServiceUrl, auth);
-    const projectResponse = await fetchRequest(
-        new URL('/admin/rest-v2/cs/project/list', sourceServiceUrl),
-        { headers: { Cookie: cookie } }
-    );
-    if (!projectResponse.ok) {
-        throw new Error(`Could not list project icons: ${projectResponse.status}`);
-    }
-    const sourceProjects = (await projectResponse.json()).projects;
-    if (!Array.isArray(sourceProjects)) {
-        throw new Error('Invalid Content Studio project list');
-    }
+    const authHeaders = await getAuthHeaders(sourceServiceUrl, auth);
     const icons = [];
     for (const project of projects) {
-        const sourceProject = sourceProjects.find(({ name }) => name === project.id);
-        if (!sourceProject) {
-            throw new Error(
-                `Project ${project.id} is missing from the Content Studio project list`
-            );
-        }
-        // Content Studio renders language flags itself when there is no uploaded icon.
-        // Calling the attachment endpoint for those projects returns HTTP 500 on XP7.
-        if (!sourceProject.icon) {
+        const url = new URL(sourceServiceUrl);
+        url.searchParams.set('project', project.id);
+        const response = await fetchImpl(url, {
+            headers: authHeaders,
+            redirect: 'error',
+            signal: AbortSignal.timeout(30000),
+        });
+        if (response.status === 204) {
             continue;
         }
-        const response = await fetchRequest(getIconUrl(sourceServiceUrl, project.id), {
-            headers: { Cookie: cookie },
-        });
         if (!response.ok) {
             throw new Error(`Could not read icon for project ${project.id}: ${response.status}`);
         }

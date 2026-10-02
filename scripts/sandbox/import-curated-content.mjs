@@ -200,18 +200,13 @@ const main = async () => {
                 'Manifest must contain the XP version and started, versioned NAV and Content Studio apps'
             );
         }
-        if (sourceIsDeployed && !options.page) {
-            // Icons come from Content Studio's admin API, which the export token cannot reach.
-            console.log('Skipping project icons from deployed sources');
-        }
-        const projectIcons =
-            options.page || sourceIsDeployed
-                ? []
-                : await downloadProjectIcons({
-                      sourceServiceUrl: source.sourceServiceUrl,
-                      projects: manifest.projects,
-                      auth: sourceAuth,
-                  });
+        const projectIcons = options.page
+            ? []
+            : await downloadProjectIcons({
+                  sourceServiceUrl: source.sourceServiceUrl,
+                  projects: manifest.projects,
+                  auth: sourceAuth,
+              });
 
         console.log(`Downloading content from ${source.name}`);
         const extraction = await extractCuratedSource({
@@ -269,7 +264,9 @@ const main = async () => {
                 auth: targetAuth,
             });
             assertLocalTargetProcess(options.target);
-            console.log('Uploading project icons');
+            if (projectIcons.length > 0) {
+                console.log(`Uploading ${projectIcons.length} project icons`);
+            }
             await uploadProjectIcons({
                 targetServiceUrl: LOCAL_IMPORT_SERVICE_URL,
                 icons: projectIcons,

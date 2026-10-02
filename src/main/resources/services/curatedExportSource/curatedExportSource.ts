@@ -3,6 +3,7 @@ import {
     getCuratedSourceBinary,
     getCuratedSourceNode,
 } from '../../lib/exports/curated-node-reader';
+import { getCuratedProjectIcon } from '../../lib/exports/curated-project-icon';
 import { userCanManageCuratedExports } from '../../lib/utils/auth-utils';
 import { logger } from '../../lib/utils/logging';
 import {
@@ -57,9 +58,43 @@ const getRepositoryAndBranch = (repository: unknown, branch: unknown) => {
     return { repository, branch };
 };
 
+const getProjectIcon = (projectId: string): Response => {
+    if (!isCuratedRepository(`com.enonic.cms.${projectId}`)) {
+        return jsonResponse(400, { message: 'Invalid project' });
+    }
+    try {
+        const icon = getCuratedProjectIcon(projectId);
+        if (!icon) {
+            // 204, not 404, so the CLI can tell "no icon" apart from a missing route.
+            return { status: 204, headers: { 'Cache-Control': 'no-store' } };
+        }
+        return {
+            status: 200,
+            contentType: icon.mimeType,
+            // Icons may be SVG; never let a browser render one as a document on the admin origin.
+            headers: {
+                'Cache-Control': 'no-store',
+                'Content-Disposition': 'attachment',
+                'Content-Security-Policy': "default-src 'none'; sandbox",
+                'X-Content-Type-Options': 'nosniff',
+            },
+            body: icon.stream,
+        };
+    } catch (error) {
+        logger.error(`Curated export project icon failed for ${projectId}: ${error}`);
+        return jsonResponse(500, { message: 'Failed to read project icon' });
+    }
+};
+
 export const get = (req: Request): Response => {
     if (!userCanManageCuratedExports()) {
         return jsonResponse(403, { message: 'System administrator access is required' });
+    }
+    if (req.params.project !== undefined) {
+        const projectId = getStringParam(req, 'project');
+        return projectId
+            ? getProjectIcon(projectId)
+            : jsonResponse(400, { message: 'Invalid project' });
     }
     const request = getRequest(req);
     if (!request) {

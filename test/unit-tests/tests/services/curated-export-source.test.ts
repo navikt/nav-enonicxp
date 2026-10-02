@@ -2,6 +2,8 @@ const getNode = jest.fn();
 const getBinary = jest.fn();
 const readTypedNode = jest.fn();
 const readTypedBinary = jest.fn();
+const getRepository = jest.fn();
+const getRepositoryBinary = jest.fn();
 
 jest.mock('@navno-app/lib/exports/curated-node-reader', () => ({
     getCuratedSourceNode: readTypedNode,
@@ -11,6 +13,7 @@ jest.mock('@navno-app/lib/exports/curated-node-reader', () => ({
 jest.mock('@navno-app/lib/repos/repo-utils', () => ({
     getRepoConnection: jest.fn(() => ({ get: getNode, getBinary })),
 }));
+jest.mock('/lib/xp/repo', () => ({ get: getRepository, getBinary: getRepositoryBinary }));
 jest.mock('@navno-app/lib/utils/logging', () => ({
     logger: { error: jest.fn() },
 }));
@@ -473,5 +476,83 @@ describe('curated export source', () => {
 
         expect(response.status).toBe(400);
         expect(getNode).not.toHaveBeenCalled();
+    });
+
+    describe('project icons', () => {
+        const projectWithIcon = (icon: Record<string, unknown> | undefined) => ({
+            id: 'com.enonic.cms.default',
+            data: { 'com-enonic-cms': { displayName: 'Nav.no', ...(icon && { icon }) } },
+        });
+
+        it('streams the stored project icon from the project repository', () => {
+            getRepository.mockReturnValue(
+                projectWithIcon({ binary: 'icon', mimeType: 'image/png', name: 'Rød.png' })
+            );
+            getRepositoryBinary.mockReturnValue('icon-stream');
+
+            const response = get(request({ project: 'default' }));
+
+            expect(getRepository).toHaveBeenCalledWith('com.enonic.cms.default');
+            expect(getRepositoryBinary).toHaveBeenCalledWith({
+                repoId: 'com.enonic.cms.default',
+                binaryReference: 'icon',
+            });
+            expect(response).toEqual({
+                status: 200,
+                contentType: 'image/png',
+                headers: {
+                    'Cache-Control': 'no-store',
+                    'Content-Disposition': 'attachment',
+                    'Content-Security-Policy': "default-src 'none'; sandbox",
+                    'X-Content-Type-Options': 'nosniff',
+                },
+                body: 'icon-stream',
+            });
+        });
+
+        it('answers 204 when the project has no icon', () => {
+            getRepository.mockReturnValue(projectWithIcon(undefined));
+
+            const response = get(request({ project: 'default' }));
+
+            expect(response.status).toBe(204);
+            expect(response.body).toBeUndefined();
+            expect(getRepositoryBinary).not.toHaveBeenCalled();
+        });
+
+        it('does not pass on a stored non-image content type', () => {
+            getRepository.mockReturnValue(
+                projectWithIcon({ binary: 'icon', mimeType: 'text/html' })
+            );
+
+            expect(get(request({ project: 'default' })).contentType).toBe(
+                'application/octet-stream'
+            );
+        });
+
+        it('rejects projects outside the curated project set before reading repositories', () => {
+            for (const project of ['', 'other', '../system-repo']) {
+                expect(get(request({ project })).status).toBe(400);
+            }
+            expect(getRepository).not.toHaveBeenCalled();
+        });
+
+        it('requires the same administrative role as content reads', () => {
+            jest.mocked(authLib.hasRole).mockReturnValue(false);
+
+            expect(get(request({ project: 'default' })).status).toBe(403);
+            expect(getRepository).not.toHaveBeenCalled();
+        });
+
+        it('reports repository read failures as a server error', () => {
+            getRepository.mockImplementation(() => {
+                throw new Error('boom');
+            });
+
+            const response = get(request({ project: 'default' }));
+
+            expect(response.status).toBe(500);
+            expect(responseBody(response)).toEqual({ message: 'Failed to read project icon' });
+        });
     });
 });
