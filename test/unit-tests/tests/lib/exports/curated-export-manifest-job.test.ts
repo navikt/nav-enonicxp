@@ -113,12 +113,37 @@ describe('curated export manifest jobs', () => {
         expect(createCuratedExportManifest).toHaveBeenCalledWith(['/arbeid'], 'full', {
             seeds: [],
             includeDrafts: true,
+            onProgress: expect.any(Function),
         });
         const done = poll(job);
         expect(done.status).toBe(200);
         expect(JSON.parse(done.body as string)).toEqual(MANIFEST);
         // The result is handed out once and then removed.
         expect(poll(job).status).toBe(404);
+    });
+
+    it('shows throttled build progress while the job is running', () => {
+        const { job } = start().body as { job: string };
+        const seen: unknown[] = [];
+        jest.mocked(createCuratedExportManifest).mockImplementation((_paths, _scope, options) => {
+            const report = options!.onProgress!;
+            report({ stage: 'resolving pages', checked: 0, queued: 0 });
+            seen.push((poll(job).body as { progress: unknown }).progress);
+            // Same stage within the interval: not written.
+            report({ stage: 'resolving pages', checked: 0, queued: 5 });
+            seen.push((poll(job).body as { progress: unknown }).progress);
+            // A new stage is written at once.
+            report({ stage: 'following dependencies', checked: 10, queued: 50 });
+            seen.push((poll(job).body as { progress: unknown }).progress);
+            return MANIFEST as never;
+        });
+        runTask();
+        expect(seen).toEqual([
+            { stage: 'resolving pages', checked: 0, queued: 0 },
+            { stage: 'resolving pages', checked: 0, queued: 0 },
+            { stage: 'following dependencies', checked: 10, queued: 50 },
+        ]);
+        expect(poll(job).status).toBe(200);
     });
 
     it('validates the request before starting a task', () => {

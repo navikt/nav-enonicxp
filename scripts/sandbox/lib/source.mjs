@@ -426,6 +426,17 @@ const requestJson = async (url, init, timeoutMs) => {
     };
 };
 
+const describeManifestProgress = (progress) => {
+    if (typeof progress?.stage !== 'string') {
+        return '';
+    }
+    const { stage, checked, queued } = progress;
+    if (!Number.isInteger(queued) || queued === 0) {
+        return `: ${stage}`;
+    }
+    return checked > 0 ? `: ${stage}, ${checked}/${queued} checked` : `: ${stage}, ${queued} found`;
+};
+
 const waitForManifestJob = async (
     serviceUrl,
     started,
@@ -451,7 +462,9 @@ const waitForManifestJob = async (
                 return response;
             }
             const elapsedSeconds = Math.round((Date.now() - startedAt) / 1000);
-            reportCounter(`\rSource is building the manifest (${elapsedSeconds}s)`);
+            reportCounter(
+                `\rSource is building the manifest${describeManifestProgress(response.body?.progress)} (${elapsedSeconds}s)\x1b[K`
+            );
             counterShown = true;
         }
         throw new Error(`Manifest job exceeded ${Math.ceil(jobTimeoutMs / 1000)} seconds`);

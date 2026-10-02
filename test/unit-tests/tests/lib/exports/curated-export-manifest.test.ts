@@ -302,6 +302,22 @@ test('expands dependencies from content later selected as an ancestor', () => {
     expect(contentIds).toContain('section-image');
 });
 
+test('reports each stage and the dependency walk while building', () => {
+    addNode('page', '/www.nav.no/page');
+    addNode('image', '/www.nav.no/image', { type: 'media:image' });
+    setReferences('page', 'master', ['image']);
+    const progress: unknown[] = [];
+
+    createCuratedExportManifest(['/www.nav.no/page'], 'page', {
+        onProgress: (update) => progress.push(update),
+    });
+
+    expect(progress[0]).toEqual({ stage: 'resolving pages', checked: 0, queued: 0 });
+    expect(progress).toContainEqual({ stage: 'following dependencies', checked: 0, queued: 1 });
+    expect(progress).toContainEqual({ stage: 'following dependencies', checked: 2, queued: 3 });
+    expect(progress.at(-1)).toEqual({ stage: 'validating', checked: 0, queued: 3 });
+});
+
 test('ignores unpublished moves of ancestors', () => {
     addNode('page', '/www.nav.no/old/page', { branches: ['master'] });
     addNode('parent', '/www.nav.no/old', { branches: ['master'], type: 'base:folder' });

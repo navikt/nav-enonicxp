@@ -3,7 +3,7 @@ import * as contextLib from '/lib/xp/context';
 import * as taskLib from '/lib/xp/task';
 import { Request, Response } from '@enonic-types/core';
 import { logger } from '../utils/logging';
-import { createCuratedExportManifest } from './curated-export-manifest';
+import { createCuratedExportManifest, CuratedExportProgress } from './curated-export-manifest';
 import { curatedJsonResponse as jsonResponse } from './curated-safety';
 import {
     createRandomHex,
@@ -23,21 +23,52 @@ const JOB_ROOT_NAME = 'curated-export-manifest-jobs';
 const JOB_ROOT_PATH = `/${JOB_ROOT_NAME}`;
 const JOB_LIFETIME_MS = 30 * 60 * 1000;
 const JOB_ID = /^[0-9a-f]{64}$/;
+const PROGRESS_INTERVAL_MS = 2000;
 
 type JobResult = { status: 'done'; manifest: string } | { status: 'failed'; message: string };
 
 type ManifestJobNode = {
     userKey: string;
     expiresAtMs: number;
-} & ({ status: 'running' } | JobResult);
+} & ({ status: 'running'; progress?: CuratedExportProgress } | JobResult);
+
+const updateJob = (jobId: string, update: Partial<ManifestJobNode>) => {
+    const repo = getCuratedStoreRepo(JOB_ROOT_NAME);
+    repo.modify({
+        key: `${JOB_ROOT_PATH}/${jobId}`,
+        editor: (node) => ({ ...node, ...update }),
+    });
+    repo.refresh();
+};
+
+const createProgressReporter = (jobId: string) => {
+    let lastReportMs = 0;
+    let lastStage = '';
+    return (progress: CuratedExportProgress) => {
+        const now = Date.now();
+        if (progress.stage === lastStage && now - lastReportMs < PROGRESS_INTERVAL_MS) {
+            return;
+        }
+        lastReportMs = now;
+        lastStage = progress.stage;
+        try {
+            updateJob(jobId, { progress });
+        } catch (error) {
+            // Progress is informational; a failed write must not stop the build.
+            logger.warning(`Failed to store curated export manifest job progress: ${error}`);
+        }
+    };
+};
 
 const buildManifest = (
+    jobId: string,
     user: { idProvider: string; login: string },
     { paths, scope, seeds, includeDrafts }: ManifestRequest
 ): JobResult => {
     try {
+        const onProgress = createProgressReporter(jobId);
         const manifest = contextLib.run({ user }, () =>
-            createCuratedExportManifest(paths, scope, { seeds, includeDrafts })
+            createCuratedExportManifest(paths, scope, { seeds, includeDrafts, onProgress })
         );
         return { status: 'done', manifest: JSON.stringify(manifest) };
     } catch (error) {
@@ -48,12 +79,7 @@ const buildManifest = (
 
 const finishJob = (jobId: string, result: JobResult) => {
     try {
-        const repo = getCuratedStoreRepo(JOB_ROOT_NAME);
-        repo.modify({
-            key: `${JOB_ROOT_PATH}/${jobId}`,
-            editor: (node) => ({ ...node, ...result }),
-        });
-        repo.refresh();
+        updateJob(jobId, result);
     } catch (error) {
         // The job may have expired and been cleaned up while the manifest was being built.
         logger.warning(`Failed to store curated export manifest job result: ${error}`);
@@ -94,7 +120,7 @@ export const startManifestJob = (req: Request): Response => {
     const { request } = parsed;
     taskLib.executeFunction({
         description: 'Create curated export manifest',
-        func: () => finishJob(jobId, buildManifest(taskUser, request)),
+        func: () => finishJob(jobId, buildManifest(jobId, taskUser, request)),
     });
     return jsonResponse(202, { job: jobId });
 };
@@ -111,7 +137,7 @@ export const getManifestJob = (req: Request): Response => {
         return jsonResponse(404, { message: 'Unknown or expired manifest job' });
     }
     if (node.status === 'running') {
-        return jsonResponse(202, { status: 'running' });
+        return jsonResponse(202, { status: 'running', progress: node.progress });
     }
 
     repo.delete(node._id);

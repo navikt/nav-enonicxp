@@ -68,9 +68,17 @@ export type CuratedExportSeed = {
     contentId: string;
 };
 
+export type CuratedExportProgress = {
+    stage: string;
+    // Content per branch: checked catches up with queued as the dependency walk finishes.
+    checked: number;
+    queued: number;
+};
+
 export type CuratedExportOptions = {
     seeds?: CuratedExportSeed[];
     includeDrafts?: boolean;
+    onProgress?: (progress: CuratedExportProgress) => void;
 };
 
 export type CuratedExportManifest = {
@@ -352,7 +360,8 @@ const findTypeRepresentative = (
 const closeContentGraph = (
     initialEntries: CuratedExportEntry[],
     entriesByKey: Record<string, CuratedExportEntry>,
-    sourceBranches: SourceBranch[]
+    sourceBranches: SourceBranch[],
+    onProgress: (progress: CuratedExportProgress) => void
 ) => {
     const pendingEntries: Array<{ entry: CuratedExportEntry; branch: SourceBranch }> = [];
     const queuedBranches = new Set<string>();
@@ -392,7 +401,10 @@ const closeContentGraph = (
     }
     initialEntries.forEach((entry) => enqueue(entry, true));
 
+    let checked = 0;
     for (const { entry, branch } of pendingEntries) {
+        onProgress({ stage: 'following dependencies', checked, queued: pendingEntries.length });
+        checked += 1;
         getAncestorContentPaths(entry.paths[branch]!).forEach((contentPath) => {
             const selectedAncestor = selectedEntriesByPath.get(
                 `${entry.repoId}:${branch}:${contentPath}`
@@ -512,7 +524,7 @@ const addRecursiveDescendants = (
 export const createCuratedExportManifest = (
     paths: string[],
     scope: 'full' | 'page' = 'full',
-    { seeds = [], includeDrafts = false }: CuratedExportOptions = {}
+    { seeds = [], includeDrafts = false, onProgress = () => {} }: CuratedExportOptions = {}
 ): CuratedExportManifest => {
     const sourceBranches = getSourceBranches(includeDrafts);
     if (paths.length + seeds.length > MAX_INPUT_PATHS) {
@@ -522,7 +534,10 @@ export const createCuratedExportManifest = (
     const projects = getRequiredProjects();
     const entriesByKey: Record<string, CuratedExportEntry> = {};
     const unresolvedPaths: string[] = [];
+    const reportStage = (stage: string) =>
+        onProgress({ stage, checked: 0, queued: Object.keys(entriesByKey).length });
 
+    reportStage('resolving pages');
     seeds.forEach((seed) => {
         const locale = getLayersData().repoIdToLocaleMap[seed.repository];
         if (
@@ -565,6 +580,7 @@ export const createCuratedExportManifest = (
     });
 
     if (scope === 'full') {
+        reportStage('adding required sections');
         REQUIRED_RECURSIVE_ROOTS.forEach(({ path, reason }) => {
             const target = findTargetContentAndLocale({ path, branch: 'master' });
             if (!target) {
@@ -585,6 +601,7 @@ export const createCuratedExportManifest = (
     const missingContentTypes: string[] = [];
 
     if (scope === 'full') {
+        reportStage('adding content type examples');
         TYPE_COVERAGE_CONTENT_TYPES.forEach((contentType) => {
             if (selectedTypes.has(contentType)) {
                 return;
@@ -601,8 +618,9 @@ export const createCuratedExportManifest = (
         });
     }
 
-    closeContentGraph(Object.values(entriesByKey), entriesByKey, sourceBranches);
+    closeContentGraph(Object.values(entriesByKey), entriesByKey, sourceBranches, onProgress);
     const entries = Object.values(entriesByKey);
+    reportStage('validating');
     if (scope === 'full') {
         validateRepositorySet(entries);
     }

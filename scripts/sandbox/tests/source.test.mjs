@@ -253,7 +253,24 @@ const mockManifestJob = (t, f, pollResponses) => {
 
 test('polls a deployed source until its manifest job is done', async (t) => {
     const f = fixture(t);
-    const requests = mockManifestJob(t, f, [{ status: 202, body: { status: 'running' } }]);
+    const requests = mockManifestJob(t, f, [
+        { status: 202, body: { status: 'running' } },
+        { status: 202, body: { status: 'running', progress: { stage: 'resolving pages' } } },
+        {
+            status: 202,
+            body: {
+                status: 'running',
+                progress: { stage: 'adding required sections', checked: 0, queued: 120 },
+            },
+        },
+        {
+            status: 202,
+            body: {
+                status: 'running',
+                progress: { stage: 'following dependencies', checked: 4980, queued: 6210 },
+            },
+        },
+    ]);
     const messages = [];
     const plan = await createCuratedPlan({
         ...f.options,
@@ -265,13 +282,20 @@ test('polls a deployed source until its manifest job is done', async (t) => {
     assert.deepEqual(plan.entries, f.body.entries);
     assert.deepEqual(
         requests.map(({ method }) => method),
-        ['POST', 'GET', 'GET']
+        ['POST', 'GET', 'GET', 'GET', 'GET', 'GET']
     );
     assert.equal(requests[1].url, `${f.options.serviceUrl}?job=${'a'.repeat(64)}`);
     assert.equal(requests[1].headers['X-Curated-Export-Token'], 'f'.repeat(64));
-    assert.equal(messages.length, 2);
-    assert.match(messages[0], /^\rSource is building the manifest \(\d+s\)$/);
-    assert.equal(messages[1], '\n');
+    assert.deepEqual(
+        messages.map((message) => message.replace(/\(\d+s\)/, '(0s)')),
+        [
+            '\rSource is building the manifest (0s)\x1b[K',
+            '\rSource is building the manifest: resolving pages (0s)\x1b[K',
+            '\rSource is building the manifest: adding required sections, 120 found (0s)\x1b[K',
+            '\rSource is building the manifest: following dependencies, 4980/6210 checked (0s)\x1b[K',
+            '\n',
+        ]
+    );
 });
 
 test('reports a failed manifest job', async (t) => {
