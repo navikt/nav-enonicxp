@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -13,6 +14,7 @@ import com.google.common.io.ByteSource;
 import com.enonic.xp.data.Property;
 import com.enonic.xp.data.ValueType;
 import com.enonic.xp.data.ValueTypes;
+import com.enonic.xp.index.PatternIndexConfigDocument;
 import com.enonic.xp.node.AttachedBinary;
 import com.enonic.xp.node.Node;
 import com.enonic.xp.node.NodeId;
@@ -57,6 +59,9 @@ public final class CuratedNodeReader implements ScriptBean {
             gen.array("binaryReferences");
             binaryReferences(node).forEach(gen::value);
             gen.end();
+            gen.array("allTextLanguages");
+            allTextLanguages(node).forEach(gen::value);
+            gen.end();
         };
     }
 
@@ -86,6 +91,16 @@ public final class CuratedNodeReader implements ScriptBean {
             references.add(binary.getBinaryReference().toString());
         }
         return references;
+    }
+
+    // Workaround: lib-node leaves the allText config out of _indexConfig before XP 7.16.6
+    // (enonic/xp#12164), so the node index config read through lib-node is incomplete on older
+    // sources. When every source runs 7.16.6 or later, or XP 8, check that _indexConfig.allText
+    // is returned there and remove this together with the override in curated-node-reader.ts.
+    private List<String> allTextLanguages(final Node node) {
+        return node.getIndexConfigDocument() instanceof PatternIndexConfigDocument
+            ? ((PatternIndexConfigDocument) node.getIndexConfigDocument()).getAllTextConfig().getLanguages()
+            : List.of();
     }
 
     private void serializeProperty(final MapGenerator gen, final Property property) {

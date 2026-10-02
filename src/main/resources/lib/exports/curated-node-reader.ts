@@ -43,6 +43,7 @@ type NodeDescription = {
     properties: CuratedProperty[];
     binaryReferences: string[];
     manualOrderValue: string | null;
+    allTextLanguages: string[];
 };
 
 type NodeReaderBean = {
@@ -87,8 +88,15 @@ export const getCuratedSourceNode = (source: SourceVersion): CuratedSourceNode =
             if (description.versionId !== node._versionKey) {
                 throw new Error(`Content version changed during extraction: ${source.contentId}`);
             }
+            // Workaround: lib-node leaves allText out of _indexConfig before XP 7.16.6
+            // (enonic/xp#12164). Remove with allTextLanguages in CuratedNodeReader.java once
+            // all sources run 7.16.6 or later, or XP 8, and return it from lib-node.
+            const indexConfig = {
+                ...node._indexConfig,
+                allText: { languages: description.allTextLanguages },
+            };
             return {
-                node,
+                node: { ...node, _indexConfig: indexConfig },
                 properties: description.properties,
                 binaryReferences: description.binaryReferences,
                 manualOrderValue: description.manualOrderValue,

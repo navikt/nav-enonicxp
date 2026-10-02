@@ -26,12 +26,14 @@ beforeEach(() => {
         _id: source.contentId,
         _path: '/content/www.nav.no/page',
         _versionKey: source.versionId,
+        _indexConfig: { default: { enabled: true }, configs: [] },
     });
     describe.mockReturnValue({
         versionId: source.versionId,
         properties: [{ name: 'long', type: 'long', value: '9223372036854775807' }],
         binaryReferences: ['first.pdf', 'second.pdf'],
         manualOrderValue: '9223372036854775806',
+        allTextLanguages: ['no'],
     });
     Object.defineProperty(globalThis, '__', {
         value: {
@@ -64,6 +66,14 @@ test('combines exact-version metadata with typed properties without number conve
         },
         expect.any(Function)
     );
+});
+
+test('adds the allText index config, which lib-node leaves out before XP 7.16.6', () => {
+    expect(getCuratedSourceNode(source).node._indexConfig).toEqual({
+        default: { enabled: true },
+        configs: [],
+        allText: { languages: ['no'] },
+    });
 });
 
 test('refuses node metadata from another version', () => {
