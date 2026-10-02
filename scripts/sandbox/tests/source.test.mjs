@@ -258,7 +258,7 @@ test('polls a deployed source until its manifest job is done', async (t) => {
         auth: { token: 'f'.repeat(64) },
         paths: ['/arbeid'],
         pollIntervalMs: 0,
-        log: (message) => messages.push(message),
+        reportCounter: (text) => messages.push(text),
     });
     assert.deepEqual(plan.entries, f.body.entries);
     assert.deepEqual(
@@ -267,7 +267,9 @@ test('polls a deployed source until its manifest job is done', async (t) => {
     );
     assert.equal(requests[1].url, `${f.options.serviceUrl}?job=${'a'.repeat(64)}`);
     assert.equal(requests[1].headers['X-Curated-Export-Token'], 'f'.repeat(64));
-    assert.equal(messages.length, 1);
+    assert.equal(messages.length, 2);
+    assert.match(messages[0], /^\rSource is building the manifest \(\d+s\)$/);
+    assert.equal(messages[1], '\n');
 });
 
 test('reports a failed manifest job', async (t) => {
@@ -298,7 +300,7 @@ test('gives up on a manifest job that never finishes', async (t) => {
             paths: ['/arbeid'],
             pollIntervalMs: 1,
             jobTimeoutMs: 20,
-            log: () => {},
+            reportCounter: () => {},
         }),
         /Manifest job exceeded 1 seconds/
     );

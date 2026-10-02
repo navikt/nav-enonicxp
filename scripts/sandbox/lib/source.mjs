@@ -430,7 +430,7 @@ const waitForManifestJob = async (
     serviceUrl,
     started,
     headers,
-    { jobTimeoutMs, pollIntervalMs, log }
+    { jobTimeoutMs, pollIntervalMs, reportCounter }
 ) => {
     if (started.status !== 202 || typeof started.body?.job !== 'string') {
         return started;
@@ -438,19 +438,28 @@ const waitForManifestJob = async (
     const jobUrl = new URL(serviceUrl);
     jobUrl.searchParams.set('job', started.body.job);
     const startedAt = Date.now();
-    while (Date.now() - startedAt < jobTimeoutMs) {
-        await sleep(pollIntervalMs);
-        const response = await requestJson(
-            jobUrl,
-            { method: 'GET', headers },
-            MANIFEST_POLL_REQUEST_TIMEOUT_MS
-        );
-        if (response.status !== 202) {
-            return response;
+    let counterShown = false;
+    try {
+        while (Date.now() - startedAt < jobTimeoutMs) {
+            await sleep(pollIntervalMs);
+            const response = await requestJson(
+                jobUrl,
+                { method: 'GET', headers },
+                MANIFEST_POLL_REQUEST_TIMEOUT_MS
+            );
+            if (response.status !== 202) {
+                return response;
+            }
+            const elapsedSeconds = Math.round((Date.now() - startedAt) / 1000);
+            reportCounter(`\rSource is building the manifest (${elapsedSeconds}s)`);
+            counterShown = true;
         }
-        log(`Source is building the manifest (${Math.round((Date.now() - startedAt) / 1000)}s)`);
+        throw new Error(`Manifest job exceeded ${Math.ceil(jobTimeoutMs / 1000)} seconds`);
+    } finally {
+        if (counterShown) {
+            reportCounter('\n');
+        }
     }
-    throw new Error(`Manifest job exceeded ${Math.ceil(jobTimeoutMs / 1000)} seconds`);
 };
 
 export const createCuratedPlan = async ({
@@ -465,7 +474,7 @@ export const createCuratedPlan = async ({
     requestTimeoutMs = MANIFEST_REQUEST_TIMEOUT_MS,
     jobTimeoutMs = MANIFEST_JOB_TIMEOUT_MS,
     pollIntervalMs = MANIFEST_POLL_INTERVAL_MS,
-    log = console.log,
+    reportCounter = (text) => process.stdout.write(text),
 }) => {
     if (!isSafeName(bundle)) {
         throw new Error('bundle may only contain letters, numbers, dots, underscores, and hyphens');
@@ -490,7 +499,7 @@ export const createCuratedPlan = async ({
     const response = await waitForManifestJob(serviceUrl, started, authHeaders, {
         jobTimeoutMs,
         pollIntervalMs,
-        log,
+        reportCounter,
     });
 
     const manifest = response.body;
