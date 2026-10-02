@@ -186,18 +186,18 @@ describe('curated export access', () => {
 
     it('exchanges a code once, and only with the matching verifier', () => {
         const code = approve();
-        expect(exchange(code, 'wrong-verifier')?.status).toBe(401);
+        expect(exchange(code, 'wrong-verifier')?.status).toBe(403);
         const response = exchange(code);
         expect(response?.status).toBe(200);
         expect((response?.body as { token: string }).token).toMatch(/^[0-9a-f]{64}$/);
-        expect(exchange(code)?.status).toBe(401);
+        expect(exchange(code)?.status).toBe(403);
     });
 
     it('expires unused codes', () => {
         jest.useFakeTimers({ now: 0 });
         const code = approve();
         jest.setSystemTime(2 * 60 * 1000);
-        expect(exchange(code)?.status).toBe(401);
+        expect(exchange(code)?.status).toBe(403);
     });
 
     it('runs export handlers as the approving user', () => {
@@ -221,15 +221,15 @@ describe('curated export access', () => {
     });
 
     it('rejects missing, unknown, and expired tokens', () => {
-        expect(request('manifest', { method: 'POST' })?.status).toBe(401);
+        expect(request('manifest', { method: 'POST' })?.status).toBe(403);
         expect(
             request('source', { headers: { 'X-Curated-Export-Token': 'f'.repeat(64) } })?.status
-        ).toBe(401);
+        ).toBe(403);
         jest.useFakeTimers({ now: 0 });
         const token = issueToken();
         jest.setSystemTime(2 * 60 * 60 * 1000);
         expect(request('source', { headers: { 'X-Curated-Export-Token': token } })?.status).toBe(
-            401
+            403
         );
         expect(startManifestJob).not.toHaveBeenCalled();
     });

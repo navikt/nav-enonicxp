@@ -164,6 +164,8 @@ const handleAuthorize = (req: Request): Response => {
     };
 };
 
+// The CLI routes answer 403, not 401: XP turns a 401 under /webapp into a redirect to the
+// login page, which the CLI can only report as a failed fetch.
 const handleTokenExchange = (req: Request): Response => {
     if (req.method !== 'POST' || !isJsonRequest(req)) {
         return jsonResponse(415, { message: 'POST application/json is required' });
@@ -179,11 +181,11 @@ const handleTokenExchange = (req: Request): Response => {
     }
     const credential = readCredential(body.code, 'code');
     if (credential?.node.challenge !== sha256Hex(body.verifier)) {
-        return jsonResponse(401, { message: 'Invalid or expired code' });
+        return jsonResponse(403, { message: 'Invalid or expired code' });
     }
     // Deleting the code makes it single-use, also when two exchanges race.
     if (credential.repo.delete(credential.node._id).length !== 1) {
-        return jsonResponse(401, { message: 'Invalid or expired code' });
+        return jsonResponse(403, { message: 'Invalid or expired code' });
     }
     const expiresAtMs = Date.now() + TOKEN_LIFETIME_MS;
     const token = storeCredential({
@@ -198,7 +200,7 @@ const runWithToken = (req: Request, handler: (req: Request) => Response): Respon
     const credential = readCredential(getHeader(req, CURATED_EXPORT_TOKEN_HEADER), 'token');
     const user = credential && parseUserKey(credential.node.userKey);
     if (!user) {
-        return jsonResponse(401, { message: 'A valid curated export token is required' });
+        return jsonResponse(403, { message: 'A valid curated export token is required' });
     }
     // Running as the approving user re-checks their current roles on every request.
     return contextLib.run({ user }, () =>

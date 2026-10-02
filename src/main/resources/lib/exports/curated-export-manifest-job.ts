@@ -93,7 +93,7 @@ export const startManifestJob = (req: Request): Response => {
     }
     const user = authLib.getUser();
     if (!user) {
-        return jsonResponse(401, { message: 'A valid curated export token is required' });
+        return jsonResponse(403, { message: 'A valid curated export token is required' });
     }
 
     const jobId = createRandomHex();
