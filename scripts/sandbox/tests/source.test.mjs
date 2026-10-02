@@ -114,8 +114,9 @@ test('rejects credentials in a source URL without echoing them', () => {
     );
 });
 
-test('resolves the running local sandbox and XP version', () => {
+test('resolves the running local sandbox and XP version', (t) => {
     const homeDirectory = mkdtempSync(join(tmpdir(), 'curated-source-'));
+    t.after(() => rmSync(homeDirectory, { recursive: true, force: true }));
     const sandboxPath = join(homeDirectory, '.enonic', 'sandboxes', 'navno');
     mkdirSync(sandboxPath, { recursive: true });
     writeFileSync(join(sandboxPath, '.enonic'), 'distro = "enonic-xp-mac-arm64-sdk-7.16.6"\n');
@@ -126,8 +127,9 @@ test('resolves the running local sandbox and XP version', () => {
     assert.equal(source.sandboxPath, sandboxPath);
 });
 
-test('rejects a local sandbox that is not running', () => {
+test('rejects a local sandbox that is not running', (t) => {
     const homeDirectory = mkdtempSync(join(tmpdir(), 'curated-source-'));
+    t.after(() => rmSync(homeDirectory, { recursive: true, force: true }));
     const sandboxPath = join(homeDirectory, '.enonic', 'sandboxes', 'navno');
     mkdirSync(sandboxPath, { recursive: true });
     writeFileSync(join(sandboxPath, '.enonic'), 'distro = "enonic-xp-mac-arm64-sdk-7.16.6"\n');

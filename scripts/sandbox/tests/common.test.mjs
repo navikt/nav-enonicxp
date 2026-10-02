@@ -201,8 +201,9 @@ test('round-trips Java property escaping without changing the target password', 
     assert.doesNotThrow(() => verifyStoppedTargetAuth(sandboxPath, `su:${password}`));
 });
 
-test('verifies the configured password for a stopped target sandbox', () => {
+test('verifies the configured password for a stopped target sandbox', (t) => {
     const sandboxPath = mkdtempSync(join(tmpdir(), 'curated-auth-'));
+    t.after(() => rmSync(sandboxPath, { recursive: true, force: true }));
     mkdirSync(join(sandboxPath, 'home/config'), { recursive: true });
     writeFileSync(
         join(sandboxPath, 'home/config/system.properties'),

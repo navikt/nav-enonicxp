@@ -515,8 +515,9 @@ test('does not start an optional application which is stopped in the source', (t
     );
 });
 
-test('creates and prepares a missing target sandbox', () => {
+test('creates and prepares a missing target sandbox', (t) => {
     const root = mkdtempSync(join(tmpdir(), 'curated-target-'));
+    t.after(() => rmSync(root, { recursive: true, force: true }));
     const homeDirectory = join(root, 'home');
     const repositoryRoot = join(root, 'repository');
     const sandboxPath = join(homeDirectory, '.enonic/sandboxes/target');
@@ -639,8 +640,9 @@ test('creates and prepares a missing target sandbox', () => {
     assert.equal(readFileSync(join(sandboxPath, 'home/deploy/navno.jar'), 'utf8'), 'app');
 });
 
-test('rejects an existing target with a different XP version', () => {
+test('rejects an existing target with a different XP version', (t) => {
     const root = mkdtempSync(join(tmpdir(), 'curated-target-'));
+    t.after(() => rmSync(root, { recursive: true, force: true }));
     const sandboxPath = join(root, '.enonic/sandboxes/target');
     writeFile(join(sandboxPath, '.enonic'), 'distro = "enonic-xp-mac-arm64-sdk-7.15.0"\n');
     writeFile(
@@ -666,8 +668,9 @@ test('rejects an existing target with a different XP version', () => {
     );
 });
 
-test('keeps the SU password and explains recovery when provisioning fails', () => {
+test('keeps the SU password and explains recovery when provisioning fails', (t) => {
     const root = mkdtempSync(join(tmpdir(), 'curated-target-'));
+    t.after(() => rmSync(root, { recursive: true, force: true }));
     const repositoryRoot = join(root, 'repository');
     const sandboxPath = join(root, '.enonic/sandboxes/target');
     [
