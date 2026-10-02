@@ -29,7 +29,7 @@ export const LOCAL_IMPORT_SERVICE_URL =
     'http://localhost:8080/_/service/no.nav.navno/curatedExportImport';
 
 // Fail fast when the Enonic CLI is missing; only warn on an unexpected major version.
-export const EXPECTED_ENONIC_CLI_MAJOR_VERSION = 4;
+const EXPECTED_ENONIC_CLI_MAJOR_VERSION = 4;
 
 export const assertEnonicCliAvailable = (
     runCommand = execFileSync,

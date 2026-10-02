@@ -21,7 +21,7 @@ import {
 // token. Codes and tokens are stored as SHA-256 hashes in the misc repo, so any cluster
 // node can verify them.
 
-export const CURATED_EXPORT_TOKEN_HEADER = 'X-Curated-Export-Token';
+const CURATED_EXPORT_TOKEN_HEADER = 'X-Curated-Export-Token';
 
 const TOKEN_ROOT_NAME = 'curated-export-tokens';
 const TOKEN_ROOT_PATH = `/${TOKEN_ROOT_NAME}`;

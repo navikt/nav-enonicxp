@@ -159,7 +159,7 @@ export const getXpSessionCookie = async (serviceUrl, auth) => {
         .join('; ');
 };
 
-export const CURATED_EXPORT_TOKEN_HEADER = 'X-Curated-Export-Token';
+const CURATED_EXPORT_TOKEN_HEADER = 'X-Curated-Export-Token';
 
 // Local sources log in with a password; deployed sources use a token approved in the browser.
 export const getSourceAuthHeaders = async (serviceUrl, auth) =>
@@ -279,9 +279,9 @@ export const setPropertiesEntry = (path, key, value, { mode } = {}) => {
 };
 
 // Exit codes follow the 128 + signal number convention, so callers can tell interrupts from failures.
-export const SIGNAL_EXIT_CODES = { SIGINT: 130, SIGTERM: 143, SIGHUP: 129 };
+const SIGNAL_EXIT_CODES = { SIGINT: 130, SIGTERM: 143, SIGHUP: 129 };
 
-export const assertCuratedBundleName = (bundle) => {
+const assertCuratedBundleName = (bundle) => {
     if (!isSafeName(bundle)) {
         throw new Error('Bundle must be a safe directory name');
     }
