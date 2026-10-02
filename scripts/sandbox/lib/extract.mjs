@@ -130,7 +130,9 @@ export const writeNativeNodeXml = (nodeDirectory, source) => {
     const sourceNode = source.node;
     const indexConfig = sourceNode._indexConfig;
     if (!indexConfig?.default || !Array.isArray(indexConfig.configs) || !indexConfig.allText) {
-        throw new Error(`Missing source index configuration for ${sourceNode._id}`);
+        throw new Error(
+            `Missing source index configuration for ${sourceNode._id} at ${sourceNode._path}: ${JSON.stringify(indexConfig ?? null)}`
+        );
     }
     for (const name of ['_id', '_nodeType', '_childOrder', '_ts', '_versionKey']) {
         if (
@@ -520,7 +522,14 @@ export const extractCuratedSource = async ({
                         );
                     }
                     const nodeDirectory = getNodeDirectory(exportRoot, expectedPath);
-                    writeNativeNodeXml(nodeDirectory, source);
+                    try {
+                        writeNativeNodeXml(nodeDirectory, source);
+                    } catch (error) {
+                        throw new Error(
+                            `${error.message} (${nativeExport.repoId}:${nativeExport.sourceBranch})`,
+                            { cause: error }
+                        );
+                    }
                     if (
                         !Array.isArray(binaryReferences) ||
                         binaryReferences.some((reference) => typeof reference !== 'string')
