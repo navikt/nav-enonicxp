@@ -1,11 +1,15 @@
 import * as authLib from '/lib/xp/auth';
 import * as contextLib from '/lib/xp/context';
 import { Request, Response } from '@enonic-types/core';
-import { getMiscRepoConnection } from '../repos/misc-repo';
 import { userCanManageCuratedExports } from '../utils/auth-utils';
-import { logger } from '../utils/logging';
 import { curatedJsonResponse as jsonResponse, isJsonRequest, isRecord } from './curated-safety';
-import { post as postManifest } from '../../services/curatedExportManifest/curatedExportManifest';
+import {
+    createRandomHex,
+    deleteExpiredCuratedNodes,
+    getCuratedStoreRepo,
+    sha256Hex,
+} from './curated-export-store';
+import { getManifestJob, startManifestJob } from './curated-export-manifest-job';
 import {
     get as getSource,
     post as postSource,
@@ -23,7 +27,6 @@ const TOKEN_ROOT_NAME = 'curated-export-tokens';
 const TOKEN_ROOT_PATH = `/${TOKEN_ROOT_NAME}`;
 const CODE_LIFETIME_MS = 2 * 60 * 1000;
 const TOKEN_LIFETIME_MS = 2 * 60 * 60 * 1000;
-const RANDOM_BYTE_COUNT = 32;
 const HEX_SHA256 = /^[0-9a-f]{64}$/;
 const URL_SAFE_RANDOM = /^[A-Za-z0-9_-]{32,128}$/;
 
@@ -36,57 +39,10 @@ type CredentialNode = {
     challenge?: string;
 };
 
-const toHex = (bytes: number[]) => {
-    let hex = '';
-    // bytes is a Java byte[], which Babel's for-of helper cannot iterate on Nashorn.
-    for (let index = 0; index < bytes.length; index++) {
-        hex += ('0' + (bytes[index] & 0xff).toString(16)).slice(-2);
-    }
-    return hex;
-};
-
-const createRandomHex = () => {
-    const SecureRandom = Java.type('java.security.SecureRandom');
-    const ByteArray = Java.type('byte[]');
-    const bytes = new ByteArray(RANDOM_BYTE_COUNT);
-    new SecureRandom().nextBytes(bytes);
-    return toHex(bytes);
-};
-
-export const sha256Hex = (value: string) => {
-    const MessageDigest = Java.type('java.security.MessageDigest');
-    const JavaString = Java.type('java.lang.String');
-    return toHex(
-        MessageDigest.getInstance('SHA-256').digest(new JavaString(value).getBytes('UTF-8'))
-    );
-};
-
-const getRepo = () => {
-    const repo = getMiscRepoConnection();
-    if (!repo.exists(TOKEN_ROOT_PATH)) {
-        repo.create({ _parentPath: '/', _name: TOKEN_ROOT_NAME });
-    }
-    return repo;
-};
-
-const deleteExpiredCredentials = (repo: ReturnType<typeof getRepo>) => {
-    try {
-        const expired = repo.query({
-            count: 1000,
-            query: `_parentPath = '${TOKEN_ROOT_PATH}' AND expiresAtMs < ${Date.now()}`,
-        });
-        if (expired.hits.length > 0) {
-            repo.delete(expired.hits.map((hit) => hit.id));
-        }
-    } catch (error) {
-        logger.warning(`Failed to delete expired curated export credentials: ${error}`);
-    }
-};
-
 const storeCredential = (credential: CredentialNode) => {
     const secret = createRandomHex();
-    const repo = getRepo();
-    deleteExpiredCredentials(repo);
+    const repo = getCuratedStoreRepo(TOKEN_ROOT_NAME);
+    deleteExpiredCuratedNodes(repo, TOKEN_ROOT_NAME);
     repo.create({ _parentPath: TOKEN_ROOT_PATH, _name: sha256Hex(secret), ...credential });
     // Another cluster node may receive the follow-up request.
     repo.refresh();
@@ -97,7 +53,7 @@ const readCredential = (secret: unknown, credentialType: CredentialType) => {
     if (typeof secret !== 'string' || !HEX_SHA256.test(secret)) {
         return null;
     }
-    const repo = getRepo();
+    const repo = getCuratedStoreRepo(TOKEN_ROOT_NAME);
     const node = repo.get<CredentialNode>(`${TOKEN_ROOT_PATH}/${sha256Hex(secret)}`);
     if (node?.credentialType !== credentialType || node.expiresAtMs <= Date.now()) {
         return null;
@@ -266,9 +222,8 @@ export const handleCuratedExportRequest = (req: Request): Response | null => {
         case 'token':
             return handleTokenExchange(req);
         case 'manifest':
-            return isPost
-                ? runWithToken(req, postManifest)
-                : jsonResponse(405, { message: 'POST is required' });
+            // Building a manifest outlasts the proxy timeout, so it runs as a polled task.
+            return runWithToken(req, isPost ? startManifestJob : getManifestJob);
         case 'source':
             return runWithToken(req, isPost ? postSource : getSource);
     }

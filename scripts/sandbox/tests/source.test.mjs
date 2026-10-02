@@ -236,6 +236,74 @@ test('plans a deployed source with its token instead of a password login', async
     assert.equal(f.requests[0].headers.Cookie, undefined);
 });
 
+const mockManifestJob = (t, f, pollResponses) => {
+    const requests = [];
+    t.mock.method(globalThis, 'fetch', async (url, options) => {
+        requests.push({ url: String(url), method: options.method, headers: options.headers });
+        if (options.method === 'POST') {
+            return new Response(JSON.stringify({ job: 'a'.repeat(64) }), { status: 202 });
+        }
+        const next = pollResponses.shift() ?? { status: 200, body: f.body };
+        return new Response(JSON.stringify(next.body), { status: next.status });
+    });
+    return requests;
+};
+
+test('polls a deployed source until its manifest job is done', async (t) => {
+    const f = fixture(t);
+    const requests = mockManifestJob(t, f, [{ status: 202, body: { status: 'running' } }]);
+    const messages = [];
+    const plan = await createCuratedPlan({
+        ...f.options,
+        auth: { token: 'f'.repeat(64) },
+        paths: ['/arbeid'],
+        pollIntervalMs: 0,
+        log: (message) => messages.push(message),
+    });
+    assert.deepEqual(plan.entries, f.body.entries);
+    assert.deepEqual(
+        requests.map(({ method }) => method),
+        ['POST', 'GET', 'GET']
+    );
+    assert.equal(requests[1].url, `${f.options.serviceUrl}?job=${'a'.repeat(64)}`);
+    assert.equal(requests[1].headers['X-Curated-Export-Token'], 'f'.repeat(64));
+    assert.equal(messages.length, 1);
+});
+
+test('reports a failed manifest job', async (t) => {
+    const f = fixture(t);
+    mockManifestJob(t, f, [{ status: 500, body: { message: 'boom' } }]);
+    await assert.rejects(
+        createCuratedPlan({
+            ...f.options,
+            auth: { token: 'f'.repeat(64) },
+            paths: ['/arbeid'],
+            pollIntervalMs: 0,
+        }),
+        /Manifest service returned 500: {"message":"boom"}/
+    );
+});
+
+test('gives up on a manifest job that never finishes', async (t) => {
+    const f = fixture(t);
+    const running = Array.from({ length: 1000 }, () => ({
+        status: 202,
+        body: { status: 'running' },
+    }));
+    mockManifestJob(t, f, running);
+    await assert.rejects(
+        createCuratedPlan({
+            ...f.options,
+            auth: { token: 'f'.repeat(64) },
+            paths: ['/arbeid'],
+            pollIntervalMs: 1,
+            jobTimeoutMs: 20,
+            log: () => {},
+        }),
+        /Manifest job exceeded 1 seconds/
+    );
+});
+
 test('plans both branches of every project without extraction or target requests', async (t) => {
     const f = fixture(t);
     const plan = await createCuratedPlan({ ...f.options, paths: ['/arbeid'] });

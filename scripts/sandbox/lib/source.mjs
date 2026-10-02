@@ -3,6 +3,7 @@ import { createHash, randomBytes } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { clearTimeout, setTimeout } from 'node:timers';
+import { setTimeout as sleep } from 'node:timers/promises';
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 import {
@@ -224,6 +225,10 @@ export const resolveCuratedPage = ({ page }) => {
 };
 
 const MANIFEST_REQUEST_TIMEOUT_MS = 5 * 60 * 1000;
+// Deployed sources build the manifest as a task, since the proxy cuts long requests short.
+const MANIFEST_JOB_TIMEOUT_MS = 20 * 60 * 1000;
+const MANIFEST_POLL_INTERVAL_MS = 3000;
+const MANIFEST_POLL_REQUEST_TIMEOUT_MS = 60 * 1000;
 
 const normalizePath = (value) => {
     const trimmed = value.trim();
@@ -392,18 +397,10 @@ const assertFullScopeCoverage = (nativeExports) => {
     }
 };
 
-const postJson = async (url, body, headers = {}, timeoutMs = MANIFEST_REQUEST_TIMEOUT_MS) => {
+const requestJson = async (url, init, timeoutMs) => {
     let response;
     try {
-        response = await fetchXp(url, {
-            method: 'POST',
-            signal: AbortSignal.timeout(timeoutMs),
-            headers: {
-                'Content-Type': 'application/json',
-                ...headers,
-            },
-            body: JSON.stringify(body),
-        });
+        response = await fetchXp(url, { ...init, signal: AbortSignal.timeout(timeoutMs) });
     } catch (error) {
         if (error?.name === 'AbortError' || error?.name === 'TimeoutError') {
             throw new Error(`Manifest request exceeded ${Math.ceil(timeoutMs / 1000)} seconds`, {
@@ -429,6 +426,33 @@ const postJson = async (url, body, headers = {}, timeoutMs = MANIFEST_REQUEST_TI
     };
 };
 
+const waitForManifestJob = async (
+    serviceUrl,
+    started,
+    headers,
+    { jobTimeoutMs, pollIntervalMs, log }
+) => {
+    if (started.status !== 202 || typeof started.body?.job !== 'string') {
+        return started;
+    }
+    const jobUrl = new URL(serviceUrl);
+    jobUrl.searchParams.set('job', started.body.job);
+    const startedAt = Date.now();
+    while (Date.now() - startedAt < jobTimeoutMs) {
+        await sleep(pollIntervalMs);
+        const response = await requestJson(
+            jobUrl,
+            { method: 'GET', headers },
+            MANIFEST_POLL_REQUEST_TIMEOUT_MS
+        );
+        if (response.status !== 202) {
+            return response;
+        }
+        log(`Source is building the manifest (${Math.round((Date.now() - startedAt) / 1000)}s)`);
+    }
+    throw new Error(`Manifest job exceeded ${Math.ceil(jobTimeoutMs / 1000)} seconds`);
+};
+
 export const createCuratedPlan = async ({
     inputPath,
     paths = [],
@@ -439,6 +463,9 @@ export const createCuratedPlan = async ({
     scope = 'full',
     includeDrafts = false,
     requestTimeoutMs = MANIFEST_REQUEST_TIMEOUT_MS,
+    jobTimeoutMs = MANIFEST_JOB_TIMEOUT_MS,
+    pollIntervalMs = MANIFEST_POLL_INTERVAL_MS,
+    log = console.log,
 }) => {
     if (!isSafeName(bundle)) {
         throw new Error('bundle may only contain letters, numbers, dots, underscores, and hyphens');
@@ -451,12 +478,20 @@ export const createCuratedPlan = async ({
     }
     const selectedPaths = inputPath ? readPaths(inputPath) : normalizePaths(paths);
     const authHeaders = await getSourceAuthHeaders(serviceUrl, auth);
-    const response = await postJson(
+    const started = await requestJson(
         serviceUrl,
-        { paths: selectedPaths, seeds, scope, includeDrafts },
-        authHeaders,
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...authHeaders },
+            body: JSON.stringify({ paths: selectedPaths, seeds, scope, includeDrafts }),
+        },
         requestTimeoutMs
     );
+    const response = await waitForManifestJob(serviceUrl, started, authHeaders, {
+        jobTimeoutMs,
+        pollIntervalMs,
+        log,
+    });
 
     const manifest = response.body;
     if (!response.ok) {

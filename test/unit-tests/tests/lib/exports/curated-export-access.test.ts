@@ -30,8 +30,9 @@ jest.mock('@navno-app/lib/repos/misc-repo', () => ({
 jest.mock('@navno-app/lib/utils/logging', () => ({
     logger: { info: jest.fn(), warning: jest.fn(), error: jest.fn() },
 }));
-jest.mock('@navno-app/services/curatedExportManifest/curatedExportManifest', () => ({
-    post: jest.fn(() => ({ status: 200, body: 'manifest' })),
+jest.mock('@navno-app/lib/exports/curated-export-manifest-job', () => ({
+    startManifestJob: jest.fn(() => ({ status: 202, body: 'job' })),
+    getManifestJob: jest.fn(() => ({ status: 202, body: 'running' })),
 }));
 jest.mock('@navno-app/services/curatedExportSource/curatedExportSource', () => ({
     get: jest.fn(() => ({ status: 200, body: 'node' })),
@@ -40,7 +41,7 @@ jest.mock('@navno-app/services/curatedExportSource/curatedExportSource', () => (
 
 import * as authLib from '/lib/xp/auth';
 import * as contextLib from '/lib/xp/context';
-import { post as postManifest } from '@navno-app/services/curatedExportManifest/curatedExportManifest';
+import { startManifestJob } from '@navno-app/lib/exports/curated-export-manifest-job';
 import { get as getSource } from '@navno-app/services/curatedExportSource/curatedExportSource';
 import { handleCuratedExportRequest } from '@navno-app/lib/exports/curated-export-access';
 
@@ -205,7 +206,7 @@ describe('curated export access', () => {
             method: 'POST',
             headers: { 'x-curated-export-token': token },
         });
-        expect(response?.body).toBe('manifest');
+        expect(response?.body).toBe('job');
         expect(contextLib.run).toHaveBeenCalledWith(
             { user: { idProvider: 'entra', login: 'admin@nav.no' } },
             expect.any(Function)
@@ -214,6 +215,9 @@ describe('curated export access', () => {
             'node'
         );
         expect(getSource).toHaveBeenCalled();
+        expect(request('manifest', { headers: { 'X-Curated-Export-Token': token } })?.body).toBe(
+            'running'
+        );
     });
 
     it('rejects missing, unknown, and expired tokens', () => {
@@ -227,7 +231,7 @@ describe('curated export access', () => {
         expect(request('source', { headers: { 'X-Curated-Export-Token': token } })?.status).toBe(
             401
         );
-        expect(postManifest).not.toHaveBeenCalled();
+        expect(startManifestJob).not.toHaveBeenCalled();
     });
 
     it('rejects tokens of users who are no longer administrators', () => {
@@ -239,11 +243,7 @@ describe('curated export access', () => {
         expect(getSource).not.toHaveBeenCalled();
     });
 
-    it('does not use the code or token endpoints as data endpoints', () => {
-        const token = issueToken();
-        expect(request('manifest', { headers: { 'X-Curated-Export-Token': token } })?.status).toBe(
-            405
-        );
+    it('does not use the token endpoint as a data endpoint', () => {
         expect(request('token', { method: 'GET' })?.status).toBe(415);
     });
 });
