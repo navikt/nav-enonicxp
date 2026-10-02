@@ -421,6 +421,90 @@ test('allows injected metadata, binary, and session transports without reaching 
     assert.deepEqual(result, { nodeCount: 1, binaryCount: 1 });
 });
 
+const droppedConnection = () =>
+    new TypeError('fetch failed', { cause: new Error('other side closed') });
+
+const retryOptions = (t, root, source, fetchImpl) => {
+    const warnings = [];
+    t.mock.method(console, 'warn', (message) => warnings.push(message));
+    t.mock.method(process.stdout, 'write', () => true);
+    return {
+        warnings,
+        args: {
+            ...options(root, [source]),
+            getAuthHeaders: async () => ({}),
+            retryDelaysMs: [0, 0],
+            fetchImpl,
+        },
+    };
+};
+
+test('retries dropped connections and gateway errors for node batches and binaries', async (t) => {
+    const root = directory(t);
+    const source = createSourceNode();
+    const bytes = Buffer.from('retried binary');
+    attach(source, 'file.pdf', bytes);
+    const failures = {
+        POST: [droppedConnection(), new Response('<html>Bad gateway</html>', { status: 502 })],
+        GET: [new TypeError('terminated')],
+    };
+    const { args, warnings } = retryOptions(t, root, source, async (_input, request) => {
+        const failure = failures[request.method || 'GET'].shift();
+        if (failure instanceof Error) {
+            throw failure;
+        }
+        if (failure) {
+            return failure;
+        }
+        return request.method === 'POST' ? Response.json({ nodes: [source] }) : new Response(bytes);
+    });
+    const result = await extractCuratedSource(args);
+    assert.deepEqual(result, { nodeCount: 1, binaryCount: 1 });
+    assert.equal(warnings.length, 3);
+    assert.match(
+        warnings[0],
+        /Node batch 1\/1 for com\.enonic\.cms\.default:master.*other side closed/
+    );
+    assert.match(warnings[1], /attempt 3\/3.*502 from/);
+    assert.match(warnings[2], /Binary content-id\/file\.pdf.*terminated/);
+});
+
+test('names the failing request after the last retry and removes the incomplete export', async (t) => {
+    const root = directory(t);
+    const source = createSourceNode();
+    let attempts = 0;
+    const { args } = retryOptions(t, root, source, async () => {
+        attempts += 1;
+        throw droppedConnection();
+    });
+    await assert.rejects(extractCuratedSource(args), (error) => {
+        assert.match(
+            error.message,
+            /^Node batch 1\/1 for com\.enonic\.cms\.default:master failed after 3 attempts: fetch failed$/
+        );
+        assert.equal(error.cause.message, 'other side closed');
+        return true;
+    });
+    assert.equal(attempts, 3);
+    assert.equal(existsSync(join(root, 'curated-test')), false);
+});
+
+test('does not retry client errors from the source', async (t) => {
+    const root = directory(t);
+    const source = createSourceNode();
+    let attempts = 0;
+    const { args, warnings } = retryOptions(t, root, source, async () => {
+        attempts += 1;
+        return Response.json({ message: 'Forbidden' }, { status: 403 });
+    });
+    await assert.rejects(
+        extractCuratedSource(args),
+        /^Error: Node batch 1\/1 for com\.enonic\.cms\.default:master failed: 403 from .*Forbidden/
+    );
+    assert.equal(attempts, 1);
+    assert.equal(warnings.length, 0);
+});
+
 test('downloads available Content Studio project icons', async () => {
     const icons = await downloadProjectIcons({
         sourceServiceUrl: 'https://source.example/_/service/no.nav.navno/curatedExportSource',

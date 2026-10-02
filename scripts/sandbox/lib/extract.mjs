@@ -12,6 +12,7 @@ import {
 import { dirname, resolve } from 'node:path';
 import { Readable, Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
+import { setTimeout as sleep } from 'node:timers/promises';
 import {
     directLocalFetch,
     fetchXp,
@@ -215,6 +216,49 @@ const chunks = (values, size) => {
     return result;
 };
 
+// Deployed sources sit behind proxies that drop connections or answer 502-504 during
+// restarts and load spikes. Every source request is a read, so repeating it is safe.
+const RETRY_DELAYS_MS = [2000, 5000];
+const RETRYABLE_STATUSES = new Set([502, 503, 504]);
+const RETRYABLE_ERROR_CODES = new Set([
+    'ECONNREFUSED',
+    'ECONNRESET',
+    'EPIPE',
+    'ETIMEDOUT',
+    'UND_ERR_SOCKET',
+]);
+
+const httpError = (message, status) =>
+    Object.assign(new Error(message), { retryable: RETRYABLE_STATUSES.has(status) });
+
+const isRetryableError = (error) =>
+    error?.retryable === true ||
+    // Undici reports network failures as TypeError('fetch failed') before the response and
+    // TypeError('terminated') when the body stream is cut off.
+    (error instanceof TypeError && ['fetch failed', 'terminated'].includes(error.message)) ||
+    RETRYABLE_ERROR_CODES.has(error?.code) ||
+    RETRYABLE_ERROR_CODES.has(error?.cause?.code);
+
+const withRetries = async (description, operation, retryDelaysMs) => {
+    for (let attempt = 1; ; attempt += 1) {
+        try {
+            return await operation();
+        } catch (error) {
+            const attempts = retryDelaysMs.length + 1;
+            if (!isRetryableError(error) || attempt === attempts) {
+                const attemptInfo = attempt > 1 ? ` after ${attempt} attempts` : '';
+                error.message = `${description} failed${attemptInfo}: ${error.message}`;
+                throw error;
+            }
+            const reason = error.cause?.message || error.message;
+            console.warn(
+                `\nRetrying ${description} (attempt ${attempt + 1}/${attempts}): ${reason}`
+            );
+            await sleep(retryDelaysMs[attempt - 1]);
+        }
+    }
+};
+
 const requestJson = async (url, authHeaders, options, fetchImpl) => {
     const response = await fetchImpl(url, {
         ...options,
@@ -226,11 +270,12 @@ const requestJson = async (url, authHeaders, options, fetchImpl) => {
             ...options?.headers,
         },
     });
-    const body = await response.json();
+    // Read text first: proxies answer errors with HTML, which would hide the status code.
+    const text = await response.text();
     if (!response.ok) {
-        throw new Error(`${response.status} from ${url}: ${JSON.stringify(body)}`);
+        throw httpError(`${response.status} from ${url}: ${text.slice(0, 500)}`, response.status);
     }
-    return body;
+    return JSON.parse(text);
 };
 
 const getNodeDirectory = (exportRoot, contentPath) => {
@@ -348,9 +393,7 @@ const downloadBinary = async ({
         signal: AbortSignal.timeout(120000),
     });
     if (!response.ok || !response.body) {
-        throw new Error(
-            `Failed binary ${request.contentId}/${request.binaryReference}: ${response.status}`
-        );
+        throw httpError(`HTTP ${response.status}`, response.status);
     }
 
     const temporaryPath = resolve(cacheDirectory, `.download-${randomUUID()}`);
@@ -441,6 +484,7 @@ export const extractCuratedSource = async ({
     exportDirectory,
     fetchImpl = fetchXp,
     getAuthHeaders = getSourceAuthHeaders,
+    retryDelaysMs = RETRY_DELAYS_MS,
 }) => {
     const exportRoots = manifest.exports.map(({ exportName }) => {
         if (!isSafeName(exportName)) {
@@ -462,23 +506,28 @@ export const extractCuratedSource = async ({
             createdRoots.push(exportRoot);
         }
         const authHeaders = await getAuthHeaders(sourceServiceUrl, auth);
-        for (const nativeExport of manifest.exports) {
+        const entriesByExport = manifest.exports.map((nativeExport) =>
+            manifest.entries.filter(
+                (entry) =>
+                    entry.repoId === nativeExport.repoId &&
+                    entry.branches.includes(nativeExport.sourceBranch)
+            )
+        );
+        const totalNodes = entriesByExport.reduce((sum, entries) => sum + entries.length, 0);
+        for (const [exportIndex, nativeExport] of manifest.exports.entries()) {
             const exportRoot = resolve(exportDirectory, nativeExport.exportName);
             writeFileSync(
                 resolve(exportRoot, 'export.properties'),
                 `xpVersion = ${manifest.xpVersion}\n`
             );
-            const entries = manifest.entries.filter(
-                (entry) =>
-                    entry.repoId === nativeExport.repoId &&
-                    entry.branches.includes(nativeExport.sourceBranch)
-            );
+            const entries = entriesByExport[exportIndex];
             const exportedSources = [];
             // Without drafts, the manifest mirrors master into draft, so draft data is read from master.
             const readBranch =
                 manifest.includeDrafts === true ? nativeExport.sourceBranch : 'master';
+            const batches = chunks(entries, BATCH_SIZE);
 
-            for (const batch of chunks(entries, BATCH_SIZE)) {
+            for (const [batchIndex, batch] of batches.entries()) {
                 const versionIds = batch.map((entry) => {
                     const versionId = entry.versions?.[nativeExport.sourceBranch];
                     if (typeof versionId !== 'string' || !versionId) {
@@ -488,19 +537,24 @@ export const extractCuratedSource = async ({
                     }
                     return versionId;
                 });
-                const result = await requestJson(
-                    sourceServiceUrl,
-                    authHeaders,
-                    {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            repository: nativeExport.repoId,
-                            branch: readBranch,
-                            contentIds: batch.map(({ contentId }) => contentId),
-                            versionIds,
-                        }),
-                    },
-                    fetchImpl
+                const result = await withRetries(
+                    `Node batch ${batchIndex + 1}/${batches.length} for ${nativeExport.repoId}:${readBranch}`,
+                    () =>
+                        requestJson(
+                            sourceServiceUrl,
+                            authHeaders,
+                            {
+                                method: 'POST',
+                                body: JSON.stringify({
+                                    repository: nativeExport.repoId,
+                                    branch: readBranch,
+                                    contentIds: batch.map(({ contentId }) => contentId),
+                                    versionIds,
+                                }),
+                            },
+                            fetchImpl
+                        ),
+                    retryDelaysMs
                 );
                 if (!Array.isArray(result.nodes) || result.nodes.length !== batch.length) {
                     throw new Error(
@@ -549,20 +603,29 @@ export const extractCuratedSource = async ({
                     );
                     nodeCount += 1;
                 });
+                process.stdout.write(`\rDownloaded nodes: ${nodeCount}/${totalNodes}`);
             }
             writeManualChildOrders(exportRoot, exportedSources);
+        }
+        if (totalNodes > 0) {
+            process.stdout.write('\n');
         }
 
         const cacheDirectory = resolve(exportDirectory, '.binary-cache');
         let completedBinaries = 0;
         await runWorkers(binaryRequests, BINARY_CONCURRENCY, async (request) => {
-            await downloadBinary({
-                sourceServiceUrl,
-                authHeaders,
-                request,
-                cacheDirectory,
-                fetchImpl,
-            });
+            await withRetries(
+                `Binary ${request.contentId}/${request.binaryReference}`,
+                () =>
+                    downloadBinary({
+                        sourceServiceUrl,
+                        authHeaders,
+                        request,
+                        cacheDirectory,
+                        fetchImpl,
+                    }),
+                retryDelaysMs
+            );
             completedBinaries += 1;
             if (completedBinaries % 100 === 0 || completedBinaries === binaryRequests.length) {
                 process.stdout.write(
