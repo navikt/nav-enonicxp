@@ -79,7 +79,7 @@ test('the public create/update command loads without removed CLI modules', () =>
     );
     assert.equal(result.status, 1);
     // The sandbox name is rejected before the Enonic CLI check (no PATH here) or any prompt.
-    assert.match(result.stderr, /A valid, explicit local target sandbox name is required/);
+    assert.match(result.stderr, /Invalid sandbox name/);
     assert.doesNotMatch(result.stderr, /ERR_MODULE_NOT_FOUND/);
 });
 

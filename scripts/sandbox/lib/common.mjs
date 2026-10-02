@@ -7,6 +7,7 @@ import {
     mkdirSync,
     readFileSync,
     rmSync,
+    rmdirSync,
     writeFileSync,
 } from 'node:fs';
 import { Agent, request as httpRequest } from 'node:http';
@@ -322,6 +323,16 @@ export const withCuratedWorkspace = async (
             !current.isSymbolicLink()
         ) {
             rmSync(directory, { recursive: true, force: true });
+        }
+        if (currentRoot?.dev === root.dev && currentRoot?.ino === root.ino) {
+            try {
+                // Only succeeds when empty, so concurrent runs and other files are left alone.
+                rmdirSync(outputDirectory);
+            } catch (error) {
+                if (!['ENOENT', 'ENOTEMPTY', 'EEXIST'].includes(error.code)) {
+                    throw error;
+                }
+            }
         }
     };
     const handlers = Object.entries(SIGNAL_EXIT_CODES).map(([signal, code]) => {

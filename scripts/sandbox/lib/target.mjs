@@ -18,7 +18,6 @@ import {
     directLocalFetch,
     encodePropertyValue,
     getXpSessionCookie,
-    isSafeName,
     parseAuth,
     readRunningSandbox,
     readSandboxXpVersion,
@@ -67,8 +66,11 @@ export const assertLocalUrl = (value, expected) => {
 };
 
 export const assertSandboxName = (sandbox) => {
-    if (!isSafeName(sandbox)) {
-        throw new Error('A valid, explicit local target sandbox name is required');
+    // Same rule as `enonic sandbox create`, so a bad name fails before any download.
+    if (typeof sandbox !== 'string' || !/^\w+$/.test(sandbox)) {
+        throw new Error(
+            `Invalid sandbox name '${sandbox ?? ''}'. Use letters, digits or underscore (_) only`
+        );
     }
 };
 

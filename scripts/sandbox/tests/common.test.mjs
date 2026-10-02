@@ -376,6 +376,12 @@ for (const fail of [false, true]) {
     });
 }
 
+test('removes the output directory when no other runs or files are left in it', async (t) => {
+    const root = fixture(t);
+    await withCuratedWorkspace({ bundle: 'run', outputDirectory: root }, async () => {});
+    assert.equal(existsSync(root), false);
+});
+
 test('rejects unsafe names, existing directories and symlinks without touching them', async (t) => {
     const root = fixture(t);
     const mustNotRun = () => assert.fail('must not start import');
@@ -443,6 +449,6 @@ for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP', 'exit']) {
         assert.equal(result.error, undefined);
         assert.equal(result.status, { SIGINT: 130, SIGTERM: 143, SIGHUP: 129, exit: 7 }[signal]);
         assert.equal(existsSync(join(root, 'run')), false);
-        assert.equal(existsSync(root), true);
+        assert.equal(existsSync(root), false);
     });
 }

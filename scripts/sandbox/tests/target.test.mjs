@@ -64,7 +64,7 @@ test('requires exact local endpoints and non-traversing sandbox names', () => {
     ]) {
         assert.throws(() => assertLocalUrl(url, LOCAL_MANAGEMENT_URL), /require/);
     }
-    for (const name of ['', '.', '..', '../target', 'a/b']) {
+    for (const name of ['', '.', '..', '../target', 'a/b', 'curated-dev2', 'v1.0', undefined]) {
         assert.throws(() => assertSandboxName(name), /sandbox name/);
     }
     assertSandboxName('curated_e2e');
