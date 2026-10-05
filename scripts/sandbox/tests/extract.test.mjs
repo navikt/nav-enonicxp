@@ -537,18 +537,26 @@ test('downloads project icons through the curated source endpoint and skips proj
     assert.equal(icons[0].data.toString(), '<svg/>');
 });
 
-test('does not mistake an icon error for an absent icon', async () => {
+test('warns and continues when an icon cannot be read', async () => {
     for (const status of [400, 403, 404, 500]) {
-        await assert.rejects(
-            downloadProjectIcons({
-                sourceServiceUrl: iconSource,
-                projects: [{ id: 'default' }],
-                auth: { token: 'synthetic-token' },
-                getAuthHeaders: async () => ({}),
-                fetchImpl: async () => new Response('Error', { status }),
-            }),
-            new RegExp(`Could not read icon for project default: ${status}`)
+        const warnings = [];
+        const icons = await downloadProjectIcons({
+            sourceServiceUrl: iconSource,
+            projects: [{ id: 'default' }, { id: 'navno-engelsk' }],
+            auth: { token: 'synthetic-token' },
+            getAuthHeaders: async () => ({}),
+            warn: (message) => warnings.push(message),
+            fetchImpl: async (url) =>
+                url.searchParams.get('project') === 'default'
+                    ? new Response('Error', { status })
+                    : new Response('<svg/>', { headers: { 'content-type': 'image/svg+xml' } }),
+        });
+        assert.deepEqual(
+            icons.map(({ projectId }) => projectId),
+            ['navno-engelsk']
         );
+        assert.equal(warnings.length, 1);
+        assert.match(warnings[0], new RegExp(`icon for project default \\(${status}\\)`));
     }
 });
 

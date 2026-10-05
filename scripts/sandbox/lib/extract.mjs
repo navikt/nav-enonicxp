@@ -645,12 +645,14 @@ export const extractCuratedSource = async ({
 
 // Reads icons through the curated source endpoint so local and deployed sources share one path.
 // The source answers 204 for projects without an icon; Content Studio then shows the language flag.
+// Icons are cosmetic, so a failed read only warns.
 export const downloadProjectIcons = async ({
     sourceServiceUrl,
     projects,
     auth,
     fetchImpl = fetchXp,
     getAuthHeaders = getSourceAuthHeaders,
+    warn = console.warn,
 }) => {
     if (projects.length === 0) {
         return [];
@@ -669,7 +671,11 @@ export const downloadProjectIcons = async ({
             continue;
         }
         if (!response.ok) {
-            throw new Error(`Could not read icon for project ${project.id}: ${response.status}`);
+            warn(
+                `Warning: Could not read icon for project ${project.id} (${response.status}); ` +
+                    'Content Studio will show the language flag.'
+            );
+            continue;
         }
         icons.push({
             projectId: project.id,

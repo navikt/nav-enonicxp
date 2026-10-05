@@ -65,7 +65,7 @@ const getProjectIcon = (projectId: string): Response => {
     try {
         const icon = getCuratedProjectIcon(projectId);
         if (!icon) {
-            // 204, not 404, so the CLI can tell "no icon" apart from a missing route.
+            // 204, not 404, so the CLI skips projects without an icon but warns on errors.
             return { status: 204, headers: { 'Cache-Control': 'no-store' } };
         }
         return {
