@@ -1,0 +1,40 @@
+kind: "Macro"
+title: "Globale verdier med utregning"
+description: "Bruk denne ved behov for matematiske operasjoner på verdier"
+form:
+  - type: "CustomSelector"
+    name: "keys"
+    label: "Velg verdier"
+    occurrences:
+      min: 0
+      max: 0
+    service: "globalValues"
+    params:
+      contentType: "no.nav.navno:global-value-set"
+      withDescription: "true"
+  - type: "TextLine"
+    name: "expression"
+    label: "Skriv inn et matematisk uttrykk"
+    helpText: "'$n' erstattes av valgt verdi n over. F.eks: '$1 * 5 + $2' vil gange\
+      \ den\n                første valgte verdien med 5, og legge til den andre valgte\
+      \ verdien\n            "
+    occurrences:
+      min: 0
+      max: 1
+  - type: "Long"
+    name: "decimals"
+    label: "Avrunding"
+    helpText: "Antall desimaler resultatet skal avrundes til (0 for kun heltall)"
+    occurrences:
+      min: 1
+      max: 1
+    min: 0
+    max: 2
+    default: 0
+  - type: "TextLine"
+    name: "variables"
+    label: "(tomt felt, skal ikke brukes)"
+    occurrences:
+      min: 0
+      max: 1
+    regexp: "^$"

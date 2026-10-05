@@ -1,0 +1,75 @@
+kind: "ContentType"
+superType: "base:structured"
+final: true
+title: "Temaartikkel"
+description: "En generisk side som kan brukes til generelle artikler, dybdeinfo, stø\
+  tteinformasjon etc"
+form:
+  - type: "FormFragment"
+    name: "page-header"
+  - type: "FormFragment"
+    name: "ingress-required"
+  - type: "FormFragment"
+    name: "audience"
+  - type: "FieldSet"
+    label: "Kategori"
+    items:
+      - type: "ComboBox"
+        name: "taxonomy"
+        label: "Kategorier"
+        occurrences:
+          min: 0
+          max: 0
+        options:
+          - value: "tips_job"
+            label: "Jobbsøkertips"
+          - value: "help_work"
+            label: "Hjelp til å komme i jobb"
+          - value: "when_sick"
+            label: "Når du er syk"
+          - value: "payment"
+            label: "Utbetaling"
+          - value: "complaint_rights"
+            label: "Klagerettigheter"
+          - value: "user_support"
+            label: "Brukerstøtte"
+          - value: "about_nav"
+            label: "Om NAV"
+          - value: "membership_national_insurance"
+            label: "Medlemskap i folketrygden"
+          - value: "recruitment"
+            label: "Rekruttering (for arbeidsgivere)"
+      - type: "TextLine"
+        name: "customCategory"
+        label: "Tilleggskategori"
+        helpText: "Du kan også bruke denne dersom ingen kategorier i listen ovenfor\
+          \ er relevante."
+        occurrences:
+          min: 0
+          max: 1
+        maxLength: 40
+        showCounter: true
+  - type: "FormFragment"
+    name: "area"
+  - type: "FormFragment"
+    name: "illustration"
+  - type: "FormFragment"
+    name: "external-product-url"
+  - type: "FormFragment"
+    name: "custom-path-selector-required"
+  - type: "FormFragment"
+    name: "alternative-audience"
+  - type: "FormFragment"
+    name: "related-situations"
+  - type: "FormFragment"
+    name: "owner"
+  - type: "FormFragment"
+    name: "managed-by"
+  - type: "FormFragment"
+    name: "product-details-selector"
+  - type: "FormFragment"
+    name: "form-details-selector"
+  - type: "FormFragment"
+    name: "show-subsection-navigation"
+  - type: "FormFragment"
+    name: "dynamic-page-common"

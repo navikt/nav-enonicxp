@@ -1,0 +1,57 @@
+kind: "Macro"
+title: "Lenke til layer"
+description: "Benyttes dersom du skal lenke til en spesifikk språkversjon i et annet\
+  \ layer"
+form:
+  - type: "ComboBox"
+    name: "locale"
+    label: "Velg språkversjon"
+    occurrences:
+      min: 1
+      max: 1
+    options:
+      - value: "no"
+        label: "Norsk bokmål"
+      - value: "nn"
+        label: "Nynorsk"
+      - value: "en"
+        label: "Engelsk"
+      - value: "se"
+        label: "Samisk"
+  - type: "TextLine"
+    name: "body"
+    label: "Tekst"
+    occurrences:
+      min: 1
+      max: 1
+  - type: "TextLine"
+    name: "tooltip"
+    label: "Pekertekst"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "ContentSelector"
+    name: "target"
+    label: "Innhold"
+    occurrences:
+      min: 1
+      max: 1
+    attributes:
+      showStatus: "true"
+    allowContentType:
+      - "^(?!media:*$).*"
+    allowPath:
+      - "/www.nav.no/*"
+  - type: "CheckBox"
+    name: "newTab"
+    label: "Åpne i ny fane"
+    occurrences:
+      min: 0
+      max: 1
+    default: "unchecked"
+  - type: "TextLine"
+    name: "anchorId"
+    label: "Anker"
+    occurrences:
+      min: 0
+      max: 1

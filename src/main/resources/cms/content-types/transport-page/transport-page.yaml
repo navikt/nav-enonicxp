@@ -1,0 +1,13 @@
+kind: "ContentType"
+superType: "base:structured"
+title: "Transportside"
+description: "Eksempel \"Hva er din situasjon\" på nav.no"
+form:
+  - type: "FormFragment"
+    name: "ingress"
+  - type: "FormFragment"
+    name: "link-panels"
+  - type: "FormFragment"
+    name: "decorator-toggles"
+  - type: "FormFragment"
+    name: "seo"

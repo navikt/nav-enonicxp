@@ -1,15 +1,12 @@
-import { CreateObjectTypeParams } from '/lib/graphql';
 import * as contentLib from '/lib/xp/content';
 import { officeCallback } from '@navno-app/lib/guillotine/schema/schema-creation-callbacks/office-callback';
 import { OfficeTypes } from '@navno-app/lib/office-pages/types';
+import { GuillotineGraphQL } from '@navno-app/lib/guillotine/utils/creation-callback-utils';
 
-jest.mock('/lib/graphql', () => ({
-    __esModule: true,
-    default: {
-        GraphQLID: {},
-        reference: jest.fn(() => ({})),
-    },
-}));
+const graphQLMock = {
+    GraphQLID: {},
+    reference: jest.fn(() => ({})),
+} as unknown as GuillotineGraphQL;
 
 jest.mock('/lib/xp/content', () => ({
     get: jest.fn(),
@@ -19,12 +16,11 @@ jest.mock('/lib/xp/content', () => ({
 const contentMock = contentLib as jest.Mocked<typeof contentLib>;
 
 const resolveEditorial = (contentId = 'office-id') => {
-    const params = { fields: {} } as CreateObjectTypeParams;
-    officeCallback({} as never, params);
+    const { resolvers } = officeCallback(graphQLMock, 'no_nav_navno_OfficePage');
 
-    return params.fields.editorial.resolve!({
+    return resolvers!.no_nav_navno_OfficePage.editorial({
         args: { contentId },
-        context: {},
+        localContext: {},
         source: {},
     });
 };

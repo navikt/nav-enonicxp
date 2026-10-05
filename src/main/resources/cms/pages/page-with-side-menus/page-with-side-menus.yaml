@@ -1,0 +1,31 @@
+kind: "Page"
+title: "Innholdsside med meny"
+description: "Sidetype med meny"
+form:
+  - type: "FieldSet"
+    label: "Meny"
+    items:
+      - type: "CheckBox"
+        name: "showInternalNav"
+        label: "Vis intern-navigasjon"
+        occurrences:
+          min: 0
+          max: 1
+        default: "checked"
+      - type: "FormFragment"
+        name: "page-navigation-menu"
+  - type: "FieldSet"
+    label: "Andre innstillinger"
+    items:
+      - type: "CheckBox"
+        name: "showProductName"
+        label: "Vis produktnavnet i 'Det finnes også informasjon om...'"
+        helpText: "Hvis du krysser vekk, blir ordet 'dette' vist istedet for produktnavnet."
+        occurrences:
+          min: 0
+          max: 1
+        default: "checked"
+regions:
+  - "topPageContent"
+  - "pageContent"
+  - "bottomRow"

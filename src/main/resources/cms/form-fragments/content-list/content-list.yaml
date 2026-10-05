@@ -1,0 +1,20 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "Long"
+    name: "numLinks"
+    label: "Maks antall lenker som vises"
+    occurrences:
+      min: 0
+      max: 1
+    min: 1
+  - type: "ContentSelector"
+    name: "target"
+    label: "Velg innholdsliste"
+    occurrences:
+      min: 1
+      max: 1
+    allowContentType:
+      - "no.nav.navno:content-list"
+    allowPath:
+      - "${site}/*"

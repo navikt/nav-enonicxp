@@ -1,0 +1,13 @@
+kind: "FormFragment"
+title: "Ingress"
+form:
+  - type: "TextArea"
+    name: "ingress"
+    label: "Ingress"
+    helpText: "Ingressen skal være kort og brukes på produktkortet. Den skrives på\
+      \ formatet [Dette gjør produktet] når du [situasjon eller målgruppe]."
+    occurrences:
+      min: 1
+      max: 1
+    maxLength: 260
+    showCounter: true

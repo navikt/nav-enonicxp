@@ -39,7 +39,6 @@ import { fragmentComponentDataCallback } from './schema-creation-callbacks/fragm
 import { globalCaseTimeSetCallback } from './schema-creation-callbacks/global-case-time-set';
 import { saksbehandlingstidMacroCallback } from './schema-creation-callbacks/saksbehandlingstid-macro-config';
 import { areapageSituationCardPartCallback } from './schema-creation-callbacks/areapage-situation-card';
-import { CreationCallback } from '../utils/creation-callback-utils';
 import { contentInterfaceCallback } from './schema-creation-callbacks/content-interface';
 import { externalLinkCallback } from './schema-creation-callbacks/external-link-callback';
 import { createOpeningHoursFields } from './schema-creation-callbacks/common/opening-hours-mixin';
@@ -53,7 +52,17 @@ import { pressLandingPageDataCallback } from './schema-creation-callbacks/press-
 import { macroLinkToLayerCallback } from './schema-creation-callbacks/macro-link-to-layer';
 import { formIntermediateStepCallback } from './schema-creation-callbacks/form-intermediate-step';
 
-export const schemaCreationCallbacks: Record<string, CreationCallback> = {
+import {
+    CreationCallback,
+    CreationCallbackParams,
+    FieldDefinition,
+    GuillotineExtensions,
+    GuillotineGraphQL,
+    SchemaExtension,
+} from '../utils/creation-callback-utils';
+import { runInForwardedQueryContext } from '../utils/forwarded-query-context';
+
+const schemaExtensions: Record<string, SchemaExtension> = {
     Attachment: attachmentCallback,
     Content: contentInterfaceCallback,
     FragmentComponentData: fragmentComponentDataCallback,
@@ -71,8 +80,19 @@ export const schemaCreationCallbacks: Record<string, CreationCallback> = {
     no_nav_navno_OfficePage: officeCallback,
     no_nav_navno_ContactInformation_Chat: createOpeningHoursFields('chat'),
     no_nav_navno_ContactInformation_Telephone: createOpeningHoursFields('telephone'),
-    no_nav_navno_MainArticle_MenuListItems: menuListDataCallback,
-    no_nav_navno_PageList_MenuListItems: menuListDataCallback,
+    no_nav_navno_MainArticle_MenuListItems: menuListDataCallback([
+        'selfservice',
+        'form_and_application',
+        'process_times',
+        'related_information',
+        'international',
+        'report_changes',
+        'rates',
+        'appeal_rights',
+        'membership',
+        'rules_and_regulations',
+    ]),
+    no_nav_navno_PageList_MenuListItems: menuListDataCallback(['shortcuts']),
     no_nav_navno_GlobalValueSet: globalValueSetCallback,
     no_nav_navno_GlobalCaseTimeSet: globalCaseTimeSetCallback,
     no_nav_navno_Calculator_GlobalValue: globalValueCalculatorConfigCallback,
@@ -125,4 +145,85 @@ export const schemaCreationCallbacks: Record<string, CreationCallback> = {
     no_nav_navno_GuidePage_Audience: audienceCallback,
     no_nav_navno_GuidePage_Data: generalDataCallback,
     no_nav_navno_GuidePage_AlternativeAudience: alternativeAudienceCallback('GuidePage'),
-} as const;
+};
+
+// Several extensions may modify the same type. Collect all modifications and apply them
+// with a single call for each modification type.
+const combineCreationCallbacks =
+    (callbacks: CreationCallback[]): CreationCallback =>
+    (params) => {
+        let addFields: Record<string, FieldDefinition> = {};
+        let modifyFields: Record<string, Partial<FieldDefinition>> = {};
+
+        // Note: Object.assign is not supported by Nashorn
+        const collector: CreationCallbackParams = {
+            addFields: (fields) => {
+                addFields = { ...addFields, ...fields };
+            },
+            modifyFields: (fields) => {
+                modifyFields = { ...modifyFields, ...fields };
+            },
+            removeFields: (fieldNames) => params.removeFields(fieldNames),
+            setDescription: (description) => params.setDescription(description),
+            setInterfaces: (interfaces) => params.setInterfaces(interfaces),
+        };
+
+        callbacks.forEach((callback) => callback(collector));
+
+        if (Object.keys(addFields).length > 0) {
+            params.addFields(addFields);
+        }
+
+        if (Object.keys(modifyFields).length > 0) {
+            params.modifyFields(modifyFields);
+        }
+    };
+
+// Builds the schema extensions for the Guillotine app. All resolvers run with the context
+// attributes forwarded from the query caller.
+export const buildSchemaExtensions = (graphQL: GuillotineGraphQL): GuillotineExtensions => {
+    const types: NonNullable<GuillotineExtensions['types']> = {};
+    const creationCallbacks: Record<string, CreationCallback[]> = {};
+    const resolvers: NonNullable<GuillotineExtensions['resolvers']> = {};
+
+    Object.entries(schemaExtensions).forEach(([typeName, schemaExtension]) => {
+        const extension = schemaExtension(graphQL, typeName);
+
+        // The Guillotine app requires a description for all types
+        Object.keys(extension.types || {}).forEach((typeDefName) => {
+            const typeDef = extension.types![typeDefName];
+            types[typeDefName] = { ...typeDef, description: typeDef.description || typeDefName };
+        });
+
+        Object.entries(extension.creationCallbacks || {}).forEach(
+            ([callbackTypeName, callback]) => {
+                creationCallbacks[callbackTypeName] = [
+                    ...(creationCallbacks[callbackTypeName] || []),
+                    callback,
+                ];
+            }
+        );
+
+        Object.entries(extension.resolvers || {}).forEach(([resolverTypeName, fieldResolvers]) => {
+            const wrappedResolvers = Object.entries(fieldResolvers).reduce<
+                (typeof resolvers)[string]
+            >((acc, [fieldName, resolver]) => {
+                acc[fieldName] = (env) => runInForwardedQueryContext(() => resolver(env));
+                return acc;
+            }, {});
+
+            resolvers[resolverTypeName] = { ...resolvers[resolverTypeName], ...wrappedResolvers };
+        });
+    });
+
+    return {
+        types,
+        creationCallbacks: Object.entries(creationCallbacks).reduce<
+            NonNullable<GuillotineExtensions['creationCallbacks']>
+        >((acc, [typeName, callbacks]) => {
+            acc[typeName] = combineCreationCallbacks(callbacks);
+            return acc;
+        }, {}),
+        resolvers,
+    };
+};

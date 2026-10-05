@@ -1,0 +1,17 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "Time"
+    name: "from"
+    label: "Fra klokken"
+    occurrences:
+      min: 0
+      max: 1
+    default: "09:00"
+  - type: "Time"
+    name: "to"
+    label: "Til klokken"
+    occurrences:
+      min: 0
+      max: 1
+    default: "15:00"

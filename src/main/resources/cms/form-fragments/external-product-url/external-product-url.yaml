@@ -1,0 +1,32 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "TextLine"
+    name: "externalProductUrl"
+    label: "Videresend alle besøk til annen url:"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "ContentSelector"
+    name: "externalContentRedirect"
+    label: "Videresend alle besøkt til annet innhold (kun for administratorer):"
+    occurrences:
+      min: 0
+      max: 1
+    allowContentType:
+      - "${app}:area-page"
+      - "${app}:content-page-with-sidemenus"
+      - "${app}:current-topic-page"
+      - "${app}:dynamic-page"
+      - "${app}:form-intermediate-step"
+      - "${app}:front-page"
+      - "${app}:generic-page"
+      - "${app}:guide-page"
+      - "${app}:main-article-chapter"
+      - "${app}:main-article"
+      - "${app}:oversikt"
+      - "${app}:page-list"
+      - "${app}:situation-page"
+      - "${app}:themed-article-page"
+      - "${app}:tools-page"
+      - "${app}:section-page"

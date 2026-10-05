@@ -1,0 +1,5 @@
+kind: "Page"
+title: "Main Page"
+form: []
+regions:
+  - "main"

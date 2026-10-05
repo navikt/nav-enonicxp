@@ -1,0 +1,18 @@
+kind: "FormFragment"
+title: "Hovedpaneler"
+form:
+  - type: "FieldSet"
+    label: "Tavleoppføringer"
+    items:
+      - type: "Long"
+        name: "nrTableEntries"
+        label: "Oppgi antall tavler/bokser på seksjonssiden"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "ContentSelector"
+        name: "tableContents"
+        label: "Velg innhold"
+        occurrences:
+          min: 0
+          max: 0

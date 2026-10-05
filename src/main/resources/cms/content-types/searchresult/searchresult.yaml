@@ -1,0 +1,6 @@
+kind: "ContentType"
+superType: "base:structured"
+abstract: true
+title: "Søkeresultat"
+description: "Søkeresultat - skal aldri opprettes fra CS"
+form: []

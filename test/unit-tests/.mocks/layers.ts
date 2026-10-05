@@ -4,21 +4,24 @@ import { CONTENT_LOCALE_DEFAULT } from '@navno-app/lib/constants';
 
 const { server, TEST_SERVER_ENGLISH_PROJECT_ID } = xpMocks;
 
+// XP8 types the context repository as optional, but the mock server is always created with one
+const defaultRepoId = server.context.repository!;
+
 const englishRepoId = server
     .listRepos()
     .find((repo) => repo.id.endsWith(TEST_SERVER_ENGLISH_PROJECT_ID))!.id;
 
 const layersData: LayersRepoData = {
     defaultLocale: CONTENT_LOCALE_DEFAULT,
-    localeToRepoIdMap: { no: server.context.repository, en: englishRepoId },
+    localeToRepoIdMap: { no: defaultRepoId, en: englishRepoId },
     repoIdToLocaleMap: {
-        [server.context.repository]: CONTENT_LOCALE_DEFAULT,
+        [defaultRepoId]: CONTENT_LOCALE_DEFAULT,
         [englishRepoId]: 'en',
     },
     sources: {
         master: [
             {
-                repoId: server.context.repository,
+                repoId: defaultRepoId,
                 branch: 'master',
                 principals: ['role:system.admin'],
             },
@@ -30,7 +33,7 @@ const layersData: LayersRepoData = {
         ],
         draft: [
             {
-                repoId: server.context.repository,
+                repoId: defaultRepoId,
                 branch: 'draft',
                 principals: ['role:system.admin'],
             },

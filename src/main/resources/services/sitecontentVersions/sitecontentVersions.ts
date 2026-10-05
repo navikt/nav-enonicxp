@@ -7,6 +7,7 @@ import { userIsLoggedIn, validateServiceSecretHeader } from '../../lib/utils/aut
 import { SITECONTENT_404_MSG_PREFIX } from '../../lib/constants';
 import { getServiceRequestSubPath } from '../service-utils';
 import { publishedVersionsReqHandler } from './publishedVersions/publishedVersions';
+import { TIME_TRAVEL_ENABLED } from '../../lib/time-travel/run-with-time-travel';
 
 const isValidTime = (time?: string): time is string => {
     try {
@@ -17,9 +18,9 @@ const isValidTime = (time?: string): time is string => {
     }
 };
 
-const sitecontentVersionsReqHandler = (req: Request) : Response => {
+const sitecontentVersionsReqHandler = (req: Request): Response => {
     const id = req.params.id as string;
-    const branch = req.params.branch ? req.params.branch as string : "master";
+    const branch = req.params.branch ? (req.params.branch as string) : 'master';
     const time = req.params.time as string;
     const locale = req.params.locale as string;
 
@@ -38,6 +39,16 @@ const sitecontentVersionsReqHandler = (req: Request) : Response => {
             status: 400,
             body: {
                 message: 'Invalid branch specified',
+            },
+            contentType: 'application/json',
+        };
+    }
+
+    if (!TIME_TRAVEL_ENABLED) {
+        return {
+            status: 501,
+            body: {
+                message: 'Version history is temporarily disabled',
             },
             contentType: 'application/json',
         };
@@ -103,7 +114,7 @@ const sitecontentVersionsReqHandler = (req: Request) : Response => {
     }
 };
 
-export const get = (req: Request) : Response => {
+export const get = (req: Request): Response => {
     if (!validateServiceSecretHeader(req) && !userIsLoggedIn()) {
         return {
             status: 401,

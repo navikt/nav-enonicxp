@@ -1,0 +1,15 @@
+kind: "FormFragment"
+title: "Html Area"
+form:
+  - type: "HtmlArea"
+    name: "editorial"
+    label: "Ingress"
+    occurrences:
+      min: 0
+      max: 1
+    attributes:
+      service: "htmlFragmentSelector"
+    exclude: "JustifyBlock JustifyLeft JustifyCenter JustifyRight Outdent Indent\n\
+      \                    Anchor Table\n                "
+    include: "Undo Redo Bold"
+    allowHeadings: "normal h2 h3 h4"

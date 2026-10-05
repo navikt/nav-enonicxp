@@ -3,7 +3,6 @@
 #import "./parts/partAreapageSituationCard.graphql"
 #import "./parts/partButton.graphql"
 #import "./parts/partCalculator.graphql"
-#import "./parts/partContactOption.graphql"
 #import "./parts/partDynamicAlert.graphql"
 #import "./parts/partDynamicHeader.graphql"
 #import "./parts/partDynamicLinkList.graphql"
@@ -45,9 +44,6 @@ fragment partComponents on PartComponentData {
                 }
                 calculator {
                     ...partComponentCalculator
-                }
-                contact_option {
-                    ...partComponentContactOption
                 }
                 dynamic_alert {
                     ...partComponentDynamicAlert

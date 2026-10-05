@@ -1,0 +1,18 @@
+kind: "Layout"
+title: "Fast kolonne-layout - 3 kolonner"
+description: "Tre faste kolonner med valgfri bredde-fordeling"
+form:
+  - type: "TextLine"
+    name: "distribution"
+    label: "Bredde-fordeling (xx-xx-xx)"
+    occurrences:
+      min: 0
+      max: 1
+    regexp: "^\\d+-\\d+-\\d+$"
+    default: "33-33-33"
+  - type: "FormFragment"
+    name: "layouts-common"
+regions:
+  - "dynamic-1"
+  - "dynamic-2"
+  - "dynamic-3"

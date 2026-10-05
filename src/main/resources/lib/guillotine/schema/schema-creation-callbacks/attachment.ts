@@ -1,15 +1,26 @@
-import graphQlLib from '/lib/graphql';
 import { getAttachmentText } from './common/attachments';
-import { CreationCallback } from '../../utils/creation-callback-utils';
+import {
+    getCurrentContentFromLocalContext,
+    SchemaExtension,
+} from '../../utils/creation-callback-utils';
 
-export const attachmentCallback: CreationCallback = (context, params) => {
-    params.fields.attachmentText = {
-        type: graphQlLib.GraphQLString,
-        args: {
-            maxSize: graphQlLib.GraphQLInt,
+export const attachmentCallback: SchemaExtension = (graphQL, typeName) => ({
+    creationCallbacks: {
+        [typeName]: (params) => {
+            params.addFields({
+                attachmentText: {
+                    type: graphQL.GraphQLString,
+                    args: { maxSize: graphQL.GraphQLInt },
+                },
+            });
         },
-        resolve: (env) => {
-            return getAttachmentText(env.source, env.args.maxSize);
+    },
+    resolvers: {
+        [typeName]: {
+            attachmentText: (env) => {
+                const contentId = getCurrentContentFromLocalContext(env)?._id;
+                return getAttachmentText(contentId, env.source, env.args.maxSize);
+            },
         },
-    };
-};
+    },
+});

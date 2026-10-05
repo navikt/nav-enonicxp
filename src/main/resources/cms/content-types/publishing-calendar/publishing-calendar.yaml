@@ -1,0 +1,11 @@
+kind: "ContentType"
+superType: "base:unstructured"
+abstract: true
+final: true
+title: "Publiseringskalender"
+description: "Brukes til publiseringskalender - Skal ikke opprettes nye"
+form:
+  - type: "FormFragment"
+    name: "ingress"
+  - type: "FormFragment"
+    name: "seo"

@@ -1,6 +1,5 @@
 import * as contentLib from '/lib/xp/content';
-import graphQlLib from '/lib/graphql';
-import { CreationCallback } from '../../utils/creation-callback-utils';
+import { SchemaExtension } from '../../utils/creation-callback-utils';
 import { CONTENT_LOCALE_DEFAULT } from '../../../constants';
 
 const getChatContactInformation = (contactContentId?: string, lang?: string) => {
@@ -38,20 +37,33 @@ const getChatContactInformation = (contactContentId?: string, lang?: string) => 
     return queryResults[0] || null;
 };
 
-export const partContactOptionChatCallback: CreationCallback = (context, params) => {
-    params.fields.sharedContactInformation.args = { contentId: graphQlLib.GraphQLID };
-    params.fields.sharedContactInformation.resolve = (env) => {
-        const { contentId } = env.args;
+export const partContactOptionChatCallback: SchemaExtension = (graphQL, typeName) => ({
+    creationCallbacks: {
+        [typeName]: (params) => {
+            params.modifyFields({
+                sharedContactInformation: { args: { contentId: graphQL.GraphQLID } },
+            });
+        },
+    },
+    resolvers: {
+        [typeName]: {
+            sharedContactInformation: (env) => {
+                const { contentId } = env.args;
 
-        const currentPage = contentLib.get({ key: contentId });
-        if (!currentPage) {
-            return null;
-        }
+                const currentPage = contentLib.get({ key: contentId });
+                if (!currentPage) {
+                    return null;
+                }
 
-        const { language } = currentPage;
-        const { sharedContactInformation } = env.source;
-        const sharedChatContent = getChatContactInformation(sharedContactInformation, language);
+                const { language } = currentPage;
+                const { sharedContactInformation } = env.source;
+                const sharedChatContent = getChatContactInformation(
+                    sharedContactInformation,
+                    language
+                );
 
-        return sharedChatContent;
-    };
-};
+                return sharedChatContent;
+            },
+        },
+    },
+});

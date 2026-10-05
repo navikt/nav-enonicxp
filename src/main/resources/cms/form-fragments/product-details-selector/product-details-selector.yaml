@@ -1,0 +1,33 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "FieldSet"
+    label: "Produktdetaljer"
+    items:
+      - type: "CustomSelector"
+        name: "processing_times"
+        label: "Saksbehandlingstider"
+        occurrences:
+          min: 0
+          max: 1
+        service: "productDetailsSelector"
+        params:
+          detailType: "processing_times"
+      - type: "CustomSelector"
+        name: "payout_dates"
+        label: "Utbetalingsdatoer"
+        occurrences:
+          min: 0
+          max: 1
+        service: "productDetailsSelector"
+        params:
+          detailType: "payout_dates"
+      - type: "CustomSelector"
+        name: "rates"
+        label: "Satser"
+        occurrences:
+          min: 0
+          max: 1
+        service: "productDetailsSelector"
+        params:
+          detailType: "rates"

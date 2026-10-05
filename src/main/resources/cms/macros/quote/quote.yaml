@@ -1,0 +1,10 @@
+kind: "Macro"
+title: "Sitat"
+description: "Sett inn sitat i brødteksten"
+form:
+  - type: "TextLine"
+    name: "quote"
+    label: "Sitat"
+    occurrences:
+      min: 1
+      max: 1

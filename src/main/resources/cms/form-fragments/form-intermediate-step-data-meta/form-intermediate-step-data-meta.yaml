@@ -1,0 +1,21 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "TextLine"
+    name: "label"
+    label: "Tittel på valget"
+    occurrences:
+      min: 1
+      max: 1
+  - type: "TextArea"
+    name: "explanation"
+    label: "Ekstra forklaring"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "TextArea"
+    name: "languageDisclaimer"
+    label: "Informasjon om språk"
+    occurrences:
+      min: 0
+      max: 1

@@ -1,0 +1,143 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "ItemSet"
+    name: "regularOpeningHours"
+    label: "Ordinære åpningstider"
+    occurrences:
+      min: 0
+      max: 1
+    items:
+      - type: "ItemSet"
+        name: "monday"
+        label: "Mandag"
+        occurrences:
+          min: 0
+          max: 1
+        items:
+          - type: "FormFragment"
+            name: "opening-hour"
+      - type: "ItemSet"
+        name: "tuesday"
+        label: "Tirsdag"
+        occurrences:
+          min: 0
+          max: 1
+        items:
+          - type: "FormFragment"
+            name: "opening-hour"
+      - type: "ItemSet"
+        name: "wednesday"
+        label: "Onsdag"
+        occurrences:
+          min: 0
+          max: 1
+        items:
+          - type: "FormFragment"
+            name: "opening-hour"
+      - type: "ItemSet"
+        name: "thursday"
+        label: "Torsdag"
+        occurrences:
+          min: 0
+          max: 1
+        items:
+          - type: "FormFragment"
+            name: "opening-hour"
+      - type: "ItemSet"
+        name: "friday"
+        label: "Fredag"
+        occurrences:
+          min: 0
+          max: 1
+        items:
+          - type: "FormFragment"
+            name: "opening-hour"
+      - type: "ItemSet"
+        name: "saturday"
+        label: "Lørdag"
+        occurrences:
+          min: 0
+          max: 1
+        items:
+          - type: "FormFragment"
+            name: "opening-hour"
+      - type: "ItemSet"
+        name: "sunday"
+        label: "Søndag"
+        occurrences:
+          min: 0
+          max: 1
+        items:
+          - type: "FormFragment"
+            name: "opening-hour"
+  - type: "OptionSet"
+    name: "specialOpeningHours"
+    expanded: false
+    label: "Spesielle åpningstider"
+    occurrences:
+      min: 0
+      max: 1
+    options:
+      - name: "shared"
+        label: "Referer til annen åpningstid"
+        items:
+          - type: "ContentSelector"
+            name: "sharedSpecialOpeningHours"
+            label: "Referer til felles spesielle åpningstider"
+            helpText: "Dette vil overstyre eventuelle spesielle åpningstider som du\
+              \ har lagt til nedenfor."
+            occurrences:
+              min: 0
+              max: 0
+            allowContentType:
+              - "${app}:contact-information"
+      - name: "custom"
+        label: "Tilpass spesielle åpningstider"
+        items:
+          - type: "Instant"
+            name: "validFrom"
+            label: "Synlig fra"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "Instant"
+            name: "validTo"
+            label: "Synlig til"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "ItemSet"
+            name: "hours"
+            label: "Dag"
+            occurrences:
+              min: 0
+              max: 0
+            items:
+              - type: "Date"
+                name: "date"
+                label: "Dato"
+                occurrences:
+                  min: 1
+                  max: 1
+              - type: "OptionSet"
+                name: "status"
+                expanded: false
+                label: "Åpent/Stengt"
+                occurrences:
+                  min: 1
+                  max: 1
+                options:
+                  - name: "closed"
+                    label: "Stengt"
+                  - name: "open"
+                    label: "Åpent"
+                    items:
+                      - type: "FormFragment"
+                        name: "opening-hour"
+                selection:
+                  min: 1
+                  max: 1
+    selection:
+      min: 0
+      max: 1

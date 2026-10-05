@@ -1,0 +1,32 @@
+<div data-th-if="${archiveEntries == null}">Ingen treff</div>
+<div data-th-if="${archiveEntries != null}">
+    <form th:attr="onsubmit='fetchArchiveRestore(event)'">
+        <label for="restore-input" style="margin-bottom: 0.25rem"
+            >Velg innhold for gjenoppretting</label
+        ><br />
+        <select
+            name="selectedContent"
+            id="restore-input"
+            class="xp-admin-common-text-input"
+            style="
+                -moz-appearance: revert;
+                -webkit-appearance: revert;
+                max-width: 100%;
+                white-space: nowrap;
+            "
+        >
+            <option
+                data-th-each="entry : ${archiveEntries}"
+                data-th-text="${entry.name}"
+                data-th-value="${entry.id}"
+            ></option>
+        </select>
+        <button
+            type="submit"
+            style="margin-top: 0.25rem; height: 32px"
+            class="xp-admin-common-button"
+        >
+            <span>Gjenopprett</span>
+        </button>
+    </form>
+</div>

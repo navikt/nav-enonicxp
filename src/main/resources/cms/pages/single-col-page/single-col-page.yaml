@@ -1,0 +1,6 @@
+kind: "Page"
+title: "Side med en kolonne"
+description: "En enkelt kolonne for innhold, uten sidemenyer"
+form: []
+regions:
+  - "pageContent"

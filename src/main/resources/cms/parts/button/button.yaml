@@ -1,0 +1,15 @@
+kind: "Part"
+title: "Knapp"
+form:
+  - type: "FormFragment"
+    name: "link"
+  - type: "CheckBox"
+    name: "fullwidth"
+    label: "Full bredde"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "FormFragment"
+    name: "icon-selector"
+  - type: "FormFragment"
+    name: "auth-render-option"

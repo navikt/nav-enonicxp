@@ -1,0 +1,21 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "FormFragment"
+    name: "languages-legacy"
+  - type: "FormFragment"
+    name: "decorator-toggles"
+  - type: "FieldSet"
+    label: "For internt søk"
+    items:
+      - type: "TextArea"
+        name: "description"
+        label: "Oppsummering"
+        helpText: "Vises når denne siden lenkes til fra enkelte andre sider, og i\n\
+          \                        søkeresultater. Bør være maks 240 tegn.\n     \
+          \               "
+        occurrences:
+          min: 0
+          max: 1
+  - type: "FormFragment"
+    name: "seo"

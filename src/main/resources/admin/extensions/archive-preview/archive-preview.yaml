@@ -1,0 +1,5 @@
+kind: "AdminExtension"
+title: "Forhåndsvisning"
+description: "Forhåndsvisning av arkivinnhold"
+interfaces:
+  - "contentstudio.liveview"

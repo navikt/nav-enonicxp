@@ -1,0 +1,30 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "TextLine"
+    name: "title"
+    label: "Tittel"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "TextLine"
+    name: "textAboveTitle"
+    label: "Tekst over tittel"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "TextLine"
+    name: "sortTitle"
+    label: "Tittel for utlisting og sortering"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "TextLine"
+    name: "norwegianTitle"
+    label: "Norsk tittel (hvis fremmedspråklig innhold)"
+    helpText: "Dette er kun ment som hjelp til redaktørene. Vises ikke på nav.no."
+    occurrences:
+      min: 0
+      max: 1
+  - type: "FormFragment"
+    name: "illustration"

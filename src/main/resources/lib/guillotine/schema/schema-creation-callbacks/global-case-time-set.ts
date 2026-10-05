@@ -1,39 +1,52 @@
-import graphQlLib, { GraphQLResolver } from '/lib/graphql';
-import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
+import { ObjectTypeDefinition, SchemaExtension } from '../../utils/creation-callback-utils';
 import {
     GlobalCaseTimeSetData,
     CaseTimeItem,
 } from '../../../../types/content-types/global-case-time-set';
 import { forceArray } from '../../../utils/array-utils';
 
-export const globalCaseTimeSetCallback: CreationCallback = (context, params) => {
-    const valueItems: GraphQLResolver = {
-        resolve: (env): CaseTimeItem[] => {
-            return forceArray(env.source.valueItems).map((item) => ({
-                ...item,
-                type: 'caseTime',
-            }));
+const CASE_TIME_ITEM_TYPE = 'CaseTimeItem';
+const DATA_TYPE = 'no_nav_navno_GlobalCaseTimeSet_Data';
+
+export const globalCaseTimeSetCallback: SchemaExtension = (graphQL, typeName) => {
+    const caseTimeItemType: ObjectTypeDefinition<keyof CaseTimeItem> = {
+        description: 'Saksbehandlingstid',
+        fields: {
+            key: { type: graphQL.GraphQLString },
+            unit: { type: graphQL.GraphQLString },
+            value: { type: graphQL.GraphQLInt },
+            itemName: { type: graphQL.GraphQLString },
+            type: { type: graphQL.GraphQLString },
         },
-        type: graphQlLib.list(
-            graphQlCreateObjectType<keyof CaseTimeItem>(context, {
-                name: context.uniqueName('CaseTimeItem'),
-                description: 'Saksbehandlingstid',
-                fields: {
-                    key: { type: graphQlLib.GraphQLString },
-                    unit: { type: graphQlLib.GraphQLString },
-                    value: { type: graphQlLib.GraphQLInt },
-                    itemName: { type: graphQlLib.GraphQLString },
-                    type: { type: graphQlLib.GraphQLString },
-                },
-            })
-        ),
     };
 
-    params.fields.data = {
-        type: graphQlCreateObjectType<keyof GlobalCaseTimeSetData>(context, {
-            name: context.uniqueName('no_nav_navno_GlobalCaseTimeSet_Data'),
-            description: 'Data for saksbehandlingstider',
-            fields: { valueItems },
-        }),
+    const dataType: ObjectTypeDefinition<keyof GlobalCaseTimeSetData> = {
+        description: 'Data for saksbehandlingstider',
+        fields: {
+            valueItems: { type: graphQL.list(graphQL.reference(CASE_TIME_ITEM_TYPE)) },
+        },
+    };
+
+    return {
+        types: {
+            [CASE_TIME_ITEM_TYPE]: caseTimeItemType,
+            [DATA_TYPE]: dataType,
+        },
+        creationCallbacks: {
+            [typeName]: (params) => {
+                params.addFields({
+                    data: { type: graphQL.reference(DATA_TYPE) },
+                });
+            },
+        },
+        resolvers: {
+            [DATA_TYPE]: {
+                valueItems: (env): CaseTimeItem[] =>
+                    forceArray(env.source.valueItems).map((item) => ({
+                        ...item,
+                        type: 'caseTime',
+                    })),
+            },
+        },
     };
 };

@@ -1,0 +1,25 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "OptionSet"
+    name: "audience"
+    expanded: false
+    label: "Målgruppe"
+    occurrences:
+      min: 1
+      max: 1
+    options:
+      - name: "person"
+        label: "Privatperson"
+      - name: "employer"
+        label: "Arbeidsgiver"
+      - name: "provider"
+        label: "Samarbeidspartner"
+        items:
+          - type: "FormFragment"
+            name: "provider-audience"
+      - name: "other"
+        label: "Annet"
+    selection:
+      min: 1
+      max: 1

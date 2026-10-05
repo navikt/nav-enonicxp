@@ -1,0 +1,10 @@
+kind: "FormFragment"
+title: "Ingress"
+form:
+  - type: "TextArea"
+    name: "ingress"
+    label: "Ingress"
+    helpText: "Ingressen bør være maks. 240 tegn."
+    occurrences:
+      min: 0
+      max: 1

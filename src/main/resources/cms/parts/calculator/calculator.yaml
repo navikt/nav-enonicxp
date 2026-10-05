@@ -1,0 +1,18 @@
+kind: "Part"
+title: "Kalkulator"
+description: "Velg en eksisterende kalkulator som du har opprettet som et eget innholdsobjekt"
+form:
+  - type: "FieldSet"
+    label: "Kalkulator"
+    items:
+      - type: "TextLine"
+        name: "header"
+        label: "Overskrift"
+        helpText: "Overskrift er ikke påkrevet"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "FormFragment"
+        name: "calculator-target-selector"
+  - type: "FormFragment"
+    name: "filter-selector"

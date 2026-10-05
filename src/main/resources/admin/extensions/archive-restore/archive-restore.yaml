@@ -1,0 +1,7 @@
+kind: "AdminExtension"
+title: "Gjenopprett fra arkiv"
+description: "Gjenoppretter innhold fra arkivet"
+allow:
+  - "role:system.admin.login"
+interfaces:
+  - "contentstudio.contextpanel"

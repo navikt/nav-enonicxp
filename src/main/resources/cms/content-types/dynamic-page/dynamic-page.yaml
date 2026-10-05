@@ -1,0 +1,10 @@
+kind: "ContentType"
+superType: "base:structured"
+final: true
+title: "Dynamisk side"
+description: "Side som bygges med dynamiske komponenter"
+form:
+  - type: "FormFragment"
+    name: "dynamic-page-common"
+  - type: "FormFragment"
+    name: "custom-path-selector"

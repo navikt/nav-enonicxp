@@ -135,8 +135,9 @@ const populateWithChildLayers = (
     parentId: string
 ) => {
     projects.forEach((project) => {
-        const { parent, id, language } = project;
-        if (parent !== parentId || !language) {
+        // XP8 replaced the single "parent" field with a "parents" array
+        const { parents, id, language } = project;
+        if (!parents?.includes(parentId) || !language) {
             return;
         }
 

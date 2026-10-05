@@ -1,0 +1,7 @@
+kind: "AdminExtension"
+title: "Slett cache"
+description: "Manuell cache-invalidering"
+allow:
+  - "role:system.admin.login"
+interfaces:
+  - "contentstudio.contextpanel"

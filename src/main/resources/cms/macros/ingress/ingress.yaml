@@ -1,0 +1,10 @@
+kind: "Macro"
+title: "Ingress-tekst"
+description: "Tekst med 20px størrelse"
+form:
+  - type: "TextArea"
+    name: "body"
+    label: "Tekst"
+    occurrences:
+      min: 1
+      max: 1

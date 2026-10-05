@@ -1,0 +1,22 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "FieldSet"
+    label: "Område- eller situasjonsnavigasjon"
+    items:
+      - type: "ContentSelector"
+        name: "navigationRefs"
+        label: "Velg utgående navigasjonlenker"
+        helpText: "Kortene blir presentert i henhold til type forside under seksjonen\
+          \ \"Hva kan vi hjelpe deg med\"."
+        occurrences:
+          min: 0
+          max: 0
+        allowContentType:
+          - "${app}:area-page"
+          - "${app}:front-page-nested"
+          - "${app}:situation-page"
+          - "${app}:overview"
+          - "${app}:forms-overview"
+          - "${app}:oversikt"
+          - "${app}:external-link"

@@ -1,0 +1,77 @@
+kind: "ContentType"
+superType: "base:structured"
+final: true
+title: "Landingsside for presse"
+description: "Side-type for pressevaktinfo, pressemeldinger etc"
+form:
+  - type: "FieldSet"
+    label: "Tittel"
+    items:
+      - type: "TextLine"
+        name: "title"
+        label: "Sett side-tittel"
+        occurrences:
+          min: 0
+          max: 1
+  - type: "FieldSet"
+    label: "Pressevakt"
+    items:
+      - type: "HtmlArea"
+        name: "pressCall"
+        label: "Informasjon om pressevakt"
+        occurrences:
+          min: 0
+          max: 1
+        include: "Undo Redo"
+  - type: "FieldSet"
+    label: "Nyheter"
+    items:
+      - type: "TextLine"
+        name: "maxNewsCount"
+        label: "Hvor mange nyheter i listen er tillatt"
+        occurrences:
+          min: 0
+          max: 1
+        default: "5"
+      - type: "ContentSelector"
+        name: "pressNews"
+        label: "Velg innhold"
+        occurrences:
+          min: 1
+          max: 1
+        allowContentType:
+          - "${app}:content-list"
+      - type: "TextLine"
+        name: "moreNewsUrl"
+        label: "Url til flere nyheter"
+        occurrences:
+          min: 0
+          max: 1
+  - type: "FieldSet"
+    label: "Snarveier"
+    items:
+      - type: "TextLine"
+        name: "maxShortcutsCount"
+        label: "Hvor mange snarveier i listen er tillatt"
+        occurrences:
+          min: 0
+          max: 1
+        default: "3"
+      - type: "ContentSelector"
+        name: "shortcuts"
+        label: "Velg innhold"
+        occurrences:
+          min: 1
+          max: 1
+        allowContentType:
+          - "${app}:content-list"
+  - type: "FormFragment"
+    name: "custom-path-selector-required"
+  - type: "FormFragment"
+    name: "audience"
+  - type: "FormFragment"
+    name: "owner"
+  - type: "FormFragment"
+    name: "managed-by"
+  - type: "FormFragment"
+    name: "dynamic-page-common"

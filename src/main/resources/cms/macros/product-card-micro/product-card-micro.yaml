@@ -1,0 +1,27 @@
+kind: "Macro"
+title: "Produkt-kort (micro)"
+description: "Lenker til en produkt- eller livssituasjons-side"
+form:
+  - type: "TextLine"
+    name: "header"
+    label: "Overskrift"
+    helpText: "Overskrift er ikke påkrevet"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "ContentSelector"
+    name: "card-list"
+    label: "Velg side"
+    occurrences:
+      min: 1
+      max: 0
+    allowContentType:
+      - "${app}:content-page-with-sidemenus"
+      - "${app}:situation-page"
+      - "${app}:guide-page"
+      - "${app}:tools-page"
+      - "${app}:themed-article-page"
+      - "${app}:overview"
+      - "${app}:forms-overview"
+      - "${app}:oversikt"
+      - "${app}:generic-page"

@@ -2,10 +2,15 @@ import * as contextLib from '/lib/xp/context';
 import { generateUUID } from '../utils/uuid';
 import { RepoBranch } from '../../types/common';
 import { logger } from '../utils/logging';
-import { runInContext } from '../context/run-in-context';
+import { getContextRepoId, runInContext } from '../context/run-in-context';
 import { getTargetUnixTime } from '../utils/version-utils';
 import { getUnixTimeFromDateTimeString } from '../utils/datetime-utils';
 import { getContentNodeKey } from '../utils/content-utils';
+
+// Time travel is disabled during the XP8 migration. It relied on hooking lib-content/lib-node in
+// the lib-guillotine runtime, while Guillotine app 8 resolves built-in fields in Java where these
+// hooks have no effect. Content is resolved to its current version while this is disabled.
+export const TIME_TRAVEL_ENABLED = false;
 
 type TimeTravelOptions = {
     dateTime: string;
@@ -59,7 +64,14 @@ export const runInTimeTravelContext = <CallbackReturn>(
     options: TimeTravelOptions,
     callback: () => CallbackReturn
 ) => {
-    const { branch, baseContentKey, dateTime, repoId = contextLib.get().repository } = options;
+    const { branch, baseContentKey, dateTime, repoId = getContextRepoId() } = options;
+
+    if (!TIME_TRAVEL_ENABLED) {
+        logger.info(
+            `Time travel is disabled - resolving current version for ${baseContentKey} (requested time: ${dateTime} / repo: ${repoId})`
+        );
+        return runInContext({ repository: repoId, asAdmin: true }, callback);
+    }
 
     const sessionId = generateUUID();
 

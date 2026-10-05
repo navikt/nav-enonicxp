@@ -1,0 +1,84 @@
+kind: "Part"
+title: "Seksjon for snarveier"
+description: "Til bruk på forsider"
+form:
+  - type: "TextLine"
+    name: "title"
+    label: "Tittel på seksjon"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "ItemSet"
+    name: "shortcuts"
+    label: "Velg snarveier"
+    occurrences:
+      min: 0
+      max: 0
+    items:
+      - type: "TextLine"
+        name: "customTitle"
+        label: "Tittel på snarvei"
+        helpText: "Hvis denne er blank vil tittel på innholdet vises"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "ContentSelector"
+        name: "customIllustration"
+        label: "Velg piktogram"
+        helpText: "Hvis denne er blank vil piktogrammet til innholdet vises"
+        occurrences:
+          min: 0
+          max: 1
+        allowContentType:
+          - "${app}:animated-icons"
+      - type: "ContentSelector"
+        name: "target"
+        label: "Velg innhold"
+        occurrences:
+          min: 1
+          max: 1
+        attributes:
+          showStatus: "true"
+        allowContentType:
+          - "${app}:external-link"
+          - "${app}:content-page-with-sidemenus"
+          - "${app}:situation-page"
+          - "${app}:guide-page"
+          - "${app}:tools-page"
+          - "${app}:themed-article-page"
+          - "${app}:overview"
+          - "${app}:forms-overview"
+          - "${app}:oversikt"
+          - "${app}:page-list"
+  - type: "CustomSelector"
+    name: "bgColor"
+    label: "Overstyr bakgrunnsfarge"
+    helpText: "Velg fra designsystemets fargepalett, eller en egendefinert hex-code,\
+      \ f.eks. #0451ff"
+    occurrences:
+      min: 0
+      max: 1
+    service: "colorPicker"
+  - type: "CustomSelector"
+    name: "itemColor"
+    label: "Overstyr farge på snarveiene"
+    helpText: "Velg fra designsystemets fargepalett, eller en egendefinert hex-code,\
+      \ f.eks. #0451ff"
+    occurrences:
+      min: 0
+      max: 1
+    service: "colorPicker"
+  - type: "CustomSelector"
+    name: "hoverColor"
+    label: "Overstyr farge på hover-effekt på snarveiene"
+    helpText: "Velg fra designsystemets fargepalett, eller en egendefinert hex-code,\
+      \ f.eks. #0451ff"
+    occurrences:
+      min: 0
+      max: 1
+    service: "colorPicker"
+config:
+  allowOnContentType:
+    - "${app}:front-page"
+    - "${app}:front-page-nested"
+    - "portal:page-template"

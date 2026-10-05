@@ -1,0 +1,26 @@
+kind: "FormFragment"
+title: "Kategori"
+form:
+  - type: "ComboBox"
+    name: "taxonomy"
+    label: "Kategori"
+    occurrences:
+      min: 0
+      max: 0
+    options:
+      - value: "insurance"
+        label: "Forsikring"
+      - value: "measures"
+        label: "Tiltak"
+      - value: "service"
+        label: "Tjeneste"
+      - value: "rights"
+        label: "Veiledning"
+      - value: "assistive_tools"
+        label: "Hjelpemiddel (KUN PRIVATPERSON)"
+      - value: "benefits"
+        label: "Pengestøtte (KUN PRIVATPERSON)"
+      - value: "employee_benefits"
+        label: "Pengestøtte til ansatt (KUN ARBEIDSGIVER)"
+      - value: "refund"
+        label: "Refusjon (KUN ARBEIDSGIVER)"

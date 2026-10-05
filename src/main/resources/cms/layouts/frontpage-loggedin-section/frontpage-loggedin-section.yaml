@@ -1,0 +1,31 @@
+kind: "Layout"
+title: "Seksjon for innloggede tjenester"
+description: "Seksjon med lenker til innloggede tjenester - vises kun for innlogget\
+  \ bruker"
+form:
+  - type: "FieldSet"
+    label: "Overskrift"
+    items:
+      - type: "TextLine"
+        name: "header"
+        label: "Tekst"
+        helpText: "\"$navn\" vil erstattes av navn på innlogget bruker"
+        occurrences:
+          min: 1
+          max: 1
+        default: "Hei, $navn"
+  - type: "ItemSet"
+    name: "mypage"
+    label: "Min side lenke"
+    occurrences:
+      min: 0
+      max: 1
+    items:
+      - type: "FormFragment"
+        name: "link"
+regions:
+  - "cards"
+config:
+  allowOnContentType:
+    - "${app}:front-page"
+    - "portal:page-template"

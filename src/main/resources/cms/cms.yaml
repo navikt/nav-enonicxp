@@ -1,0 +1,27 @@
+kind: "CMS"
+mixins:
+  - name: "no.nav.navno:previewOnly"
+    optional: true
+  - name: "no.nav.navno:virtualParent"
+    optional: true
+  - name: "no.nav.navno:redirectToLayer"
+    optional: true
+  - name: "no.nav.navno:fasetter"
+    allowContentTypes: "^$"
+    optional: true
+  - name: "no.nav.navno:cmsContent"
+    allowContentTypes: "^$"
+    optional: true
+  - name: "no.nav.navno:cmsMenu"
+    allowContentTypes: "^$"
+    optional: true
+  - name: "no.nav.navno:cmsStatus"
+    allowContentTypes: "^$"
+    optional: true
+  - name: "no.nav.navno:menu-item"
+    allowContentTypes: "^$"
+    optional: true
+  - name: "no.nav.navno:oldContentType"
+    allowContentTypes: "^$"
+    optional: true
+form: []

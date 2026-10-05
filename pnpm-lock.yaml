@@ -22,65 +22,65 @@ catalogs:
       specifier: 7.29.7
       version: 7.29.7
     '@enonic-types/core':
-      specifier: 7.16.6
-      version: 7.16.6
+      specifier: 8.0.4
+      version: 8.0.4
     '@enonic-types/global':
-      specifier: 7.16.6
-      version: 7.16.6
+      specifier: 8.0.4
+      version: 8.0.4
     '@enonic-types/lib-auditlog':
-      specifier: 7.16.6
-      version: 7.16.6
+      specifier: 8.0.4
+      version: 8.0.4
     '@enonic-types/lib-auth':
-      specifier: 7.16.6
-      version: 7.16.6
+      specifier: 8.0.4
+      version: 8.0.4
     '@enonic-types/lib-cluster':
-      specifier: 7.16.6
-      version: 7.16.6
+      specifier: 8.0.4
+      version: 8.0.4
     '@enonic-types/lib-common':
-      specifier: 7.16.6
-      version: 7.16.6
+      specifier: 8.0.4
+      version: 8.0.4
     '@enonic-types/lib-content':
-      specifier: 7.16.6
-      version: 7.16.6
+      specifier: 8.0.4
+      version: 8.0.4
     '@enonic-types/lib-context':
-      specifier: 7.16.6
-      version: 7.16.6
+      specifier: 8.0.4
+      version: 8.0.4
     '@enonic-types/lib-event':
-      specifier: 7.16.6
-      version: 7.16.6
+      specifier: 8.0.4
+      version: 8.0.4
     '@enonic-types/lib-grid':
-      specifier: 7.16.6
-      version: 7.16.6
+      specifier: 8.0.4
+      version: 8.0.4
     '@enonic-types/lib-io':
-      specifier: 7.16.6
-      version: 7.16.6
+      specifier: 8.0.4
+      version: 8.0.4
     '@enonic-types/lib-node':
-      specifier: 7.16.6
-      version: 7.16.6
+      specifier: 8.0.4
+      version: 8.0.4
     '@enonic-types/lib-portal':
-      specifier: 7.16.6
-      version: 7.16.6
+      specifier: 8.0.4
+      version: 8.0.4
     '@enonic-types/lib-project':
-      specifier: 7.16.6
-      version: 7.16.6
+      specifier: 8.0.4
+      version: 8.0.4
     '@enonic-types/lib-repo':
-      specifier: 7.16.6
-      version: 7.16.6
+      specifier: 8.0.4
+      version: 8.0.4
     '@enonic-types/lib-scheduler':
-      specifier: 7.16.6
-      version: 7.16.6
+      specifier: 8.0.4
+      version: 8.0.4
     '@enonic-types/lib-schema':
-      specifier: 7.16.6
-      version: 7.16.6
+      specifier: 8.0.4
+      version: 8.0.4
     '@enonic-types/lib-task':
-      specifier: 7.16.6
-      version: 7.16.6
+      specifier: 8.0.4
+      version: 8.0.4
     '@enonic-types/lib-value':
-      specifier: 7.16.6
-      version: 7.16.6
+      specifier: 8.0.4
+      version: 8.0.4
     '@enonic-types/lib-websocket':
-      specifier: 7.16.6
-      version: 7.16.6
+      specifier: 8.0.4
+      version: 8.0.4
     '@enonic/mock-xp':
       specifier: 1.0.0
       version: 1.0.0
@@ -96,15 +96,6 @@ catalogs:
     '@item-enonic-types/lib-cache':
       specifier: 2.2.1
       version: 2.2.1
-    '@item-enonic-types/lib-graphql':
-      specifier: 2.1.0
-      version: 2.1.0
-    '@item-enonic-types/lib-graphql-playground':
-      specifier: 0.0.1
-      version: 0.0.1
-    '@item-enonic-types/lib-guillotine':
-      specifier: 5.5.0
-      version: 5.5.0
     '@item-enonic-types/lib-http-client':
       specifier: 3.2.2
       version: 3.2.2
@@ -196,64 +187,64 @@ importers:
         version: 7.29.7(@babel/core@7.29.7)
       '@enonic-types/core':
         specifier: 'catalog:'
-        version: 7.16.6
+        version: 8.0.4
       '@enonic-types/global':
         specifier: 'catalog:'
-        version: 7.16.6
+        version: 8.0.4
       '@enonic-types/lib-auditlog':
         specifier: 'catalog:'
-        version: 7.16.6
+        version: 8.0.4
       '@enonic-types/lib-auth':
         specifier: 'catalog:'
-        version: 7.16.6
+        version: 8.0.4
       '@enonic-types/lib-cluster':
         specifier: 'catalog:'
-        version: 7.16.6
+        version: 8.0.4
       '@enonic-types/lib-common':
         specifier: 'catalog:'
-        version: 7.16.6
+        version: 8.0.4
       '@enonic-types/lib-content':
         specifier: 'catalog:'
-        version: 7.16.6
+        version: 8.0.4
       '@enonic-types/lib-context':
         specifier: 'catalog:'
-        version: 7.16.6
+        version: 8.0.4
       '@enonic-types/lib-event':
         specifier: 'catalog:'
-        version: 7.16.6
+        version: 8.0.4
       '@enonic-types/lib-grid':
         specifier: 'catalog:'
-        version: 7.16.6
+        version: 8.0.4
       '@enonic-types/lib-io':
         specifier: 'catalog:'
-        version: 7.16.6
+        version: 8.0.4
       '@enonic-types/lib-node':
         specifier: 'catalog:'
-        version: 7.16.6
+        version: 8.0.4
       '@enonic-types/lib-portal':
         specifier: 'catalog:'
-        version: 7.16.6
+        version: 8.0.4
       '@enonic-types/lib-project':
         specifier: 'catalog:'
-        version: 7.16.6
+        version: 8.0.4
       '@enonic-types/lib-repo':
         specifier: 'catalog:'
-        version: 7.16.6
+        version: 8.0.4
       '@enonic-types/lib-scheduler':
         specifier: 'catalog:'
-        version: 7.16.6
+        version: 8.0.4
       '@enonic-types/lib-schema':
         specifier: 'catalog:'
-        version: 7.16.6
+        version: 8.0.4
       '@enonic-types/lib-task':
         specifier: 'catalog:'
-        version: 7.16.6
+        version: 8.0.4
       '@enonic-types/lib-value':
         specifier: 'catalog:'
-        version: 7.16.6
+        version: 8.0.4
       '@enonic-types/lib-websocket':
         specifier: 'catalog:'
-        version: 7.16.6
+        version: 8.0.4
       '@eslint/compat':
         specifier: 'catalog:'
         version: 2.1.0(eslint@10.8.0)
@@ -266,15 +257,6 @@ importers:
       '@item-enonic-types/lib-cache':
         specifier: 'catalog:'
         version: 2.2.1
-      '@item-enonic-types/lib-graphql':
-        specifier: 'catalog:'
-        version: 2.1.0
-      '@item-enonic-types/lib-graphql-playground':
-        specifier: 'catalog:'
-        version: 0.0.1
-      '@item-enonic-types/lib-guillotine':
-        specifier: 'catalog:'
-        version: 5.5.0
       '@item-enonic-types/lib-http-client':
         specifier: 'catalog:'
         version: 3.2.2
@@ -1108,68 +1090,68 @@ packages:
   '@emnapi/wasi-threads@1.1.0':
     resolution: {integrity: sha512-WI0DdZ8xFSbgMjR1sFsKABJ/C5OnRrjT06JXbZKexJGrDuPTzZdDYfFlsgcCXCyf+suG5QU2e/y1Wo2V/OapLQ==}
 
-  '@enonic-types/core@7.15.4':
-    resolution: {integrity: sha512-XiPAhgTEzYQSCXlMYiQlmXpRj3hHqI/c1waC4ctm6bbt4O4y+dOAQQ0rnUROc9ZrjOEqVtvZ1dcSWHJ6JAGwsw==}
-
   '@enonic-types/core@7.16.6':
     resolution: {integrity: sha512-RGey537Kd/DJBPAbNjfEYegnTJmD3oGjgWI8E++Np6xWT+vuAmxl03aNR+xik4iWFgRSo3UeWKHi7N8wCp3Mjg==}
 
-  '@enonic-types/global@7.16.6':
-    resolution: {integrity: sha512-f8NMIiGdz4ajE+IeBxP0LTGi5qC+DeWFCIy7g0W2epKV7LdNuHxiDcbP5QX/7Ty9QBhDViRyA4g1IiMms6QLEw==}
+  '@enonic-types/core@8.0.4':
+    resolution: {integrity: sha512-8ZNsk4Yb0MZwq2DW9T6XUxKWCIedt0CUR2bCOriUge3LrY0diwJX2QwaZYrQQ7A4bF8g3dTczO3DDnDRQuPhFg==}
 
-  '@enonic-types/lib-auditlog@7.16.6':
-    resolution: {integrity: sha512-1PIa6pRRl69GP6+9Ns3GTU/DoU7IOD2jmgUgn734fGNe+jXcu1CteZ0M27ee7wmZ1OS0PUY7L0x/l/NX7uX2Uw==}
+  '@enonic-types/global@8.0.4':
+    resolution: {integrity: sha512-K32di6aJFFyGQMBwCPC+1Vo/zRFlhwC4iCBKOlQL8FGeFwrc8E+88ZfNhyPO7NVVI0E6TcCpovBmhfQMw7rj8A==}
 
-  '@enonic-types/lib-auth@7.16.6':
-    resolution: {integrity: sha512-OUwbQat77IfPb7FTfljqHAQGhH6Vp9qX3EJ0OIjGXpYLKDag8MZg4ksgYcS4kGxYP92dUxdGYO0FyYfAESTBvg==}
+  '@enonic-types/lib-auditlog@8.0.4':
+    resolution: {integrity: sha512-mnAcw4sjwjRh0o+AOUrrLsYKd8GrSrUj6lUu5Xy4scGfF38m/jrB6K523G096EaM+ZSyWw+fB4N1o0qL/GI9jw==}
 
-  '@enonic-types/lib-cluster@7.16.6':
-    resolution: {integrity: sha512-ncppLr9fnz92Vo9Www6gH6HkKfOWMQy8Q+/2acSUyDfQUsbaLJwoTA3Nv3Z5/Iv+iF7PkkhvObG5SQKgpqohFA==}
+  '@enonic-types/lib-auth@8.0.4':
+    resolution: {integrity: sha512-u2QFD3WshAG5btXWD10isCri7VWUIKww4i39vae6C2vtX+wef0/0EHORnGpMNXkA7pjo2fPg/b6+HXERyZjdUA==}
 
-  '@enonic-types/lib-common@7.16.6':
-    resolution: {integrity: sha512-W4eCwEuHh4tHBYOuaCPPhv9fJYK1+CI8CH2lB0Gr1hGin+yt+q2IGdP9XRp9oDMTPuHdXiAaHrDP7NqMDLzigw==}
+  '@enonic-types/lib-cluster@8.0.4':
+    resolution: {integrity: sha512-fG/SzSSabGfuRKMSPl5LyiA/I+uiXja/Nsu3kXZPzq6coQCqN8WDu0g3DrItoOTMqqH2mNG+zHRENQZ8x+8h/w==}
 
-  '@enonic-types/lib-content@7.16.6':
-    resolution: {integrity: sha512-SKnIIr1N3LNDFGFhl6DVKHjHQdwjkxh0Mwq8e+kxmQq28BHJuGRjnAPXog+i06XD3i+DlV4cidUapFFWNDURXg==}
+  '@enonic-types/lib-common@8.0.4':
+    resolution: {integrity: sha512-6nyfmUCxj+bm36AKoSCM0EBZ/Uuz/BI3mbjZ6sVCpSU9NKrOTLmgup2eB6eZWV5oSJxjBrniJs6rInuVKq82uw==}
 
-  '@enonic-types/lib-context@7.16.6':
-    resolution: {integrity: sha512-MuXno44AdAqmdK2tWGOQiBaVtcjmHVVATi8f44HlbPQAYsXxDpzCobnDQR1LJ8c8L/FDMmGivk71Ea6H0/EMnQ==}
+  '@enonic-types/lib-content@8.0.4':
+    resolution: {integrity: sha512-Grpdvvp1dozubFJ7Idognd9BjpJJu/J/WvdyhZ5UL9eTf/nCaNJUnq/6XkPlvTqspjgKHgKqgRQU0GzxJRKgcA==}
 
-  '@enonic-types/lib-event@7.16.6':
-    resolution: {integrity: sha512-cWJ98Ik+adAUB8mpgsVMKoKqGIvz8XavgwG4ze+fYmIS/XmR7FH4qBkxQ0vE1HzSCf3yF9epCM/TwmtvUjWIlg==}
+  '@enonic-types/lib-context@8.0.4':
+    resolution: {integrity: sha512-5E6x4Ow4O9lE1UCYXgwcHytC6GsRbtzdXp7rxSufQxrsJLKvF4+XyQqA2Hws4cGl8RbZhm2gboSB/NfC5TugCw==}
 
-  '@enonic-types/lib-grid@7.16.6':
-    resolution: {integrity: sha512-qH3eaQ8ppgiAgwh3btwBaAgLkXo8rAewf5SPjr7uVIjezBG2vJ3gz0uthHoJ7eZn9oJFzAMyYKvchGnwrwm4og==}
+  '@enonic-types/lib-event@8.0.4':
+    resolution: {integrity: sha512-RBmAE/n3EOvrnru/RTvvYFWk0hjahO5rJBD8LycQkBO/Zg8Q5fKFh7dKZpPb9LwbXWPJfJSa6uJZFPsONb606Q==}
 
-  '@enonic-types/lib-io@7.16.6':
-    resolution: {integrity: sha512-o9TACiMR3QQkuy2uQTgch4iNTZIgvmG8t9w2dOzhF0IRmNDP1Zum8Mrz4YVejJ7qtcW5CjACpjMMbUBzWSU7qA==}
+  '@enonic-types/lib-grid@8.0.4':
+    resolution: {integrity: sha512-asrJkibauLg+HqWDjRIOMATfkrqlyd0Xv9n9X5qGPNXzy4oQWSIilQeOcYZBpw+usmfFxA/+J4k0Rq/r23uOYw==}
 
-  '@enonic-types/lib-node@7.16.6':
-    resolution: {integrity: sha512-DpI91I9RVPI09rAGpSH/3jXBuEV1AL+xEyBQqNbV8w+CICqUItw7dhBTQOciDKuJC89/hJ55mP0p9GXoNi1z1Q==}
+  '@enonic-types/lib-io@8.0.4':
+    resolution: {integrity: sha512-nrcExEXKGu1DiLfAhrm7/X2w+O4nXa08VJsA/CP2GPkdWUDHdpjDUPmfIYwzRxiRzT2DNUPf0/0B/eENbr7kgA==}
 
-  '@enonic-types/lib-portal@7.16.6':
-    resolution: {integrity: sha512-LWlg7wgS4ChGNesTMJBCoa4Ad9EqwxylodpQXzkkJCqgklepap4z4DGZ8f25MFA2sxaiB51Xb2I0f05JcpHI9w==}
+  '@enonic-types/lib-node@8.0.4':
+    resolution: {integrity: sha512-1ltjqQ+5a0DXDDHRWe7eQTfnpFOPXblDF+zKiJI+oMpY4PL9EzODeUTc938FxNl2wxG8gi2KMbdkvTTAelwAdw==}
 
-  '@enonic-types/lib-project@7.16.6':
-    resolution: {integrity: sha512-Dld2oauRIWYcFPDExLe8NMLyEcNXFNYBb5qmRWPvlp8inZjUH88Ay46ZOvHxnRWl0xo1DsImd9JNCYBGutqiJQ==}
+  '@enonic-types/lib-portal@8.0.4':
+    resolution: {integrity: sha512-XetDnczRi2JnpDxj14hsjcTPgtTrMiZhOVij+RB4JXwnWmidgZv1WuDXVsOdJcPLh/41V9LGTqT8I1wbrkfoCQ==}
 
-  '@enonic-types/lib-repo@7.16.6':
-    resolution: {integrity: sha512-7+TqVb8r0SSpBvXmRzn4Wu/UXwRnB9UR2NkoofmQ2NuI94SFaJwPst2hcAOmcT1Sfb9Gbl7xyMmM2k8ur21OjQ==}
+  '@enonic-types/lib-project@8.0.4':
+    resolution: {integrity: sha512-8k8/7cJEJiyHz18TqYu9jvldHRVvXDmxtmBM7yhykXJdlzRO+kfKT1Dl/a4T10PjkG/SccDthWmTTSOK/ZlOQw==}
 
-  '@enonic-types/lib-scheduler@7.16.6':
-    resolution: {integrity: sha512-CHqsQAP3hHbaTJ8XT7ic2pZHB27tAkE4FP0+4xbXQ6I/RRoRorbaKwn9HqOAjYG5sC9BorBeiIKSpYzNWKlEBg==}
+  '@enonic-types/lib-repo@8.0.4':
+    resolution: {integrity: sha512-i+n28eN5Vu1gsV0RZARq0lxWjylG4jd1+vP72AZ8nPJ6dbGDEM+81jrNDLfyLNRIrnYToVsHArwjG2a+iQLqFQ==}
 
-  '@enonic-types/lib-schema@7.16.6':
-    resolution: {integrity: sha512-VehQLCPdVUcOCH8qwc2NPnc5hEJRlPrHbtgf0hgCoAesmE6BLPnDe0ZgVlwr4PaccxnAm0yT0efNWi2D3nZHEw==}
+  '@enonic-types/lib-scheduler@8.0.4':
+    resolution: {integrity: sha512-29vDqL7CzKW0A1krh8caWBs7mgvrYcz3UVxBCz/PSs02UPj9McqheImg4uLK7Ut88DfddQdNxiLOZNTlXOHk5Q==}
 
-  '@enonic-types/lib-task@7.16.6':
-    resolution: {integrity: sha512-UJ5R93SadnPs5iqvoXoEDE2F3etV7Uo2QysNrF56Gni3lrX9TjFJpm0YxasiiJgJWW/LJTpwsrshVnlI8n9j3w==}
+  '@enonic-types/lib-schema@8.0.4':
+    resolution: {integrity: sha512-+qa7z9FuoP3RSVdFbkUs7BtFU3K5VkYaVQUwLV5FQI1BwsAgmsgXnp0nfl4DwVF9DOimosCvH/EUzadIoe7Tdw==}
 
-  '@enonic-types/lib-value@7.16.6':
-    resolution: {integrity: sha512-8DqGMtlFaeY1U4TAs35U/O9aqUAO+TUvKf4A+ixrH/Axtq+umbmN7TDRZiYkRH3vc9gS8cEwA6v9fD5gLW8wAg==}
+  '@enonic-types/lib-task@8.0.4':
+    resolution: {integrity: sha512-FmoM0Jow4tRDcSRXi8GUAbDUY1RA7kIQEo0opzR9O2Nzfpd0xcX4d+vFbl8R11Lp+nMgMmqzdSs2bYVTzv1vbg==}
 
-  '@enonic-types/lib-websocket@7.16.6':
-    resolution: {integrity: sha512-+IfguDHQsTiqutvDDoy0crwFE6weYKEtNg2z5FSpkbovDRvjxZkPiGAt6DW4Hu42/wwaW61XnMJxSJiF0h9IoQ==}
+  '@enonic-types/lib-value@8.0.4':
+    resolution: {integrity: sha512-3GOc1OZdo+KZGnFtW77hofjsBkBxCn3HG/b5Zb8y4jQa5LC1JFNB1dyWvN1fC/dasc8Ah9W8l2F2smEQc526ig==}
+
+  '@enonic-types/lib-websocket@8.0.4':
+    resolution: {integrity: sha512-FReHVSRPJFkTMLcHjaxL6rQXcWc4LrtqC9qHO+t935mAWKGDByoEVsZbVHMJqNu3WcnT/RpDhTCPgZoFdif1gA==}
 
   '@enonic/js-utils@1.9.0':
     resolution: {integrity: sha512-bohP40o5Fv6JtR69wOvZDJJl11Ze8ur9WxQgA9gFGE6/UW7Wlo68U99+3mDU9XtCpITg2ZUxlwcqlY0gIULr9g==}
@@ -1274,17 +1256,6 @@ packages:
 
   '@item-enonic-types/lib-cache@2.2.1':
     resolution: {integrity: sha512-mTko5xeMTdXYROqqRa3kil4mH4KlFfcmw6FNPIwfCk92dyNVvUY4Gixz3HdynBdKxkAr+g+iM+7bO3wisUykjA==}
-
-  '@item-enonic-types/lib-graphql-playground@0.0.1':
-    resolution: {integrity: sha512-efJ4GJsFC00SBhOKYdxlLHcAeF+9VJiEtMjGzNekaN5k7v9rIdIy92f2eEHj/Ify4nlprVAcMg8urG2VuMjrCQ==}
-    deprecated: Use Guillotine app instead of this lib
-
-  '@item-enonic-types/lib-graphql@2.1.0':
-    resolution: {integrity: sha512-ri32tfVXlbHEWJ7QTR1D78kTbeXkDfkCMGYPKK83wT31g+oKu4RA8TLP9ah3745k9craguCloX1ISr+neqKKzg==}
-
-  '@item-enonic-types/lib-guillotine@5.5.0':
-    resolution: {integrity: sha512-2y5hmVqOwIxZkPutMfrZm4zLfF2CqkZRJCHq9C+Hnzrg/vm46sGOLRaqnlhF59/LjtwkLJ6Ot5aywyylfzoHnQ==}
-    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   '@item-enonic-types/lib-http-client@3.2.2':
     resolution: {integrity: sha512-+Sdhx9VmBmJG3zLU75RN2TRdnXqEDPrNCLpFMCIzCmEy3qsXq1qoDrGXgmcoF29dYRp3IFPhe6UJs3E95VUCeQ==}
@@ -5754,77 +5725,77 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
-  '@enonic-types/core@7.15.4': {}
-
   '@enonic-types/core@7.16.6': {}
 
-  '@enonic-types/global@7.16.6':
+  '@enonic-types/core@8.0.4': {}
+
+  '@enonic-types/global@8.0.4':
     dependencies:
-      '@enonic-types/core': 7.16.6
+      '@enonic-types/core': 8.0.4
 
-  '@enonic-types/lib-auditlog@7.16.6':
+  '@enonic-types/lib-auditlog@8.0.4':
     dependencies:
-      '@enonic-types/core': 7.16.6
+      '@enonic-types/core': 8.0.4
 
-  '@enonic-types/lib-auth@7.16.6':
+  '@enonic-types/lib-auth@8.0.4':
     dependencies:
-      '@enonic-types/core': 7.16.6
+      '@enonic-types/core': 8.0.4
 
-  '@enonic-types/lib-cluster@7.16.6': {}
+  '@enonic-types/lib-cluster@8.0.4': {}
 
-  '@enonic-types/lib-common@7.16.6': {}
+  '@enonic-types/lib-common@8.0.4': {}
 
-  '@enonic-types/lib-content@7.16.6':
+  '@enonic-types/lib-content@8.0.4':
     dependencies:
-      '@enonic-types/core': 7.16.6
+      '@enonic-types/core': 8.0.4
 
-  '@enonic-types/lib-context@7.16.6':
+  '@enonic-types/lib-context@8.0.4':
     dependencies:
-      '@enonic-types/core': 7.16.6
+      '@enonic-types/core': 8.0.4
 
-  '@enonic-types/lib-event@7.16.6': {}
+  '@enonic-types/lib-event@8.0.4': {}
 
-  '@enonic-types/lib-grid@7.16.6':
+  '@enonic-types/lib-grid@8.0.4':
     dependencies:
-      '@enonic-types/core': 7.16.6
+      '@enonic-types/core': 8.0.4
 
-  '@enonic-types/lib-io@7.16.6':
+  '@enonic-types/lib-io@8.0.4':
     dependencies:
-      '@enonic-types/core': 7.16.6
+      '@enonic-types/core': 8.0.4
 
-  '@enonic-types/lib-node@7.16.6':
+  '@enonic-types/lib-node@8.0.4':
     dependencies:
-      '@enonic-types/core': 7.16.6
+      '@enonic-types/core': 8.0.4
 
-  '@enonic-types/lib-portal@7.16.6':
+  '@enonic-types/lib-portal@8.0.4':
     dependencies:
-      '@enonic-types/core': 7.16.6
+      '@enonic-types/core': 8.0.4
 
-  '@enonic-types/lib-project@7.16.6':
+  '@enonic-types/lib-project@8.0.4':
     dependencies:
-      '@enonic-types/core': 7.16.6
+      '@enonic-types/core': 8.0.4
 
-  '@enonic-types/lib-repo@7.16.6':
+  '@enonic-types/lib-repo@8.0.4':
     dependencies:
-      '@enonic-types/core': 7.16.6
+      '@enonic-types/core': 8.0.4
 
-  '@enonic-types/lib-scheduler@7.16.6':
+  '@enonic-types/lib-scheduler@8.0.4':
     dependencies:
-      '@enonic-types/core': 7.16.6
+      '@enonic-types/core': 8.0.4
 
-  '@enonic-types/lib-schema@7.16.6':
+  '@enonic-types/lib-schema@8.0.4':
     dependencies:
-      '@enonic-types/core': 7.16.6
+      '@enonic-types/core': 8.0.4
 
-  '@enonic-types/lib-task@7.16.6':
+  '@enonic-types/lib-task@8.0.4':
     dependencies:
-      '@enonic-types/core': 7.16.6
+      '@enonic-types/core': 8.0.4
 
-  '@enonic-types/lib-value@7.16.6':
+  '@enonic-types/lib-value@8.0.4':
     dependencies:
-      '@enonic-types/core': 7.16.6
+      '@enonic-types/core': 8.0.4
 
-  '@enonic-types/lib-websocket@7.16.6': {}
+  '@enonic-types/lib-websocket@8.0.4': {}
 
   '@enonic/js-utils@1.9.0': {}
 
@@ -5954,19 +5925,13 @@ snapshots:
 
   '@item-enonic-types/lib-cache@2.2.1': {}
 
-  '@item-enonic-types/lib-graphql-playground@0.0.1': {}
-
-  '@item-enonic-types/lib-graphql@2.1.0': {}
-
-  '@item-enonic-types/lib-guillotine@5.5.0': {}
-
   '@item-enonic-types/lib-http-client@3.2.2':
     dependencies:
-      '@enonic-types/core': 7.15.4
+      '@enonic-types/core': 7.16.6
 
   '@item-enonic-types/lib-thymeleaf@2.1.0':
     dependencies:
-      '@enonic-types/core': 7.15.4
+      '@enonic-types/core': 7.16.6
 
   '@jest/console@29.7.0':
     dependencies:

@@ -1,0 +1,169 @@
+kind: "Part"
+title: "Kontakt-oss kanal"
+description: "Skriv til oss, ring oss, chat etc"
+form:
+  - type: "OptionSet"
+    name: "contactOptions"
+    expanded: true
+    label: "Kontakt-oss kanaler"
+    occurrences:
+      min: 1
+      max: 1
+    options:
+      - name: "chat"
+        label: "Chat"
+        items:
+          - type: "ContentSelector"
+            name: "sharedContactInformation"
+            label: "Velg chat med oss"
+            occurrences:
+              min: 0
+              max: 1
+            allowContentType:
+              - "${app}:contact-information"
+          - type: "HtmlArea"
+            name: "ingress"
+            label: "Overstyr ingress"
+            occurrences:
+              min: 0
+              max: 1
+            include: "Undo Redo"
+          - type: "TextLine"
+            name: "title"
+            label: "(tomt felt, skal ikke brukes)"
+            occurrences:
+              min: 0
+              max: 1
+            regexp: "^$"
+      - name: "write"
+        label: "Skriv til oss"
+        items:
+          - type: "ContentSelector"
+            name: "sharedContactInformation"
+            label: "Velg skriv til oss"
+            occurrences:
+              min: 0
+              max: 1
+            allowContentType:
+              - "${app}:contact-information"
+          - type: "HtmlArea"
+            name: "ingress"
+            label: "Overstyr ingress"
+            occurrences:
+              min: 0
+              max: 1
+            include: "Undo Redo"
+          - type: "TextLine"
+            name: "url"
+            label: "(tomt felt, skal ikke brukes)"
+            occurrences:
+              min: 0
+              max: 1
+            regexp: "^$"
+          - type: "TextLine"
+            name: "title"
+            label: "(tomt felt, skal ikke brukes)"
+            occurrences:
+              min: 0
+              max: 1
+            regexp: "^$"
+      - name: "call"
+        label: "Ring oss"
+        items:
+          - type: "ContentSelector"
+            name: "sharedContactInformation"
+            label: "Velg telefonnummer"
+            occurrences:
+              min: 0
+              max: 1
+            allowContentType:
+              - "${app}:contact-information"
+          - type: "HtmlArea"
+            name: "ingress"
+            label: "Overstyr ingress"
+            occurrences:
+              min: 0
+              max: 1
+            include: "Undo Redo"
+          - type: "TextLine"
+            name: "phoneNumber"
+            label: "(tomt felt, skal ikke brukes)"
+            occurrences:
+              min: 0
+              max: 1
+            regexp: "^$"
+      - name: "navoffice"
+        label: "Finn ditt NAV-kontor"
+        items:
+          - type: "TextLine"
+            name: "title"
+            label: "Overstyr tittel"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "HtmlArea"
+            name: "ingress"
+            label: "Overstyr ingress"
+            occurrences:
+              min: 0
+              max: 1
+            include: "Undo Redo"
+      - name: "aidcentral"
+        label: "Finn din hjelpemiddelsentral"
+        items:
+          - type: "TextLine"
+            name: "title"
+            label: "Overstyr tittel"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "HtmlArea"
+            name: "ingress"
+            label: "Overstyr ingress"
+            occurrences:
+              min: 0
+              max: 1
+            include: "Undo Redo"
+      - name: "custom"
+        label: "Egentilpasset"
+        helpText: "Brukes til andre kontaktkanaler"
+        items:
+          - type: "TextLine"
+            name: "title"
+            label: "Tittel"
+            occurrences:
+              min: 1
+              max: 1
+          - type: "ComboBox"
+            name: "icon"
+            label: "Icon"
+            occurrences:
+              min: 1
+              max: 1
+            options:
+              - value: "facebook"
+                label: "Facebook"
+              - value: "linkedin"
+                label: "LinkedIn"
+              - value: "nyhetsbrev"
+                label: "Nyhetsbrev"
+              - value: "generisk"
+                label: "Generisk"
+          - type: "TextLine"
+            name: "url"
+            label: "Url"
+            occurrences:
+              min: 1
+              max: 1
+          - type: "HtmlArea"
+            name: "ingress"
+            label: "Ingress"
+            occurrences:
+              min: 0
+              max: 1
+            include: "Undo Redo"
+    selection:
+      min: 1
+      max: 1
+  - type: "FormFragment"
+    name: "auth-render-option"

@@ -1,0 +1,10 @@
+kind: "Macro"
+title: "Fotnote"
+description: "Sett inn fotnote i brødteksten"
+form:
+  - type: "TextLine"
+    name: "fotnote"
+    label: "Teksten i fotnoten"
+    occurrences:
+      min: 1
+      max: 1

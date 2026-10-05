@@ -1,0 +1,40 @@
+kind: "FormFragment"
+title: "Søkemotor-optimalisering (SEO)"
+form:
+  - type: "FieldSet"
+    label: "Søkeoptimalisering (SEO)"
+    items:
+      - type: "TextLine"
+        name: "metaDescription"
+        label: "Sidebeskrivelse for søk og sosiale medier"
+        helpText: "\n                        Søkemotorer/sosiale medier bruker beskrivelsen\
+          \ i søkeresultat/når siden blir\n                        delt.\n       \
+          \                 Hvis feltet ikke fylles ut, brukes ingress-feltet.\n \
+          \                   "
+        occurrences:
+          min: 0
+          max: 1
+      - type: "TextLine"
+        name: "canonicalUrl"
+        label: "Canonical url - NB! Skal bare legges inn av hovedredaktør/administrator"
+        occurrences:
+          min: 0
+          max: 1
+        regexp: "^https:\\/\\/([a-z0-9_\\-.]*\\.)?nav\\.no($|\\/).*"
+      - type: "CheckBox"
+        name: "noindex"
+        label: "Skal ikke vises i søk"
+        helpText: "\n                        Gjelder både søket på nav.no og eksternt\
+          \ søk som Google og Bing\n                    "
+        occurrences:
+          min: 0
+          max: 1
+      - type: "CheckBox"
+        name: "nosnippet"
+        label: "Ikke vis \"tilfeldige\" utdrag (snippets). NB! Skal bare brukes av\
+          \ hovedredaktør/administrator."
+        helpText: "\n                        Huker du av her, hindrer du synlighet\
+          \ i både tradisjonelle søkemotorer og KI-verktøy.\n                    "
+        occurrences:
+          min: 0
+          max: 1

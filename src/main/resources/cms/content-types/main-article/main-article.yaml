@@ -1,0 +1,141 @@
+kind: "ContentType"
+superType: "base:unstructured"
+title: "Artikkel"
+description: "Brukes til artikler/nyheter/pressemeldinger"
+form:
+  - type: "FieldSet"
+    label: "Artikkel"
+    items:
+      - type: "TextLine"
+        name: "originaltitle"
+        label: "Norsk tittel (hvis fremmedspråklig innhold)"
+        helpText: "For fremmedspråklig innhold skal norsk tittel angis her. Norsk\
+          \ tittel\n                        vil da vises ved siden av fremmedsprå\
+          klig tittel i Enonic. "
+        occurrences:
+          min: 0
+          max: 1
+      - type: "FormFragment"
+        name: "ingress"
+      - type: "HtmlArea"
+        name: "text"
+        label: "Brødtekst"
+        helpText: "Artikler/nyheter skal som hovedregel være på maks 2 500 tegn."
+        occurrences:
+          min: 1
+          max: 1
+        exclude: "JustifyBlock Underline"
+        include: "Undo Redo"
+        allowHeadings: "h3 h4 normal"
+      - type: "RadioButton"
+        name: "contentType"
+        label: "Innholdstype"
+        helpText: "På grunn av vedlikeholdsarbeid på nav.no ber vi deg velge riktig\n\
+          \                        innholdstype"
+        occurrences:
+          min: 1
+          max: 1
+        options:
+          - value: "news"
+            label: "Nyhet"
+          - value: "pressRelease"
+            label: "Pressemelding"
+          - value: "lastingContent"
+            label: "Varig innhold"
+      - type: "RadioButton"
+        name: "subContentType"
+        label: "Gjelder saken statistikk, analyse eller forskning?"
+        helpText: "Dette valget gir oss mulighet til å lage interne oversikter over\n\
+          \                        innholdet på nav.no"
+        occurrences:
+          min: 1
+          max: 1
+        options:
+          - value: "statistics"
+            label: "Ja"
+          - value: "none"
+            label: "Nei"
+      - type: "RadioButton"
+        name: "hasTableOfContents"
+        label: "Sett inn innholdsfortegnelse"
+        helpText: "Innholdsfortegnelsen blir vist som lenker i toppen av en artikkel.\n\
+          \                        Skal ikke brukes på nyheter og pressemeldinger."
+        occurrences:
+          min: 0
+          max: 1
+        options:
+          - value: "none"
+            label: "Nei"
+          - value: "h3"
+            label: "Ja"
+        default: "none"
+      - type: "FormFragment"
+        name: "menu-list-items"
+  - type: "FieldSet"
+    label: "Faktaboks"
+    items:
+      - type: "HtmlArea"
+        name: "fact"
+        label: "Faktaboksen vises under brødteksten"
+        helpText: "Bruk maks 500 tegn."
+        occurrences:
+          min: 0
+          max: 1
+        exclude: "JustifyBlock Underline"
+        include: "Undo Redo"
+        allowHeadings: "h3 h4 normal"
+  - type: "FieldSet"
+    label: "Bilde"
+  - type: "ItemSet"
+    name: "picture"
+    label: "Bilde med beskrivelse"
+    occurrences:
+      min: 0
+      max: 1
+    items:
+      - type: "ImageSelector"
+        name: "target"
+        label: "Bilde"
+        helpText: "Du kan kun legge inn ett bilde/illustrasjon."
+        occurrences:
+          min: 1
+          max: 1
+      - type: "RadioButton"
+        name: "size"
+        label: "Velg bildestørrelse"
+        helpText: "Bredden på bildet skal ikke være mindre enn 580 piksler."
+        occurrences:
+          min: 0
+          max: 1
+        options:
+          - value: "100"
+            label: "100%"
+          - value: "70"
+            label: "70%"
+          - value: "40"
+            label: "40%"
+      - type: "TextLine"
+        name: "caption"
+        label: "Bildetekst"
+        helpText: "Bildene skal ha en beskrivende tekst og skal gi merverdi til\n\
+          \                        artikkelen!"
+        occurrences:
+          min: 1
+          max: 1
+      - type: "TextLine"
+        name: "altText"
+        label: "Alternativ tekst"
+        helpText: "Tekst som vises eller leses opp når bildet ikke vises for brukeren"
+        occurrences:
+          min: 1
+          max: 1
+  - type: "FormFragment"
+    name: "form-details-selector"
+  - type: "FieldSet"
+    label: "Sosiale medier (funksjonalitet fjernet)"
+  - type: "FormFragment"
+    name: "languages-legacy"
+  - type: "FormFragment"
+    name: "decorator-toggles"
+  - type: "FormFragment"
+    name: "seo"

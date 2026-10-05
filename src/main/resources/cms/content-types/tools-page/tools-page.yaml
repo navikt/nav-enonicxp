@@ -1,0 +1,49 @@
+kind: "ContentType"
+superType: "base:structured"
+final: true
+title: "Verktøy-side"
+description: "Side-type for kalkulatorer, veivisere, osv [ikke implementert]"
+form:
+  - type: "FieldSet"
+    label: "Tittel og ingress"
+    items:
+      - type: "FormFragment"
+        name: "page-header"
+      - type: "FormFragment"
+        name: "ingress-required"
+  - type: "FieldSet"
+    label: "Kategorier"
+    items:
+      - type: "FormFragment"
+        name: "audience"
+      - type: "ComboBox"
+        name: "taxonomy"
+        label: "Kategorier"
+        occurrences:
+          min: 0
+          max: 99
+        options:
+          - value: "calculator"
+            label: "Kalkulator"
+          - value: "navigator"
+            label: "Veiviser"
+      - type: "FormFragment"
+        name: "area"
+  - type: "FieldSet"
+    label: "Piktogram"
+    items:
+      - type: "FormFragment"
+        name: "illustration"
+  - type: "FieldSet"
+    label: "URL"
+    items:
+      - type: "FormFragment"
+        name: "external-product-url"
+      - type: "FormFragment"
+        name: "custom-path-selector-required"
+  - type: "FormFragment"
+    name: "owner"
+  - type: "FormFragment"
+    name: "managed-by"
+  - type: "FormFragment"
+    name: "languages-legacy"

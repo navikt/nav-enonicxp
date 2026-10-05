@@ -1,8 +1,7 @@
 import * as contentLib from '/lib/xp/content';
-import * as contextLib from '/lib/xp/context';
 import { Content } from '/lib/xp/content';
 import * as eventLib from '/lib/xp/event';
-import { runInContext } from '../context/run-in-context';
+import { getContextRepoId, runInContext } from '../context/run-in-context';
 import { isContentAwaitingPrepublish } from '../utils/content-utils';
 import { logger } from '../utils/logging';
 import { forceArray } from '../utils/array-utils';
@@ -50,16 +49,13 @@ const removeUnpublishedFromContentList = (
 
     try {
         runInContext({ branch: 'draft', asAdmin: true }, () => {
-            const context = contextLib.get();
+            const repoId = getContextRepoId();
             const repoConnection = getRepoConnection({
                 branch: 'draft',
-                repoId: context.repository,
+                repoId,
             });
 
-            const shouldPushChanges = isDraftAndMasterSameVersion(
-                contentList._id,
-                context.repository
-            );
+            const shouldPushChanges = isDraftAndMasterSameVersion(contentList._id, repoId);
 
             repoConnection.modify<Content>({
                 key: contentList._id,

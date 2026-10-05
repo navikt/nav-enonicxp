@@ -8,6 +8,7 @@ import { isWellFormedContentRef } from '../../lib/paths/path-utils';
 import { SitecontentResponse } from './common/content-response';
 import { sitecontentDraftResponse } from './draft/draft-response';
 import { sitecontentPublicResponse } from './public/public-response';
+import { stringifyWithoutNullValues } from '../../lib/utils/json-response';
 
 type SiteContentParams = {
     id: string;
@@ -105,7 +106,7 @@ export const get = (req: Request) => {
 
         return {
             status: 200,
-            body: responseBody,
+            body: stringifyWithoutNullValues(responseBody),
             contentType: 'application/json',
         };
     } catch (e) {

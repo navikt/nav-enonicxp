@@ -1,0 +1,19 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "TextLine"
+    name: "url"
+    label: "URL"
+    helpText: "Url til ekstern side"
+    occurrences:
+      min: 1
+      max: 1
+    regexp: "^https?:\\/\\/.*"
+    default: "https://"
+  - type: "TextLine"
+    name: "text"
+    label: "Lenketekst"
+    occurrences:
+      min: 1
+      max: 1
+    default: "Tekst"

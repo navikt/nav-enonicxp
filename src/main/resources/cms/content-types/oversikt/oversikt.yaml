@@ -1,0 +1,167 @@
+kind: "ContentType"
+superType: "base:structured"
+final: true
+title: "Oversiktsside (v3)"
+description: "Oversikt for søknad/skjema, klage/anke, ettersendelse, tjenester og\
+  \ produktdetaljer"
+form:
+  - type: "FieldSet"
+    label: "Sideoppsett"
+    items:
+      - type: "TextLine"
+        name: "title"
+        label: "Side-tittel"
+        occurrences:
+          min: 1
+          max: 1
+      - type: "TextLine"
+        name: "underTitle"
+        label: "Under-tittel"
+        occurrences:
+          min: 0
+          max: 1
+        default: ""
+      - type: "FormFragment"
+        name: "ingress"
+      - type: "ComboBox"
+        name: "oversiktType"
+        label: "Velg type oversikt"
+        occurrences:
+          min: 1
+          max: 1
+        options:
+          - value: "application"
+            label: "Søknad og skjema"
+          - value: "complaint"
+            label: "Klage og anke"
+          - value: "addendum"
+            label: "Ettersendelse"
+          - value: "rates"
+            label: "Satser"
+          - value: "payout_dates"
+            label: "Utbetalingdatoer"
+          - value: "processing_times"
+            label: "Saksbehandlingstider"
+          - value: "all_products"
+            label: "Alle produkter"
+      - type: "FormFragment"
+        name: "illustration"
+      - type: "FormFragment"
+        name: "custom-path-selector-required"
+      - type: "TextLine"
+        name: "externalProductUrl"
+        label: "Videresend alle besøk til annen url:"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "CheckBox"
+        name: "areasFilterToggle"
+        label: "Vis område-filter"
+        occurrences:
+          min: 0
+          max: 1
+        default: "checked"
+      - type: "CheckBox"
+        name: "textFilterToggle"
+        label: "Vis fritekst-filter"
+        occurrences:
+          min: 0
+          max: 1
+        default: "checked"
+  - type: "OptionSet"
+    name: "audience"
+    expanded: false
+    label: "Målgruppe"
+    occurrences:
+      min: 1
+      max: 0
+    options:
+      - name: "person"
+        label: "Privatperson"
+      - name: "employer"
+        label: "Arbeidsgiver"
+      - name: "provider"
+        label: "Samarbeidspartner"
+        items:
+          - type: "OptionSet"
+            name: "pageType"
+            expanded: false
+            label: "Velg sidetype"
+            occurrences:
+              min: 1
+              max: 1
+            options:
+              - name: "overview"
+                label: "Oversiktsside for underkategori"
+                items:
+                  - type: "FormFragment"
+                    name: "provider-audience"
+              - name: "links"
+                label: "Transportside til oversikter for underkategorier"
+                items:
+                  - type: "ItemSet"
+                    name: "links"
+                    label: "Lenker til oversiktssider"
+                    occurrences:
+                      min: 1
+                      max: 0
+                    items:
+                      - type: "TextLine"
+                        name: "text"
+                        label: "Lenketekst"
+                        helpText: "Hvis denne er tom benyttes tittel på oversiktssiden\
+                          \ som\n                                                \
+                          \        lenketekst\n                                  \
+                          \                  "
+                        occurrences:
+                          min: 0
+                          max: 1
+                      - type: "ContentSelector"
+                        name: "link"
+                        label: "Velg oversiktsside"
+                        occurrences:
+                          min: 1
+                          max: 1
+                        allowContentType:
+                          - "${app}:oversikt"
+            selection:
+              min: 1
+              max: 1
+    selection:
+      min: 1
+      max: 1
+  - type: "FieldSet"
+    label: "Data for ikke-lokaliserte sider"
+    items:
+      - type: "ContentSelector"
+        name: "localeFallback"
+        label: "Velg fallback data"
+        helpText: "Brukes for å sette inn elementer for sider som ikke er lokalisert"
+        occurrences:
+          min: 0
+          max: 0
+        attributes:
+          showStatus: "true"
+        allowContentType:
+          - "${app}:content-data-locale-fallback"
+  - type: "FieldSet"
+    label: "Ekskluderte sider"
+    items:
+      - type: "CustomSelector"
+        name: "excludedContent"
+        label: "Velg innhold som ikke skal vises i denne oversikten"
+        occurrences:
+          min: 0
+          max: 0
+        service: "contentSelector"
+        params:
+          contentTypes: "\n                            [\"no.nav.navno:content-page-with-sidemenus\"\
+            ,\"no.nav.navno:guide-page\", \"no.nav.navno:themed-article-page\"]\n\
+            \                        "
+          sort: "data.area ASC, displayName ASC"
+  - type: "FormFragment"
+    name: "owner"
+  - type: "FormFragment"
+    name: "managed-by"
+  - type: "FormFragment"
+    name: "seo"

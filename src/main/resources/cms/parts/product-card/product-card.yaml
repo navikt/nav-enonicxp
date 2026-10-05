@@ -1,0 +1,16 @@
+kind: "Part"
+title: "Kort"
+description: "Kort med lenke"
+form:
+  - type: "FieldSet"
+    label: "Valgt side"
+    items:
+      - type: "FormFragment"
+        name: "product-target-selector"
+      - type: "TextArea"
+        name: "ingressOverride"
+        label: "Overstyr ingress"
+        helpText: "La stå blank dersom standard-ingress skal vises"
+        occurrences:
+          min: 0
+          max: 1

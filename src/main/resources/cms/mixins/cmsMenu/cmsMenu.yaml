@@ -1,0 +1,15 @@
+kind: "Mixin"
+title: "CMS Menu Item"
+form:
+  - type: "TextLine"
+    name: "menuKey"
+    label: "Menu item key"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "ContentSelector"
+    name: "content"
+    label: "Menu item related content"
+    occurrences:
+      min: 0
+      max: 1

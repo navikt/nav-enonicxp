@@ -1,7 +1,6 @@
 import * as contentLib from '/lib/xp/content';
-import graphQlLib from '/lib/graphql';
 import { forceArray } from '../../../../utils/array-utils';
-import { CreationCallback, graphQlCreateObjectType } from '../../../utils/creation-callback-utils';
+import { ResolverEnv, SchemaExtension } from '../../../utils/creation-callback-utils';
 import { logger } from '../../../../utils/logging';
 import { OpeningHours } from '@xp-types/site/mixins/opening-hours';
 
@@ -100,116 +99,108 @@ const getSpecialOpeningHoursObject = (
     };
 };
 
-export const createOpeningHoursFields =
-    (contactType: SupportedContactType): CreationCallback =>
-    (context, params) => {
-        if (!context.types.regularOpeningHour) {
-            context.types.regularOpeningHour = graphQlCreateObjectType(context, {
-                name: 'RegularOpeningHour',
-                fields: {
-                    dayName: { type: graphQlLib.GraphQLString },
-                    from: { type: graphQlLib.GraphQLString },
-                    to: { type: graphQlLib.GraphQLString },
-                    status: { type: graphQlLib.GraphQLString },
-                },
-            });
-        }
+const resolveRegularOpeningHours = (env: ResolverEnv) => {
+    const { regularOpeningHours = {} } = env.source;
 
-        if (!context.types.regularOpeningHours) {
-            context.types.regularOpeningHours = graphQlCreateObjectType(context, {
-                name: 'RegularOpeningHours',
-                fields: {
-                    hours: { type: graphQlLib.list(context.types.regularOpeningHour) },
-                },
-            });
-        }
+    if (Object.keys(regularOpeningHours).length === 0) {
+        return null;
+    }
 
-        if (!context.types.specialOpeningHour) {
-            context.types.specialOpeningHour = graphQlCreateObjectType(context, {
-                name: 'SpecialOpeningHour',
-                fields: {
-                    date: { type: graphQlLib.GraphQLString },
-                    from: { type: graphQlLib.GraphQLString },
-                    to: { type: graphQlLib.GraphQLString },
-                    status: { type: graphQlLib.GraphQLString },
-                },
-            });
-        }
+    return {
+        hours: dayNames.map((dayName) => {
+            const openingHours = regularOpeningHours[dayName];
 
-        if (!context.types.specialOpeningHours) {
-            context.types.specialOpeningHours = graphQlCreateObjectType(context, {
-                name: 'SpecialOpeningHours',
-                fields: {
-                    overrideText: { type: graphQlLib.GraphQLString },
-                    validFrom: { type: graphQlLib.GraphQLString },
-                    validTo: { type: graphQlLib.GraphQLString },
-                    hours: { type: graphQlLib.list(context.types.specialOpeningHour) },
-                },
-            });
-        }
+            if (!openingHours) {
+                return { dayName, status: 'CLOSED' };
+            }
 
-        params.fields.regularOpeningHours = {
-            type: context.types.regularOpeningHours,
-            resolve: (env) => {
-                const { regularOpeningHours = {} } = env.source;
-
-                if (Object.keys(regularOpeningHours).length === 0) {
-                    return null;
-                }
-
-                return {
-                    hours: dayNames.map((dayName) => {
-                        const openingHours = regularOpeningHours[dayName];
-
-                        if (!openingHours) {
-                            return { dayName, status: 'CLOSED' };
-                        }
-
-                        return { ...openingHours, dayName, status: 'OPEN' };
-                    }),
-                };
-            },
-        };
-
-        params.fields.specialOpeningHours = {
-            type: context.types.specialOpeningHours,
-            resolve: (env) => {
-                const rawSpecialOpeningHours: RawSpecialOpeningHours =
-                    env.source.specialOpeningHours;
-
-                const { specialOpeningHours, text } =
-                    getSpecialOpeningHoursObject(rawSpecialOpeningHours, contactType) || {};
-
-                // No specialOpeningHours are actually set by the editors.
-                if (specialOpeningHours?._selected !== 'custom') {
-                    return {};
-                }
-
-                const { validFrom, validTo, hours } = specialOpeningHours.custom;
-
-                // We want the special opening hours to have the same schema as regular
-                // opening hours and also (just in case) to be sorted by date.
-                const normalizedHours = forceArray(hours)
-                    .map(({ status, date }) => {
-                        const openHours =
-                            status._selected === 'open'
-                                ? { from: status.open.from, to: status.open.to }
-                                : {};
-
-                        return {
-                            date,
-                            ...openHours,
-                            status: status._selected.toUpperCase(),
-                        };
-                    })
-                    .sort((a, b) => (a.date < b.date ? -1 : 1));
-
-                return {
-                    overrideText: text,
-                    hours: normalizedHours,
-                    validFrom,
-                    validTo,
-                };
-            },
-        };
+            return { ...openingHours, dayName, status: 'OPEN' };
+        }),
     };
+};
+
+const resolveSpecialOpeningHours = (env: ResolverEnv, contactType: SupportedContactType) => {
+    const rawSpecialOpeningHours: RawSpecialOpeningHours = env.source.specialOpeningHours;
+
+    const { specialOpeningHours, text } =
+        getSpecialOpeningHoursObject(rawSpecialOpeningHours, contactType) || {};
+
+    // No specialOpeningHours are actually set by the editors.
+    if (specialOpeningHours?._selected !== 'custom') {
+        return {};
+    }
+
+    const { validFrom, validTo, hours } = specialOpeningHours.custom;
+
+    // We want the special opening hours to have the same schema as regular
+    // opening hours and also (just in case) to be sorted by date.
+    const normalizedHours = forceArray(hours)
+        .map(({ status, date }) => {
+            const openHours =
+                status._selected === 'open' ? { from: status.open.from, to: status.open.to } : {};
+
+            return {
+                date,
+                ...openHours,
+                status: status._selected.toUpperCase(),
+            };
+        })
+        .sort((a, b) => (a.date < b.date ? -1 : 1));
+
+    return {
+        overrideText: text,
+        hours: normalizedHours,
+        validFrom,
+        validTo,
+    };
+};
+
+export const createOpeningHoursFields =
+    (contactType: SupportedContactType): SchemaExtension =>
+    (graphQL, typeName) => ({
+        types: {
+            RegularOpeningHour: {
+                fields: {
+                    dayName: { type: graphQL.GraphQLString },
+                    from: { type: graphQL.GraphQLString },
+                    to: { type: graphQL.GraphQLString },
+                    status: { type: graphQL.GraphQLString },
+                },
+            },
+            RegularOpeningHours: {
+                fields: {
+                    hours: { type: graphQL.list(graphQL.reference('RegularOpeningHour')) },
+                },
+            },
+            SpecialOpeningHour: {
+                fields: {
+                    date: { type: graphQL.GraphQLString },
+                    from: { type: graphQL.GraphQLString },
+                    to: { type: graphQL.GraphQLString },
+                    status: { type: graphQL.GraphQLString },
+                },
+            },
+            SpecialOpeningHours: {
+                fields: {
+                    overrideText: { type: graphQL.GraphQLString },
+                    validFrom: { type: graphQL.GraphQLString },
+                    validTo: { type: graphQL.GraphQLString },
+                    hours: { type: graphQL.list(graphQL.reference('SpecialOpeningHour')) },
+                },
+            },
+        },
+        creationCallbacks: {
+            [typeName]: (params) => {
+                params.addFields({
+                    regularOpeningHours: { type: graphQL.reference('RegularOpeningHours') },
+                    specialOpeningHours: { type: graphQL.reference('SpecialOpeningHours') },
+                });
+            },
+        },
+        resolvers: {
+            [typeName]: {
+                regularOpeningHours: resolveRegularOpeningHours,
+                specialOpeningHours: (env) => resolveSpecialOpeningHours(env, contactType),
+            },
+        },
+    });

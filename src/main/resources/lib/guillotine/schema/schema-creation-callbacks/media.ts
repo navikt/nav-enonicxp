@@ -1,53 +1,68 @@
-import graphQlLib from '/lib/graphql';
-import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
+import { SchemaExtension } from '../../utils/creation-callback-utils';
 import { getAttachmentText } from './common/attachments';
 
-export const mediaCodeCallback: CreationCallback = (context, params) => {
-    params.fields.mediaText = {
-        type: graphQlLib.GraphQLString,
-        args: {
-            maxSize: graphQlLib.GraphQLInt,
+export const mediaCodeCallback: SchemaExtension = (graphQL, typeName) => ({
+    creationCallbacks: {
+        [typeName]: (params) => {
+            params.addFields({
+                mediaText: {
+                    type: graphQL.GraphQLString,
+                    args: { maxSize: graphQL.GraphQLInt },
+                },
+            });
         },
-        resolve: (env) => {
-            const attachmentName = env.source.data?.media?.attachment;
-            if (!attachmentName) {
-                return null;
-            }
+    },
+    resolvers: {
+        [typeName]: {
+            mediaText: (env) => {
+                const attachmentName = env.source.data?.media?.attachment;
+                if (!attachmentName) {
+                    return null;
+                }
 
-            const attachment = env.source.attachments?.[attachmentName];
-            if (!attachment) {
-                return null;
-            }
+                const attachment = env.source.attachments?.[attachmentName];
+                if (!attachment) {
+                    return null;
+                }
 
-            return getAttachmentText(attachment, env.args.maxSize);
+                return getAttachmentText(env.source._id, attachment, env.args.maxSize);
+            },
         },
-    };
-};
+    },
+});
 
-export const mediaImageCallback: CreationCallback = (context, params) => {
-    const imageInfoType = graphQlCreateObjectType(context, {
-        name: 'ImageInfo',
-        fields: {
-            imageWidth: { type: graphQlLib.GraphQLInt },
-            imageHeight: { type: graphQlLib.GraphQLInt },
-            contentType: { type: graphQlLib.GraphQLString },
+export const mediaImageCallback: SchemaExtension = (graphQL, typeName) => ({
+    types: {
+        ImageInfo: {
+            fields: {
+                imageWidth: { type: graphQL.GraphQLInt },
+                imageHeight: { type: graphQL.GraphQLInt },
+                contentType: { type: graphQL.GraphQLString },
+            },
         },
-    });
-
-    params.fields.imageInfo = {
-        type: imageInfoType,
-        resolve: (env) => {
-            if (!env.source.x?.media?.imageInfo) {
-                return null;
-            }
-
-            const { imageHeight, imageWidth, contentType } = env.source.x.media.imageInfo;
-
-            return {
-                imageWidth: Number(imageWidth),
-                imageHeight: Number(imageHeight),
-                contentType: contentType,
-            };
+    },
+    creationCallbacks: {
+        [typeName]: (params) => {
+            params.addFields({
+                imageInfo: { type: graphQL.reference('ImageInfo') },
+            });
         },
-    };
-};
+    },
+    resolvers: {
+        [typeName]: {
+            imageInfo: (env) => {
+                if (!env.source.x?.media?.imageInfo) {
+                    return null;
+                }
+
+                const { imageHeight, imageWidth, contentType } = env.source.x.media.imageInfo;
+
+                return {
+                    imageWidth: Number(imageWidth),
+                    imageHeight: Number(imageHeight),
+                    contentType: contentType,
+                };
+            },
+        },
+    },
+});

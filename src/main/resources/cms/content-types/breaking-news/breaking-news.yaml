@@ -1,0 +1,7 @@
+kind: "ContentType"
+superType: "base:unstructured"
+abstract: true
+title: "Kampanje - Skal ikke brukes"
+description: "\n        Utgått innholdstype - må være definert for å unngå krasj i\
+  \ Content Studio\n    "
+form: []

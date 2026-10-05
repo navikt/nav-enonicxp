@@ -1,4 +1,4 @@
-import { NodeVersion } from '/lib/xp/node';
+import { NodeVersion, RepoConnection } from '/lib/xp/node';
 import { RepoBranch } from '../../types/common';
 import { nodeLibConnectStandard } from '../time-travel/standard-functions';
 import { logger } from './logging';
@@ -13,6 +13,23 @@ export type GetNodeVersionsParams = {
     nodeKey: string;
     repoId: string;
     branch: RepoBranch;
+};
+
+// XP8 replaced repo.findVersions({ start, count }) with cursor-based repo.getVersions({ cursor, count }).
+// Pages through the cursor until maxCount versions are collected, newest first.
+export const getVersionsFromRepo = (repo: RepoConnection, key: string, maxCount: number) => {
+    const hits: NodeVersion[] = [];
+    let total: number;
+    let cursor: string | null | undefined;
+
+    do {
+        const result = repo.getVersions({ key, cursor, count: maxCount - hits.length });
+        total = result.total;
+        hits.push(...result.hits);
+        cursor = result.hits.length > 0 ? result.cursor : null;
+    } while (cursor && hits.length < maxCount);
+
+    return { total, hits };
 };
 
 // For non-localized content, we need to retrieve content from the default repo
@@ -39,11 +56,7 @@ export const getNodeVersions = ({
 }: GetNodeVersionsParams): NodeVersion[] => {
     const repo = nodeLibConnectStandard({ repoId, branch });
 
-    const result = repo.findVersions({
-        key: nodeKey,
-        start: 0,
-        count: MAX_VERSIONS_COUNT_TO_RETRIEVE,
-    });
+    const result = getVersionsFromRepo(repo, nodeKey, MAX_VERSIONS_COUNT_TO_RETRIEVE);
 
     if (result.total > MAX_VERSIONS_COUNT_TO_RETRIEVE) {
         logger.warning(

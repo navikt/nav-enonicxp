@@ -1,0 +1,7 @@
+kind: "ContentType"
+superType: "base:structured"
+abstract: true
+title: "link-list - Skal ikke brukes"
+description: "\n        Utgått innholdstype fra Enonic CMS - må være definert for\
+  \ å unngå krasj i Content Studio\n    "
+form: []

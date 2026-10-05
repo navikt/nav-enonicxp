@@ -1,0 +1,15 @@
+kind: "ContentType"
+superType: "base:structured"
+final: true
+title: "Piktogram"
+description: "Piktogrammer til bruk på områdesider, produktsider, situasjoner etc"
+form:
+  - type: "ItemSet"
+    name: "icons"
+    label: "Velg ikoner"
+    occurrences:
+      min: 2
+      max: 2
+    items:
+      - type: "FormFragment"
+        name: "icon-selector"

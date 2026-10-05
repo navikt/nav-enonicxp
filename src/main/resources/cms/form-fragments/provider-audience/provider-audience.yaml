@@ -1,0 +1,26 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "ComboBox"
+    name: "provider_audience"
+    label: "Velg underkategorier"
+    occurrences:
+      min: 1
+      max: 0
+    options:
+      - value: "doctor"
+        label: "Lege, tannlege eller annen behandler"
+      - value: "municipality_employed"
+        label: "Ansatt i kommunen eller fylkeskommunen"
+      - value: "optician"
+        label: "Optiker eller øyelege"
+      - value: "administrator"
+        label: "Bostyrer"
+      - value: "measures_organizer"
+        label: "Tiltaksarrangør"
+      - value: "aid_supplier"
+        label: "Hjelpemiddelformidler"
+      - value: "trekkmottaker"
+        label: "Trekkmottaker"
+      - value: "other"
+        label: "Andre samarbeidspartnere"

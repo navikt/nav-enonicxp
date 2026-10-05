@@ -4,6 +4,17 @@ import { xpMocks } from '../../../.mocks/xp-mocks';
 
 const { libContentMock, libNodeMock, server } = xpMocks;
 
+// XP8 types the context repository as optional, but the mock server is always created with one
+const repoId = server.context.repository!;
+
+// XP8 types RepoConnection without the deprecated modify(), which mock-xp still implements
+type MockRepoConnection = ReturnType<typeof libNodeMock.connect> & {
+    modify: <NodeData = ContentNode>(params: {
+        key: string;
+        editor: (node: NodeData) => NodeData;
+    }) => NodeData;
+};
+
 const content = libContentMock.create({
     contentType: 'no.nav.navno:dynamic-page',
     parentPath: '/',
@@ -16,7 +27,7 @@ libContentMock.publish({
 });
 
 describe('Scheduled publishing event handler', () => {
-    const repo = libNodeMock.connect({ repoId: server.context.repository, branch: 'master' });
+    const repo = libNodeMock.connect({ repoId, branch: 'master' }) as MockRepoConnection;
 
     test('Should not schedule anything for published content', () => {
         const contentData = repo.get(content._id) as ContentNode;
@@ -26,7 +37,7 @@ describe('Scheduled publishing event handler', () => {
                 branch: 'master',
                 path: contentData._path,
                 id: contentData._id,
-                repo: server.context.repository,
+                repo: repoId,
             },
             'node.pushed'
         );
@@ -50,7 +61,7 @@ describe('Scheduled publishing event handler', () => {
                 branch: 'master',
                 path: contentData._path,
                 id: contentData._id,
-                repo: server.context.repository,
+                repo: repoId,
             },
             'node.pushed'
         );

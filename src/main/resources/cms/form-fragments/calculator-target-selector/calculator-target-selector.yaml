@@ -1,0 +1,11 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "ContentSelector"
+    name: "targetCalculator"
+    label: "Velg kalkulator"
+    occurrences:
+      min: 0
+      max: 1
+    allowContentType:
+      - "${app}:calculator"

@@ -1,0 +1,13 @@
+kind: "Part"
+title: "Infokort (varsel)"
+description: "Infokort med rik tekst"
+form:
+  - type: "HtmlArea"
+    name: "content"
+    label: "Innhold"
+    occurrences:
+      min: 0
+      max: 1
+    include: "Undo Redo"
+  - type: "FormFragment"
+    name: "auth-render-option"

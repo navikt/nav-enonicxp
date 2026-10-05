@@ -5,6 +5,14 @@ import { xpMocks } from '../../../../.mocks/xp-mocks';
 
 const { libContentMock, libNodeMock, server } = xpMocks;
 
+// XP8 types RepoConnection without the deprecated modify(), which mock-xp still implements
+type MockRepoConnection = ReturnType<typeof libNodeMock.connect> & {
+    modify: <NodeData = ContentNode>(params: {
+        key: string;
+        editor: (node: NodeData) => NodeData;
+    }) => NodeData;
+};
+
 const searchConfigData: SearchConfigV2 = {
     defaultKeys: {
         titleKey: 'displayName',
@@ -92,8 +100,8 @@ jest.mock('@navno-app/lib/localization/resolve-language-versions', () => ({
 describe('Document builder for external search api', () => {
     const repoConnection = libNodeMock.connect({
         branch: 'master',
-        repoId: server.context.repository,
-    });
+        repoId: server.context.repository!,
+    }) as MockRepoConnection;
 
     test('Content types with a search config should generate a document', () => {
         const contentNode = repoConnection.get(mainArticle._id) as ContentNode;

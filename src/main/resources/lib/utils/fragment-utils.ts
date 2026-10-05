@@ -1,10 +1,9 @@
-import * as contextLib from '/lib/xp/context';
 import { getRepoConnection } from '../repos/repo-utils';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { htmlAreaComponentPaths, htmlAreaDataPaths } from './htmlarea-utils';
-import { runInContext } from '../context/run-in-context';
+import { getContextBranch, getContextRepoId, runInContext } from '../context/run-in-context';
 import { logger } from './logging';
 import { forceArray, removeDuplicates } from './array-utils';
 import { getNestedValues } from './object-utils';
@@ -15,10 +14,9 @@ const htmlFragmentMacroPrefix = 'html-fragment fragmentId="';
 const htmlFragmentMacroPattern = new RegExp(`${htmlFragmentMacroPrefix}[0-9a-z-]+`, 'gi');
 
 const getContentNode = (contentRef: string, branch: RepoBranch) => {
-    const context = contextLib.get();
     const repo = getRepoConnection({
-        repoId: context.repository,
-        branch: branch || context.branch,
+        repoId: getContextRepoId(),
+        branch: branch || getContextBranch(),
     });
 
     return repo.get<Content>(getContentNodeKey(contentRef));

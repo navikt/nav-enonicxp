@@ -1,0 +1,9 @@
+kind: "Page"
+title: "Produktdetaljer"
+description: "Sidetype for å sette opp produktdetaljer"
+form: []
+regions:
+  - "intro"
+  - "main"
+  - "main_complaint"
+  - "outro"

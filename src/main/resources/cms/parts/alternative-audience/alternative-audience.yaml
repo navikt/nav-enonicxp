@@ -1,0 +1,18 @@
+kind: "Part"
+title: "Aktuelle målgrupper"
+description: "Viser aktuelle målgrupper basert på hva som er valgt i metadata til\
+  \ venstre."
+form:
+  - type: "CheckBox"
+    name: "showProductName"
+    label: "Vis produktnavn"
+    helpText: "Hvis du krysser vekk, blir ordet 'dette' vist i stedet for produktnavnet."
+    occurrences:
+      min: 0
+      max: 1
+    default: "checked"
+config:
+  allowOnContentType:
+    - "${app}:content-page-with-sidemenus"
+    - "${app}:guide-page"
+    - "${app}:themed-article-page"

@@ -1,0 +1,21 @@
+kind: "Part"
+title: "Detaljinformasjon for det aktuelle kontoret"
+description: "Detaljinformasjon blir hentet fra NORG og flettet inn her"
+form:
+  - type: "RadioButton"
+    name: "detailType"
+    label: "Velg detaljinformasjon"
+    occurrences:
+      min: 1
+      max: 1
+    options:
+      - value: "serviceInformation"
+        label: "Dette kan vi hjelpe deg med"
+      - value: "socialHelpLinks"
+        label: "Søknadslenker til økonomisk sosialhjelp"
+      - value: "socialHelpPostalInformation"
+        label: "Postkasse for økonomisk sosialhjelp"
+      - value: "socialHelpPayoutInformation"
+        label: "Utbetaling av økonomisk sosialhjelp"
+config:
+  allowOnContentType: "${app}:office-editorial-page"

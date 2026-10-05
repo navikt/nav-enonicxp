@@ -1,0 +1,9 @@
+kind: "Mixin"
+title: "Old Content Type"
+form:
+  - type: "TextLine"
+    name: "type"
+    label: "Type"
+    occurrences:
+      min: 0
+      max: 1

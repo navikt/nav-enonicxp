@@ -1,0 +1,17 @@
+kind: "Page"
+title: "Side med to kolonner"
+description: "En bred kolonne for hovedinnhold, med en valgfri side-kolonne"
+form:
+  - type: "FieldSet"
+    label: "Vis side-kolonne"
+    items:
+      - type: "CheckBox"
+        name: "sideColToggle"
+        label: "Vis"
+        occurrences:
+          min: 0
+          max: 1
+        default: "checked"
+regions:
+  - "mainCol"
+  - "sideCol"

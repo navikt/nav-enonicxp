@@ -1,0 +1,7 @@
+kind: "ContentType"
+superType: "base:structured"
+final: true
+title: "Globale tall-verdier"
+description: "Tall-verdier som forvaltes sentralt og kan benyttes i tekster eller\
+  \ kalkulatorer"
+form: []

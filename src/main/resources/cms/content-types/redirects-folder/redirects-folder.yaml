@@ -1,0 +1,11 @@
+kind: "ContentType"
+superType: "base:folder"
+abstract: true
+title: "Redirects-mappe"
+description: "Mappe kun for redirects"
+form: []
+allowChildContentType:
+  - "${app}:internal-link"
+  - "${app}:external-link"
+  - "${app}:redirects-folder"
+  - "base:folder"

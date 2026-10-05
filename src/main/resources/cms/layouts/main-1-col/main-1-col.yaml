@@ -1,0 +1,16 @@
+kind: "Layout"
+title: "main-1-col"
+description: "Legacy-layout med en kolonne (deprecated)"
+form: []
+regions:
+  - "first"
+config:
+  allowOnContentType:
+    - "${app}:main-article"
+    - "${app}:main-article-chapter"
+    - "${app}:melding"
+    - "${app}:office-information"
+    - "${app}:page-list"
+    - "${app}:publishing-calendar"
+    - "${app}:section-page"
+    - "${app}:transport-page"

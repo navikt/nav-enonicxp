@@ -15,11 +15,6 @@
         "paths": {
             "@xp-types/*": ["../../../.xp-codegen/*"],
             "/lib/cache": ["../../../node_modules/@item-enonic-types/lib-cache"],
-            "/lib/graphql": ["../../../node_modules/@item-enonic-types/lib-graphql"],
-            "/lib/graphql-playground": [
-                "../../../node_modules/@item-enonic-types/lib-graphql-playground"
-            ],
-            "/lib/guillotine": ["../../../node_modules/@item-enonic-types/lib-guillotine"],
             "/lib/http-client": ["../../../node_modules/@item-enonic-types/lib-http-client"],
             "/lib/thymeleaf": ["../../../node_modules/@item-enonic-types/lib-thymeleaf"],
             "/lib/xp/auditlog": ["../../../node_modules/@enonic-types/lib-auditlog"],

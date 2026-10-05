@@ -1,0 +1,17 @@
+kind: "Mixin"
+title: "Overstyring av brødsmulesti"
+form:
+  - type: "ContentSelector"
+    name: "virtualParent"
+    label: "Velg innhold for brødsmulesti"
+    helpText: "Velg innhold som dette innholdet skal ligge under i brødsmulestien.\
+      \ Overstyrer den interne posisjonen i strukturen når brødsmulestien genereres."
+    occurrences:
+      min: 0
+      max: 1
+    allowContentType:
+      - "no.nav.navno:*"
+      - "base:folder"
+    allowPath:
+      - "${site}/*"
+    treeMode: true

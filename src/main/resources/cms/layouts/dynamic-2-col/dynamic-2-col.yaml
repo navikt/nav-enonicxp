@@ -1,0 +1,17 @@
+kind: "Layout"
+title: "Fast kolonne-layout - 2 kolonner"
+description: "To faste kolonner med valgfri bredde-fordeling"
+form:
+  - type: "TextLine"
+    name: "distribution"
+    label: "Bredde-fordeling (xx-xx)"
+    occurrences:
+      min: 0
+      max: 1
+    regexp: "^\\d+-\\d+$"
+    default: "50-50"
+  - type: "FormFragment"
+    name: "layouts-common"
+regions:
+  - "dynamic-1"
+  - "dynamic-2"

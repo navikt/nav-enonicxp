@@ -1,0 +1,43 @@
+kind: "ContentType"
+superType: "base:structured"
+title: "Eksternt innhold til søket"
+description: "Innhold utenfra Enonic som skal indekseres i søket på nav.no"
+form:
+  - type: "Tag"
+    name: "keywords"
+    label: "Nøkkelord"
+    occurrences:
+      min: 0
+      max: 0
+  - type: "TextLine"
+    name: "url"
+    label: "URL"
+    helpText: "Sett inn url til nettsted"
+    occurrences:
+      min: 1
+      max: 1
+  - type: "TextArea"
+    name: "text"
+    label: "Fritekst"
+    occurrences:
+      min: 0
+      max: 0
+  - type: "TextArea"
+    name: "ingress"
+    label: "Ingress"
+    occurrences:
+      min: 1
+      max: 1
+  - type: "ComboBox"
+    name: "audience"
+    label: "Målgruppe"
+    occurrences:
+      min: 0
+      max: 0
+    options:
+      - value: "person"
+        label: "Privatperson"
+      - value: "employer"
+        label: "Arbeidsgiver"
+      - value: "provider"
+        label: "Samarbeidspartner"

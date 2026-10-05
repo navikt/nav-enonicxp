@@ -1,0 +1,12 @@
+kind: "Macro"
+title: "Utbetalingsdatoer"
+description: "Setter inn en tabell med utbetalingsdatoer"
+form:
+  - type: "ContentSelector"
+    name: "payoutDates"
+    label: "Velg utbetalingsdatoer"
+    occurrences:
+      min: 1
+      max: 1
+    allowContentType:
+      - "${app}:payout-dates"

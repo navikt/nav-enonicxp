@@ -1,0 +1,30 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "ComboBox"
+    name: "area"
+    label: "Områdekategori"
+    occurrences:
+      min: 1
+      max: 99
+    options:
+      - value: "health"
+        label: "Helse og sykdom"
+      - value: "other"
+        label: "På tvers"
+      - value: "work"
+        label: "Arbeid (KUN PRIVATPERSON)"
+      - value: "family"
+        label: "Familie og barn (KUN PRIVATPERSON)"
+      - value: "accessibility"
+        label: "Hjelpemidler og tilrettelegging (KUN PRIVATPERSON)"
+      - value: "pension"
+        label: "Pensjon (KUN PRIVATPERSON)"
+      - value: "social_counselling"
+        label: "Sosiale tjenester og veiledning (KUN PRIVATPERSON)"
+      - value: "inclusion"
+        label: "Inkludering og tilrettelegging (KUN ARBEIDSGIVER)"
+      - value: "downsizing"
+        label: "Permittering og nedbemanning (KUN ARBEIDSGIVER)"
+      - value: "recruitment"
+        label: "Rekruttering (KUN ARBEIDSGIVER)"

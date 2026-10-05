@@ -1,0 +1,83 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "FieldSet"
+    label: "Marginer"
+    items:
+      - type: "Double"
+        name: "marginTop"
+        label: "Topp-margin (rem-enheter)"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "Double"
+        name: "marginBottom"
+        label: "Bunn-margin (rem-enheter)"
+        occurrences:
+          min: 0
+          max: 1
+  - type: "OptionSet"
+    name: "paddingSides"
+    expanded: false
+    label: "Horisontal padding"
+    occurrences:
+      min: 1
+      max: 1
+    options:
+      - name: "standard"
+        label: "Standard"
+        selected: true
+      - name: "fullWidth"
+        label: "Full skjermbredde"
+      - name: "custom"
+        label: "Tilpasset"
+        items:
+          - type: "Double"
+            name: "remValue"
+            label: "(rem-enheter)"
+            occurrences:
+              min: 0
+              max: 1
+    selection:
+      min: 1
+      max: 1
+  - type: "OptionSet"
+    name: "paddingTopBottom"
+    expanded: false
+    label: "Vertikal padding"
+    occurrences:
+      min: 1
+      max: 1
+    options:
+      - name: "standard"
+        label: "Standard"
+        selected: true
+      - name: "custom"
+        label: "Tilpasset (rem-enheter)"
+        items:
+          - type: "Double"
+            name: "top"
+            label: "Topp"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "Double"
+            name: "bottom"
+            label: "Bunn"
+            occurrences:
+              min: 0
+              max: 1
+    selection:
+      min: 1
+      max: 1
+  - type: "ItemSet"
+    name: "bgColor"
+    label: "Bakgrunnsfarge"
+    occurrences:
+      min: 0
+      max: 1
+    items:
+      - type: "FormFragment"
+        name: "color-picker"
+  - type: "FormFragment"
+    name: "auth-render-option"

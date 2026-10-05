@@ -14,6 +14,7 @@ import { activateContentListItemUnpublishedListener } from './lib/contentlists/r
 import { activateCustomPathNodeListeners } from './lib/paths/custom-paths/custom-path-event-listeners';
 import { createOfficeImportSchedule } from './lib/office-pages/office-tasks';
 import { hookLibsWithTimeTravel } from './lib/time-travel/time-travel-hooks';
+import { TIME_TRAVEL_ENABLED } from './lib/time-travel/run-with-time-travel';
 import { initMiscRepo } from './lib/repos/misc-repo';
 import { initLayersData } from './lib/localization/layers-data';
 import { activateLayersEventListeners } from './lib/localization/publish-events';
@@ -23,39 +24,48 @@ import { initializeMainDatanodeSelection } from './lib/cluster-utils/main-datano
 import { activateSchedulerCleanupSchedule } from './lib/scheduling/schedule-cleanup';
 import { initArchiveContentTrees } from './lib/external-archive/content-tree-archive';
 import { activateArchiveNewsSchedule } from './lib/archiving/archive-old-news';
+import { runInContext } from './lib/context/run-in-context';
+import { CONTENT_ROOT_REPO_ID } from './lib/constants';
 
-updateClusterInfo();
-initLayersData();
-hookLibsWithTimeTravel();
+// XP8 runs the main controller without a repository/branch and as an unknown user, which is denied
+// content access. XP7 defaulted to the root content repo and draft branch, which much of the init
+// code implicitly relies on.
+runInContext({ repository: CONTENT_ROOT_REPO_ID, branch: 'draft', asAdmin: true }, () => {
+    updateClusterInfo();
+    initLayersData();
+    if (TIME_TRAVEL_ENABLED) {
+        hookLibsWithTimeTravel();
+    }
 
-if (clusterLib.isMaster()) {
-    log.info('Running master only init scripts');
-    initializeMainDatanodeSelection();
-    initMiscRepo();
-}
+    if (clusterLib.isMaster()) {
+        log.info('Running master only init scripts');
+        initializeMainDatanodeSelection();
+        initMiscRepo();
+    }
 
-if (app.config.env !== 'test') {
-    createOfficeImportSchedule();
-    activateSitemapDataUpdateEventListener();
-}
+    if (app.config.env !== 'test') {
+        createOfficeImportSchedule();
+        activateSitemapDataUpdateEventListener();
+    }
 
-activateLayersEventListeners();
-activateCacheEventListeners();
-activateContentListItemUnpublishedListener();
-activateExternalSearchIndexEventHandlers();
+    activateLayersEventListeners();
+    activateCacheEventListeners();
+    activateContentListItemUnpublishedListener();
+    activateExternalSearchIndexEventHandlers();
 
-activateArchiveNewsSchedule();
+    activateArchiveNewsSchedule();
 
-activateCustomPathNodeListeners();
-activateContentUpdateListener();
-activateSchedulerCleanupSchedule();
-initArchiveContentTrees();
+    activateCustomPathNodeListeners();
+    activateContentUpdateListener();
+    activateSchedulerCleanupSchedule();
+    initArchiveContentTrees();
 
-// This is somewhat annoying for local development, as it will run a fairly heavy task and spam
-// the logs when generating the sitemap. This happens on every redeploy of the app.
-if (app.config.env !== 'localhost' && app.config.env !== 'test') {
-    generateSitemapDataAndActivateSchedule();
-}
+    // This is somewhat annoying for local development, as it will run a fairly heavy task and spam
+    // the logs when generating the sitemap. This happens on every redeploy of the app.
+    if (app.config.env !== 'localhost' && app.config.env !== 'test') {
+        generateSitemapDataAndActivateSchedule();
+    }
+});
 
 log.info('Finished running main');
 

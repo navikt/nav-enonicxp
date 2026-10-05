@@ -1,0 +1,30 @@
+kind: "Macro"
+title: "Global verdi"
+description: "Sett inn en verdi i teksten"
+form:
+  - type: "CustomSelector"
+    name: "key"
+    label: "Velg verdi"
+    occurrences:
+      min: 1
+      max: 1
+    service: "globalValues"
+    params:
+      contentType: "no.nav.navno:global-value-set"
+      withDescription: "true"
+  - type: "Long"
+    name: "decimals"
+    label: "Desimaler"
+    helpText: "Antall desimaler som skal vises"
+    occurrences:
+      min: 0
+      max: 1
+    min: 0
+    max: 2
+  - type: "TextLine"
+    name: "value"
+    label: "(tomt felt, skal ikke brukes)"
+    occurrences:
+      min: 0
+      max: 1
+    regexp: "^$"

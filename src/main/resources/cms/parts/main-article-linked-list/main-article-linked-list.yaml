@@ -1,0 +1,14 @@
+kind: "Part"
+title: "main-article-linked-list (legacy, ikke bruk!)"
+form: []
+config:
+  allowOnContentType:
+    - "${app}:large-table"
+    - "${app}:main-article"
+    - "${app}:main-article-chapter"
+    - "${app}:melding"
+    - "${app}:office-information"
+    - "${app}:page-list"
+    - "${app}:publishing-calendar"
+    - "${app}:section-page"
+    - "portal:page-template"

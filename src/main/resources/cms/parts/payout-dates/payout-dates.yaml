@@ -1,0 +1,18 @@
+kind: "Part"
+title: "Utbetalingsdatoer"
+description: "Setter inn en tabell med utbetalingsdatoer"
+form:
+  - type: "ContentSelector"
+    name: "dates"
+    label: "Velg utbetalingsdatoer"
+    occurrences:
+      min: 1
+      max: 1
+    allowContentType:
+      - "${app}:payout-dates"
+  - type: "FormFragment"
+    name: "expandable"
+  - type: "FormFragment"
+    name: "auth-render-option"
+config:
+  allowOnContentType: "${app}:product-details"

@@ -1,0 +1,15 @@
+#import "../fragments/components/contactOptionComponentsFragment.graphql"
+
+query contactOptionComponentsQuery(
+    $ref: ID!
+    $resolveTemplate: Boolean
+    $resolveFragment: Boolean
+) {
+    guillotine {
+        get(key: $ref) {
+            components(resolveTemplate: $resolveTemplate, resolveFragment: $resolveFragment) {
+                ...contactOptionComponents
+            }
+        }
+    }
+}

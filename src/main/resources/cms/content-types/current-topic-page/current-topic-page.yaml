@@ -1,0 +1,33 @@
+kind: "ContentType"
+superType: "base:structured"
+final: true
+title: "Aktuelt"
+description: "Aktuelt-artikler skal kun brukes for nyhetssaker til personbrukere"
+form:
+  - type: "TextLine"
+    name: "title"
+    label: "Sett side-tittel"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "TextLine"
+    name: "norwegianTitle"
+    label: "Norsk tittel (hvis fremmedspråklig innhold)"
+    helpText: "Dette er kun ment som hjelp til redaktørene. Vises ikke på nav.no."
+    occurrences:
+      min: 0
+      max: 1
+  - type: "FormFragment"
+    name: "audience"
+  - type: "FormFragment"
+    name: "area"
+  - type: "FormFragment"
+    name: "external-product-url"
+  - type: "FormFragment"
+    name: "custom-path-selector-required"
+  - type: "FormFragment"
+    name: "owner"
+  - type: "FormFragment"
+    name: "managed-by"
+  - type: "FormFragment"
+    name: "dynamic-page-common"
