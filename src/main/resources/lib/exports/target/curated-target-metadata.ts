@@ -1,5 +1,5 @@
 import { NodeIndexConfig } from '/lib/xp/node';
-import { userCanManageCuratedExports } from '../../utils/auth-utils';
+import { userIsAdmin } from '../../utils/auth-utils';
 import { runInContext } from '../../context/run-in-context';
 import {
     isCuratedBranch,
@@ -92,7 +92,7 @@ const validateBatch = (batch: CuratedTargetBatch) => {
 
 export const restoreCuratedTargetMetadata = (batch: CuratedTargetBatch): CuratedTargetResult => {
     // This guard must run before any context elevation or privileged repository read.
-    if (!userCanManageCuratedExports() || !isCuratedImportEnabled()) {
+    if (!userIsAdmin() || !isCuratedImportEnabled()) {
         throw new Error(
             'Curated target operations require an administrator and trusted localhost opt-in'
         );

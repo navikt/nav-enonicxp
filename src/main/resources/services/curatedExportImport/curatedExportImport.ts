@@ -1,5 +1,5 @@
 import { Request } from '@enonic-types/core';
-import { userCanManageCuratedExports } from '../../lib/utils/auth-utils';
+import { userIsAdmin } from '../../lib/utils/auth-utils';
 import * as appLib from '/lib/xp/app';
 import * as nodeLib from '/lib/xp/node';
 import * as projectLib from '/lib/xp/project';
@@ -727,7 +727,7 @@ const synchronizePublished = (repository: string, entries: ImportEntry[]) => {
 };
 
 const getImportAccessError = () => {
-    if (!userCanManageCuratedExports()) {
+    if (!userIsAdmin()) {
         return jsonResponse(403, { message: 'System administrator access is required' });
     }
     if (!isCuratedImportEnabled()) {

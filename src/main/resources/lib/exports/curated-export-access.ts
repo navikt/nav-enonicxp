@@ -1,7 +1,7 @@
 import * as authLib from '/lib/xp/auth';
 import * as contextLib from '/lib/xp/context';
 import { Request, Response } from '@enonic-types/core';
-import { userCanManageCuratedExports } from '../utils/auth-utils';
+import { userIsAdmin } from '../utils/auth-utils';
 import { curatedJsonResponse as jsonResponse, isJsonRequest, isRecord } from './curated-safety';
 import {
     createRandomHex,
@@ -123,7 +123,7 @@ const handleAuthorize = (req: Request): Response => {
         // Lets the vhost's ID provider send the user to login and back here.
         return { status: 401 };
     }
-    if (!userCanManageCuratedExports()) {
+    if (!userIsAdmin()) {
         return htmlResponse(403, '<p>Systemadministrator-tilgang er påkrevd.</p>');
     }
 
@@ -204,7 +204,7 @@ const runWithToken = (req: Request, handler: (req: Request) => Response): Respon
     }
     // Running as the approving user re-checks their current roles on every request.
     return contextLib.run({ user }, () =>
-        userCanManageCuratedExports()
+        userIsAdmin()
             ? handler(req)
             : jsonResponse(403, { message: 'System administrator access is required' })
     );

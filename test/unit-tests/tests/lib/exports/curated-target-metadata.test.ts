@@ -3,10 +3,10 @@ import {
     CuratedTargetExpectation,
     restoreCuratedTargetMetadata,
 } from '@navno-app/lib/exports/target/curated-target-metadata';
-import { userCanManageCuratedExports } from '@navno-app/lib/utils/auth-utils';
+import { userIsAdmin } from '@navno-app/lib/utils/auth-utils';
 import { runInContext } from '@navno-app/lib/context/run-in-context';
 
-jest.mock('@navno-app/lib/utils/auth-utils', () => ({ userCanManageCuratedExports: jest.fn() }));
+jest.mock('@navno-app/lib/utils/auth-utils', () => ({ userIsAdmin: jest.fn() }));
 jest.mock('@navno-app/lib/context/run-in-context', () => ({
     runInContext: jest.fn((_context, callback) => callback()),
 }));
@@ -29,7 +29,7 @@ const batch = (): CuratedTargetBatch => ({
 });
 
 beforeEach(() => {
-    jest.mocked(userCanManageCuratedExports).mockReturnValue(true);
+    jest.mocked(userIsAdmin).mockReturnValue(true);
     app.config.env = 'localhost';
     (app.config as Record<string, unknown>).curatedImportEnabled = 'true';
     restore.mockReturnValue({ checkedNodes: 1, restoredNodes: 1 });
@@ -46,7 +46,7 @@ afterAll(() => {
 });
 
 test('refuses non-admin callers before context elevation or bean creation', () => {
-    jest.mocked(userCanManageCuratedExports).mockReturnValue(false);
+    jest.mocked(userIsAdmin).mockReturnValue(false);
     expect(() => restoreCuratedTargetMetadata(batch())).toThrow(/administrator/);
     expect(runInContext).not.toHaveBeenCalled();
     expect(newBean).not.toHaveBeenCalled();

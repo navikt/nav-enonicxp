@@ -11,7 +11,7 @@ import {
     isJsonRequest,
     isRecord,
 } from '../../lib/exports/curated-safety';
-import { userCanManageCuratedExports } from '../../lib/utils/auth-utils';
+import { userIsAdmin } from '../../lib/utils/auth-utils';
 import { logger } from '../../lib/utils/logging';
 
 type RequestBody = {
@@ -82,7 +82,7 @@ export const parseManifestRequest = (req: Request): ParsedManifestRequest => {
 };
 
 export const post = (req: Request) => {
-    if (!userCanManageCuratedExports()) {
+    if (!userIsAdmin()) {
         return jsonResponse(403, { message: 'System administrator access is required' });
     }
     const parsed = parseManifestRequest(req);

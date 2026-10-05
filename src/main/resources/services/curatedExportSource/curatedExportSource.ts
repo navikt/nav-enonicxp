@@ -4,7 +4,7 @@ import {
     getCuratedSourceNode,
 } from '../../lib/exports/curated-node-reader';
 import { getCuratedProjectIcon } from '../../lib/exports/curated-project-icon';
-import { userCanManageCuratedExports } from '../../lib/utils/auth-utils';
+import { userIsAdmin } from '../../lib/utils/auth-utils';
 import { logger } from '../../lib/utils/logging';
 import {
     isCuratedBranch,
@@ -87,7 +87,7 @@ const getProjectIcon = (projectId: string): Response => {
 };
 
 export const get = (req: Request): Response => {
-    if (!userCanManageCuratedExports()) {
+    if (!userIsAdmin()) {
         return jsonResponse(403, { message: 'System administrator access is required' });
     }
     if (req.params.project !== undefined) {
@@ -152,7 +152,7 @@ export const get = (req: Request): Response => {
 };
 
 export const post = (req: Request): Response => {
-    if (!userCanManageCuratedExports()) {
+    if (!userIsAdmin()) {
         return jsonResponse(403, { message: 'System administrator access is required' });
     }
     if (!req.body) {
