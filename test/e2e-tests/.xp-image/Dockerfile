@@ -1,4 +1,6 @@
-FROM enonic/xp:7.15.0-ubuntu
+# Set from the root gradle.properties by the build-xp-image script
+ARG XP_VERSION
+FROM enonic/xp:${XP_VERSION}-ubuntu
 
 ARG NAVNO_JAR="navno.jar"
 ARG TEST_DATA_JAR="navno-testdata.jar"
