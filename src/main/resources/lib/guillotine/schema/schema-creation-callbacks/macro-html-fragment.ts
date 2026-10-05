@@ -1,7 +1,6 @@
 import * as contentLib from '/lib/xp/content';
-import graphQlLib from '/lib/graphql';
-import macroLib from '/lib/guillotine/macro';
-import { CreationCallback } from '../../utils/creation-callback-utils';
+import { ResolverEnv, SchemaExtension } from '../../utils/creation-callback-utils';
+import { processRichTextHtml } from '../../utils/process-rich-text-html';
 import { getKeyWithoutMacroDescription } from '../../../utils/component-utils';
 import { HtmlArea } from '@xp-types/site/parts/html-area';
 import { logger } from '../../../utils/logging';
@@ -23,56 +22,61 @@ const getInvalidReferenceLogLevel = (baseContentId?: string) => {
     return isContentPreviewOnly(baseContent) ? 'warning' : 'critical';
 };
 
-export const macroHtmlFragmentCallback: CreationCallback = (context, params) => {
-    params.fields.processedHtml = {
-        type: graphQlLib.reference('RichText'),
-        resolve: (env) => {
-            const { fragmentId } = env.source;
-            if (!fragmentId) {
-                return null;
-            }
+const resolveProcessedHtml = (env: ResolverEnv) => {
+    const { fragmentId } = env.source;
+    if (!fragmentId) {
+        return null;
+    }
 
-            const key = getKeyWithoutMacroDescription(fragmentId);
+    const key = getKeyWithoutMacroDescription(fragmentId);
 
-            const fragmentContent = runInContext({ branch: 'master' }, () =>
-                contentLib.get({ key })
-            );
-            if (!fragmentContent) {
-                const baseContentId = getGuillotineContentQueryBaseContentId();
-                const locale = getLocaleFromContext();
-                const logLevel = getInvalidReferenceLogLevel(baseContentId);
+    const fragmentContent = runInContext({ branch: 'master' }, () => contentLib.get({ key }));
+    if (!fragmentContent) {
+        const baseContentId = getGuillotineContentQueryBaseContentId();
+        const locale = getLocaleFromContext();
+        const logLevel = getInvalidReferenceLogLevel(baseContentId);
 
-                logger[logLevel](
-                    `Content not found for fragment in html-fragment macro: ${fragmentId} / [${locale}] ${baseContentId}`,
-                    true,
-                    true
-                );
-                return null;
-            }
+        logger[logLevel](
+            `Content not found for fragment in html-fragment macro: ${fragmentId} / [${locale}] ${baseContentId}`,
+            true,
+            true
+        );
+        return null;
+    }
 
-            if (fragmentContent.type !== 'portal:fragment') {
-                logger.critical(
-                    `Content specified for html-fragment macro is not a fragment: ${fragmentId}`,
-                    false,
-                    true
-                );
-                return null;
-            }
+    if (fragmentContent.type !== 'portal:fragment') {
+        logger.critical(
+            `Content specified for html-fragment macro is not a fragment: ${fragmentId}`,
+            false,
+            true
+        );
+        return null;
+    }
 
-            const html = (fragmentContent.fragment?.config as Partial<HtmlArea>)?.html;
-            if (!html) {
-                logger.error(
-                    `Fragment in html-fragment macro did not contain html: ${fragmentId}`,
-                    false,
-                    true
-                );
-                return null;
-            }
+    const html = (fragmentContent.fragment?.config as Partial<HtmlArea>)?.html;
+    if (!html) {
+        logger.error(
+            `Fragment in html-fragment macro did not contain html: ${fragmentId}`,
+            false,
+            true
+        );
+        return null;
+    }
 
-            return macroLib.processHtml({
-                type: 'server',
-                value: html,
+    return processRichTextHtml(html);
+};
+
+export const macroHtmlFragmentCallback: SchemaExtension = (graphQL, typeName) => ({
+    creationCallbacks: {
+        [typeName]: (params) => {
+            params.addFields({
+                processedHtml: { type: graphQL.reference('RichText') },
             });
         },
-    };
-};
+    },
+    resolvers: {
+        [typeName]: {
+            processedHtml: resolveProcessedHtml,
+        },
+    },
+});

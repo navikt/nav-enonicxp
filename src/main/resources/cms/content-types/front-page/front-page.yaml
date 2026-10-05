@@ -1,0 +1,26 @@
+kind: "ContentType"
+superType: "base:structured"
+final: true
+title: "Forside"
+description: "Forside med navigasjon til områdesider"
+form:
+  - type: "FormFragment"
+    name: "audience"
+  - type: "FieldSet"
+    label: "Overskrift for områdenavigasjon"
+    items:
+      - type: "TextLine"
+        name: "areasHeader"
+        label: "Overskrift"
+        occurrences:
+          min: 1
+          max: 1
+  - type: "FormFragment"
+    name: "area-navigation"
+  - type: "FieldSet"
+    label: "Kort-url"
+    items:
+      - type: "FormFragment"
+        name: "custom-path-selector-required"
+  - type: "FormFragment"
+    name: "dynamic-page-common"

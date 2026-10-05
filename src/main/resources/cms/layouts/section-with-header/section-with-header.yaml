@@ -1,0 +1,91 @@
+kind: "Layout"
+title: "Innholdsseksjon"
+description: "Seksjon med header og en kolonne"
+form:
+  - type: "FieldSet"
+    label: "Header (H2)"
+    items:
+      - type: "TextLine"
+        name: "title"
+        label: "Tittel"
+        occurrences:
+          min: 0
+          max: 1
+        default: "Seksjonstittel"
+      - type: "TextLine"
+        name: "anchorId"
+        label: "Anker-id"
+        helpText: "\n                        Sett et anker-id for å kunne lenke til\
+          \ denne delen av siden\n                        Eks: https://www.nav.no/no/min-side#mitt-anker\n\
+          \                        Dette feltet benyttes også av komponenten for intern-navigasjon\
+          \ på siden\n                    "
+        occurrences:
+          min: 0
+          max: 1
+        regexp: "^[0-9a-zA-Z-_]+$"
+      - type: "CheckBox"
+        name: "hideFromInternalNavigation"
+        label: "Ikke vis under innhold"
+        occurrences:
+          min: 0
+          max: 1
+        alignment: "left"
+  - type: "ItemSet"
+    name: "icon"
+    label: "Ikon"
+    occurrences:
+      min: 0
+      max: 1
+    items:
+      - type: "FormFragment"
+        name: "icon-selector"
+      - type: "Long"
+        name: "size"
+        label: "Størrelse (%)"
+        helpText: "Sett til 0 for automatisk tilpasset størrelse"
+        occurrences:
+          min: 0
+          max: 1
+        min: 0
+        max: 100
+        default: 0
+      - type: "FormFragment"
+        name: "color-picker"
+  - type: "ItemSet"
+    name: "bgColor"
+    label: "Bakgrunnsfarge"
+    occurrences:
+      min: 0
+      max: 1
+    items:
+      - type: "FormFragment"
+        name: "color-picker"
+  - type: "ItemSet"
+    name: "border"
+    label: "Omriss"
+    occurrences:
+      min: 0
+      max: 1
+    items:
+      - type: "FormFragment"
+        name: "color-picker"
+      - type: "CheckBox"
+        name: "rounded"
+        label: "Avrundede hjørner"
+        occurrences:
+          min: 0
+          max: 1
+        attributes:
+          default: "unchecked"
+      - type: "Long"
+        name: "width"
+        label: "Tykkelse (px)"
+        occurrences:
+          min: 0
+          max: 1
+        min: 0
+        max: 8
+        default: 3
+regions:
+  - "intro"
+  - "content"

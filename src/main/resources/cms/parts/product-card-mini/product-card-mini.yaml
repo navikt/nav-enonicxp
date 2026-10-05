@@ -1,0 +1,9 @@
+kind: "Part"
+title: "Produkt-kort (mini)"
+description: "Lenker til en produkt- eller livssituasjons-side"
+form:
+  - type: "FieldSet"
+    label: "Målside for produktkortet"
+    items:
+      - type: "FormFragment"
+        name: "product-target-selector"

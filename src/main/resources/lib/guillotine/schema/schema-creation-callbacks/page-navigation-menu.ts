@@ -3,12 +3,11 @@ import { Content } from '/lib/xp/content';
 import { getRepoConnection } from '../../../repos/repo-utils';
 import { RepoConnection } from '/lib/xp/node';
 import * as contextLib from '/lib/xp/context';
-import graphQlLib from '/lib/graphql';
-import { RepoBranch } from '../../../../types/common';
-import { CreationCallback } from '../../utils/creation-callback-utils';
+import { SchemaExtension } from '../../utils/creation-callback-utils';
 import { NodeComponent } from '../../../../types/components/component-node';
 import { logger } from '../../../utils/logging';
 import { forceArray } from '../../../utils/array-utils';
+import { getContextBranch, getContextRepoId } from '../../../context/run-in-context';
 
 type AnchorLink = {
     anchorId: string;
@@ -119,63 +118,79 @@ const getComponentAnchorLink = (
     return null;
 };
 
-export const anchorLinksCallback: CreationCallback = (context, params) => {
-    params.fields.isDupe = {
-        type: graphQlLib.GraphQLBoolean,
-    };
-};
+export const anchorLinksCallback: SchemaExtension = (graphQL, typeName) => ({
+    creationCallbacks: {
+        [typeName]: (params) => {
+            params.addFields({
+                isDupe: { type: graphQL.GraphQLBoolean },
+            });
+        },
+    },
+});
 
-export const pageNavigationMenuCallback: CreationCallback = (context, params) => {
-    params.fields.anchorLinks.args = { contentId: graphQlLib.GraphQLID };
-    params.fields.anchorLinks.resolve = (env) => {
-        const { contentId } = env.args;
-        if (!contentId) {
-            logger.error(
-                'Attempted to resolve a page navigation menu without providing a content id for the page'
-            );
-            return null;
-        }
+export const pageNavigationMenuCallback: SchemaExtension = (graphQL, typeName) => ({
+    creationCallbacks: {
+        [typeName]: (params) => {
+            params.modifyFields({
+                anchorLinks: { args: { contentId: graphQL.GraphQLID } },
+            });
+        },
+    },
+    resolvers: {
+        [typeName]: {
+            anchorLinks: (env) => {
+                const { contentId } = env.args;
+                if (!contentId) {
+                    logger.error(
+                        'Attempted to resolve a page navigation menu without providing a content id for the page'
+                    );
+                    return null;
+                }
 
-        const context = contextLib.get();
-        const repo = getRepoConnection({
-            repoId: context.repository,
-            branch: context.branch as RepoBranch,
-        });
+                const context = contextLib.get();
+                const repo = getRepoConnection({
+                    repoId: getContextRepoId(),
+                    branch: getContextBranch(),
+                });
 
-        const anchorLinkOverrides = forceArray(env.source.anchorLinks);
-        const components = getComponents(contentId, repo);
+                const anchorLinkOverrides = forceArray(env.source.anchorLinks);
+                const components = getComponents(contentId, repo);
 
-        return components.reduce((acc: AnchorLink[], component) => {
-            const anchorLink = getComponentAnchorLink(component, repo);
-            if (!anchorLink) {
-                return acc;
-            }
+                return components.reduce((acc: AnchorLink[], component) => {
+                    const anchorLink = getComponentAnchorLink(component, repo);
+                    if (!anchorLink) {
+                        return acc;
+                    }
 
-            const { anchorId, hideFromInternalNavigation } = anchorLink;
+                    const { anchorId, hideFromInternalNavigation } = anchorLink;
 
-            if (hideFromInternalNavigation) {
-                return acc;
-            }
+                    if (hideFromInternalNavigation) {
+                        return acc;
+                    }
 
-            const linkOverride = anchorLinkOverrides.find((link) => link.anchorId === anchorId);
-            const isDupe = acc.some((_anchorLink) => _anchorLink.anchorId === anchorId);
+                    const linkOverride = anchorLinkOverrides.find(
+                        (link) => link.anchorId === anchorId
+                    );
+                    const isDupe = acc.some((_anchorLink) => _anchorLink.anchorId === anchorId);
 
-            if (isDupe && context.branch === 'master') {
-                logger.warning(
-                    `Duplicate anchor id ${anchorId} found under content id ${contentId}`,
-                    false,
-                    true
-                );
-            }
+                    if (isDupe && context.branch === 'master') {
+                        logger.warning(
+                            `Duplicate anchor id ${anchorId} found under content id ${contentId}`,
+                            false,
+                            true
+                        );
+                    }
 
-            return [
-                ...acc,
-                {
-                    ...anchorLink,
-                    ...(linkOverride && { linkText: linkOverride.linkText }),
-                    ...(isDupe && { isDupe }),
-                },
-            ];
-        }, [] as AnchorLink[]);
-    };
-};
+                    return [
+                        ...acc,
+                        {
+                            ...anchorLink,
+                            ...(linkOverride && { linkText: linkOverride.linkText }),
+                            ...(isDupe && { isDupe }),
+                        },
+                    ];
+                }, [] as AnchorLink[]);
+            },
+        },
+    },
+});

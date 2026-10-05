@@ -1,0 +1,35 @@
+kind: "ContentType"
+superType: "base:structured"
+title: "Menyelement"
+form:
+  - type: "ContentSelector"
+    name: "target"
+    label: "Velg innhold"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "CheckBox"
+    name: "displayLock"
+    label: "Nivå 4 - Vis hengelås"
+    helpText: "Tjenesten krever nivå 4 innlogging"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "CheckBox"
+    name: "flatten"
+    label: "Ekspander underelementer"
+    helpText: "Viser underelementer uten undermeny på mobil. Gjelder kun dersom dette\
+      \ elementet har underelementer."
+    occurrences:
+      min: 0
+      max: 1
+  - type: "TextLine"
+    name: "frontendEventID"
+    label: "Hendelse-ID for frontend"
+    helpText: "Legg inn en avtalt ID som dekoratøren skal reagere på, feks med egen\
+      \ javascript-oppførsel. Må avtales med utvikler."
+    occurrences:
+      min: 0
+      max: 1
+allowChildContentType:
+  - "${app}:megamenu-item"

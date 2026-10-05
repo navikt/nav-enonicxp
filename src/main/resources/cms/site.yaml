@@ -1,0 +1,20 @@
+kind: "Site"
+processors:
+  - name: "page-template-processor"
+    order: 0
+mappings:
+  - controller: "/lib/controllers/site-info-controller.js"
+    order: 50
+    pattern: "^/?(?!(\\?))$"
+  - controller: "/lib/controllers/area-page-controller.js"
+    order: 50
+    match: "type:'no.nav.navno:area-page'"
+  - controller: "/lib/controllers/dynamic-page-controller.js"
+    order: 50
+    match: "type:'no.nav.navno:(content-page-with-sidemenus|guide-page|tools-page|generic-page|themed-article-page|office-page)'"
+  - controller: "/lib/controllers/form-intermediate-step-controller.js"
+    order: 50
+    match: "type:'no.nav.navno:form-intermediate-step'"
+  - controller: "/lib/controllers/frontend-proxy.js"
+    order: 50
+    match: "type:'^(?!(portal:page-template)|(media:(document|image|vector|text|video))).+'"

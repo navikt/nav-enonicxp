@@ -1,0 +1,15 @@
+kind: "Layout"
+title: "Fleksibelt kolonne-layout for produktsider, temasider og slik gjør du det"
+description: "Fleksibel kolonne-layout for produktsider, temasider og slik gjør du\
+  \ det"
+form:
+  - type: "FormFragment"
+    name: "header-with-anchor"
+regions:
+  - "flexcols"
+config:
+  allowOnContentType:
+    - "${app}:content-page-with-sidemenus"
+    - "${app}:themed-article-page"
+    - "${app}:guide-page"
+    - "portal:page-template"

@@ -1,0 +1,17 @@
+kind: "Layout"
+title: "Situasjonsliste"
+description: "Utlisting av situasjoner for områdeside"
+form:
+  - type: "TextLine"
+    name: "title"
+    label: "Tittel"
+    occurrences:
+      min: 1
+      max: 1
+    default: "Hva er situasjonen din?"
+regions:
+  - "situations"
+config:
+  allowOnContentType:
+    - "${app}:area-page"
+    - "portal:page-template"

@@ -1,0 +1,11 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "FormFragment"
+    name: "link"
+  - type: "TextArea"
+    name: "ingress"
+    label: "Ingress"
+    occurrences:
+      min: 0
+      max: 1

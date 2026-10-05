@@ -1,0 +1,20 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "FieldSet"
+    label: "Dekoratør-parametre"
+    items:
+      - type: "CheckBox"
+        name: "feedbackToggle"
+        label: "Fant du det du lette etter?"
+        occurrences:
+          min: 0
+          max: 1
+        default: "unchecked"
+      - type: "CheckBox"
+        name: "chatbotToggle"
+        label: "Chatbot Frida"
+        occurrences:
+          min: 0
+          max: 1
+        default: "checked"

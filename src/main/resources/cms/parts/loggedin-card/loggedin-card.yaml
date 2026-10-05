@@ -1,0 +1,25 @@
+kind: "Part"
+title: "Kort for innlogget bruker"
+description: "Brukertilpasset informasjon om en tjenste for innlogget bruker"
+form:
+  - type: "OptionSet"
+    name: "card"
+    expanded: false
+    label: "Velg type kort"
+    occurrences:
+      min: 1
+      max: 1
+    options:
+      - name: "meldekort"
+        label: "Meldekort"
+        helpText: "Vises kun for meldekort-brukere"
+        items:
+          - type: "FormFragment"
+            name: "link"
+    selection:
+      min: 1
+      max: 1
+config:
+  allowOnContentType:
+    - "${app}:front-page"
+    - "portal:page-template"

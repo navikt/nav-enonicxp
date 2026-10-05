@@ -1,0 +1,8 @@
+kind: "Page"
+title: "Layout for forside og områdersider"
+description: "Page-layout med to regioner. Navigasjon til/mellom områdesider settes\
+  \ inn mellom regionene."
+form: []
+regions:
+  - "contentTop"
+  - "contentBottom"

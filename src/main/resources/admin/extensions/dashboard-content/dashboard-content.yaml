@@ -1,0 +1,10 @@
+kind: "AdminExtension"
+allow:
+  - "role:system.everyone"
+interfaces:
+  - "admin.dashboard"
+config:
+  width: "medium"
+  style: "custom"
+  height: "full"
+  order: "-2"

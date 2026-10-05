@@ -1,0 +1,97 @@
+kind: "ContentType"
+superType: "base:structured"
+final: true
+title: "Brukertester"
+description: "Oppsett for brukertester, med mulighet for randomisert utvalg blant\
+  \ flere test-varianter"
+form:
+  - type: "FieldSet"
+    label: "Felles oppsett for tester"
+    items:
+      - type: "TextLine"
+        name: "title"
+        label: "Tittel"
+        occurrences:
+          min: 1
+          max: 1
+      - type: "TextArea"
+        name: "ingress"
+        label: "Ingress"
+        occurrences:
+          min: 1
+          max: 1
+      - type: "TextLine"
+        name: "cookieId"
+        label: "Cookie-id"
+        helpText: "Dersom utvalg for denne gruppen av tester ikke skal kunne overlappe\
+          \ med en annen gruppe,\n                        kan du gi dem samme id\n\
+          \                    "
+        occurrences:
+          min: 1
+          max: 1
+      - type: "DateTime"
+        name: "startTime"
+        label: "Start-tidspunkt"
+        occurrences:
+          min: 0
+          max: 1
+        default: "now"
+      - type: "DateTime"
+        name: "endTime"
+        label: "Slutt-tidspunkt"
+        occurrences:
+          min: 0
+          max: 1
+        default: "+1 week"
+  - type: "ItemSet"
+    name: "variants"
+    label: "Test-varianter"
+    occurrences:
+      min: 1
+      max: 0
+    items:
+      - type: "TextLine"
+        name: "id"
+        label: "Id for denne varianten (må være unik!)"
+        helpText: "Benyttes for å referere til spesifikke varianter i test-komponenter"
+        occurrences:
+          min: 1
+          max: 1
+        default: "min-test-variant"
+      - type: "Double"
+        name: "percentage"
+        label: "Prosentandel av brukere som skal få denne varianten"
+        occurrences:
+          min: 1
+          max: 1
+        min: 0.0
+        max: 100.0
+        default: 0.0
+      - type: "TextLine"
+        name: "url"
+        label: "Url til denne test-varianten"
+        occurrences:
+          min: 1
+          max: 1
+        regexp: "^https:\\/\\/.*"
+        default: "https://"
+      - type: "TextLine"
+        name: "linkText"
+        label: "Lenketekst"
+        occurrences:
+          min: 1
+          max: 1
+      - type: "TextLine"
+        name: "title"
+        label: "Tilpasset tittel"
+        helpText: "Hvis tom benyttes felles tittel"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "TextLine"
+        name: "ingress"
+        label: "Tilpasset ingress"
+        helpText: "Hvis tom benyttes felles ingress"
+        occurrences:
+          min: 0
+          max: 1

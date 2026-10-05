@@ -1,0 +1,14 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "ImageSelector"
+    name: "icon"
+    label: "Velg ikon"
+    helpText: "Ikoner må plasseres i en mappe under dette innholdet, eller i /nav.no-ressurser/bilder/(ikoner|svg-ikoner)"
+    occurrences:
+      min: 0
+      max: 1
+    allowPath:
+      - "${site}/nav.no-ressurser/bilder/svg-ikoner"
+      - "${site}/nav.no-ressurser/bilder/ikoner"
+      - "./*"

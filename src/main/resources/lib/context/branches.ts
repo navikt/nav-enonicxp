@@ -5,5 +5,5 @@ const branches: { [key in RepoBranch]: boolean } = {
     draft: true,
 };
 
-export const isValidBranch = (branch: string): branch is RepoBranch =>
-    branches[branch as RepoBranch];
+export const isValidBranch = (branch?: string): branch is RepoBranch =>
+    !!branch && branches[branch as RepoBranch];

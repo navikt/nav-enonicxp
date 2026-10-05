@@ -29,7 +29,7 @@ const contentInfo = contentTypesToShow.map((contentType) => {
     const typeInfo = contentLib.getType(contentType);
     return {
         type: contentType,
-        name: typeInfo ? typeInfo.displayName : '',
+        name: typeInfo ? typeInfo.title : '',
     };
 });
 

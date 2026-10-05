@@ -1,0 +1,306 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "OptionSet"
+    name: "menuListItems"
+    expanded: false
+    label: "Innhold i høyremenyen"
+    occurrences:
+      min: 0
+      max: 1
+    options:
+      - name: "selfservice"
+        label: "Logg inn"
+        items:
+          - type: "ContentSelector"
+            name: "link"
+            label: "Logg inn"
+            occurrences:
+              min: 0
+              max: 0
+            attributes:
+              showStatus: "true"
+            allowContentType:
+              - "${app}:section-page"
+              - "${app}:main-article"
+              - "${app}:main-article-chapter"
+              - "${app}:page-list"
+              - "${app}:external-link"
+              - "${app}:internal-link"
+              - "${app}:dynamic-page"
+              - "${app}:content-page-with-sidemenus"
+              - "${app}:situation-page"
+              - "${app}:guide-page"
+              - "${app}:tools-page"
+              - "${app}:themed-article-page"
+              - "${app}:overview"
+              - "${app}:forms-overview"
+              - "${app}:oversikt"
+              - "media:*"
+      - name: "form-and-application"
+        label: "Skjema og søknad"
+        items:
+          - type: "ContentSelector"
+            name: "link"
+            label: "Skjema og søknad"
+            occurrences:
+              min: 0
+              max: 0
+            attributes:
+              showStatus: "true"
+            allowContentType:
+              - "${app}:section-page"
+              - "${app}:main-article"
+              - "${app}:main-article-chapter"
+              - "${app}:page-list"
+              - "${app}:external-link"
+              - "${app}:internal-link"
+              - "${app}:dynamic-page"
+              - "${app}:content-page-with-sidemenus"
+              - "${app}:situation-page"
+              - "${app}:guide-page"
+              - "${app}:tools-page"
+              - "${app}:themed-article-page"
+              - "${app}:overview"
+              - "${app}:forms-overview"
+              - "${app}:oversikt"
+              - "media:*"
+      - name: "process-times"
+        label: "Saksbehandlingstider"
+        items:
+          - type: "ContentSelector"
+            name: "link"
+            label: "Saksbehandlingstider"
+            occurrences:
+              min: 0
+              max: 0
+            attributes:
+              showStatus: "true"
+            allowContentType:
+              - "${app}:section-page"
+              - "${app}:main-article"
+              - "${app}:main-article-chapter"
+              - "${app}:page-list"
+              - "${app}:external-link"
+              - "${app}:internal-link"
+              - "${app}:dynamic-page"
+              - "${app}:content-page-with-sidemenus"
+              - "${app}:situation-page"
+              - "${app}:tools-page"
+              - "${app}:guide-page"
+              - "${app}:themed-article-page"
+              - "${app}:overview"
+              - "${app}:forms-overview"
+              - "${app}:oversikt"
+              - "media:*"
+      - name: "related-information"
+        label: "Relatert informasjon"
+        items:
+          - type: "ContentSelector"
+            name: "link"
+            label: "Innhold"
+            occurrences:
+              min: 0
+              max: 0
+            attributes:
+              showStatus: "true"
+            allowContentType:
+              - "${app}:section-page"
+              - "${app}:main-article"
+              - "${app}:main-article-chapter"
+              - "${app}:page-list"
+              - "${app}:external-link"
+              - "${app}:internal-link"
+              - "${app}:dynamic-page"
+              - "${app}:content-page-with-sidemenus"
+              - "${app}:situation-page"
+              - "${app}:tools-page"
+              - "${app}:guide-page"
+              - "${app}:themed-article-page"
+              - "${app}:overview"
+              - "${app}:forms-overview"
+              - "${app}:oversikt"
+              - "media:*"
+          - type: "MediaSelector"
+            name: "files"
+            label: "Legg ved filer"
+            helpText: "Bruk som hovedregel kun pdf-filer. Filer skal ha beskrivende\
+              \ navn da disse vises."
+            occurrences:
+              min: 0
+              max: 0
+            attributes:
+              showStatus: "true"
+            allowContentType:
+              - "media:*"
+      - name: "international"
+        label: "Internasjonalt"
+        items:
+          - type: "ContentSelector"
+            name: "link"
+            label: "Internasjonalt"
+            occurrences:
+              min: 0
+              max: 0
+            attributes:
+              showStatus: "true"
+            allowContentType:
+              - "${app}:section-page"
+              - "${app}:main-article"
+              - "${app}:main-article-chapter"
+              - "${app}:page-list"
+              - "${app}:external-link"
+              - "${app}:internal-link"
+              - "${app}:dynamic-page"
+              - "${app}:content-page-with-sidemenus"
+              - "${app}:situation-page"
+              - "${app}:tools-page"
+              - "${app}:guide-page"
+              - "${app}:themed-article-page"
+              - "${app}:overview"
+              - "${app}:forms-overview"
+              - "${app}:oversikt"
+              - "media:*"
+      - name: "report-changes"
+        label: "Meld fra om endringer"
+        items:
+          - type: "ContentSelector"
+            name: "link"
+            label: "Meld fra om endringer"
+            occurrences:
+              min: 0
+              max: 0
+            attributes:
+              showStatus: "true"
+            allowContentType:
+              - "${app}:section-page"
+              - "${app}:main-article"
+              - "${app}:main-article-chapter"
+              - "${app}:page-list"
+              - "${app}:external-link"
+              - "${app}:internal-link"
+              - "${app}:dynamic-page"
+              - "${app}:content-page-with-sidemenus"
+              - "${app}:situation-page"
+              - "${app}:tools-page"
+              - "${app}:guide-page"
+              - "${app}:themed-article-page"
+              - "${app}:overview"
+              - "${app}:forms-overview"
+              - "${app}:oversikt"
+              - "media:*"
+      - name: "rates"
+        label: "Satser"
+        items:
+          - type: "ContentSelector"
+            name: "link"
+            label: "Satser"
+            occurrences:
+              min: 0
+              max: 0
+            attributes:
+              showStatus: "true"
+            allowContentType:
+              - "${app}:section-page"
+              - "${app}:main-article"
+              - "${app}:main-article-chapter"
+              - "${app}:page-list"
+              - "${app}:external-link"
+              - "${app}:internal-link"
+              - "${app}:dynamic-page"
+              - "${app}:content-page-with-sidemenus"
+              - "${app}:situation-page"
+              - "${app}:tools-page"
+              - "${app}:guide-page"
+              - "${app}:themed-article-page"
+              - "${app}:overview"
+              - "${app}:forms-overview"
+              - "${app}:oversikt"
+              - "media:*"
+      - name: "appeal-rights"
+        label: "Klagerettigheter"
+        items:
+          - type: "ContentSelector"
+            name: "link"
+            label: "Klagerettigheter"
+            occurrences:
+              min: 0
+              max: 0
+            attributes:
+              showStatus: "true"
+            allowContentType:
+              - "${app}:section-page"
+              - "${app}:main-article"
+              - "${app}:main-article-chapter"
+              - "${app}:page-list"
+              - "${app}:external-link"
+              - "${app}:internal-link"
+              - "${app}:dynamic-page"
+              - "${app}:content-page-with-sidemenus"
+              - "${app}:situation-page"
+              - "${app}:tools-page"
+              - "${app}:guide-page"
+              - "${app}:themed-article-page"
+              - "${app}:overview"
+              - "${app}:forms-overview"
+              - "${app}:oversikt"
+              - "media:*"
+      - name: "membership"
+        label: "Medlemskap i folketrygden"
+        items:
+          - type: "ContentSelector"
+            name: "link"
+            label: "Medlemskap i folketrygden"
+            occurrences:
+              min: 0
+              max: 0
+            attributes:
+              showStatus: "true"
+            allowContentType:
+              - "${app}:section-page"
+              - "${app}:main-article"
+              - "${app}:main-article-chapter"
+              - "${app}:page-list"
+              - "${app}:external-link"
+              - "${app}:internal-link"
+              - "${app}:dynamic-page"
+              - "${app}:content-page-with-sidemenus"
+              - "${app}:situation-page"
+              - "${app}:tools-page"
+              - "${app}:guide-page"
+              - "${app}:themed-article-page"
+              - "${app}:overview"
+              - "${app}:forms-overview"
+              - "${app}:oversikt"
+              - "media:*"
+      - name: "rules-and-regulations"
+        label: "Regelverk"
+        items:
+          - type: "ContentSelector"
+            name: "link"
+            label: "Regelverk"
+            occurrences:
+              min: 0
+              max: 0
+            attributes:
+              showStatus: "true"
+            allowContentType:
+              - "${app}:section-page"
+              - "${app}:main-article"
+              - "${app}:main-article-chapter"
+              - "${app}:page-list"
+              - "${app}:external-link"
+              - "${app}:internal-link"
+              - "${app}:dynamic-page"
+              - "${app}:content-page-with-sidemenus"
+              - "${app}:situation-page"
+              - "${app}:tools-page"
+              - "${app}:guide-page"
+              - "${app}:themed-article-page"
+              - "${app}:overview"
+              - "${app}:forms-overview"
+              - "${app}:oversikt"
+              - "media:*"
+    selection:
+      min: 0
+      max: 10

@@ -1,0 +1,7 @@
+kind: "AdminExtension"
+title: "Innholdstype"
+description: "Endre type for dette innholdet"
+allow:
+  - "role:system.admin.login"
+interfaces:
+  - "contentstudio.contextpanel"

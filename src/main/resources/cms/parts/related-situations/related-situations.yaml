@@ -1,0 +1,23 @@
+kind: "Part"
+title: "Aktuelle situasjoner"
+description: "Viser aktuelle situasjoner basert på va som er valgt i metadata til\
+  \ venstre."
+form:
+  - type: "TextLine"
+    name: "title"
+    label: "Overstyr tittel"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "TextArea"
+    name: "description"
+    label: "Overstyr introduksjon (1-2 linjer)"
+    occurrences:
+      min: 0
+      max: 1
+config:
+  allowOnContentType:
+    - "${app}:content-page-with-sidemenus"
+    - "${app}:guide-page"
+    - "${app}:themed-article-page"
+    - "${app}:situation-page"

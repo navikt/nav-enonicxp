@@ -1,0 +1,21 @@
+kind: "Mixin"
+title: "CMS Content"
+form:
+  - type: "TextLine"
+    name: "contentKey"
+    label: "Content key"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "TextLine"
+    name: "categoryKey"
+    label: "Category key"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "ContentSelector"
+    name: "contentHome"
+    label: "Content Home"
+    occurrences:
+      min: 0
+      max: 0

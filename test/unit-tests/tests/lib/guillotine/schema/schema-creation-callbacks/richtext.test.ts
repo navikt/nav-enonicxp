@@ -1,17 +1,14 @@
 import { richTextCallback } from '@navno-app/lib/guillotine/schema/schema-creation-callbacks/richtext';
-import { CreateObjectTypeParams } from '/lib/graphql';
+import {
+    FieldResolver,
+    GuillotineGraphQL,
+} from '@navno-app/lib/guillotine/utils/creation-callback-utils';
 import { xpMocks } from '../../../../../.mocks/xp-mocks';
 
 const { libContentMock } = xpMocks;
 
-const createParams = (): CreateObjectTypeParams => ({
-    fields: {
-        processedHtml: {
-            type: { name: 'String' },
-        },
-    },
-    name: 'RichText',
-});
+const getProcessedHtmlResolver = (): FieldResolver =>
+    richTextCallback({} as GuillotineGraphQL, 'RichText').resolvers!.RichText.processedHtml;
 
 const contentWithoutCustomPath = libContentMock.create({
     contentType: 'no.nav.navno:dynamic-page',
@@ -39,12 +36,11 @@ const childContentWithCustomPath = libContentMock.create({
 
 describe('Guillotine richtext resolver', () => {
     test('Should preserve link to internal path if no custom path set', () => {
-        const params = createParams();
-        richTextCallback({} as any, params);
+        const resolveProcessedHtml = getProcessedHtmlResolver();
 
         const htmlInput = `<p>Hello world! <a href="${contentWithoutCustomPath._path}">Link to content without custom path</a></p>`;
 
-        const processedHtml = params.fields.processedHtml.resolve!({
+        const processedHtml = resolveProcessedHtml({
             source: {
                 processedHtml: htmlInput,
                 links: [
@@ -54,17 +50,16 @@ describe('Guillotine richtext resolver', () => {
                 ],
             },
             args: {},
-            context: {},
+            localContext: {},
         });
 
         expect(processedHtml).toBe(htmlInput);
     });
 
     test('Should resolve link to custom path', () => {
-        const params = createParams();
-        richTextCallback({} as any, params);
+        const resolveProcessedHtml = getProcessedHtmlResolver();
 
-        const result = params.fields.processedHtml.resolve!({
+        const result = resolveProcessedHtml({
             source: {
                 processedHtml: `<p>Hello world! <a href="${contentWithCustomPath._path}">Link to content with custom path</a></p>`,
                 links: [
@@ -75,7 +70,7 @@ describe('Guillotine richtext resolver', () => {
                 ],
             },
             args: {},
-            context: {},
+            localContext: {},
         });
 
         expect(result).toBe(
@@ -84,10 +79,9 @@ describe('Guillotine richtext resolver', () => {
     });
 
     test('Should resolve link to custom path with anchor', () => {
-        const params = createParams();
-        richTextCallback({} as any, params);
+        const resolveProcessedHtml = getProcessedHtmlResolver();
 
-        const result = params.fields.processedHtml.resolve!({
+        const result = resolveProcessedHtml({
             source: {
                 processedHtml: `<p>Hello world! <a href="${contentWithCustomPath._path}#my-anchor">Link to content with custom path with anchor</a></p>`,
                 links: [
@@ -97,7 +91,7 @@ describe('Guillotine richtext resolver', () => {
                 ],
             },
             args: {},
-            context: {},
+            localContext: {},
         });
 
         expect(result).toBe(
@@ -106,10 +100,9 @@ describe('Guillotine richtext resolver', () => {
     });
 
     test('Should resolve link to custom path with parameter', () => {
-        const params = createParams();
-        richTextCallback({} as any, params);
+        const resolveProcessedHtml = getProcessedHtmlResolver();
 
-        const result = params.fields.processedHtml.resolve!({
+        const result = resolveProcessedHtml({
             source: {
                 processedHtml: `<p>Hello world! <a href="${contentWithCustomPath._path}?foo=bar">Link to content with custom path with anchor</a></p>`,
                 links: [
@@ -119,7 +112,7 @@ describe('Guillotine richtext resolver', () => {
                 ],
             },
             args: {},
-            context: {},
+            localContext: {},
         });
 
         expect(result).toBe(
@@ -128,10 +121,9 @@ describe('Guillotine richtext resolver', () => {
     });
 
     test('Should resolve multiple links', () => {
-        const params = createParams();
-        richTextCallback({} as any, params);
+        const resolveProcessedHtml = getProcessedHtmlResolver();
 
-        const result = params.fields.processedHtml.resolve!({
+        const result = resolveProcessedHtml({
             source: {
                 processedHtml: `<p>Hello world! <a href="${contentWithCustomPath._path}">Link to parent content</a><a href="${childContentWithCustomPath._path}">Link to child content</a></p>`,
                 links: [
@@ -144,11 +136,30 @@ describe('Guillotine richtext resolver', () => {
                 ],
             },
             args: {},
-            context: {},
+            localContext: {},
         });
 
         expect(result).toBe(
             `<p>Hello world! <a href="${contentWithCustomPath.data.customPath}">Link to parent content</a><a href="${childContentWithCustomPath.data.customPath}">Link to child content</a></p>`
         );
+    });
+
+    test('Should resolve link to custom path for links with the Guillotine loopback prefix', () => {
+        const resolveProcessedHtml = getProcessedHtmlResolver();
+
+        const result = resolveProcessedHtml({
+            source: {
+                processedHtml: `<p><a href="/_guillotine/default/draft/www.nav.no${contentWithCustomPath._path}">Link</a></p>`,
+                links: [
+                    {
+                        contentId: contentWithCustomPath._id,
+                    },
+                ],
+            },
+            args: {},
+            localContext: {},
+        });
+
+        expect(result).toBe(`<p><a href="${contentWithCustomPath.data.customPath}">Link</a></p>`);
     });
 });

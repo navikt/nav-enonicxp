@@ -1,0 +1,14 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "FieldSet"
+    label: "Intern navigasjon"
+    items:
+      - type: "CheckBox"
+        name: "showSubsectionNavigation"
+        label: "Vis kapittelnavigasjon i hver innholdsseksjon"
+        occurrences:
+          min: 0
+          max: 1
+        alignment: "left"
+        default: "checked"

@@ -138,7 +138,7 @@ const getOriginalContentTypeName = (
         return undefined;
     }
     const versionType = versions.find((v) => !linkArray.includes(v.type))?.type;
-    return versionType && getType(versionType)?.displayName;
+    return versionType && getType(versionType)?.title;
 };
 
 const getArchivedOrUnpublishedTime = (

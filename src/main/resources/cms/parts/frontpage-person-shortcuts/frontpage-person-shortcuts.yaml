@@ -1,0 +1,41 @@
+kind: "Part"
+title: "Seksjon for snarveier på forside for privatperson"
+description: "Til bruk på forside for privatperson"
+form:
+  - type: "TextLine"
+    name: "title"
+    label: "Tittel på seksjon"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "ItemSet"
+    name: "shortcuts"
+    label: "Velg snarveier"
+    occurrences:
+      min: 0
+      max: 0
+    items:
+      - type: "TextLine"
+        name: "customTitle"
+        label: "Tittel på snarvei"
+        helpText: "Hvis denne er blank vil tittel på innholdet vises"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "ContentSelector"
+        name: "target"
+        label: "Velg innhold"
+        occurrences:
+          min: 1
+          max: 1
+        attributes:
+          showStatus: "true"
+        allowContentType:
+          - "${app}:overview"
+          - "${app}:forms-overview"
+          - "${app}:oversikt"
+config:
+  allowOnContentType:
+    - "${app}:front-page"
+    - "${app}:front-page-nested"
+    - "portal:page-template"

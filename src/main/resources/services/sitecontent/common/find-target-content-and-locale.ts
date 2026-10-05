@@ -136,6 +136,8 @@ const resolveExactPath = (path: string, branch: RepoBranch): ContentAndLocale | 
 
     const { hits } = contentLib.query({
         count: contentIds.length,
+        // Ensure the oldest content is returned from getContentFromMultipleHits below
+        sort: 'createdTime ASC',
         filters: {
             ids: {
                 values: contentIds,

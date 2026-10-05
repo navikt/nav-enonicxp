@@ -32,4 +32,6 @@ export const mergeGuillotineObject = (
 };
 
 export const mergeGuillotineArray = (array: any[], baseKeys: string[]): any[] =>
-    array.map((item) => (typeof item === 'object' ? mergeGuillotineObject(item, baseKeys) : item));
+    array.map((item) =>
+        item && typeof item === 'object' ? mergeGuillotineObject(item, baseKeys) : item
+    );

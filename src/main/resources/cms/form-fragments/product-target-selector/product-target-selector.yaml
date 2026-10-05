@@ -1,0 +1,19 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "ContentSelector"
+    name: "targetPage"
+    label: "Velg side"
+    occurrences:
+      min: 0
+      max: 1
+    allowContentType:
+      - "${app}:content-page-with-sidemenus"
+      - "${app}:situation-page"
+      - "${app}:guide-page"
+      - "${app}:tools-page"
+      - "${app}:themed-article-page"
+      - "${app}:overview"
+      - "${app}:forms-overview"
+      - "${app}:oversikt"
+      - "${app}:generic-page"

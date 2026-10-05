@@ -1,0 +1,19 @@
+kind: "Part"
+title: "Les mer"
+description: "Brukes for korte forklaringer av begreper eller konsepter"
+form:
+  - type: "TextLine"
+    name: "title"
+    label: "Tittelen på les-mer-knapp"
+    occurrences:
+      min: 1
+      max: 1
+  - type: "HtmlArea"
+    name: "html"
+    label: "Innhold"
+    occurrences:
+      min: 1
+      max: 1
+    include: "Undo Redo"
+  - type: "FormFragment"
+    name: "auth-render-option"

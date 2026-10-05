@@ -28,7 +28,7 @@ const contentTypesToShowSet: ReadonlySet<ContentDescriptor> = new Set(contentTyp
 
 const contentTypeNameMap = contentTypesToShow.reduce<Record<string, string>>((acc, contentType) => {
     const typeInfo = contentLib.getType(contentType);
-    acc[contentType] = typeInfo?.displayName || contentType;
+    acc[contentType] = typeInfo?.title || contentType;
     return acc;
 }, {});
 

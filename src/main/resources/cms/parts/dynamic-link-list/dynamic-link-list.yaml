@@ -1,0 +1,78 @@
+kind: "Part"
+title: "Lenkeliste"
+form:
+  - type: "TextLine"
+    name: "title"
+    label: "Tittel"
+    occurrences:
+      min: 0
+      max: 1
+    default: "Lenker"
+  - type: "CheckBox"
+    name: "hideTitle"
+    label: "Skjul tittel"
+    occurrences:
+      min: 0
+      max: 1
+    default: "unchecked"
+  - type: "ComboBox"
+    name: "listType"
+    label: "Vis listen som"
+    occurrences:
+      min: 1
+      max: 1
+    options:
+      - value: "default"
+        label: "Vanlige lenker"
+      - value: "chevron"
+        label: "Lenker med chevron"
+      - value: "bulletlist"
+        label: "Lenker som punktliste"
+    default: "default"
+  - type: "OptionSet"
+    name: "list"
+    expanded: false
+    label: "Lenker"
+    occurrences:
+      min: 1
+      max: 1
+    options:
+      - name: "contentList"
+        label: "Hent lenker fra innholdsliste"
+        items:
+          - type: "FormFragment"
+            name: "content-list"
+      - name: "linkList"
+        label: "Sett lenker direkte"
+        items:
+          - type: "OptionSet"
+            name: "links"
+            expanded: false
+            label: "Lenke"
+            occurrences:
+              min: 0
+              max: 0
+            options:
+              - name: "internal"
+                label: "Intern lenke"
+                helpText: "Lenke til internt innhold"
+                selected: true
+                items:
+                  - type: "FormFragment"
+                    name: "link-internal"
+              - name: "external"
+                label: "Ekstern lenke"
+                helpText: "Lenke til innhold utenfor CMS'et"
+                items:
+                  - type: "FormFragment"
+                    name: "link-external"
+            selection:
+              min: 1
+              max: 1
+    selection:
+      min: 1
+      max: 1
+  - type: "FormFragment"
+    name: "expandable"
+  - type: "FormFragment"
+    name: "auth-render-option"

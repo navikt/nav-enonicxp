@@ -1,0 +1,49 @@
+kind: "ContentType"
+superType: "base:unstructured"
+title: "Melding"
+description: "Driftsmelding"
+form:
+  - type: "FieldSet"
+    label: "Melding"
+    items:
+      - type: "RadioButton"
+        name: "type"
+        label: "Type"
+        occurrences:
+          min: 0
+          max: 1
+        options:
+          - value: "prodstatus"
+            label: "Kritisk driftsmelding"
+          - value: "info"
+            label: "Viktig informasjon"
+        default: "prodstatus"
+      - type: "FormFragment"
+        name: "ingress"
+      - type: "HtmlArea"
+        name: "text"
+        label: "Brødtekst melding"
+        helpText: "Kort og konsis meldingstekst"
+        occurrences:
+          min: 0
+          max: 1
+        include: "Undo Redo"
+      - type: "ItemSet"
+        name: "urlscope"
+        label: "Vis kun på bestemte URL'er"
+        helpText: "Hvis ingen URL'er er satt, vises meldingen globalt på nav.no"
+        occurrences:
+          min: 0
+          max: 1
+        items:
+          - type: "TextLine"
+            name: "urls"
+            label: "URL"
+            helpText: "Som standard vises meldingen på alle under-sider av valgt URL\
+              \ - For å kun vise på en spesifikk side, avslutt med $"
+            occurrences:
+              min: 1
+              max: 0
+            regexp: "^((http:\\/\\/localhost:3000)|(https:\\/\\/([a-z0-9_\\-.]*\\\
+              .)*nav\\.no))($|\\/).*"
+            default: "https://www.nav.no/"

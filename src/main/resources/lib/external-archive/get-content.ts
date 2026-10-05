@@ -4,9 +4,13 @@ import { Content } from '/lib/xp/content';
 import { NodeVersion, RepoConnection, RepoNode } from '/lib/xp/node';
 import { isArchivedContentNode, isExcludedFromExternalArchive } from '../utils/content-utils';
 import { logger } from '../utils/logging';
+import { getVersionsFromRepo } from '../utils/version-utils';
 
 const transformRepoContentNode = (node: RepoNode<Content>): Content => {
-    const { _indexConfig, _inheritsPermissions, _permissions, _childOrder, ...content } = node;
+    // _inheritsPermissions is not part of the XP8 node type, but strip it in case it is still
+    // present on nodes migrated from XP7
+    const { _indexConfig, _inheritsPermissions, _permissions, _childOrder, ...content } =
+        node as RepoNode<Content> & { _inheritsPermissions?: unknown };
 
     return { ...content, childOrder: _childOrder };
 };
@@ -46,7 +50,7 @@ export const getLastPublishedContentVersion = (
         asAdmin: true,
     });
 
-    const versions = draftRepo.findVersions({ key: contentKey, count: 1000 });
+    const versions = getVersionsFromRepo(draftRepo, contentKey, 1000);
 
     const contentNode = getLastPublishedDraftVersion(versions.hits, draftRepo);
 

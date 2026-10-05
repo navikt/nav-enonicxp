@@ -157,7 +157,7 @@ const getHitsFromIds = (ids: string[]) =>
 // </input>
 //
 
-const getCacheName = (sourcePage: string | string[]) => {
+const getCacheName = (sourcePage?: string | string[]) => {
     return sourcePage === 'content-data-locale-fallback' ? 'fallback-content' : null;
 };
 

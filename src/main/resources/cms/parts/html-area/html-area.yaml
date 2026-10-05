@@ -1,0 +1,32 @@
+kind: "Part"
+title: "Formatert innhold"
+description: "Komponent for rikt tekstinnhold, bilder, mm"
+form:
+  - type: "HtmlArea"
+    name: "html"
+    label: "Innhold"
+    occurrences:
+      min: 1
+      max: 1
+    exclude: "JustifyBlock Underline"
+    include: "Undo Redo"
+    allowHeadings: "h3 h4 normal"
+  - type: "ComboBox"
+    name: "type"
+    label: "Type innhold"
+    occurrences:
+      min: 0
+      max: 1
+    options:
+      - value: "documentation_requirements"
+        label: "Dokumentasjonskrav"
+      - value: "processing_times"
+        label: "Saksbehandlingstider"
+      - value: "rates"
+        label: "Satser"
+  - type: "FormFragment"
+    name: "expandable"
+  - type: "FormFragment"
+    name: "filter-selector"
+  - type: "FormFragment"
+    name: "auth-render-option"

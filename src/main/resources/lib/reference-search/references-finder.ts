@@ -16,6 +16,7 @@ import { NON_LOCALIZED_QUERY_FILTER } from '../localization/layers-repo-utils/lo
 import { forceArray } from '../utils/array-utils';
 import { isValidBranch } from '../context/branches';
 import { Overview } from '@xp-types/site/content-types/overview';
+import { getContextRepoId } from '../context/run-in-context';
 
 type ContentDescriptorSet = ReadonlySet<ContentDescriptor>;
 
@@ -79,10 +80,10 @@ export class ReferencesFinder {
         timeout?: number;
         logErrorsOnly?: boolean;
     }) {
-        const { repository: repoIdFromContext, branch: branchFromContext } = contextLib.get();
+        const { branch: branchFromContext } = contextLib.get();
 
         this.baseContentId = contentId;
-        this.repoId = repoId || repoIdFromContext;
+        this.repoId = repoId || getContextRepoId();
         this.branch = branch || (isValidBranch(branchFromContext) ? branchFromContext : 'master');
         this.withDeepSearch = withDeepSearch;
         this.timeout = timeout;

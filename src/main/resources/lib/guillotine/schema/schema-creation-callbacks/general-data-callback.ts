@@ -1,11 +1,10 @@
-import graphQlLib from '/lib/graphql';
-import * as contextLib from '/lib/xp/context';
 import * as contentLib from '/lib/xp/content';
 import * as nodeLib from '/lib/xp/node';
 import { getRepoConnection } from '../../../repos/repo-utils';
 
-import { CreationCallback } from '../../utils/creation-callback-utils';
+import { SchemaExtension } from '../../utils/creation-callback-utils';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
+import { getContextRepoId } from '../../../context/run-in-context';
 
 /*
 Bakgrunn: Hvis innhold som allerede er publisert markeres som 'klar' på fredag
@@ -31,27 +30,36 @@ export const determineLastPublished = (
     return changedTs;
 };
 
-export const generalDataCallback: CreationCallback = (context, params) => {
-    params.fields.lastPublished = {
-        type: graphQlLib.GraphQLString,
-    };
+const resolveLastPublished = () => {
+    const contentId = getGuillotineContentQueryBaseContentId();
+    if (!contentId) {
+        return null;
+    }
 
-    params.fields.lastPublished.resolve = (env) => {
-        const contentId = getGuillotineContentQueryBaseContentId();
-        if (!contentId) {
-            return null;
-        }
+    const repoId = getContextRepoId();
 
-        const repoId = contextLib.get().repository;
+    const masterConnection = getRepoConnection({ branch: 'master', repoId, asAdmin: true });
 
-        const masterConnection = getRepoConnection({ branch: 'master', repoId, asAdmin: true });
+    const masterNode = masterConnection.get<contentLib.Content>({ key: contentId });
 
-        const masterNode = masterConnection.get<contentLib.Content>({ key: contentId });
+    if (!masterNode) {
+        return null;
+    }
 
-        if (!masterNode) {
-            return null;
-        }
-
-        return determineLastPublished(masterNode);
-    };
+    return determineLastPublished(masterNode);
 };
+
+export const generalDataCallback: SchemaExtension = (graphQL, typeName) => ({
+    creationCallbacks: {
+        [typeName]: (params) => {
+            params.addFields({
+                lastPublished: { type: graphQL.GraphQLString },
+            });
+        },
+    },
+    resolvers: {
+        [typeName]: {
+            lastPublished: resolveLastPublished,
+        },
+    },
+});

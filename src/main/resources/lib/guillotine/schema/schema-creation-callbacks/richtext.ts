@@ -1,11 +1,12 @@
 import * as contentLib from '/lib/xp/content';
 import striptags from '/assets/striptags/3.2.0/src/striptags';
-import { CreationCallback } from '../../utils/creation-callback-utils';
+import { SchemaExtension } from '../../utils/creation-callback-utils';
 import { getPublicPath } from '../../../paths/public-path';
 import { getLocaleFromContext } from '../../../localization/locale-context';
 import { logger } from '../../../utils/logging';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
 import { stripPathPrefix } from '../../../paths/path-utils';
+import { rewriteLoopbackUrls } from '../../utils/loopback-urls';
 
 type Link = {
     contentId: string;
@@ -52,18 +53,24 @@ const resolvePublicPathsInLinks = (processedHtml: string, links?: Link[]) => {
     }, processedHtml);
 };
 
-export const richTextCallback: CreationCallback = (context, params) => {
-    params.fields.processedHtml.resolve = (env) => {
-        const { processedHtml, links } = env.source;
+export const richTextCallback: SchemaExtension = (graphQL, typeName) => ({
+    resolvers: {
+        [typeName]: {
+            processedHtml: (env) => {
+                const { processedHtml, links } = env.source;
 
-        return processedHtml
-            ? resolvePublicPathsInLinks(processedHtml, links)
-                  // Strip linebreaks, as it may cause errors in the frontend parser
-                  .replace(linebreakFilter, ' ')
-                  // Strip html tags from the body of macro-tags. Fixes invalid html-nesting caused by the CS editor
-                  .replace(macroTagFilter, (match: string) => {
-                      return striptags(match, [macroTagName]);
-                  })
-            : processedHtml;
-    };
-};
+                // Links must be rewritten from the loopback format before resolving public paths, as
+                // these are matched on the internal content path
+                return processedHtml
+                    ? resolvePublicPathsInLinks(rewriteLoopbackUrls(processedHtml), links)
+                          // Strip linebreaks, as it may cause errors in the frontend parser
+                          .replace(linebreakFilter, ' ')
+                          // Strip html tags from the body of macro-tags. Fixes invalid html-nesting caused by the CS editor
+                          .replace(macroTagFilter, (match: string) => {
+                              return striptags(match, [macroTagName]);
+                          })
+                    : processedHtml;
+            },
+        },
+    },
+});

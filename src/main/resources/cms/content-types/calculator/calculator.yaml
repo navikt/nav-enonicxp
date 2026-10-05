@@ -1,0 +1,134 @@
+kind: "ContentType"
+superType: "base:unstructured"
+title: "Kalkulator"
+description: "Kalkulator som kan settes inn i produktsider"
+form:
+  - type: "OptionSet"
+    name: "fields"
+    expanded: false
+    label: "Variabel"
+    helpText: "Definer variabler som brukeren skal kunne oppgi eller global verdi\
+      \ som skal brukes i utregningen."
+    occurrences:
+      min: 0
+      max: 0
+    options:
+      - name: "inputField"
+        label: "Nummerfelt"
+        helpText: "Alle inputfelt blir automatisk begrenset til å kun inneholde tall."
+        items:
+          - type: "TextLine"
+            name: "label"
+            label: "Tittel på felt"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextArea"
+            name: "explanation"
+            label: "Forklaring"
+            helpText: "Oppgi en ekstra forklaring til feltet dersom det er nødvendig."
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextLine"
+            name: "variableName"
+            label: "Javascript variabelnavn (skal normalt ikke endres)"
+            helpText: "Brukes til å henvise referanse i selve utregningen nedenfor."
+            occurrences:
+              min: 0
+              max: 1
+      - name: "dropdownField"
+        label: "Listevalg"
+        items:
+          - type: "TextLine"
+            name: "label"
+            label: "Tittel på felt"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "ItemSet"
+            name: "optionItems"
+            label: "Valg"
+            occurrences:
+              min: 1
+              max: 0
+            items:
+              - type: "TextLine"
+                name: "label"
+                label: "Tittel"
+                occurrences:
+                  min: 0
+                  max: 1
+              - type: "Double"
+                name: "value"
+                label: "Tallverdi"
+                occurrences:
+                  min: 0
+                  max: 1
+          - type: "TextArea"
+            name: "explanation"
+            label: "Forklaring"
+            helpText: "Oppgi en ekstra forklaring til feltet dersom det er nødvendig."
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextLine"
+            name: "variableName"
+            label: "Javascript variabelnavn (skal normalt ikke endres)"
+            helpText: "Brukes til å henvise referanse i selve utregningen nedenfor."
+            occurrences:
+              min: 0
+              max: 1
+      - name: "globalValue"
+        label: "Global verdi"
+        items:
+          - type: "CustomSelector"
+            name: "key"
+            label: "Velg verdier"
+            occurrences:
+              min: 1
+              max: 1
+            service: "globalValues"
+            params:
+              contentType: "no.nav.navno:global-value-set"
+          - type: "TextLine"
+            name: "variableName"
+            label: "Javascript variabelnavn (skal normalt ikke endres)"
+            helpText: "Brukes til å henvise referanse i selve utregningen nedenfor."
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextLine"
+            name: "value"
+            label: "(tomt felt, skal ikke brukes)"
+            occurrences:
+              min: 0
+              max: 1
+            regexp: "^$"
+    selection:
+      min: 1
+      max: 1
+  - type: "TextArea"
+    name: "calculationScript"
+    label: "Beregning"
+    helpText: "Variabler må være like navnet som variabelnavn ovenfor. Du kan kun\
+      \ benytte javascript."
+    occurrences:
+      min: 0
+      max: 1
+  - type: "CheckBox"
+    name: "useThousandSeparator"
+    label: "Legg inn tusenskille i svaret"
+    helpText: "Nyttig når svaret feks gis i kroner"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "TextArea"
+    name: "summaryText"
+    label: "Tekst for beregingsresultat"
+    helpText: "Skriv inn tekst eller forklarende tekst som skal vises i forbindelse\
+      \ av beregningsresultatet. For å sette inn selve resultatet, sett inn kortkoden\
+      \ \"[resultat]\" i teksten."
+    occurrences:
+      min: 0
+      max: 1

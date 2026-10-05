@@ -1,0 +1,85 @@
+kind: "Part"
+title: "Seksjon for aktuelle temaer"
+description: "Til bruk på forsider"
+form:
+  - type: "TextLine"
+    name: "title"
+    label: "Tittel"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "ContentSelector"
+    name: "contentList"
+    label: "Velg innholdsliste"
+    occurrences:
+      min: 1
+      max: 1
+    allowContentType:
+      - "no.nav.navno:content-list"
+  - type: "Long"
+    name: "maxItems"
+    label: "Maks antall lenker"
+    helpText: "(Kan ikke endres her)"
+    occurrences:
+      min: 0
+      max: 1
+    min: 2
+    max: 2
+    default: 2
+  - type: "CheckBox"
+    name: "sortByPublishDate"
+    label: "Sorter etter publiseringsdato"
+    occurrences:
+      min: 0
+      max: 1
+    alignment: "right"
+    default: "false"
+  - type: "FieldSet"
+    label: "Lenke til flere saker"
+    items:
+      - type: "OptionSet"
+        name: "link"
+        expanded: true
+        occurrences:
+          min: 0
+          max: 1
+        options:
+          - name: "internal"
+            label: "Intern lenke"
+            helpText: "Lenke til internt innhold"
+            selected: true
+            items:
+              - type: "FormFragment"
+                name: "link-internal"
+          - name: "external"
+            label: "Ekstern lenke"
+            helpText: "Lenke til innhold utenfor CMS'et"
+            items:
+              - type: "FormFragment"
+                name: "link-external"
+        selection:
+          min: 1
+          max: 1
+  - type: "CustomSelector"
+    name: "bgColor"
+    label: "Overstyr bakgrunnsfarge"
+    helpText: "Velg fra designsystemets fargepalett, eller en egendefinert hex-code,\
+      \ f.eks. #0451ff"
+    occurrences:
+      min: 0
+      max: 1
+    service: "colorPicker"
+  - type: "CustomSelector"
+    name: "itemColor"
+    label: "Overstyr farge på kortene"
+    helpText: "Velg fra designsystemets fargepalett, eller en egendefinert hex-code,\
+      \ f.eks. #0451ff"
+    occurrences:
+      min: 0
+      max: 1
+    service: "colorPicker"
+config:
+  allowOnContentType:
+    - "${app}:front-page"
+    - "${app}:front-page-nested"
+    - "portal:page-template"

@@ -4,17 +4,20 @@ import * as ioLib from '/lib/xp/io';
 import { ByteSource } from '/lib/xp/io';
 import { logger } from '../../../../utils/logging';
 
-type GuillotineAttachment = Attachment & { __nodeId: string };
-
 const maxSizeDefault = 100000;
 
-export const getAttachmentText = (attachment: GuillotineAttachment, maxSize = maxSizeDefault) => {
+export const getAttachmentText = (
+    contentId: string | undefined,
+    attachment: Attachment,
+    maxSize = maxSizeDefault
+) => {
     if (!attachment) {
         logger.warning(`No attachment object was provided`, false, true);
         return null;
     }
 
-    const { __nodeId: id, name, mimeType, size } = attachment;
+    const id = contentId;
+    const { name, mimeType, size } = attachment;
 
     if (!id || !name) {
         logger.warning(

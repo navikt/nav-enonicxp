@@ -1,0 +1,30 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "FieldSet"
+    label: "Header (H2)"
+    items:
+      - type: "TextLine"
+        name: "title"
+        label: "Tittel"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "TextLine"
+        name: "anchorId"
+        label: "Anker-id"
+        helpText: "\n                        Sett et anker-id for å kunne lenke til\
+          \ denne delen av siden\n                        Eks: https://www.nav.no/no/min-side#mitt-anker\n\
+          \                        Dette feltet benyttes også av komponenten for intern-navigasjon\
+          \ på siden\n                    "
+        occurrences:
+          min: 0
+          max: 1
+        regexp: "^[0-9a-zA-Z-_]+$"
+      - type: "CheckBox"
+        name: "hideFromInternalNavigation"
+        label: "Ikke vis under innhold"
+        occurrences:
+          min: 0
+          max: 1
+        alignment: "left"

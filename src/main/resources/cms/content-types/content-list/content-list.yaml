@@ -1,0 +1,34 @@
+kind: "ContentType"
+superType: "base:unstructured"
+title: "Innholdsliste"
+description: "Visning av Nyheter/Nyttig å vite/Snarveier"
+form:
+  - type: "FieldSet"
+    label: "Innholdsliste"
+    items:
+      - type: "ContentSelector"
+        name: "sectionContents"
+        label: "Velg innhold"
+        occurrences:
+          min: 0
+          max: 0
+        attributes:
+          showStatus: "true"
+        allowContentType:
+          - "${app}:main-article"
+          - "${app}:main-article-chapter"
+          - "${app}:internal-link"
+          - "${app}:external-link"
+          - "${app}:page-list"
+          - "${app}:dynamic-page"
+          - "${app}:content-page-with-sidemenus"
+          - "${app}:situation-page"
+          - "${app}:guide-page"
+          - "${app}:tools-page"
+          - "${app}:current-topic-page"
+          - "${app}:themed-article-page"
+          - "${app}:overview"
+          - "${app}:forms-overview"
+          - "${app}:oversikt"
+          - "${app}:office-page"
+          - "${app}:generic-page"

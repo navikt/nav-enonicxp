@@ -12,6 +12,7 @@ import { GuillotineQueryParams, runGuillotineQuery } from '../utils/run-guilloti
 import componentsQuery from './component-queries/components.graphql';
 import componentPreviewQuery from './component-queries/componentPreview.graphql';
 import fragmentComponentsQuery from './component-queries/fragmentComponents.graphql';
+import contactOptionComponentsQuery from './component-queries/contactOptionComponents.graphql';
 import { PortalComponent } from '../../../types/components/component-portal';
 import { guillotineTransformSpecialComponents } from './transform-special-components';
 import { logger } from '../../utils/logging';
@@ -20,12 +21,20 @@ import { isContentPreviewOnly } from '../../utils/content-utils';
 import { SitecontentResponse } from '../../../services/sitecontent/common/content-response';
 import { ContentDescriptor } from '../../../types/content-types/content-config';
 import { getOfficeEditorialType } from '../../office-pages/office-editorial';
+import { forceArray } from '../../utils/array-utils';
 
 export type GuillotineUnresolvedComponentType = { type: ComponentType; path: string };
 
 type GuillotineComponentQueryResult = {
     components: GuillotineComponent[];
 };
+
+type ComponentsResolveArgs = {
+    resolveTemplate: boolean;
+    resolveFragment: boolean;
+};
+
+const CONTACT_OPTION_DESCRIPTOR = 'no.nav.navno:contact-option';
 
 const contentTypesWithComponentsSet: ReadonlySet<ContentDescriptor> = new Set(
     contentTypesWithComponents
@@ -78,6 +87,59 @@ export const runSitecontentGuillotineQuery = (
     };
 };
 
+// The contact-option part is queried separately and only when needed, as including it in the
+// main components query exceeds the maximum number of fields per query in the Guillotine app
+const addContactOptionComponentsData = (
+    components: GuillotineComponent[],
+    queryParams: GuillotineQueryParams,
+    resolveArgs: ComponentsResolveArgs
+): GuillotineComponent[] => {
+    const hasContactOptions = forceArray(components).some(
+        (component) => component.part?.descriptor === CONTACT_OPTION_DESCRIPTOR
+    );
+    if (!hasContactOptions) {
+        return components;
+    }
+
+    const result = runGuillotineQuery({
+        branch: queryParams.branch,
+        throwOnErrors: queryParams.throwOnErrors,
+        query: contactOptionComponentsQuery,
+        params: { ...queryParams.params, ...resolveArgs },
+    })?.get as GuillotineComponentQueryResult;
+
+    const contactOptionsByPath = forceArray(result?.components).reduce<Record<string, unknown>>(
+        (acc, component) => {
+            const contactOption = component.part?.config?.no_nav_navno?.contact_option;
+            if (contactOption) {
+                acc[component.path] = contactOption;
+            }
+            return acc;
+        },
+        {}
+    );
+
+    return components.map((component) => {
+        const contactOption = contactOptionsByPath[component.path];
+        if (!contactOption) {
+            return component;
+        }
+
+        const config = component.part.config || {};
+
+        return {
+            ...component,
+            part: {
+                ...component.part,
+                config: {
+                    ...config,
+                    no_nav_navno: { ...config.no_nav_navno, contact_option: contactOption },
+                },
+            },
+        };
+    });
+};
+
 const processComponentsQueryResult = (
     baseContent: Content,
     components: GuillotineComponent[],
@@ -92,11 +154,13 @@ const processComponentsQueryResult = (
             return acc;
         }
 
-        const fragment = runGuillotineQuery({
+        const fragmentQueryParams: GuillotineQueryParams = {
             ...queryParams,
             query: fragmentComponentsQuery,
             params: { ref: fragmentId },
-        })?.get;
+        };
+
+        const fragment = runGuillotineQuery(fragmentQueryParams)?.get;
 
         if (!fragment) {
             const msg = `Invalid fragment reference ${fragmentId} in content [${getLocaleFromContext()}] ${baseContent._id}`;
@@ -113,7 +177,14 @@ const processComponentsQueryResult = (
             // If the fragment was not found, set the fragment component tree to an empty object
             // to ensure it is rendered (as an error) in the CS preview. This allows editors to remove
             // the invalid fragment
-            fragment: fragment ? buildFragmentComponentTree(fragment.components) : {},
+            fragment: fragment
+                ? buildFragmentComponentTree(
+                      addContactOptionComponentsData(fragment.components, fragmentQueryParams, {
+                          resolveTemplate: true,
+                          resolveFragment: true,
+                      })
+                  )
+                : {},
         });
 
         return acc;
@@ -145,7 +216,12 @@ export const runGuillotineComponentsQuery = (
         return { components: [], fragments: [] };
     }
 
-    return processComponentsQueryResult(baseContent, result.components, queryParams);
+    const components = addContactOptionComponentsData(result.components, queryParams, {
+        resolveTemplate: true,
+        resolveFragment: false,
+    });
+
+    return processComponentsQueryResult(baseContent, components, queryParams);
 };
 
 export const runGuillotineComponentPreviewQuery = (baseContent: Content, componentPath: string) => {
@@ -155,7 +231,6 @@ export const runGuillotineComponentPreviewQuery = (baseContent: Content, compone
         jsonBaseKeys: ['config', 'data'],
         params: {
             ref: baseContent._id,
-            path: componentPath,
         },
     };
 
@@ -164,7 +239,23 @@ export const runGuillotineComponentPreviewQuery = (baseContent: Content, compone
         return null;
     }
 
-    return processComponentsQueryResult(baseContent, result.components, queryParams);
+    const componentsForPath = forceArray(result.components).filter((component) =>
+        component.path.startsWith(componentPath)
+    );
+
+    if (componentsForPath.length === 0) {
+        logger.warning(
+            `Invalid component path ${componentPath} on content ${baseContent._id} - no components found`
+        );
+        return null;
+    }
+
+    const components = addContactOptionComponentsData(componentsForPath, queryParams, {
+        resolveTemplate: false,
+        resolveFragment: false,
+    });
+
+    return processComponentsQueryResult(baseContent, components, queryParams);
 };
 
 const buildOfficeBranchPageWithEditorialContent = (contentQueryResult: any) => {

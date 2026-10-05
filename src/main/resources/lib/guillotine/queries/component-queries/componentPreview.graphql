@@ -1,10 +1,12 @@
 #import "../fragments/components/allComponentsFragment.graphql"
 #import "../fragments/contentCommonFragment.graphql"
 
-query componentPreviewQuery($ref: ID!, $path: String!) {
+# Components are filtered by path in runGuillotineComponentPreviewQuery, as the Guillotine app
+# does not support filtering components by path
+query componentPreviewQuery($ref: ID!) {
     guillotine {
         get(key: $ref) {
-            components(path: $path, resolveTemplate: true, resolveFragment: false) {
+            components(resolveTemplate: false, resolveFragment: false) {
                 ...allComponents
             }
         }

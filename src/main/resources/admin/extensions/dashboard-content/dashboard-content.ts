@@ -1,0 +1,162 @@
+import { Content } from '/lib/xp/content';
+import thymeleafLib from '/lib/thymeleaf';
+import * as authLib from '/lib/xp/auth';
+import { UserKey } from '/lib/xp/auditlog';
+import * as contentLib from '/lib/xp/content';
+import { APP_DESCRIPTOR, NAVNO_NODE_ROOT_PATH } from '../../../lib/constants';
+import { getLayersMultiConnection } from '../../../lib/localization/layers-repo-utils/layers-repo-connection';
+import { NON_LOCALIZED_QUERY_FILTER } from '../../../lib/localization/layers-repo-utils/localization-state-filters';
+import { contentTypesRenderedByEditorFrontend } from '../../../lib/contenttype-lists';
+import dayjs from '/assets/dayjs/1.11.13/dayjs.min.js';
+import utc from '/assets/dayjs/1.11.13/plugin/utc.js';
+import { getContentProjectIdFromRepoId, getRepoConnection } from '../../../lib/repos/repo-utils';
+import { notNullOrUndefined } from '../../../lib/utils/mixed-bag-of-utils';
+import { DashboardContentInfo } from './utils/types';
+import { ContentDescriptor } from '../../../types/content-types/content-config';
+import { dashboardContentBuildPublishLists } from './utils/buildPublishLists';
+import { layerStr, NUM_ENTRIES_TO_DISPLAY } from './utils/contentResolver';
+
+const view = resolve('./dashboard-content.html');
+
+dayjs.extend(utc);
+
+const contentTypesToShow = [
+    ...contentTypesRenderedByEditorFrontend,
+    `${APP_DESCRIPTOR}:content-list`,
+] as const satisfies ContentDescriptor[];
+
+const contentInfo = contentTypesToShow.map((contentType) => {
+    const typeInfo = contentLib.getType(contentType);
+    return {
+        type: contentType,
+        name: typeInfo ? typeInfo.title : '',
+    };
+});
+
+// Lag dayjs-dato - Kan være på Elastic-format (yyyy-mm-ddThh:mm:ss.mmmmmmZ)
+const dayjsDateTime = (datetime?: string) => {
+    const localDate =
+        datetime && datetime.search('Z') !== -1
+            ? datetime.substring(0, 19).replace('T', ' ') // Er på Elastic-format
+            : datetime;
+    if (!localDate) {
+        return '';
+    }
+    return dayjs(localDate).utc(true).local().toISOString();
+};
+
+// Hent brukers endringer av innhold (bare lokalisert innhold av "våre" innholdsyper)
+const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
+    const repos = getLayersMultiConnection('draft');
+
+    return repos
+        .query({
+            count: 50,
+            filters: {
+                boolean: {
+                    mustNot: NON_LOCALIZED_QUERY_FILTER,
+                    must: [
+                        {
+                            hasValue: {
+                                field: 'type',
+                                values: contentTypesToShow,
+                            },
+                        },
+                        {
+                            hasValue: {
+                                field: 'modifier',
+                                values: [user],
+                            },
+                        },
+                    ],
+                },
+            },
+            sort: [
+                {
+                    field: 'modifiedTime',
+                    direction: 'DESC',
+                },
+            ],
+        })
+        .hits.map((hit): DashboardContentInfo | undefined => {
+            const draftContent = getRepoConnection({
+                branch: 'draft',
+                repoId: hit.repoId,
+            }).get<Content>(hit.id);
+            const masterContent = getRepoConnection({
+                branch: 'master',
+                repoId: hit.repoId,
+            }).get<Content>(hit.id);
+
+            if (!draftContent) {
+                return undefined;
+            }
+
+            if (!draftContent.displayName) {
+                draftContent.displayName = 'Uten tittel';
+            }
+
+            let status = 'Ny';
+            const draftModifiedTime = dayjsDateTime(draftContent.modifiedTime);
+            const draftTs = dayjsDateTime(draftContent._ts);
+
+            if (masterContent?.publish?.first && masterContent?.publish?.from) {
+                // Innholdet ER publisert, eventuelt endret etterpå
+                if (draftContent?._versionKey !== masterContent?._versionKey) {
+                    // Publisert, men endret etterpå
+                    status = 'Endret';
+                } else {
+                    // Publisert, skal ikke vises her
+                    return undefined;
+                }
+            } else if (draftContent?.archivedTime) {
+                // Arkivert, skal ikke vises her
+                return undefined;
+            } else if (draftContent?.publish?.first) {
+                // Avpublisert, eventuelt endret etterpå
+                if (dayjs(draftTs).isAfter(dayjs(draftModifiedTime))) {
+                    // Avpublisert, skal ikke vises her
+                    return undefined;
+                } else {
+                    status = 'Endret';
+                }
+            }
+
+            const projectId = getContentProjectIdFromRepoId(hit.repoId);
+            const contentTypeInfo = contentInfo.find((el) => el.type === draftContent.type);
+
+            return {
+                displayName: draftContent.displayName + layerStr(projectId),
+                contentType: contentTypeInfo ? contentTypeInfo.name : '',
+                modifiedTimeRaw: draftModifiedTime,
+                modifiedTime: dayjs(draftModifiedTime).format('DD.MM.YYYY - HH:mm:ss'),
+                status,
+                title: draftContent._path.replace(NAVNO_NODE_ROOT_PATH + '/', ''),
+                url: `/admin/tool/com.enonic.app.contentstudio/main/${projectId}/edit/${draftContent._id}`,
+            };
+        })
+        .filter(notNullOrUndefined)
+        .slice(0, NUM_ENTRIES_TO_DISPLAY);
+};
+
+const getUsersLastContent = () => {
+    const user = authLib.getUser()?.key;
+    if (!user) {
+        return null;
+    }
+
+    const { published, prePublished, unPublished } = dashboardContentBuildPublishLists(user);
+    const modified: DashboardContentInfo[] = getUsersModifications(user);
+
+    return {
+        body: thymeleafLib.render(view, {
+            published: published.length > 0 ? published : null,
+            prePublished: prePublished.length > 0 ? prePublished : null,
+            unPublished: unPublished.length > 0 ? unPublished : null,
+            modified,
+        }),
+        contentType: 'text/html',
+    };
+};
+
+export const get = getUsersLastContent;

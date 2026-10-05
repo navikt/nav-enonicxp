@@ -17,7 +17,9 @@ import { ContentDataMapper, ContentDescriptor } from '../../content-types/conten
 
 export type Content<ContentType extends ContentDescriptor = ContentDescriptor> =
     ContentDataMapper<ContentType> &
-        Omit<ContentOriginal, 'data' | 'type' | 'page' | 'fragment' | 'inherit'> & {
+        Omit<ContentOriginal, 'data' | 'type' | 'page' | 'fragment' | 'inherit' | 'x'> & {
+            // XP8 types "x" as the non-augmentable XpMixin alias. Keep our generated XpXData typing.
+            x: XpXData;
             inherit?: Array<'CONTENT' | 'PARENT' | 'NAME' | 'SORT'>; // This field is incorrectly defined in the original type
             archivedTime?: string; // Archive related fields are missing in the original type
             archivedBy?: string;
@@ -49,8 +51,9 @@ export declare function getChildren<
     AggregationOutput extends Record<string, AggregationsResult> = never,
 >(params: GetChildContentParams): ContentsResult<ContentType, AggregationOutput>;
 
-export interface CreateContentParams<ContentType extends ContentDescriptor>
-    extends CreateContentParamsOriginal<unknown, ContentType> {
+export interface CreateContentParams<
+    ContentType extends ContentDescriptor,
+> extends CreateContentParamsOriginal<unknown, ContentType> {
     contentType: ContentType;
     data: XP.ContentTypes[ContentType];
 }
@@ -73,8 +76,9 @@ export declare function query<
     params: QueryContentParams<ContentType, AggregationInput>
 ): ContentsResult<ContentType, AggregationsToAggregationResults<AggregationInput>>;
 
-export interface ModifyContentParams<ContentType extends ContentDescriptor = ContentDescriptor>
-    extends ModifyContentParamsOriginal<unknown, ContentType> {
+export interface ModifyContentParams<
+    ContentType extends ContentDescriptor = ContentDescriptor,
+> extends ModifyContentParamsOriginal<unknown, ContentType> {
     editor: (v: Content<ContentType>) => Content<ContentType>;
 }
 
@@ -97,8 +101,100 @@ export declare function resetInheritance(params: ResetInheritanceParams): void;
 // There no "rest" type operator for imports/exports, so we have to export everything we don't
 // override one by one :|
 export {
-    Aggregation,
     getAttachments,
+    Schedule,
+    ARCHIVE_ROOT_PATH,
+    CONTENT_ROOT_PATH,
+    GetContentParams,
+    GetAttachmentStreamParams,
+    getAttachmentStream,
+    AddAttachmentParam,
+    addAttachment,
+    RemoveAttachmentParams,
+    removeAttachment,
+    SiteConfig,
+    Site,
+    GetSiteParams,
+    getSite,
+    GetSiteConfigParams,
+    getSiteConfig,
+    DeleteContentParams,
+    delete as delete,
+    GetChildContentParams,
+    IdGeneratorSupplier,
+    PublishContentParams,
+    PublishContentResult,
+    publish,
+    UnpublishContentParams,
+    unpublish,
+    ContentExistsParams,
+    exists,
+    CreateMediaParams,
+    createMedia,
+    MoveContentParams,
+    ArchiveContentParams,
+    archive,
+    RestoreContentParams,
+    restore,
+    Permission,
+    AccessControlEntry,
+    Permissions,
+    GetPermissionsParams,
+    Icon,
+    ContentType,
+    getType,
+    getTypes,
+    GetOutboundDependenciesParams,
+    getOutboundDependencies,
+    ResetInheritanceHandler,
+    ModifyMediaParams,
+    modifyMedia,
+    DuplicateContentParams,
+    DuplicateContentsResult,
+    duplicate,
+    getPermissions,
+    PageComponentWhenAutomaticTemplate,
+    PageComponentWhenSpecificTemplate,
+    PatchableContent,
+    deleteContent,
+    UpdateContentParams,
+    ModifyAttachmentParam,
+    CreateAttachmentParam,
+    PatchAttachmentsParam,
+    PatchContentParams,
+    PatchContentResult,
+    BranchPatchResult,
+    update,
+    patch,
+    EditableContentMetadata,
+    UpdateMetadataParams,
+    UpdateMetadataResult,
+    updateMetadata,
+    EditableWorkflow,
+    UpdateWorkflowParams,
+    UpdateWorkflowResult,
+    updateWorkflow,
+    PublishFailureReason,
+    PublishFailure,
+    ApplyPermissionsParams,
+    ApplyPermissionsResult,
+    BranchResult,
+    applyPermissions,
+    UpdateMediaParams,
+    updateMedia,
+    GetVersionsParams,
+    ContentVersion,
+    ContentVersionAction,
+    ContentVersionsResult,
+    getVersions,
+    GetActiveVersionsParams,
+    ActiveContentVersions,
+    getActiveVersions,
+} from '@enonic-types/lib-content';
+
+// Types re-exported from lib-content in XP7, moved to @enonic-types/core in XP8
+export {
+    Aggregation,
     Aggregations,
     AggregationsResult,
     Attachment,
@@ -121,7 +217,6 @@ export {
     FieldSortDsl,
     Filter,
     FormItem,
-    FormItemInlineMixin,
     FormItemInput,
     FormItemLayout,
     FormItemOptionSet,
@@ -164,57 +259,4 @@ export {
     UserKey,
     ValueCountAggregation,
     ValueType,
-    Schedule,
-    ARCHIVE_ROOT_PATH,
-    CONTENT_ROOT_PATH,
-    GetContentParams,
-    GetAttachmentStreamParams,
-    getAttachmentStream,
-    AddAttachmentParam,
-    addAttachment,
-    RemoveAttachmentParams,
-    removeAttachment,
-    SiteConfig,
-    Site,
-    GetSiteParams,
-    getSite,
-    GetSiteConfigParams,
-    getSiteConfig,
-    DeleteContentParams,
-    delete as delete,
-    GetChildContentParams,
-    IdGeneratorSupplier,
-    PublishContentParams,
-    PublishContentResult,
-    publish,
-    UnpublishContentParams,
-    unpublish,
-    ContentExistsParams,
-    exists,
-    CreateMediaParams,
-    createMedia,
-    MoveContentParams,
-    ArchiveContentParams,
-    archive,
-    RestoreContentParams,
-    restore,
-    Permission,
-    AccessControlEntry,
-    SetPermissionsParams,
-    Permissions,
-    setPermissions,
-    GetPermissionsParams,
-    Icon,
-    ContentType,
-    getType,
-    getTypes,
-    GetOutboundDependenciesParams,
-    getOutboundDependencies,
-    ResetInheritanceHandler,
-    ModifyMediaParams,
-    modifyMedia,
-    DuplicateContentParams,
-    DuplicateContentsResult,
-    duplicate,
-    getPermissions,
-} from '@enonic-types/lib-content';
+} from '@enonic-types/core';

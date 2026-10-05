@@ -1,8 +1,11 @@
-import graphQlLib from '/lib/graphql';
-import { CreationCallback } from '../../utils/creation-callback-utils';
+import { SchemaExtension } from '../../utils/creation-callback-utils';
 
-export const filterCallback: CreationCallback = (context, params) => {
-    params.fields.id = {
-        type: graphQlLib.GraphQLString,
-    };
-};
+export const filterCallback: SchemaExtension = (graphQL, typeName) => ({
+    creationCallbacks: {
+        [typeName]: (params) => {
+            params.addFields({
+                id: { type: graphQL.GraphQLString },
+            });
+        },
+    },
+});

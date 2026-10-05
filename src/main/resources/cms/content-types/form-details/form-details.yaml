@@ -1,0 +1,152 @@
+kind: "ContentType"
+superType: "base:structured"
+final: true
+title: "Skjemadetaljer"
+description: "Informasjon og lenker til søknader, skjemaer, klage og anke, ettersendelse"
+form:
+  - type: "FieldSet"
+    label: "Skjemadetaljer"
+    items:
+      - type: "TextLine"
+        name: "formNumbers"
+        label: "Skjemanummer"
+        helpText: "Legacy-felt for skjemanummer. Skjemanummer hentes også automatisk\
+          \ fra\n                        mellomstegene det lenkes til. Unike skjemanummer\
+          \ vises uansett kun én gang.\n                    "
+        occurrences:
+          min: 0
+          max: 0
+      - type: "TextLine"
+        name: "title"
+        label: "Tittel"
+        occurrences:
+          min: 1
+          max: 1
+      - type: "TextLine"
+        name: "longTitle"
+        label: "Tittel for søk"
+        helpText: "Benyttes i søketreff og ellers hvor skjemadetaljen vises utenfor\n\
+          \                        kontekst, ved behov for\n                     \
+          \   en mer beskrivende tittel\n                    "
+        occurrences:
+          min: 0
+          max: 1
+      - type: "HtmlArea"
+        name: "ingress"
+        label: "Ingress"
+        occurrences:
+          min: 0
+          max: 1
+        include: "Undo Redo"
+      - type: "TextArea"
+        name: "languageDisclaimer"
+        label: "Informasjon om språk"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "OptionSet"
+        name: "audience"
+        expanded: false
+        label: "Målgruppe"
+        occurrences:
+          min: 1
+          max: 1
+        options:
+          - name: "person"
+            label: "Privatperson"
+          - name: "employer"
+            label: "Arbeidsgiver"
+          - name: "provider"
+            label: "Samarbeidspartner"
+            items:
+              - type: "FormFragment"
+                name: "provider-audience"
+          - name: "other"
+            label: "Annet"
+        selection:
+          min: 1
+          max: 0
+      - type: "OptionSet"
+        name: "formType"
+        expanded: false
+        label: "Variasjoner"
+        helpText: "Velg hva slags type variasjon du vil lage - søknad, klage eller\n\
+          \                        ettersendelse. For kun\n                      \
+          \  redaksjonell tekst kan du la være å fylle inn felter for søknadsvariasjonen.\n\
+          \                    "
+        occurrences:
+          min: 1
+          max: 0
+        options:
+          - name: "application"
+            label: "Søknad / skjema"
+            items:
+              - type: "ItemSet"
+                name: "variations"
+                occurrences:
+                  min: 0
+                  max: 0
+                items:
+                  - type: "TextLine"
+                    name: "label"
+                    label: "Knappetekst"
+                    helpText: "Bør være kort. Alternativt flere korte ord."
+                    occurrences:
+                      min: 1
+                      max: 1
+                  - type: "FormFragment"
+                    name: "form-details-link"
+          - name: "complaint"
+            label: "Klage- og ankevariasjoner"
+            items:
+              - type: "ItemSet"
+                name: "variations"
+                occurrences:
+                  min: 0
+                  max: 0
+                items:
+                  - type: "TextLine"
+                    name: "label"
+                    label: "Knappetekst"
+                    helpText: "Bør være kort. Alternativt flere korte ord."
+                    occurrences:
+                      min: 1
+                      max: 1
+                  - type: "FormFragment"
+                    name: "form-details-link"
+                  - type: "ComboBox"
+                    name: "type"
+                    label: "Klage- eller anketype"
+                    occurrences:
+                      min: 1
+                      max: 1
+                    options:
+                      - value: "complaint"
+                        label: "\n                                               \
+                          \     Klage\n                                          \
+                          \      "
+                      - value: "appeal"
+                        label: "\n                                               \
+                          \     Anke\n                                           \
+                          \     "
+          - name: "addendum"
+            label: "Ettersendelse"
+            items:
+              - type: "ItemSet"
+                name: "variations"
+                occurrences:
+                  min: 0
+                  max: 0
+                items:
+                  - type: "TextLine"
+                    name: "label"
+                    label: "Knappetekst"
+                    helpText: "Bør være kort. Alternativt flere korte ord."
+                    occurrences:
+                      min: 1
+                      max: 1
+                  - type: "FormFragment"
+                    name: "form-details-link"
+        selection:
+          min: 1
+          max: 1

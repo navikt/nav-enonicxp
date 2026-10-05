@@ -1,0 +1,27 @@
+kind: "ContentType"
+superType: "base:unstructured"
+title: "Melding til redaktører"
+description: "Brukes til å legge melding på dashboard (oppstartsside) i Enonic XP"
+form:
+  - type: "HtmlArea"
+    name: "text"
+    label: "Brødtekst"
+    occurrences:
+      min: 1
+      max: 1
+    exclude: "JustifyBlock Underline"
+    include: "Undo Redo"
+    allowHeadings: "h3 h4 normal"
+  - type: "FieldSet"
+    label: "Ved behov underseksjon"
+    items:
+      - type: "HtmlArea"
+        name: "subText"
+        label: "Tekst etter ekspanderbarpaneler"
+        helpText: "Vil vises under eventuelle paneler"
+        occurrences:
+          min: 0
+          max: 1
+        exclude: "JustifyBlock Underline"
+        include: "Undo Redo"
+        allowHeadings: "h3 h4 normal"

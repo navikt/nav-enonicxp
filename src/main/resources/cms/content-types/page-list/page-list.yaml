@@ -1,0 +1,75 @@
+kind: "ContentType"
+superType: "base:unstructured"
+final: true
+title: "Artikkelliste"
+description: "Overskriften blir lenke og ingress vises under"
+form:
+  - type: "TextArea"
+    name: "originaltitle"
+    label: "Orginaltittel"
+    helpText: "Norsk tittel (hvis fremmedspråklig innhold)"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "FormFragment"
+    name: "ingress"
+  - type: "CheckBox"
+    name: "hide_date"
+    label: "Skjul dato på artikkellisten"
+    occurrences:
+      min: 0
+      max: 1
+    default: "checked"
+  - type: "CheckBox"
+    name: "hideSectionContentsDate"
+    label: "Skjul dato på artiklene i artikkellisten"
+    occurrences:
+      min: 0
+      max: 1
+    default: "unchecked"
+  - type: "CheckBox"
+    name: "orderSectionContentsByPublished"
+    label: "Sorter artikkellisten etter publiseringsdato"
+    occurrences:
+      min: 0
+      max: 1
+    default: "unchecked"
+  - type: "ContentSelector"
+    name: "sectionContents"
+    label: "Contents"
+    helpText: "Add contents to section"
+    occurrences:
+      min: 0
+      max: 0
+  - type: "OptionSet"
+    name: "menuListItems"
+    expanded: false
+    label: "Innhold i høyremenyen"
+    occurrences:
+      min: 0
+      max: 1
+    options:
+      - name: "shortcuts"
+        label: "Snarveier"
+        items:
+          - type: "ContentSelector"
+            name: "link"
+            label: "Snarveier"
+            occurrences:
+              min: 0
+              max: 0
+    selection:
+      min: 0
+      max: 11
+  - type: "Tag"
+    name: "metaTags"
+    label: "Meta tagger"
+    occurrences:
+      min: 0
+      max: 0
+  - type: "FormFragment"
+    name: "languages-legacy"
+  - type: "FormFragment"
+    name: "decorator-toggles"
+  - type: "FormFragment"
+    name: "seo"

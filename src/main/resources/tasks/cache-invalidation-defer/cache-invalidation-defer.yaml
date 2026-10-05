@@ -1,0 +1,15 @@
+kind: "Task"
+description: "Toggle deferred cache invalidation on node events"
+form:
+  - type: "CheckBox"
+    name: "shouldDefer"
+    label: "Should defer"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "Long"
+    name: "maxDeferTime"
+    label: "Max defer time"
+    occurrences:
+      min: 0
+      max: 1

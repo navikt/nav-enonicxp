@@ -1,0 +1,47 @@
+kind: "Part"
+title: "Filtreringsmeny"
+form:
+  - type: "TextLine"
+    name: "title"
+    label: "Tittel"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "TextArea"
+    name: "description"
+    label: "Beskrivelse"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "ItemSet"
+    name: "categories"
+    label: "Filter-kategori"
+    occurrences:
+      min: 0
+      max: 0
+    items:
+      - type: "TextLine"
+        name: "categoryName"
+        label: "Filtreringsspørsmål"
+        helpText: "Vises som overskrift over filter-valgene"
+        occurrences:
+          min: 1
+          max: 1
+      - type: "ItemSet"
+        name: "filters"
+        label: "Filter"
+        occurrences:
+          min: 1
+          max: 0
+        items:
+          - type: "TextLine"
+            name: "filterName"
+            label: "Filter-navn"
+            occurrences:
+              min: 1
+              max: 1
+            default: "Nytt filter"
+  - type: "FormFragment"
+    name: "expandable"
+config:
+  allowOnContentType: "none"

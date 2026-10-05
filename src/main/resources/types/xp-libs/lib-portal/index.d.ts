@@ -78,8 +78,14 @@ export {
     getIdProviderKey,
     ComponentUrlParams,
     componentUrl,
-    ByteSource,
     attachmentUrl,
-    Attachment,
     assetUrl,
+    ApiUrlParams,
+    apiUrl,
+    BaseUrlParams,
+    baseUrl,
+    MacroContext,
 } from '@enonic-types/lib-portal';
+
+// Types re-exported from lib-portal in XP7, moved to @enonic-types/core in XP8
+export { ByteSource, Attachment } from '@enonic-types/core';

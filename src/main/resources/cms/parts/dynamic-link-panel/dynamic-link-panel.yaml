@@ -1,0 +1,56 @@
+kind: "Part"
+title: "Lenkepanel"
+description: "Med valgfri ikon/bakgrunn"
+form:
+  - type: "FormFragment"
+    name: "link-with-ingress"
+  - type: "FormFragment"
+    name: "icon-selector"
+  - type: "ImageSelector"
+    name: "background"
+    label: "Bakgrunnsbilde (valgfritt)"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "OptionSet"
+    name: "variant"
+    expanded: false
+    label: "Varianter"
+    helpText: "Ulike lenkepanel-stiler"
+    occurrences:
+      min: 0
+      max: 1
+    options:
+      - name: "vertical"
+        label: "Standard vertikalt layout"
+      - name: "verticalWithBgColor"
+        label: "Vertikalt med stort ikon og bakgrunnsfarge"
+        items:
+          - type: "ItemSet"
+            name: "iconBg"
+            label: "Bakgrunnsfarge"
+            occurrences:
+              min: 0
+              max: 1
+            items:
+              - type: "FormFragment"
+                name: "color-picker"
+          - type: "RadioButton"
+            name: "iconJustify"
+            label: "Posisjon på ikonet"
+            occurrences:
+              min: 1
+              max: 1
+            options:
+              - value: "flex-start"
+                label: "Topp"
+              - value: "center"
+                label: "Midtstilt"
+              - value: "flex-end"
+                label: "Bunn"
+            default: "center"
+    selection:
+      min: 1
+      max: 1
+  - type: "FormFragment"
+    name: "auth-render-option"

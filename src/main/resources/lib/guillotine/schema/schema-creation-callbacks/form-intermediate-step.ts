@@ -1,6 +1,3 @@
-import { CreationCallback } from '../../utils/creation-callback-utils';
-import { insertOriginalContentTypeField } from './common/original-content-type';
+import { originalContentTypeExtension } from './common/original-content-type';
 
-export const formIntermediateStepCallback: CreationCallback = (context, params) => {
-    insertOriginalContentTypeField(params);
-};
+export const formIntermediateStepCallback = originalContentTypeExtension;
