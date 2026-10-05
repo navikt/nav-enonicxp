@@ -7,6 +7,7 @@ import { getCuratedProjectIcon } from '../../lib/exports/curated-project-icon';
 import { userIsAdmin } from '../../lib/utils/auth-utils';
 import { logger } from '../../lib/utils/logging';
 import {
+    curatedJsonResponse,
     isCuratedBranch,
     isCuratedContentId,
     isCuratedContentPath,
@@ -17,9 +18,7 @@ import {
 const MAX_BATCH_SIZE = 100;
 
 const jsonResponse = (status: number, body: Record<string, unknown>): Response => ({
-    status,
-    contentType: 'application/json',
-    headers: { 'Cache-Control': 'no-store' },
+    ...curatedJsonResponse(status, body),
     // XP's JS-to-Java response map conversion drops nulls, including typed property values.
     body: JSON.stringify(body),
 });

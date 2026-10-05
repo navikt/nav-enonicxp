@@ -7,6 +7,7 @@ import {
     isCuratedContentPath,
     isCuratedImportEnabled,
     isCuratedRepository,
+    isRecord,
 } from '../curated-safety';
 
 export type CuratedTargetExpectation = {
@@ -45,9 +46,6 @@ const EXPECTATION_KEYS = new Set([
     'indexConfig',
     'nodeType',
 ]);
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-    value !== null && typeof value === 'object' && !Array.isArray(value);
 
 const isValidExpectation = (expected: unknown): expected is CuratedTargetExpectation =>
     isRecord(expected) &&
