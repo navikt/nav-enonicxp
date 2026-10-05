@@ -9,8 +9,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import process from 'node:process';
-import { fileURLToPath } from 'node:url';
-import { setPropertiesEntry } from './lib/common.mjs';
+import { runCli, setPropertiesEntry } from './lib/common.mjs';
 import { assertEnonicCliAvailable, assertSandboxName } from './lib/target.mjs';
 
 const HELP_FLAGS = new Set(['--help', '-h']);
@@ -83,11 +82,4 @@ const main = () => {
     deployLocalApplication(process.argv.slice(2));
 };
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-    try {
-        main();
-    } catch (error) {
-        console.error(error instanceof Error ? error.message : error);
-        process.exitCode = 1;
-    }
-}
+runCli(import.meta.url, main);

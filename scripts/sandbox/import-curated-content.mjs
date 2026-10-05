@@ -6,7 +6,6 @@ import { existsSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import process from 'node:process';
-import { fileURLToPath } from 'node:url';
 import {
     assertSandboxXpVersion,
     getXpSessionCookie,
@@ -15,6 +14,7 @@ import {
     promptForAuth,
     promptForPassword,
     readRunningSandbox,
+    runCli,
     verifyStoppedTargetAuth,
     withCuratedWorkspace,
 } from './lib/common.mjs';
@@ -286,12 +286,4 @@ const main = async () => {
     });
 };
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-    main().catch((error) => {
-        console.error(error instanceof Error ? error.message : error);
-        for (let cause = error?.cause; cause; cause = cause.cause) {
-            console.error(`  Caused by: ${cause instanceof Error ? cause.message : cause}`);
-        }
-        process.exitCode = error?.exitCode ?? 1;
-    });
-}
+runCli(import.meta.url, main);

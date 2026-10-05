@@ -13,6 +13,7 @@ import {
 import { Agent, request as httpRequest } from 'node:http';
 import { dirname, join, resolve } from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 
 // Mirrors src/main/resources/lib/exports/curated-safety.ts; the XP services validate the same rules.
 export const CONTENT_ROOT_PATH = '/content/www.nav.no';
@@ -351,4 +352,20 @@ export const withCuratedWorkspace = async (
             handlers.forEach(([signal, handler]) => lifecycle.removeListener(signal, handler));
         }
     }
+};
+
+// Runs main when the module is the script node was started with, and reports errors with their causes.
+export const runCli = (moduleUrl, main) => {
+    if (!process.argv[1] || resolve(process.argv[1]) !== fileURLToPath(moduleUrl)) {
+        return;
+    }
+    Promise.resolve()
+        .then(main)
+        .catch((error) => {
+            console.error(error instanceof Error ? error.message : error);
+            for (let cause = error?.cause; cause; cause = cause.cause) {
+                console.error(`  Caused by: ${cause instanceof Error ? cause.message : cause}`);
+            }
+            process.exitCode = error?.exitCode ?? 1;
+        });
 };

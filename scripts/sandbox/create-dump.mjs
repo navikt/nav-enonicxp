@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 
 import { homedir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { join } from 'node:path';
 import { setTimeout as wait } from 'node:timers/promises';
-import { fileURLToPath } from 'node:url';
-import { directLocalFetch, getXpSessionCookie, promptForAuth } from './lib/common.mjs';
+import { directLocalFetch, getXpSessionCookie, promptForAuth, runCli } from './lib/common.mjs';
 import {
     assertEnonicCliAvailable,
     assertLocalTargetProcess,
@@ -122,11 +121,4 @@ export const createSandboxDump = async (
     return { dumpPath, repositoryCount: result.repositories.length };
 };
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-    Promise.resolve()
-        .then(() => createSandboxDump(getDumpOptions(process.argv.slice(2))))
-        .catch((error) => {
-            console.error(error instanceof Error ? error.message : error);
-            process.exitCode = 1;
-        });
-}
+runCli(import.meta.url, () => createSandboxDump(getDumpOptions(process.argv.slice(2))));
