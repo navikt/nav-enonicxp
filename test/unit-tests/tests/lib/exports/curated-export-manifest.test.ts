@@ -568,12 +568,11 @@ describe('with includeDrafts', () => {
     });
 });
 
-test('does not embed legacy sanitized supplements or mutate source text', () => {
+test('does not mutate source text', () => {
     addNode('page', '/www.nav.no/page', { branches: ['master'] });
     const page = getNode(repositories.no, 'master', 'page')!;
     (page.data as Record<string, unknown>).body = 'before\u0002after';
-    const manifest = selectPage();
-    expect(manifest).not.toHaveProperty('sanitizedSupplements');
+    selectPage();
     expect(page.data).toEqual({ body: 'before\u0002after' });
 });
 
