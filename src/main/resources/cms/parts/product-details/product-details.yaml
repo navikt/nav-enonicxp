@@ -1,0 +1,48 @@
+kind: "Part"
+title: "Produktdetaljer"
+description: "Viser valgt produktdetaljer som en del av produktsiden"
+form:
+  - type: "FieldSet"
+    label: "Type produktdetalj"
+    items:
+      - type: "RadioButton"
+        name: "detailType"
+        label: "Velg type produktdetalj"
+        occurrences:
+          min: 1
+          max: 1
+        options:
+          - value: "processing_times"
+            label: "Saksbehandlingstider"
+          - value: "payout_dates"
+            label: "Utbetalingsdatoer"
+          - value: "rates"
+            label: "Satser"
+  - type: "FieldSet"
+    label: "Visningsinnstillinger"
+    items:
+      - type: "ComboBox"
+        name: "processingTimesVisibility"
+        label: "For visning av saksbehandlingstider"
+        occurrences:
+          min: 1
+          max: 1
+        options:
+          - value: "all"
+            label: "Vis begge"
+          - value: "application"
+            label: "Vis bare søknad"
+          - value: "complaint"
+            label: "Vis bare klage"
+        default: "all"
+  - type: "FormFragment"
+    name: "expandable"
+  - type: "FormFragment"
+    name: "filter-selector"
+  - type: "FormFragment"
+    name: "auth-render-option"
+config:
+  allowOnContentType:
+    - "${app}:content-page-with-sidemenus"
+    - "${app}:guide-page"
+    - "${app}:themed-article-page"

@@ -1,0 +1,18 @@
+kind: "Mixin"
+title: "CMS Content Status"
+form:
+  - type: "ComboBox"
+    name: "status"
+    label: "Status"
+    occurrences:
+      min: 0
+      max: 1
+    options:
+      - value: "draft"
+        label: "Draft"
+      - value: "snapshot"
+        label: "Snapshot"
+      - value: "approved"
+        label: "Approved"
+      - value: "archived"
+        label: "Archived"

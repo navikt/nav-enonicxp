@@ -1,0 +1,427 @@
+kind: "ContentType"
+superType: "base:unstructured"
+title: "Enhetsinformasjon"
+description: "Kontorinformasjon"
+form:
+  - type: "TextLine"
+    name: "checksum"
+    label: "Checksum"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "ItemSet"
+    name: "enhet"
+    label: "Enhet"
+    occurrences:
+      min: 1
+      max: 1
+    items:
+      - type: "Long"
+        name: "enhetId"
+        label: "EnhetId"
+        occurrences:
+          min: 1
+          max: 1
+      - type: "TextLine"
+        name: "navn"
+        label: "Navn"
+        occurrences:
+          min: 1
+          max: 1
+      - type: "TextLine"
+        name: "enhetNr"
+        label: "EnhetNr"
+        occurrences:
+          min: 1
+          max: 1
+      - type: "Long"
+        name: "antallRessurser"
+        label: "Antall Ressurser"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "TextLine"
+        name: "status"
+        label: "Status"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "TextLine"
+        name: "orgNivaa"
+        label: "Org Nivå"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "TextLine"
+        name: "type"
+        label: "Type"
+        occurrences:
+          min: 1
+          max: 1
+      - type: "TextLine"
+        name: "organisasjonsnummer"
+        label: "Organisasjonsnummer"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "TextLine"
+        name: "underEtableringDato"
+        label: "Under Etablering Dato"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "TextLine"
+        name: "aktiveringsdato"
+        label: "Aktiveringsdato"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "TextLine"
+        name: "underAvviklingDato"
+        label: "Under Avvikling Dato"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "TextLine"
+        name: "nedleggelsesdato"
+        label: "Nedleggelsesdato"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "TextLine"
+        name: "oppgavebehandler"
+        label: "Oppgavebehandler"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "Long"
+        name: "versjon"
+        label: "Versjon"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "TextLine"
+        name: "sosialeTjenester"
+        label: "Sosiale Tjenester"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "TextLine"
+        name: "kanalstrategi"
+        label: "Kanalstrategi"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "TextLine"
+        name: "orgNrTilKommunaltNavKontor"
+        label: "Org Nr Til Kommunalt Nav Kontor"
+        occurrences:
+          min: 0
+          max: 1
+  - type: "TextLine"
+    name: "overordnetEnhet"
+    label: "Overordnet Enhet"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "TextLine"
+    name: "habilitetskontor"
+    label: "Habilitetskontor"
+    occurrences:
+      min: 0
+      max: 0
+  - type: "ItemSet"
+    name: "kontaktinformasjon"
+    label: "Kontaktinformasjon"
+    occurrences:
+      min: 0
+      max: 1
+    items:
+      - type: "Long"
+        name: "id"
+        label: "Id"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "TextLine"
+        name: "enhetNr"
+        label: "EnhetNr"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "TextLine"
+        name: "telefonnummer"
+        label: "Telefonnummer"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "TextLine"
+        name: "telefonnummerKommentar"
+        label: "Telefonnummer Kommentar"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "TextLine"
+        name: "faksnummer"
+        label: "Faksnummer"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "ItemSet"
+        name: "epost"
+        label: "E-post"
+        occurrences:
+          min: 0
+          max: 1
+        items:
+          - type: "TextLine"
+            name: "adresse"
+            label: "Adresse"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextLine"
+            name: "kommentar"
+            label: "Kommentar"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextLine"
+            name: "kunIntern"
+            label: "kunIntern"
+            occurrences:
+              min: 0
+              max: 1
+      - type: "ItemSet"
+        name: "postadresse"
+        label: "Postadresse"
+        occurrences:
+          min: 0
+          max: 1
+        items:
+          - type: "TextLine"
+            name: "type"
+            label: "Type"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextLine"
+            name: "postnummer"
+            label: "Postnummer"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextLine"
+            name: "poststed"
+            label: "Poststed"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextLine"
+            name: "gatenavn"
+            label: "Gatenavn"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextLine"
+            name: "husnummer"
+            label: "Husnummer"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextLine"
+            name: "husbokstav"
+            label: "Husbokstav"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextLine"
+            name: "adresseTilleggsnavn"
+            label: "Adresse Tilleggsnavn"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextLine"
+            name: "postboksnummer"
+            label: "Postboksnummer"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextLine"
+            name: "postboksanlegg"
+            label: "Postboksanlegg"
+            occurrences:
+              min: 0
+              max: 1
+      - type: "ItemSet"
+        name: "besoeksadresse"
+        label: "Besøksadresse"
+        occurrences:
+          min: 0
+          max: 1
+        items:
+          - type: "TextLine"
+            name: "type"
+            label: "Type"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextLine"
+            name: "postnummer"
+            label: "Postnummer"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextLine"
+            name: "poststed"
+            label: "Poststed"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextLine"
+            name: "gatenavn"
+            label: "Gatenavn"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextLine"
+            name: "husnummer"
+            label: "Husnummer"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextLine"
+            name: "husbokstav"
+            label: "Husbokstav"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextLine"
+            name: "adresseTilleggsnavn"
+            label: "Adresse Tilleggsnavn"
+            occurrences:
+              min: 0
+              max: 1
+      - type: "TextLine"
+        name: "spesielleOpplysninger"
+        label: "Spesielle Opplysninger"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "ItemSet"
+        name: "publikumsmottak"
+        label: "Publikumsmottak"
+        occurrences:
+          min: 0
+          max: 0
+        items:
+          - type: "Long"
+            name: "id"
+            label: "Id"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextLine"
+            name: "stedsbeskrivelse"
+            label: "Stedsbeskrivelse"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "ItemSet"
+            name: "besoeksadresse"
+            label: "Besøksadresse"
+            occurrences:
+              min: 0
+              max: 1
+            items:
+              - type: "TextLine"
+                name: "type"
+                label: "Type"
+                occurrences:
+                  min: 0
+                  max: 1
+              - type: "TextLine"
+                name: "postnummer"
+                label: "Postnummer"
+                occurrences:
+                  min: 0
+                  max: 1
+              - type: "TextLine"
+                name: "poststed"
+                label: "Poststed"
+                occurrences:
+                  min: 0
+                  max: 1
+              - type: "TextLine"
+                name: "gatenavn"
+                label: "Gatenavn"
+                occurrences:
+                  min: 0
+                  max: 1
+              - type: "TextLine"
+                name: "husnummer"
+                label: "Husnummer"
+                occurrences:
+                  min: 0
+                  max: 1
+              - type: "TextLine"
+                name: "husbokstav"
+                label: "Husbokstav"
+                occurrences:
+                  min: 0
+                  max: 1
+              - type: "TextLine"
+                name: "adresseTilleggsnavn"
+                label: "Adresse Tilleggsnavn"
+                occurrences:
+                  min: 0
+                  max: 1
+          - type: "ItemSet"
+            name: "aapningstider"
+            label: "Åpningstider"
+            occurrences:
+              min: 0
+              max: 0
+            items:
+              - type: "Long"
+                name: "id"
+                label: "Id"
+                occurrences:
+                  min: 0
+                  max: 1
+              - type: "TextLine"
+                name: "dag"
+                label: "Dag"
+                occurrences:
+                  min: 0
+                  max: 1
+              - type: "TextLine"
+                name: "dato"
+                label: "Dato"
+                occurrences:
+                  min: 0
+                  max: 1
+              - type: "TextLine"
+                name: "fra"
+                label: "Fra"
+                occurrences:
+                  min: 0
+                  max: 1
+              - type: "TextLine"
+                name: "til"
+                label: "Til"
+                occurrences:
+                  min: 0
+                  max: 1
+              - type: "TextLine"
+                name: "kommentar"
+                label: "Kommentar"
+                occurrences:
+                  min: 0
+                  max: 1
+              - type: "TextLine"
+                name: "stengt"
+                label: "Stengt"
+                occurrences:
+                  min: 0
+                  max: 1

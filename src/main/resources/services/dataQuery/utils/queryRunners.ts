@@ -22,7 +22,11 @@ const contentIdsCache = cacheLib.newCache({
     expire: 600,
 });
 
+type LegacyNodeProperties = { _inheritsPermissions?: unknown; _state?: unknown };
+
 const transformRepoNode = (node: RepoNode<Content>): Content => {
+    // _inheritsPermissions and _state are not part of the XP8 node type, but strip them in case they
+    // are still present on nodes migrated from XP7, to keep the response unchanged
     const {
         _childOrder,
         _indexConfig,
@@ -31,7 +35,7 @@ const transformRepoNode = (node: RepoNode<Content>): Content => {
         _state,
         _nodeType,
         ...content
-    } = node;
+    } = node as RepoNode<Content> & LegacyNodeProperties;
 
     return content;
 };

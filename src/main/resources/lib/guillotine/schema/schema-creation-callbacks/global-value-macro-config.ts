@@ -1,5 +1,4 @@
-import graphQlLib from '/lib/graphql';
-import { CreationCallback } from '../../utils/creation-callback-utils';
+import { ResolverEnv, SchemaExtension } from '../../utils/creation-callback-utils';
 import {
     getGlobalNumberValue,
     getGvKeyAndContentIdFromUniqueKey,
@@ -8,73 +7,91 @@ import { runInContext } from '../../../context/run-in-context';
 import { logger } from '../../../utils/logging';
 import { forceArray } from '../../../utils/array-utils';
 
-export const globalValueMacroConfigCallback: CreationCallback = (context, params) => {
-    params.fields.value = {
-        type: graphQlLib.GraphQLString,
-        resolve: (env) => {
-            const { gvKey, contentId } = getGvKeyAndContentIdFromUniqueKey(env.source.key);
+const resolveValue = (env: ResolverEnv) => {
+    const { gvKey, contentId } = getGvKeyAndContentIdFromUniqueKey(env.source.key);
+    if (!gvKey || !contentId) {
+        logger.error(
+            `Invalid global value reference in macro: ${env.source.key} (code 1)`,
+            true,
+            true
+        );
+        return null;
+    }
+
+    const value = runInContext({ branch: 'master' }, () => getGlobalNumberValue(gvKey, contentId));
+
+    if (value === null) {
+        logger.error(
+            `Invalid global value reference in macro: ${env.source.key} (code 2)`,
+            true,
+            true
+        );
+    }
+
+    return value;
+};
+
+const resolveVariables = (env: ResolverEnv) => {
+    const keys = forceArray(env.source.keys);
+
+    const variables = runInContext({ branch: 'master' }, () =>
+        keys.reduce((acc, key) => {
+            const { gvKey, contentId } = getGvKeyAndContentIdFromUniqueKey(key);
             if (!gvKey || !contentId) {
                 logger.error(
-                    `Invalid global value reference in macro: ${env.source.key} (code 1)`,
+                    `Invalid global value reference in math macro: ${key} (code 1)`,
                     true,
                     true
                 );
-                return null;
+                return acc;
             }
 
-            const value = runInContext({ branch: 'master' }, () =>
-                getGlobalNumberValue(gvKey, contentId)
-            );
-
+            const value = getGlobalNumberValue(gvKey, contentId);
             if (value === null) {
                 logger.error(
-                    `Invalid global value reference in macro: ${env.source.key} (code 2)`,
+                    `Invalid global value reference in math macro: ${key} (code 2)`,
                     true,
                     true
                 );
+                return acc;
             }
 
-            return value;
-        },
-    };
+            return [...acc, value];
+        }, [])
+    );
+
+    // If any specified variables are missing, we return nothing to ensure
+    // inconsistent/unintended calculations does not happen
+    const hasMissingValues = keys.length !== variables.length;
+    return hasMissingValues ? [] : variables;
 };
 
-export const globalValueWithMathMacroConfigCallback: CreationCallback = (context, params) => {
-    params.fields.variables = {
-        type: graphQlLib.list(graphQlLib.GraphQLFloat),
-        resolve: (env) => {
-            const keys = forceArray(env.source.keys);
-
-            const variables = runInContext({ branch: 'master' }, () =>
-                keys.reduce((acc, key) => {
-                    const { gvKey, contentId } = getGvKeyAndContentIdFromUniqueKey(key);
-                    if (!gvKey || !contentId) {
-                        logger.error(
-                            `Invalid global value reference in math macro: ${key} (code 1)`,
-                            true,
-                            true
-                        );
-                        return acc;
-                    }
-
-                    const value = getGlobalNumberValue(gvKey, contentId);
-                    if (value === null) {
-                        logger.error(
-                            `Invalid global value reference in math macro: ${key} (code 2)`,
-                            true,
-                            true
-                        );
-                        return acc;
-                    }
-
-                    return [...acc, value];
-                }, [])
-            );
-
-            // If any specified variables are missing, we return nothing to ensure
-            // inconsistent/unintended calculations does not happen
-            const hasMissingValues = keys.length !== variables.length;
-            return hasMissingValues ? [] : variables;
+export const globalValueMacroConfigCallback: SchemaExtension = (graphQL, typeName) => ({
+    creationCallbacks: {
+        [typeName]: (params) => {
+            params.addFields({
+                value: { type: graphQL.GraphQLString },
+            });
         },
-    };
-};
+    },
+    resolvers: {
+        [typeName]: {
+            value: resolveValue,
+        },
+    },
+});
+
+export const globalValueWithMathMacroConfigCallback: SchemaExtension = (graphQL, typeName) => ({
+    creationCallbacks: {
+        [typeName]: (params) => {
+            params.addFields({
+                variables: { type: graphQL.list(graphQL.GraphQLFloat) },
+            });
+        },
+    },
+    resolvers: {
+        [typeName]: {
+            variables: resolveVariables,
+        },
+    },
+});

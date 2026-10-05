@@ -1,0 +1,14 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "FieldSet"
+    label: "Skjemadetaljer"
+    items:
+      - type: "ContentSelector"
+        name: "formDetailsTargets"
+        label: "Velg alle detaljer som skal brukes på denne siden"
+        occurrences:
+          min: 0
+          max: 0
+        allowContentType:
+          - "${app}:form-details"

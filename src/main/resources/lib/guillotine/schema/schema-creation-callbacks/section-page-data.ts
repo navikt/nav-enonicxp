@@ -1,12 +1,12 @@
-import { CreationCallback } from '../../utils/creation-callback-utils';
+import { SchemaExtension } from '../../utils/creation-callback-utils';
 import { contentListResolver } from './common/content-list-resolver';
 
-export const sectionPageDataCallback: CreationCallback = (context, params) => {
-    params.fields.newsContents.resolve = contentListResolver(
-        'newsContents',
-        'nrNews',
-        'publish.from'
-    );
-    params.fields.ntkContents.resolve = contentListResolver('ntkContents', 'nrNTK');
-    params.fields.scContents.resolve = contentListResolver('scContents', 'nrSC');
-};
+export const sectionPageDataCallback: SchemaExtension = (graphQL, typeName) => ({
+    resolvers: {
+        [typeName]: {
+            newsContents: contentListResolver('newsContents', 'nrNews', 'publish.from'),
+            ntkContents: contentListResolver('ntkContents', 'nrNTK'),
+            scContents: contentListResolver('scContents', 'nrSC'),
+        },
+    },
+});

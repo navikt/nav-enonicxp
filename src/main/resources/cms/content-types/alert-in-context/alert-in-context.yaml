@@ -1,0 +1,53 @@
+kind: "ContentType"
+superType: "base:unstructured"
+title: "Varsel i kontekst"
+description: "Varsel til bruker i kontekst"
+form:
+  - type: "FieldSet"
+    label: "Redaksjonelt varsel"
+    items:
+      - type: "RadioButton"
+        name: "type"
+        label: "Type"
+        occurrences:
+          min: 0
+          max: 1
+        options:
+          - value: "critical"
+            label: "Kritisk informasjon"
+          - value: "information"
+            label: "Viktig informasjon"
+        default: "information"
+      - type: "TextArea"
+        name: "text"
+        label: "Varselmelding"
+        helpText: "Kort og konsis meldingstekst"
+        occurrences:
+          min: 1
+          max: 1
+      - type: "OptionSet"
+        name: "target"
+        expanded: false
+        label: "Velg innhold"
+        occurrences:
+          min: 1
+          max: 1
+        options:
+          - name: "formDetails"
+            label: "Skjemadetaljer"
+            selected: true
+            items:
+              - type: "ContentSelector"
+                name: "targetContent"
+                label: "Velg hvilke skjemadetaljer som varselet skal vises på"
+                helpText: "Varselet vises på både skjemaoversikt og på produktsider\
+                  \ hvor skjemaet er satt inn."
+                occurrences:
+                  min: 1
+                  max: 0
+                allowContentType:
+                  - "${app}:form-details"
+                hideToggleIcon: true
+        selection:
+          min: 1
+          max: 1

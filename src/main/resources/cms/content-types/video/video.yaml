@@ -1,0 +1,59 @@
+kind: "ContentType"
+superType: "base:structured"
+final: true
+title: "Qbrick Video"
+description: "Video fra Qbrick med metadata og diverse informasjon"
+form:
+  - type: "FieldSet"
+    label: "Videoinfo fra Qbrick"
+    items:
+      - type: "TextLine"
+        name: "title"
+        label: "Videotittel"
+        occurrences:
+          min: 1
+          max: 1
+      - type: "TextLine"
+        name: "mediaId"
+        label: "Qbrick media-id"
+        helpText: "For eksempel ddf118c6-00015227-86825a7e. Denne id'en henter du\
+          \ fra Qbrick eller ber om hjelp fra noen som har tilgang. Du kan ikke bruke\
+          \ denne innholdstypen til videoer fra Vimeo eller liknende."
+        occurrences:
+          min: 1
+          max: 1
+      - type: "Long"
+        name: "accountId"
+        label: "Qbrick konto-id"
+        helpText: "I de fleste tilfeller kan du bruke standard foreslått id '763558'."
+        occurrences:
+          min: 1
+          max: 1
+        default: 763558
+  - type: "FieldSet"
+    label: "Spilleinfo (hentes fra Qbrick automatisk etter lagring)"
+    items:
+      - type: "ImageSelector"
+        name: "poster"
+        label: "Bildeplakat"
+        occurrences:
+          min: 0
+          max: 1
+        allowPath:
+          - "./*"
+        treeMode: false
+        hideToggleIcon: true
+      - type: "TextLine"
+        name: "duration"
+        label: "Spilletid i sekunder"
+        helpText: "For eldre videoer vil ikke denne alltid kunne settes automatisk.\
+          \ Du kan da legge inn spilletiden manuelt."
+        occurrences:
+          min: 0
+          max: 1
+      - type: "TextLine"
+        name: "subtitles"
+        label: "Tilgjengelige språk (undertekster)"
+        occurrences:
+          min: 0
+          max: 0

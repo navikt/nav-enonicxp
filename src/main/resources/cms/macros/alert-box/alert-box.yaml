@@ -1,0 +1,13 @@
+kind: "Macro"
+title: "Infokort (varsel)"
+description: "Infokort med rik tekst"
+form:
+  - type: "HtmlArea"
+    name: "body"
+    label: "Innhold"
+    occurrences:
+      min: 1
+      max: 1
+    exclude: "JustifyBlock Underline Macro Image"
+    include: "Undo Redo"
+    allowHeadings: "h3 h4 normal"

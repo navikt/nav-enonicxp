@@ -1,0 +1,17 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "FieldSet"
+    label: "Aktuelle situasjoner"
+    items:
+      - type: "ContentSelector"
+        name: "relatedSituations"
+        label: "Situasjoner"
+        helpText: "Velg aktuelle situasjoner for denne produktsiden"
+        occurrences:
+          min: 0
+          max: 0
+        attributes:
+          showStatus: "true"
+        allowContentType:
+          - "${app}:situation-page"

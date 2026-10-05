@@ -1,9 +1,17 @@
-import graphQlLib from '/lib/graphql';
-import { schema } from '../schema/schema';
+import httpClient from '/lib/http-client';
 import { RepoBranch } from '../../../types/common';
 import { mergeGuillotineArray, mergeGuillotineObject } from './merge-json';
 import { logger } from '../../utils/logging';
-import { runInContext } from '../../context/run-in-context';
+import { getContextRepoId } from '../../context/run-in-context';
+import { CONTENT_REPO_PREFIX } from '../../constants';
+import { GUILLOTINE_API_URL, rewriteLoopbackUrls } from './loopback-urls';
+import {
+    buildForwardedQueryContextHeader,
+    FORWARDED_QUERY_CONTEXT_HEADER,
+} from './forwarded-query-context';
+
+const CONNECTION_TIMEOUT_MS = 5000;
+const READ_TIMEOUT_MS = 60000;
 
 // We don't have any good Typescript integration with Guillotine/GraphQL atm
 // so just return as any for now...
@@ -23,8 +31,52 @@ export type GuillotineQueryParams = {
     query: string;
     branch: RepoBranch;
     jsonBaseKeys?: string[];
-    params?: Record<string, string>;
+    params?: Record<string, string | boolean>;
     throwOnErrors?: boolean;
+};
+
+const getProjectIdFromContext = () => {
+    const repoId = getContextRepoId();
+    return repoId.replace(`${CONTENT_REPO_PREFIX}.`, '');
+};
+
+const executeQuery = (
+    query: string,
+    branch: RepoBranch,
+    params: Record<string, string | boolean>
+): GraphQLResponse => {
+    const url = `${GUILLOTINE_API_URL}/${getProjectIdFromContext()}/${branch}`;
+
+    const response = httpClient.request({
+        url,
+        method: 'POST',
+        connectionTimeout: CONNECTION_TIMEOUT_MS,
+        readTimeout: READ_TIMEOUT_MS,
+        contentType: 'application/json',
+        headers: {
+            secret: app.config.serviceSecret,
+            [FORWARDED_QUERY_CONTEXT_HEADER]: buildForwardedQueryContextHeader(),
+        },
+        body: JSON.stringify({ query, variables: params }),
+    });
+
+    if (response.status !== 200 || !response.body) {
+        return {
+            errors: [{ message: `Guillotine request to ${url} failed with ${response.status}` }],
+        };
+    }
+
+    try {
+        // Guillotine 8 returns null elements for unresolvable references in content lists, whereas
+        // lib-guillotine in XP7 omitted these
+        return JSON.parse(rewriteLoopbackUrls(response.body), (_key: string, value: unknown) =>
+            Array.isArray(value) ? value.filter((item) => item !== null) : value
+        );
+    } catch (e) {
+        return {
+            errors: [{ message: `Invalid response from Guillotine request to ${url} - ${e}` }],
+        };
+    }
 };
 
 export const runGuillotineQuery = ({
@@ -34,11 +86,7 @@ export const runGuillotineQuery = ({
     params = {},
     throwOnErrors = false,
 }: GuillotineQueryParams) => {
-    const result = runInContext({ branch, asAdmin: true }, () =>
-        graphQlLib.execute<undefined, GraphQLResponse>(schema, query, params)
-    );
-
-    const { data, errors } = result;
+    const { data, errors } = executeQuery(query, branch, params);
 
     if (errors) {
         const errorMsg = `GraphQL errors for ${JSON.stringify(params)}: ${errors

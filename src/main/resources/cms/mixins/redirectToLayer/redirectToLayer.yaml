@@ -1,0 +1,18 @@
+kind: "Mixin"
+title: "Redirect til språkversjon"
+form:
+  - type: "ComboBox"
+    name: "locale"
+    label: "Obs: språkversjonen må være lokalisert"
+    occurrences:
+      min: 0
+      max: 1
+    options:
+      - value: "no"
+        label: "Norsk bokmål"
+      - value: "nn"
+        label: "Nynorsk"
+      - value: "en"
+        label: "Engelsk"
+      - value: "se"
+        label: "Samisk"

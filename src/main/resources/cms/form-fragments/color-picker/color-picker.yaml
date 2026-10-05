@@ -1,0 +1,12 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "CustomSelector"
+    name: "color"
+    label: "Velg farge"
+    helpText: "Velg fra designsystemets fargepalett, eller en egendefinert hex-code,\
+      \ f.eks. #0451ff"
+    occurrences:
+      min: 1
+      max: 1
+    service: "colorPicker"

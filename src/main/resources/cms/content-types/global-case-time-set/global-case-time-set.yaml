@@ -1,0 +1,6 @@
+kind: "ContentType"
+superType: "base:structured"
+final: true
+title: "Saksbehandlingstider"
+description: "Saksbehandlingstider som forvaltes sentralt og kan benyttes i tekster"
+form: []

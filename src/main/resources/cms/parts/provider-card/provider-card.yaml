@@ -1,0 +1,19 @@
+kind: "Part"
+title: "Tilbyderkort"
+description: "Benyttes på livssituasjonssider for lenking til eksterne tilbydere."
+form:
+  - type: "FormFragment"
+    name: "link"
+  - type: "TextArea"
+    name: "description"
+    label: "Beskrivelse"
+    occurrences:
+      min: 0
+      max: 1
+    maxLength: 300
+  - type: "TextLine"
+    name: "endnote"
+    label: "Sluttnote / kategorinavn"
+    occurrences:
+      min: 0
+      max: 1

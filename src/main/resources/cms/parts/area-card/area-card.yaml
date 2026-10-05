@@ -1,0 +1,34 @@
+kind: "Part"
+title: "Områdekort"
+form:
+  - type: "FormFragment"
+    name: "link"
+  - type: "ComboBox"
+    name: "area"
+    label: "Grafikk"
+    occurrences:
+      min: 1
+      max: 1
+    options:
+      - value: "payments"
+        label: "Dine utbetalinger"
+      - value: "cases"
+        label: "Dine saker"
+      - value: "employment-status-form"
+        label: "Dine meldekort"
+      - value: "work"
+        label: "Arbeid"
+      - value: "family"
+        label: "Familie og barn"
+      - value: "health"
+        label: "Helse og sykdom"
+      - value: "accessibility"
+        label: "Hjelpemidler og tilrettelegging"
+      - value: "pension"
+        label: "Pensjon"
+      - value: "social_counselling"
+        label: "Økonomisk sosialhjelp, råd og veiledning"
+config:
+  allowOnContentType:
+    - "${app}:front-page"
+    - "portal:page-template"

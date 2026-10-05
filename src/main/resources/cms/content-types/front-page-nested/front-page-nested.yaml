@@ -1,0 +1,19 @@
+kind: "ContentType"
+superType: "base:structured"
+final: true
+title: "Underforside"
+description: "Underforside med utgang til redaksjonelt styrte sider"
+form:
+  - type: "FormFragment"
+    name: "audience"
+  - type: "FormFragment"
+    name: "illustration"
+  - type: "FormFragment"
+    name: "external-product-url"
+  - type: "FieldSet"
+    label: "Kort-url"
+    items:
+      - type: "FormFragment"
+        name: "custom-path-selector-required"
+  - type: "FormFragment"
+    name: "dynamic-page-common"

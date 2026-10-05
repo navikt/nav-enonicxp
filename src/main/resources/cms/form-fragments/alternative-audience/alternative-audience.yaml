@@ -1,0 +1,106 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "OptionSet"
+    name: "alternativeAudience"
+    expanded: false
+    label: "Aktuelle målgrupper"
+    helpText: "Hvis det finnes tilsvarende produktside for andre målgrupper, skal\
+      \ de legges inn her."
+    occurrences:
+      min: 0
+      max: 1
+    options:
+      - name: "person"
+        label: "Privatperson"
+        items:
+          - type: "CustomSelector"
+            name: "targetPage"
+            label: "Innhold"
+            helpText: "Velg innholdet som brukeren skal sendes til"
+            occurrences:
+              min: 1
+              max: 1
+            service: "contentSelector"
+            params:
+              contentTypes: "[\"no.nav.navno:content-page-with-sidemenus\", \"\
+                no.nav.navno:themed-article-page\", \"no.nav.navno:guide-page\"\
+                ]"
+              selectorQuery: "data.audience._selected=\"person\""
+      - name: "employer"
+        label: "Arbeidsgiver"
+        items:
+          - type: "CustomSelector"
+            name: "targetPage"
+            label: "Innhold"
+            helpText: "Velg innholdet som brukeren skal sendes til"
+            occurrences:
+              min: 1
+              max: 1
+            service: "contentSelector"
+            params:
+              contentTypes: "[\"no.nav.navno:content-page-with-sidemenus\", \"\
+                no.nav.navno:themed-article-page\", \"no.nav.navno:guide-page\"\
+                ]"
+              selectorQuery: "data.audience._selected=\"employer\""
+      - name: "provider"
+        label: "Samarbeidspartner"
+        items:
+          - type: "ItemSet"
+            name: "providerList"
+            label: "Velg samarbeidspartner"
+            occurrences:
+              min: 1
+              max: 0
+            items:
+              - type: "OptionSet"
+                name: "subProviders"
+                expanded: false
+                label: "Type samarbeidspartner"
+                occurrences:
+                  min: 1
+                  max: 0
+                options:
+                  - name: "doctor"
+                    label: "Lege, tannlege eller annen behandler"
+                  - name: "municipality_employed"
+                    label: "Ansatt i kommunen eller fylkeskommunen"
+                  - name: "optician"
+                    label: "Optiker eller øyelege"
+                  - name: "administrator"
+                    label: "Bostyrer"
+                  - name: "measures_organizer"
+                    label: "Tiltaksarrangør"
+                  - name: "aid_supplier"
+                    label: "Hjelpemiddelformidler"
+                  - name: "trekkmottaker"
+                    label: "Trekkmottaker"
+                  - name: "other"
+                    label: "Andre samarbeidspartnere"
+                    items:
+                      - type: "TextLine"
+                        name: "overrideLabel"
+                        label: "Alternativ målgruppe"
+                        helpText: "For eksempel lese- og sekretærhjelp eller frilanstolk."
+                        occurrences:
+                          min: 0
+                          max: 1
+                selection:
+                  min: 1
+                  max: 1
+              - type: "CustomSelector"
+                name: "targetPage"
+                label: "Innhold"
+                helpText: "Velg innholdet som brukeren skal sendes til"
+                occurrences:
+                  min: 1
+                  max: 1
+                service: "contentSelector"
+                params:
+                  contentTypes: "[\"no.nav.navno:content-page-with-sidemenus\"\
+                    , \"no.nav.navno:themed-article-page\", \"no.nav.navno:guide-page\"\
+                    ]"
+                  selectorQuery: "data.audience._selected=\"provider\""
+    selection:
+      min: 1
+      max: 0

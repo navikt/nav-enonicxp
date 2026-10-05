@@ -1,0 +1,22 @@
+kind: "Mixin"
+title: "Fasetter"
+form:
+  - type: "TextLine"
+    name: "fasett"
+    label: "Fasett"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "TextLine"
+    name: "underfasett"
+    label: "Underfasett"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "TextLine"
+    name: "className"
+    label: "(tomt felt, skal ikke brukes)"
+    occurrences:
+      min: 0
+      max: 1
+    regexp: "^$"

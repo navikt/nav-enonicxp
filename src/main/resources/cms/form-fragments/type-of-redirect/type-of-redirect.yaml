@@ -1,0 +1,11 @@
+kind: "FormFragment"
+title: "Type redirect"
+form:
+  - type: "CheckBox"
+    name: "permanentRedirect"
+    label: "Permanent redirect (innhold flyttet til ny url)"
+    helpText: "Velg hvis dette er en permanent redirect (308). Midlertidig (307) er\
+      \ standard."
+    occurrences:
+      min: 0
+      max: 1

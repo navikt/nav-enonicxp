@@ -1,0 +1,11 @@
+kind: "Macro"
+title: "Tankestrek"
+description: "Sett inn lang tankestrek – i brødteksten"
+form:
+  - type: "TextLine"
+    name: "dummy"
+    label: "(tomt felt, skal ikke brukes)"
+    occurrences:
+      min: 0
+      max: 1
+    regexp: "^$"

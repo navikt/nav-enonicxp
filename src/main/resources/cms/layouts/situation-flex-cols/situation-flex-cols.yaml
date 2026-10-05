@@ -1,0 +1,55 @@
+kind: "Layout"
+title: "Fleksibelt kolonne-layout for situasjons-side"
+description: "Responsive flexbox-kolonner"
+form:
+  - type: "FormFragment"
+    name: "header-with-anchor"
+  - type: "HtmlArea"
+    name: "ingress"
+    label: "Ingress"
+    occurrences:
+      min: 0
+      max: 1
+    exclude: "JustifyBlock JustifyLeft JustifyCenter JustifyRight BulletedList NumberedList\n\
+      \                    Outdent Indent Anchor Image Macro Table Underline\n   \
+      \             "
+    include: "Undo Redo Bold"
+    allowHeadings: "normal"
+  - type: "Long"
+    name: "numCols"
+    label: "Antall kolonner ved full skjermbredde"
+    occurrences:
+      min: 0
+      max: 1
+    min: 1
+    max: 3
+  - type: "RadioButton"
+    name: "justifyContent"
+    label: "Justering"
+    helpText: "\n                Justering for ufullstendige rader\n            "
+    occurrences:
+      min: 0
+      max: 1
+    options:
+      - value: "flex-start"
+        label: "Venstre"
+      - value: "center"
+        label: "Midtstilt"
+      - value: "flex-end"
+        label: "Høyre"
+    default: "flex-start"
+  - type: "ItemSet"
+    name: "bgColor"
+    label: "Bakgrunnsfarge"
+    occurrences:
+      min: 0
+      max: 1
+    items:
+      - type: "FormFragment"
+        name: "color-picker"
+regions:
+  - "flexcols"
+config:
+  allowOnContentType:
+    - "${app}:situation-page"
+    - "portal:page-template"

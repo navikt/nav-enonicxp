@@ -1,0 +1,91 @@
+kind: "ContentType"
+superType: "base:structured"
+final: true
+title: "Oversettelser for ikke-lokalisert innhold"
+description: "Benyttes ved behov for oversetting av enkelt-felter på innhold som ikke\
+  \ er lokalisert"
+form:
+  - type: "CheckBox"
+    name: "forceRefresh"
+    label: "Oppdater listen (kryss av og lagre for å oppdatere)"
+    helpText: "Oppdaterer listen ut fra valgte restriksjoner (maks 500 elementer)"
+    occurrences:
+      min: 0
+      max: 1
+    default: "unchecked"
+  - type: "ItemSet"
+    name: "items"
+    label: "Oversettelser"
+    occurrences:
+      min: 0
+      max: 0
+    items:
+      - type: "CheckBox"
+        name: "enabled"
+        label: "Aktiver oversettelse (husk å kryss av!)"
+        helpText: "Må aktiveres dersom oversettelsen skal vises for dette innholdet"
+        occurrences:
+          min: 0
+          max: 1
+        default: "unchecked"
+      - type: "TextLine"
+        name: "title"
+        label: "Sidetittel"
+        occurrences:
+          min: 1
+          max: 1
+      - type: "TextLine"
+        name: "sortTitle"
+        label: "Tittel for utlisting og sortering"
+        helpText: "Hvis tom benyttes sidetittel"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "TextArea"
+        name: "ingress"
+        label: "Ingress"
+        occurrences:
+          min: 1
+          max: 1
+      - type: "TextLine"
+        name: "externalProductUrl"
+        label: "Overstyr URL"
+        helpText: "Dersom dette feltet er tomt vil det lenkes til norsk versjon"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "CustomSelector"
+        name: "contentId"
+        label: "Velg et innhold"
+        occurrences:
+          min: 1
+          max: 1
+        service: "contentSelector"
+        params:
+          selectorQuery: "{data.contentQuery} AND type IN ({data.contentTypes, true})"
+          sort: "displayName ASC"
+          sourcePage: "content-data-locale-fallback"
+  - type: "FieldSet"
+    label: "Innholdstyper som skal kunne velges"
+    items:
+      - type: "ContentTypeFilter"
+        name: "contentTypes"
+        label: "Velg innholdstyper"
+        occurrences:
+          min: 1
+          max: 0
+        context: true
+  - type: "FieldSet"
+    label: "Andre restriksjoner på innholdsvelger"
+    items:
+      - type: "TextLine"
+        name: "contentQuery"
+        label: "Må være en gyldig NoQL query string"
+        helpText: "Dersom flere restriksjoner skal gjelde for hvilket innhold som\
+          \ kan velges, kan det legges\n                        inn her\n        \
+          \            "
+        occurrences:
+          min: 1
+          max: 1
+        regexp: "^inherit=\"CONTENT\".*$"
+        default: "inherit=\"CONTENT\""

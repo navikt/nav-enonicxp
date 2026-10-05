@@ -1,0 +1,13 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "FieldSet"
+    label: "Filter"
+    items:
+      - type: "CustomSelector"
+        name: "filters"
+        label: "Velg filtre"
+        occurrences:
+          min: 0
+          max: 0
+        service: "filterSelector"

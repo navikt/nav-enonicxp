@@ -1,0 +1,76 @@
+kind: "ContentType"
+superType: "base:structured"
+final: true
+title: "Oppsett for nytt søk"
+form:
+  - type: "ItemSet"
+    name: "defaultKeys"
+    label: "Standard-felter"
+    helpText: "Ved flere valg brukes første felt som er definert på innholdet"
+    occurrences:
+      min: 1
+      max: 1
+    items:
+      - type: "TextLine"
+        name: "titleKey"
+        label: "Felter for tittel"
+        occurrences:
+          min: 1
+          max: 0
+      - type: "TextLine"
+        name: "ingressKey"
+        label: "Felter for ingress"
+        occurrences:
+          min: 0
+          max: 0
+      - type: "TextLine"
+        name: "textKey"
+        label: "Felter for innhold"
+        occurrences:
+          min: 0
+          max: 0
+  - type: "ItemSet"
+    name: "contentGroups"
+    label: "Oppsett for innholdstyper"
+    occurrences:
+      min: 0
+      max: 0
+    items:
+      - type: "TextLine"
+        name: "name"
+        label: "Navn på denne gruppen"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "ContentTypeFilter"
+        name: "contentTypes"
+        label: "Velg innholdstyper for denne gruppen"
+        occurrences:
+          min: 1
+          max: 0
+      - type: "ItemSet"
+        name: "groupKeys"
+        label: "Oppsett av felter (overstyrer standard-oppsett)"
+        helpText: "Ved flere valg brukes første felt som er definert på innholdet"
+        occurrences:
+          min: 0
+          max: 1
+        items:
+          - type: "TextLine"
+            name: "titleKey"
+            label: "Felter for tittel"
+            occurrences:
+              min: 0
+              max: 0
+          - type: "TextLine"
+            name: "ingressKey"
+            label: "Felter for ingress"
+            occurrences:
+              min: 0
+              max: 0
+          - type: "TextLine"
+            name: "textKey"
+            label: "Felter for innhold"
+            occurrences:
+              min: 0
+              max: 0

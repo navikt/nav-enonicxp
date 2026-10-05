@@ -1,11 +1,10 @@
 import * as contentLib from '/lib/xp/content';
-import graphQlLib from '/lib/graphql';
 import { runInContext } from '../../../../lib/context/run-in-context';
 import { forceArray } from '../../../../lib/utils/array-utils';
 import { FormIntermediateStepData } from '@xp-types/site/mixins/form-intermediate-step-data';
 import { FormDetails } from '@xp-types/site/content-types/form-details';
 
-import { CreationCallback } from '../../utils/creation-callback-utils';
+import { SchemaExtension } from '../../utils/creation-callback-utils';
 
 const extractFormNumbersFromSteps = (steps: FormIntermediateStepData['steps']): string[] => {
     const numbers: string[] = [];
@@ -73,55 +72,67 @@ const getFormNumbersFromVariations = (formType: FormDetails['formType']) => {
     return formNumbers;
 };
 
-export const formDetailsCallback: CreationCallback = (context, params) => {
-    params.fields.data.resolve = (env) => {
-        const contentId = env.source._id;
+export const formDetailsCallback: SchemaExtension = (graphQL, typeName) => ({
+    resolvers: {
+        [typeName]: {
+            data: (env) => {
+                const contentId = env.source._id;
 
-        const formNumbers = dedupStrings([
-            ...forceArray(env.source.data.formNumbers),
-            ...getFormNumbersFromVariations(env.source.data.formType),
-        ]);
+                const formNumbers = dedupStrings([
+                    ...forceArray(env.source.data.formNumbers),
+                    ...getFormNumbersFromVariations(env.source.data.formType),
+                ]);
 
-        return runInContext({ branch: 'master' }, () => {
-            const alerts = contentLib.query({
-                count: 10,
-                contentTypes: ['no.nav.navno:alert-in-context'],
-                filters: {
-                    boolean: {
-                        must: [
-                            {
-                                hasValue: {
-                                    field: 'data.target.formDetails.targetContent',
-                                    values: [contentId],
-                                },
+                return runInContext({ branch: 'master' }, () => {
+                    const alerts = contentLib.query({
+                        count: 10,
+                        contentTypes: ['no.nav.navno:alert-in-context'],
+                        filters: {
+                            boolean: {
+                                must: [
+                                    {
+                                        hasValue: {
+                                            field: 'data.target.formDetails.targetContent',
+                                            values: [contentId],
+                                        },
+                                    },
+                                ],
                             },
-                        ],
-                    },
-                },
-            });
-            return {
-                ...env.source.data,
-                alerts: [...alerts.hits],
-                formNumbers,
-            };
-        });
-    };
-};
-
-export const formDetailsDataCallback: CreationCallback = (context, params) => {
-    params.fields.alerts = {
-        type: graphQlLib.list(graphQlLib.reference('no_nav_navno_AlertInContext')),
-    };
-    params.fields.formNumbers = {
-        type: graphQlLib.list(graphQlLib.GraphQLString),
-    };
-};
-
-export const formDetailsPartOrMacroCallback: CreationCallback = (context, params) => {
-    params.fields.targetFormDetails = {
-        type: graphQlLib.reference('no_nav_navno_FormDetails'),
-        resolve: (env) => {
-            return contentLib.get({ key: env.source.targetFormDetails });
+                        },
+                    });
+                    return {
+                        ...env.source.data,
+                        alerts: [...alerts.hits],
+                        formNumbers,
+                    };
+                });
+            },
         },
-    };
-};
+    },
+});
+
+export const formDetailsDataCallback: SchemaExtension = (graphQL, typeName) => ({
+    creationCallbacks: {
+        [typeName]: (params) => {
+            params.addFields({
+                alerts: { type: graphQL.list(graphQL.reference('no_nav_navno_AlertInContext')) },
+                formNumbers: { type: graphQL.list(graphQL.GraphQLString) },
+            });
+        },
+    },
+});
+
+export const formDetailsPartOrMacroCallback: SchemaExtension = (graphQL, typeName) => ({
+    creationCallbacks: {
+        [typeName]: (params) => {
+            params.addFields({
+                targetFormDetails: { type: graphQL.reference('no_nav_navno_FormDetails') },
+            });
+        },
+    },
+    resolvers: {
+        [typeName]: {
+            targetFormDetails: (env) => contentLib.get({ key: env.source.targetFormDetails }),
+        },
+    },
+});

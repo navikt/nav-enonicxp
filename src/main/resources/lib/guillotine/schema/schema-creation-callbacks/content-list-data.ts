@@ -1,8 +1,11 @@
-import graphQlLib from '/lib/graphql';
-import { CreationCallback } from '../../utils/creation-callback-utils';
+import { SchemaExtension } from '../../utils/creation-callback-utils';
 
-export const contentListDataCallback: CreationCallback = (context, params) => {
-    params.fields.sortedBy = {
-        type: graphQlLib.GraphQLString,
-    };
-};
+export const contentListDataCallback: SchemaExtension = (graphQL, typeName) => ({
+    creationCallbacks: {
+        [typeName]: (params) => {
+            params.addFields({
+                sortedBy: { type: graphQL.GraphQLString },
+            });
+        },
+    },
+});

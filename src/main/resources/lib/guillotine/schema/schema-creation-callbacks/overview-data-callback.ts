@@ -1,6 +1,9 @@
 import * as contentLib from '/lib/xp/content';
-import graphQlLib from '/lib/graphql';
-import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
+import {
+    FieldResolver,
+    ObjectTypeDefinition,
+    SchemaExtension,
+} from '../../utils/creation-callback-utils';
 import { buildOverviewList } from '../../../overview-pages/overview-v1/build-overview-list';
 import { logger } from '../../../utils/logging';
 import {
@@ -10,62 +13,73 @@ import {
 import { forceArray } from '../../../utils/array-utils';
 import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
 
-export const overviewDataCallback: CreationCallback = (context, params) => {
-    const productLinkType = graphQlCreateObjectType<keyof OverviewPageItemProductLink>(context, {
-        name: context.uniqueName('OverviewProductLink'),
+const PRODUCT_LINK_TYPE = 'OverviewProductLink';
+const PRODUCT_LIST_ITEM_TYPE = 'OverviewListItem';
+
+export const overviewDataCallback: SchemaExtension = (graphQL, typeName) => {
+    const productLinkType: ObjectTypeDefinition<keyof OverviewPageItemProductLink> = {
         description: 'Product link',
         fields: {
-            url: { type: graphQlLib.GraphQLString },
-            type: { type: graphQlLib.GraphQLString },
-            language: { type: graphQlLib.GraphQLString },
-            title: { type: graphQlLib.GraphQLString },
+            url: { type: graphQL.GraphQLString },
+            type: { type: graphQL.GraphQLString },
+            language: { type: graphQL.GraphQLString },
+            title: { type: graphQL.GraphQLString },
         },
-    });
+    };
 
-    const productListItemType = graphQlCreateObjectType<keyof OverviewPageItem>(context, {
-        name: context.uniqueName('OverviewListItem'),
+    const productListItemType: ObjectTypeDefinition<keyof OverviewPageItem> = {
         description: 'Product item in overview list',
         fields: {
-            anchorId: { type: graphQlLib.GraphQLString },
-            productDetailsPath: { type: graphQlLib.GraphQLString },
-            audience: { type: graphQlLib.GraphQLString },
-            title: { type: graphQlLib.GraphQLString },
-            ingress: { type: graphQlLib.GraphQLString },
-            illustration: {
-                type: graphQlLib.reference('Content'),
-                resolve: (env) => {
+            anchorId: { type: graphQL.GraphQLString },
+            productDetailsPath: { type: graphQL.GraphQLString },
+            audience: { type: graphQL.GraphQLString },
+            title: { type: graphQL.GraphQLString },
+            ingress: { type: graphQL.GraphQLString },
+            illustration: { type: graphQL.reference('Content') },
+            productLinks: { type: graphQL.list(graphQL.reference(PRODUCT_LINK_TYPE)) },
+            taxonomy: { type: graphQL.list(graphQL.GraphQLString) },
+            area: { type: graphQL.list(graphQL.GraphQLString) },
+        },
+    };
+
+    return {
+        types: {
+            [PRODUCT_LINK_TYPE]: productLinkType,
+            [PRODUCT_LIST_ITEM_TYPE]: productListItemType,
+        },
+        creationCallbacks: {
+            [typeName]: (params) => {
+                params.addFields({
+                    productList: { type: graphQL.list(graphQL.reference(PRODUCT_LIST_ITEM_TYPE)) },
+                });
+            },
+        },
+        resolvers: {
+            [PRODUCT_LIST_ITEM_TYPE]: <Record<string, FieldResolver>>{
+                illustration: (env) => {
                     const { illustration } = env.source;
                     return illustration ? contentLib.get({ key: illustration }) : illustration;
                 },
+                taxonomy: (env) => forceArray(env.source.taxonomy),
+                area: (env) => forceArray(env.source.area),
             },
-            productLinks: { type: graphQlLib.list(productLinkType) },
-            taxonomy: {
-                type: graphQlLib.list(graphQlLib.GraphQLString),
-                resolve: (env) => forceArray(env.source.taxonomy),
+            [typeName]: <Record<string, FieldResolver>>{
+                productList: (): OverviewPageItem[] => {
+                    const contentId = getGuillotineContentQueryBaseContentId();
+                    if (!contentId) {
+                        logger.warning('No contentId provided for overview page resolver');
+                        return [];
+                    }
+
+                    const content = contentLib.get({ key: contentId });
+                    if (content?.type !== 'no.nav.navno:overview') {
+                        logger.error(`Content not found for overview page id ${contentId}`);
+                        return [];
+                    }
+
+                    return buildOverviewList(content);
+                },
             },
-            area: {
-                type: graphQlLib.list(graphQlLib.GraphQLString),
-                resolve: (env) => forceArray(env.source.area),
-            },
-        },
-    });
-
-    params.fields.productList = {
-        type: graphQlLib.list(productListItemType),
-        resolve: (): OverviewPageItem[] => {
-            const contentId = getGuillotineContentQueryBaseContentId();
-            if (!contentId) {
-                logger.warning('No contentId provided for overview page resolver');
-                return [];
-            }
-
-            const content = contentLib.get({ key: contentId });
-            if (content?.type !== 'no.nav.navno:overview') {
-                logger.error(`Content not found for overview page id ${contentId}`);
-                return [];
-            }
-
-            return buildOverviewList(content);
         },
     };
 };

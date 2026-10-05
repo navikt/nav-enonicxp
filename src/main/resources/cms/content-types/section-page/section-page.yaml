@@ -1,0 +1,77 @@
+kind: "ContentType"
+superType: "base:unstructured"
+title: "Oppslagstavle"
+description: "Seksjonsside (bokser). Eksempel Person/Bedrift/NAV og Samfunn/DITT NAV"
+form:
+  - type: "FormFragment"
+    name: "ingress"
+  - type: "FormFragment"
+    name: "main-panels"
+  - type: "FormFragment"
+    name: "link-panels"
+  - type: "FieldSet"
+    label: "Nyttig å vite"
+    items:
+      - type: "Long"
+        name: "nrNTK"
+        label: "Hvor mange elementer i undermenyene er tillatt"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "ContentSelector"
+        name: "ntkContents"
+        label: "Velg innhold"
+        occurrences:
+          min: 0
+          max: 1
+        allowContentType:
+          - "${app}:content-list"
+        treeMode: true
+  - type: "FieldSet"
+    label: "Nyheter"
+    items:
+      - type: "Long"
+        name: "nrNews"
+        label: "Hvor mange elementer i undermenyene er tillatt"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "ContentSelector"
+        name: "newsContents"
+        label: "Velg innhold"
+        occurrences:
+          min: 0
+          max: 1
+        allowContentType:
+          - "${app}:content-list"
+        treeMode: true
+      - type: "TextLine"
+        name: "moreNewsUrl"
+        label: "Url til flere nyheter"
+        occurrences:
+          min: 0
+          max: 1
+  - type: "FieldSet"
+    label: "Snarveier"
+    items:
+      - type: "Long"
+        name: "nrSC"
+        label: "Hvor mange elementer i undermenyene er tillatt"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "ContentSelector"
+        name: "scContents"
+        label: "Velg innhold"
+        occurrences:
+          min: 0
+          max: 1
+        allowContentType:
+          - "${app}:content-list"
+        treeMode: true
+  - type: "FormFragment"
+    name: "languages-legacy"
+  - type: "FormFragment"
+    name: "decorator-toggles"
+  - type: "FormFragment"
+    name: "seo"

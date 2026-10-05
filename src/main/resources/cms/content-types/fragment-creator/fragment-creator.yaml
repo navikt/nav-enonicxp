@@ -1,0 +1,18 @@
+kind: "ContentType"
+superType: "base:structured"
+final: true
+title: "Fragment"
+description: "Opprett et fragment direkte, uten å gå via en annen side"
+form:
+  - type: "RadioButton"
+    name: "type"
+    label: "Velg type fragment og lagre"
+    occurrences:
+      min: 1
+      max: 1
+    options:
+      - value: "part"
+        label: "Part (for tekst og andre enkeltstående komponenter)"
+      - value: "layout"
+        label: "Layout (for seksjoner som kan inneholde flere komponenter)"
+    default: "part"

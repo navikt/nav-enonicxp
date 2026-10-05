@@ -1,0 +1,86 @@
+kind: "ContentType"
+superType: "base:unstructured"
+abstract: true
+title: "Varsel"
+description: "Viktig informasjon som vises over alt annet innhold (legacy, skal ikke\
+  \ brukes!)"
+form:
+  - type: "FieldSet"
+    label: "Varsel"
+    items:
+      - type: "FormFragment"
+        name: "icon-selector"
+      - type: "TextLine"
+        name: "title"
+        label: "Tittel (overstyrer sidetittel fra valgt innhold)"
+        helpText: "\n                        Fylles ut hvis du vil overstyre visning\
+          \ av tittel fra innhold\n                        det henvises til.\n   \
+          \                 "
+        occurrences:
+          min: 0
+          max: 1
+      - type: "CheckBox"
+        name: "showDescription"
+        label: "Vis beskrivelse/ingress"
+        helpText: "Kryss av for å vise en beskrivelse eller ingress i lenkepanelet"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "FormFragment"
+        name: "ingress"
+      - type: "CheckBox"
+        name: "showUpdated"
+        label: "Vis oppdateringstidspunkt"
+        helpText: "Kryss av for å vise oppdateringstidspunktet i lenkepanelet"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "ContentSelector"
+        name: "target"
+        label: "Innhold det henvises til"
+        helpText: "Velg innhold som det skal henvises til"
+        occurrences:
+          min: 1
+          max: 1
+        attributes:
+          showStatus: "true"
+        allowContentType:
+          - "${app}:external-link"
+          - "${app}:faq-page"
+          - "${app}:internal-link"
+          - "${app}:main-article"
+          - "${app}:main-article-chapter"
+          - "${app}:page-list"
+          - "${app}:section-page"
+          - "${app}:transport-page"
+          - "${app}:dynamic-page"
+          - "${app}:content-page-with-sidemenus"
+          - "${app}:situation-page"
+          - "${app}:guide-page"
+          - "media:video"
+        allowPath:
+          - "${site}/*"
+      - type: "ContentSelector"
+        name: "notificationToReplaceId"
+        label: "Hvis du skal ersatte et globalt varsel, velg hvilket"
+        helpText: "Velg globalt varsel som varselet skal ersatte"
+        occurrences:
+          min: 0
+          max: 1
+        attributes:
+          showStatus: "true"
+        allowContentType:
+          - "${app}:notification"
+        allowPath:
+          - "${site}/global-notifications"
+      - type: "RadioButton"
+        name: "type"
+        label: "Ikon-type (deprecated, overstyres dersom ikon er valgt ovenfor)"
+        occurrences:
+          min: 0
+          max: 1
+        options:
+          - value: "warning"
+            label: "Kritisk informasjon (virus-ikon/korona)"
+          - value: "info"
+            label: "Viktig informasjon (info-ikon)"

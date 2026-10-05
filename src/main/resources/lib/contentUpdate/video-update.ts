@@ -65,7 +65,6 @@ const createImageAsset = (imageUrl: string, targetPath: string, targetName: stri
     return contentLib.createMedia<Content<'media:image'>>({
         name: `${targetName}.jpg`,
         parentPath: `${targetPath}`,
-        mimeType: 'image/jpeg',
         data: response.bodyStream as unknown as ByteSource,
     });
 };

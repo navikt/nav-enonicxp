@@ -90,7 +90,7 @@ const transformContent = (content: Content): ContentSummary => {
         path: content._path,
         customPath: hasValidCustomPath(content) ? content.data.customPath : undefined,
         displayName: content.displayName,
-        type: contentLib.getType(content.type)?.displayName || '',
+        type: contentLib.getType(content.type)?.title || '',
         publish: getPublishInfo(content),
     };
 };

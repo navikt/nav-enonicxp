@@ -1,0 +1,72 @@
+kind: "ContentType"
+superType: "base:structured"
+final: true
+title: "Områdeside"
+description: "Områdeside"
+form:
+  - type: "FieldSet"
+    label: "Områdedata"
+    items:
+      - type: "FormFragment"
+        name: "audience"
+      - type: "ComboBox"
+        name: "area"
+        label: "Område"
+        occurrences:
+          min: 1
+          max: 1
+        options:
+          - value: "work"
+            label: "Arbeid"
+          - value: "family"
+            label: "Familie og barn"
+          - value: "health"
+            label: "Helse og sykdom"
+          - value: "accessibility"
+            label: "Hjelpemidler og tilrettelegging"
+          - value: "pension"
+            label: "Pensjon"
+          - value: "social_counselling"
+            label: "Sosiale tjenester og veiledning"
+          - value: "other"
+            label: "Annet"
+  - type: "FieldSet"
+    label: "Header"
+    items:
+      - type: "TextLine"
+        name: "header"
+        label: "Overskrift"
+        occurrences:
+          min: 1
+          max: 1
+      - type: "ItemSet"
+        name: "banner"
+        label: "Banner"
+        occurrences:
+          min: 0
+          max: 1
+        items:
+          - type: "FormFragment"
+            name: "link"
+          - type: "FormFragment"
+            name: "color-picker"
+          - type: "HtmlArea"
+            name: "html"
+            label: "Innhold"
+            occurrences:
+              min: 0
+              max: 1
+            exclude: "JustifyBlock JustifyLeft JustifyCenter JustifyRight BulletedList\
+              \ NumberedList\n                                    Outdent Indent Anchor\
+              \ Link Unlink Table Underline\n                                "
+            include: "Undo Redo Bold"
+            allowHeadings: "normal"
+  - type: "FormFragment"
+    name: "owner"
+  - type: "FieldSet"
+    label: "Kort-url"
+    items:
+      - type: "FormFragment"
+        name: "custom-path-selector-required"
+  - type: "FormFragment"
+    name: "dynamic-page-common"

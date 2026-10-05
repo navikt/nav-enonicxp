@@ -1,0 +1,31 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "FieldSet"
+    label: "Utvidbart panel"
+    items:
+      - type: "CheckBox"
+        name: "expandable"
+        label: "Utvidbar"
+        occurrences:
+          min: 0
+          max: 1
+        attributes:
+          default: "unchecked"
+      - type: "TextLine"
+        name: "expandableTitle"
+        label: "Tittel på utvidbart panel"
+        occurrences:
+          min: 0
+          max: 1
+        attributes:
+          default: "Tittel"
+      - type: "TextLine"
+        name: "expandableAnchorId"
+        label: "Anker-id på utvidbart panel"
+        helpText: "Sett denne dersom det skal lenkes direkte til dette panelet, f.eks.\
+          \ nav.no/min-side#mitt-anker-id"
+        occurrences:
+          min: 0
+          max: 1
+        regexp: "^[0-9a-zA-Z-_]+$"

@@ -1,0 +1,21 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "ContentSelector"
+    name: "target"
+    label: "Innhold det skal lenkes til"
+    occurrences:
+      min: 1
+      max: 1
+    attributes:
+      showStatus: "true"
+    allowContentType:
+      - "^(?!media:*$).*"
+    allowPath:
+      - "/www.nav.no/*"
+  - type: "TextLine"
+    name: "text"
+    label: "Lenketekst (hvis tom vil tittel på innholdet vises)"
+    occurrences:
+      min: 0
+      max: 1

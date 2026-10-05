@@ -1,0 +1,8 @@
+kind: "Layout"
+title: "Fast kolonne-layout - 1 kolonne"
+description: "En kolonne"
+form:
+  - type: "FormFragment"
+    name: "layouts-common"
+regions:
+  - "dynamic-1"

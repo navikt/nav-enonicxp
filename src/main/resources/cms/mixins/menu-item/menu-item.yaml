@@ -1,0 +1,21 @@
+kind: "Mixin"
+title: "Menu settings"
+form:
+  - type: "CheckBox"
+    name: "menuItem"
+    label: "Show in Menu?"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "TextLine"
+    name: "menuName"
+    label: "Override menu name"
+    occurrences:
+      min: 0
+      max: 1
+  - type: "CheckBox"
+    name: "newWindow"
+    label: "Open in new window?"
+    occurrences:
+      min: 0
+      max: 1

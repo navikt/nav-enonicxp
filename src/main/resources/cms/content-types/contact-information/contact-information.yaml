@@ -1,0 +1,120 @@
+kind: "ContentType"
+superType: "base:unstructured"
+title: "Kontaktinformasjon"
+description: "Informasjon om kontaktpunkt som kan brukes på tvers av nav.no"
+form:
+  - type: "OptionSet"
+    name: "contactType"
+    expanded: false
+    label: "Kontakttype"
+    occurrences:
+      min: 1
+      max: 1
+    options:
+      - name: "chat"
+        label: "Chat med oss"
+        items:
+          - type: "TextLine"
+            name: "title"
+            label: "Tittel"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextArea"
+            name: "alertText"
+            label: "Avvikstekst"
+            helpText: "\n                                Brukes kun dersom det finnes\
+              \ avvik, f.eks. ved midlertidige tekniske problemer.\n             \
+              \               "
+            occurrences:
+              min: 0
+              max: 1
+          - type: "HtmlArea"
+            name: "ingress"
+            label: "Ingress"
+            occurrences:
+              min: 0
+              max: 1
+            include: "Undo Redo"
+          - type: "FormFragment"
+            name: "opening-hours"
+      - name: "write"
+        label: "Skriv til oss"
+        items:
+          - type: "TextLine"
+            name: "title"
+            label: "Tittel"
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextLine"
+            name: "url"
+            label: "URL"
+            occurrences:
+              min: 0
+              max: 1
+            default: "https://www.nav.no/kontaktoss#skriv-til-oss"
+          - type: "TextArea"
+            name: "alertText"
+            label: "Avvikstekst"
+            helpText: "\n                                Brukes kun dersom det finnes\
+              \ avvik, f.eks. ved midlertidige tekniske problemer.\n             \
+              \               "
+            occurrences:
+              min: 0
+              max: 1
+          - type: "HtmlArea"
+            name: "ingress"
+            label: "Ingress"
+            occurrences:
+              min: 0
+              max: 1
+            include: "Undo Redo"
+      - name: "telephone"
+        label: "Telefonnummer"
+        items:
+          - type: "TextLine"
+            name: "title"
+            label: "Tittel"
+            helpText: "Tittelen som skal vises i overskriften f.eks. (\"Ring telefon\
+              \ 55 55 33 33\")\n                            "
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextLine"
+            name: "phoneNumber"
+            label: "Telefonnummer"
+            helpText: "Kun tall og uten mellomrom, f.eks. (\"+4755553333\")"
+            occurrences:
+              min: 0
+              max: 1
+            regexp: "^[0-9+]+$"
+          - type: "TextArea"
+            name: "text"
+            label: "Tekst"
+            helpText: "Kan også brukes for å overstyre tekst dersom spesielle åpningstider\
+              \ er i bruk."
+            occurrences:
+              min: 0
+              max: 1
+          - type: "TextArea"
+            name: "alertText"
+            label: "Avvikstekst"
+            helpText: "\n                                Når avviksfeltet er i bruk,\
+              \ vises ikke \"Åpent nå/Stengt nå\"-teksten. Brukes feks ved midlertidige\
+              \ tekniske problemer.\n                            "
+            occurrences:
+              min: 0
+              max: 1
+          - type: "CheckBox"
+            name: "hideMoreLink"
+            label: "Ikke vis lenken \"Flere telefonnummer og tastevalg\""
+            occurrences:
+              min: 0
+              max: 1
+            default: "unchecked"
+          - type: "FormFragment"
+            name: "opening-hours"
+    selection:
+      min: 1
+      max: 1

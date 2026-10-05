@@ -1,0 +1,20 @@
+kind: "ContentType"
+superType: "base:unstructured"
+title: "Kapittel"
+description: "Brukes ifm. artikkel med høyremeny"
+form:
+  - type: "ContentSelector"
+    name: "article"
+    label: "Velg artikkel"
+    helpText: "Dersom du velger en annen innholdstype enn Artikkel, vil dette kapittelet\
+      \ fungere som en redirect"
+    occurrences:
+      min: 1
+      max: 1
+    allowContentType:
+      - "${app}:main-article"
+      - "${app}:content-page-with-sidemenus"
+      - "${app}:situation-page"
+      - "${app}:guide-page"
+      - "${app}:tools-page"
+      - "${app}:themed-article-page"

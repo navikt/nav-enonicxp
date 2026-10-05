@@ -1,0 +1,56 @@
+import * as contentLib from '/lib/xp/content';
+import thymeleafLib from '/lib/thymeleaf';
+import { runInContext } from '../../../lib/context/run-in-context';
+import { getContentNodeKey } from '../../../lib/utils/content-utils';
+import { APP_DESCRIPTOR, NAVNO_NODE_ROOT_PATH } from '../../../lib/constants';
+
+const view = resolve('./dashboard.html');
+
+const dashboardInfo = () => {
+    const content = runInContext({ branch: 'master' }, () =>
+        contentLib.query({
+            query: {
+                term: {
+                    field: '_parentPath',
+                    value: NAVNO_NODE_ROOT_PATH + '/admin',
+                },
+            },
+            count: 100,
+            contentTypes: [`${APP_DESCRIPTOR}:announcement-to-editors`],
+            sort: 'createdTime DESC',
+        })
+    ).hits[0];
+
+    if (content) {
+        const { displayName, _path, data } = content;
+        // Hent eventuelt underliggende innhold av samme innholdstype som subseksjoner
+        // (XP8 har fjernet content.hasChildren, så vi spør alltid og bruker null ved tomt resultat)
+        const subSectionHits = runInContext({ branch: 'master' }, () =>
+            contentLib.query({
+                query: {
+                    term: {
+                        field: '_parentPath',
+                        value: getContentNodeKey(_path),
+                    },
+                },
+                count: 100,
+                contentTypes: [`${APP_DESCRIPTOR}:announcement-to-editors`],
+                sort: '_manualordervalue DESC',
+            })
+        ).hits;
+        const subSections = subSectionHits.length > 0 ? subSectionHits : null;
+        const { text, subText } = data;
+        const model = { displayName, text, subSections, subText };
+
+        return {
+            body: thymeleafLib.render(view, model),
+            contentType: 'text/html; charset=UTF-8',
+        };
+    }
+    return {
+        body: null,
+        contentType: 'text/html; charset=UTF-8',
+    };
+};
+
+export const get = dashboardInfo;

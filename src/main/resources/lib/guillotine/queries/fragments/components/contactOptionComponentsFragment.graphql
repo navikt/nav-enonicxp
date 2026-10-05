@@ -1,0 +1,19 @@
+#import "./parts/partContactOption.graphql"
+
+# The contact-option part is queried separately from the other components, as including it in
+# allComponents exceeds the maximum number of fields per query in the Guillotine app
+fragment contactOptionComponents on Component {
+    path
+    part {
+        descriptor
+        config {
+            ... on PartComponentDataConfig {
+                no_nav_navno {
+                    contact_option {
+                        ...partComponentContactOption
+                    }
+                }
+            }
+        }
+    }
+}

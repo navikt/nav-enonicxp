@@ -1,0 +1,11 @@
+kind: "FormFragment"
+title: "_TEMP_"
+form:
+  - type: "ContentSelector"
+    name: "illustration"
+    label: "Velg piktogram"
+    occurrences:
+      min: 1
+      max: 1
+    allowContentType:
+      - "${app}:animated-icons"

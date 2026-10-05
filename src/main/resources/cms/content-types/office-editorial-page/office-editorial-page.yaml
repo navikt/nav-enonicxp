@@ -1,0 +1,23 @@
+kind: "ContentType"
+superType: "base:structured"
+final: true
+title: "Kontorside for redaktørinnhold"
+description: "Sidemal for redaktørdelen av kontorsidene.\n        Denne skal kun benyttes\
+  \ én gang pr språk på hver sidetype"
+form:
+  - type: "RadioButton"
+    name: "officeType"
+    label: "Kontortype"
+    occurrences:
+      min: 1
+      max: 1
+    options:
+      - value: "LOKAL"
+        label: "Lokalkontor"
+      - value: "ALS"
+        label: "Arbeidslivssenter"
+      - value: "ENHET"
+        label: "Enhet"
+    default: "LOKAL"
+  - type: "FormFragment"
+    name: "dynamic-page-common"

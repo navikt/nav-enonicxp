@@ -24,21 +24,21 @@ const dashboardInfo = () => {
     if (content) {
         const { displayName, _path, data } = content;
         // Hent eventuelt underliggende innhold av samme innholdstype som subseksjoner
-        const subSections = content.hasChildren
-            ? runInContext({ branch: 'master' }, () =>
-                  contentLib.query({
-                      query: {
-                          term: {
-                              field: '_parentPath',
-                              value: getContentNodeKey(_path),
-                          },
-                      },
-                      count: 100,
-                      contentTypes: [`${APP_DESCRIPTOR}:announcement-to-editors`],
-                      sort: '_manualordervalue DESC',
-                  })
-              ).hits
-            : null;
+        // (XP8 har fjernet content.hasChildren, så vi spør alltid og bruker null ved tomt resultat)
+        const subSectionHits = runInContext({ branch: 'master' }, () =>
+            contentLib.query({
+                query: {
+                    term: {
+                        field: '_parentPath',
+                        value: getContentNodeKey(_path),
+                    },
+                },
+                count: 100,
+                contentTypes: [`${APP_DESCRIPTOR}:announcement-to-editors`],
+                sort: '_manualordervalue DESC',
+            })
+        ).hits;
+        const subSections = subSectionHits.length > 0 ? subSectionHits : null;
         const { text, subText } = data;
         const model = { displayName, text, subSections, subText };
 

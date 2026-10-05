@@ -1,0 +1,80 @@
+kind: "Part"
+title: "Seksjon for kontaktinformasjon"
+description: "Til bruk på forsider"
+form:
+  - type: "TextLine"
+    name: "title"
+    label: "Tittel"
+    occurrences:
+      min: 1
+      max: 1
+    default: "Kontakt oss"
+  - type: "FieldSet"
+    label: "Chat"
+    items:
+      - type: "ContentSelector"
+        name: "sharedContactInformation"
+        label: "Hent tekster fra delte åpningstider"
+        helpText: "Dette vil overstyre eventuelle spesielle åpningstider du har lagt\
+          \ til nedenfor."
+        occurrences:
+          min: 0
+          max: 0
+        allowContentType:
+          - "${app}:contact-information"
+      - type: "TextLine"
+        name: "chatTitle"
+        label: "Overstyr header"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "TextArea"
+        name: "chatAlertText"
+        label: "Overstyr avvikstekst"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "TextArea"
+        name: "chatIngress"
+        label: "Overstyr ingress"
+        occurrences:
+          min: 0
+          max: 1
+  - type: "FieldSet"
+    label: "Kontakt oss"
+    items:
+      - type: "TextLine"
+        name: "contactUsTitle"
+        label: "Header"
+        occurrences:
+          min: 1
+          max: 1
+      - type: "TextArea"
+        name: "contactUsAlertText"
+        label: "Avvikstekst"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "TextArea"
+        name: "contactUsIngress"
+        label: "Ingress"
+        occurrences:
+          min: 1
+          max: 1
+      - type: "ContentSelector"
+        name: "contactUsLink"
+        label: "Lenke til kontakt-oss side"
+        occurrences:
+          min: 1
+          max: 1
+        allowContentType:
+          - "${app}:generic-page"
+          - "${app}:external-link"
+        allowPath:
+          - "/www.nav.no/*"
+config:
+  allowOnContentType:
+    - "${app}:front-page"
+    - "${app}:front-page-nested"
+    - "${app}:dynamic-page"
+    - "portal:page-template"

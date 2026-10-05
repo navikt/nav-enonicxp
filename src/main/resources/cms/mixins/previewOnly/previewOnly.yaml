@@ -1,0 +1,11 @@
+kind: "Mixin"
+title: "Vis som utkast"
+form:
+  - type: "CheckBox"
+    name: "previewOnly"
+    label: "Viser publisert innhold kun under nav.no/utkast/"
+    helpText: "For innhold som er under arbeid, men som skal kunne deles utenfor Enonic"
+    occurrences:
+      min: 0
+      max: 1
+    default: "unchecked"
