@@ -481,6 +481,27 @@ test('enumerates recursive editorial descendants as actual entries', () => {
     );
 });
 
+test('includes every page template', () => {
+    (Object.keys(repositories) as Array<keyof typeof repositories>).forEach((locale) =>
+        addNode(`page-${locale}`, '/www.nav.no/page', { locale })
+    );
+    addNode('templates', '/www.nav.no/_templates', { type: 'portal:template-folder' });
+    addNode('template', '/www.nav.no/_templates/underforside', { type: 'portal:page-template' });
+    const manifest = createCuratedExportManifest([], 'full', {
+        seeds: (Object.keys(repositories) as Array<keyof typeof repositories>).map((locale) => ({
+            repository: repositories[locale],
+            branch: 'master',
+            contentId: `page-${locale}`,
+        })),
+    });
+    expect(manifest.entries).toContainEqual(
+        expect.objectContaining({ contentId: 'templates', reason: 'page-templates' })
+    );
+    expect(manifest.entries).toContainEqual(
+        expect.objectContaining({ contentId: 'template', reason: 'page-templates' })
+    );
+});
+
 describe.each(['draft', 'master'] as const)('source consistency on %s', (branch) => {
     test.each(['version', 'path', 'missing-node', 'missing-version', 'missing-path'])(
         'rejects %s changes after graph selection',

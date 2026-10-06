@@ -42,15 +42,22 @@ const TYPE_COVERAGE_CONTENT_TYPES = dynamicPageContentTypes.filter(
 const EXCLUDED_ROOT_PATHS = ['/www.nav.no/brukertester', '/www.nav.no/testsider'];
 const REQUIRED_RECURSIVE_ROOTS: ReadonlyArray<{
     path: string;
-    reason: Extract<CuratedExportReason, 'office-editorial' | 'decorator-menu'>;
+    reason: Extract<CuratedExportReason, 'office-editorial' | 'decorator-menu' | 'page-templates'>;
 }> = [
     { path: '/www.nav.no/arbeidsgiver/editorial-mappe', reason: 'office-editorial' },
     { path: '/www.nav.no/kontor/editorial-mappe', reason: 'office-editorial' },
     { path: '/www.nav.no/dekorator-meny', reason: 'decorator-menu' },
+    { path: '/www.nav.no/_templates', reason: 'page-templates' },
 ];
 
 export type CuratedExportReason =
-    'popular' | 'type-coverage' | 'dependency' | 'ancestor' | 'office-editorial' | 'decorator-menu';
+    | 'popular'
+    | 'type-coverage'
+    | 'dependency'
+    | 'ancestor'
+    | 'office-editorial'
+    | 'decorator-menu'
+    | 'page-templates';
 
 export type CuratedExportEntry = {
     contentId: string;

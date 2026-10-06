@@ -2,7 +2,7 @@
 
 Oppretter en lokal sandbox med et kuratert utvalg av sider. Kan også oppdatere sidene eller importere én spesifikk side til en lokal sandbox.
 
-Kuratert import inkluderer sidene i [curated-content-urls.txt](curated-content-urls.txt), kontormapper (editorial), dekoratørmenyen og ett eller flere eksempler for hver sidetype, med nødvendige avhengigheter og foreldre. Bruk `--input <fil>` for en egen liste med én URL eller sti per linje. Filer som slutter på `.json`, leses som en JSON-liste av strenger.
+Kuratert import inkluderer sidene i [curated-content-urls.txt](curated-content-urls.txt), kontormapper (editorial), dekoratørmenyen, alle sidemaler (`_templates`) og ett eller flere eksempler for hver sidetype, med nødvendige avhengigheter og foreldre. Bruk `--input <fil>` for en egen liste med én URL eller sti per linje. Filer som slutter på `.json`, leses som en JSON-liste av strenger.
 
 ## Viktig før du starter
 
