@@ -248,13 +248,25 @@ export const readSandboxXpVersion = (sandboxPath) => {
     return { distro, version };
 };
 
+const isOlderXpVersion = (version, other) => {
+    const parts = version.split(/[.-]/).slice(0, 3).map(Number);
+    const otherParts = other.split(/[.-]/).slice(0, 3).map(Number);
+    const index = parts.findIndex((part, i) => part !== otherParts[i]);
+    return index >= 0 && parts[index] < otherParts[index];
+};
+
 export const assertSandboxXpVersion = (sandboxPath, sandbox, xpVersion) => {
     const { version } = readSandboxXpVersion(sandboxPath);
-    if (version !== xpVersion) {
-        throw new Error(
-            `Target sandbox ${sandbox} uses XP ${version}; curated source uses XP ${xpVersion}`
-        );
+    if (version === xpVersion) {
+        return;
     }
+    // XP sandboxes can be upgraded but not downgraded.
+    const fix = isOlderXpVersion(version, xpVersion)
+        ? `Run \`enonic sandbox upgrade ${sandbox} --version ${xpVersion}\`, or import into a new sandbox with another --target`
+        : 'Import into a new sandbox with another --target';
+    throw new Error(
+        `Target sandbox ${sandbox} uses XP ${version}, but the source uses XP ${xpVersion}. ${fix}`
+    );
 };
 
 // Replaces (or with value null, removes) one key in a Java properties file. Returns true on change.

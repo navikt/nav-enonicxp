@@ -676,7 +676,7 @@ test('rejects an existing target with a different XP version', (t) => {
                 suPassword: 'temporary-password',
                 homeDirectory: root,
             }),
-        /uses XP 7\.15\.0; curated source uses XP 7\.16\.6/
+        /uses XP 7\.15\.0, but the source uses XP 7\.16\.6/
     );
 });
 

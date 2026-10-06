@@ -335,7 +335,14 @@ test('reads the running sandbox and sandbox XP version', (t) => {
     assert.doesNotThrow(() => assertSandboxXpVersion(sandboxPath, 'navno', '7.16.6'));
     assert.throws(
         () => assertSandboxXpVersion(sandboxPath, 'navno', '7.17.0'),
-        /uses XP 7\.16\.6; curated source uses XP 7\.17\.0/
+        /uses XP 7\.16\.6, but the source uses XP 7\.17\.0\. Run `enonic sandbox upgrade navno --version 7\.17\.0`/
+    );
+    assert.throws(
+        () => assertSandboxXpVersion(sandboxPath, 'navno', '7.16.5'),
+        (error) =>
+            /uses XP 7\.16\.6, but the source uses XP 7\.16\.5\. Import into a new sandbox/.test(
+                error.message
+            ) && !/upgrade/.test(error.message)
     );
 });
 
