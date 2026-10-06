@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const { randomFillSync } = jest.requireActual('crypto') as any;
 
 type FakeNode = Record<string, unknown> & { _id: string };
