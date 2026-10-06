@@ -3,14 +3,14 @@ import { Content } from '/lib/xp/content';
 import * as appLib from '/lib/xp/app';
 import * as projectLib from '/lib/xp/project';
 import { Project } from '/lib/xp/project';
-import { dynamicPageContentTypes, legacyPageContentTypes } from '../contenttype-lists';
-import { findTargetContentAndLocale } from '../../services/sitecontent/common/find-target-content-and-locale';
-import { getLayersData } from '../localization/layers-data';
-import { runInLocaleContext } from '../localization/locale-context';
-import { ContentDescriptor } from '../../types/content-types/content-config';
-import { getRepoConnection } from '../repos/repo-utils';
-import { queryAllLayersToRepoIdBuckets } from '../localization/layers-repo-utils/query-all-layers';
-import { assertSourceIncludesAllTextConfig } from './curated-node-reader';
+import { dynamicPageContentTypes, legacyPageContentTypes } from '../../contenttype-lists';
+import { findTargetContentAndLocale } from '../../../services/sitecontent/common/find-target-content-and-locale';
+import { getLayersData } from '../../localization/layers-data';
+import { runInLocaleContext } from '../../localization/locale-context';
+import { ContentDescriptor } from '../../../types/content-types/content-config';
+import { getRepoConnection } from '../../repos/repo-utils';
+import { queryAllLayersToRepoIdBuckets } from '../../localization/layers-repo-utils/query-all-layers';
+import { assertSourceIncludesAllTextConfig } from './node-reader';
 import {
     CURATED_CONTENT_ROOT_PATH,
     CURATED_REPOSITORIES,
@@ -21,7 +21,7 @@ import {
     isCuratedContentId,
     isCuratedContentPath,
     isCuratedRepository,
-} from './curated-safety';
+} from '../safety';
 
 const MAX_INPUT_PATHS = 1000;
 const MAX_EXPORT_ENTRIES = 20000;

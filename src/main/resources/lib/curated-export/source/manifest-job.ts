@@ -2,18 +2,11 @@ import * as authLib from '/lib/xp/auth';
 import * as contextLib from '/lib/xp/context';
 import * as taskLib from '/lib/xp/task';
 import { Request, Response } from '@enonic-types/core';
-import { logger } from '../utils/logging';
-import { createCuratedExportManifest, CuratedExportProgress } from './curated-export-manifest';
-import { curatedJsonResponse as jsonResponse } from './curated-safety';
-import {
-    createRandomHex,
-    deleteExpiredCuratedNodes,
-    getCuratedStoreRepo,
-} from './curated-export-store';
-import {
-    ManifestRequest,
-    parseManifestRequest,
-} from '../../services/curatedExportManifest/curatedExportManifest';
+import { logger } from '../../utils/logging';
+import { createCuratedExportManifest, CuratedExportProgress } from './manifest';
+import { curatedJsonResponse as jsonResponse } from '../safety';
+import { createRandomHex, deleteExpiredCuratedNodes, getCuratedStoreRepo } from './store';
+import { ManifestRequest, parseManifestRequest } from './manifest-requests';
 
 // Building a full manifest takes longer than the proxy in front of deployed XP allows for one
 // request. The token route therefore builds it as a task: POST starts a job and the CLI polls

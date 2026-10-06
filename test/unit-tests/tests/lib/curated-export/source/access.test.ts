@@ -29,20 +29,20 @@ jest.mock('@navno-app/lib/repos/misc-repo', () => ({
 jest.mock('@navno-app/lib/utils/logging', () => ({
     logger: { info: jest.fn(), warning: jest.fn(), error: jest.fn() },
 }));
-jest.mock('@navno-app/lib/exports/curated-export-manifest-job', () => ({
+jest.mock('@navno-app/lib/curated-export/source/manifest-job', () => ({
     startManifestJob: jest.fn(() => ({ status: 202, body: 'job' })),
     getManifestJob: jest.fn(() => ({ status: 202, body: 'running' })),
 }));
-jest.mock('@navno-app/services/curatedExportSource/curatedExportSource', () => ({
-    get: jest.fn(() => ({ status: 200, body: 'node' })),
-    post: jest.fn(() => ({ status: 200, body: 'batch' })),
+jest.mock('@navno-app/lib/curated-export/source/source-requests', () => ({
+    getCuratedSource: jest.fn(() => ({ status: 200, body: 'node' })),
+    postCuratedSourceBatch: jest.fn(() => ({ status: 200, body: 'batch' })),
 }));
 
 import * as authLib from '/lib/xp/auth';
 import * as contextLib from '/lib/xp/context';
-import { startManifestJob } from '@navno-app/lib/exports/curated-export-manifest-job';
-import { get as getSource } from '@navno-app/services/curatedExportSource/curatedExportSource';
-import { handleCuratedExportRequest } from '@navno-app/lib/exports/curated-export-access';
+import { startManifestJob } from '@navno-app/lib/curated-export/source/manifest-job';
+import { getCuratedSource } from '@navno-app/lib/curated-export/source/source-requests';
+import { handleCuratedExportRequest } from '@navno-app/lib/curated-export/source/access';
 
 const javaTypes: Record<string, unknown> = {
     'java.security.SecureRandom': class {
@@ -218,7 +218,7 @@ describe('curated export access', () => {
         expect(request('source', { headers: { 'X-Curated-Export-Token': token } })?.body).toBe(
             'node'
         );
-        expect(getSource).toHaveBeenCalled();
+        expect(getCuratedSource).toHaveBeenCalled();
         expect(request('manifest', { headers: { 'X-Curated-Export-Token': token } })?.body).toBe(
             'running'
         );
@@ -244,7 +244,7 @@ describe('curated export access', () => {
         expect(request('source', { headers: { 'X-Curated-Export-Token': token } })?.status).toBe(
             403
         );
-        expect(getSource).not.toHaveBeenCalled();
+        expect(getCuratedSource).not.toHaveBeenCalled();
     });
 
     it('does not use the token endpoint as a data endpoint', () => {

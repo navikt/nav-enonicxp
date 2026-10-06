@@ -1,15 +1,15 @@
 import { Content } from '/lib/xp/content';
 import { ByteSource, RepoNode } from '/lib/xp/node';
-import { getRepoConnection } from '../repos/repo-utils';
-import { CONTENT_ROOT_REPO_ID } from '../constants';
-import { runInContext } from '../context/run-in-context';
+import { getRepoConnection } from '../../repos/repo-utils';
+import { CONTENT_ROOT_REPO_ID } from '../../constants';
+import { runInContext } from '../../context/run-in-context';
 import {
     CURATED_CONTENT_ROOT_PATH,
     CuratedBranch,
     isCuratedBranch,
     isCuratedContentId,
     isCuratedRepository,
-} from './curated-safety';
+} from '../safety';
 
 export type CuratedProperty = {
     name: string;
@@ -57,7 +57,8 @@ type NodeReaderBean = {
     readBinary: (contentId: string, versionId: string, reference: string) => ByteSource;
 };
 
-const createReader = () => __.newBean('no.nav.navno.exports.CuratedNodeReader') as NodeReaderBean;
+const createReader = () =>
+    __.newBean('no.nav.navno.curatedexport.source.CuratedNodeReader') as NodeReaderBean;
 
 const validateSource = ({ repository, branch, contentId, versionId }: SourceVersion) => {
     if (

@@ -1,19 +1,16 @@
 import * as authLib from '/lib/xp/auth';
 import * as contextLib from '/lib/xp/context';
 import { Request, Response } from '@enonic-types/core';
-import { userIsAdmin } from '../utils/auth-utils';
-import { curatedJsonResponse as jsonResponse, isJsonRequest, isRecord } from './curated-safety';
+import { userIsAdmin } from '../../utils/auth-utils';
+import { curatedJsonResponse as jsonResponse, isJsonRequest, isRecord } from '../safety';
 import {
     createRandomHex,
     deleteExpiredCuratedNodes,
     getCuratedStoreRepo,
     sha256Hex,
-} from './curated-export-store';
-import { getManifestJob, startManifestJob } from './curated-export-manifest-job';
-import {
-    get as getSource,
-    post as postSource,
-} from '../../services/curatedExportSource/curatedExportSource';
+} from './store';
+import { getManifestJob, startManifestJob } from './manifest-job';
+import { getCuratedSource, postCuratedSourceBatch } from './source-requests';
 
 // Lets the curated import CLI read from deployed XP instances without a password:
 // an admin approves the CLI in the browser, which hands a short-lived one-time code to
@@ -237,7 +234,7 @@ export const handleCuratedExportRequest = (req: Request): Response | null => {
             // Building a manifest outlasts the proxy timeout, so it runs as a polled task.
             return runWithToken(req, isPost ? startManifestJob : getManifestJob);
         case 'source':
-            return runWithToken(req, isPost ? postSource : getSource);
+            return runWithToken(req, isPost ? postCuratedSourceBatch : getCuratedSource);
     }
     return null;
 };

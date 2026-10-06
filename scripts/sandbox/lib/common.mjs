@@ -15,7 +15,7 @@ import { dirname, join, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
-// Mirrors src/main/resources/lib/exports/curated-safety.ts; the XP services validate the same rules.
+// Mirrors src/main/resources/lib/curated-export/safety.ts; the XP services validate the same rules.
 export const CONTENT_ROOT_PATH = '/content/www.nav.no';
 
 export const REQUIRED_PROJECTS = [

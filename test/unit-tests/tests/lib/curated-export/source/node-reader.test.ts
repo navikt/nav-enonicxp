@@ -2,7 +2,7 @@ import {
     assertSourceIncludesAllTextConfig,
     getCuratedSourceBinary,
     getCuratedSourceNode,
-} from '@navno-app/lib/exports/curated-node-reader';
+} from '@navno-app/lib/curated-export/source/node-reader';
 import { getRepoConnection } from '@navno-app/lib/repos/repo-utils';
 import { runInContext } from '@navno-app/lib/context/run-in-context';
 

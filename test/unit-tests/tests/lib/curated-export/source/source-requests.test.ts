@@ -5,7 +5,7 @@ const readTypedBinary = jest.fn();
 const getRepository = jest.fn();
 const getRepositoryBinary = jest.fn();
 
-jest.mock('@navno-app/lib/exports/curated-node-reader', () => ({
+jest.mock('@navno-app/lib/curated-export/source/node-reader', () => ({
     getCuratedSourceNode: readTypedNode,
     getCuratedSourceBinary: readTypedBinary,
 }));
@@ -22,7 +22,10 @@ jest.mock('@navno-app/lib/localization/layers-data', () => ({
     getLayersData: () => ({ localeToRepoIdMap: { no: 'com.enonic.cms.default' } }),
 }));
 
-import { get, post } from '@navno-app/services/curatedExportSource/curatedExportSource';
+import {
+    getCuratedSource as get,
+    postCuratedSourceBatch as post,
+} from '@navno-app/lib/curated-export/source/source-requests';
 import { externalArchiveAttachmentService } from '@navno-app/services/externalArchive/attachment/attachment';
 import * as authLib from '/lib/xp/auth';
 

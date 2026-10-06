@@ -9,7 +9,7 @@ import {
     isCuratedImportEnabled,
     isCuratedRepository,
     isRecord,
-} from '../curated-safety';
+} from '../safety';
 
 export type CuratedTargetExpectation = {
     contentId: string;
@@ -102,7 +102,7 @@ export const restoreCuratedTargetMetadata = (batch: CuratedTargetBatch): Curated
         { repository: batch.repository, branch: batch.branch, asAdmin: true },
         () => {
             const bean = __.newBean(
-                'no.nav.navno.exports.target.CuratedMetadataRestore'
+                'no.nav.navno.curatedexport.target.CuratedMetadataRestore'
             ) as RestoreBean;
             return __.toNativeObject(bean.restore(JSON.stringify(batch))) as CuratedTargetResult;
         }

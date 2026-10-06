@@ -50,7 +50,7 @@ jest.mock('@navno-app/lib/archiving/archive-old-news', () => ({ archiveOldNews: 
 jest.mock('@navno-app/lib/scheduling/manage-scheduled-jobs', () => ({
     manageScheduledJobs: mockManageScheduledJobs,
 }));
-jest.mock('@navno-app/lib/exports/curated-export-access', () => ({
+jest.mock('@navno-app/lib/curated-export/source/access', () => ({
     handleCuratedExportRequest: mockHandleCuratedExportRequest,
 }));
 

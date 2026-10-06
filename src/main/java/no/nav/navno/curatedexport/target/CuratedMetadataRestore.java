@@ -1,4 +1,4 @@
-package no.nav.navno.exports.target;
+package no.nav.navno.curatedexport.target;
 
 import java.io.IOException;
 import java.util.HashSet;

@@ -1,6 +1,6 @@
 import { ByteSource } from '/lib/xp/node';
 import * as repoLib from '/lib/xp/repo';
-import { isCuratedRepository, isRecord } from './curated-safety';
+import { isCuratedRepository, isRecord } from '../safety';
 
 type CuratedProjectIcon = { mimeType: string; stream: ByteSource };
 

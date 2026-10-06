@@ -1,4 +1,4 @@
-package no.nav.navno.exports;
+package no.nav.navno.curatedexport.source;
 
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;

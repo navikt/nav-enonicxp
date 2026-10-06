@@ -35,7 +35,7 @@ jest.mock('@navno-app/lib/repos/misc-repo', () => ({
 jest.mock('@navno-app/lib/utils/logging', () => ({
     logger: { info: jest.fn(), warning: jest.fn(), error: jest.fn() },
 }));
-jest.mock('@navno-app/lib/exports/curated-export-manifest', () => ({
+jest.mock('@navno-app/lib/curated-export/source/manifest', () => ({
     createCuratedExportManifest: jest.fn(),
 }));
 jest.mock('/lib/xp/task', () => ({ executeFunction: jest.fn() }));
@@ -43,11 +43,11 @@ jest.mock('/lib/xp/task', () => ({ executeFunction: jest.fn() }));
 import * as authLib from '/lib/xp/auth';
 import * as contextLib from '/lib/xp/context';
 import * as taskLib from '/lib/xp/task';
-import { createCuratedExportManifest } from '@navno-app/lib/exports/curated-export-manifest';
+import { createCuratedExportManifest } from '@navno-app/lib/curated-export/source/manifest';
 import {
     getManifestJob,
     startManifestJob,
-} from '@navno-app/lib/exports/curated-export-manifest-job';
+} from '@navno-app/lib/curated-export/source/manifest-job';
 
 (globalThis as unknown as { Java: { type: (name: string) => unknown } }).Java.type = (name) =>
     ({

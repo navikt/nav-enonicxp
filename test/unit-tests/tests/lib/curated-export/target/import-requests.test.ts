@@ -15,7 +15,7 @@ const restoreTarget = jest.fn();
 const getApplication = jest.fn();
 const logWarning = jest.fn();
 
-jest.mock('@navno-app/lib/exports/target/curated-target-metadata', () => ({
+jest.mock('@navno-app/lib/curated-export/target/metadata', () => ({
     restoreCuratedTargetMetadata: restoreTarget,
 }));
 
@@ -52,7 +52,10 @@ jest.mock('@navno-app/lib/repos/repo-utils', () => ({
     })),
 }));
 
-import { get, post } from '@navno-app/services/curatedExportImport/curatedExportImport';
+import {
+    getCuratedImportStatus as get,
+    postCuratedImportAction as post,
+} from '@navno-app/lib/curated-export/target/import-requests';
 import * as authLib from '/lib/xp/auth';
 import * as nodeLib from '/lib/xp/node';
 import { getRepoConnection } from '@navno-app/lib/repos/repo-utils';

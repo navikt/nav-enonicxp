@@ -15,7 +15,7 @@ import { runSchedulerCleanup } from '../lib/scheduling/schedule-cleanup';
 import { NAVOccurences } from '../lib/reporting/NAVOccurrences';
 import { archiveOldNews } from '../lib/archiving/archive-old-news';
 import { manageScheduledJobs } from '../lib/scheduling/manage-scheduled-jobs';
-import { handleCuratedExportRequest } from '../lib/exports/curated-export-access';
+import { handleCuratedExportRequest } from '../lib/curated-export/source/access';
 
 type ActionsMap = Record<string, { description: string; callback: () => any }>;
 

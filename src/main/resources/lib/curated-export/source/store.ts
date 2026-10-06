@@ -1,5 +1,5 @@
-import { getMiscRepoConnection } from '../repos/misc-repo';
-import { logger } from '../utils/logging';
+import { getMiscRepoConnection } from '../../repos/misc-repo';
+import { logger } from '../../utils/logging';
 
 // Short-lived curated export state (codes, tokens, manifest jobs) lives in the misc repo,
 // so any cluster node can serve the follow-up requests.

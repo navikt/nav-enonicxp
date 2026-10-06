@@ -72,8 +72,8 @@ jar.dependsOn(babelJs)
 jar {
     if (project.findProperty('curatedImportLocal') != 'true') {
         exclude 'services/curatedExportImport/**'
-        exclude 'lib/exports/target/**'
-        exclude 'no/nav/navno/exports/target/**'
+        exclude 'lib/curated-export/target/**'
+        exclude 'no/nav/navno/curatedexport/target/**'
     }
 }
 processResources.dependsOn(generateTypeScript)

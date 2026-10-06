@@ -2,7 +2,7 @@ import {
     CuratedTargetBatch,
     CuratedTargetExpectation,
     restoreCuratedTargetMetadata,
-} from '@navno-app/lib/exports/target/curated-target-metadata';
+} from '@navno-app/lib/curated-export/target/metadata';
 import { userIsAdmin } from '@navno-app/lib/utils/auth-utils';
 import { runInContext } from '@navno-app/lib/context/run-in-context';
 
@@ -125,7 +125,9 @@ test('passes exact 64-bit order strings to the target-only bean', () => {
     const result = restoreCuratedTargetMetadata(batch());
     const payload = JSON.parse(restore.mock.calls[0][0]);
     expect(payload.expectations[0].manualOrderValue).toBe('9223372036854775807');
-    expect(newBean).toHaveBeenCalledWith('no.nav.navno.exports.target.CuratedMetadataRestore');
+    expect(newBean).toHaveBeenCalledWith(
+        'no.nav.navno.curatedexport.target.CuratedMetadataRestore'
+    );
     expect(runInContext).toHaveBeenCalledWith(
         { repository: 'com.enonic.cms.default', branch: 'draft', asAdmin: true },
         expect.any(Function)

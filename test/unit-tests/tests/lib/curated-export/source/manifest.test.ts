@@ -5,12 +5,12 @@ import {
     createCuratedExportManifest,
     escapeNoqlStringLiteral,
     getAncestorContentPaths,
-} from '@navno-app/lib/exports/curated-export-manifest';
+} from '@navno-app/lib/curated-export/source/manifest';
 import { findTargetContentAndLocale } from '@navno-app/services/sitecontent/common/find-target-content-and-locale';
 import { getRepoConnection } from '@navno-app/lib/repos/repo-utils';
 import { runInLocaleContext } from '@navno-app/lib/localization/locale-context';
 import { queryAllLayersToRepoIdBuckets } from '@navno-app/lib/localization/layers-repo-utils/query-all-layers';
-import { assertSourceIncludesAllTextConfig } from '@navno-app/lib/exports/curated-node-reader';
+import { assertSourceIncludesAllTextConfig } from '@navno-app/lib/curated-export/source/node-reader';
 
 jest.mock('/lib/xp/content', () => ({
     get: jest.fn(),
@@ -42,7 +42,7 @@ jest.mock('@navno-app/lib/localization/layers-data', () => ({
 }));
 jest.mock('@navno-app/lib/localization/locale-context', () => ({ runInLocaleContext: jest.fn() }));
 jest.mock('@navno-app/lib/repos/repo-utils', () => ({ getRepoConnection: jest.fn() }));
-jest.mock('@navno-app/lib/exports/curated-node-reader', () => ({
+jest.mock('@navno-app/lib/curated-export/source/node-reader', () => ({
     assertSourceIncludesAllTextConfig: jest.fn(),
 }));
 jest.mock('@navno-app/lib/localization/layers-repo-utils/query-all-layers', () => ({
