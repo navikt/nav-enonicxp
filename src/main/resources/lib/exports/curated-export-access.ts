@@ -120,8 +120,18 @@ const handleAuthorize = (req: Request): Response => {
     }
     const user = authLib.getUser();
     if (!user) {
-        // Lets the vhost's ID provider send the user to login and back here.
-        return { status: 401 };
+        // Not a 401: the ID provider would then start the Entra ID login from this /webapp path,
+        // and Entra ID only accepts the admin tool's redirect URI.
+        const retryUrl = `authorize?${(['port', 'state', 'challenge'] as const)
+            .map((name) => `${name}=${encodeURIComponent(String(params[name]))}`)
+            .join('&')}`;
+        return htmlResponse(
+            200,
+            `<h1>Logg inn i XP-admin først</h1>
+<p>Du må være innlogget i XP-admin for å gi importverktøyet tilgang.</p>
+<p><a href="/admin" target="_blank" rel="noopener noreferrer">Logg inn i XP-admin</a> (åpnes i ny fane), og kom tilbake hit når du er innlogget.</p>
+<p><a href="${escapeHtml(retryUrl)}">Prøv igjen</a></p>`
+        );
     }
     if (!userIsAdmin()) {
         return htmlResponse(403, '<p>Systemadministrator-tilgang er påkrevd.</p>');

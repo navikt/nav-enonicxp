@@ -127,9 +127,14 @@ describe('curated export access', () => {
         ).toBeNull();
     });
 
-    it('sends anonymous users to login', () => {
+    it('asks anonymous users to log in to XP admin instead of answering 401', () => {
         jest.mocked(authLib.getUser).mockReturnValue(null);
-        expect(request('authorize', { params: authorizeParams })?.status).toBe(401);
+        const response = request('authorize', { params: authorizeParams });
+        expect(response?.status).toBe(200);
+        expect(response?.body).toContain('href="/admin"');
+        expect(response?.body).toContain(
+            `href="authorize?port=${authorizeParams.port}&amp;state=${authorizeParams.state}&amp;challenge=${authorizeParams.challenge}"`
+        );
     });
 
     it('rejects non-admins and invalid handoff parameters', () => {
