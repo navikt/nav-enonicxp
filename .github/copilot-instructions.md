@@ -89,7 +89,7 @@
 - Build/test stack is mixed Gradle + pnpm + TypeScript/Babel.
 - CI-aligned baseline:
     - Unit tests: `pnpm --filter nav-enonicxp-unit-tests run test`
-    - App build: `./gradlew build -PxpVersion=<version>`
+    - App build: `./gradlew build` (XP version from `gradle.properties`, also used by deploys and e2e tests)
 - TypeScript source under `src/main/resources/**/*.ts`, transpiled by Babel.
 - Transpiled JavaScript is executed on the JVM using **Nashorn** (legacy JS runtime constraints apply).
 
