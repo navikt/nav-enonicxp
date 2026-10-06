@@ -7,13 +7,13 @@ import java.time.temporal.ChronoField;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import com.google.common.io.ByteSource;
 
 import com.enonic.xp.data.Property;
 import com.enonic.xp.data.ValueType;
 import com.enonic.xp.data.ValueTypes;
-import com.enonic.xp.node.AttachedBinary;
 import com.enonic.xp.node.Node;
 import com.enonic.xp.node.NodeId;
 import com.enonic.xp.node.NodeService;
@@ -81,11 +81,10 @@ public final class CuratedNodeReader implements ScriptBean {
     }
 
     private Set<String> binaryReferences(final Node node) {
-        final Set<String> references = new LinkedHashSet<>();
-        for (final AttachedBinary binary : node.getAttachedBinaries()) {
-            references.add(binary.getBinaryReference().toString());
-        }
-        return references;
+        return node.getAttachedBinaries()
+            .stream()
+            .map(binary -> binary.getBinaryReference().toString())
+            .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     private void serializeProperty(final MapGenerator gen, final Property property) {
