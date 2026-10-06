@@ -374,7 +374,11 @@ export const runCli = (moduleUrl, main) => {
     Promise.resolve()
         .then(main)
         .catch((error) => {
-            console.error(error instanceof Error ? error.message : error);
+            const label =
+                process.stderr.isTTY && !process.env.NO_COLOR
+                    ? '\x1b[1;31mError:\x1b[0m'
+                    : 'Error:';
+            console.error(`${label} ${error instanceof Error ? error.message : error}`);
             for (let cause = error?.cause; cause; cause = cause.cause) {
                 console.error(`  Caused by: ${cause instanceof Error ? cause.message : cause}`);
             }
