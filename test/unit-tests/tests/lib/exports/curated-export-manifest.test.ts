@@ -10,6 +10,7 @@ import { findTargetContentAndLocale } from '@navno-app/services/sitecontent/comm
 import { getRepoConnection } from '@navno-app/lib/repos/repo-utils';
 import { runInLocaleContext } from '@navno-app/lib/localization/locale-context';
 import { queryAllLayersToRepoIdBuckets } from '@navno-app/lib/localization/layers-repo-utils/query-all-layers';
+import { assertSourceIncludesAllTextConfig } from '@navno-app/lib/exports/curated-node-reader';
 
 jest.mock('/lib/xp/content', () => ({
     get: jest.fn(),
@@ -41,6 +42,9 @@ jest.mock('@navno-app/lib/localization/layers-data', () => ({
 }));
 jest.mock('@navno-app/lib/localization/locale-context', () => ({ runInLocaleContext: jest.fn() }));
 jest.mock('@navno-app/lib/repos/repo-utils', () => ({ getRepoConnection: jest.fn() }));
+jest.mock('@navno-app/lib/exports/curated-node-reader', () => ({
+    assertSourceIncludesAllTextConfig: jest.fn(),
+}));
 jest.mock('@navno-app/lib/localization/layers-repo-utils/query-all-layers', () => ({
     queryAllLayersToRepoIdBuckets: jest.fn(),
 }));
@@ -594,4 +598,12 @@ test('requires Content Studio and content type owners, but not other apps', () =
     expect(manifest.applications).toContainEqual(
         expect.objectContaining({ key: 'no.item.partfinder', started: true, required: false })
     );
+});
+
+test('stops before resolving pages when the source leaves out allText', () => {
+    jest.mocked(assertSourceIncludesAllTextConfig).mockImplementationOnce(() => {
+        throw new Error('allText missing');
+    });
+    expect(() => createCuratedExportManifest(['/no/person'])).toThrow('allText missing');
+    expect(findTargetContentAndLocale).not.toHaveBeenCalled();
 });

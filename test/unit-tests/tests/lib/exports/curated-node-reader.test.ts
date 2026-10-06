@@ -1,4 +1,5 @@
 import {
+    assertSourceIncludesAllTextConfig,
     getCuratedSourceBinary,
     getCuratedSourceNode,
 } from '@navno-app/lib/exports/curated-node-reader';
@@ -33,7 +34,6 @@ beforeEach(() => {
         properties: [{ name: 'long', type: 'long', value: '9223372036854775807' }],
         binaryReferences: ['first.pdf', 'second.pdf'],
         manualOrderValue: '9223372036854775806',
-        allTextLanguages: ['no'],
     });
     Object.defineProperty(globalThis, '__', {
         value: {
@@ -68,12 +68,20 @@ test('combines exact-version metadata with typed properties without number conve
     );
 });
 
-test('adds the allText index config, which lib-node leaves out before XP 7.16.6', () => {
-    expect(getCuratedSourceNode(source).node._indexConfig).toEqual({
-        default: { enabled: true },
-        configs: [],
-        allText: { languages: ['no'] },
+test('accepts a source whose lib-node returns the allText index config', () => {
+    getNode.mockReturnValue({ _indexConfig: { allText: { languages: [] } } });
+    expect(() => assertSourceIncludesAllTextConfig()).not.toThrow();
+    expect(getRepoConnection).toHaveBeenCalledWith({
+        repoId: 'com.enonic.cms.default',
+        branch: 'draft',
+        asAdmin: true,
     });
+    expect(getNode).toHaveBeenCalledWith('/content/www.nav.no');
+});
+
+test('stops on a source built with a lib-node that leaves out allText', () => {
+    getNode.mockReturnValue({ _indexConfig: { default: { enabled: true }, configs: [] } });
+    expect(() => assertSourceIncludesAllTextConfig()).toThrow(/xpVersion 7.16.6 or later/);
 });
 
 test('refuses node metadata from another version', () => {

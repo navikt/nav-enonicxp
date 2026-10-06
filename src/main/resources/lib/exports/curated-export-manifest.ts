@@ -10,6 +10,7 @@ import { runInLocaleContext } from '../localization/locale-context';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { getRepoConnection } from '../repos/repo-utils';
 import { queryAllLayersToRepoIdBuckets } from '../localization/layers-repo-utils/query-all-layers';
+import { assertSourceIncludesAllTextConfig } from './curated-node-reader';
 import {
     CURATED_CONTENT_ROOT_PATH,
     CURATED_REPOSITORIES,
@@ -530,6 +531,7 @@ export const createCuratedExportManifest = (
     if (paths.length + seeds.length > MAX_INPUT_PATHS) {
         throw new Error(`A maximum of ${MAX_INPUT_PATHS} popular paths is allowed`);
     }
+    assertSourceIncludesAllTextConfig();
 
     const projects = getRequiredProjects();
     const entriesByKey: Record<string, CuratedExportEntry> = {};
