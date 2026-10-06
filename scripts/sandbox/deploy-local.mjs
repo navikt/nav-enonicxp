@@ -47,10 +47,18 @@ export const enableCuratedImport = (sandbox, homeDirectory = homedir()) => {
         console.log(`Enabled curatedImportEnabled for sandbox ${sandbox}`);
     }
 
-    // The import refuses clustered targets. Keep an existing cluster config so the check can report it.
+    // The import refuses clustered targets. Enonic CLI creates this file with every line commented
+    // out, so add the setting when nothing is active, and keep any active config so the check can report it.
     const clusterConfigPath = join(configDirectory, 'com.enonic.xp.cluster.cfg');
-    if (!existsSync(clusterConfigPath)) {
-        writeFileSync(clusterConfigPath, 'cluster.enabled=false\n');
+    const clusterConfig = existsSync(clusterConfigPath)
+        ? readFileSync(clusterConfigPath, 'utf8')
+        : '';
+    const hasActiveClusterConfig = clusterConfig
+        .split(/\r?\n/)
+        .some((line) => line.trim() && !/^\s*[#!]/.test(line));
+    if (!hasActiveClusterConfig) {
+        const separator = clusterConfig && !clusterConfig.endsWith('\n') ? '\n' : '';
+        writeFileSync(clusterConfigPath, `${clusterConfig}${separator}cluster.enabled=false\n`);
         console.log(`Disabled clustering for sandbox ${sandbox}`);
     }
 };

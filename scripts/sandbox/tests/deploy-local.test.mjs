@@ -56,12 +56,19 @@ test('creates the application config when the sandbox does not have one', (t) =>
     );
 });
 
-test('disables clustering only when the sandbox has no cluster config', (t) => {
+test('disables clustering only when the sandbox has no active cluster config', (t) => {
     const { homeDirectory, sandboxPath } = fixture(t);
     const clusterConfigPath = join(sandboxPath, 'home/config/com.enonic.xp.cluster.cfg');
 
     enableCuratedImport('navno', homeDirectory);
     assert.equal(readFileSync(clusterConfigPath, 'utf8'), 'cluster.enabled=false\n');
+
+    writeFileSync(clusterConfigPath, '#cluster.enabled=false\n#node.name=<generated-UUID>');
+    enableCuratedImport('navno', homeDirectory);
+    assert.equal(
+        readFileSync(clusterConfigPath, 'utf8'),
+        '#cluster.enabled=false\n#node.name=<generated-UUID>\ncluster.enabled=false\n'
+    );
 
     writeFileSync(clusterConfigPath, 'cluster.enabled=true\n');
     enableCuratedImport('navno', homeDirectory);

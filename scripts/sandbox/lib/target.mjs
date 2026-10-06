@@ -96,8 +96,11 @@ export const assertLocalTargetConfiguration = (
     if (properties.env !== 'localhost') {
         throw new Error('Target must explicitly configure env=localhost');
     }
+    const sandbox = basename(sandboxPath);
     if (requireCuratedImport && properties.curatedImportEnabled !== 'true') {
-        throw new Error('Target must explicitly configure curatedImportEnabled=true');
+        throw new Error(
+            `Target must explicitly configure curatedImportEnabled=true. Run \`pnpm sandbox:deploy ${sandbox}\` to set it`
+        );
     }
     if (properties.serviceSecret !== 'dummyToken' || properties.searchApiKey) {
         throw new Error('Target must use the local dummy service secret and no search API key');
@@ -109,11 +112,18 @@ export const assertLocalTargetConfiguration = (
     const clusterProperties = clusterConfig
         .split(/\r?\n/)
         .filter((line) => line.trim() && !/^\s*[#!]/.test(line));
+    if (clusterProperties.length === 0) {
+        throw new Error(
+            `Target sandbox ${sandbox} does not disable clustering. Run \`pnpm sandbox:deploy ${sandbox}\` to set cluster.enabled=false`
+        );
+    }
     if (
         clusterProperties.length !== 1 ||
         !/^\s*cluster\.enabled\s*=\s*false\s*$/.test(clusterProperties[0])
     ) {
-        throw new Error('Target clustering configuration must contain only cluster.enabled=false');
+        throw new Error(
+            `Target sandbox ${sandbox} must have cluster.enabled=false as the only active line in home/config/com.enonic.xp.cluster.cfg (found: ${clusterProperties.map((line) => line.trim()).join(', ')})`
+        );
     }
 };
 

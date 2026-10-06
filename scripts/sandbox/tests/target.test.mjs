@@ -272,7 +272,19 @@ test('rejects target clustering before any target mutation', (t) => {
     );
     assert.throws(
         () => assertLocalTargetConfiguration(target.sandboxPath),
-        /clustering configuration/
+        /only active line .*found: cluster\.enabled=true, discovery\.unicast\.hosts=production\.example/
+    );
+});
+
+test('points to sandbox:deploy when the cluster config has only comments', (t) => {
+    const target = fixture(t);
+    writeFileSync(
+        join(target.sandboxPath, 'home/config/com.enonic.xp.cluster.cfg'),
+        '#cluster.enabled=false\n#node.name=<generated-UUID>\n'
+    );
+    assert.throws(
+        () => assertLocalTargetConfiguration(target.sandboxPath),
+        /pnpm sandbox:deploy .* to set cluster\.enabled=false/
     );
 });
 
