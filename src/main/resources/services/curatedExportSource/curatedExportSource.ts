@@ -12,6 +12,7 @@ import {
     isCuratedContentId,
     isCuratedContentPath,
     isCuratedRepository,
+    isJsonRequest,
     isRecord,
 } from '../../lib/exports/curated-safety';
 
@@ -153,6 +154,9 @@ export const get = (req: Request): Response => {
 export const post = (req: Request): Response => {
     if (!userIsAdmin()) {
         return jsonResponse(403, { message: 'System administrator access is required' });
+    }
+    if (!isJsonRequest(req)) {
+        return jsonResponse(415, { message: 'Content-Type must be application/json' });
     }
     if (!req.body) {
         return jsonResponse(400, { message: 'A JSON request body is required' });

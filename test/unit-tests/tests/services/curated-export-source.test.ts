@@ -71,6 +71,7 @@ describe('curated export source', () => {
         expect(get(request({ ...params, binaryReference: 'private.pdf' })).status).toBe(403);
         expect(
             post({
+                contentType: 'application/json',
                 body: JSON.stringify({ ...params, contentIds: [params.contentId] }),
             } as never).status
         ).toBe(403);
@@ -78,6 +79,21 @@ describe('curated export source', () => {
         expect(getBinary).not.toHaveBeenCalled();
         expect(readTypedNode).not.toHaveBeenCalled();
         expect(readTypedBinary).not.toHaveBeenCalled();
+    });
+
+    it('requires a JSON content type for batch POST', () => {
+        const response = post({
+            contentType: 'text/plain',
+            body: JSON.stringify({
+                repository: 'com.enonic.cms.default',
+                branch: 'draft',
+                contentIds: ['content-id'],
+                versionIds: ['version-id'],
+            }),
+        } as never);
+
+        expect(response.status).toBe(415);
+        expect(readTypedNode).not.toHaveBeenCalled();
     });
 
     it.each([
@@ -99,6 +115,7 @@ describe('curated export source', () => {
         ).toBe(404);
         expect(
             post({
+                contentType: 'application/json',
                 body: JSON.stringify({
                     repository: 'com.enonic.cms.default',
                     branch: 'draft',
@@ -125,6 +142,7 @@ describe('curated export source', () => {
         expect(get(request(params)).status).toBe(400);
         expect(
             post({
+                contentType: 'application/json',
                 body: JSON.stringify({
                     ...params,
                     contentIds: [params.contentId],
@@ -208,6 +226,7 @@ describe('curated export source', () => {
         expect(getResponse.status).toBe(200);
         expect(responseBody(getResponse)).toMatchObject({ binaryReferences });
         const postResponse = post({
+            contentType: 'application/json',
             body: JSON.stringify({
                 ...params,
                 contentIds: ['content-id'],
@@ -314,6 +333,7 @@ describe('curated export source', () => {
         ['version-id', '../other'],
     ])('rejects invalid or non-parallel batch versions before any read: %j', (versionIds) => {
         const response = post({
+            contentType: 'application/json',
             body: JSON.stringify({
                 repository: 'com.enonic.cms.default',
                 branch: 'draft',
@@ -349,6 +369,7 @@ describe('curated export source', () => {
         expect(readTypedBinary).not.toHaveBeenCalled();
         expect(
             post({
+                contentType: 'application/json',
                 body: JSON.stringify({
                     repository: 'com.enonic.cms.default',
                     branch: 'draft',
@@ -386,6 +407,7 @@ describe('curated export source', () => {
 
     it('returns node metadata in validated batches', () => {
         const response = post({
+            contentType: 'application/json',
             body: JSON.stringify({
                 repository: 'com.enonic.cms.default',
                 branch: 'master',
@@ -449,6 +471,7 @@ describe('curated export source', () => {
         const responses = [
             get(request(params)),
             post({
+                contentType: 'application/json',
                 body: JSON.stringify({
                     ...params,
                     contentIds: [params.contentId],
@@ -467,6 +490,7 @@ describe('curated export source', () => {
 
     it('rejects metadata batches larger than 100 nodes', () => {
         const response = post({
+            contentType: 'application/json',
             body: JSON.stringify({
                 repository: 'com.enonic.cms.default',
                 branch: 'master',
