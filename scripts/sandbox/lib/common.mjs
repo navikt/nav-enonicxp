@@ -139,6 +139,10 @@ export const parseAuth = (auth, label) => {
     };
 };
 
+// Marks a wrong username or password, which promptForVerifiedAuth lets the user retype.
+const rejectedCredentialsError = (message) =>
+    Object.assign(new Error(message), { credentialsRejected: true });
+
 export const getXpSessionCookie = async (serviceUrl, auth) => {
     const { username, password } = parseAuth(auth, 'XP');
     const response = await fetchXp(new URL('/_/idprovider/system', serviceUrl), {
@@ -149,7 +153,10 @@ export const getXpSessionCookie = async (serviceUrl, auth) => {
         body: JSON.stringify({ action: 'login', user: username, password }),
     });
     const result = await response.json();
-    if (!response.ok || !result.authenticated) {
+    if (response.ok && !result.authenticated) {
+        throw rejectedCredentialsError('XP rejected the username or password');
+    }
+    if (!response.ok) {
         throw new Error(
             `Authentication with the XP system provider failed (HTTP ${response.status}, authenticated: ${Boolean(result.authenticated)})`
         );
@@ -186,16 +193,21 @@ const decodePropertyValue = (value) =>
 export const verifyStoppedTargetAuth = (sandboxPath, auth) => {
     const { username, password } = parseAuth(auth, 'Target');
     if (username !== 'su') {
-        throw new Error('A stopped target sandbox must be authenticated with its built-in su user');
+        throw rejectedCredentialsError(
+            'A stopped target sandbox must be authenticated with its built-in SU user'
+        );
     }
     const properties = readFileSync(join(sandboxPath, 'home/config/system.properties'), 'utf8');
     const configuredPassword = properties.match(/^\s*xp\.suPassword\s*[=:]\s*(.*)$/m)?.[1];
     const supplied = Buffer.from(password);
     const configured = Buffer.from(decodePropertyValue(configuredPassword || ''));
     if (supplied.length !== configured.length || !timingSafeEqual(supplied, configured)) {
-        throw new Error('Target authentication failed');
+        throw rejectedCredentialsError('Wrong SU password');
     }
 };
+
+// Prints which sandbox the following indented credential prompts belong to.
+export const printPromptHeading = (heading) => console.error(heading);
 
 export const promptForAuth = (label, { runCommand = spawnSync } = {}) => {
     if (!process.stdin.isTTY || !process.stderr.isTTY) {
@@ -205,7 +217,7 @@ export const promptForAuth = (label, { runCommand = spawnSync } = {}) => {
         '/bin/zsh',
         [
             '-c',
-            `read -r "username?${label} username: "; IFS= read -r -s "password?${label} password: "; printf '\\n' >&2; printf '%s:%s' "$username" "$password"`,
+            `read -r "username?  Username: "; IFS= read -r -s "password?  Password: "; printf '\\n' >&2; printf '%s:%s' "$username" "$password"`,
         ],
         { encoding: 'utf8', stdio: ['inherit', 'pipe', 'inherit'] }
     );
@@ -215,13 +227,40 @@ export const promptForAuth = (label, { runCommand = spawnSync } = {}) => {
     return result.stdout;
 };
 
+export const promptForVerifiedAuth = async ({
+    label,
+    prompt,
+    verify,
+    attempts = 3,
+    warn = console.error,
+}) => {
+    for (let attempt = 1; ; attempt++) {
+        const auth = prompt();
+        try {
+            await verify(auth);
+            return auth;
+        } catch (error) {
+            if (!error?.credentialsRejected || attempt >= attempts) {
+                throw new Error(`${label} authentication failed`, { cause: error });
+            }
+            const remaining = attempts - attempt;
+            warn(
+                `  ${error.message}. Try again (${remaining} ${remaining === 1 ? 'try' : 'tries'} left)`
+            );
+        }
+    }
+};
+
 export const promptForPassword = (label, { runCommand = spawnSync } = {}) => {
     if (!process.stdin.isTTY || !process.stderr.isTTY) {
         throw new Error(`${label} requires an interactive terminal`);
     }
     const result = runCommand(
         '/bin/zsh',
-        ['-c', `IFS= read -r -s "password?${label}: "; printf '\\n' >&2; printf '%s' "$password"`],
+        [
+            '-c',
+            `IFS= read -r -s "password?  ${label}: "; printf '\\n' >&2; printf '%s' "$password"`,
+        ],
         { encoding: 'utf8', stdio: ['inherit', 'pipe', 'inherit'] }
     );
     if (result.status !== 0 || !result.stdout) {

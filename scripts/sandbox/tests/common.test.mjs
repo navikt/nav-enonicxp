@@ -27,6 +27,7 @@ import {
     readRunningSandbox,
     readSandboxXpVersion,
     setPropertiesEntry,
+    promptForVerifiedAuth,
     verifyStoppedTargetAuth,
     withCuratedWorkspace,
 } from '../lib/common.mjs';
@@ -213,11 +214,11 @@ test('verifies the configured password for a stopped target sandbox', (t) => {
     assert.doesNotThrow(() => verifyStoppedTargetAuth(sandboxPath, 'su:correct-password'));
     assert.throws(
         () => verifyStoppedTargetAuth(sandboxPath, 'su:wrong-password'),
-        /Target authentication failed/
+        (error) => error.credentialsRejected && /Wrong SU password/.test(error.message)
     );
     assert.throws(
         () => verifyStoppedTargetAuth(sandboxPath, 'editor:correct-password'),
-        /built-in su user/
+        /built-in SU user/
     );
 });
 
@@ -250,7 +251,7 @@ test('requires an interactive terminal for credentials', () => {
     Object.defineProperty(process.stderr, 'isTTY', { value: false, configurable: true });
     try {
         assert.throws(() => promptForAuth('Source'), /interactive terminal/);
-        assert.throws(() => promptForPassword('Target SU password'), /interactive terminal/);
+        assert.throws(() => promptForPassword('SU password'), /interactive terminal/);
     } finally {
         Object.defineProperty(process.stdin, 'isTTY', {
             value: originalInputTty,
@@ -269,7 +270,7 @@ test('returns a password collected silently by the interactive shell prompt', ()
     Object.defineProperty(process.stdin, 'isTTY', { value: true, configurable: true });
     Object.defineProperty(process.stderr, 'isTTY', { value: true, configurable: true });
     try {
-        const password = promptForPassword('New local SU password', {
+        const password = promptForPassword('New SU password', {
             runCommand: () => ({ status: 0, stdout: 'secret' }),
         });
         assert.equal(password, 'secret');
@@ -459,3 +460,53 @@ for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP', 'exit']) {
         assert.equal(existsSync(root), false);
     });
 }
+
+test('asks again for rejected credentials and stops after the last try', async () => {
+    const rejected = () =>
+        Object.assign(new Error('Wrong SU password'), { credentialsRejected: true });
+    const warnings = [];
+    const answers = ['su:first', 'su:second'];
+    const auth = await promptForVerifiedAuth({
+        label: 'Target',
+        prompt: () => answers.shift(),
+        verify: (value) => {
+            if (value === 'su:first') {
+                throw rejected();
+            }
+        },
+        warn: (message) => warnings.push(message),
+    });
+    assert.equal(auth, 'su:second');
+    assert.deepEqual(warnings, ['  Wrong SU password. Try again (2 tries left)']);
+
+    await assert.rejects(
+        promptForVerifiedAuth({
+            label: 'Target',
+            prompt: () => 'su:wrong',
+            verify: () => {
+                throw rejected();
+            },
+            warn: () => {},
+        }),
+        (error) =>
+            error.message === 'Target authentication failed' && /Wrong SU/.test(error.cause.message)
+    );
+});
+
+test('does not ask again when verification fails for another reason', async () => {
+    let prompts = 0;
+    await assert.rejects(
+        promptForVerifiedAuth({
+            label: 'Source',
+            prompt: () => {
+                prompts++;
+                return 'su:password';
+            },
+            verify: () => {
+                throw new Error('connect ECONNREFUSED');
+            },
+        }),
+        /Source authentication failed/
+    );
+    assert.equal(prompts, 1);
+});

@@ -11,8 +11,10 @@ import {
     getXpSessionCookie,
     LOOPBACK_HOSTS,
     parseAuth,
+    printPromptHeading,
     promptForAuth,
     promptForPassword,
+    promptForVerifiedAuth,
     readRunningSandbox,
     runCli,
     verifyStoppedTargetAuth,
@@ -126,42 +128,43 @@ const main = async () => {
         throw new Error('Source and target sandbox must be different');
     }
     const sourceIsDeployed = source.kind === 'deployed';
-    // Show where the credentials go, since --page may infer the source host from a pasted URL.
-    // Deployed sources are approved in the browser instead.
-    let sourceAuth = sourceIsDeployed ? null : promptForAuth(`Source (${source.origin})`);
-    const targetIsRunning = getRunningSandbox() === options.target;
-    const targetAuth = targetExists
-        ? targetIsRunning
-            ? promptForAuth('Target')
-            : `su:${promptForPassword('Target SU password')}`
-        : `su:${promptForPassword('New local SU password')}`;
-    if (!targetExists && !targetAuth.startsWith('su:')) {
-        throw new Error('A new target sandbox must use the built-in su user');
-    }
-    if (!sourceIsDeployed) {
-        parseAuth(sourceAuth, 'Source');
-    }
-    parseAuth(targetAuth, 'Target');
-    console.log('Verifying source and target credentials');
-    try {
-        if (sourceIsDeployed) {
-            sourceAuth = await authorizeDeployedSource(source);
-        } else {
-            await getXpSessionCookie(source.sourceServiceUrl, sourceAuth);
-        }
-    } catch (error) {
-        throw new Error('Source authentication failed', { cause: error });
-    }
-    if (targetExists && targetIsRunning) {
+    // Only local sandbox sources take a password; deployed sources are approved in the browser.
+    let sourceAuth;
+    if (sourceIsDeployed) {
         try {
-            // Import mode is enabled later, when the target is restarted for the import.
-            await verifyLocalImportTarget({ sandbox: options.target, auth: targetAuth });
+            sourceAuth = await authorizeDeployedSource(source);
         } catch (error) {
-            throw new Error('Target authentication failed', { cause: error });
+            throw new Error('Source authentication failed', { cause: error });
         }
-    } else if (targetExists) {
-        verifyStoppedTargetAuth(targetPath, targetAuth);
+    } else {
+        printPromptHeading(`Source: ${source.name}`);
+        sourceAuth = await promptForVerifiedAuth({
+            label: 'Source',
+            prompt: () => promptForAuth('Source'),
+            verify: (auth) => {
+                parseAuth(auth, 'Source');
+                return getXpSessionCookie(source.sourceServiceUrl, auth);
+            },
+        });
     }
+    const targetIsRunning = getRunningSandbox() === options.target;
+    printPromptHeading(`Target: ${options.target}${targetExists ? '' : ' (new sandbox)'}`);
+    const targetAuth = !targetExists
+        ? `su:${promptForPassword('New SU password')}`
+        : await promptForVerifiedAuth({
+              label: 'Target',
+              prompt: () =>
+                  targetIsRunning
+                      ? promptForAuth('Target')
+                      : `su:${promptForPassword('SU password')}`,
+              verify: (auth) => {
+                  parseAuth(auth, 'Target');
+                  // Import mode is enabled later, when the target is restarted for the import.
+                  return targetIsRunning
+                      ? verifyLocalImportTarget({ sandbox: options.target, auth })
+                      : verifyStoppedTargetAuth(targetPath, auth);
+              },
+          });
     console.log('Credentials verified');
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');

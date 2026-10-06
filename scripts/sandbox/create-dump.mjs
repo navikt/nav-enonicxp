@@ -3,7 +3,13 @@
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { setTimeout as wait } from 'node:timers/promises';
-import { directLocalFetch, getXpSessionCookie, promptForAuth, runCli } from './lib/common.mjs';
+import {
+    directLocalFetch,
+    getXpSessionCookie,
+    printPromptHeading,
+    promptForAuth,
+    runCli,
+} from './lib/common.mjs';
 import {
     assertEnonicCliAvailable,
     assertLocalTargetProcess,
@@ -50,7 +56,10 @@ const request = async (url, auth, sandbox, options = {}) => {
 export const createSandboxDump = async (
     options,
     {
-        getAuth = () => promptForAuth('Target'),
+        getAuth = (sandbox) => {
+            printPromptHeading(`Sandbox: ${sandbox}`);
+            return promptForAuth('Sandbox');
+        },
         verifyTarget = (sandbox) =>
             assertLocalTargetProcess(sandbox, { requireCuratedImport: false }),
         verifyAuth = (auth) => getXpSessionCookie('http://localhost:8080', auth),
@@ -68,7 +77,7 @@ export const createSandboxDump = async (
     }
     assertSandboxName(options.sandbox);
     verifyTarget(options.sandbox);
-    const auth = getAuth();
+    const auth = getAuth(options.sandbox);
     await verifyAuth(auth);
     const { taskId } = await requestApi(
         `${LOCAL_MANAGEMENT_URL}/system/dump`,
