@@ -77,7 +77,9 @@ export const frontendProxy = (req: Request, path?: string) => {
     }
 
     // Ensures our legacy health-check still works after the old /no/person page is removed
-    // TODO: remove this asap after the health-check has been updated
+    // 01.10.2026: This is still actively used and CS preview is blocked if health check fails.
+    // TODO: Remove this handler when all of XP is in XP Cloud. In XP Cloud, we fetch frontend via external ingress
+    // so this health check won't matter anymore.
     if (req.mode === 'live' && req.url.endsWith('/no/person')) {
         logger.info('Is the old health check still in use? (Yes it is!)');
         return healthCheckDummyResponse();

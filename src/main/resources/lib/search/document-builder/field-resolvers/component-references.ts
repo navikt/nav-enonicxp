@@ -61,7 +61,7 @@ export const getSearchDocumentFormDetails = (
     }
 
     const { showTitle, showIngress, targetFormDetails } = partConfig;
-    if (!targetFormDetails || !(showTitle && showIngress)) {
+    if (!targetFormDetails) {
         return [];
     }
 

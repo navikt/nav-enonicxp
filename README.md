@@ -119,8 +119,17 @@ open http://localhost:8080/admin
                         dump
                             [navn på dumpen, f.eks prod_2025_08_05]
     ```
+8. **4 filer må kopieres til config i sandbox-mappa:
 
-8. **Potensiell feil**
+   Disse ligger i config i repoet:
+    - com.enonic.app.contentstudio.cfg
+    - com.enonic.xp.content.cfg 
+   Disse ligger under localhost i repoet:
+    - com.enonic.xp.web.vhost.cfg
+    - no.nav.navno.cfg
+
+
+9. **Potensiell feil**
 
     Hvis du går inn i `localhost:8080/admin/tool` og ikke finner Content Studio i menyen til høyre må du installere Content Studio med en nyere versjon:
 
@@ -129,6 +138,7 @@ open http://localhost:8080/admin
     - Klikk på `Uninstall`
     - Klikk på `Install`
     - Finn `Content Studio` og klikk `Install`
+
 
 ## Server config docs
 

@@ -4,7 +4,7 @@ import { RepoNode } from '/lib/xp/node';
 import { ContentDescriptor, MediaDescriptor } from '../../types/content-types/content-config';
 import { getISONowWithoutMS } from './datetime-utils';
 import { logger } from './logging';
-import { COMPONENT_APP_KEY } from '../constants';
+import { COMPONENT_APP_KEY, NAVNO_NODE_ROOT_PATH } from '../constants';
 
 export const isMedia = (content: Content): content is Content<MediaDescriptor> =>
     content.type.startsWith('media:');
@@ -78,4 +78,4 @@ export const isContentAwaitingPrepublish = (
 
 // If the content ref is a path, ensure it has the /content prefix
 export const getContentNodeKey = (contentRef: string) =>
-    contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
+    contentRef.replace(/^\/www.nav.no/, NAVNO_NODE_ROOT_PATH);

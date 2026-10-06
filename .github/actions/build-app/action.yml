@@ -4,9 +4,6 @@ inputs:
   xpEnv:
     required: true
     description: XP environment name
-  xpVersion:
-    required: true
-    description: Enonic XP version
 
 runs:
   using: composite
@@ -37,7 +34,7 @@ runs:
 
     - name: Build application
       shell: bash
-      run: ./gradlew build -PxpVersion=${{ inputs.xpVersion }}
+      run: ./gradlew build
 
     - name: Verify production package boundary
       shell: bash
@@ -50,7 +47,8 @@ runs:
 
     - name: Build e2e test data
       shell: bash
-      run: ./gradlew build -p=test/e2e-tests/.xp-test-data-app -PxpVersion=${{ inputs.xpVersion }}
+      # The test data build reads the XP version from the root gradle.properties.
+      run: ./gradlew build -p=test/e2e-tests/.xp-test-data-app
         # TODO: "Delete node_modules" and "Install production dependencies" steps were omitted.
         # This project builds JAR files (Enonic XP app), not a Node.js app. No node_modules are
         # copied into Docker images, and all Node.js dependencies are dev-only (build tools, testing).

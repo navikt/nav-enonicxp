@@ -21,12 +21,23 @@ import { OfficeTypes } from './types';
 type OfficePageDescriptor = NavNoDescriptor<'office-page'>;
 type InternalLinkDescriptor = NavNoDescriptor<'internal-link'>;
 
-type OfficeNorgData = OfficePageData['officeNorgData']['data'];
+type BaseOfficeNorgData = OfficePageData['officeNorgData']['data'];
+type OfficeLocation = Omit<NonNullable<BaseOfficeNorgData['beliggenhet']>, 'hideLocation'> & {
+    hideLocation?: boolean;
+};
+type OfficeNorgData = Omit<BaseOfficeNorgData, 'beliggenhet'> & {
+    phoneHeader?: string;
+    beliggenhet?: OfficeLocation;
+};
 type ImportedOfficeType = Exclude<OfficeNorgData['type'], 'REDAKSJONELT'>;
-type ImportedOfficeNorgData = Omit<OfficeNorgData, 'enhetNr' | 'navn' | 'type'> & {
+type ImportedOfficeNorgData = Omit<
+    OfficeNorgData,
+    'enhetNr' | 'navn' | 'type' | 'beliggenhet'
+> & {
     enhetNr: string;
     navn: string;
     type: ImportedOfficeType;
+    beliggenhet?: Omit<OfficeLocation, 'hideLocation'>;
 };
 
 type OfficeOverview = {
@@ -307,7 +318,7 @@ const moveAndRedirectOnNameChange = (
     }
 };
 
-const mergeOfficeDataWithPageData = ({
+export const mergeOfficeDataWithPageData = ({
     pageData,
     officeData,
     checksum,
@@ -316,15 +327,25 @@ const mergeOfficeDataWithPageData = ({
     officeData: ImportedOfficeNorgData;
     checksum: string;
 }): OfficePageData => {
+    const existingOfficeData = pageData.officeNorgData?.data as OfficeNorgData | undefined;
+    const mergedOfficeData: OfficeNorgData = {
+        ...officeData,
+        checksum,
+        phoneHeader: existingOfficeData?.phoneHeader,
+        beliggenhet: officeData.beliggenhet
+            ? {
+                  ...officeData.beliggenhet,
+                  hideLocation: existingOfficeData?.beliggenhet?.hideLocation ?? false,
+              }
+            : officeData.beliggenhet,
+    };
+
     return {
         ...pageData,
         title: officeData.navn,
         officeNorgData: {
             _selected: 'data',
-            data: {
-                ...officeData,
-                checksum,
-            },
+            data: mergedOfficeData as BaseOfficeNorgData,
         },
     };
 };
