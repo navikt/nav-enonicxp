@@ -14,8 +14,10 @@ import {
     restoreCuratedTargetMetadata,
 } from '../../lib/exports/target/curated-target-metadata';
 import {
+    CuratedBranch,
     curatedJsonResponse as jsonResponse,
     getProjectParents as getParents,
+    hasRequiredProjectTopology,
     isCuratedBranch,
     isCuratedContentId,
     isCuratedContentPath,
@@ -31,9 +33,9 @@ const MAX_RELOCATION_DESCENDANTS = 1000;
 
 type ImportEntry = {
     contentId: string;
-    paths: Partial<Record<'draft' | 'master', string>>;
+    paths: Partial<Record<CuratedBranch, string>>;
     repoId: string;
-    branches: Array<'draft' | 'master'>;
+    branches: Array<CuratedBranch>;
 };
 
 type RequestBody = {
@@ -47,7 +49,7 @@ type RequestBody = {
     applications?: RequiredApplication[];
     projects?: Project[];
     repository?: string;
-    branch?: 'draft' | 'master';
+    branch?: CuratedBranch;
     entries?: ImportEntry[];
     expectations?: CuratedTargetExpectation[];
 };
@@ -269,13 +271,7 @@ const validateProjects = (projects: Project[]) => {
         ) {
             throw new Error(`Invalid project configuration for "${expectedProject.id}"`);
         }
-        const parents = getParents(project);
-        if (
-            project.id !== expectedProject.id ||
-            project.language !== expectedProject.language ||
-            parents.length !== expectedProject.parents.length ||
-            parents.some((parent, parentIndex) => parent !== expectedProject.parents[parentIndex])
-        ) {
+        if (!hasRequiredProjectTopology(project, expectedProject)) {
             throw new Error(
                 `Project topology mismatch for expected project "${expectedProject.id}"`
             );
@@ -294,15 +290,23 @@ const comparableProject = (project: Project) => ({
     readAccess: project.readAccess || {},
 });
 
+const matchesProject = (actual: Project | null, expected: Project) =>
+    !!actual &&
+    JSON.stringify(comparableProject(actual)) === JSON.stringify(comparableProject(expected));
+
+// Parents, permissions and read access are verified separately and never modified here.
+const modifyProjectMetadata = (project: Project) =>
+    projectLib.modify({
+        id: project.id,
+        displayName: project.displayName,
+        description: project.description,
+        language: project.language,
+        siteConfig: project.siteConfig || [],
+    });
+
 const configureDefaultProject = (project: Project) => {
     try {
-        projectLib.modify({
-            id: project.id,
-            displayName: project.displayName,
-            description: project.description,
-            language: project.language,
-            siteConfig: project.siteConfig || [],
-        });
+        modifyProjectMetadata(project);
     } catch (error) {
         if (!String(error).includes('Default project has no roles')) {
             throw error;
@@ -332,19 +336,8 @@ const configureDefaultProject = (project: Project) => {
 const configureChildProject = (project: Project) => {
     const existingProject = projectLib.get({ id: project.id });
     if (existingProject) {
-        projectLib.modify({
-            id: project.id,
-            displayName: project.displayName,
-            description: project.description,
-            language: project.language,
-            siteConfig: project.siteConfig || [],
-        });
-        const configuredProject = projectLib.get({ id: project.id });
-        if (
-            !configuredProject ||
-            JSON.stringify(comparableProject(configuredProject)) !==
-                JSON.stringify(comparableProject(project))
-        ) {
+        modifyProjectMetadata(project);
+        if (!matchesProject(projectLib.get({ id: project.id }), project)) {
             throw new Error(`Existing project "${project.id}" does not match the manifest`);
         }
         return;
@@ -361,12 +354,7 @@ const configureChildProject = (project: Project) => {
         readAccess: { public: Boolean((project.readAccess as { public?: boolean })?.public) },
     });
 
-    const configuredProject = projectLib.get({ id: project.id });
-    if (
-        !configuredProject ||
-        JSON.stringify(comparableProject(configuredProject)) !==
-            JSON.stringify(comparableProject(project))
-    ) {
+    if (!matchesProject(projectLib.get({ id: project.id }), project)) {
         throw new Error(`Created project "${project.id}" does not match the manifest`);
     }
 };
@@ -501,7 +489,7 @@ const orderRelocationEntries = (entries: RelocationEntry[]) => {
 
 const planImportRelocations = (
     connection: ReturnType<typeof getRepoConnection>,
-    branch: 'draft' | 'master',
+    branch: CuratedBranch,
     entries: ImportEntry[],
     allowMissing: boolean
 ) => {
@@ -599,7 +587,7 @@ const planImportRelocations = (
 
 const relocateImportPaths = (
     repository: string,
-    branch: 'draft' | 'master',
+    branch: CuratedBranch,
     entries: ImportEntry[],
     allowMissing: boolean
 ) => {
@@ -664,7 +652,7 @@ const relocateImportPaths = (
 
 const prepareProjectImport = (
     repository: string,
-    branch: 'draft' | 'master',
+    branch: CuratedBranch,
     entries: ImportEntry[]
 ) => {
     const result = relocateImportPaths(repository, branch, entries, true);
@@ -674,11 +662,8 @@ const prepareProjectImport = (
     };
 };
 
-const normalizeImportPaths = (
-    repository: string,
-    branch: 'draft' | 'master',
-    entries: ImportEntry[]
-) => relocateImportPaths(repository, branch, entries, false).relocatedPaths;
+const normalizeImportPaths = (repository: string, branch: CuratedBranch, entries: ImportEntry[]) =>
+    relocateImportPaths(repository, branch, entries, false).relocatedPaths;
 
 const synchronizePublished = (repository: string, entries: ImportEntry[]) => {
     if (
@@ -799,7 +784,7 @@ export const post = (req: Request) => {
         if (
             body.action === 'prepare-project-import' &&
             typeof body.repository === 'string' &&
-            (body.branch === 'draft' || body.branch === 'master') &&
+            isCuratedBranch(body.branch) &&
             Array.isArray(body.entries)
         ) {
             return jsonResponse(
@@ -810,7 +795,7 @@ export const post = (req: Request) => {
         if (
             body.action === 'normalize-import-paths' &&
             typeof body.repository === 'string' &&
-            (body.branch === 'draft' || body.branch === 'master') &&
+            isCuratedBranch(body.branch) &&
             Array.isArray(body.entries)
         ) {
             return jsonResponse(200, {

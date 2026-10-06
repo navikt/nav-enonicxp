@@ -16,7 +16,9 @@ export const CURATED_REPOSITORIES: string[] = REQUIRED_PROJECTS.map(
 export const isCuratedRepository = (value: unknown): value is string =>
     typeof value === 'string' && CURATED_REPOSITORIES.includes(value);
 
-export const isCuratedBranch = (value: unknown): value is 'draft' | 'master' =>
+export type CuratedBranch = 'draft' | 'master';
+
+export const isCuratedBranch = (value: unknown): value is CuratedBranch =>
     value === 'draft' || value === 'master';
 
 export const isCuratedContentId = (value: unknown): value is string =>
@@ -51,6 +53,19 @@ export const getProjectParents = (project: Project) => {
         return project.parents;
     }
     return project.parent ? [project.parent] : [];
+};
+
+export const hasRequiredProjectTopology = (
+    project: Project,
+    expected: (typeof REQUIRED_PROJECTS)[number]
+) => {
+    const parents = getProjectParents(project);
+    return (
+        project.id === expected.id &&
+        project.language === expected.language &&
+        parents.length === expected.parents.length &&
+        parents.every((parent, index) => parent === expected.parents[index])
+    );
 };
 
 export const curatedJsonResponse = (status: number, body: Record<string, unknown>) => ({

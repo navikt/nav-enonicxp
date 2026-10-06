@@ -15,7 +15,8 @@ import {
     CURATED_CONTENT_ROOT_PATH,
     CURATED_REPOSITORIES,
     REQUIRED_PROJECTS,
-    getProjectParents,
+    CuratedBranch,
+    hasRequiredProjectTopology,
     isCuratedBranch,
     isCuratedContentId,
     isCuratedContentPath,
@@ -53,19 +54,19 @@ export type CuratedExportReason =
 
 export type CuratedExportEntry = {
     contentId: string;
-    paths: Partial<Record<'draft' | 'master', string>>;
-    versions: Partial<Record<'draft' | 'master', string>>;
+    paths: Partial<Record<CuratedBranch, string>>;
+    versions: Partial<Record<CuratedBranch, string>>;
     contentType: string;
     locale: string;
     repoId: string;
     reason: CuratedExportReason;
     descendantCount: number;
-    branches: Array<'draft' | 'master'>;
+    branches: Array<CuratedBranch>;
 };
 
 export type CuratedExportSeed = {
     repository: string;
-    branch: 'draft' | 'master';
+    branch: CuratedBranch;
     contentId: string;
 };
 
@@ -118,19 +119,17 @@ const isExcludedPath = (path: string) =>
 const isAllowedNodePath = (path: string) =>
     isCuratedContentPath(path) && !isExcludedPath(path.slice('/content'.length));
 
-type SourceBranch = 'draft' | 'master';
-
 // By default only published content is exported: master is read and mirrored into the local draft
 // branch, so unpublished changes stay in the source. With includeDrafts, both branches are read.
-const getSourceBranches = (includeDrafts: boolean): SourceBranch[] =>
+const getSourceBranches = (includeDrafts: boolean): CuratedBranch[] =>
     includeDrafts ? ['draft', 'master'] : ['master'];
 
 const getEntry = (
     content: Content,
     locale: string,
     reason: CuratedExportReason,
-    sourceBranches: SourceBranch[],
-    sourceBranch: SourceBranch = 'master'
+    sourceBranches: CuratedBranch[],
+    sourceBranch: CuratedBranch = 'master'
 ): CuratedExportEntry | null => {
     const repoId = getLayersData().localeToRepoIdMap[locale];
     if (!repoId) {
@@ -197,7 +196,7 @@ const getEntry = (
 };
 
 // Mirrored draft data is a copy of master, so only branches that were actually read are walked.
-const getReadBranches = (entry: CuratedExportEntry, sourceBranches: SourceBranch[]) =>
+const getReadBranches = (entry: CuratedExportEntry, sourceBranches: CuratedBranch[]) =>
     entry.branches.filter((branch) => sourceBranches.includes(branch));
 
 const getRequiredProjects = () => {
@@ -212,12 +211,7 @@ const getRequiredProjects = () => {
             throw new Error(`Required content project "${expectedProject.id}" was not found`);
         }
 
-        const parents = getProjectParents(project);
-        if (
-            project.language !== expectedProject.language ||
-            parents.length !== expectedProject.parents.length ||
-            parents.some((parent, index) => parent !== expectedProject.parents[index])
-        ) {
+        if (!hasRequiredProjectTopology(project, expectedProject)) {
             throw new Error(
                 `Content project "${project.id}" has unexpected language or parent metadata`
             );
@@ -296,7 +290,7 @@ const validateRepositorySet = (entries: CuratedExportEntry[]) => {
 
 const assertSelectedSourceConsistency = (
     entries: CuratedExportEntry[],
-    sourceBranches: SourceBranch[]
+    sourceBranches: CuratedBranch[]
 ) => {
     entries.forEach((entry) => {
         getReadBranches(entry, sourceBranches).forEach((branch) => {
@@ -320,7 +314,7 @@ const assertSelectedSourceConsistency = (
 
 const findTypeRepresentative = (
     contentType: ContentDescriptor,
-    sourceBranches: SourceBranch[]
+    sourceBranches: CuratedBranch[]
 ): CuratedExportEntry | null => {
     const contentByRepoId = queryAllLayersToRepoIdBuckets({
         branch: 'master',
@@ -361,10 +355,10 @@ const findTypeRepresentative = (
 const closeContentGraph = (
     initialEntries: CuratedExportEntry[],
     entriesByKey: Record<string, CuratedExportEntry>,
-    sourceBranches: SourceBranch[],
+    sourceBranches: CuratedBranch[],
     onProgress: (progress: CuratedExportProgress) => void
 ) => {
-    const pendingEntries: Array<{ entry: CuratedExportEntry; branch: SourceBranch }> = [];
+    const pendingEntries: Array<{ entry: CuratedExportEntry; branch: CuratedBranch }> = [];
     const queuedBranches = new Set<string>();
     const expandableEntryKeys = new Set<string>();
     const selectedEntriesByPath = new Map<string, CuratedExportEntry>();
@@ -486,7 +480,7 @@ export const getAncestorContentPaths = (contentPath: string) => {
 const addRecursiveDescendants = (
     rootEntry: CuratedExportEntry,
     entriesByKey: Record<string, CuratedExportEntry>,
-    sourceBranches: SourceBranch[]
+    sourceBranches: CuratedBranch[]
 ) => {
     getReadBranches(rootEntry, sourceBranches).forEach((branch) => {
         const rootPath = rootEntry.paths[branch];

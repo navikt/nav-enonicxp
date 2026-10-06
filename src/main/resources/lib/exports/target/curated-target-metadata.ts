@@ -2,6 +2,7 @@ import { NodeIndexConfig } from '/lib/xp/node';
 import { userIsAdmin } from '../../utils/auth-utils';
 import { runInContext } from '../../context/run-in-context';
 import {
+    CuratedBranch,
     isCuratedBranch,
     isCuratedContentId,
     isCuratedContentPath,
@@ -22,7 +23,7 @@ export type CuratedTargetExpectation = {
 
 export type CuratedTargetBatch = {
     repository: string;
-    branch: 'draft' | 'master';
+    branch: CuratedBranch;
     expectations: CuratedTargetExpectation[];
 };
 

@@ -5,6 +5,7 @@ import { CONTENT_ROOT_REPO_ID } from '../constants';
 import { runInContext } from '../context/run-in-context';
 import {
     CURATED_CONTENT_ROOT_PATH,
+    CuratedBranch,
     isCuratedBranch,
     isCuratedContentId,
     isCuratedRepository,
@@ -39,7 +40,7 @@ export type CuratedSourceNode = {
 
 type SourceVersion = {
     repository: string;
-    branch: 'draft' | 'master';
+    branch: CuratedBranch;
     contentId: string;
     versionId?: string;
 };
