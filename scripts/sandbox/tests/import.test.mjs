@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { getImportOptions } from '../import-curated-content.mjs';
+import { getImportOptions } from '../import.mjs';
 
 test('full import and refresh require an explicit target even if one is running', () => {
     for (const flags of [[], ['--force']]) {
@@ -69,7 +69,7 @@ test('the public create/update command loads without removed CLI modules', () =>
     const result = spawnSync(
         process.execPath,
         [
-            fileURLToPath(new URL('../import-curated-content.mjs', import.meta.url)),
+            fileURLToPath(new URL('../import.mjs', import.meta.url)),
             '--source',
             'prod',
             '--target',
@@ -90,7 +90,7 @@ const runImportWithoutCli = (t, args, setupHome = () => {}) => {
     setupHome(home);
     return spawnSync(
         process.execPath,
-        [fileURLToPath(new URL('../import-curated-content.mjs', import.meta.url)), ...args],
+        [fileURLToPath(new URL('../import.mjs', import.meta.url)), ...args],
         { encoding: 'utf8', env: { HOME: home } }
     );
 };

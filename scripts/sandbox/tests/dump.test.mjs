@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { createSandboxDump, getDumpOptions } from '../create-dump.mjs';
+import { createSandboxDump, getDumpOptions } from '../dump.mjs';
 
 const fixture = () => {
     const calls = [];
@@ -41,7 +41,7 @@ test('the separate dump command requires sandbox and name, not credentials in ar
     );
     const result = spawnSync(
         process.execPath,
-        [fileURLToPath(new URL('../create-dump.mjs', import.meta.url))],
+        [fileURLToPath(new URL('../dump.mjs', import.meta.url))],
         { encoding: 'utf8', env: {} }
     );
     assert.equal(result.status, 1);

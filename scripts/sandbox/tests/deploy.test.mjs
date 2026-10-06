@@ -6,11 +6,7 @@ import { join } from 'node:path';
 import process from 'node:process';
 import test from 'node:test';
 import { fileURLToPath, URL } from 'node:url';
-import {
-    deployLocalApplication,
-    enableCuratedImport,
-    resolveDeploySandbox,
-} from '../deploy-local.mjs';
+import { deployLocalApplication, enableCuratedImport, resolveDeploySandbox } from '../deploy.mjs';
 
 const fixture = (t) => {
     const root = mkdtempSync(join(tmpdir(), 'curated-deploy-'));
@@ -130,7 +126,7 @@ test('rejects a missing sandbox before running the deploy command', (t) => {
 test('the deploy command loads without removed CLI modules', () => {
     const result = spawnSync(
         process.execPath,
-        [fileURLToPath(new URL('../deploy-local.mjs', import.meta.url))],
+        [fileURLToPath(new URL('../deploy.mjs', import.meta.url))],
         { encoding: 'utf8', env: {} }
     );
     assert.equal(result.status, 1);
