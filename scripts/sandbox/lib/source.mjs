@@ -398,7 +398,7 @@ const assertFullScopeCoverage = (nativeExports) => {
     }
 };
 
-const requestJson = async (url, init, timeoutMs) => {
+const requestManifest = async (url, init, timeoutMs) => {
     let response;
     try {
         response = await fetchXp(url, { ...init, signal: AbortSignal.timeout(timeoutMs) });
@@ -454,7 +454,7 @@ const waitForManifestJob = async (
     try {
         while (Date.now() - startedAt < jobTimeoutMs) {
             await sleep(pollIntervalMs);
-            const response = await requestJson(
+            const response = await requestManifest(
                 jobUrl,
                 { method: 'GET', headers },
                 MANIFEST_POLL_REQUEST_TIMEOUT_MS
@@ -501,7 +501,7 @@ export const createCuratedPlan = async ({
     }
     const selectedPaths = inputPath ? readPaths(inputPath) : normalizePaths(paths);
     const authHeaders = await getSourceAuthHeaders(serviceUrl, auth);
-    const started = await requestJson(
+    const started = await requestManifest(
         serviceUrl,
         {
             method: 'POST',
