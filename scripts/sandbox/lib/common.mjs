@@ -209,6 +209,18 @@ export const verifyStoppedTargetAuth = (sandboxPath, auth) => {
 // Prints which sandbox the following indented credential prompts belong to.
 export const printPromptHeading = (heading) => console.error(heading);
 
+// Rewrites a "\r…" progress line in place. On a terminal the line is cut to the terminal width:
+// a wrapped line leaves fragments on the rows above, which \r cannot reach.
+export const writeProgress = (text, stream = process.stdout) => {
+    if (!stream.isTTY || !text.startsWith('\r')) {
+        stream.write(text);
+        return;
+    }
+    const line = text.slice(1);
+    const width = stream.columns ? stream.columns - 1 : line.length;
+    stream.write(`\r${line.slice(0, width)}\x1b[K`);
+};
+
 export const promptForAuth = (label, { runCommand = spawnSync } = {}) => {
     if (!process.stdin.isTTY || !process.stderr.isTTY) {
         throw new Error(`${label} credentials require an interactive terminal`);

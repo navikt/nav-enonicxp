@@ -20,6 +20,7 @@ import {
     getXpSessionCookie,
     isCuratedContentPath,
     isSafeName,
+    writeProgress,
 } from './common.mjs';
 
 const PROPERTY_TYPES = new Set([
@@ -603,7 +604,7 @@ export const extractCuratedSource = async ({
                     );
                     nodeCount += 1;
                 });
-                process.stdout.write(`\rDownloaded nodes: ${nodeCount}/${totalNodes}`);
+                writeProgress(`\rDownloaded nodes: ${nodeCount}/${totalNodes}`);
             }
             writeManualChildOrders(exportRoot, exportedSources);
         }
@@ -628,9 +629,7 @@ export const extractCuratedSource = async ({
             );
             completedBinaries += 1;
             if (completedBinaries % 100 === 0 || completedBinaries === binaryRequests.length) {
-                process.stdout.write(
-                    `\rVerified binaries: ${completedBinaries}/${binaryRequests.length}`
-                );
+                writeProgress(`\rVerified binaries: ${completedBinaries}/${binaryRequests.length}`);
             }
         });
         if (binaryRequests.length > 0) {

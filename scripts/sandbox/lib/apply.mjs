@@ -12,7 +12,12 @@ import {
 import { tmpdir } from 'node:os';
 import { isAbsolute, join, relative, sep } from 'node:path';
 import process from 'node:process';
-import { CURATED_BRANCHES, CURATED_REPOSITORIES, directLocalFetch } from './common.mjs';
+import {
+    CURATED_BRANCHES,
+    CURATED_REPOSITORIES,
+    directLocalFetch,
+    writeProgress,
+} from './common.mjs';
 import {
     assertLocalTargetProcess,
     LOCAL_IMPORT_SERVICE_URL,
@@ -325,7 +330,7 @@ export const importCuratedBundle = async ({
     postAction,
     importNative,
     reportProgress = console.log,
-    reportCounter = (text) => process.stdout.write(text),
+    reportCounter = writeProgress,
 }) => {
     try {
         const metadataGroups = loadCuratedExpectations(manifest, files);

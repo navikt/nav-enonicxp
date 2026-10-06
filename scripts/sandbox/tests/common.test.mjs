@@ -29,6 +29,7 @@ import {
     setPropertiesEntry,
     promptForNewPassword,
     promptForVerifiedAuth,
+    writeProgress,
     verifyStoppedTargetAuth,
     withCuratedWorkspace,
 } from '../lib/common.mjs';
@@ -542,4 +543,16 @@ test('asks for a new password twice and again when the two do not match', () => 
         /The SU passwords did not match/
     );
     assert.equal(prompts, 6);
+});
+
+test('cuts progress lines to the terminal width so they never wrap', () => {
+    const written = [];
+    const terminal = { isTTY: true, columns: 21, write: (text) => written.push(text) };
+    writeProgress('\rDownloaded nodes: 17182/17182', terminal);
+    writeProgress('\n', terminal);
+    assert.deepEqual(written, ['\rDownloaded nodes: 17\x1b[K', '\n']);
+
+    const piped = [];
+    writeProgress('\rDownloaded nodes: 1/2', { isTTY: false, write: (text) => piped.push(text) });
+    assert.deepEqual(piped, ['\rDownloaded nodes: 1/2']);
 });

@@ -20,6 +20,7 @@ import {
     readRunningSandbox,
     readSandboxXpVersion,
     REQUIRED_PROJECTS,
+    writeProgress,
 } from './common.mjs';
 
 const DEPLOYED_SOURCES = {
@@ -463,7 +464,7 @@ const waitForManifestJob = async (
             }
             const elapsedSeconds = Math.round((Date.now() - startedAt) / 1000);
             reportCounter(
-                `\rSource is building the manifest${describeManifestProgress(response.body?.progress)} (${elapsedSeconds}s)\x1b[K`
+                `\rSource is building the manifest${describeManifestProgress(response.body?.progress)} (${elapsedSeconds}s)`
             );
             counterShown = true;
         }
@@ -487,7 +488,7 @@ export const createCuratedPlan = async ({
     requestTimeoutMs = MANIFEST_REQUEST_TIMEOUT_MS,
     jobTimeoutMs = MANIFEST_JOB_TIMEOUT_MS,
     pollIntervalMs = MANIFEST_POLL_INTERVAL_MS,
-    reportCounter = (text) => process.stdout.write(text),
+    reportCounter = writeProgress,
 }) => {
     if (!isSafeName(bundle)) {
         throw new Error('bundle may only contain letters, numbers, dots, underscores, and hyphens');

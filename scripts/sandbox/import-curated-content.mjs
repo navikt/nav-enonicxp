@@ -269,7 +269,9 @@ const main = async () => {
             });
             assertLocalTargetProcess(options.target);
             if (projectIcons.length > 0) {
-                console.log(`Uploading ${projectIcons.length} project icons`);
+                console.log(
+                    `Uploading ${projectIcons.length} project ${projectIcons.length === 1 ? 'icon' : 'icons'}`
+                );
             }
             await uploadProjectIcons({
                 targetServiceUrl: LOCAL_IMPORT_SERVICE_URL,

@@ -9,6 +9,7 @@ import {
     printPromptHeading,
     promptForAuth,
     runCli,
+    writeProgress,
 } from './lib/common.mjs';
 import {
     assertEnonicCliAvailable,
@@ -97,7 +98,7 @@ export const createSandboxDump = async (
         }
         await waitForNextPoll(1000);
         status = await requestApi(`${LOCAL_MANAGEMENT_URL}/task/${taskId}`, auth, options.sandbox);
-        process.stdout.write(
+        writeProgress(
             `\rCreating ${options.name}: ${status.progress.current}/${status.progress.total}`
         );
     } while (status.state === 'WAITING' || status.state === 'RUNNING');

@@ -289,10 +289,10 @@ test('polls a deployed source until its manifest job is done', async (t) => {
     assert.deepEqual(
         messages.map((message) => message.replace(/\(\d+s\)/, '(0s)')),
         [
-            '\rSource is building the manifest (0s)\x1b[K',
-            '\rSource is building the manifest: resolving pages (0s)\x1b[K',
-            '\rSource is building the manifest: adding required sections, 120 found (0s)\x1b[K',
-            '\rSource is building the manifest: following dependencies, 4980/6210 checked (0s)\x1b[K',
+            '\rSource is building the manifest (0s)',
+            '\rSource is building the manifest: resolving pages (0s)',
+            '\rSource is building the manifest: adding required sections, 120 found (0s)',
+            '\rSource is building the manifest: following dependencies, 4980/6210 checked (0s)',
             '\n',
         ]
     );
