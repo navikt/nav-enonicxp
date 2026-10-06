@@ -13,6 +13,7 @@ import {
     parseAuth,
     printPromptHeading,
     promptForAuth,
+    promptForNewPassword,
     promptForPassword,
     promptForVerifiedAuth,
     readRunningSandbox,
@@ -150,7 +151,7 @@ const main = async () => {
     const targetIsRunning = getRunningSandbox() === options.target;
     printPromptHeading(`Target: ${options.target}${targetExists ? '' : ' (new sandbox)'}`);
     const targetAuth = !targetExists
-        ? `su:${promptForPassword('New SU password')}`
+        ? `su:${promptForNewPassword('SU password')}`
         : await promptForVerifiedAuth({
               label: 'Target',
               prompt: () =>

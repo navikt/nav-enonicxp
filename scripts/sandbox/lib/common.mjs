@@ -227,6 +227,9 @@ export const promptForAuth = (label, { runCommand = spawnSync } = {}) => {
     return result.stdout;
 };
 
+const retryWarning = (message, remaining) =>
+    `  ${message}. Try again (${remaining} ${remaining === 1 ? 'try' : 'tries'} left)`;
+
 export const promptForVerifiedAuth = async ({
     label,
     prompt,
@@ -243,11 +246,25 @@ export const promptForVerifiedAuth = async ({
             if (!error?.credentialsRejected || attempt >= attempts) {
                 throw new Error(`${label} authentication failed`, { cause: error });
             }
-            const remaining = attempts - attempt;
-            warn(
-                `  ${error.message}. Try again (${remaining} ${remaining === 1 ? 'try' : 'tries'} left)`
-            );
+            warn(retryWarning(error.message, attempts - attempt));
         }
+    }
+};
+
+// Asks twice, since a mistyped new password locks the user out of the new sandbox.
+export const promptForNewPassword = (
+    label,
+    { prompt = promptForPassword, attempts = 3, warn = console.error } = {}
+) => {
+    for (let attempt = 1; ; attempt++) {
+        const password = prompt(`New ${label}`);
+        if (prompt(`Repeat ${label}`) === password) {
+            return password;
+        }
+        if (attempt >= attempts) {
+            throw new Error(`The ${label}s did not match`);
+        }
+        warn(retryWarning('The passwords do not match', attempts - attempt));
     }
 };
 

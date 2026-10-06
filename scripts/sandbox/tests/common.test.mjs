@@ -27,6 +27,7 @@ import {
     readRunningSandbox,
     readSandboxXpVersion,
     setPropertiesEntry,
+    promptForNewPassword,
     promptForVerifiedAuth,
     verifyStoppedTargetAuth,
     withCuratedWorkspace,
@@ -509,4 +510,36 @@ test('does not ask again when verification fails for another reason', async () =
         /Source authentication failed/
     );
     assert.equal(prompts, 1);
+});
+
+test('asks for a new password twice and again when the two do not match', () => {
+    const labels = [];
+    const warnings = [];
+    const answers = ['first', 'typo', 'second', 'second'];
+    const password = promptForNewPassword('SU password', {
+        prompt: (label) => {
+            labels.push(label);
+            return answers.shift();
+        },
+        warn: (message) => warnings.push(message),
+    });
+    assert.equal(password, 'second');
+    assert.deepEqual(labels, [
+        'New SU password',
+        'Repeat SU password',
+        'New SU password',
+        'Repeat SU password',
+    ]);
+    assert.deepEqual(warnings, ['  The passwords do not match. Try again (2 tries left)']);
+
+    let prompts = 0;
+    assert.throws(
+        () =>
+            promptForNewPassword('SU password', {
+                prompt: () => `answer-${prompts++}`,
+                warn: () => {},
+            }),
+        /The SU passwords did not match/
+    );
+    assert.equal(prompts, 6);
 });
