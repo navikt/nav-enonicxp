@@ -728,6 +728,63 @@ export const getCuratedImportStatus = () =>
         importInProgress: app.config.curatedImportInProgress === 'true',
     });
 
+const runImportAction = (body: RequestBody) => {
+    if (
+        body.action === 'restore-metadata' &&
+        body.repository &&
+        body.branch &&
+        Array.isArray(body.expectations)
+    ) {
+        return jsonResponse(
+            200,
+            restoreCuratedTargetMetadata({
+                repository: body.repository,
+                branch: body.branch,
+                expectations: body.expectations,
+            })
+        );
+    }
+    if (body.action === 'configure-login') {
+        return jsonResponse(200, configureLogin());
+    }
+    if (
+        body.action === 'configure-projects' &&
+        Array.isArray(body.applications) &&
+        Array.isArray(body.projects)
+    ) {
+        validateApplications(body.applications);
+        return jsonResponse(200, { projects: configureProjects(body.projects) });
+    }
+    if (
+        body.action === 'prepare-project-import' &&
+        typeof body.repository === 'string' &&
+        isCuratedBranch(body.branch) &&
+        Array.isArray(body.entries)
+    ) {
+        return jsonResponse(200, prepareProjectImport(body.repository, body.branch, body.entries));
+    }
+    if (
+        body.action === 'normalize-import-paths' &&
+        typeof body.repository === 'string' &&
+        isCuratedBranch(body.branch) &&
+        Array.isArray(body.entries)
+    ) {
+        return jsonResponse(200, {
+            normalizedPaths: normalizeImportPaths(body.repository, body.branch, body.entries),
+        });
+    }
+    if (
+        body.action === 'synchronize-published' &&
+        typeof body.repository === 'string' &&
+        Array.isArray(body.entries)
+    ) {
+        return jsonResponse(200, {
+            synchronizedPublished: synchronizePublished(body.repository, body.entries),
+        });
+    }
+    return jsonResponse(400, { message: 'Invalid curated export import action or payload' });
+};
+
 export const postCuratedImportAction = (req: Request) => {
     const accessError = getImportAccessError();
     if (accessError) {
@@ -752,63 +809,7 @@ export const postCuratedImportAction = (req: Request) => {
     }
 
     try {
-        if (
-            body.action === 'restore-metadata' &&
-            body.repository &&
-            body.branch &&
-            Array.isArray(body.expectations)
-        ) {
-            return jsonResponse(
-                200,
-                restoreCuratedTargetMetadata({
-                    repository: body.repository,
-                    branch: body.branch,
-                    expectations: body.expectations,
-                })
-            );
-        }
-        if (body.action === 'configure-login') {
-            return jsonResponse(200, configureLogin());
-        }
-        if (
-            body.action === 'configure-projects' &&
-            Array.isArray(body.applications) &&
-            Array.isArray(body.projects)
-        ) {
-            validateApplications(body.applications);
-            return jsonResponse(200, { projects: configureProjects(body.projects) });
-        }
-        if (
-            body.action === 'prepare-project-import' &&
-            typeof body.repository === 'string' &&
-            isCuratedBranch(body.branch) &&
-            Array.isArray(body.entries)
-        ) {
-            return jsonResponse(
-                200,
-                prepareProjectImport(body.repository, body.branch, body.entries)
-            );
-        }
-        if (
-            body.action === 'normalize-import-paths' &&
-            typeof body.repository === 'string' &&
-            isCuratedBranch(body.branch) &&
-            Array.isArray(body.entries)
-        ) {
-            return jsonResponse(200, {
-                normalizedPaths: normalizeImportPaths(body.repository, body.branch, body.entries),
-            });
-        }
-        if (
-            body.action === 'synchronize-published' &&
-            typeof body.repository === 'string' &&
-            Array.isArray(body.entries)
-        ) {
-            return jsonResponse(200, {
-                synchronizedPublished: synchronizePublished(body.repository, body.entries),
-            });
-        }
-        return jsonResponse(400, { message: 'Invalid curated export import action or payload' });
+        return runImportAction(body);
     } catch (error) {
         logger.error(`Curated export import failed: ${error}`);
         return jsonResponse(500, { message: `Curated export import failed: ${error}` });
