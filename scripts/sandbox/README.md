@@ -7,6 +7,7 @@ Kuratert import inkluderer sidene i [curated-content-urls.txt](curated-content-u
 ## Viktig før du starter
 
 - Du trenger Enonic CLI installert for at dette skal fungere.
+- Kommandoene kjører på macOS, Linux (med `lsof` installert) og Windows (i PowerShell, med Enonic CLI installert med Scoop eller installasjonsprogrammet, ikke npm).
 - Du må ha rollen `system.admin` i kildemiljøet. Mot `prod`, `dev1` og `dev2` godkjenner du tilgangen i nettleseren med din vanlige Entra ID-innlogging, se [Tilgang til deployede miljøer](#tilgang-til-deployede-miljøer). Mot en lokal sandbox logger du inn med brukernavn og passord. Skriver du feil, får du tre forsøk.
 - Den lokale sandboxen bruker den innebygde SU-brukeren.
 - Kommandoen endrer ikke innhold i kilden. Import og andre endringer skjer i den lokale sandboxen. Er kilden en lokal sandbox, stoppes den etter nedlastingen fordi målet skal kjøre på samme port.

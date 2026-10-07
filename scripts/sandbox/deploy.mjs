@@ -9,7 +9,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import process from 'node:process';
-import { runCli, setPropertiesEntry } from './lib/common.mjs';
+import { getSandboxPath, runCli, setPropertiesEntry } from './lib/common.mjs';
 import { assertEnonicCliAvailable, assertSandboxName } from './lib/target.mjs';
 
 const HELP_FLAGS = new Set(['--help', '-h']);
@@ -31,7 +31,7 @@ export const resolveDeploySandbox = (args, repositoryRoot = resolve('.')) => {
 };
 
 export const enableCuratedImport = (sandbox, homeDirectory = homedir()) => {
-    const sandboxPath = join(homeDirectory, '.enonic/sandboxes', sandbox);
+    const sandboxPath = getSandboxPath(homeDirectory, sandbox);
     if (!existsSync(join(sandboxPath, '.enonic'))) {
         throw new Error(`Sandbox ${sandbox} does not exist; create it before deploying to it`);
     }

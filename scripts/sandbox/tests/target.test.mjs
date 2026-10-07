@@ -96,6 +96,83 @@ test('accepts one local JVM owning both ports with the selected XP home', (t) =>
     assert.equal(assertLocalTargetProcess('target', target), target.sandboxPath);
 });
 
+test('keeps the Windows variables programs need, whatever their case', () => {
+    const environment = {
+        Path: 'C:\\Windows\\system32',
+        SystemRoot: 'C:\\Windows',
+        PATHEXT: '.COM;.EXE',
+        USERPROFILE: 'C:\\Users\\user',
+        ENONIC_CLI_REMOTE_PASS: 'source-password',
+        Java_Tool_Options: '-Dcluster.enabled=true',
+    };
+    assert.deepEqual(getLocalProcessEnvironment(environment, 'win32'), {
+        Path: 'C:\\Windows\\system32',
+        SystemRoot: 'C:\\Windows',
+        PATHEXT: '.COM;.EXE',
+        USERPROFILE: 'C:\\Users\\user',
+    });
+    assert.deepEqual(getLocalProcessEnvironment(environment, 'darwin'), {});
+});
+
+const windowsTarget = (t) => {
+    // Windows home folders often contain spaces; Enonic CLI quotes the home there.
+    const homeDirectory = mkdtempSync(join(tmpdir(), 'curated windows target '));
+    t.after(() => rmSync(homeDirectory, { recursive: true, force: true }));
+    const sandboxPath = join(homeDirectory, '.enonic/sandboxes/target');
+    mkdirSync(join(sandboxPath, 'home/config'), { recursive: true });
+    writeFileSync(join(homeDirectory, '.enonic/.enonic'), 'running = "target"\n');
+    writeFileSync(
+        join(sandboxPath, 'home/config/no.nav.navno.cfg'),
+        'env=localhost\ncuratedImportEnabled=true\nserviceSecret=dummyToken\n'
+    );
+    writeFileSync(
+        join(sandboxPath, 'home/config/com.enonic.xp.cluster.cfg'),
+        'cluster.enabled=false\n'
+    );
+    const commandLine = `"C:\\XP\\jdk\\bin\\java.exe" -Dxp.install="C:\\XP\\bin\\.." com.enonic.xp.launcher.LauncherMain -Dxp.runMode=prod -Dxp.home="${join(sandboxPath, 'home')}"`;
+    const describe = (overrides = {}) =>
+        JSON.stringify({
+            ExecutablePath: 'C:\\XP\\jdk\\bin\\java.exe',
+            CommandLine: commandLine,
+            ...overrides,
+        });
+    const runCommand = (command, args) => {
+        assert.equal(command, 'powershell.exe');
+        return args.at(-1).includes('Get-NetTCPConnection') ? '4242\r\n' : describe();
+    };
+    return { homeDirectory, sandboxPath, runCommand, describe, platform: 'win32' };
+};
+
+test('accepts the local JVM on Windows with PowerShell and a quoted home', (t) => {
+    const target = windowsTarget(t);
+    assert.equal(assertLocalTargetProcess('target', target), target.sandboxPath);
+});
+
+test('rejects other processes and homes on Windows', (t) => {
+    const target = windowsTarget(t);
+    const withProcess = (overrides) => (command, args) =>
+        args.at(-1).includes('Win32_Process')
+            ? target.describe(overrides)
+            : target.runCommand(command, args);
+    const invalidCommands = [
+        (command, args) =>
+            args.at(-1).includes('-LocalPort 4848') ? '9999\r\n' : target.runCommand(command, args),
+        withProcess({ ExecutablePath: 'C:\\Windows\\System32\\OpenSSH\\ssh.exe' }),
+        withProcess({ CommandLine: 'java.exe -Dxp.home="C:\\another\\home"' }),
+        withProcess({ CommandLine: `java.exe -Dxp.home=${join(target.sandboxPath, 'home')}` }),
+        withProcess({ CommandLine: null }),
+        () => {
+            throw new Error('powershell.exe not found');
+        },
+    ];
+    for (const runCommand of invalidCommands) {
+        assert.throws(
+            () => assertLocalTargetProcess('target', { ...target, runCommand }),
+            /local XP|target listeners/
+        );
+    }
+});
+
 test('rejects split listeners, tunnels, another XP home and duplicate home options', (t) => {
     const target = fixture(t);
     const invalidCommands = [
@@ -598,12 +675,21 @@ test('creates and prepares a missing target sandbox', (t) => {
         '--skip-start',
     ]);
     assert.deepEqual(commands[1].args, [
+        '-Xmx64m',
+        '-Xms64m',
+        '-classpath',
+        join(repositoryRoot, 'gradle/wrapper/gradle-wrapper.jar'),
+        'org.gradle.wrapper.GradleWrapperMain',
         'build',
         '--quiet',
         '-PcuratedImportLocal=true',
         '-PxpVersion=7.16.6',
         '-Pversion=2.3.4-test',
     ]);
+    assert.equal(
+        commands[1].command,
+        join(homeDirectory, '.enonic/distributions', distro, 'jdk/bin/java')
+    );
     assert.equal(
         commands[1].options.env.JAVA_HOME,
         join(homeDirectory, '.enonic/distributions', distro, 'jdk')

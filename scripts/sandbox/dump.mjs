@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { setTimeout as wait } from 'node:timers/promises';
 import {
     directLocalFetch,
+    getSandboxPath,
     getXpSessionCookie,
     printPromptHeading,
     promptForAuth,
@@ -78,7 +79,7 @@ export const createSandboxDump = async (
     }
     assertSandboxName(options.sandbox);
     verifyTarget(options.sandbox);
-    const auth = getAuth(options.sandbox);
+    const auth = await getAuth(options.sandbox);
     await verifyAuth(auth);
     const { taskId } = await requestApi(
         `${LOCAL_MANAGEMENT_URL}/system/dump`,
@@ -118,10 +119,7 @@ export const createSandboxDump = async (
     }
 
     const dumpPath = join(
-        homedir(),
-        '.enonic',
-        'sandboxes',
-        options.sandbox,
+        getSandboxPath(homedir(), options.sandbox),
         'home',
         'data',
         'dump',

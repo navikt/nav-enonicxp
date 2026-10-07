@@ -10,13 +10,14 @@ import {
     rmSync,
     writeFileSync,
 } from 'node:fs';
-import { homedir, tmpdir } from 'node:os';
-import { basename, join, resolve } from 'node:path';
+import { devNull, homedir, tmpdir } from 'node:os';
+import { basename, join, resolve, win32 } from 'node:path';
 import process from 'node:process';
 import {
     assertSandboxXpVersion,
     directLocalFetch,
     encodePropertyValue,
+    getSandboxPath,
     getXpSessionCookie,
     parseAuth,
     readRunningSandbox,
@@ -147,12 +148,30 @@ const PROCESS_ENVIRONMENT_KEYS = new Set([
     'NODE_EXTRA_CA_CERTS',
 ]);
 
+// Java and Windows programs need these to start, and Node's own PATH search uses PATHEXT.
+const WINDOWS_PROCESS_ENVIRONMENT_KEYS = new Set([
+    'SYSTEMROOT',
+    'WINDIR',
+    'PATHEXT',
+    'USERPROFILE',
+    'APPDATA',
+    'LOCALAPPDATA',
+]);
+
 // Do not pass source credentials or inherited JVM/XP overrides to a target process.
-export const getLocalProcessEnvironment = (environment = process.env) =>
+export const getLocalProcessEnvironment = (
+    environment = process.env,
+    platform = process.platform
+) =>
     Object.fromEntries(
-        Object.entries(environment).filter(
-            ([key]) => PROCESS_ENVIRONMENT_KEYS.has(key) || /^LC_[A-Z_]+$/.test(key)
-        )
+        Object.entries(environment).filter(([key]) => {
+            if (platform !== 'win32') {
+                return PROCESS_ENVIRONMENT_KEYS.has(key) || /^LC_[A-Z_]+$/.test(key);
+            }
+            // Windows variable names are case-insensitive, and PATH is usually spelled Path.
+            const name = key.toUpperCase();
+            return PROCESS_ENVIRONMENT_KEYS.has(name) || WINDOWS_PROCESS_ENVIRONMENT_KEYS.has(name);
+        })
     );
 
 export const getLocalCliEnvironment = (auth, environment = process.env) => {
@@ -168,54 +187,109 @@ export const getLocalCliEnvironment = (auth, environment = process.env) => {
     };
 };
 
-// Checking URLs alone cannot distinguish a local XP process from a tunnel to production.
-export const assertLocalTargetProcess = (
-    sandbox,
-    { homeDirectory = homedir(), runCommand = execFileSync, requireCuratedImport = true } = {}
-) => {
-    assertSandboxName(sandbox);
-    if (readRunningSandbox(homeDirectory) !== sandbox) {
-        throw new Error(`The selected target sandbox ${sandbox} must be running`);
+const TARGET_PORTS = [8080, 4848];
+
+// Windows PowerShell 5.1 ships with Windows. Its pipe output uses the console code page unless
+// told otherwise, which would garble non-ASCII characters in user folder names.
+const runPowerShell = (runCommand, script, options) =>
+    runCommand(
+        'powershell.exe',
+        [
+            '-NoProfile',
+            '-NonInteractive',
+            '-Command',
+            `[Console]::OutputEncoding = [Text.Encoding]::UTF8; ${script}`,
+        ],
+        options
+    );
+
+const readListenerPids = (port, { runCommand, platform, commandOptions }) => {
+    const output =
+        platform === 'win32'
+            ? runPowerShell(
+                  runCommand,
+                  `Get-NetTCPConnection -State Listen -LocalPort ${port} | Select-Object -ExpandProperty OwningProcess -Unique`,
+                  commandOptions
+              )
+            : runCommand('lsof', ['-nP', `-iTCP:${port}`, '-sTCP:LISTEN', '-t'], commandOptions);
+    return [...new Set(output.trim().split(/\s+/))];
+};
+
+const readProcess = (pid, { runCommand, platform, commandOptions }) => {
+    if (platform === 'win32') {
+        const { ExecutablePath, CommandLine } = JSON.parse(
+            runPowerShell(
+                runCommand,
+                `Get-CimInstance Win32_Process -Filter 'ProcessId = ${pid}' | Select-Object ExecutablePath, CommandLine | ConvertTo-Json -Compress`,
+                commandOptions
+            )
+        );
+        return { executable: ExecutablePath ?? '', commandLine: (CommandLine ?? '').trim() };
     }
-    const sandboxPath = join(homeDirectory, '.enonic/sandboxes', sandbox);
-    assertLocalTargetConfiguration(sandboxPath, { requireCuratedImport });
+    return {
+        executable: runCommand('ps', ['-p', pid, '-o', 'comm='], commandOptions).trim(),
+        commandLine: runCommand('ps', ['-p', pid, '-o', 'args='], commandOptions).trim(),
+    };
+};
+
+const getJavaExecutableName = (platform) => (platform === 'win32' ? 'java.exe' : 'java');
+
+// Enonic CLI quotes the home on Windows, since server.bat passes it on to java.exe as written.
+const getHomeArgument = (sandboxPath, platform) => {
+    if (platform === 'win32') {
+        return `-Dxp.home="${join(sandboxPath, 'home')}"`;
+    }
     const expectedHome = realpathSync(join(sandboxPath, 'home'));
     if (/\s/.test(expectedHome)) {
         throw new Error(
             'Local XP home paths containing whitespace cannot be safely attested with ps'
         );
     }
-    const commandOptions = { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] };
-    let listeners;
+    return `-Dxp.home=${expectedHome}`;
+};
+
+// Checking URLs alone cannot distinguish a local XP process from a tunnel to production.
+export const assertLocalTargetProcess = (
+    sandbox,
+    {
+        homeDirectory = homedir(),
+        runCommand = execFileSync,
+        requireCuratedImport = true,
+        platform = process.platform,
+    } = {}
+) => {
+    assertSandboxName(sandbox);
+    if (readRunningSandbox(homeDirectory) !== sandbox) {
+        throw new Error(`The selected target sandbox ${sandbox} must be running`);
+    }
+    const sandboxPath = getSandboxPath(homeDirectory, sandbox);
+    assertLocalTargetConfiguration(sandboxPath, { requireCuratedImport });
+    const homeArgument = getHomeArgument(sandboxPath, platform);
+    const context = {
+        runCommand,
+        platform,
+        commandOptions: { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] },
+    };
     let executable;
     let commandLine;
     try {
-        listeners = [8080, 4848].map((port) => [
-            ...new Set(
-                runCommand('lsof', ['-nP', `-iTCP:${port}`, '-sTCP:LISTEN', '-t'], commandOptions)
-                    .trim()
-                    .split(/\s+/)
-            ),
-        ]);
+        const listeners = TARGET_PORTS.map((port) => readListenerPids(port, context));
         if (
             listeners.some((pids) => pids.length !== 1 || !/^\d+$/.test(pids[0])) ||
             listeners[0][0] !== listeners[1][0]
         ) {
             throw new Error('Target ports are not owned by one process');
         }
-        const pid = listeners[0][0];
-        executable = runCommand('ps', ['-p', pid, '-o', 'comm='], commandOptions).trim();
-        commandLine = runCommand('ps', ['-p', pid, '-o', 'args='], commandOptions).trim();
+        ({ executable, commandLine } = readProcess(listeners[0][0], context));
     } catch {
         throw new Error(
-            'Cannot verify the local XP process; direct Unix sandboxes with lsof and ps are required'
+            'Cannot verify the local XP process; the sandbox must run directly on this machine'
         );
     }
-    const homeArgument = `-Dxp.home=${expectedHome}`;
     const argumentStart = commandLine.indexOf(homeArgument);
     const argumentEnd = argumentStart + homeArgument.length;
     if (
-        basename(executable) !== 'java' ||
+        win32.basename(executable) !== getJavaExecutableName(platform) ||
         argumentStart < 0 ||
         (commandLine.match(/(?:^|\s)-Dxp\.home=/g) || []).length !== 1 ||
         /-D[^\s]*cluster[^\s]*enabled=(?!false(?:\s|$))/.test(commandLine) ||
@@ -478,7 +552,7 @@ export const waitForManagementApi = (runCommand = execFileSync) => {
         [
             '--silent',
             '--output',
-            '/dev/null',
+            devNull,
             '--retry',
             '60',
             '--retry-connrefused',
@@ -510,8 +584,9 @@ export const prepareCuratedTarget = ({
     homeDirectory = homedir(),
     runCommand = execFileSync,
     verifyTarget = assertLocalTargetProcess,
+    platform = process.platform,
 }) => {
-    const sandboxPath = join(homeDirectory, '.enonic/sandboxes', sandbox);
+    const sandboxPath = getSandboxPath(homeDirectory, sandbox);
     const sandboxMetadataPath = join(sandboxPath, '.enonic');
     if (existsSync(sandboxMetadataPath)) {
         assertLocalTargetConfiguration(sandboxPath);
@@ -555,9 +630,16 @@ export const prepareCuratedTarget = ({
     try {
         const { distro } = readSandboxXpVersion(sandboxPath);
         const javaHome = join(homeDirectory, '.enonic/distributions', distro, 'jdk');
+        // Runs the Gradle wrapper the way gradlew does, without a shell script, so Windows
+        // needs neither gradlew.bat nor cmd.exe.
         runCommand(
-            join(repositoryRoot, 'gradlew'),
+            join(javaHome, 'bin', getJavaExecutableName(platform)),
             [
+                '-Xmx64m',
+                '-Xms64m',
+                '-classpath',
+                join(repositoryRoot, 'gradle/wrapper/gradle-wrapper.jar'),
+                'org.gradle.wrapper.GradleWrapperMain',
                 'build',
                 '--quiet',
                 '-PcuratedImportLocal=true',

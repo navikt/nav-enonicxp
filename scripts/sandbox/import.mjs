@@ -8,6 +8,7 @@ import { join, resolve } from 'node:path';
 import process from 'node:process';
 import {
     assertSandboxXpVersion,
+    getSandboxPath,
     getXpSessionCookie,
     LOOPBACK_HOSTS,
     parseAuth,
@@ -106,7 +107,7 @@ const main = async () => {
     if (inputPath && !existsSync(inputPath)) {
         throw new Error(`URL list not found: ${inputPath}`);
     }
-    const targetPath = join(homedir(), '.enonic/sandboxes', options.target);
+    const targetPath = getSandboxPath(homedir(), options.target);
     const targetExists = existsSync(join(targetPath, '.enonic'));
     if (options.page && !targetExists) {
         throw new Error('--page requires an existing target sandbox');
@@ -151,13 +152,13 @@ const main = async () => {
     const targetIsRunning = getRunningSandbox() === options.target;
     printPromptHeading(`Target: ${options.target}${targetExists ? '' : ' (new sandbox)'}`);
     const targetAuth = !targetExists
-        ? `su:${promptForNewPassword('SU password')}`
+        ? `su:${await promptForNewPassword('SU password')}`
         : await promptForVerifiedAuth({
               label: 'Target',
-              prompt: () =>
+              prompt: async () =>
                   targetIsRunning
                       ? promptForAuth('Target')
-                      : `su:${promptForPassword('SU password')}`,
+                      : `su:${await promptForPassword('SU password')}`,
               verify: (auth) => {
                   parseAuth(auth, 'Target');
                   // Import mode is enabled later, when the target is restarted for the import.

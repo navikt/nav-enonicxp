@@ -14,6 +14,8 @@ import {
 } from 'node:fs';
 import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
+import { setImmediate } from 'node:timers/promises';
+import { PassThrough } from 'node:stream';
 import { join, resolve } from 'node:path';
 import test from 'node:test';
 import {
@@ -29,6 +31,7 @@ import {
     setPropertiesEntry,
     promptForNewPassword,
     promptForVerifiedAuth,
+    readTerminalLine,
     writeProgress,
     verifyStoppedTargetAuth,
     withCuratedWorkspace,
@@ -224,68 +227,110 @@ test('verifies the configured password for a stopped target sandbox', (t) => {
     );
 });
 
-test('returns credentials collected by the interactive shell prompt', () => {
-    const originalInputTty = process.stdin.isTTY;
-    const originalErrorTty = process.stderr.isTTY;
-    Object.defineProperty(process.stdin, 'isTTY', { value: true, configurable: true });
-    Object.defineProperty(process.stderr, 'isTTY', { value: true, configurable: true });
-    try {
-        const auth = promptForAuth('Source', {
-            runCommand: () => ({ status: 0, stdout: 'editor:secret' }),
-        });
-        assert.equal(auth, 'editor:secret');
-    } finally {
-        Object.defineProperty(process.stdin, 'isTTY', {
-            value: originalInputTty,
-            configurable: true,
-        });
-        Object.defineProperty(process.stderr, 'isTTY', {
-            value: originalErrorTty,
-            configurable: true,
-        });
-    }
+const fakeTerminal = () => {
+    const input = new PassThrough();
+    input.isTTY = true;
+    input.rawModes = [];
+    input.setRawMode = (enabled) => input.rawModes.push(enabled);
+    const written = [];
+    const output = { isTTY: true, write: (text) => written.push(String(text)) };
+    return { input, output, written };
+};
+
+test('reads a hidden line without echoing it', async () => {
+    const { input, output, written } = fakeTerminal();
+    const line = readTerminalLine('  Password: ', { hidden: true, input, output });
+    input.write('sec');
+    input.write('x\u007fret\r');
+    assert.equal(await line, 'secret');
+    const shown = written.join('');
+    assert.match(shown, /Password: /);
+    assert.doesNotMatch(shown, /sec|ret/);
+    assert.ok(shown.endsWith('\n'));
+    assert.deepEqual(input.rawModes, [true, false]);
 });
 
-test('requires an interactive terminal for credentials', () => {
-    const originalInputTty = process.stdin.isTTY;
-    const originalErrorTty = process.stderr.isTTY;
-    Object.defineProperty(process.stdin, 'isTTY', { value: false, configurable: true });
-    Object.defineProperty(process.stderr, 'isTTY', { value: false, configurable: true });
-    try {
-        assert.throws(() => promptForAuth('Source'), /interactive terminal/);
-        assert.throws(() => promptForPassword('SU password'), /interactive terminal/);
-    } finally {
-        Object.defineProperty(process.stdin, 'isTTY', {
-            value: originalInputTty,
-            configurable: true,
-        });
-        Object.defineProperty(process.stderr, 'isTTY', {
-            value: originalErrorTty,
-            configurable: true,
-        });
-    }
+test('echoes visible input and handles backspace', async () => {
+    const { input, output, written } = fakeTerminal();
+    const line = readTerminalLine('  Username: ', { input, output });
+    input.write('edx\u007fitor\r');
+    assert.equal(await line, 'editor');
+    assert.match(written.join(''), /Username: .*edx.*itor/);
 });
 
-test('returns a password collected silently by the interactive shell prompt', () => {
-    const originalInputTty = process.stdin.isTTY;
-    const originalErrorTty = process.stderr.isTTY;
-    Object.defineProperty(process.stdin, 'isTTY', { value: true, configurable: true });
-    Object.defineProperty(process.stderr, 'isTTY', { value: true, configurable: true });
-    try {
-        const password = promptForPassword('New SU password', {
-            runCommand: () => ({ status: 0, stdout: 'secret' }),
-        });
-        assert.equal(password, 'secret');
-    } finally {
-        Object.defineProperty(process.stdin, 'isTTY', {
-            value: originalInputTty,
-            configurable: true,
-        });
-        Object.defineProperty(process.stderr, 'isTTY', {
-            value: originalErrorTty,
-            configurable: true,
-        });
-    }
+test('answers an empty prompt closed with Ctrl-D', async () => {
+    const { input, output } = fakeTerminal();
+    const line = readTerminalLine('  Password: ', { hidden: true, input, output });
+    input.write('\u0004');
+    assert.equal(await line, '');
+});
+
+test('restores the terminal and interrupts on Ctrl-C', async () => {
+    const { input, output } = fakeTerminal();
+    let interrupted = false;
+    readTerminalLine('  Password: ', {
+        hidden: true,
+        input,
+        output,
+        interrupt: () => {
+            interrupted = true;
+        },
+    });
+    input.write('sec\u0003');
+    await setImmediate();
+    assert.equal(interrupted, true);
+    assert.deepEqual(input.rawModes, [true, false]);
+});
+
+test('collects a username and hidden password', async () => {
+    const { input, output } = fakeTerminal();
+    const prompts = [];
+    const answers = ['editor', 'secret'];
+    const auth = await promptForAuth('Source', {
+        input,
+        output,
+        readLine: (question, options) => {
+            prompts.push([question, options.hidden === true]);
+            return Promise.resolve(answers.shift());
+        },
+    });
+    assert.equal(auth, 'editor:secret');
+    assert.deepEqual(prompts, [
+        ['  Username: ', false],
+        ['  Password: ', true],
+    ]);
+    await assert.rejects(
+        promptForAuth('Source', { input, output, readLine: () => Promise.resolve('') }),
+        /Source credentials are required/
+    );
+});
+
+test('requires an interactive terminal for credentials', async () => {
+    const input = { isTTY: false };
+    const output = { isTTY: false };
+    await assert.rejects(promptForAuth('Source', { input, output }), /interactive terminal/);
+    await assert.rejects(
+        promptForPassword('SU password', { input, output }),
+        /interactive terminal/
+    );
+});
+
+test('returns a hidden password and rejects an empty one', async () => {
+    const { input, output } = fakeTerminal();
+    const password = await promptForPassword('New SU password', {
+        input,
+        output,
+        readLine: (question, options) => {
+            assert.equal(question, '  New SU password: ');
+            assert.equal(options.hidden, true);
+            return Promise.resolve('secret');
+        },
+    });
+    assert.equal(password, 'secret');
+    await assert.rejects(
+        promptForPassword('SU password', { input, output, readLine: () => Promise.resolve('') }),
+        /SU password is required/
+    );
 });
 
 const tempDirectory = (t) => {
@@ -513,11 +558,11 @@ test('does not ask again when verification fails for another reason', async () =
     assert.equal(prompts, 1);
 });
 
-test('asks for a new password twice and again when the two do not match', () => {
+test('asks for a new password twice and again when the two do not match', async () => {
     const labels = [];
     const warnings = [];
     const answers = ['first', 'typo', 'second', 'second'];
-    const password = promptForNewPassword('SU password', {
+    const password = await promptForNewPassword('SU password', {
         prompt: (label) => {
             labels.push(label);
             return answers.shift();
@@ -534,12 +579,11 @@ test('asks for a new password twice and again when the two do not match', () => 
     assert.deepEqual(warnings, ['  The passwords do not match. Try again (2 tries left)']);
 
     let prompts = 0;
-    assert.throws(
-        () =>
-            promptForNewPassword('SU password', {
-                prompt: () => `answer-${prompts++}`,
-                warn: () => {},
-            }),
+    await assert.rejects(
+        promptForNewPassword('SU password', {
+            prompt: () => `answer-${prompts++}`,
+            warn: () => {},
+        }),
         /The SU passwords did not match/
     );
     assert.equal(prompts, 6);

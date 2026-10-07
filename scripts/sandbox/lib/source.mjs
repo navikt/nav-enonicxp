@@ -12,6 +12,7 @@ import {
     CURATED_REPOSITORIES,
     fetchXp,
     getSourceAuthHeaders,
+    getSandboxPath,
     isCuratedContentPath,
     isCuratedId,
     isSafeName,
@@ -164,7 +165,7 @@ export const resolveCuratedSource = (
         throw new Error(`Unsupported source sandbox name: ${source}`);
     }
 
-    const sandboxPath = join(homeDirectory, '.enonic', 'sandboxes', source);
+    const sandboxPath = getSandboxPath(homeDirectory, source);
     if (!existsSync(join(sandboxPath, '.enonic'))) {
         throw new Error(`Source is neither a known environment nor a local sandbox: ${source}`);
     }

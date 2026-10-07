@@ -1,4 +1,3 @@
-import { spawnSync } from 'node:child_process';
 import { timingSafeEqual } from 'node:crypto';
 import {
     chmodSync,
@@ -13,6 +12,8 @@ import {
 import { Agent, request as httpRequest } from 'node:http';
 import { dirname, join, resolve } from 'node:path';
 import process from 'node:process';
+import { createInterface } from 'node:readline';
+import { Writable } from 'node:stream';
 import { fileURLToPath } from 'node:url';
 
 // Mirrors src/main/resources/lib/curated-export/safety.ts; the XP services validate the same rules.
@@ -221,22 +222,73 @@ export const writeProgress = (text, stream = process.stdout) => {
     stream.write(`\r${line.slice(0, width)}\x1b[K`);
 };
 
-export const promptForAuth = (label, { runCommand = spawnSync } = {}) => {
-    if (!process.stdin.isTTY || !process.stderr.isTTY) {
-        throw new Error(`${label} credentials require an interactive terminal`);
+// Reads one line with readline; hidden input is muted rather than echoed, so no shell is needed.
+export const readTerminalLine = (
+    question,
+    {
+        hidden = false,
+        input = process.stdin,
+        output = process.stderr,
+        interrupt = () => process.kill(process.pid, 'SIGINT'),
+    } = {}
+) =>
+    new Promise((resolve) => {
+        let muted = false;
+        const echo = new Writable({
+            write: (chunk, encoding, callback) => {
+                if (!muted) {
+                    output.write(chunk);
+                }
+                callback();
+            },
+        });
+        const lineReader = createInterface({ input, output: echo, terminal: true });
+        let answer = '';
+        let interrupted = false;
+        // Ctrl-C leaves the prompt unanswered and lets the normal SIGINT cleanup run.
+        lineReader.on('SIGINT', () => {
+            interrupted = true;
+            lineReader.close();
+            interrupt();
+        });
+        // Enter answers the prompt; Ctrl-D on an empty line closes it without an answer.
+        lineReader.on('close', () => {
+            if (interrupted) {
+                return;
+            }
+            if (hidden) {
+                output.write('\n');
+            }
+            resolve(answer);
+        });
+        lineReader.question(question, (line) => {
+            answer = line;
+            lineReader.close();
+        });
+        muted = hidden;
+    });
+
+const assertInteractiveTerminal = (message, input, output) => {
+    if (!input.isTTY || !output.isTTY) {
+        throw new Error(message);
     }
-    const result = runCommand(
-        '/bin/zsh',
-        [
-            '-c',
-            `read -r "username?  Username: "; IFS= read -r -s "password?  Password: "; printf '\\n' >&2; printf '%s:%s' "$username" "$password"`,
-        ],
-        { encoding: 'utf8', stdio: ['inherit', 'pipe', 'inherit'] }
+};
+
+export const promptForAuth = async (
+    label,
+    { input = process.stdin, output = process.stderr, readLine = readTerminalLine } = {}
+) => {
+    assertInteractiveTerminal(
+        `${label} credentials require an interactive terminal`,
+        input,
+        output
     );
-    if (result.status !== 0 || !result.stdout || result.stdout.startsWith(':')) {
+    const username = await readLine('  Username: ', { input, output });
+    const password = await readLine('  Password: ', { hidden: true, input, output });
+    if (!username) {
         throw new Error(`${label} credentials are required`);
     }
-    return result.stdout;
+    return `${username}:${password}`;
 };
 
 const retryWarning = (message, remaining) =>
@@ -250,7 +302,7 @@ export const promptForVerifiedAuth = async ({
     warn = console.error,
 }) => {
     for (let attempt = 1; ; attempt++) {
-        const auth = prompt();
+        const auth = await prompt();
         try {
             await verify(auth);
             return auth;
@@ -264,13 +316,13 @@ export const promptForVerifiedAuth = async ({
 };
 
 // Asks twice, since a mistyped new password locks the user out of the new sandbox.
-export const promptForNewPassword = (
+export const promptForNewPassword = async (
     label,
     { prompt = promptForPassword, attempts = 3, warn = console.error } = {}
 ) => {
     for (let attempt = 1; ; attempt++) {
-        const password = prompt(`New ${label}`);
-        if (prompt(`Repeat ${label}`) === password) {
+        const password = await prompt(`New ${label}`);
+        if ((await prompt(`Repeat ${label}`)) === password) {
             return password;
         }
         if (attempt >= attempts) {
@@ -280,23 +332,20 @@ export const promptForNewPassword = (
     }
 };
 
-export const promptForPassword = (label, { runCommand = spawnSync } = {}) => {
-    if (!process.stdin.isTTY || !process.stderr.isTTY) {
-        throw new Error(`${label} requires an interactive terminal`);
-    }
-    const result = runCommand(
-        '/bin/zsh',
-        [
-            '-c',
-            `IFS= read -r -s "password?  ${label}: "; printf '\\n' >&2; printf '%s' "$password"`,
-        ],
-        { encoding: 'utf8', stdio: ['inherit', 'pipe', 'inherit'] }
-    );
-    if (result.status !== 0 || !result.stdout) {
+export const promptForPassword = async (
+    label,
+    { input = process.stdin, output = process.stderr, readLine = readTerminalLine } = {}
+) => {
+    assertInteractiveTerminal(`${label} requires an interactive terminal`, input, output);
+    const password = await readLine(`  ${label}: `, { hidden: true, input, output });
+    if (!password) {
         throw new Error(`${label} is required`);
     }
-    return result.stdout;
+    return password;
 };
+
+export const getSandboxPath = (homeDirectory, sandbox) =>
+    join(homeDirectory, '.enonic', 'sandboxes', sandbox);
 
 export const readRunningSandbox = (homeDirectory) => {
     const cliStatePath = join(homeDirectory, '.enonic', '.enonic');
