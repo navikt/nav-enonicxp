@@ -38,7 +38,8 @@ const listRegularFiles = (root) => {
         if (stat.isDirectory()) {
             readdirSync(path).forEach((name) => visit(join(path, name)));
         } else {
-            files.push(relative(root, path));
+            // Compared with XP content paths, which always use forward slashes.
+            files.push(relative(root, path).split(sep).join('/'));
         }
     };
     visit(root);
