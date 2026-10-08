@@ -1,4 +1,5 @@
 import {
+    chmodSync,
     cpSync,
     existsSync,
     lstatSync,
@@ -121,12 +122,13 @@ export const prepareCuratedImportFiles = ({
                 rmSync(targetPath, { recursive: true, force: true });
             }
             staged.add(name);
-            mkdirSync(targetPath, { mode: 0o700 });
+            // cp creates the directory itself; on Windows it rejects an existing one.
             cpSync(join(retainedRoot, name), targetPath, {
                 recursive: true,
                 force: false,
                 errorOnExist: true,
             });
+            chmodSync(targetPath, 0o700);
         },
         cleanup: () => {
             staged.forEach((name) =>
