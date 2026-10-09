@@ -36,7 +36,14 @@ export const sha256Hex = (value: string) => {
 export const getCuratedStoreRepo = (rootName: string) => {
     const repo = getMiscRepoConnection();
     if (!repo.exists(`/${rootName}`)) {
-        repo.create({ _parentPath: '/', _name: rootName });
+        try {
+            repo.create({ _parentPath: '/', _name: rootName });
+        } catch (error) {
+            // Another request or cluster node may have created the root since the check.
+            if (!repo.exists(`/${rootName}`)) {
+                throw error;
+            }
+        }
     }
     return repo;
 };
