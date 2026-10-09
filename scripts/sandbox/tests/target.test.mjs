@@ -23,6 +23,7 @@ import {
     getLocalCliEnvironment,
     getLocalProcessEnvironment,
     installCuratedApplications,
+    isCuratedSetupIncomplete,
     LOCAL_IMPORT_SERVICE_URL,
     LOCAL_MANAGEMENT_URL,
     prepareCuratedTarget,
@@ -736,6 +737,7 @@ test('creates and prepares a missing target sandbox', (t) => {
         'loginWithoutUser=false\n'
     );
     assert.equal(readFileSync(join(sandboxPath, 'home/deploy/navno.jar'), 'utf8'), 'app');
+    assert.equal(isCuratedSetupIncomplete(sandboxPath), false);
 });
 
 test('rejects an existing target with a different XP version', (t) => {
@@ -818,4 +820,54 @@ test('keeps the SU password and explains recovery when provisioning fails', (t) 
         readFileSync(join(sandboxPath, 'home/config/no.nav.navno.cfg'), 'utf8'),
         /curatedImportInProgress/
     );
+
+    // Retrying resumes the setup instead of treating the sandbox as ready.
+    writeFile(join(repositoryRoot, 'build/libs/navno.jar'), 'app');
+    const commands = [];
+    const result = prepareCuratedTarget({
+        sandbox: 'target',
+        xpVersion: '7.16.6',
+        appVersion: '2.3.4-test',
+        contentStudioVersion: '5.3.2',
+        applications: [{ key: 'com.enonic.app.contentstudio', version: '5.3.2' }],
+        suPassword: 'temporary-password',
+        repositoryRoot,
+        homeDirectory: root,
+        verifyTarget: () => {},
+        runCommand(command, args) {
+            commands.push(args);
+            if (args[0] === 'app') {
+                return installResult('com.enonic.app.contentstudio', '5.3.2');
+            }
+        },
+    });
+    assert.equal(result.created, true);
+    assert.equal(
+        commands.some((args) => args[0] === 'sandbox' && args[1] === 'create'),
+        false
+    );
+    assert.equal(
+        commands.some((args) => args.includes('-PcuratedImportLocal=true')),
+        true
+    );
+    assert.equal(readFileSync(join(sandboxPath, 'home/deploy/navno.jar'), 'utf8'), 'app');
+    assert.equal(isCuratedSetupIncomplete(sandboxPath), false);
+    assert.equal(
+        readFileSync(join(sandboxPath, 'home/config/system.properties'), 'utf8'),
+        'existing.property=true\nxp.suPassword=temporary-password\n'
+    );
+
+    const repeated = prepareCuratedTarget({
+        sandbox: 'target',
+        xpVersion: '7.16.6',
+        appVersion: '2.3.4-test',
+        contentStudioVersion: '5.3.2',
+        suPassword: 'temporary-password',
+        repositoryRoot,
+        homeDirectory: root,
+        runCommand() {
+            throw new Error('a completed sandbox must not be provisioned again');
+        },
+    });
+    assert.equal(repeated.created, false);
 });

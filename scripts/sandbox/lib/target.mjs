@@ -564,6 +564,11 @@ export const waitForManagementApi = (runCommand = execFileSync) => {
     );
 };
 
+const CURATED_SETUP_INCOMPLETE_FILE = '.curated-setup-incomplete';
+
+export const isCuratedSetupIncomplete = (sandboxPath) =>
+    existsSync(join(sandboxPath, CURATED_SETUP_INCOMPLETE_FILE));
+
 export const setCuratedImportMode = (sandboxPath, enabled) => {
     assertLocalTargetConfiguration(sandboxPath);
     setPropertiesEntry(
@@ -588,26 +593,36 @@ export const prepareCuratedTarget = ({
 }) => {
     const sandboxPath = getSandboxPath(homeDirectory, sandbox);
     const sandboxMetadataPath = join(sandboxPath, '.enonic');
-    if (existsSync(sandboxMetadataPath)) {
+    // Present from sandbox creation until setup completes, so a retry resumes the missing steps.
+    const setupIncompletePath = join(sandboxPath, CURATED_SETUP_INCOMPLETE_FILE);
+    const sandboxExists = existsSync(sandboxMetadataPath);
+    if (sandboxExists && !existsSync(setupIncompletePath)) {
         assertLocalTargetConfiguration(sandboxPath);
         assertSandboxXpVersion(sandboxPath, sandbox, xpVersion);
         return { created: false, sandboxPath };
     }
 
-    runCommand(
-        'enonic',
-        [
-            'sandbox',
-            'create',
-            sandbox,
-            '--version',
-            xpVersion,
-            '--skip-template',
-            '--force',
-            '--skip-start',
-        ],
-        { stdio: 'inherit', env: getLocalProcessEnvironment() }
-    );
+    if (sandboxExists) {
+        assertSandboxXpVersion(sandboxPath, sandbox, xpVersion);
+        console.log(`Resuming the incomplete setup of sandbox ${sandbox}`);
+    } else {
+        runCommand(
+            'enonic',
+            [
+                'sandbox',
+                'create',
+                sandbox,
+                '--version',
+                xpVersion,
+                '--skip-template',
+                '--force',
+                '--skip-start',
+            ],
+            { stdio: 'inherit', env: getLocalProcessEnvironment() }
+        );
+        mkdirSync(sandboxPath, { recursive: true });
+        writeFileSync(setupIncompletePath, '');
+    }
 
     const configDirectory = join(sandboxPath, 'home/config');
     mkdirSync(configDirectory, { recursive: true });
@@ -673,6 +688,7 @@ export const prepareCuratedTarget = ({
             runCommand,
             verifyTarget,
         });
+        rmSync(setupIncompletePath, { force: true });
     } catch (error) {
         if (existsSync(join(configDirectory, 'com.enonic.xp.cluster.cfg'))) {
             setCuratedImportMode(sandboxPath, false);

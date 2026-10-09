@@ -28,7 +28,7 @@ Dette tas ikke med:
 - versjonshistorikk
 - auditloggen. Dashbord-widgeten «Sist publiserte», «Forhåndspubliseringer» og «Sist avpubliserte» er derfor tom i sandboxen. «Under arbeid» viser bare innhold du selv har endret lokalt.
 
-Hvis oppsettet av en ny sandbox feiler, beholdes SU-passordet. Kjør kommandoen på nytt med `--force` og samme passord, eller slett sandboxen med `enonic sandbox delete navno`.
+Hvis oppsettet av en ny sandbox feiler, beholdes SU-passordet. Kjør kommandoen på nytt med `--force` og samme passord for å fullføre oppsettet, eller slett sandboxen med `enonic sandbox delete navno`.
 
 ## Oppdatere importtjenesten
 

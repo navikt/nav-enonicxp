@@ -38,6 +38,7 @@ import {
     assertSandboxName,
     getLocalProcessEnvironment,
     installCuratedApplications,
+    isCuratedSetupIncomplete,
     LOCAL_IMPORT_SERVICE_URL,
     prepareCuratedTarget,
     setCuratedImportMode,
@@ -232,7 +233,11 @@ const main = async () => {
             `Extracted ${extraction.nodeCount} nodes and ${extraction.binaryCount} binary occurrences`
         );
 
-        if (source.kind === 'local') {
+        // A target whose setup was interrupted may still be running; resuming it starts it again.
+        if (
+            source.kind === 'local' ||
+            (isCuratedSetupIncomplete(targetPath) && getRunningSandbox() === options.target)
+        ) {
             stopRunningSandbox();
         }
         const target = prepareCuratedTarget({
