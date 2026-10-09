@@ -23,6 +23,7 @@ import { initializeMainDatanodeSelection } from './lib/cluster-utils/main-datano
 import { activateSchedulerCleanupSchedule } from './lib/scheduling/schedule-cleanup';
 import { initArchiveContentTrees } from './lib/external-archive/content-tree-archive';
 import { activateArchiveNewsSchedule } from './lib/archiving/archive-old-news';
+import { isCuratedImportInProgress } from './lib/curated-export/safety';
 
 updateClusterInfo();
 initLayersData();
@@ -36,12 +37,9 @@ if (clusterLib.isMaster()) {
 
 // Native imports emit normal node events. Editing those nodes here would corrupt
 // the source snapshot (for example, custom-path cleanup drops typed null values).
-const curatedImportInProgress =
-    app.config.env === 'localhost' && app.config.curatedImportInProgress === 'true';
-
-if (curatedImportInProgress) {
+if (isCuratedImportInProgress()) {
     log.warning(
-        'Curated import mode is active: content event listeners and schedules are disabled. Remove curatedImportInProgress from no.nav.navno.cfg if no import is running.'
+        'Curated import mode is active: content event listeners are disabled, schedules are not created and content-writing scheduled tasks are skipped. Remove curatedImportInProgress from no.nav.navno.cfg if no import is running.'
     );
 } else {
     if (app.config.env !== 'test') {

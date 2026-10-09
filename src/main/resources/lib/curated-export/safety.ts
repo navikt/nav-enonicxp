@@ -85,3 +85,7 @@ export const isCuratedImportEnabled = () => {
     // Only trusted server configuration may opt a local sandbox into write access.
     return config.env === 'localhost' && config.curatedImportEnabled === 'true';
 };
+
+// Set by the sandbox import script while it imports into a local sandbox.
+export const isCuratedImportInProgress = () =>
+    app.config.env === 'localhost' && app.config.curatedImportInProgress === 'true';
