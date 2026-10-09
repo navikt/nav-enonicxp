@@ -266,7 +266,11 @@ const main = async () => {
                 importModeEnabled = true;
                 startSandbox(options.target);
                 waitForManagementApi();
-                await verifyLocalImportTarget({ sandbox: options.target, auth: targetAuth });
+                await verifyLocalImportTarget({
+                    sandbox: options.target,
+                    auth: targetAuth,
+                    waitForService: true,
+                });
                 if (!options.page) {
                     installCuratedApplications({
                         applications: manifest.applications,

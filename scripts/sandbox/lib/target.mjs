@@ -13,6 +13,7 @@ import {
 import { devNull, homedir, tmpdir } from 'node:os';
 import { basename, join, resolve, win32 } from 'node:path';
 import process from 'node:process';
+import { setTimeout as sleep } from 'node:timers/promises';
 import {
     assertSandboxXpVersion,
     directLocalFetch,
@@ -301,6 +302,26 @@ export const assertLocalTargetProcess = (
     return sandboxPath;
 };
 
+const IMPORT_SERVICE_WAIT_ATTEMPTS = 120;
+// XP answers these while it is starting or before the NAV app has deployed its services.
+const IMPORT_SERVICE_NOT_READY_STATUSES = new Set([404, 502, 503]);
+
+const requestImportServiceStatus = async ({ serviceUrl, auth, getSessionCookie, fetchRequest }) => {
+    const cookie = await getSessionCookie(serviceUrl, auth);
+    const response = await fetchRequest(serviceUrl, {
+        headers: { Cookie: cookie },
+        redirect: 'error',
+        signal: AbortSignal.timeout(30000),
+    });
+    // XP error pages are HTML, so only the service itself answers with a JSON object.
+    const result = await response.json().catch(() => null);
+    const ready =
+        !IMPORT_SERVICE_NOT_READY_STATUSES.has(response.status) &&
+        result !== null &&
+        typeof result === 'object';
+    return { cookie, response, result, ready };
+};
+
 export const verifyLocalImportTarget = async ({
     sandbox,
     auth,
@@ -309,17 +330,48 @@ export const verifyLocalImportTarget = async ({
     getSessionCookie = getXpSessionCookie,
     fetchRequest = directLocalFetch,
     requireImportMode = false,
+    waitForService = false,
+    retryDelayMs = 1000,
 }) => {
     assertLocalUrl(serviceUrl, LOCAL_IMPORT_SERVICE_URL);
     verifyTarget(sandbox);
-    const cookie = await getSessionCookie(serviceUrl, auth);
-    const response = await fetchRequest(serviceUrl, {
-        headers: { Cookie: cookie },
-        redirect: 'error',
-        signal: AbortSignal.timeout(30000),
-    });
-    const result = await response.json();
-    if (!response.ok || result.environment !== 'localhost' || result.importEnabled !== true) {
+    const attempts = waitForService ? IMPORT_SERVICE_WAIT_ATTEMPTS : 1;
+    let status = null;
+    let lastError = null;
+    for (let attempt = 1; attempt <= attempts; attempt += 1) {
+        try {
+            status = await requestImportServiceStatus({
+                serviceUrl,
+                auth,
+                getSessionCookie,
+                fetchRequest,
+            });
+            lastError = null;
+        } catch (error) {
+            if (!waitForService || error?.credentialsRejected) {
+                throw error;
+            }
+            status = null;
+            lastError = error;
+        }
+        if (status?.ready || attempt === attempts) {
+            break;
+        }
+        await sleep(retryDelayMs);
+    }
+    if (!status || (waitForService && !status.ready)) {
+        throw new Error(
+            `The curated import service in sandbox ${sandbox} did not become available after ${attempts} attempts`,
+            { cause: lastError }
+        );
+    }
+    const { cookie, response, result } = status;
+    if (
+        !status.ready ||
+        !response.ok ||
+        result.environment !== 'localhost' ||
+        result.importEnabled !== true
+    ) {
         throw new Error('Target has not enabled the local-only curated import service');
     }
     if (requireImportMode && result.importInProgress !== true) {

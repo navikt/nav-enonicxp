@@ -340,6 +340,80 @@ test('requires authenticated live localhost opt-in before import', async () => {
         }),
         /has not enabled/
     );
+    await assert.rejects(
+        verifyLocalImportTarget({
+            ...options,
+            fetchRequest: async () => ({
+                ok: false,
+                status: 404,
+                json: async () => JSON.parse('<html>'),
+            }),
+        }),
+        /has not enabled/
+    );
+});
+
+test('waits for the import service while the target app starts', async () => {
+    const responses = [
+        () => {
+            throw new TypeError('fetch failed');
+        },
+        () => ({ ok: false, status: 404, json: async () => JSON.parse('<html>') }),
+        () => ({
+            ok: true,
+            status: 200,
+            json: async () => ({ environment: 'localhost', importEnabled: true }),
+        }),
+    ];
+    let attempts = 0;
+    const cookie = await verifyLocalImportTarget({
+        sandbox: 'target',
+        auth: 'su:synthetic',
+        verifyTarget: () => {},
+        getSessionCookie: async () => 'synthetic-cookie',
+        fetchRequest: async () => responses[attempts++](),
+        waitForService: true,
+        retryDelayMs: 0,
+    });
+    assert.equal(cookie, 'synthetic-cookie');
+    assert.equal(attempts, 3);
+});
+
+test('does not retry rejected target credentials or a disabled import service', async () => {
+    let logins = 0;
+    await assert.rejects(
+        verifyLocalImportTarget({
+            sandbox: 'target',
+            auth: 'su:wrong',
+            verifyTarget: () => {},
+            getSessionCookie: async () => {
+                logins += 1;
+                throw Object.assign(new Error('rejected'), { credentialsRejected: true });
+            },
+            waitForService: true,
+            retryDelayMs: 0,
+        }),
+        /rejected/
+    );
+    assert.equal(logins, 1);
+
+    let requests = 0;
+    await assert.rejects(
+        verifyLocalImportTarget({
+            sandbox: 'target',
+            auth: 'su:synthetic',
+            verifyTarget: () => {},
+            getSessionCookie: async () => 'synthetic-cookie',
+            fetchRequest: async () => {
+                requests += 1;
+                return { ok: false, status: 403, json: async () => ({ message: 'disabled' }) };
+            },
+            waitForService: true,
+            retryDelayMs: 0,
+        }),
+        /has not enabled/
+    );
+    assert.equal(requests, 1);
 });
 
 test('rejects target clustering before any target mutation', (t) => {

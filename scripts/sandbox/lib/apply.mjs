@@ -427,7 +427,12 @@ export const importCuratedBundle = async ({
 };
 
 export const applyCuratedImport = async ({ manifest, exportDirectory, sandbox, auth }) => {
-    const sessionCookie = await verifyLocalImportTarget({ sandbox, auth, requireImportMode: true });
+    const sessionCookie = await verifyLocalImportTarget({
+        sandbox,
+        auth,
+        requireImportMode: true,
+        waitForService: true,
+    });
     const sandboxPath = assertLocalTargetProcess(sandbox);
     const nativeExports = manifest.exports
         .slice()
