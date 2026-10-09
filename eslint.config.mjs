@@ -17,6 +17,33 @@ const compat = new FlatCompat({
     allConfig: js.configs.all
 });
 
+// Babel adds no built-in polyfills, so ES2015+ built-ins missing from lib/polyfills.ts fail at runtime.
+const nashornUnsupportedProperties = [
+    ["Number", "isFinite"],
+    ["Number", "isInteger"],
+    ["Number", "isNaN"],
+    ["Number", "isSafeInteger"],
+    ["String", "raw"],
+    ["Object", "assign"],
+    ["Object", "fromEntries"],
+    ["Array", "from"],
+    ["Array", "of"],
+    ["Math", "trunc"],
+    ["Math", "sign"],
+    [undefined, "replaceAll"],
+    [undefined, "codePointAt"],
+    [undefined, "padStart"],
+    [undefined, "padEnd"],
+    [undefined, "trimStart"],
+    [undefined, "trimEnd"],
+    [undefined, "flatMap"],
+    [undefined, "matchAll"],
+].map(([object, property]) => ({
+    ...(object && { object }),
+    property,
+    message: "Not supported by Nashorn in XP and not polyfilled in lib/polyfills.ts",
+}));
+
 export default defineConfig([globalIgnores([
     ".idea/**/workspace.xml",
     ".idea/**/tasks.xml",
@@ -223,6 +250,32 @@ export default defineConfig([globalIgnores([
         "prefer-destructuring": "off",
         "prefer-template": "off",
         radix: ["error", "as-needed"],
+    },
+}, {
+    files: ["src/main/resources/**/*.ts"],
+    ignores: ["src/main/resources/types/**/*.d.ts"],
+    rules: {
+        "no-restricted-properties": ["error", ...nashornUnsupportedProperties],
+    },
+}, {
+    files: ["scripts/**/*.mjs"],
+    languageOptions: {
+        globals: {
+            process: true,
+            console: true,
+            Buffer: true,
+            URL: true,
+            Request: true,
+            Response: true,
+            Headers: true,
+            FormData: true,
+            Blob: true,
+            AbortSignal: true,
+            globalThis: true,
+        },
+    },
+    rules: {
+        "no-console": "off",
     },
 }, {
     files: ["**/*.html", "**/*.ftl", "**/*.xml"],

@@ -36,6 +36,15 @@ runs:
       shell: bash
       run: ./gradlew build
 
+    - name: Verify production package boundary
+      shell: bash
+      run: |
+        entries="$(jar tf build/libs/navno.jar)"
+        if grep -Eq '^(services/curatedExportImport/|lib/curated-export/target/|no/nav/navno/curatedexport/target/)' <<< "$entries"; then
+          echo "Writable curated import helpers must not be packaged for deployment"
+          exit 1
+        fi
+
     - name: Build e2e test data
       shell: bash
       # The test data build reads the XP version from the root gradle.properties.

@@ -1,0 +1,136 @@
+jest.mock('@navno-app/lib/curated-export/source/manifest', () => ({
+    createCuratedExportManifest: jest.fn(() => ({ entries: [] })),
+}));
+jest.mock('@navno-app/lib/utils/logging', () => ({
+    logger: { error: jest.fn() },
+}));
+
+import * as authLib from '/lib/xp/auth';
+import { createCuratedExportManifest } from '@navno-app/lib/curated-export/source/manifest';
+import { postCuratedManifest as post } from '@navno-app/lib/curated-export/source/manifest-requests';
+
+describe('curated export manifest authorization', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        jest.mocked(authLib.hasRole).mockImplementation((role) => role === 'role:system.admin');
+    });
+
+    it.each(['role:system.admin.login', 'role:system.authenticated', 'role:system.everyone'])(
+        'does not grant export capability to %s',
+        (grantedRole) => {
+            jest.mocked(authLib.hasRole).mockImplementation((role) => role === grantedRole);
+            expect(
+                post({ contentType: 'application/json', body: '{"paths":["/"]}' } as never).status
+            ).toBe(403);
+            expect(createCuratedExportManifest).not.toHaveBeenCalled();
+        }
+    );
+
+    it('allows actual system administrators', () => {
+        jest.mocked(authLib.hasRole).mockImplementation((role) => role === 'role:system.admin');
+        expect(
+            post({ contentType: 'application/json', body: '{"paths":["/"]}' } as never).status
+        ).toBe(200);
+        expect(createCuratedExportManifest).toHaveBeenCalledWith(['/'], 'full', {
+            seeds: [],
+            includeDrafts: false,
+        });
+    });
+
+    it.each([undefined, 'text/plain', 'application/x-www-form-urlencoded'])(
+        'rejects cross-site capable content type %s before building a manifest',
+        (contentType) => {
+            expect(post({ contentType, body: '{"paths":["/"]}' } as never).status).toBe(415);
+            expect(createCuratedExportManifest).not.toHaveBeenCalled();
+        }
+    );
+
+    it('forwards validated editor seeds through the options object', () => {
+        const seeds = [
+            {
+                repository: 'com.enonic.cms.navno-engelsk',
+                branch: 'draft',
+                contentId: 'editor-content-id',
+            },
+        ];
+        expect(
+            post({
+                contentType: 'application/json',
+                body: JSON.stringify({ paths: [], scope: 'page', seeds }),
+            } as never).status
+        ).toBe(200);
+        expect(createCuratedExportManifest).toHaveBeenCalledWith([], 'page', {
+            seeds,
+            includeDrafts: false,
+        });
+    });
+
+    it('supports a seeds-only request without public paths', () => {
+        const seeds = [
+            {
+                repository: 'com.enonic.cms.default',
+                branch: 'master',
+                contentId: 'editor-content-id',
+            },
+        ];
+        expect(
+            post({
+                contentType: 'application/json',
+                body: JSON.stringify({ seeds, scope: 'page' }),
+            } as never).status
+        ).toBe(200);
+        expect(createCuratedExportManifest).toHaveBeenCalledWith([], 'page', {
+            seeds,
+            includeDrafts: false,
+        });
+    });
+
+    it('forwards includeDrafts to the manifest builder', () => {
+        expect(
+            post({
+                contentType: 'application/json',
+                body: JSON.stringify({ paths: ['/'], includeDrafts: true }),
+            } as never).status
+        ).toBe(200);
+        expect(createCuratedExportManifest).toHaveBeenCalledWith(['/'], 'full', {
+            seeds: [],
+            includeDrafts: true,
+        });
+    });
+
+    it.each(['true', 1, null])('rejects a non-boolean includeDrafts value %j', (includeDrafts) => {
+        const response = post({
+            contentType: 'application/json',
+            body: JSON.stringify({ paths: ['/'], includeDrafts }),
+        } as never);
+        expect(response.status).toBe(400);
+        expect(createCuratedExportManifest).not.toHaveBeenCalled();
+    });
+
+    it.each([
+        null,
+        {},
+        'content-id',
+        { repository: 'system-repo', branch: 'master', contentId: 'content-id' },
+        { repository: 'com.enonic.cms.other', branch: 'master', contentId: 'content-id' },
+        { repository: 'com.enonic.cms.default', branch: 'other', contentId: 'content-id' },
+        { repository: 'com.enonic.cms.default', branch: 'draft', contentId: '/outside' },
+    ])('rejects an invalid later seed before invoking the manifest builder: %j', (invalidSeed) => {
+        const response = post({
+            contentType: 'application/json',
+            body: JSON.stringify({
+                paths: [],
+                seeds: [
+                    {
+                        repository: 'com.enonic.cms.default',
+                        branch: 'master',
+                        contentId: 'valid-id',
+                    },
+                    invalidSeed,
+                ],
+            }),
+        } as never);
+        expect(response.status).toBe(400);
+        expect(createCuratedExportManifest).not.toHaveBeenCalled();
+    });
+});
