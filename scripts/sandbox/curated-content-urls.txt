@@ -1,3 +1,9 @@
+# Kuratert utvalg for pnpm sandbox:import. Linjer som starter med # hoppes over.
+# Utvalget følger lenker to nivåer ut fra forsidene for privatperson, arbeidsgiver og
+# samarbeidspartner, og tar med de 100 mest besøkte sidene fra
+# https://innblikk.ansatt.nav.no/dashboard/74, uten sider som ikke ligger i Enonic.
+# Sist oppdatert: 9. oktober 2026
+
 # Lenker fra forsiden
 https://www.nav.no/
 https://www.nav.no/informasjonskapsler
@@ -330,3 +336,7 @@ https://www.nav.no/aktivitetsplan
 https://www.nav.no/start/soknad-uforetrygd
 https://www.nav.no/start/soknad-barnetrygd
 https://www.nav.no/gjenlevendepensjon
+https://www.nav.no/regulering-2026
+https://www.nav.no/delvis-utfasing-enslig-mor-far
+https://www.nav.no/start/soknad-tiltakspenger
+https://www.nav.no/brukerstotte
