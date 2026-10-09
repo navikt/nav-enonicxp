@@ -58,10 +58,10 @@ Dette oppdaterer det kuraterte utvalget, ikke hele systemdatabasen. Lokale endri
 Bruk en offentlig URL eller en redigerings-URL fra Content Studio:
 
 ```bash
-pnpm sandbox:import --page 'https://www.nav.no/arbeid'
+pnpm sandbox:import 'https://www.nav.no/arbeid'
 ```
 
-`--page` utleder siden fra URL-en og importerer til den lokale sandboxen som kjører. Den krever et eksisterende mål, så `--force` er ikke nødvendig. Du kan overstyre kilden og målet med `--source` og `--target`. Content Studio-URL-er beholder prosjekt og innholds-ID, men importerer den publiserte versjonen. Innhold som aldri er publisert, kan bare importeres med `--include-drafts`.
+URL-en kan også gis med `--page`. Kommandoen utleder siden og kilden fra URL-en og importerer til den lokale sandboxen som kjører. Kjører ingen sandbox, stopper den med en gang. Den krever et eksisterende mål, så `--force` er ikke nødvendig. Du kan overstyre kilden og målet med `--source` og `--target`. Content Studio-URL-er beholder prosjekt og innholds-ID, men importerer den publiserte versjonen. Innhold som aldri er publisert, kan bare importeres med `--include-drafts`.
 
 En eksisterende sandbox stoppes og startes før både full import og sideimport. Importen kan også oppdatere innhold i lokale språkprosjekter som arver fra det valgte innholdet. «Én side» betyr derfor ikke at bare én node endres.
 

@@ -53,6 +53,11 @@ export const getImportOptions = (args, getCurrentSandbox = () => null) => {
             options[argument.slice(2)] = true;
             continue;
         }
+        // A bare URL is short for --page.
+        if (/^https?:\/\//.test(argument) && !options.page) {
+            options.page = argument;
+            continue;
+        }
         if (!['--source', '--target', '--page', '--input'].includes(argument)) {
             throw new Error(`Unsupported argument: ${argument}`);
         }
@@ -64,9 +69,12 @@ export const getImportOptions = (args, getCurrentSandbox = () => null) => {
     }
     options.source ||= options.page ? inferCuratedSourceFromPage(options.page) : null;
     options.target ||= options.page ? getCurrentSandbox() : null;
+    if (options.page && !options.target) {
+        throw new Error('No sandbox is running; start one or pass --target');
+    }
     if (!options.source || !options.target) {
         throw new Error(
-            'Usage: pnpm sandbox:import --source <prod|dev1|dev2|URL|sandbox> --target <sandbox> [--page <URL>] [--force] [--include-drafts]. Only --page defaults to the running target.'
+            'Usage: pnpm sandbox:import --source <prod|dev1|dev2|URL|sandbox> --target <sandbox> [--force] [--include-drafts], or pnpm sandbox:import <page URL> to import one page into the running sandbox. Only page imports default to the running target.'
         );
     }
     return options;

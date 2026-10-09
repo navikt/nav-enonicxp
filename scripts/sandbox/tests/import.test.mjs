@@ -11,7 +11,7 @@ test('full import and refresh require an explicit target even if one is running'
     for (const flags of [[], ['--force']]) {
         assert.throws(
             () => getImportOptions(['--source', 'prod', ...flags], () => 'running-target'),
-            /Only --page defaults/
+            /Only page imports default/
         );
         const options = getImportOptions(
             ['--source', 'prod', '--target', 'explicit-target', ...flags],
@@ -34,7 +34,17 @@ test('page import defaults to the running target but allows explicit overrides',
     );
     assert.equal(explicit.target, 'other-target');
     assert.equal(explicit.source, 'dev1');
-    assert.throws(() => getImportOptions(['--page', page]), /Only --page defaults/);
+    assert.throws(() => getImportOptions(['--page', page]), /No sandbox is running/);
+});
+
+test('a bare page URL is short for --page', () => {
+    const page = 'https://www.nav.no/arbeid';
+    const options = getImportOptions([page, '--include-drafts'], () => 'running-target');
+    assert.equal(options.page, page);
+    assert.equal(options.source, 'prod');
+    assert.equal(options.target, 'running-target');
+    assert.throws(() => getImportOptions([page, page], () => 'target'), /Unsupported argument/);
+    assert.throws(() => getImportOptions(['arbeid'], () => 'target'), /Unsupported argument/);
 });
 
 test('include-drafts is an opt-in boolean flag', () => {
