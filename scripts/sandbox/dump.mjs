@@ -22,7 +22,11 @@ import {
 export const getDumpOptions = (args) => {
     const options = {};
 
-    for (let index = 0; index < args.length; index += 2) {
+    for (let index = 0; index < args.length; index++) {
+        if (args[index] === '--include-versions') {
+            options.includeVersions = true;
+            continue;
+        }
         if (
             !['--sandbox', '--name'].includes(args[index]) ||
             !args[index + 1] ||
@@ -31,6 +35,7 @@ export const getDumpOptions = (args) => {
             throw new Error(`Invalid argument: ${args[index]}`);
         }
         options[args[index].slice(2)] = args[index + 1];
+        index++;
     }
 
     return options;
@@ -87,7 +92,11 @@ export const createSandboxDump = async (
         options.sandbox,
         {
             method: 'POST',
-            body: JSON.stringify({ name: options.name, includeVersions: false, archive: true }),
+            body: JSON.stringify({
+                name: options.name,
+                includeVersions: options.includeVersions ?? false,
+                archive: true,
+            }),
         }
     );
 

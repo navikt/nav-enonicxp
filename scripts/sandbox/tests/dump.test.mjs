@@ -34,6 +34,16 @@ test('the separate dump command requires sandbox and name, not credentials in ar
         sandbox: 'target',
         name: 'curated_2026_09_10',
     });
+    assert.deepEqual(
+        getDumpOptions([
+            '--sandbox',
+            'target',
+            '--name',
+            'xp7to8',
+            '--include-versions',
+        ]),
+        { sandbox: 'target', name: 'xp7to8', includeVersions: true }
+    );
     assert.throws(() => getDumpOptions(['--sandbox', '--name']), /Invalid argument/);
     assert.throws(
         () => getDumpOptions(['--management-url', 'https://remote.example']),
@@ -73,6 +83,19 @@ test('validates the target before requesting credentials and creates only a loca
     assert.equal(f.calls[4][1], 'http://localhost:4848/task/task');
     assert.match(result.dumpPath, /target\/home\/data\/dump\/curated_dump\.zip$/);
     assert.equal(result.repositoryCount, 1);
+});
+
+test('includes version history when requested', async () => {
+    const f = fixture();
+    await createSandboxDump(
+        { sandbox: 'target', name: 'upgrade_dump', includeVersions: true },
+        f.dependencies
+    );
+    assert.deepEqual(JSON.parse(f.calls[3][4].body), {
+        name: 'upgrade_dump',
+        includeVersions: true,
+        archive: true,
+    });
 });
 
 test('rejects missing or unsafe options without prompting or contacting XP', async () => {

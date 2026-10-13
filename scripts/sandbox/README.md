@@ -110,6 +110,11 @@ pnpm sandbox:dump --sandbox navno --name dump_YYYY_MM_DD
 ```
 
 `--sandbox` og `--name` er påkrevd, og sandboxen må kjøre fra før. Filen havner i `XP_HOME/data/dump/<name>.zip`.
+Dumpen inkluderer som standard ikke versjonshistorikk. Legg til `--include-versions` når historikken skal med, for eksempel ved oppgraderingstesting:
+
+```bash
+pnpm sandbox:dump --sandbox navno_mini --name xp7to8 --include-versions
+```
 
 Se [«Full systemdump» i hoved-READMEen](../../README.md#full-systemdump) for hvordan du laster en slik dump inn i en annen sandbox.
 
