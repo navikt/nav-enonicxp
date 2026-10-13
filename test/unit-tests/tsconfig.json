@@ -20,6 +20,7 @@
             "/lib/http-client": ["node_modules/@item-enonic-types/lib-http-client"],
             "/lib/thymeleaf": ["node_modules/@item-enonic-types/lib-thymeleaf"],
             "/lib/xp/auditlog": ["node_modules/@enonic-types/lib-auditlog"],
+            "/lib/xp/app": ["test/unit-tests/.mocks/modules/lib/xp/app"],
             "/lib/xp/auth": ["node_modules/@enonic-types/lib-auth"],
             "/lib/xp/cluster": ["node_modules/@enonic-types/lib-cluster"],
             "/lib/xp/common": ["node_modules/@enonic-types/lib-common"],
