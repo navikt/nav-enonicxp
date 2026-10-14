@@ -325,10 +325,24 @@ const assertUniqueTargets = (entries) => {
     });
 };
 
-const validateManifest = (manifest) => {
-    if (manifest.unresolvedPaths.length > 0) {
-        throw new Error(`Manifest has ${manifest.unresolvedPaths.length} unresolved paths`);
+// A listed page can be unpublished or moved after the list was made, so it is skipped with a
+// warning. Paths the command did not list (required sections) and single-page imports still fail.
+const checkUnresolvedPaths = (manifest, { selectedPaths, scope, warn }) => {
+    const unresolvedPaths = manifest.unresolvedPaths ?? [];
+    const skippable =
+        scope === 'full' ? unresolvedPaths.filter((path) => selectedPaths.includes(path)) : [];
+    const fatal = unresolvedPaths.filter((path) => !skippable.includes(path));
+    if (fatal.length > 0) {
+        throw new Error(`Manifest has ${fatal.length} unresolved paths: ${fatal.join(', ')}`);
     }
+    if (skippable.length > 0) {
+        warn(
+            `Warning: Skipping ${skippable.length} listed paths not found in the source:\n${skippable.map((path) => `  - ${path}`).join('\n')}`
+        );
+    }
+};
+
+const validateManifest = (manifest) => {
     if (manifest.missingContentTypes.length > 0) {
         throw new Error(`Manifest is missing ${manifest.missingContentTypes.length} content types`);
     }
@@ -490,6 +504,7 @@ export const createCuratedPlan = async ({
     jobTimeoutMs = MANIFEST_JOB_TIMEOUT_MS,
     pollIntervalMs = MANIFEST_POLL_INTERVAL_MS,
     reportCounter = writeProgress,
+    warn = console.warn,
 }) => {
     if (!isSafeName(bundle)) {
         throw new Error('bundle may only contain letters, numbers, dots, underscores, and hyphens');
@@ -524,6 +539,7 @@ export const createCuratedPlan = async ({
         );
     }
     validateManifest(manifest);
+    checkUnresolvedPaths(manifest, { selectedPaths, scope, warn });
     if (manifest.scope !== scope) {
         throw new Error('Manifest service returned a different selection scope');
     }

@@ -417,10 +417,49 @@ test('rejects invalid planning inputs before authentication', async (t) => {
     assert.equal(f.requests.length, 0);
 });
 
+test('skips listed paths missing from the source with a warning, but not required or single pages', async (t) => {
+    const missing = '/www.nav.no/arbeidsgiver/unpublished';
+    const full = fixture(t);
+    full.body.unresolvedPaths = [missing];
+    const warnings = [];
+    const plan = await createCuratedPlan({
+        ...full.options,
+        paths: ['/arbeidsgiver/unpublished', '/arbeid'],
+        warn: (message) => warnings.push(message),
+    });
+    assert.ok(plan.entries.length > 0);
+    assert.equal(warnings.length, 1);
+    assert.match(
+        warnings[0],
+        /Skipping 1 listed paths[\s\S]*- \/www\.nav\.no\/arbeidsgiver\/unpublished/
+    );
+
+    full.body.unresolvedPaths = [missing, '/www.nav.no/_templates'];
+    await assert.rejects(
+        createCuratedPlan({
+            ...full.options,
+            paths: ['/arbeidsgiver/unpublished'],
+            warn: () => {},
+        }),
+        /1 unresolved paths: \/www\.nav\.no\/_templates$/
+    );
+
+    const page = fixture(t, 'page');
+    page.body.unresolvedPaths = [missing];
+    await assert.rejects(
+        createCuratedPlan({
+            ...page.options,
+            paths: ['/arbeidsgiver/unpublished'],
+            warn: () => {},
+        }),
+        /1 unresolved paths/
+    );
+});
+
 test('rejects incomplete or mismatching plans', async (t) => {
     const f = fixture(t);
     for (const [change, expected] of [
-        [{ unresolvedPaths: ['/missing'] }, /unresolved paths/],
+        [{ unresolvedPaths: ['/missing'] }, /1 unresolved paths: \/missing$/],
         [{ missingContentTypes: ['missing:type'] }, /missing.*content types/],
         [{ projects: [] }, /topology/],
         [
