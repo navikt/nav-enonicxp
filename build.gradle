@@ -18,6 +18,8 @@ node {
 dependencies {
     implementation xplibs.api.core
     implementation xplibs.api.portal
+    // XP provides Jackson at runtime, but XP 8 no longer exposes it through core-api.
+    compileOnly 'com.fasterxml.jackson.core:jackson-databind:2.22.1'
     include xplibs.app
     include xplibs.auditlog
     include xplibs.auth

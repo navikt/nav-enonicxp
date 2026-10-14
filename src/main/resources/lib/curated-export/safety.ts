@@ -48,12 +48,7 @@ export const isCuratedContentPath = (value: unknown): value is string => {
 export const isRecord = (value: unknown): value is Record<string, unknown> =>
     value !== null && typeof value === 'object' && !Array.isArray(value);
 
-export const getProjectParents = (project: Project) => {
-    if (project.parents.length > 0) {
-        return project.parents;
-    }
-    return project.parent ? [project.parent] : [];
-};
+export const getProjectParents = (project: Project) => project.parents;
 
 export const hasRequiredProjectTopology = (
     project: Project,
