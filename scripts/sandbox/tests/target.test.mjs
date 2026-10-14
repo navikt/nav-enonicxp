@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import console from 'node:console';
+import { createHash } from 'node:crypto';
 import {
     existsSync,
     mkdirSync,
@@ -32,6 +33,9 @@ import {
     verifyLocalImportTarget,
     waitForManagementApi,
 } from '../lib/target.mjs';
+
+const hashed = (password) =>
+    `{sha512}${createHash('sha512').update(password, 'utf8').digest('hex')}`;
 
 const fixture = (t) => {
     const homeDirectory = mkdtempSync(join(tmpdir(), 'curated-local-target-'));
@@ -801,7 +805,7 @@ test('creates and prepares a missing target sandbox', (t) => {
     assert.equal(commands[5].options.env.ENONIC_CLI_REMOTE_URL, 'http://localhost:4848');
     assert.equal(
         readFileSync(join(sandboxPath, 'home/config/system.properties'), 'utf8'),
-        'existing.property=true\nxp.suPassword=temporary-password\n'
+        `existing.property=true\nxp.suPassword=${hashed('temporary-password')}\n`
     );
     assert.equal(
         readFileSync(
@@ -888,7 +892,7 @@ test('keeps the SU password and explains recovery when provisioning fails', (t) 
     );
     assert.equal(
         readFileSync(join(sandboxPath, 'home/config/system.properties'), 'utf8'),
-        'existing.property=true\nxp.suPassword=temporary-password\n'
+        `existing.property=true\nxp.suPassword=${hashed('temporary-password')}\n`
     );
     assert.doesNotMatch(
         readFileSync(join(sandboxPath, 'home/config/no.nav.navno.cfg'), 'utf8'),
@@ -928,7 +932,7 @@ test('keeps the SU password and explains recovery when provisioning fails', (t) 
     assert.equal(isCuratedSetupIncomplete(sandboxPath), false);
     assert.equal(
         readFileSync(join(sandboxPath, 'home/config/system.properties'), 'utf8'),
-        'existing.property=true\nxp.suPassword=temporary-password\n'
+        `existing.property=true\nxp.suPassword=${hashed('temporary-password')}\n`
     );
 
     const repeated = prepareCuratedTarget({

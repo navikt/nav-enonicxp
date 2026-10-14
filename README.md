@@ -88,7 +88,7 @@ open http://localhost:8080/admin
     Format `bruker:passord`
 
     - Brukernavn: su
-    - Passord: det du satte med `pnpm sandbox:config --sandbox navno --set-password` under [Manuelt oppsett av sandbox](#manuelt-oppsett-av-sandbox). Det står som `xp.suPassword` i `home/config/system.properties` i sandboxen. Har du glemt det, kjører du kommandoen på nytt og starter sandboxen på nytt.
+    - Passord: det du satte med `pnpm sandbox:config --sandbox navno --set-password` under [Manuelt oppsett av sandbox](#manuelt-oppsett-av-sandbox). Passordet lagres som en hash, så det kan ikke leses ut igjen. Har du glemt det, kjører du kommandoen på nytt og starter sandboxen på nytt.
 
 6. **Vent på at dumpen fullfører**
 

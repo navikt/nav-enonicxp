@@ -23,6 +23,7 @@ import {
     directLocalFetch,
     encodePropertyValue,
     fetchXp,
+    hashSuPassword,
     parseAuth,
     promptForAuth,
     promptForPassword,
@@ -224,6 +225,29 @@ test('verifies the configured password for a stopped target sandbox', (t) => {
     assert.throws(
         () => verifyStoppedTargetAuth(sandboxPath, 'editor:correct-password'),
         /built-in SU user/
+    );
+});
+
+test('hashes the SU password in the {sha512} hex format XP 7 and 8 accept', () => {
+    assert.equal(
+        hashSuPassword('abc'),
+        '{sha512}ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f'
+    );
+});
+
+test('verifies a hashed SU password for a stopped target sandbox', (t) => {
+    const sandboxPath = mkdtempSync(join(tmpdir(), 'curated-auth-'));
+    t.after(() => rmSync(sandboxPath, { recursive: true, force: true }));
+    mkdirSync(join(sandboxPath, 'home/config'), { recursive: true });
+    writeFileSync(
+        join(sandboxPath, 'home/config/system.properties'),
+        `xp.suPassword=${hashSuPassword('correct-password')}\n`
+    );
+
+    assert.doesNotThrow(() => verifyStoppedTargetAuth(sandboxPath, 'su:correct-password'));
+    assert.throws(
+        () => verifyStoppedTargetAuth(sandboxPath, 'su:wrong-password'),
+        (error) => error.credentialsRejected && /Wrong SU password/.test(error.message)
     );
 });
 

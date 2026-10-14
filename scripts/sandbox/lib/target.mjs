@@ -17,9 +17,9 @@ import { setTimeout as sleep } from 'node:timers/promises';
 import {
     assertSandboxXpVersion,
     directLocalFetch,
-    encodePropertyValue,
     getSandboxPath,
     getXpSessionCookie,
+    hashSuPassword,
     parseAuth,
     readRunningSandbox,
     readSandboxXpVersion,
@@ -642,7 +642,7 @@ export const writeSandboxConfig = ({ sandboxPath, repositoryRoot = resolve('.'),
         setPropertiesEntry(
             join(configDirectory, 'system.properties'),
             'xp.suPassword',
-            encodePropertyValue(suPassword),
+            hashSuPassword(suPassword),
             { mode: 0o600 }
         );
     }

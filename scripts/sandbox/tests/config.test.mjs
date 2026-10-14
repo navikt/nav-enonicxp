@@ -1,9 +1,13 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import test from 'node:test';
 import { configureSandbox, getConfigOptions } from '../config.mjs';
+
+const hashed = (password) =>
+    `{sha512}${createHash('sha512').update(password, 'utf8').digest('hex')}`;
 
 const createSandbox = () => {
     const home = mkdtempSync(join(tmpdir(), 'sandbox-config-'));
@@ -56,7 +60,7 @@ test('stores the prompted password only with the password flag', async () => {
         );
         assert.match(
             readFileSync(join(configDirectory, 'system.properties'), 'utf8'),
-            /^xp\.suPassword=synthetic-password$/m
+            new RegExp(`^xp\\.suPassword=\\${hashed('synthetic-password')}$`, 'm')
         );
     } finally {
         rmSync(home, { recursive: true, force: true });
@@ -77,7 +81,7 @@ test('replaces a forgotten password and keeps other properties', async () => {
         );
         assert.equal(
             readFileSync(join(configDirectory, 'system.properties'), 'utf8'),
-            'xp.name=local\nxp.suPassword=new-password\n'
+            `xp.name=local\nxp.suPassword=${hashed('new-password')}\n`
         );
     } finally {
         rmSync(home, { recursive: true, force: true });

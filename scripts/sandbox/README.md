@@ -126,7 +126,7 @@ Kopierer de fire config-filene fra repoet til en eksisterende sandbox, uten å b
 pnpm sandbox:config --sandbox navno --set-password
 ```
 
-`--set-password` spør etter et nytt `su`-passord (skjult, to ganger) og lagrer det som `xp.suPassword` i `home/config/system.properties`. Et eksisterende passord erstattes, så kommandoen kan også brukes hvis du har glemt det. XP leser passordet ved oppstart, så start sandboxen på nytt etterpå. Uten flagget røres ikke et eksisterende passord. Passordet kan ikke oppgis som argument.
+`--set-password` spør etter et nytt `su`-passord (skjult, to ganger) og lagrer det som en SHA-512-hash i `xp.suPassword` i `home/config/system.properties`. XP 8 godtar bare hashede passord, og XP 7 godtar samme format. Et eksisterende passord erstattes, så kommandoen kan også brukes hvis du har glemt det. XP leser passordet ved oppstart, så start sandboxen på nytt etterpå. Uten flagget røres ikke et eksisterende passord. Passordet kan ikke oppgis som argument.
 
 Kommandoen skriver ikke `cluster.enabled=false` eller `loginWithoutUser=false`. Det trengs bare for import: `sandbox:import` skriver begge når den oppretter en sandbox, og `sandbox:deploy` slår av clustering i en eksisterende sandbox.
 
