@@ -118,6 +118,18 @@ pnpm sandbox:dump --sandbox navno_mini --name xp7to8 --include-versions
 
 Se [«Full systemdump» i hoved-READMEen](../../README.md#full-systemdump) for hvordan du laster en slik dump inn i en annen sandbox.
 
+## Skriv config til en sandbox
+
+Kopierer de fire config-filene fra repoet til en eksisterende sandbox, uten å bygge, deploye eller starte noe:
+
+```bash
+pnpm sandbox:config --sandbox navno --set-password
+```
+
+`--set-password` spør etter et nytt `su`-passord (skjult, to ganger) og lagrer det som `xp.suPassword` i `home/config/system.properties`. Et eksisterende passord erstattes, så kommandoen kan også brukes hvis du har glemt det. XP leser passordet ved oppstart, så start sandboxen på nytt etterpå. Uten flagget røres ikke et eksisterende passord. Passordet kan ikke oppgis som argument.
+
+Kommandoen skriver ikke `cluster.enabled=false` eller `loginWithoutUser=false`. Det trengs bare for import: `sandbox:import` skriver begge når den oppretter en sandbox, og `sandbox:deploy` slår av clustering i en eksisterende sandbox.
+
 ## Tester
 
 Lint og skripttester kjøres i CI av `sandbox-tooling.yml` når filer under `scripts/sandbox/` endres:

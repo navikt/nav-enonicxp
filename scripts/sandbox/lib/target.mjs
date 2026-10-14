@@ -630,6 +630,25 @@ export const setCuratedImportMode = (sandboxPath, enabled) => {
     );
 };
 
+// Without suPassword, an existing xp.suPassword is left untouched.
+export const writeSandboxConfig = ({ sandboxPath, repositoryRoot = resolve('.'), suPassword }) => {
+    const configDirectory = join(sandboxPath, 'home/config');
+    mkdirSync(configDirectory, { recursive: true });
+    CONFIG_FILES.forEach(([source, target]) => {
+        copyFileSync(join(repositoryRoot, source), join(configDirectory, target));
+    });
+    if (suPassword) {
+        // The su password is the only login on a fresh sandbox, so it is kept for later imports.
+        setPropertiesEntry(
+            join(configDirectory, 'system.properties'),
+            'xp.suPassword',
+            encodePropertyValue(suPassword),
+            { mode: 0o600 }
+        );
+    }
+    return configDirectory;
+};
+
 export const prepareCuratedTarget = ({
     sandbox,
     xpVersion,
@@ -676,22 +695,12 @@ export const prepareCuratedTarget = ({
         writeFileSync(setupIncompletePath, '');
     }
 
-    const configDirectory = join(sandboxPath, 'home/config');
-    mkdirSync(configDirectory, { recursive: true });
-    CONFIG_FILES.forEach(([source, target]) => {
-        copyFileSync(join(repositoryRoot, source), join(configDirectory, target));
-    });
+    const configDirectory = writeSandboxConfig({ sandboxPath, repositoryRoot, suPassword });
+    // The import refuses clustered targets and verifies credentials against a real login.
     writeFileSync(join(configDirectory, 'com.enonic.xp.cluster.cfg'), 'cluster.enabled=false\n');
     writeFileSync(
         join(configDirectory, 'com.enonic.xp.app.standardidprovider.cfg'),
         'loginWithoutUser=false\n'
-    );
-    // The su password is the only login on a fresh sandbox, so it is kept for later imports.
-    setPropertiesEntry(
-        join(configDirectory, 'system.properties'),
-        'xp.suPassword',
-        encodePropertyValue(suPassword),
-        { mode: 0o600 }
     );
 
     try {
@@ -742,7 +751,7 @@ export const prepareCuratedTarget = ({
         });
         rmSync(setupIncompletePath, { force: true });
     } catch (error) {
-        if (existsSync(join(configDirectory, 'com.enonic.xp.cluster.cfg'))) {
+        if (existsSync(join(sandboxPath, 'home/config/com.enonic.xp.cluster.cfg'))) {
             setCuratedImportMode(sandboxPath, false);
         }
         throw new Error(

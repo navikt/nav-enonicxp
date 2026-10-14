@@ -9,6 +9,7 @@
     "babel": "babel src/main/resources --out-dir=build/resources/main --no-copy-ignored --extensions \".ts\"",
     "sandbox:import": "node scripts/sandbox/import.mjs",
     "sandbox:dump": "node scripts/sandbox/dump.mjs",
+    "sandbox:config": "node scripts/sandbox/config.mjs",
     "sandbox:deploy": "node scripts/sandbox/deploy.mjs",
     "sandbox:test": "node --test scripts/sandbox/tests/*.test.mjs",
     "sandbox:lint": "eslint scripts/sandbox --quiet"

@@ -30,12 +30,10 @@ Bruk denne flyten når du vil starte uten importert innhold eller laste inn en [
 ```bash
 enonic sandbox create navno --skip-start
 enonic project sandbox navno
-
-cp config/com.enonic.xp.content.cfg ~/.enonic/sandboxes/navno/home/config/
-cp config/localhost/no.nav.navno.cfg ~/.enonic/sandboxes/navno/home/config/
-cp config/localhost/com.enonic.xp.web.vhost.cfg ~/.enonic/sandboxes/navno/home/config/
-cp config/com.enonic.app.contentstudio.cfg ~/.enonic/sandboxes/navno/home/config/
+pnpm sandbox:config --sandbox navno --set-password
 ```
+
+`sandbox:config` kopierer config-filene fra repoet til sandboxen. `--set-password` spør etter et `su`-passord og lagrer det i `system.properties`; du trenger det for å laste inn en dump. Se [Skriv config til en sandbox](scripts/sandbox/README.md#skriv-config-til-en-sandbox).
 
 Start sandboxen hvis den ikke allerede kjører:
 
@@ -90,16 +88,7 @@ open http://localhost:8080/admin
     Format `bruker:passord`
 
     - Brukernavn: su
-    - Passord: det du har definert i system.properties-filen.
-
-        `system.properties`-filen ligger i:
-        `home/config`
-        `I windows ligger filen her: C:\Users\YourUser\.enonic\sandboxes\YourSandboxName\home\config `
-        Hvis du ikke har den fra før:
-        `touch system.properties`
-        Relevant verdi i filen:
-        `xp.suPassword=PASSORDDUVELGER`
-        Flere eksempler finnes her: [Standard config files – Enonic Docs](https://developer.enonic.com/docs/xp/stable/deployment/config#standard_config_files)
+    - Passord: det du satte med `pnpm sandbox:config --sandbox navno --set-password` under [Manuelt oppsett av sandbox](#manuelt-oppsett-av-sandbox). Det står som `xp.suPassword` i `home/config/system.properties` i sandboxen. Har du glemt det, kjører du kommandoen på nytt og starter sandboxen på nytt.
 
 6. **Vent på at dumpen fullfører**
 
@@ -119,17 +108,8 @@ open http://localhost:8080/admin
                         dump
                             [navn på dumpen, f.eks prod_2025_08_05]
     ```
-8. **4 filer må kopieres til config i sandbox-mappa:
 
-   Disse ligger i config i repoet:
-    - com.enonic.app.contentstudio.cfg
-    - com.enonic.xp.content.cfg 
-   Disse ligger under localhost i repoet:
-    - com.enonic.xp.web.vhost.cfg
-    - no.nav.navno.cfg
-
-
-9. **Potensiell feil**
+8. **Potensiell feil**
 
     Hvis du går inn i `localhost:8080/admin/tool` og ikke finner Content Studio i menyen til høyre må du installere Content Studio med en nyere versjon:
 
