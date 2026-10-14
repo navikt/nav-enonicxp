@@ -2,6 +2,7 @@ package no.nav.navno.curatedexport.target;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -10,10 +11,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.enonic.xp.context.ContextAccessor;
-import com.enonic.xp.data.PropertyPath;
+import com.enonic.xp.index.AllTextIndexConfig;
 import com.enonic.xp.index.ChildOrder;
 import com.enonic.xp.index.IndexConfig;
 import com.enonic.xp.index.IndexConfigDocument;
+import com.enonic.xp.index.IndexPath;
 import com.enonic.xp.index.IndexValueProcessors;
 import com.enonic.xp.index.PathIndexConfig;
 import com.enonic.xp.index.PatternIndexConfigDocument;
@@ -138,11 +140,23 @@ public final class CuratedMetadataRestore implements ScriptBean {
         final PatternIndexConfigDocument.Builder builder = PatternIndexConfigDocument.create()
             .analyzer(json.path("analyzer").asText("document_index_default")).defaultConfig(config(json.get("default")));
         for (final JsonNode entry : array(json, "configs")) {
-            builder.addPattern(PathIndexConfig.create().path(PropertyPath.from(text(entry, "path")))
-                                   .indexConfig(config(entry.get("config"))).build());
+            builder.add(PathIndexConfig.create().path(IndexPath.from(text(entry, "path")))
+                            .indexConfig(config(entry.get("config"))).build());
         }
-        for (final JsonNode language : json.path("allText").path("languages")) {
-            builder.addAllTextConfigLanguage(language.asText());
+        builder.allTextConfig(allTextConfig(json.get("allText")));
+        return builder.build();
+    }
+
+    private AllTextIndexConfig allTextConfig(final JsonNode json) {
+        if (!json.isObject()) {
+            throw new IllegalArgumentException("Invalid allText index configuration");
+        }
+        // Missing flags keep XP's defaults, which are all enabled.
+        final AllTextIndexConfig.Builder builder = AllTextIndexConfig.create()
+            .enabled(flag(json, "enabled", true)).nGram(flag(json, "nGram", true))
+            .fulltext(flag(json, "fulltext", true));
+        for (final JsonNode language : json.path("languages")) {
+            builder.addLanguage(Locale.forLanguageTag(language.asText()));
         }
         return builder.build();
     }
@@ -156,7 +170,7 @@ public final class CuratedMetadataRestore implements ScriptBean {
             .nGram(flag(json, "nGram")).fulltext(flag(json, "fulltext"))
             .path(flag(json, "path")).includeInAllText(flag(json, "includeInAllText"));
         for (final JsonNode language : json.path("languages")) {
-            builder.addLanguage(language.asText());
+            builder.addLanguage(Locale.forLanguageTag(language.asText()));
         }
         for (final JsonNode processor : json.path("indexValueProcessors")) {
             builder.addIndexValueProcessor(IndexValueProcessors.get(processor.asText()));
@@ -165,10 +179,14 @@ public final class CuratedMetadataRestore implements ScriptBean {
     }
 
     private static boolean flag(final JsonNode json, final String name) {
+        return flag(json, name, false);
+    }
+
+    private static boolean flag(final JsonNode json, final String name, final boolean defaultValue) {
         if (json.has(name) && !json.get(name).isBoolean()) {
             throw new IllegalArgumentException("Index flags must be booleans");
         }
-        return json.path(name).asBoolean(false);
+        return json.path(name).asBoolean(defaultValue);
     }
 
     private static String text(final JsonNode json, final String key) {

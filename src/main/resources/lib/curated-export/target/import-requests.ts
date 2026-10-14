@@ -3,7 +3,7 @@ import { userIsAdmin } from '../../utils/auth-utils';
 import * as appLib from '/lib/xp/app';
 import * as nodeLib from '/lib/xp/node';
 import * as projectLib from '/lib/xp/project';
-import { Project } from '/lib/xp/project';
+import { EditableProject, Project } from '/lib/xp/project';
 import { Content } from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
 import { runInContext } from '../../context/run-in-context';
@@ -121,10 +121,6 @@ const isProjectPermissions = (value: unknown) =>
             Array.isArray(value[role]) &&
             value[role].every(isPrincipalKey)
     );
-
-const isProjectReadAccess = (value: unknown) =>
-    isRecord(value) &&
-    Object.keys(value).every((key) => key === 'public' && typeof value[key] === 'boolean');
 
 const hasUnsafeProperty = (value: unknown): boolean => {
     if (Array.isArray(value)) {
@@ -290,7 +286,7 @@ const validateProjects = (projects: Project[]) => {
                             (config.config !== undefined && !isRecord(config.config))
                     ))) ||
             (project.permissions !== undefined && !isProjectPermissions(project.permissions)) ||
-            (project.readAccess !== undefined && !isProjectReadAccess(project.readAccess))
+            typeof project.publicRead !== 'boolean'
         ) {
             throw new Error(`Invalid project configuration for "${expectedProject.id}"`);
         }
@@ -310,7 +306,7 @@ const comparableProject = (project: Project) => ({
     parents: getParents(project),
     siteConfig: project.siteConfig || [],
     permissions: project.permissions || {},
-    readAccess: project.readAccess || {},
+    publicRead: project.publicRead,
 });
 
 const matchesProject = (actual: Project | null, expected: Project) =>
@@ -321,10 +317,15 @@ const matchesProject = (actual: Project | null, expected: Project) =>
 const modifyProjectMetadata = (project: Project) =>
     projectLib.modify({
         id: project.id,
-        displayName: project.displayName,
-        description: project.description,
-        language: project.language,
-        siteConfig: project.siteConfig || [],
+        editor: (editableProject) => {
+            // The typings drop the documented null that clears a field when intersecting with Project.
+            const fields: EditableProject<Record<string, unknown>> = editableProject;
+            fields.displayName = project.displayName;
+            fields.description = project.description ?? null;
+            fields.language = project.language ?? null;
+            fields.siteConfig = project.siteConfig || [];
+            return editableProject;
+        },
     });
 
 const configureDefaultProject = (project: Project) => {
@@ -341,15 +342,16 @@ const configureDefaultProject = (project: Project) => {
         throw new Error('Default project was not found after configuration');
     }
 
+    // Access to the default project is not managed by the import.
     const expected = comparableProject({
         ...project,
         permissions: undefined,
-        readAccess: undefined,
+        publicRead: false,
     });
     const actual = comparableProject({
         ...configuredProject,
         permissions: undefined,
-        readAccess: undefined,
+        publicRead: false,
     });
     if (JSON.stringify(actual) !== JSON.stringify(expected)) {
         throw new Error(`Default project verification failed: ${JSON.stringify(actual)}`);
@@ -374,7 +376,7 @@ const configureChildProject = (project: Project) => {
         parents: getParents(project),
         siteConfig: project.siteConfig || [],
         permissions: project.permissions,
-        readAccess: { public: Boolean((project.readAccess as { public?: boolean })?.public) },
+        publicRead: project.publicRead,
     });
 
     if (!matchesProject(projectLib.get({ id: project.id }), project)) {
@@ -391,8 +393,7 @@ const configureProjects = (projects: Project[]) => {
             (JSON.stringify(getParents(existingProject)) !== JSON.stringify(getParents(project)) ||
                 JSON.stringify(existingProject.permissions || {}) !==
                     JSON.stringify(project.permissions || {}) ||
-                JSON.stringify(existingProject.readAccess || {}) !==
-                    JSON.stringify(project.readAccess || {}))
+                existingProject.publicRead !== project.publicRead)
         ) {
             throw new Error(`Existing project "${project.id}" has incompatible topology or access`);
         }

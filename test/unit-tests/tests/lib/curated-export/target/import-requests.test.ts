@@ -506,13 +506,26 @@ describe('curated export import', () => {
 
     it('validates later project permissions before configuring the default project', () => {
         const projects = [
-            { id: 'default', language: 'no', parents: [], displayName: 'Nav.no' },
-            { id: 'navno-engelsk', language: 'en', parents: ['default'], displayName: 'English' },
+            {
+                id: 'default',
+                language: 'no',
+                parents: [],
+                displayName: 'Nav.no',
+                publicRead: false,
+            },
+            {
+                id: 'navno-engelsk',
+                language: 'en',
+                parents: ['default'],
+                displayName: 'English',
+                publicRead: false,
+            },
             {
                 id: 'navno-nynorsk',
                 language: 'nn',
                 parents: ['default'],
                 displayName: 'Nynorsk',
+                publicRead: false,
                 permissions: { 'system.admin': ['user:system:attacker'] },
             },
         ];
@@ -527,11 +540,159 @@ describe('curated export import', () => {
         expectNoWrites();
     });
 
+    it('rejects a project without XP 8 public read access', () => {
+        const response = post(
+            importRequest({
+                action: 'configure-projects',
+                applications: [],
+                projects: [
+                    { id: 'default', language: 'no', parents: [], displayName: 'Nav.no' },
+                    {
+                        id: 'navno-engelsk',
+                        language: 'en',
+                        parents: ['default'],
+                        displayName: 'English',
+                        publicRead: false,
+                    },
+                    {
+                        id: 'navno-nynorsk',
+                        language: 'nn',
+                        parents: ['default'],
+                        displayName: 'Nynorsk',
+                        publicRead: false,
+                    },
+                ],
+            })
+        );
+        expect(response.status).toBe(400);
+        expect((response.body as { message: string }).message).toMatch(
+            /Invalid project configuration for "default"/
+        );
+        expectNoWrites();
+    });
+
+    it('stops when an existing child project has different public read access', () => {
+        const projects = [
+            { id: 'default', language: 'no', parents: [], displayName: 'Nav.no', publicRead: true },
+            {
+                id: 'navno-engelsk',
+                language: 'en',
+                parents: ['default'],
+                displayName: 'English',
+                publicRead: false,
+            },
+            {
+                id: 'navno-nynorsk',
+                language: 'nn',
+                parents: ['default'],
+                displayName: 'Nynorsk',
+                publicRead: false,
+            },
+        ];
+        getProject.mockImplementation(({ id }) =>
+            id === 'navno-nynorsk' ? { ...projects[2], publicRead: true } : null
+        );
+        const response = post(
+            importRequest({ action: 'configure-projects', applications: [], projects })
+        );
+        expect(response.status).toBe(500);
+        expect((response.body as { message: string }).message).toMatch(
+            /Existing project "navno-nynorsk" has incompatible topology or access/
+        );
+        expectNoWrites();
+    });
+
+    it('configures projects with the XP 8 project editor and public read access', () => {
+        const projects = [
+            { id: 'default', language: 'no', parents: [], displayName: 'Nav.no', publicRead: true },
+            {
+                id: 'navno-engelsk',
+                language: 'en',
+                parents: ['default'],
+                displayName: 'English',
+                publicRead: false,
+            },
+            {
+                id: 'navno-nynorsk',
+                language: 'nn',
+                parents: ['default'],
+                displayName: 'Nynorsk',
+                description: 'Nynorsk content',
+                publicRead: true,
+            },
+        ];
+        const stored = new Map<string, Record<string, unknown>>([
+            [
+                'default',
+                {
+                    id: 'default',
+                    displayName: 'Old name',
+                    description: 'Old description',
+                    language: 'en',
+                    parents: [],
+                    publicRead: false,
+                },
+            ],
+        ]);
+        getProject.mockImplementation(({ id }) => stored.get(id) ?? null);
+        modifyProject.mockImplementation(({ id, editor }) => {
+            stored.set(id, editor({ ...stored.get(id) }));
+        });
+        createProject.mockImplementation((params) => {
+            stored.set(params.id, params);
+        });
+
+        const response = post(
+            importRequest({ action: 'configure-projects', applications: [], projects })
+        );
+
+        expect(response.status).toBe(200);
+        expect(stored.get('default')).toEqual({
+            id: 'default',
+            displayName: 'Nav.no',
+            description: null,
+            language: 'no',
+            parents: [],
+            siteConfig: [],
+            publicRead: false,
+        });
+        expect(createProject).toHaveBeenCalledTimes(2);
+        expect(createProject).toHaveBeenCalledWith(
+            expect.objectContaining({ id: 'navno-engelsk', publicRead: false })
+        );
+        expect(createProject).toHaveBeenCalledWith(
+            expect.objectContaining({
+                id: 'navno-nynorsk',
+                parents: ['default'],
+                description: 'Nynorsk content',
+                publicRead: true,
+            })
+        );
+    });
+
     it('checks existing child project access before modifying any projects', () => {
         const projects = [
-            { id: 'default', language: 'no', parents: [], displayName: 'Nav.no' },
-            { id: 'navno-engelsk', language: 'en', parents: ['default'], displayName: 'English' },
-            { id: 'navno-nynorsk', language: 'nn', parents: ['default'], displayName: 'Nynorsk' },
+            {
+                id: 'default',
+                language: 'no',
+                parents: [],
+                displayName: 'Nav.no',
+                publicRead: false,
+            },
+            {
+                id: 'navno-engelsk',
+                language: 'en',
+                parents: ['default'],
+                displayName: 'English',
+                publicRead: false,
+            },
+            {
+                id: 'navno-nynorsk',
+                language: 'nn',
+                parents: ['default'],
+                displayName: 'Nynorsk',
+                publicRead: false,
+            },
         ];
         getProject.mockImplementation(({ id }) =>
             id === 'navno-nynorsk'
@@ -563,18 +724,26 @@ describe('curated export import', () => {
                     action: 'configure-projects',
                     applications: [application],
                     projects: [
-                        { id: 'default', language: 'no', parents: [], displayName: 'Nav.no' },
+                        {
+                            id: 'default',
+                            language: 'no',
+                            parents: [],
+                            displayName: 'Nav.no',
+                            publicRead: false,
+                        },
                         {
                             id: 'navno-engelsk',
                             language: 'en',
                             parents: ['default'],
                             displayName: 'English',
+                            publicRead: false,
                         },
                         {
                             id: 'navno-nynorsk',
                             language: 'nn',
                             parents: ['default'],
                             displayName: 'Nynorsk',
+                            publicRead: false,
                         },
                     ],
                 })
