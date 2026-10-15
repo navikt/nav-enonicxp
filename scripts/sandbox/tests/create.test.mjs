@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import { createSandbox, getCreateOptions, readRepositoryXpVersion } from '../create.mjs';
 
-const hashed = (password) =>
-    `{sha512}${createHash('sha512').update(password, 'utf8').digest('hex')}`;
+// SHA-512 of 'synthetic-password', in the {sha512}<hex> format XP requires for xp.suPassword.
+const SYNTHETIC_PASSWORD_HASH =
+    '{sha512}d541171f7924e165b7781933e8277f9ad2a1f7f20c8984ffb6ffebf6415eb118feccbdbba10e5e3ecd9fa06ab4762ba7097a44b190c6c3796ff5bc636d8a2c36';
 
 const setup = () => {
     const home = mkdtempSync(join(tmpdir(), 'sandbox-create-'));
@@ -64,7 +64,7 @@ test('creates the sandbox with the repo XP version, config and hashed password',
         assert.ok(existsSync(join(configDirectory('navno_xp8'), 'com.enonic.xp.web.vhost.cfg')));
         assert.match(
             readFileSync(join(configDirectory('navno_xp8'), 'system.properties'), 'utf8'),
-            new RegExp(`^xp\\.suPassword=\\${hashed('synthetic-password')}$`, 'm')
+            new RegExp(`^xp\\.suPassword=\\${SYNTHETIC_PASSWORD_HASH}$`, 'm')
         );
     } finally {
         rmSync(home, { recursive: true, force: true });
