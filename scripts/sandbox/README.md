@@ -2,7 +2,7 @@
 
 Oppretter en lokal sandbox med et kuratert utvalg av sider. Kan også oppdatere sidene eller importere én spesifikk side til en lokal sandbox.
 
-Kuratert import inkluderer sidene i [curated-content-urls.txt](curated-content-urls.txt), kontormapper (editorial), dekoratørmenyen, alle sidemaler (`_templates`) og ett eller flere eksempler for hver sidetype, med nødvendige avhengigheter og foreldre. Bruk `--input <fil>` for en egen liste med én URL eller sti per linje. Filer som slutter på `.json`, leses som en JSON-liste av strenger.
+Kuratert import inkluderer sidene i [curated-content-urls.txt](curated-content-urls.txt), kontormapper (editorial), dekoratørmenyen, alle sidemaler (`_templates`) og ett eller flere eksempler for hver sidetype, med nødvendige avhengigheter og foreldre. Bruk `--input <fil>` for en egen liste med én URL eller sti per linje. Filer som slutter på `.json`, leses som en JSON-liste av strenger. Finnes ikke en side fra listen i kilden lenger, for eksempel fordi den er avpublisert eller flyttet, hoppes den over med en advarsel. Mangler en av de faste delene, som sidemaler eller dekoratørmenyen, eller siden du importerer alene, stopper kommandoen.
 
 ## Viktig før du starter
 
@@ -38,7 +38,7 @@ Importtjenesten bygges når sandboxen opprettes. Hvis du senere endrer kode i im
 pnpm sandbox:deploy navno
 ```
 
-`pnpm sandbox:deploy [sandbox]` aktiverer `curatedImportEnabled=true` i sandboxens `no.nav.navno.cfg`, slår av klynging hvis `com.enonic.xp.cluster.cfg` mangler eller bare har utkommenterte linjer, og kjører deretter den vanlige `enonic project deploy`-kommandoen med `curatedImportLocal=true` satt som Gradle-prosjektegenskap. Du kan også bruke denne kommandoen for å gjøre en sandbox som er satt opp manuelt etter [hoved-READMEen](../../README.md#manuelt-oppsett-av-sandbox), klar for import.
+`pnpm sandbox:deploy [sandbox]` aktiverer `curatedImportEnabled=true` i sandboxens `no.nav.navno.cfg`, slår av klynging hvis `com.enonic.xp.cluster.cfg` mangler eller bare har utkommenterte linjer, og kjører deretter den vanlige `enonic project deploy`-kommandoen med `curatedImportLocal=true` satt som Gradle-prosjektegenskap. Du kan også bruke denne kommandoen for å gjøre en sandbox som er satt opp som en [tom sandbox](../../README.md#tom-sandbox), klar for import.
 
 > [!WARNING]
 > Vanlig `enonic project deploy` bygger uten importtjenesten og bør ikke brukes når den trengs lokalt.
@@ -117,6 +117,28 @@ pnpm sandbox:dump --sandbox navno_mini --name xp7to8 --include-versions
 ```
 
 Se [«Full systemdump» i hoved-READMEen](../../README.md#full-systemdump) for hvordan du laster en slik dump inn i en annen sandbox.
+
+## Opprett en tom sandbox
+
+Oppretter en tom sandbox, for eksempel for å laste inn en dump:
+
+```bash
+pnpm sandbox:create --sandbox navno
+```
+
+Kommandoen spør etter et nytt `su`-passord, oppretter sandboxen med XP-versjonen fra `gradle.properties` i branchen du står på, og skriver config-filene og passordet som `sandbox:config --set-password` gjør. Bruk `--version X.Y.Z` for en annen XP-versjon. Den installerer ingen apper, importerer ikke innhold og starter ikke sandboxen. Finnes sandboxen fra før, stopper kommandoen; bruk da `sandbox:config`.
+
+## Skriv config til en sandbox
+
+Kopierer de fire config-filene fra repoet til en eksisterende sandbox, uten å bygge, deploye eller starte noe. Bruk det for å oppdatere configen etter endringer i repoet, eller for å bytte passord:
+
+```bash
+pnpm sandbox:config --sandbox navno --set-password
+```
+
+`--set-password` spør etter et nytt `su`-passord (skjult, to ganger) og lagrer det som en SHA-512-hash i `xp.suPassword` i `home/config/system.properties`. XP 8 godtar bare hashede passord, og XP 7 godtar samme format. Et eksisterende passord erstattes, så kommandoen kan også brukes hvis du har glemt det. XP leser passordet ved oppstart, så start sandboxen på nytt etterpå. Uten flagget røres ikke et eksisterende passord. Passordet kan ikke oppgis som argument.
+
+Kommandoen skriver ikke `cluster.enabled=false` eller `loginWithoutUser=false`. Det trengs bare for import: `sandbox:import` skriver begge når den oppretter en sandbox, og `sandbox:deploy` slår av clustering i en eksisterende sandbox.
 
 ## Tester
 
