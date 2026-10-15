@@ -38,7 +38,7 @@ Importtjenesten bygges når sandboxen opprettes. Hvis du senere endrer kode i im
 pnpm sandbox:deploy navno
 ```
 
-`pnpm sandbox:deploy [sandbox]` aktiverer `curatedImportEnabled=true` i sandboxens `no.nav.navno.cfg`, slår av klynging hvis `com.enonic.xp.cluster.cfg` mangler eller bare har utkommenterte linjer, og kjører deretter den vanlige `enonic project deploy`-kommandoen med `curatedImportLocal=true` satt som Gradle-prosjektegenskap. Du kan også bruke denne kommandoen for å gjøre en sandbox som er satt opp manuelt etter [hoved-READMEen](../../README.md#manuelt-oppsett-av-sandbox), klar for import.
+`pnpm sandbox:deploy [sandbox]` aktiverer `curatedImportEnabled=true` i sandboxens `no.nav.navno.cfg`, slår av klynging hvis `com.enonic.xp.cluster.cfg` mangler eller bare har utkommenterte linjer, og kjører deretter den vanlige `enonic project deploy`-kommandoen med `curatedImportLocal=true` satt som Gradle-prosjektegenskap. Du kan også bruke denne kommandoen for å gjøre en sandbox som er satt opp som en [tom sandbox](../../README.md#tom-sandbox), klar for import.
 
 > [!WARNING]
 > Vanlig `enonic project deploy` bygger uten importtjenesten og bør ikke brukes når den trengs lokalt.
@@ -118,9 +118,19 @@ pnpm sandbox:dump --sandbox navno_mini --name xp7to8 --include-versions
 
 Se [«Full systemdump» i hoved-READMEen](../../README.md#full-systemdump) for hvordan du laster en slik dump inn i en annen sandbox.
 
+## Opprett en tom sandbox
+
+Oppretter en tom sandbox, for eksempel for å laste inn en dump:
+
+```bash
+pnpm sandbox:create --sandbox navno
+```
+
+Kommandoen spør etter et nytt `su`-passord, oppretter sandboxen med XP-versjonen fra `gradle.properties` i branchen du står på, og skriver config-filene og passordet som `sandbox:config --set-password` gjør. Bruk `--version X.Y.Z` for en annen XP-versjon. Den installerer ingen apper, importerer ikke innhold og starter ikke sandboxen. Finnes sandboxen fra før, stopper kommandoen; bruk da `sandbox:config`.
+
 ## Skriv config til en sandbox
 
-Kopierer de fire config-filene fra repoet til en eksisterende sandbox, uten å bygge, deploye eller starte noe:
+Kopierer de fire config-filene fra repoet til en eksisterende sandbox, uten å bygge, deploye eller starte noe. Bruk det for å oppdatere configen etter endringer i repoet, eller for å bytte passord:
 
 ```bash
 pnpm sandbox:config --sandbox navno --set-password

@@ -23,23 +23,17 @@ pnpm sandbox:import --source prod --target navno
 
 Se [kuratert sandbox-flyt](scripts/sandbox/README.md) for oppdatering av en eksisterende sandbox, sideimport og alternative kilder.
 
-### Manuelt oppsett av sandbox
+### Tom sandbox
 
-Bruk denne flyten når du vil starte uten importert innhold eller laste inn en [full systemdump](#full-systemdump). Den oppretter og konfigurerer sandboxen, men kopierer ikke data:
+Bruk denne flyten når du vil starte uten innhold eller laste inn en [full systemdump](#full-systemdump):
 
 ```bash
-enonic sandbox create navno --skip-start
+pnpm sandbox:create --sandbox navno
 enonic project sandbox navno
-pnpm sandbox:config --sandbox navno --set-password
-```
-
-`sandbox:config` kopierer config-filene fra repoet til sandboxen. `--set-password` spør etter et `su`-passord og lagrer det i `system.properties`; du trenger det for å laste inn en dump. Se [Skriv config til en sandbox](scripts/sandbox/README.md#skriv-config-til-en-sandbox).
-
-Start sandboxen hvis den ikke allerede kjører:
-
-```bash
 enonic sandbox start navno
 ```
+
+`sandbox:create` spør etter et `su`-passord, oppretter sandboxen med XP-versjonen fra `gradle.properties` og kopierer config-filene fra repoet. Passordet trenger du for å laste inn en dump. Se [Opprett en tom sandbox](scripts/sandbox/README.md#opprett-en-tom-sandbox).
 
 ## Utvikling
 
@@ -76,7 +70,7 @@ open http://localhost:8080/admin
 
 4. **Kjør import av dumpen**
 
-    Sett opp sandboxen som beskrevet under [Manuelt oppsett av sandbox](#manuelt-oppsett-av-sandbox). Sørg for at Enonic kjører lokalt først (kjøres i egen terminal): `enonic project deploy`
+    Sett opp sandboxen som beskrevet under [Tom sandbox](#tom-sandbox). Sørg for at Enonic kjører lokalt først (kjøres i egen terminal): `enonic project deploy`
 
     Kjør kommandoen: `enonic dump load`
 
@@ -88,7 +82,7 @@ open http://localhost:8080/admin
     Format `bruker:passord`
 
     - Brukernavn: su
-    - Passord: det du satte med `pnpm sandbox:config --sandbox navno --set-password` under [Manuelt oppsett av sandbox](#manuelt-oppsett-av-sandbox). Passordet lagres som en hash, så det kan ikke leses ut igjen. Har du glemt det, kjører du kommandoen på nytt og starter sandboxen på nytt.
+    - Passord: det du satte med `pnpm sandbox:create` under [Tom sandbox](#tom-sandbox). Passordet lagres som en hash, så det kan ikke leses ut igjen. Har du glemt det, kjører du `pnpm sandbox:config --sandbox navno --set-password` og starter sandboxen på nytt.
 
 6. **Vent på at dumpen fullfører**
 

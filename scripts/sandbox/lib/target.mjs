@@ -649,6 +649,24 @@ export const writeSandboxConfig = ({ sandboxPath, repositoryRoot = resolve('.'),
     return configDirectory;
 };
 
+// --force answers the CLI's prompts; --skip-template avoids its interactive template picker.
+export const createEmptySandbox = ({ sandbox, xpVersion, runCommand = execFileSync }) => {
+    runCommand(
+        'enonic',
+        [
+            'sandbox',
+            'create',
+            sandbox,
+            '--version',
+            xpVersion,
+            '--skip-template',
+            '--force',
+            '--skip-start',
+        ],
+        { stdio: 'inherit', env: getLocalProcessEnvironment() }
+    );
+};
+
 export const prepareCuratedTarget = ({
     sandbox,
     xpVersion,
@@ -677,20 +695,7 @@ export const prepareCuratedTarget = ({
         assertSandboxXpVersion(sandboxPath, sandbox, xpVersion);
         console.log(`Resuming the incomplete setup of sandbox ${sandbox}`);
     } else {
-        runCommand(
-            'enonic',
-            [
-                'sandbox',
-                'create',
-                sandbox,
-                '--version',
-                xpVersion,
-                '--skip-template',
-                '--force',
-                '--skip-start',
-            ],
-            { stdio: 'inherit', env: getLocalProcessEnvironment() }
-        );
+        createEmptySandbox({ sandbox, xpVersion, runCommand });
         mkdirSync(sandboxPath, { recursive: true });
         writeFileSync(setupIncompletePath, '');
     }
