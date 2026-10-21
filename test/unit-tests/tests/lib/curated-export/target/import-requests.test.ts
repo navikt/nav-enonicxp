@@ -14,6 +14,9 @@ const pushNode = jest.fn();
 const restoreTarget = jest.fn();
 const getApplication = jest.fn();
 const logWarning = jest.fn();
+const queryNode = jest.fn();
+const newBean = jest.fn();
+const ensureLayersLogin = jest.fn();
 
 jest.mock('@navno-app/lib/curated-export/target/metadata', () => ({
     restoreCuratedTargetMetadata: restoreTarget,
@@ -49,6 +52,7 @@ jest.mock('@navno-app/lib/repos/repo-utils', () => ({
         findChildren,
         refresh,
         push: pushNode,
+        query: queryNode,
     })),
 }));
 
@@ -116,8 +120,13 @@ const expectNoWrites = () => {
         modifyProject,
         createProject,
         restoreTarget,
+        ensureLayersLogin,
     ].forEach((write) => expect(write).not.toHaveBeenCalled());
 };
+
+afterAll(() => {
+    delete (globalThis as { __?: unknown }).__;
+});
 
 describe('curated export import', () => {
     beforeEach(() => {
@@ -133,8 +142,16 @@ describe('curated export import', () => {
             findChildren,
             refresh,
             push: pushNode,
+            query: queryNode,
         } as never);
         findChildren.mockReturnValue({ total: 0, count: 0, hits: [] });
+        ensureLayersLogin.mockReturnValue({ createdIdProvider: true, createdUser: true });
+        newBean.mockReturnValue({ ensure: ensureLayersLogin });
+        Object.defineProperty(globalThis, '__', {
+            value: { newBean, toNativeObject: (value: unknown) => value },
+            configurable: true,
+            writable: true,
+        });
         jest.mocked(nodeLib.connect).mockReturnValue({
             get: getSystemNode,
             modify: modifySystemNode,
@@ -235,6 +252,7 @@ describe('curated export import', () => {
         'normalize-import-paths',
         'restore-metadata',
         'synchronize-published',
+        'publish-inherited-layer-content',
     ])('rejects arbitrary repositories and branches for %s before connecting', (action) => {
         for (const override of [
             { repository: 'system-repo' },
@@ -316,6 +334,88 @@ describe('curated export import', () => {
             target: 'master',
             resolve: false,
         });
+    });
+
+    it('publishes inherited layer content that is published in the root project, parents first', () => {
+        const node = (id: string, path: string, version: string) => ({
+            _id: id,
+            _path: `${rootPath}${path}`,
+            _versionKey: version,
+        });
+        const nodesByRepoBranch: Record<string, Array<ReturnType<typeof node>>> = {
+            'com.enonic.cms.navno-nynorsk:draft': [
+                node('page', '/page', 'layer-page'),
+                node('site', '', 'layer-site'),
+                node('modified', '/modified', 'layer-modified'),
+                node('already', '/already', 'layer-already'),
+                node('unpublished', '/unpublished', 'layer-unpublished'),
+            ],
+            'com.enonic.cms.navno-nynorsk:master': [node('already', '/already', 'layer-already')],
+            'com.enonic.cms.default:draft': [
+                node('page', '/page', 'root-page'),
+                node('site', '', 'root-site'),
+                node('modified', '/modified', 'root-modified-draft'),
+                node('already', '/already', 'root-already'),
+                node('unpublished', '/unpublished', 'root-unpublished'),
+            ],
+            'com.enonic.cms.default:master': [
+                node('page', '/page', 'root-page'),
+                node('site', '', 'root-site'),
+                node('modified', '/modified', 'root-modified-master'),
+                node('already', '/already', 'root-already'),
+            ],
+        };
+        jest.mocked(getRepoConnection).mockImplementation(
+            ({ repoId, branch }) =>
+                ({
+                    get: (ids: string[]) =>
+                        (nodesByRepoBranch[`${repoId}:${branch}`] || []).filter(({ _id }) =>
+                            ids.includes(_id)
+                        ),
+                    query: queryNode,
+                    push: pushNode,
+                }) as never
+        );
+        queryNode.mockReturnValue({
+            total: 5,
+            hits: ['page', 'site', 'modified', 'already', 'unpublished'].map((id) => ({ id })),
+        });
+        pushNode.mockImplementation(({ keys }) => ({ success: keys, failed: [] }));
+
+        expect(
+            post(
+                importRequest({
+                    action: 'publish-inherited-layer-content',
+                    repository: 'com.enonic.cms.navno-nynorsk',
+                })
+            )
+        ).toMatchObject({ status: 200, body: { published: 2, failed: 0 } });
+        expect(queryNode).toHaveBeenCalledWith(
+            expect.objectContaining({
+                filters: {
+                    boolean: { must: [{ hasValue: { field: 'inherit', values: ['CONTENT'] } }] },
+                },
+            })
+        );
+        expect(pushNode).toHaveBeenCalledTimes(1);
+        expect(pushNode).toHaveBeenCalledWith({
+            keys: ['site', 'page'],
+            target: 'master',
+            resolve: false,
+        });
+    });
+
+    it('refuses to publish inherited content in the root project', () => {
+        expect(
+            post(
+                importRequest({
+                    action: 'publish-inherited-layer-content',
+                    repository: 'com.enonic.cms.default',
+                })
+            ).status
+        ).toBe(500);
+        expect(getRepoConnection).not.toHaveBeenCalled();
+        expectNoWrites();
     });
 
     it('rejects an unknown action without reading or writing repositories', () => {
@@ -506,8 +606,15 @@ describe('curated export import', () => {
 
         expect(response).toMatchObject({
             status: 200,
-            body: { disabledAdminUserCreation: true },
+            body: {
+                disabledAdminUserCreation: true,
+                layersLogin: { createdIdProvider: true, createdUser: true },
+            },
         });
+        expect(newBean).toHaveBeenCalledWith(
+            'no.nav.navno.curatedexport.target.CuratedLayersLogin'
+        );
+        expect(ensureLayersLogin).toHaveBeenCalledWith('layers', 'layers-viewer');
         expect(modifySystemNode).toHaveBeenCalledWith({
             key: '/identity/system',
             editor: expect.any(Function),
