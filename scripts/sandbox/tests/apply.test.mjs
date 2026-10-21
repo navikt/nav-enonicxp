@@ -225,11 +225,15 @@ test('reimports deferred IDs after normalization and then restores metadata', as
                 'prepare-project-import': /Importing .*several minutes/,
                 'normalize-import-paths': /Importing .*several minutes/,
                 'restore-metadata': /Restoring source metadata.*\(\d+\/\d+\)/,
+                'publish-inherited-layer-content': /Publishing inherited content for /,
             }[body.action];
             assert.match(progress.at(-1), phase);
-            calls.push([body.action, body.branch]);
+            calls.push([body.action, body.branch ?? body.repository]);
             if (body.action === 'prepare-project-import') return { deferredRelocations: ['site'] };
             if (body.action === 'normalize-import-paths') return {};
+            if (body.action === 'publish-inherited-layer-content') {
+                return { published: 3, failed: body.repository.endsWith('nynorsk') ? 1 : 0 };
+            }
             return { checkedNodes: body.expectations.length, restoredNodes: 0 };
         },
     });
@@ -239,8 +243,14 @@ test('reimports deferred IDs after normalization and then restores metadata', as
         ['normalize-import-paths', 'draft'],
         ['native', []],
         ['restore-metadata', 'draft'],
+        ['publish-inherited-layer-content', 'com.enonic.cms.navno-engelsk'],
+        ['publish-inherited-layer-content', 'com.enonic.cms.navno-nynorsk'],
     ]);
     assert.match(progress[0], /Importing com.enonic.cms.default:draft/);
+    assert.deepEqual(progress.slice(-2), [
+        'Publishing inherited content for com.enonic.cms.navno-nynorsk',
+        'Published 3 inherited nodes, 1 failed (see XP log)',
+    ]);
     assert.ok(existsSync(f.metadataPath));
     assert.ok(!existsSync(join(f.targetDirectory, 'bundle')));
 });

@@ -421,6 +421,18 @@ export const importCuratedBundle = async ({
                 entries: publishedEntries,
             });
         }
+
+        // The root project is first; the rest are layers inheriting from it
+        for (const repository of CURATED_REPOSITORIES.slice(1)) {
+            reportProgress(`Publishing inherited content for ${repository}`);
+            const result = await postAction({
+                action: 'publish-inherited-layer-content',
+                repository,
+            });
+            reportProgress(
+                `Published ${result.published} inherited nodes${result.failed > 0 ? `, ${result.failed} failed (see XP log)` : ''}`
+            );
+        }
     } finally {
         files.cleanup();
     }

@@ -10,8 +10,12 @@ import { runInContext } from '../../context/run-in-context';
 import { logger } from '../../utils/logging';
 import { getRepoConnection } from '../../repos/repo-utils';
 import { CuratedTargetExpectation, restoreCuratedTargetMetadata } from './metadata';
+import { LAYERS_ANON_USER, LAYERS_ID_PROVIDER, CONTENT_ROOT_REPO_ID } from '../../constants';
+import { forceArray } from '../../utils/array-utils';
+import { NON_LOCALIZED_QUERY_FILTER } from '../../localization/layers-repo-utils/localization-state-filters';
 import {
     CuratedBranch,
+    CURATED_CONTENT_ROOT_PATH,
     curatedJsonResponse as jsonResponse,
     getProjectParents as getParents,
     hasRequiredProjectTopology,
@@ -42,7 +46,8 @@ type RequestBody = {
         | 'prepare-project-import'
         | 'normalize-import-paths'
         | 'restore-metadata'
-        | 'synchronize-published';
+        | 'synchronize-published'
+        | 'publish-inherited-layer-content';
     applications?: RequiredApplication[];
     projects?: Project[];
     repository?: string;
@@ -51,8 +56,24 @@ type RequestBody = {
     expectations?: CuratedTargetExpectation[];
 };
 
+type LayersLoginBean = {
+    ensure: (idProviderName: string, userLogin: string) => unknown;
+};
+
+// The id provider in the vhost mappings for layer requests is not part of the curated export.
+const ensureLayersLogin = () =>
+    runInContext({ asAdmin: true }, () => {
+        const bean = __.newBean(
+            'no.nav.navno.curatedexport.target.CuratedLayersLogin'
+        ) as LayersLoginBean;
+        return __.toNativeObject(bean.ensure(LAYERS_ID_PROVIDER, LAYERS_ANON_USER)) as {
+            createdIdProvider: boolean;
+            createdUser: boolean;
+        };
+    });
+
 // Turns off the system id provider's first-run admin creation wizard so the regular su login form is shown.
-const configureLogin = () => {
+const disableAdminUserCreation = () => {
     const connection = nodeLib.connect({
         repoId: 'system-repo',
         branch: 'master',
@@ -74,6 +95,11 @@ const configureLogin = () => {
     });
     return { disabledAdminUserCreation: true };
 };
+
+const configureLogin = () => ({
+    ...disableAdminUserCreation(),
+    layersLogin: ensureLayersLogin(),
+});
 
 type RequiredApplication = {
     key: string;
@@ -708,6 +734,112 @@ const synchronizePublished = (repository: string, entries: ImportEntry[]) => {
     });
 };
 
+const LAYER_BATCH_SIZE = 100;
+
+const getNodesById = (connection: ReturnType<typeof getRepoConnection>, ids: string[]) =>
+    forceArray(connection.get<Content>(ids)).reduce<Record<string, RepoNode<Content>>>(
+        (nodesById, node) => {
+            nodesById[node._id] = node;
+            return nodesById;
+        },
+        {}
+    );
+
+const getInheritedContentIds = (connection: ReturnType<typeof getRepoConnection>) => {
+    const ids: string[] = [];
+    let total = 0;
+    do {
+        const result = connection.query({
+            start: ids.length,
+            count: 1000,
+            query: `_path = "${CURATED_CONTENT_ROOT_PATH}" OR _path LIKE "${CURATED_CONTENT_ROOT_PATH}/*"`,
+            filters: { boolean: { must: NON_LOCALIZED_QUERY_FILTER } },
+        });
+        total = result.total;
+        if (result.hits.length === 0) {
+            break;
+        }
+        result.hits.forEach(({ id }) => ids.push(id));
+    } while (ids.length < total);
+    return ids;
+};
+
+// Import mode disables the listeners that publish inherited layer content (see publish-events.ts),
+// so inherited copies of content published in the root project are pushed to the layer master here.
+const publishInheritedLayerContent = (repository: string) => {
+    if (!isCuratedRepository(repository) || repository === CONTENT_ROOT_REPO_ID) {
+        throw new Error(`Invalid layer repository ${repository}`);
+    }
+
+    return runInContext({ repository, branch: 'draft', asAdmin: true }, () => {
+        const layerDraft = getRepoConnection({
+            repoId: repository,
+            branch: 'draft',
+            asAdmin: true,
+        });
+        const layerMaster = getRepoConnection({
+            repoId: repository,
+            branch: 'master',
+            asAdmin: true,
+        });
+        const rootDraft = getRepoConnection({
+            repoId: CONTENT_ROOT_REPO_ID,
+            branch: 'draft',
+            asAdmin: true,
+        });
+        const rootMaster = getRepoConnection({
+            repoId: CONTENT_ROOT_REPO_ID,
+            branch: 'master',
+            asAdmin: true,
+        });
+
+        const pending: Array<{ id: string; depth: number }> = [];
+        const inheritedIds = getInheritedContentIds(layerDraft);
+        for (let start = 0; start < inheritedIds.length; start += LAYER_BATCH_SIZE) {
+            const ids = inheritedIds.slice(start, start + LAYER_BATCH_SIZE);
+            const layerDraftNodes = getNodesById(layerDraft, ids);
+            const layerMasterNodes = getNodesById(layerMaster, ids);
+            const rootDraftNodes = getNodesById(rootDraft, ids);
+            const rootMasterNodes = getNodesById(rootMaster, ids);
+            ids.forEach((id) => {
+                const layerNode = layerDraftNodes[id];
+                const rootDraftNode = rootDraftNodes[id];
+                const rootMasterNode = rootMasterNodes[id];
+                if (
+                    !layerNode ||
+                    !isCuratedContentPath(layerNode._path) ||
+                    !rootDraftNode ||
+                    rootDraftNode._versionKey !== rootMasterNode?._versionKey ||
+                    layerMasterNodes[id]?._versionKey === layerNode._versionKey
+                ) {
+                    return;
+                }
+                pending.push({ id, depth: layerNode._path.split('/').length });
+            });
+        }
+
+        // Parents must reach master before their children
+        pending.sort((a, b) => a.depth - b.depth);
+        let published = 0;
+        const failed: Array<{ id: string; reason: string }> = [];
+        for (let start = 0; start < pending.length; start += LAYER_BATCH_SIZE) {
+            const result = layerDraft.push({
+                keys: pending.slice(start, start + LAYER_BATCH_SIZE).map(({ id }) => id),
+                target: 'master',
+                resolve: false,
+            });
+            published += result.success.length;
+            failed.push(...result.failed);
+        }
+        if (failed.length > 0) {
+            logger.warning(
+                `Could not publish ${failed.length} inherited nodes in ${repository}: ${JSON.stringify(failed.slice(0, 5))}`
+            );
+        }
+        return { published, failed: failed.length };
+    });
+};
+
 const getImportAccessError = () => {
     if (!userIsAdmin()) {
         return jsonResponse(403, { message: 'System administrator access is required' });
@@ -781,6 +913,9 @@ const runImportAction = (body: RequestBody) => {
         return jsonResponse(200, {
             synchronizedPublished: synchronizePublished(body.repository, body.entries),
         });
+    }
+    if (body.action === 'publish-inherited-layer-content' && typeof body.repository === 'string') {
+        return jsonResponse(200, publishInheritedLayerContent(body.repository));
     }
     return jsonResponse(400, { message: 'Invalid curated export import action or payload' });
 };
