@@ -46,7 +46,6 @@ const login = (req: Request, user: string, idProvider: string) => {
 };
 
 const isPublicFileRequest = (req: Request) =>
-    req.mode === 'live' &&
     req.branch === 'master' &&
     req.path.match(/^\/_\/((en|nn|se)\/)?(image|attachment)\//);
 

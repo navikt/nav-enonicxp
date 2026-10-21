@@ -21,5 +21,36 @@ const loopbackSiteUrlRegex = new RegExp(
 );
 const loopbackApiUrlRegex = new RegExp(`${loopbackPrefixPattern}/_/`, 'g');
 
+// The Guillotine app generates XP8 media URLs with the project (and branch, for draft) in the path.
+// Layer projects are not publicly readable, so rewrite to the XP7 format, where the project and
+// branch are resolved from the vhost serving the request. This is also the format the frontend expects.
+// /_/media:image/<project>[:<branch>]/<id>:<hash>/...                -> /_/image/<id>:<hash>/...
+// /_/media:attachment/<project>[:<branch>]/<id>:<hash>/...           -> /_/attachment/inline/<id>:<hash>/...
+// /_/media:attachment/<project>[:<branch>]/<id>:<hash>/...?download  -> /_/attachment/download/<id>:<hash>/...
+const mediaImageUrlRegex = /\/_\/media:image\/[^/"'<>\\?#\s]+\//g;
+const mediaAttachmentUrlRegex =
+    /\/_\/media:attachment\/[^/"'<>\\?#\s]+\/([^"'<>\\?#\s]*)(?:\?([^"'<>\\#\s]*))?/g;
+
+// Query params may be separated by &amp; when the URL is in richtext HTML
+const queryParamSeparatorRegex = /&amp;|&/;
+
+const rewriteAttachmentUrl = (mediaPath: string, query?: string) => {
+    const separator = query?.includes('&amp;') ? '&amp;' : '&';
+    const params = query ? query.split(queryParamSeparatorRegex) : [];
+    const otherParams = params.filter((param) => param !== 'download' && param !== '');
+
+    const disposition = params.includes('download') ? 'download' : 'inline';
+    const queryString = otherParams.length > 0 ? `?${otherParams.join(separator)}` : '';
+
+    return `/_/attachment/${disposition}/${mediaPath}${queryString}`;
+};
+
+const rewriteMediaUrls = (str: string) =>
+    str
+        .replace(mediaImageUrlRegex, '/_/image/')
+        .replace(mediaAttachmentUrlRegex, (_match, mediaPath: string, query?: string) =>
+            rewriteAttachmentUrl(mediaPath, query)
+        );
+
 export const rewriteLoopbackUrls = (str: string) =>
-    str.replace(loopbackSiteUrlRegex, '/').replace(loopbackApiUrlRegex, '/_/');
+    rewriteMediaUrls(str.replace(loopbackSiteUrlRegex, '/').replace(loopbackApiUrlRegex, '/_/'));
