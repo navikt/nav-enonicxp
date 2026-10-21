@@ -1,4 +1,4 @@
-import { timingSafeEqual } from 'node:crypto';
+import { createHash, timingSafeEqual } from 'node:crypto';
 import {
     chmodSync,
     existsSync,
@@ -176,6 +176,12 @@ export const getSourceAuthHeaders = async (serviceUrl, auth) =>
         ? { [CURATED_EXPORT_TOKEN_HEADER]: auth.token }
         : { Cookie: await getXpSessionCookie(serviceUrl, auth) };
 
+const SU_PASSWORD_HASH_PATTERN = /^\{(sha256|sha512)\}([0-9a-fA-F]+)$/;
+
+// XP 8 only accepts a hashed xp.suPassword; XP 7 accepts the same format.
+export const hashSuPassword = (password) =>
+    `{sha512}${createHash('sha512').update(password, 'utf8').digest('hex')}`;
+
 export const encodePropertyValue = (value) =>
     value.replace(/[\\ \u0080-\uffff]/g, (character) =>
         character === '\\' || character === ' '
@@ -199,9 +205,15 @@ export const verifyStoppedTargetAuth = (sandboxPath, auth) => {
         );
     }
     const properties = readFileSync(join(sandboxPath, 'home/config/system.properties'), 'utf8');
-    const configuredPassword = properties.match(/^\s*xp\.suPassword\s*[=:]\s*(.*)$/m)?.[1];
-    const supplied = Buffer.from(password);
-    const configured = Buffer.from(decodePropertyValue(configuredPassword || ''));
+    const configuredPassword = decodePropertyValue(
+        properties.match(/^\s*xp\.suPassword\s*[=:]\s*(.*)$/m)?.[1]?.trim() || ''
+    );
+    // Older sandboxes may still store the password in plain text.
+    const hashed = configuredPassword.match(SU_PASSWORD_HASH_PATTERN);
+    const supplied = hashed
+        ? createHash(hashed[1]).update(password, 'utf8').digest()
+        : Buffer.from(password);
+    const configured = hashed ? Buffer.from(hashed[2], 'hex') : Buffer.from(configuredPassword);
     if (supplied.length !== configured.length || !timingSafeEqual(supplied, configured)) {
         throw rejectedCredentialsError('Wrong SU password');
     }
