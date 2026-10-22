@@ -2,7 +2,7 @@ import { Request } from '@enonic-types/core';
 import * as taskLib from '/lib/xp/task';
 import { Content } from '/lib/xp/content';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
-import { contentTypesInSitemap, contentTypesWithDeepReferences } from '../../lib/contenttype-lists';
+import { contentTypesInSitemap } from '../../lib/contenttype-lists';
 import { getLayersData } from '../../lib/localization/layers-data';
 import { NON_LOCALIZED_QUERY_FILTER } from '../../lib/localization/layers-repo-utils/localization-state-filters';
 import { batchedNodeQuery } from '../../lib/utils/batched-query';
@@ -17,11 +17,16 @@ import { NAVNO_NODE_ROOT_PATH } from '../../lib/constants';
 // TEMPORARY - remove when the measurement is done.
 //
 // Estimates how many extra snapshots navno-cms-archive would need if pages were archived again
-// every time content they depend on (fragments, global values etc.) is published. Uses the same
-// deep reference search and timeout as cache invalidation. Read-only.
+// every time something they show is published (fragments, global values, images, other pages
+// etc.). Uses the same deep reference search and timeout as cache invalidation. Read-only.
 //
-// POST ?limit=<n>&type=<content type>  starts the measurement on the node receiving the request
-// GET ?taskId=<id>                      progress, and the result when finished
+// Each content type is measured from a random sample, scaled up to all content of the type. The
+// oldest published version is not counted: when content is first added to a page, the page gets
+// a new version of its own, which the regular archive backfill covers.
+//
+// POST ?sample=<n>&type=<content type>  starts the measurement on the node receiving the request.
+//                                        sample is per content type (default 100)
+// GET ?taskId=<id>                       progress, and the result when finished
 //
 // The result is also logged with the prefix below.
 
@@ -29,24 +34,46 @@ const LOG_PREFIX = '[archive-dependency-stats]';
 const SEARCH_TIMEOUT_MS = 10000; // Same as cache invalidation
 const RETRY_TIMEOUT_MS = 60000;
 const THROTTLE_MS = 200;
+const DEFAULT_SAMPLE_SIZE = 100;
+const MAX_SAMPLE_SIZE = 10000;
 const TOP_COUNT = 25;
 const ONE_YEAR_MS = 1000 * 60 * 60 * 24 * 365;
 
-const dependencyTypes: readonly string[] = contentTypesWithDeepReferences;
+const CONTENT_QUERY = `_path LIKE "${NAVNO_NODE_ROOT_PATH}/*"`;
+
+// Folders and the site never change a rendered page. Templates are left out because time travel
+// also resolves them to their current version
+const excludedTypes = [
+    'base:folder',
+    'portal:template-folder',
+    'portal:page-template',
+    'portal:site',
+];
+
 const pageTypes: ReadonlySet<string> = new Set<string>(contentTypesInSitemap);
 
-type MeasurementParams = { limit?: number; type?: string };
+type MeasurementParams = { sample: number; type?: string };
 
-type Stats = {
-    contents: number;
+type ContentRef = { contentId: string; locale: string };
+
+type PlannedType = { type: string; total: number; sample: ContentRef[] };
+
+type TypeStats = {
+    total: number;
+    measured: number;
+    notFound: number;
+    singleVersion: number;
     unused: number;
-    versions: number;
-    versionsLast12m: number;
-    pages: number;
-    snapshotsAllTime: number;
+    extraVersions: number;
+    extraVersionsLast12m: number;
+    pageRefs: number;
+    snapshots: number;
     snapshotsLast12m: number;
+    estimatedSnapshots: number;
+    estimatedSnapshotsLast12m: number;
     searchFailedWithin10s: number;
     searchFailedWithin60s: number;
+    referencingPageTypes: Record<string, number>;
 };
 
 type ContentResult = {
@@ -55,9 +82,19 @@ type ContentResult = {
     type: string;
     path: string;
     versions: number;
-    versionsLast12m: number;
     pages: number;
-    snapshotsAllTime: number;
+    snapshots: number;
+    referencingPageTypes: Record<string, number>;
+};
+
+type Measurement = {
+    result: ContentResult;
+    extraVersionsLast12m: number;
+    extraVersionYears: string[];
+    searched: boolean;
+    searchFailedWithin10s: boolean;
+    searchFailedWithin60s: boolean;
+    searchMs: number;
 };
 
 type Summary = {
@@ -66,68 +103,133 @@ type Summary = {
     finishedAt?: string;
     durationMinutes?: number;
     processed: number;
-    total: number;
+    plannedTotal: number;
     errors: number;
     searchMsTotal: number;
     searchMsMax: number;
-    totals: Stats;
-    byType: Record<string, Stats>;
-    snapshotsByYear: Record<string, number>;
+    totals: {
+        contents: number;
+        measured: number;
+        estimatedSnapshots: number;
+        estimatedSnapshotsLast12m: number;
+        searchFailedWithin10s: number;
+        searchFailedWithin60s: number;
+    };
+    estimatedSnapshotsByYear: Record<string, number>;
+    byType: Record<string, TypeStats>;
     top: ContentResult[];
 };
 
 let currentTaskId: string | null = null;
 
-const createStats = (): Stats => ({
-    contents: 0,
+const createTypeStats = (total: number): TypeStats => ({
+    total,
+    measured: 0,
+    notFound: 0,
+    singleVersion: 0,
     unused: 0,
-    versions: 0,
-    versionsLast12m: 0,
-    pages: 0,
-    snapshotsAllTime: 0,
+    extraVersions: 0,
+    extraVersionsLast12m: 0,
+    pageRefs: 0,
+    snapshots: 0,
     snapshotsLast12m: 0,
+    estimatedSnapshots: 0,
+    estimatedSnapshotsLast12m: 0,
     searchFailedWithin10s: 0,
     searchFailedWithin60s: 0,
+    referencingPageTypes: {},
 });
 
+const addCounts = (target: Record<string, number>, counts: Record<string, number>) => {
+    Object.keys(counts).forEach((key) => {
+        target[key] = (target[key] || 0) + counts[key];
+    });
+};
+
+const sumCounts = (counts: Record<string, number>) =>
+    Object.keys(counts).reduce((acc, key) => acc + counts[key], 0);
+
+const getRepo = (locale: string) =>
+    getRepoConnection({
+        repoId: getLayersData().localeToRepoIdMap[locale],
+        branch: 'master',
+        asAdmin: true,
+    });
+
 // Inherited content is counted in the layer it is inherited from
-const findDependencyContents = (type?: string) => {
-    const { locales, localeToRepoIdMap } = getLayersData();
+const getContentFilters = (type?: string) => ({
+    boolean: {
+        ...(type ? { must: { hasValue: { field: 'type', values: [type] } } } : {}),
+        mustNot: [
+            ...NON_LOCALIZED_QUERY_FILTER,
+            { hasValue: { field: 'type', values: excludedTypes } },
+        ],
+    },
+});
 
-    return locales.reduce<{ contentId: string; locale: string }[]>((acc, locale) => {
-        const { hits } = batchedNodeQuery({
-            repo: getRepoConnection({
-                repoId: localeToRepoIdMap[locale],
-                branch: 'master',
-                asAdmin: true,
-            }),
-            queryParams: {
-                query: `_path LIKE "${NAVNO_NODE_ROOT_PATH}/*"`,
-                filters: {
-                    boolean: {
-                        must: {
-                            hasValue: {
-                                field: 'type',
-                                values: type ? [type] : [...dependencyTypes],
-                            },
-                        },
-                        mustNot: NON_LOCALIZED_QUERY_FILTER,
-                    },
-                },
-            },
+const findContentTypes = (locale: string, type?: string) =>
+    getRepo(locale)
+        .query({
+            start: 0,
+            count: 0,
+            query: CONTENT_QUERY,
+            filters: getContentFilters(type),
+            aggregations: { types: { terms: { field: 'type', size: 1000 } } },
+        })
+        .aggregations.types.buckets.map((bucket) => bucket.key);
+
+const findContentIds = (locale: string, type: string) =>
+    batchedNodeQuery({
+        repo: getRepo(locale),
+        queryParams: { query: CONTENT_QUERY, filters: getContentFilters(type) },
+    }).hits.map((hit) => hit.id);
+
+// Partial Fisher-Yates shuffle
+const getRandomSample = <Item>(items: Item[], size: number) => {
+    const shuffled = items.slice();
+    const sampleSize = Math.min(size, shuffled.length);
+
+    for (let i = 0; i < sampleSize; i++) {
+        const j = i + Math.floor(Math.random() * (shuffled.length - i));
+        const item = shuffled[i];
+        shuffled[i] = shuffled[j];
+        shuffled[j] = item;
+    }
+
+    return shuffled.slice(0, sampleSize);
+};
+
+const planMeasurement = ({ sample, type }: MeasurementParams): PlannedType[] => {
+    const refsByType: Record<string, ContentRef[]> = {};
+
+    getLayersData().locales.forEach((locale) => {
+        findContentTypes(locale, type).forEach((contentType) => {
+            if (!refsByType[contentType]) {
+                refsByType[contentType] = [];
+            }
+
+            findContentIds(locale, contentType).forEach((contentId) => {
+                refsByType[contentType].push({ contentId, locale });
+            });
         });
+    });
 
-        return acc.concat(hits.map((hit) => ({ contentId: hit.id, locale })));
-    }, []);
+    return Object.keys(refsByType)
+        .sort()
+        .map((contentType) => ({
+            type: contentType,
+            total: refsByType[contentType].length,
+            sample: getRandomSample(refsByType[contentType], sample),
+        }));
 };
 
 // Same approach as findReferencedPaths in lib/cache/find-paths-to-invalidate.ts: content in the
 // default layer can be used in every layer
-const countReferencingPages = (contentId: string, sourceLocale: string, timeout: number) => {
+const findReferencingPages = (contentId: string, sourceLocale: string, timeout: number) => {
     const { locales, localeToRepoIdMap, defaultLocale } = getLayersData();
     const localesToSearch = sourceLocale === defaultLocale ? locales : [sourceLocale];
 
-    let pages = 0;
+    const pagesByType: Record<string, number> = {};
 
     for (const locale of localesToSearch) {
         const references = new ReferencesFinder({
@@ -143,33 +245,28 @@ const countReferencingPages = (contentId: string, sourceLocale: string, timeout:
             return null;
         }
 
-        pages += references.filter((content) => pageTypes.has(content.type)).length;
+        references.forEach((content) => {
+            if (pageTypes.has(content.type)) {
+                pagesByType[content.type] = (pagesByType[content.type] || 0) + 1;
+            }
+        });
     }
 
-    return pages;
+    return pagesByType;
 };
 
-const measureContent = (contentId: string, locale: string, cutoffTime: number) => {
-    const content = getRepoConnection({
-        repoId: getLayersData().localeToRepoIdMap[locale],
-        branch: 'master',
-        asAdmin: true,
-    }).get<Content>(contentId);
-
+const measureContent = (
+    { contentId, locale }: ContentRef,
+    cutoffTime: number
+): Measurement | null => {
+    const content = getRepo(locale).get<Content>(contentId);
     if (!content) {
         return null;
     }
 
+    // Newest first. The oldest version is not counted, see the top of this file
     const versions = getPublishedAndModifiedVersions(contentId, locale);
-    const versionsLast12m = versions.filter(
-        (version) => getUnixTimeFromDateTimeString(version.timestamp) >= cutoffTime
-    ).length;
-
-    const searchStart = Date.now();
-    const pagesWithin10s = countReferencingPages(contentId, locale, SEARCH_TIMEOUT_MS);
-    const pagesWithin60s =
-        pagesWithin10s ?? countReferencingPages(contentId, locale, RETRY_TIMEOUT_MS);
-    const pages = pagesWithin60s ?? 0;
+    const extraVersions = versions.slice(0, -1);
 
     const result: ContentResult = {
         contentId,
@@ -177,39 +274,78 @@ const measureContent = (contentId: string, locale: string, cutoffTime: number) =
         type: content.type,
         path: content._path,
         versions: versions.length,
-        versionsLast12m,
-        pages,
-        snapshotsAllTime: versions.length * pages,
+        pages: 0,
+        snapshots: 0,
+        referencingPageTypes: {},
     };
 
-    return {
+    const measurement: Measurement = {
         result,
-        versionYears: versions.map((version) => version.timestamp.slice(0, 4)),
-        searchFailedWithin10s: pagesWithin10s === null,
-        searchFailedWithin60s: pagesWithin60s === null,
-        searchMs: Date.now() - searchStart,
+        extraVersionsLast12m: extraVersions.filter(
+            (version) => getUnixTimeFromDateTimeString(version.timestamp) >= cutoffTime
+        ).length,
+        extraVersionYears: extraVersions.map((version) => version.timestamp.slice(0, 4)),
+        searched: false,
+        searchFailedWithin10s: false,
+        searchFailedWithin60s: false,
+        searchMs: 0,
     };
+
+    // Content published only once has never changed a page, so the search can be skipped
+    if (extraVersions.length === 0) {
+        return measurement;
+    }
+
+    const searchStart = Date.now();
+    const pagesWithin10s = findReferencingPages(contentId, locale, SEARCH_TIMEOUT_MS);
+    const pagesWithin60s =
+        pagesWithin10s ?? findReferencingPages(contentId, locale, RETRY_TIMEOUT_MS);
+
+    measurement.searched = true;
+    measurement.searchMs = Date.now() - searchStart;
+    measurement.searchFailedWithin10s = pagesWithin10s === null;
+    measurement.searchFailedWithin60s = pagesWithin60s === null;
+
+    if (pagesWithin60s) {
+        result.referencingPageTypes = pagesWithin60s;
+        result.pages = sumCounts(pagesWithin60s);
+        result.snapshots = extraVersions.length * result.pages;
+    }
+
+    return measurement;
 };
 
-type Measurement = NonNullable<ReturnType<typeof measureContent>>;
+const addToTypeStats = (
+    stats: TypeStats,
+    snapshotsByYear: Record<string, number>,
+    measurement: Measurement
+) => {
+    const { result, extraVersionsLast12m, extraVersionYears } = measurement;
 
-const addToStats = (stats: Stats, measurement: Measurement) => {
-    const { result, searchFailedWithin10s, searchFailedWithin60s } = measurement;
+    stats.measured += 1;
+    stats.extraVersions += extraVersionYears.length;
+    stats.extraVersionsLast12m += extraVersionsLast12m;
+    stats.pageRefs += result.pages;
+    stats.snapshots += result.snapshots;
+    stats.snapshotsLast12m += extraVersionsLast12m * result.pages;
+    addCounts(stats.referencingPageTypes, result.referencingPageTypes);
 
-    stats.contents += 1;
-    stats.versions += result.versions;
-    stats.versionsLast12m += result.versionsLast12m;
-    stats.pages += result.pages;
-    stats.snapshotsAllTime += result.snapshotsAllTime;
-    stats.snapshotsLast12m += result.versionsLast12m * result.pages;
+    extraVersionYears.forEach((year) => {
+        snapshotsByYear[year] = (snapshotsByYear[year] || 0) + result.pages;
+    });
 
-    if (result.pages === 0 && !searchFailedWithin60s) {
+    if (!measurement.searched) {
+        stats.singleVersion += 1;
+        return;
+    }
+
+    if (result.pages === 0 && !measurement.searchFailedWithin60s) {
         stats.unused += 1;
     }
-    if (searchFailedWithin10s) {
+    if (measurement.searchFailedWithin10s) {
         stats.searchFailedWithin10s += 1;
     }
-    if (searchFailedWithin60s) {
+    if (measurement.searchFailedWithin60s) {
         stats.searchFailedWithin60s += 1;
     }
 };
@@ -218,77 +354,105 @@ const runMeasurement = (params: MeasurementParams) => {
     const startTime = Date.now();
     const cutoffTime = startTime - ONE_YEAR_MS;
 
-    const allContents = findDependencyContents(params.type);
-    const contents = params.limit ? allContents.slice(0, params.limit) : allContents;
+    const plan = planMeasurement(params);
+    const plannedTotal = plan.reduce((acc, { sample }) => acc + sample.length, 0);
 
     const summary: Summary = {
         params,
         startedAt: new Date(startTime).toISOString(),
         processed: 0,
-        total: contents.length,
+        plannedTotal,
         errors: 0,
         searchMsTotal: 0,
         searchMsMax: 0,
-        totals: createStats(),
+        totals: {
+            contents: 0,
+            measured: 0,
+            estimatedSnapshots: 0,
+            estimatedSnapshotsLast12m: 0,
+            searchFailedWithin10s: 0,
+            searchFailedWithin60s: 0,
+        },
+        estimatedSnapshotsByYear: {},
         byType: {},
-        snapshotsByYear: {},
         top: [],
     };
     const results: ContentResult[] = [];
 
-    logger.info(`${LOG_PREFIX} Started - measuring ${contents.length} of ${allContents.length}`);
+    logger.info(
+        `${LOG_PREFIX} Started - measuring ${plannedTotal} contents: ${plan
+            .map(({ type, total, sample }) => `${type} ${sample.length}/${total}`)
+            .join(', ')}`
+    );
 
-    contents.forEach(({ contentId, locale }, index) => {
-        try {
-            const measurement = measureContent(contentId, locale, cutoffTime);
-            if (measurement) {
-                const { result } = measurement;
+    plan.forEach(({ type, total, sample }) => {
+        const stats = createTypeStats(total);
+        const snapshotsByYear: Record<string, number> = {};
+        summary.byType[type] = stats;
 
-                if (!summary.byType[result.type]) {
-                    summary.byType[result.type] = createStats();
+        sample.forEach((contentRef) => {
+            try {
+                const measurement = measureContent(contentRef, cutoffTime);
+                if (!measurement) {
+                    stats.notFound += 1;
+                } else {
+                    addToTypeStats(stats, snapshotsByYear, measurement);
+                    summary.searchMsTotal += measurement.searchMs;
+                    summary.searchMsMax = Math.max(summary.searchMsMax, measurement.searchMs);
+
+                    if (measurement.result.snapshots > 0) {
+                        results.push(measurement.result);
+                    }
+                    if (measurement.searched) {
+                        taskLib.sleep(THROTTLE_MS);
+                    }
                 }
-
-                addToStats(summary.totals, measurement);
-                addToStats(summary.byType[result.type], measurement);
-
-                measurement.versionYears.forEach((year) => {
-                    summary.snapshotsByYear[year] =
-                        (summary.snapshotsByYear[year] || 0) + result.pages;
-                });
-
-                summary.searchMsTotal += measurement.searchMs;
-                summary.searchMsMax = Math.max(summary.searchMsMax, measurement.searchMs);
-
-                results.push(result);
+            } catch (e) {
+                summary.errors += 1;
+                logger.error(
+                    `${LOG_PREFIX} Failed for ${contentRef.contentId} [${contentRef.locale}] - ${e}`
+                );
             }
-        } catch (e) {
-            summary.errors += 1;
-            logger.error(`${LOG_PREFIX} Failed for ${contentId} [${locale}] - ${e}`);
-        }
 
-        summary.processed = index + 1;
-        taskLib.progress({
-            current: summary.processed,
-            total: contents.length,
-            info: `${summary.processed}/${contents.length}`,
+            summary.processed += 1;
+            taskLib.progress({
+                current: summary.processed,
+                total: plannedTotal,
+                info: `${summary.processed}/${plannedTotal} - ${type}`,
+            });
+
+            if (summary.processed % 100 === 0) {
+                logger.info(`${LOG_PREFIX} Progress ${summary.processed}/${plannedTotal}`);
+            }
         });
 
-        if (summary.processed % 100 === 0) {
-            logger.info(`${LOG_PREFIX} Progress ${summary.processed}/${contents.length}`);
-        }
+        // Scale the sample up to all content of the type
+        const scale = stats.measured > 0 ? total / stats.measured : 0;
+        stats.estimatedSnapshots = Math.round(stats.snapshots * scale);
+        stats.estimatedSnapshotsLast12m = Math.round(stats.snapshotsLast12m * scale);
 
-        taskLib.sleep(THROTTLE_MS);
+        Object.keys(snapshotsByYear).forEach((year) => {
+            summary.estimatedSnapshotsByYear[year] =
+                (summary.estimatedSnapshotsByYear[year] || 0) +
+                Math.round(snapshotsByYear[year] * scale);
+        });
+
+        const { totals } = summary;
+        totals.contents += total;
+        totals.measured += stats.measured;
+        totals.estimatedSnapshots += stats.estimatedSnapshots;
+        totals.estimatedSnapshotsLast12m += stats.estimatedSnapshotsLast12m;
+        totals.searchFailedWithin10s += stats.searchFailedWithin10s;
+        totals.searchFailedWithin60s += stats.searchFailedWithin60s;
     });
 
-    summary.top = results
-        .sort((a, b) => b.snapshotsAllTime - a.snapshotsAllTime)
-        .slice(0, TOP_COUNT);
+    summary.top = results.sort((a, b) => b.snapshots - a.snapshots).slice(0, TOP_COUNT);
     summary.finishedAt = new Date().toISOString();
     summary.durationMinutes = Math.round((Date.now() - startTime) / 60000);
 
     const summaryJson = JSON.stringify(summary);
 
-    taskLib.progress({ current: contents.length, total: contents.length, info: summaryJson });
+    taskLib.progress({ current: plannedTotal, total: plannedTotal, info: summaryJson });
     logger.info(`${LOG_PREFIX} Finished - ${summaryJson}`);
 };
 
@@ -318,22 +482,26 @@ export const post = (req: Request) => {
         });
     }
 
-    const limitParam = req.params.limit as string | undefined;
-    if (limitParam && !/^[1-9]\d*$/.test(limitParam)) {
-        return jsonResponse(400, { message: 'Parameter "limit" must be a positive integer' });
+    const sampleParam = req.params.sample as string | undefined;
+    if (sampleParam && !/^[1-9]\d*$/.test(sampleParam)) {
+        return jsonResponse(400, { message: 'Parameter "sample" must be a positive integer' });
     }
 
-    const type = req.params.type as string | undefined;
-    if (type && dependencyTypes.indexOf(type) === -1) {
+    const sample = sampleParam ? Number(sampleParam) : DEFAULT_SAMPLE_SIZE;
+    if (sample > MAX_SAMPLE_SIZE) {
         return jsonResponse(400, {
-            message: `Parameter "type" must be one of: ${dependencyTypes.join(', ')}`,
+            message: `Parameter "sample" must be at most ${MAX_SAMPLE_SIZE}`,
         });
     }
 
-    const params: MeasurementParams = {
-        limit: limitParam ? Number(limitParam) : undefined,
-        type,
-    };
+    const type = req.params.type as string | undefined;
+    if (type && (!/^[a-z0-9.]+:[a-z0-9-]+$/i.test(type) || excludedTypes.indexOf(type) !== -1)) {
+        return jsonResponse(400, {
+            message: `Parameter "type" must be a content type other than ${excludedTypes.join(', ')}`,
+        });
+    }
+
+    const params: MeasurementParams = { sample, type };
 
     currentTaskId = taskLib.executeFunction({
         description: 'archive-dependency-stats',
