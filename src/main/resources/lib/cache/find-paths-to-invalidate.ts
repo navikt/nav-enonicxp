@@ -8,6 +8,7 @@ import { ReferencesFinder } from '../reference-search/references-finder';
 import { removeDuplicates } from '../utils/array-utils';
 import { RepoBranch } from '../../types/common';
 import { getContentFromAllLayers } from '../localization/layers-repo-utils/get-content-from-all-layers';
+import { runInContext } from '../context/run-in-context';
 
 const REFERENCE_SEARCH_TIMEOUT_MS = 10000;
 
@@ -71,10 +72,16 @@ const findChangedPaths = (contentId: string, repoId: string, path: string) => {
         changedPaths.push(previousPath);
     }
 
-    const currentCustomPath = getCustomPathFromContent(contentId);
-    const previousCustomPath = getCustomPathFromContent(
-        previousVersion.nodeId,
-        previousVersion.versionId
+    // Invalidation runs in a task, which has no repository in its context in XP8
+    const { currentCustomPath, previousCustomPath } = runInContext(
+        { repository: repoId, branch: 'draft' },
+        () => ({
+            currentCustomPath: getCustomPathFromContent(contentId),
+            previousCustomPath: getCustomPathFromContent(
+                previousVersion.nodeId,
+                previousVersion.versionId
+            ),
+        })
     );
 
     if (previousCustomPath !== currentCustomPath) {
