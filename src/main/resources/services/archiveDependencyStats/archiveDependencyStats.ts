@@ -25,9 +25,10 @@ import { NAVNO_NODE_ROOT_PATH } from '../../lib/constants';
 // oldest published version is not counted: when content is first added to a page, the page gets
 // a new version of its own, which the regular archive backfill covers.
 //
-// POST ?sample=<n>&type=<content type>  starts the measurement on the node receiving the request.
-//                                        sample is per content type (default 100)
-// GET ?taskId=<id>                       progress, and the result when finished
+// POST ?sample=<n|all>&type=<content type>  starts the measurement on the node receiving the
+//                                            request. sample is per content type (default 100).
+//                                            all measures all content, without sampling
+// GET ?taskId=<id>                           progress, and the result when finished
 //
 // XP removes finished tasks after 60 seconds, so the result is also kept in a shared map for a
 // week, and logged with the prefix below. Each content type is logged as it finishes.
@@ -37,7 +38,6 @@ const SEARCH_TIMEOUT_MS = 10000; // Same as cache invalidation
 const RETRY_TIMEOUT_MS = 60000;
 const THROTTLE_MS = 200;
 const DEFAULT_SAMPLE_SIZE = 100;
-const MAX_SAMPLE_SIZE = 10000;
 const TOP_COUNT = 25;
 const ONE_YEAR_MS = 1000 * 60 * 60 * 24 * 365;
 const RESULT_MAP_ID = 'archive-dependency-stats';
@@ -56,7 +56,7 @@ const excludedTypes = [
 
 const pageTypes: ReadonlySet<string> = new Set<string>(contentTypesInSitemap);
 
-type MeasurementParams = { sample: number; type?: string };
+type MeasurementParams = { sample: number | 'all'; type?: string };
 
 type ContentRef = { contentId: string; locale: string };
 
@@ -225,11 +225,15 @@ const planMeasurement = ({ sample, type }: MeasurementParams): PlannedType[] => 
 
     return Object.keys(refsByType)
         .sort()
-        .map((contentType) => ({
-            type: contentType,
-            total: refsByType[contentType].length,
-            sample: getRandomSample(refsByType[contentType], sample),
-        }));
+        .map((contentType) => {
+            const refs = refsByType[contentType];
+
+            return {
+                type: contentType,
+                total: refs.length,
+                sample: sample === 'all' ? refs : getRandomSample(refs, sample),
+            };
+        });
 };
 
 // Same approach as findReferencedPaths in lib/cache/find-paths-to-invalidate.ts: content in the
@@ -510,16 +514,14 @@ export const post = (req: Request) => {
     }
 
     const sampleParam = req.params.sample as string | undefined;
-    if (sampleParam && !/^[1-9]\d*$/.test(sampleParam)) {
-        return jsonResponse(400, { message: 'Parameter "sample" must be a positive integer' });
-    }
-
-    const sample = sampleParam ? Number(sampleParam) : DEFAULT_SAMPLE_SIZE;
-    if (sample > MAX_SAMPLE_SIZE) {
+    if (sampleParam && sampleParam !== 'all' && !/^[1-9]\d*$/.test(sampleParam)) {
         return jsonResponse(400, {
-            message: `Parameter "sample" must be at most ${MAX_SAMPLE_SIZE}`,
+            message: 'Parameter "sample" must be a positive integer or "all"',
         });
     }
+
+    const sample =
+        sampleParam === 'all' ? 'all' : sampleParam ? Number(sampleParam) : DEFAULT_SAMPLE_SIZE;
 
     const type = req.params.type as string | undefined;
     if (type && (!/^[a-z0-9.]+:[a-z0-9-]+$/i.test(type) || excludedTypes.indexOf(type) !== -1)) {
