@@ -1,5 +1,6 @@
 import { Request } from '@enonic-types/core';
 import * as taskLib from '/lib/xp/task';
+import * as gridLib from '/lib/xp/grid';
 import { Content } from '/lib/xp/content';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { contentTypesInSitemap } from '../../lib/contenttype-lists';
@@ -28,7 +29,8 @@ import { NAVNO_NODE_ROOT_PATH } from '../../lib/constants';
 //                                        sample is per content type (default 100)
 // GET ?taskId=<id>                       progress, and the result when finished
 //
-// The result is also logged with the prefix below.
+// XP removes finished tasks after 60 seconds, so the result is also kept in a shared map for a
+// week, and logged with the prefix below. Each content type is logged as it finishes.
 
 const LOG_PREFIX = '[archive-dependency-stats]';
 const SEARCH_TIMEOUT_MS = 10000; // Same as cache invalidation
@@ -38,6 +40,8 @@ const DEFAULT_SAMPLE_SIZE = 100;
 const MAX_SAMPLE_SIZE = 10000;
 const TOP_COUNT = 25;
 const ONE_YEAR_MS = 1000 * 60 * 60 * 24 * 365;
+const RESULT_MAP_ID = 'archive-dependency-stats';
+const RESULT_TTL_SECONDS = 60 * 60 * 24 * 7;
 
 const CONTENT_QUERY = `_path LIKE "${NAVNO_NODE_ROOT_PATH}/*"`;
 
@@ -119,6 +123,11 @@ type Summary = {
     byType: Record<string, TypeStats>;
     top: ContentResult[];
 };
+
+type ResultMap = Record<string, string>;
+
+// Lets the task read its own id, which is only known when executeFunction returns
+type Run = { taskId: string };
 
 let currentTaskId: string | null = null;
 
@@ -350,7 +359,7 @@ const addToTypeStats = (
     }
 };
 
-const runMeasurement = (params: MeasurementParams) => {
+const runMeasurement = (params: MeasurementParams, run: Run) => {
     const startTime = Date.now();
     const cutoffTime = startTime - ONE_YEAR_MS;
 
@@ -444,6 +453,8 @@ const runMeasurement = (params: MeasurementParams) => {
         totals.estimatedSnapshotsLast12m += stats.estimatedSnapshotsLast12m;
         totals.searchFailedWithin10s += stats.searchFailedWithin10s;
         totals.searchFailedWithin60s += stats.searchFailedWithin60s;
+
+        logger.info(`${LOG_PREFIX} Finished ${type} - ${JSON.stringify(stats)}`);
     });
 
     summary.top = results.sort((a, b) => b.snapshots - a.snapshots).slice(0, TOP_COUNT);
@@ -454,6 +465,22 @@ const runMeasurement = (params: MeasurementParams) => {
 
     taskLib.progress({ current: plannedTotal, total: plannedTotal, info: summaryJson });
     logger.info(`${LOG_PREFIX} Finished - ${summaryJson}`);
+
+    // run.taskId is set when executeFunction returns, long before a measurement of any content
+    // finishes
+    if (!run.taskId) {
+        return;
+    }
+
+    try {
+        gridLib.getMap<ResultMap>(RESULT_MAP_ID).set({
+            key: run.taskId,
+            value: summaryJson,
+            ttlSeconds: RESULT_TTL_SECONDS,
+        });
+    } catch (e) {
+        logger.error(`${LOG_PREFIX} Could not save the result in the shared map - ${e}`);
+    }
 };
 
 const jsonResponse = (status: number, body: Record<string, unknown>) => ({
@@ -502,13 +529,15 @@ export const post = (req: Request) => {
     }
 
     const params: MeasurementParams = { sample, type };
+    const run: Run = { taskId: '' };
 
-    currentTaskId = taskLib.executeFunction({
+    run.taskId = taskLib.executeFunction({
         description: 'archive-dependency-stats',
-        func: () => runInContext({ asAdmin: true }, () => runMeasurement(params)),
+        func: () => runInContext({ asAdmin: true }, () => runMeasurement(params, run)),
     });
+    currentTaskId = run.taskId;
 
-    return jsonResponse(202, { taskId: currentTaskId });
+    return jsonResponse(202, { taskId: run.taskId });
 };
 
 export const get = (req: Request) => {
@@ -522,8 +551,12 @@ export const get = (req: Request) => {
     }
 
     const task = taskLib.get(taskId);
+    const savedResult = gridLib.getMap<ResultMap>(RESULT_MAP_ID).get(taskId) ?? undefined;
+
     if (!task) {
-        return jsonResponse(404, { message: `Task ${taskId} not found` });
+        return savedResult
+            ? jsonResponse(200, { state: 'FINISHED', result: parseSummary(savedResult) })
+            : jsonResponse(404, { message: `Task ${taskId} not found` });
     }
 
     const { state, node, progress } = task;
@@ -533,6 +566,9 @@ export const get = (req: Request) => {
         node,
         current: progress?.current,
         total: progress?.total,
-        result: state === 'FINISHED' ? parseSummary(progress?.info) : null,
+        result:
+            state === 'FINISHED'
+                ? (parseSummary(progress?.info) ?? parseSummary(savedResult))
+                : null,
     });
 };
