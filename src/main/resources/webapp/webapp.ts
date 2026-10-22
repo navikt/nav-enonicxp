@@ -16,6 +16,7 @@ import { NAVOccurences } from '../lib/reporting/NAVOccurrences';
 import { archiveOldNews } from '../lib/archiving/archive-old-news';
 import { manageScheduledJobs } from '../lib/scheduling/manage-scheduled-jobs';
 import { handleCuratedExportRequest } from '../lib/curated-export/source/access';
+import { backfillLayerPublishInfo } from '../lib/localization/layer-publish-info-backfill';
 
 type ActionsMap = Record<string, { description: string; callback: () => any }>;
 
@@ -62,6 +63,11 @@ const validActions: ActionsMap = {
             callback: externalSearchUpdateAll,
         },
     }),
+    backfillLayerPublishInfo: {
+        description:
+            'Sett publiseringsinfo på arvet innhold i layers, så det vises som publisert i Content Studio (kjøres én gang etter oppgradering til XP8)',
+        callback: backfillLayerPublishInfo,
+    },
     // These should only be used after creating a new content layer
     // pushLayerContentToMaster: {
     //     description:

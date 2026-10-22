@@ -53,6 +53,9 @@ jest.mock('@navno-app/lib/scheduling/manage-scheduled-jobs', () => ({
 jest.mock('@navno-app/lib/curated-export/source/access', () => ({
     handleCuratedExportRequest: mockHandleCuratedExportRequest,
 }));
+jest.mock('@navno-app/lib/localization/layer-publish-info-backfill', () => ({
+    backfillLayerPublishInfo: jest.fn(),
+}));
 
 type PostHandler = typeof import('@navno-app/webapp/webapp').post;
 
