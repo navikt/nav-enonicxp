@@ -115,11 +115,16 @@ const renderWebapp = (runningCmd?: string, schedulerMessage?: string) => {
     };
 };
 
-// Prevents bulk jobs from running in parallel if the page is opened more than once
+// Prevents bulk jobs from running in parallel if the page is opened more than once.
+// Queued tasks count too, as executeFunction does not start the task immediately.
 const isActionRunning = (description: string) =>
     taskLib
-        .list({ state: 'RUNNING' })
-        .some((task) => task.description === description);
+        .list()
+        .some(
+            (task) =>
+                task.description === description &&
+                (task.state === 'RUNNING' || task.state === 'WAITING')
+        );
 
 export const get = (req: Request) => {
     const curatedExportResponse = handleCuratedExportRequest(req);

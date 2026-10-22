@@ -162,18 +162,21 @@ describe('Webapp actions', () => {
     test('starts the action as a task', () => {
         get(request({ cmd: 'backfillLayerPublishInfo' }));
 
-        expect(mockListTasks).toHaveBeenCalledWith({ state: 'RUNNING' });
         expect(mockExecuteFunction).toHaveBeenCalledTimes(1);
         expect(mockExecuteFunction.mock.calls[0][0].description).toContain(backfillDescription);
     });
 
-    test('does not start the action again while it is running', () => {
+    const runAgainWithExistingTask = (state: string) => {
         get(request({ cmd: 'backfillLayerPublishInfo' }));
         const { description } = mockExecuteFunction.mock.calls[0][0];
-        mockListTasks.mockReturnValue([{ description, state: 'RUNNING' }]);
+        mockListTasks.mockReturnValue([{ description, state }]);
         mockExecuteFunction.mockClear();
 
         get(request({ cmd: 'backfillLayerPublishInfo' }));
+    };
+
+    test.each(['RUNNING', 'WAITING'])('does not start the action again while it is %s', (state) => {
+        runAgainWithExistingTask(state);
 
         expect(mockExecuteFunction).not.toHaveBeenCalled();
         expect(mockRender).toHaveBeenLastCalledWith(
@@ -183,5 +186,11 @@ describe('Webapp actions', () => {
                 runningCmd: undefined,
             })
         );
+    });
+
+    test.each(['FINISHED', 'FAILED'])('starts the action again after a %s run', (state) => {
+        runAgainWithExistingTask(state);
+
+        expect(mockExecuteFunction).toHaveBeenCalledTimes(1);
     });
 });
