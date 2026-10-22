@@ -13,6 +13,7 @@ import { CuratedTargetExpectation, restoreCuratedTargetMetadata } from './metada
 import { LAYERS_ANON_USER, LAYERS_ID_PROVIDER, CONTENT_ROOT_REPO_ID } from '../../constants';
 import { forceArray } from '../../utils/array-utils';
 import { NON_LOCALIZED_QUERY_FILTER } from '../../localization/layers-repo-utils/localization-state-filters';
+import { mirrorRootPublishInfoToLayerDraft } from '../../localization/layer-publish-info';
 import {
     CuratedBranch,
     CURATED_CONTENT_ROOT_PATH,
@@ -810,9 +811,16 @@ const publishInheritedLayerContent = (repository: string) => {
                     !layerNode ||
                     !isCuratedContentPath(layerNode._path) ||
                     !rootDraftNode ||
-                    rootDraftNode._versionKey !== rootMasterNode?._versionKey ||
-                    layerMasterNodes[id]?._versionKey === layerNode._versionKey
+                    rootDraftNode._versionKey !== rootMasterNode?._versionKey
                 ) {
+                    return;
+                }
+                const patched = mirrorRootPublishInfoToLayerDraft(
+                    layerDraft,
+                    layerNode,
+                    rootMasterNode.publish
+                );
+                if (!patched && layerMasterNodes[id]?._versionKey === layerNode._versionKey) {
                     return;
                 }
                 pending.push({ id, depth: layerNode._path.split('/').length });

@@ -7,12 +7,15 @@ import { isContentLocalized } from './locale-utils';
 import { CONTENT_REPO_PREFIX, CONTENT_ROOT_REPO_ID } from '../constants';
 import { getContentFromAllLayers } from './layers-repo-utils/get-content-from-all-layers';
 import { isMainDatanode } from '../cluster-utils/main-datanode';
+import { clearLayerDraftPublishInfo, setLayerDraftPublishInfoFromRoot } from './layer-publish-info';
 
 let hasSetupListeners = false;
 
 type NodeData = EnonicEventData['nodes'][number];
 
 const pushToMaster = (contentId: string, repoId: string) => {
+    setLayerDraftPublishInfoFromRoot(contentId, repoId);
+
     const result = getRepoConnection({ branch: 'draft', repoId, asAdmin: true }).push({
         key: contentId,
         target: 'master',
@@ -138,6 +141,8 @@ const propagatePublishEventsToLayers = (event: EnonicEvent) => {
                 logger.info(
                     `Deleted ${id} from master in ${repoId} - result: ${JSON.stringify(result)}`
                 );
+
+                clearLayerDraftPublishInfo(id, repoId);
             }
         });
     });

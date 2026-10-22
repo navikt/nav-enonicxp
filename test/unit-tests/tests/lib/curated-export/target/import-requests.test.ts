@@ -405,6 +405,74 @@ describe('curated export import', () => {
         });
     });
 
+    it('sets root publish info on inherited layer content before publishing it', () => {
+        const rootPublish = { first: '2020-01-01T00:00:00Z', from: '2025-12-09T14:11:50.943Z' };
+        const node = (id: string, version: string, publish?: typeof rootPublish) => ({
+            _id: id,
+            _path: `${rootPath}/${id}`,
+            _versionKey: version,
+            inherit: ['CONTENT'],
+            ...(publish && { publish }),
+        });
+        const nodesByRepoBranch: Record<string, Array<ReturnType<typeof node>>> = {
+            'com.enonic.cms.navno-nynorsk:draft': [
+                node('missing-info', 'layer-missing'),
+                node('has-info', 'layer-has', { ...rootPublish, time: rootPublish.from } as never),
+            ],
+            'com.enonic.cms.navno-nynorsk:master': [
+                node('missing-info', 'layer-missing'),
+                node('has-info', 'layer-has'),
+            ],
+            'com.enonic.cms.default:draft': [
+                node('missing-info', 'root-missing'),
+                node('has-info', 'root-has'),
+            ],
+            'com.enonic.cms.default:master': [
+                node('missing-info', 'root-missing', rootPublish),
+                node('has-info', 'root-has', rootPublish),
+            ],
+        };
+        const patchNode = jest.fn();
+        jest.mocked(getRepoConnection).mockImplementation(
+            ({ repoId, branch }) =>
+                ({
+                    get: (ids: string[]) =>
+                        (nodesByRepoBranch[`${repoId}:${branch}`] || []).filter(({ _id }) =>
+                            ids.includes(_id)
+                        ),
+                    query: queryNode,
+                    push: pushNode,
+                    patch: patchNode,
+                }) as never
+        );
+        queryNode.mockReturnValue({
+            total: 2,
+            hits: [{ id: 'missing-info' }, { id: 'has-info' }],
+        });
+        pushNode.mockImplementation(({ keys }) => ({ success: keys, failed: [] }));
+
+        expect(
+            post(
+                importRequest({
+                    action: 'publish-inherited-layer-content',
+                    repository: 'com.enonic.cms.navno-nynorsk',
+                })
+            )
+        ).toMatchObject({ status: 200, body: { published: 1, failed: 0 } });
+        expect(patchNode).toHaveBeenCalledTimes(1);
+        expect(patchNode).toHaveBeenCalledWith(
+            expect.objectContaining({ key: 'missing-info', branches: ['draft'] })
+        );
+        expect(
+            patchNode.mock.calls[0][0].editor({ _id: 'missing-info' }).publish
+        ).toMatchObject({ first: rootPublish.first, from: rootPublish.from });
+        expect(pushNode).toHaveBeenCalledWith({
+            keys: ['missing-info'],
+            target: 'master',
+            resolve: false,
+        });
+    });
+
     it('refuses to publish inherited content in the root project', () => {
         expect(
             post(
