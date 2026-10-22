@@ -4,6 +4,8 @@ const mockRender = jest.fn((_view, model) => JSON.stringify(model));
 const mockUserIsAdmin = jest.fn();
 const mockManageScheduledJobs = jest.fn();
 const mockHandleCuratedExportRequest = jest.fn();
+const mockExecuteFunction = jest.fn();
+const mockListTasks = jest.fn();
 
 jest.mock(
     '/lib/thymeleaf',
@@ -17,7 +19,8 @@ jest.mock(
 jest.mock(
     '/lib/xp/task',
     () => ({
-        executeFunction: jest.fn(),
+        executeFunction: mockExecuteFunction,
+        list: mockListTasks,
     }),
     { virtual: true }
 );
@@ -59,18 +62,22 @@ jest.mock('@navno-app/lib/localization/layer-publish-info-backfill', () => ({
 
 type PostHandler = typeof import('@navno-app/webapp/webapp').post;
 
+type GetHandler = typeof import('@navno-app/webapp/webapp').get;
+
 let post: PostHandler;
+let get: GetHandler;
 
 beforeAll(async () => {
     Object.assign(globalThis, {
         resolve: jest.fn(() => 'webapp.html'),
     });
-    ({ post } = await import('@navno-app/webapp/webapp'));
+    ({ post, get } = await import('@navno-app/webapp/webapp'));
 });
 
 beforeEach(() => {
     mockUserIsAdmin.mockReturnValue(true);
     mockHandleCuratedExportRequest.mockReturnValue(null);
+    mockListTasks.mockReturnValue([]);
     mockManageScheduledJobs.mockReturnValue({
         selectedJobs: [],
         missingJobNames: [],
@@ -146,5 +153,35 @@ describe('Webapp curated export routes', () => {
 
         expect(post(request())).toEqual({ status: 401 });
         expect(mockManageScheduledJobs).not.toHaveBeenCalled();
+    });
+});
+
+describe('Webapp actions', () => {
+    const backfillDescription = 'Sett publiseringsinfo på arvet innhold i layers';
+
+    test('starts the action as a task', () => {
+        get(request({ cmd: 'backfillLayerPublishInfo' }));
+
+        expect(mockListTasks).toHaveBeenCalledWith({ state: 'RUNNING' });
+        expect(mockExecuteFunction).toHaveBeenCalledTimes(1);
+        expect(mockExecuteFunction.mock.calls[0][0].description).toContain(backfillDescription);
+    });
+
+    test('does not start the action again while it is running', () => {
+        get(request({ cmd: 'backfillLayerPublishInfo' }));
+        const { description } = mockExecuteFunction.mock.calls[0][0];
+        mockListTasks.mockReturnValue([{ description, state: 'RUNNING' }]);
+        mockExecuteFunction.mockClear();
+
+        get(request({ cmd: 'backfillLayerPublishInfo' }));
+
+        expect(mockExecuteFunction).not.toHaveBeenCalled();
+        expect(mockRender).toHaveBeenLastCalledWith(
+            'webapp.html',
+            expect.objectContaining({
+                schedulerMessage: expect.stringContaining('Jobben kjører allerede'),
+                runningCmd: undefined,
+            })
+        );
     });
 });

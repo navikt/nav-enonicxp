@@ -115,6 +115,12 @@ const renderWebapp = (runningCmd?: string, schedulerMessage?: string) => {
     };
 };
 
+// Prevents bulk jobs from running in parallel if the page is opened more than once
+const isActionRunning = (description: string) =>
+    taskLib
+        .list({ state: 'RUNNING' })
+        .some((task) => task.description === description);
+
 export const get = (req: Request) => {
     const curatedExportResponse = handleCuratedExportRequest(req);
     if (curatedExportResponse) {
@@ -128,6 +134,10 @@ export const get = (req: Request) => {
     const { cmd } = req.params as Params;
 
     const actionToRun = validActions[cmd];
+
+    if (actionToRun && isActionRunning(actionToRun.description)) {
+        return renderWebapp(undefined, `Jobben kjører allerede: ${actionToRun.description}`);
+    }
 
     if (actionToRun) {
         taskLib.executeFunction({
