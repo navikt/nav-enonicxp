@@ -503,15 +503,41 @@ const listPublishedVersions = (application, runCommand) => {
 const getErrorMessage = (error) =>
     error instanceof Error ? error.message.split('\n')[0] : String(error);
 
+// XP 8 only installs from a URL with a SHA-512 checksum, which the vendor repositories do not all
+// publish, so the jar is downloaded and uploaded instead. XP 7 accepts uploads as well.
 const installApplicationVersion = (
     application,
     version,
     { sandbox, auth, runCommand, verifyTarget }
 ) => {
-    const output = runLocalXpCommand(
-        ['app', 'install', '--url', getApplicationUrl({ ...application, version }), '--force'],
-        { sandbox, auth, runCommand, verifyTarget }
-    );
+    const downloadDirectory = mkdtempSync(join(tmpdir(), 'curated-app-'));
+    const applicationFile = join(downloadDirectory, `${application.key}-${version}.jar`);
+    let output;
+    try {
+        runCommand(
+            'curl',
+            [
+                '--silent',
+                '--show-error',
+                '--fail',
+                '--location',
+                '--max-time',
+                '300',
+                '--output',
+                applicationFile,
+                getApplicationUrl({ ...application, version }),
+            ],
+            { stdio: 'ignore' }
+        );
+        output = runLocalXpCommand(['app', 'install', '--file', applicationFile, '--force'], {
+            sandbox,
+            auth,
+            runCommand,
+            verifyTarget,
+        });
+    } finally {
+        rmSync(downloadDirectory, { recursive: true, force: true });
+    }
     const result = parseCliJsonOutput(output);
     if (result.Failure) {
         throw new Error(result.Failure);

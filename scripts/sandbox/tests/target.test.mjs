@@ -11,7 +11,7 @@ import {
     writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 import process from 'node:process';
 import test from 'node:test';
 import {
@@ -549,8 +549,11 @@ test('uses exceptional Maven coordinates and tolerates an unavailable optional a
         auth: 'su:password',
         sandbox: 'target',
         verifyTarget: () => {},
-        runCommand(_command, args) {
-            commands.push(args);
+        runCommand(command, args) {
+            if (command === 'curl') {
+                commands.push(args.at(-1));
+                return '';
+            }
             const { key, version } = applications[commands.length - 1];
             return args[3].includes('contentstudio.plus')
                 ? '{"Failure":"not available"}'
@@ -558,17 +561,17 @@ test('uses exceptional Maven coordinates and tolerates an unavailable optional a
         },
     });
 
-    assert.match(commands[0][3], /com\/enonic\/app\/audit-log\/1\.2\.1\/audit-log-1\.2\.1\.jar$/);
+    assert.match(commands[0], /com\/enonic\/app\/audit-log\/1\.2\.1\/audit-log-1\.2\.1\.jar$/);
     assert.match(
-        commands[1][3],
+        commands[1],
         /repo\.itemtest\.no\/releases\/no\/item\/xp-part-finder\/1\.2\.0\/xp-part-finder-1\.2\.0\.jar$/
     );
     assert.match(
-        commands[2][3],
+        commands[2],
         /github\.com\/GlennRicaud\/maven\/raw\/main\/systems\/rcd\/enonic\/datatoolbox\/5\.2\.1\/datatoolbox-5\.2\.1\.jar$/
     );
     assert.match(
-        commands[3][3],
+        commands[3],
         /com\/enonic\/app\/contentstudio\.plus\/1\.9\.0\/contentstudio\.plus-1\.9\.0\.jar$/
     );
 });
@@ -625,17 +628,21 @@ test('installs another patch of the same minor version with a warning when the e
         runCommand: (command, args) => {
             requests.push([command, args.at(-1)]);
             if (command === 'curl') {
-                return versionList('1.1.9', '1.2.0', '1.2.2', '1.3.0');
+                return args.includes('--output')
+                    ? ''
+                    : versionList('1.1.9', '1.2.0', '1.2.2', '1.3.0');
             }
-            const url = args[args.indexOf('--url') + 1];
-            return url.includes('/1.2.2/')
+            const file = args[args.indexOf('--file') + 1];
+            return file.endsWith('-1.2.2.jar')
                 ? installResult(key, '1.2.2')
                 : '{"Failure":"not found"}';
         },
     });
-    assert.match(
-        requests.find(([command]) => command === 'curl')[1],
-        /\/no\/item\/xp-part-finder\/maven-metadata\.xml$/
+    assert.deepEqual(
+        requests
+            .filter(([command]) => command === 'curl')
+            .map(([, url]) => url.replace(/^.*\/no\/item\/xp-part-finder\//, '')),
+        ['1.2.0/xp-part-finder-1.2.0.jar', 'maven-metadata.xml', '1.2.2/xp-part-finder-1.2.2.jar']
     );
     assert.match(
         warn.mock.calls[0].arguments[0],
@@ -785,24 +792,28 @@ test('creates and prepares a missing target sandbox', (t) => {
         '1',
         'http://localhost:4848/',
     ]);
-    assert.deepEqual(commands[4].args, [
-        'app',
-        'install',
-        '--url',
+    const assertDownloadedAndInstalled = ([download, install], url, fileName) => {
+        assert.equal(download.command, 'curl');
+        assert.equal(download.args.at(-1), url);
+        const file = download.args[download.args.indexOf('--output') + 1];
+        assert.equal(basename(file), fileName);
+        assert.deepEqual(install.args, ['app', 'install', '--file', file, '--force']);
+        assert.ok(!existsSync(file));
+    };
+    assertDownloadedAndInstalled(
+        commands.slice(4, 6),
         'https://repo.enonic.com/repository/public/com/enonic/app/contentstudio/5.3.2/contentstudio-5.3.2.jar',
-        '--force',
-    ]);
-    assert.equal(commands[4].options.env.ENONIC_CLI_REMOTE_URL, 'http://localhost:4848');
-    assert.equal(commands[4].options.env.ENONIC_CLI_REMOTE_USER, 'su');
-    assert.equal(commands[4].options.env.ENONIC_CLI_REMOTE_PASS, 'temporary-password');
-    assert.deepEqual(commands[5].args, [
-        'app',
-        'install',
-        '--url',
-        'https://repo.enonic.com/repository/public/com/enonic/app/xpdoctor/2.3.0/xpdoctor-2.3.0.jar',
-        '--force',
-    ]);
+        'com.enonic.app.contentstudio-5.3.2.jar'
+    );
     assert.equal(commands[5].options.env.ENONIC_CLI_REMOTE_URL, 'http://localhost:4848');
+    assert.equal(commands[5].options.env.ENONIC_CLI_REMOTE_USER, 'su');
+    assert.equal(commands[5].options.env.ENONIC_CLI_REMOTE_PASS, 'temporary-password');
+    assertDownloadedAndInstalled(
+        commands.slice(6, 8),
+        'https://repo.enonic.com/repository/public/com/enonic/app/xpdoctor/2.3.0/xpdoctor-2.3.0.jar',
+        'com.enonic.app.xpdoctor-2.3.0.jar'
+    );
+    assert.equal(commands[7].options.env.ENONIC_CLI_REMOTE_URL, 'http://localhost:4848');
     assert.equal(
         readFileSync(join(sandboxPath, 'home/config/system.properties'), 'utf8'),
         `existing.property=true\nxp.suPassword=${hashed('temporary-password')}\n`
