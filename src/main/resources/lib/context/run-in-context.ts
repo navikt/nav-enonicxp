@@ -33,20 +33,17 @@ const superUserOptions: ContextAuthInfo = {
     principals: [ADMIN_PRINCIPAL],
 } as const;
 
-// XP8 requires a project role (or admin role) to read content from the draft branch. We give the
-// system user the viewer role for the context project on the draft branch, to keep the draft read
-// access it had in XP7. Master is left as-is, as the role also grants read access via content permissions.
-const getSystemUserOptions = (repoId: string, branch: RepoBranch): ContextAuthInfo => ({
+// XP8 requires a project role (or admin role) to read content from the draft branch, and content in
+// the layers grants read access only to project roles on master as well. We give the system user the
+// viewer role for the context project, to keep the read access it had in XP7.
+const getSystemUserOptions = (repoId: string): ContextAuthInfo => ({
     user: {
         login: SYSTEM_USER,
         idProvider: SYSTEM_ID_PROVIDER,
     },
-    ...(branch === 'draft' &&
-        repoId.startsWith(`${CONTENT_REPO_PREFIX}.`) && {
-            principals: [
-                `role:cms.project.${repoId.replace(`${CONTENT_REPO_PREFIX}.`, '')}.viewer`,
-            ],
-        }),
+    ...(repoId.startsWith(`${CONTENT_REPO_PREFIX}.`) && {
+        principals: [`role:cms.project.${repoId.replace(`${CONTENT_REPO_PREFIX}.`, '')}.viewer`],
+    }),
 });
 
 export const runInContext = <ReturnType>(
@@ -60,7 +57,7 @@ export const runInContext = <ReturnType>(
     const userOptions = asAdmin
         ? superUserOptions
         : !asCurrentUser
-          ? getSystemUserOptions(repositoryActual, branchActual)
+          ? getSystemUserOptions(repositoryActual)
           : {};
 
     return contextLib.run<ReturnType>(
