@@ -211,7 +211,7 @@ const fixture = (t, scope = 'full', includeDrafts = false) => {
     };
     t.mock.method(globalThis, 'fetch', async (url, options) => {
         requests.push({ url: String(url), ...options, body: JSON.parse(options.body) });
-        return String(url).endsWith('/_/idprovider/system')
+        return String(url).endsWith('/admin/_/idprovider/system')
             ? new Response(JSON.stringify({ authenticated: true }), {
                   headers: { 'Set-Cookie': 'session=synthetic; HttpOnly' },
               })
@@ -513,7 +513,7 @@ test('allows long-running manifest requests and reports their timeout clearly', 
     t.after(() => clearInterval(keepAlive));
     t.mock.restoreAll();
     t.mock.method(globalThis, 'fetch', async (url, options) => {
-        if (String(url).endsWith('/_/idprovider/system')) {
+        if (String(url).endsWith('/admin/_/idprovider/system')) {
             return new Response(JSON.stringify({ authenticated: true }), {
                 headers: { 'Set-Cookie': 'session=synthetic; HttpOnly' },
             });

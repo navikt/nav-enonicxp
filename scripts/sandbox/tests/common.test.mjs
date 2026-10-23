@@ -182,7 +182,7 @@ test(
         assert.ok(proxyRequests.every((url) => url.includes('/proxy-control')));
         assert.deepEqual(
             targetRequests.map(({ path }) => path),
-            ['/_/idprovider/system', '/write', '/upload', '/redirect']
+            ['/admin/_/idprovider/system', '/write', '/upload', '/redirect']
         );
         assert.match(targetRequests[2].contentType, /^multipart\/form-data; boundary=/);
         assert.match(targetRequests[2].body, /synthetic-icon/);

@@ -207,7 +207,7 @@ const mockSource = (t, sources, binaries = {}) => {
     t.mock.method(globalThis, 'fetch', async (input, request) => {
         const url = new URL(input);
         requests.push({ url, request });
-        if (url.pathname === '/_/idprovider/system') {
+        if (url.pathname === '/admin/_/idprovider/system') {
             return new Response(JSON.stringify({ authenticated: true }), {
                 headers: { 'Set-Cookie': 'session=fixture' },
             });

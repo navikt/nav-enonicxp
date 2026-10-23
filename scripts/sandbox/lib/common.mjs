@@ -144,9 +144,12 @@ export const parseAuth = (auth, label) => {
 const rejectedCredentialsError = (message) =>
     Object.assign(new Error(message), { credentialsRejected: true });
 
+// XP 8 only serves id provider endpoints under a site, webapp or admin mount.
+const XP_LOGIN_PATH = '/admin/_/idprovider/system';
+
 export const getXpSessionCookie = async (serviceUrl, auth) => {
     const { username, password } = parseAuth(auth, 'XP');
-    const response = await fetchXp(new URL('/_/idprovider/system', serviceUrl), {
+    const response = await fetchXp(new URL(XP_LOGIN_PATH, serviceUrl), {
         method: 'POST',
         redirect: 'error',
         signal: AbortSignal.timeout(30000),
