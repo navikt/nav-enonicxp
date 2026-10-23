@@ -160,6 +160,12 @@ export const getXpSessionCookie = async (serviceUrl, auth) => {
     if (response.ok && !result.authenticated) {
         throw rejectedCredentialsError('XP rejected the username or password');
     }
+    // XP 8 unloads its system apps, including login, when cluster config changes at runtime.
+    if (response.status === 404) {
+        throw new Error(
+            'XP has no login endpoint. If the sandbox config changed while it was running, restart it with `enonic sandbox stop` and `enonic sandbox start <sandbox>`'
+        );
+    }
     if (!response.ok) {
         throw new Error(
             `Authentication with the XP system provider failed (HTTP ${response.status}, authenticated: ${Boolean(result.authenticated)})`

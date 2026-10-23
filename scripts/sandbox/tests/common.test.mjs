@@ -23,6 +23,7 @@ import {
     directLocalFetch,
     encodePropertyValue,
     fetchXp,
+    getXpSessionCookie,
     hashSuPassword,
     parseAuth,
     promptForAuth,
@@ -386,6 +387,20 @@ test('treats dots in property keys literally', (t) => {
     writeFileSync(path, 'xpXsuPassword=keep\nxp.suPassword=old\n');
     setPropertiesEntry(path, 'xp.suPassword', 'new');
     assert.equal(readFileSync(path, 'utf8'), 'xpXsuPassword=keep\nxp.suPassword=new\n');
+});
+
+test('tells the user to restart the sandbox when XP has no login endpoint', async (t) => {
+    const server = createServer((request, response) => {
+        response.writeHead(404, { 'Content-Type': 'application/json' });
+        response.end(JSON.stringify({ authenticated: false }));
+    });
+    await new Promise((resolveListen) => server.listen(0, '127.0.0.1', resolveListen));
+    t.after(() => server.close());
+    const origin = `http://127.0.0.1:${server.address().port}`;
+    await assert.rejects(
+        getXpSessionCookie(origin, 'su:password'),
+        /no login endpoint.*`enonic sandbox stop` and `enonic sandbox start <sandbox>`/
+    );
 });
 
 test('reads the running sandbox and sandbox XP version', (t) => {

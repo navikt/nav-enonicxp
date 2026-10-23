@@ -38,7 +38,7 @@ Importtjenesten bygges når sandboxen opprettes. Hvis du senere endrer kode i im
 pnpm sandbox:deploy navno
 ```
 
-`pnpm sandbox:deploy [sandbox]` aktiverer `curatedImportEnabled=true` i sandboxens `no.nav.navno.cfg`, slår av klynging hvis `com.enonic.xp.cluster.cfg` mangler eller bare har utkommenterte linjer, og kjører deretter den vanlige `enonic project deploy`-kommandoen med `curatedImportLocal=true` satt som Gradle-prosjektegenskap. Du kan også bruke denne kommandoen for å gjøre en sandbox som er satt opp som en [tom sandbox](../../README.md#tom-sandbox), klar for import.
+`pnpm sandbox:deploy [sandbox]` aktiverer `curatedImportEnabled=true` i sandboxens `no.nav.navno.cfg`, slår av klynging hvis `com.enonic.xp.cluster.cfg` mangler eller bare har utkommenterte linjer, og kjører deretter den vanlige `enonic project deploy`-kommandoen med `curatedImportLocal=true` satt som Gradle-prosjektegenskap. Kjører sandboxen når klyngingen må slås av, stopper kommandoen den først, fordi XP 8 ikke laster systemappene på nytt når klyngeconfigen endres mens den kjører. Du kan også bruke denne kommandoen for å gjøre en sandbox som er satt opp som en [tom sandbox](../../README.md#tom-sandbox), klar for import.
 
 > [!WARNING]
 > Vanlig `enonic project deploy` bygger uten importtjenesten og bør ikke brukes når den trengs lokalt.

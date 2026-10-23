@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import process from 'node:process';
@@ -92,6 +92,48 @@ test('configures the sandbox then delegates arguments to Enonic project deploy',
     assert.equal(calls[0].options.stdio, 'inherit');
     assert.equal(calls[0].options.env.CUSTOM_VALUE, 'preserved');
     assert.equal(calls[0].options.env.ORG_GRADLE_PROJECT_curatedImportLocal, 'true');
+});
+
+test('stops the running sandbox before disabling clustering', (t) => {
+    const { homeDirectory, repositoryRoot, sandboxPath } = fixture(t);
+    const clusterConfigPath = join(sandboxPath, 'home/config/com.enonic.xp.cluster.cfg');
+    writeFileSync(join(homeDirectory, '.enonic/.enonic'), 'running = "navno"\n');
+    const calls = [];
+    const deploy = () =>
+        deployLocalApplication(['navno'], {
+            homeDirectory,
+            repositoryRoot,
+            runCommand(command, args) {
+                calls.push({ args, clusterConfigExisted: existsSync(clusterConfigPath) });
+            },
+        });
+
+    deploy();
+    assert.deepEqual(calls, [
+        { args: ['sandbox', 'stop', '--force'], clusterConfigExisted: false },
+        { args: ['project', 'deploy', 'navno'], clusterConfigExisted: true },
+    ]);
+
+    calls.length = 0;
+    deploy();
+    assert.deepEqual(
+        calls.map(({ args }) => args),
+        [['project', 'deploy', 'navno']]
+    );
+});
+
+test('leaves other running sandboxes alone', (t) => {
+    const { homeDirectory, repositoryRoot } = fixture(t);
+    writeFileSync(join(homeDirectory, '.enonic/.enonic'), 'running = "other"\n');
+    const calls = [];
+    deployLocalApplication(['navno'], {
+        homeDirectory,
+        repositoryRoot,
+        runCommand(command, args) {
+            calls.push(args);
+        },
+    });
+    assert.deepEqual(calls, [['project', 'deploy', 'navno']]);
 });
 
 test('passes help directly to Enonic CLI without requiring a sandbox', () => {

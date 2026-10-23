@@ -9,7 +9,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import process from 'node:process';
-import { getSandboxPath, runCli, setPropertiesEntry } from './lib/common.mjs';
+import { getSandboxPath, readRunningSandbox, runCli, setPropertiesEntry } from './lib/common.mjs';
 import { assertEnonicCliAvailable, assertSandboxName } from './lib/target.mjs';
 
 const HELP_FLAGS = new Set(['--help', '-h']);
@@ -30,7 +30,11 @@ export const resolveDeploySandbox = (args, repositoryRoot = resolve('.')) => {
     return sandbox;
 };
 
-export const enableCuratedImport = (sandbox, homeDirectory = homedir()) => {
+export const enableCuratedImport = (
+    sandbox,
+    homeDirectory = homedir(),
+    beforeClusterConfigChange = () => {}
+) => {
     const sandboxPath = getSandboxPath(homeDirectory, sandbox);
     if (!existsSync(join(sandboxPath, '.enonic'))) {
         throw new Error(`Sandbox ${sandbox} does not exist; create it before deploying to it`);
@@ -57,11 +61,13 @@ export const enableCuratedImport = (sandbox, homeDirectory = homedir()) => {
         .split(/\r?\n/)
         .some((line) => line.trim() && !/^\s*[#!]/.test(line));
     if (!hasActiveClusterConfig) {
+        beforeClusterConfigChange();
         const separator = clusterConfig && !clusterConfig.endsWith('\n') ? '\n' : '';
         writeFileSync(clusterConfigPath, `${clusterConfig}${separator}cluster.enabled=false\n`);
         console.log(`Disabled clustering for sandbox ${sandbox}`);
     }
 };
+
 export const deployLocalApplication = (
     args,
     {
@@ -73,7 +79,19 @@ export const deployLocalApplication = (
 ) => {
     if (!args.some((argument) => HELP_FLAGS.has(argument))) {
         const sandbox = resolveDeploySandbox(args, repositoryRoot);
-        enableCuratedImport(sandbox, homeDirectory);
+        // XP 8 unloads every app when cluster config changes at runtime, and the system apps
+        // (admin, login) do not come back, so the sandbox must be stopped first.
+        const stopIfRunning = () => {
+            if (readRunningSandbox(homeDirectory) !== sandbox) {
+                return;
+            }
+            console.log(`Stopping sandbox ${sandbox} before changing its cluster config`);
+            runCommand('enonic', ['sandbox', 'stop', '--force'], {
+                env: environment,
+                stdio: 'inherit',
+            });
+        };
+        enableCuratedImport(sandbox, homeDirectory, stopIfRunning);
     }
 
     return runCommand('enonic', ['project', 'deploy', ...args], {
