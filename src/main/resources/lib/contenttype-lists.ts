@@ -10,6 +10,7 @@ export const legacyPageContentTypes = [
     `${APP_DESCRIPTOR}:page-list`,
     `${APP_DESCRIPTOR}:transport-page`,
     `${APP_DESCRIPTOR}:large-table`,
+    // TODO: Remove office-information compatibility when archive v2 serves stored HTML.
     `${APP_DESCRIPTOR}:office-information`,
     `${APP_DESCRIPTOR}:publishing-calendar`,
     `${APP_DESCRIPTOR}:melding`,
@@ -71,6 +72,7 @@ export const contentTypesWithDeepReferences = [
     `${APP_DESCRIPTOR}:product-details`,
     `${APP_DESCRIPTOR}:payout-dates`,
     `${APP_DESCRIPTOR}:contact-information`,
+    `${APP_DESCRIPTOR}:form-details`,
 ] as const satisfies ContentTypeList;
 
 export const contentTypesWithBreadcrumbs = [

@@ -10,9 +10,6 @@ inputs:
   xpEnv:
     required: true
     description: XP environment
-  xpVersion:
-    required: true
-    description: Enonic XP version
   NAIS_WORKLOAD_IDENTITY_PROVIDER:
     required: true
     description: NAIS workload identity provider
@@ -32,7 +29,6 @@ runs:
       uses: ./.github/actions/build-app
       with:
         xpEnv: ${{ inputs.xpEnv }}
-        xpVersion: ${{ inputs.xpVersion }}
 
     - name: Build test assets
       shell: bash

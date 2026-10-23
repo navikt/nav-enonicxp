@@ -1,6 +1,6 @@
 import { Request } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
-import { APP_DESCRIPTOR } from '../../lib/constants';
+import { APP_DESCRIPTOR, NAVNO_NODE_ROOT_PATH } from '../../lib/constants';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
 import { buildCacheKeyForReqContext } from '../../lib/cache/utils';
 import { getFromLocalCache } from '../../lib/cache/local-cache';
@@ -10,7 +10,7 @@ const getOffices = () => {
         start: 0,
         count: 1000,
         contentTypes: [`${APP_DESCRIPTOR}:office-page`],
-        query: '_path LIKE "/content/www.nav.no/kontor/*"',
+        query: `_path LIKE "${NAVNO_NODE_ROOT_PATH}/kontor/*"`,
     }).hits;
 
     return officeInfoContent.map((content) => ({

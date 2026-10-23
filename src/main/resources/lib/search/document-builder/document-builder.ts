@@ -258,7 +258,8 @@ export const buildExternalSearchDocument = (
 
     const contentGroupConfig = getContentGroupConfig(searchConfig, content);
     if (!contentGroupConfig) {
-        logger.warning(`No content group config found for content type ${content.type}`);
+        // No content group config found for this content type, which is
+        // expected for some content types.
         return null;
     }
 
