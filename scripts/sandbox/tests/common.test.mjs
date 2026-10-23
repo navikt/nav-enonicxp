@@ -420,6 +420,10 @@ test('reads the running sandbox and sandbox XP version', (t) => {
         version: '7.16.6',
     });
     assert.doesNotThrow(() => assertSandboxXpVersion(sandboxPath, 'navno', '7.16.6'));
+    writeFileSync(join(sandboxPath, '.enonic'), 'distro = "enonic-xp-mac-arm64-sdk-8.0.4"\n');
+    assert.doesNotThrow(() => assertSandboxXpVersion(sandboxPath, 'navno', '7.16.8'));
+    assert.throws(() => assertSandboxXpVersion(sandboxPath, 'navno', '8.1.0'), /uses XP 8\.0\.4/);
+    writeFileSync(join(sandboxPath, '.enonic'), 'distro = "enonic-xp-mac-arm64-sdk-7.16.6"\n');
     assert.throws(
         () => assertSandboxXpVersion(sandboxPath, 'navno', '7.17.0'),
         /uses XP 7\.16\.6, but the source uses XP 7\.17\.0\. Run `enonic sandbox upgrade navno --version 7\.17\.0`/

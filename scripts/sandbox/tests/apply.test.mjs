@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import {
     existsSync,
     mkdirSync,
@@ -102,6 +103,20 @@ test('stages privately, restages consumed exports, and cleans only owned copies'
     assert.ok(existsSync(f.metadataPath));
     assert.ok(existsSync(join(f.targetDirectory, 'unrelated')));
     assert.ok(!existsSync(join(f.targetDirectory, 'bundle')));
+});
+
+test('stages zip archives with the export in a top-level folder for XP 8', (t) => {
+    const f = fixture(t);
+    const files = f.prepare({ archive: true });
+    files.stage('bundle');
+    const archivePath = join(f.targetDirectory, 'bundle.zip');
+    assert.equal(statSync(archivePath).mode & 0o777, 0o600);
+    assert.ok(!existsSync(join(f.targetDirectory, 'bundle')));
+    const listing = execFileSync('unzip', ['-Z1', archivePath], { encoding: 'utf8' });
+    assert.ok(listing.split('\n').includes('bundle/www.nav.no/_/node.xml'));
+    files.stage('bundle');
+    files.cleanup();
+    assert.ok(!existsSync(archivePath));
 });
 
 test('retains in-place source files before XP consumes them', (t) => {

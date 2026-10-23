@@ -393,9 +393,15 @@ const isOlderXpVersion = (version, other) => {
     return index >= 0 && parts[index] < otherParts[index];
 };
 
+const getMajorVersion = (version) => Number(version.split('.')[0]);
+
+// XP7: lets an XP 7 source be imported into an XP 8 target during the upgrade. Remove with XP 7.
+const isXp7ToXp8Import = (sourceVersion, targetVersion) =>
+    getMajorVersion(sourceVersion) === 7 && getMajorVersion(targetVersion) === 8;
+
 export const assertSandboxXpVersion = (sandboxPath, sandbox, xpVersion) => {
     const { version } = readSandboxXpVersion(sandboxPath);
-    if (version === xpVersion) {
+    if (version === xpVersion || isXp7ToXp8Import(xpVersion, version)) {
         return;
     }
     // XP sandboxes can be upgraded but not downgraded.

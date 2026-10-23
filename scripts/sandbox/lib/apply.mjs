@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import {
     chmodSync,
     cpSync,
@@ -17,6 +18,7 @@ import {
     CURATED_BRANCHES,
     CURATED_REPOSITORIES,
     directLocalFetch,
+    readSandboxXpVersion,
     writeProgress,
 } from './common.mjs';
 import {
@@ -47,11 +49,22 @@ const listRegularFiles = (root) => {
     return files;
 };
 
+// XP 8 imports only <name>.zip with the export in a <name>/ folder. bsdtar (macOS, Windows) writes
+// zip, GNU tar does not, so Linux uses zip.
+const writeExportArchive = ({ sourceRoot, name, archivePath }) =>
+    process.platform === 'linux'
+        ? execFileSync('zip', ['-qr', archivePath, name], { cwd: sourceRoot, stdio: 'ignore' })
+        : execFileSync('tar', ['--format', 'zip', '-cf', archivePath, '-C', sourceRoot, name], {
+              stdio: 'ignore',
+          });
+
 export const prepareCuratedImportFiles = ({
     exportNames,
     sourceDirectory,
     targetDirectory,
     verifyTarget,
+    // XP7: XP 7 imports export directories. Remove the option with XP 7 and always archive.
+    archive = false,
 }) => {
     if (typeof verifyTarget !== 'function') {
         throw new Error('Local target verification is required before staging an import');
@@ -89,7 +102,8 @@ export const prepareCuratedImportFiles = ({
     ) {
         throw new Error('Source and target export directories must not be nested');
     }
-    if (!inPlace && exportNames.some((name) => existsSync(join(targetRoot, name)))) {
+    const getStagedPath = (name) => join(targetRoot, archive ? `${name}.zip` : name);
+    if (!inPlace && exportNames.some((name) => existsSync(getStagedPath(name)))) {
         throw new Error('Target export directories already exist; use a new bundle name');
     }
     let backupRoot;
@@ -114,7 +128,7 @@ export const prepareCuratedImportFiles = ({
             if (!exportNames.includes(name)) {
                 throw new Error('Cannot stage an undeclared native export');
             }
-            const targetPath = join(targetRoot, name);
+            const targetPath = getStagedPath(name);
             if (existsSync(targetPath)) {
                 if (!inPlace && !staged.has(name)) {
                     throw new Error(`Target export directory appeared during import: ${name}`);
@@ -122,6 +136,11 @@ export const prepareCuratedImportFiles = ({
                 rmSync(targetPath, { recursive: true, force: true });
             }
             staged.add(name);
+            if (archive) {
+                writeExportArchive({ sourceRoot: retainedRoot, name, archivePath: targetPath });
+                chmodSync(targetPath, 0o600);
+                return;
+            }
             // cp creates the directory itself; on Windows it rejects an existing one.
             cpSync(join(retainedRoot, name), targetPath, {
                 recursive: true,
@@ -131,9 +150,7 @@ export const prepareCuratedImportFiles = ({
             chmodSync(targetPath, 0o700);
         },
         cleanup: () => {
-            staged.forEach((name) =>
-                rmSync(join(targetRoot, name), { recursive: true, force: true })
-            );
+            staged.forEach((name) => rmSync(getStagedPath(name), { recursive: true, force: true }));
             if (backupRoot) {
                 rmSync(backupRoot, { recursive: true, force: true });
             }
@@ -454,6 +471,8 @@ export const applyCuratedImport = async ({ manifest, exportDirectory, sandbox, a
         sourceDirectory: exportDirectory,
         targetDirectory: join(sandboxPath, 'home/data/export'),
         verifyTarget: () => assertLocalTargetProcess(sandbox),
+        // XP7: remove with the archive option.
+        archive: !readSandboxXpVersion(sandboxPath).version.startsWith('7.'),
     });
     // Signals skip finally blocks, so remove staged exports from the sandbox on exit as well.
     process.once('exit', files.cleanup);
