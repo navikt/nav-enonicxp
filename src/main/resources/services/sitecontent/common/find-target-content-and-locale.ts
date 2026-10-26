@@ -134,28 +134,32 @@ const resolveExactPath = (path: string, branch: RepoBranch): ContentAndLocale | 
     // There are multiple content with the same path. This could happen if customPath and _path (ie a folder) are the same.
     const contentIds = defaultLayerNodes.map((node) => node.id);
 
-    const { hits } = contentLib.query({
-        count: contentIds.length,
-        // Ensure the oldest content is returned from getContentFromMultipleHits below
-        sort: 'createdTime ASC',
-        filters: {
-            ids: {
-                values: contentIds,
-            },
-            boolean: {
-                // There is a outlier where both arbeidsgiver-forside (customPath 'arbeidsgiver') and a folder called 'arbeidsgiver'
-                // clash. It doesn't cause failure, but it causes log errors.
-                mustNot: [
-                    {
-                        hasValue: {
-                            field: 'type',
-                            values: ['base:folder'],
+    // Set the repo and branch explicitly, since callers outside a site (such as the curated
+    // export manifest under /admin) have no content repository in their context on XP 8.
+    const { hits } = runInLocaleContext({ locale: defaultLocale, branch }, () =>
+        contentLib.query({
+            count: contentIds.length,
+            // Ensure the oldest content is returned from getContentFromMultipleHits below
+            sort: 'createdTime ASC',
+            filters: {
+                ids: {
+                    values: contentIds,
+                },
+                boolean: {
+                    // There is a outlier where both arbeidsgiver-forside (customPath 'arbeidsgiver') and a folder called 'arbeidsgiver'
+                    // clash. It doesn't cause failure, but it causes log errors.
+                    mustNot: [
+                        {
+                            hasValue: {
+                                field: 'type',
+                                values: ['base:folder'],
+                            },
                         },
-                    },
-                ],
+                    ],
+                },
             },
-        },
-    });
+        })
+    );
 
     if (hits.length === 1) {
         return handleExactHit(hits[0]._id, path, defaultLocale);
