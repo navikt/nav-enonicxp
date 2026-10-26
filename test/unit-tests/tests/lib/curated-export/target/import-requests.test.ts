@@ -670,6 +670,52 @@ describe('curated export import', () => {
         expectNoWrites();
     });
 
+    it('creates a missing default project from the source, since XP 8 does not create one', () => {
+        const projects = [
+            { id: 'default', language: 'no', parents: [], displayName: 'Nav.no', publicRead: true },
+            {
+                id: 'navno-engelsk',
+                language: 'en',
+                parents: ['default'],
+                displayName: 'English',
+                publicRead: false,
+            },
+            {
+                id: 'navno-nynorsk',
+                language: 'nn',
+                parents: ['default'],
+                displayName: 'Nynorsk',
+                publicRead: false,
+            },
+        ];
+        const stored = new Map<string, Record<string, unknown>>();
+        getProject.mockImplementation(({ id }) => stored.get(id) ?? null);
+        modifyProject.mockImplementation(({ id, editor }) => {
+            if (!stored.has(id)) {
+                throw new Error(`Project [${id}] was not found`);
+            }
+            stored.set(id, editor({ ...stored.get(id) }));
+        });
+        createProject.mockImplementation((params) => {
+            stored.set(params.id, params);
+        });
+
+        const response = post(
+            importRequest({ action: 'configure-projects', applications: [], projects })
+        );
+
+        expect(response.status).toBe(200);
+        expect(createProject).toHaveBeenCalledWith(
+            expect.objectContaining({
+                id: 'default',
+                displayName: 'Nav.no',
+                language: 'no',
+                parents: [],
+                publicRead: true,
+            })
+        );
+    });
+
     it('configures projects with the XP 8 project editor and public read access', () => {
         const projects = [
             { id: 'default', language: 'no', parents: [], displayName: 'Nav.no', publicRead: true },

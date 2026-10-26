@@ -329,7 +329,23 @@ const modifyProjectMetadata = (project: Project) =>
         },
     });
 
+const createManifestProject = (project: Project) =>
+    projectLib.create({
+        id: project.id,
+        displayName: project.displayName,
+        description: project.description,
+        language: project.language,
+        parents: getParents(project),
+        siteConfig: project.siteConfig || [],
+        permissions: project.permissions,
+        publicRead: project.publicRead,
+    });
+
 const configureDefaultProject = (project: Project) => {
+    // XP 8 does not create a default project in a new installation, so copy the source's.
+    if (!projectLib.get({ id: project.id })) {
+        createManifestProject(project);
+    }
     try {
         modifyProjectMetadata(project);
     } catch (error) {
@@ -369,16 +385,7 @@ const configureChildProject = (project: Project) => {
         return;
     }
 
-    projectLib.create({
-        id: project.id,
-        displayName: project.displayName,
-        description: project.description,
-        language: project.language,
-        parents: getParents(project),
-        siteConfig: project.siteConfig || [],
-        permissions: project.permissions,
-        publicRead: project.publicRead,
-    });
+    createManifestProject(project);
 
     if (!matchesProject(projectLib.get({ id: project.id }), project)) {
         throw new Error(`Created project "${project.id}" does not match the manifest`);
