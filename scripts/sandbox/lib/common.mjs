@@ -399,6 +399,21 @@ const getMajorVersion = (version) => Number(version.split('.')[0]);
 export const isXp7ToXp8Import = (sourceVersion, targetVersion) =>
     getMajorVersion(sourceVersion) === 7 && getMajorVersion(targetVersion) === 8;
 
+// gradle.properties is the single source for the XP version the branch builds against.
+export const readRepositoryXpVersion = (repositoryRoot = resolve('.')) => {
+    const properties = readFileSync(join(repositoryRoot, 'gradle.properties'), 'utf8');
+    const version = properties.match(/^xpVersion\s*=\s*(\S+)\s*$/m)?.[1];
+    if (!version) {
+        throw new Error(`Could not read xpVersion from ${repositoryRoot}/gradle.properties`);
+    }
+    return version;
+};
+
+// XP7: a new target gets the source's XP version, except that an XP 7 source goes into the XP 8
+// version the branch builds against. Remove with XP 7.
+export const getNewTargetXpVersion = (sourceVersion, repositoryVersion) =>
+    isXp7ToXp8Import(sourceVersion, repositoryVersion) ? repositoryVersion : sourceVersion;
+
 // Returns the target's XP version.
 export const assertSandboxXpVersion = (sandboxPath, sandbox, xpVersion) => {
     const { version } = readSandboxXpVersion(sandboxPath);

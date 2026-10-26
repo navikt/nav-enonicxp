@@ -8,6 +8,7 @@ import { join, resolve } from 'node:path';
 import process from 'node:process';
 import {
     assertSandboxXpVersion,
+    getNewTargetXpVersion,
     getSandboxPath,
     getXpSessionCookie,
     isXp7ToXp8Import,
@@ -18,6 +19,7 @@ import {
     promptForNewPassword,
     promptForPassword,
     promptForVerifiedAuth,
+    readRepositoryXpVersion,
     readRunningSandbox,
     runCli,
     verifyStoppedTargetAuth,
@@ -213,26 +215,22 @@ const main = async () => {
         );
         // XP7: workarounds that let an XP 7 source run on XP 8. Remove with XP 7.
         let xp7ToXp8Conflicts = null;
-        if (targetExists) {
-            // Fail before downloading anything if the target cannot run the source version.
-            const targetXpVersion = assertSandboxXpVersion(
-                targetPath,
-                options.target,
-                manifest.xpVersion
-            );
-            if (isXp7ToXp8Import(manifest.xpVersion, targetXpVersion)) {
-                const mapping = mapXp7ApplicationsToXp8(manifest.applications);
-                // The target validates the manifest's apps too, so it must expect the XP 8 versions.
-                manifest.applications = mapping.applications;
-                manifest.projects = mapXp7ProjectsToXp8(manifest.projects);
-                const nodePaths = mapXp7NodePathsToXp8(manifest.entries);
-                manifest.entries = nodePaths.entries;
-                xp7ToXp8Conflicts = [
-                    `XP ${manifest.xpVersion} content imported into XP ${targetXpVersion} without \`dump load --upgrade\``,
-                    ...mapping.conflicts,
-                    ...nodePaths.conflicts,
-                ];
-            }
+        // Fail before downloading anything if the target cannot run the source version.
+        const targetXpVersion = targetExists
+            ? assertSandboxXpVersion(targetPath, options.target, manifest.xpVersion)
+            : getNewTargetXpVersion(manifest.xpVersion, readRepositoryXpVersion());
+        if (isXp7ToXp8Import(manifest.xpVersion, targetXpVersion)) {
+            const mapping = mapXp7ApplicationsToXp8(manifest.applications);
+            // The target validates the manifest's apps too, so it must expect the XP 8 versions.
+            manifest.applications = mapping.applications;
+            manifest.projects = mapXp7ProjectsToXp8(manifest.projects);
+            const nodePaths = mapXp7NodePathsToXp8(manifest.entries);
+            manifest.entries = nodePaths.entries;
+            xp7ToXp8Conflicts = [
+                `XP ${manifest.xpVersion} content imported into XP ${targetXpVersion} without \`dump load --upgrade\``,
+                ...mapping.conflicts,
+                ...nodePaths.conflicts,
+            ];
         }
         const navApplication = manifest.applications.find(({ key }) => key === 'no.nav.navno');
         const contentStudio = manifest.applications.find(
@@ -278,7 +276,7 @@ const main = async () => {
         }
         const target = prepareCuratedTarget({
             sandbox: options.target,
-            xpVersion: manifest.xpVersion,
+            xpVersion: targetXpVersion,
             appVersion: navApplication.version,
             contentStudioVersion: contentStudio.version,
             applications: manifest.applications,

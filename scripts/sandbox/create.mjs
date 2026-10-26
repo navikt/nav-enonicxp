@@ -8,7 +8,13 @@ import { existsSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import process from 'node:process';
-import { getSandboxPath, printPromptHeading, promptForNewPassword, runCli } from './lib/common.mjs';
+import {
+    getSandboxPath,
+    printPromptHeading,
+    promptForNewPassword,
+    readRepositoryXpVersion,
+    runCli,
+} from './lib/common.mjs';
 import {
     assertEnonicCliAvailable,
     assertSandboxName,
@@ -34,16 +40,6 @@ export const getCreateOptions = (args) => {
     }
 
     return options;
-};
-
-// gradle.properties is the single source for the XP version the branch builds against.
-export const readRepositoryXpVersion = (repositoryRoot = resolve('.')) => {
-    const properties = readFileSync(join(repositoryRoot, 'gradle.properties'), 'utf8');
-    const version = properties.match(/^xpVersion\s*=\s*(\S+)\s*$/m)?.[1];
-    if (!version) {
-        throw new Error(`Could not read xpVersion from ${repositoryRoot}/gradle.properties`);
-    }
-    return version;
 };
 
 export const createSandbox = async (

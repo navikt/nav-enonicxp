@@ -3,7 +3,8 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
-import { createSandbox, getCreateOptions, readRepositoryXpVersion } from '../create.mjs';
+import { createSandbox, getCreateOptions } from '../create.mjs';
+import { readRepositoryXpVersion } from '../lib/common.mjs';
 
 // SHA-512 of 'synthetic-password', in the {sha512}<hex> format XP requires for xp.suPassword.
 const SYNTHETIC_PASSWORD_HASH =

@@ -22,6 +22,7 @@ import {
     assertSandboxXpVersion,
     directLocalFetch,
     encodePropertyValue,
+    getNewTargetXpVersion,
     fetchXp,
     getXpSessionCookie,
     hashSuPassword,
@@ -435,6 +436,12 @@ test('reads the running sandbox and sandbox XP version', (t) => {
                 error.message
             ) && !/upgrade/.test(error.message)
     );
+});
+
+test('creates new targets for XP 7 sources with the XP 8 version the branch builds against', () => {
+    assert.equal(getNewTargetXpVersion('7.16.8', '8.0.4'), '8.0.4');
+    assert.equal(getNewTargetXpVersion('7.16.8', '7.16.6'), '7.16.8');
+    assert.equal(getNewTargetXpVersion('8.0.4', '8.1.1'), '8.0.4');
 });
 
 test('parses the final JSON document from Enonic CLI output', () => {
