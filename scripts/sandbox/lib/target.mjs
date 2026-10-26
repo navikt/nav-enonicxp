@@ -635,52 +635,107 @@ export const toXp8NodePath = (path) => path.normalize('NFC');
 const formatCodePoints = (value) =>
     [...value].map((character) => `U+${character.codePointAt(0).toString(16).toUpperCase()}`);
 
-// XP7: returns the entries with XP 8 node paths, and a conflict for every renamed node. Names that
-// still have combining characters after composing, or that collide with a sibling once composed,
-// cannot be imported. Remove with XP 7.
+// XP7: returns the entries with XP 8 node paths, and a conflict for every renamed or skipped node.
+// Names that still have combining characters after composing cannot be imported. When a composed
+// name collides with a sibling that already had that name, the composed node is skipped. Remove
+// with XP 7.
 export const mapXp7NodePathsToXp8 = (entries) => {
-    const renamedNames = new Map();
     const invalidPaths = new Set();
-    const contentIdsByXp8Path = new Map();
-    const collisions = new Set();
-    const mappedEntries = entries.map((entry) => {
-        const paths = {};
+    const collisionGroups = new Map();
+    entries.forEach((entry) => {
         Object.entries(entry.paths).forEach(([branch, path]) => {
             const xp8Path = toXp8NodePath(path);
             if (/\p{M}/u.test(xp8Path)) {
                 invalidPaths.add(path);
             }
-            const pathKey = `${entry.repoId}:${branch}:${xp8Path}`;
-            const existingContentId = contentIdsByXp8Path.get(pathKey);
-            if (existingContentId && existingContentId !== entry.contentId) {
-                collisions.add(
-                    `${entry.repoId}:${branch}:${xp8Path} (${existingContentId}, ${entry.contentId})`
-                );
+            const groupKey = `${entry.repoId}:${branch}:${xp8Path}`;
+            const group = collisionGroups.get(groupKey) ?? {
+                repoId: entry.repoId,
+                xp8Path,
+                nodes: [],
+            };
+            if (!group.nodes.some(({ contentId }) => contentId === entry.contentId)) {
+                group.nodes.push({ contentId: entry.contentId, path });
             }
-            contentIdsByXp8Path.set(pathKey, entry.contentId);
-            const name = path.slice(path.lastIndexOf('/') + 1);
-            const xp8Name = toXp8NodePath(name);
-            if (xp8Name !== name) {
-                renamedNames.set(path, { name, xp8Name });
-            }
-            paths[branch] = xp8Path;
+            collisionGroups.set(groupKey, group);
         });
-        return { ...entry, paths };
     });
     if (invalidPaths.size > 0) {
         throw new Error(
             `XP 8 rejects combining characters in these node names, even after composing them. Rename them in the source: ${[...invalidPaths].join(', ')}`
         );
     }
-    if (collisions.size > 0) {
+
+    const unresolvedCollisions = [];
+    const skippedNodes = new Map();
+    collisionGroups.forEach(({ repoId, xp8Path, nodes }, groupKey) => {
+        if (nodes.length < 2) {
+            return;
+        }
+        const keptNodes = nodes.filter(({ path }) => path === xp8Path);
+        if (keptNodes.length !== 1) {
+            unresolvedCollisions.push(
+                `${groupKey} (${nodes.map(({ contentId }) => contentId).join(', ')})`
+            );
+            return;
+        }
+        nodes
+            .filter(({ path }) => path !== xp8Path)
+            .forEach(({ contentId, path }) =>
+                skippedNodes.set(`${repoId}:${contentId}`, {
+                    repoId,
+                    contentId,
+                    path,
+                    keptContentId: keptNodes[0].contentId,
+                })
+            );
+    });
+    if (unresolvedCollisions.length > 0) {
         throw new Error(
-            `These nodes get the same path once combining characters are composed for XP 8. Delete or rename one of each pair in the source: ${[...collisions].join(', ')}`
+            `These nodes get the same path once combining characters are composed for XP 8. Delete or rename one of each pair in the source: ${unresolvedCollisions.join(', ')}`
         );
     }
+    const isSkipped = ({ repoId, contentId }) => skippedNodes.has(`${repoId}:${contentId}`);
+    const keptEntries = entries.filter((entry) => !isSkipped(entry));
+    // Skipping a node with descendants would leave them without a parent.
+    const orphanedEntries = keptEntries.filter((entry) =>
+        Object.values(entry.paths).some((path) =>
+            [...skippedNodes.values()].some(
+                (skipped) => skipped.repoId === entry.repoId && path.startsWith(`${skipped.path}/`)
+            )
+        )
+    );
+    if (orphanedEntries.length > 0) {
+        throw new Error(
+            `These nodes are below a node skipped for colliding with a sibling once composed for XP 8. Delete or rename the parent in the source: ${orphanedEntries.map(({ paths }) => Object.values(paths)[0]).join(', ')}`
+        );
+    }
+
+    const renamedNames = new Map();
+    keptEntries.forEach((entry) =>
+        Object.values(entry.paths).forEach((path) => {
+            const name = path.slice(path.lastIndexOf('/') + 1);
+            const xp8Name = toXp8NodePath(name);
+            if (xp8Name !== name) {
+                renamedNames.set(path, { name, xp8Name });
+            }
+        })
+    );
     const conflicts = [...renamedNames].map(([path, { name, xp8Name }]) => {
         const marks = [...new Set(formatCodePoints(name.match(/\p{M}/gu).join('')))].join(', ');
         return `${path}: renamed to «${xp8Name}», XP 8 rejects combining characters (${marks}) in names`;
     });
+    skippedNodes.forEach(({ repoId, contentId, path, keptContentId }) =>
+        conflicts.push(
+            `${repoId}:${path} (${contentId}): skipped, its composed path belongs to ${keptContentId}. Delete one of them in the source`
+        )
+    );
+    const mappedEntries = keptEntries.map((entry) => ({
+        ...entry,
+        paths: Object.fromEntries(
+            Object.entries(entry.paths).map(([branch, path]) => [branch, toXp8NodePath(path)])
+        ),
+    }));
     return { entries: mappedEntries, conflicts };
 };
 

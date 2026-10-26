@@ -1060,20 +1060,48 @@ test('composes combining characters in XP 7 node paths and reports each renamed 
     );
 });
 
-test('rejects XP 7 nodes whose paths collide once composed for XP 8', () => {
+test('skips XP 7 nodes whose composed path belongs to a sibling in XP 8', () => {
     const entry = (contentId, path, branches = ['draft']) => ({
         repoId: 'com.enonic.cms.default',
         contentId,
         branches,
         paths: Object.fromEntries(branches.map((branch) => [branch, path])),
     });
+    const nynorsk = (value) => ({ ...value, repoId: 'com.enonic.cms.navno-nynorsk' });
+    const { entries, conflicts } = mapXp7NodePathsToXp8([
+        entry('decomposed', '/content/www.nav.no/redirects/hvemkanfa\u030A'),
+        entry('composed', '/content/www.nav.no/redirects/hvemkanf\u00E5'),
+        nynorsk(entry('decomposed', '/content/www.nav.no/redirects/hvemkanfa\u030A')),
+        nynorsk(entry('other', '/content/www.nav.no/redirects/annen')),
+    ]);
+    assert.deepEqual(
+        entries.map(({ repoId, contentId }) => `${repoId}:${contentId}`),
+        [
+            'com.enonic.cms.default:composed',
+            'com.enonic.cms.navno-nynorsk:decomposed',
+            'com.enonic.cms.navno-nynorsk:other',
+        ]
+    );
+    assert.deepEqual(conflicts, [
+        '/content/www.nav.no/redirects/hvemkanfa\u030A: renamed to «hvemkanf\u00E5», XP 8 rejects combining characters (U+30A) in names',
+        'com.enonic.cms.default:/content/www.nav.no/redirects/hvemkanfa\u030A (decomposed): skipped, its composed path belongs to composed. Delete one of them in the source',
+    ]);
+    assert.throws(
+        () =>
+            mapXp7NodePathsToXp8([
+                entry('first', '/content/www.nav.no/c\u0327\u0301'),
+                entry('second', '/content/www.nav.no/c\u0301\u0327'),
+            ]),
+        /Delete or rename one of each pair in the source: com\.enonic\.cms\.default:draft:\/content\/www\.nav\.no\/\u1E09 \(first, second\)/
+    );
     assert.throws(
         () =>
             mapXp7NodePathsToXp8([
                 entry('decomposed', '/content/www.nav.no/redirects/hvemkanfa\u030A'),
+                entry('child', '/content/www.nav.no/redirects/hvemkanfa\u030A/side'),
                 entry('composed', '/content/www.nav.no/redirects/hvemkanf\u00E5'),
             ]),
-        /Delete or rename one of each pair in the source: com\.enonic\.cms\.default:draft:\/content\/www\.nav\.no\/redirects\/hvemkanf\u00E5 \(decomposed, composed\)/
+        /Delete or rename the parent in the source: \/content\/www\.nav\.no\/redirects\/hvemkanfa\u030A\/side/
     );
     assert.doesNotThrow(() =>
         mapXp7NodePathsToXp8([
