@@ -25,6 +25,8 @@ import {
 
 const MAX_INPUT_PATHS = 1000;
 const MAX_EXPORT_ENTRIES = 20000;
+// XP 8 repositories keep Elasticsearch's default index.max_result_window, so larger queries fail.
+const MAX_QUERY_HITS = 10000;
 // Referenced pages are included, but do not recursively pull in their own links. Other dependency
 // types are expanded because they may contain references needed to render the selected page.
 const NON_TRANSITIVE_DEPENDENCY_CONTENT_TYPES: ReadonlySet<ContentDescriptor> = new Set([
@@ -499,13 +501,13 @@ const addRecursiveDescendants = (
             { locale: rootEntry.locale, branch, asAdmin: true },
             () =>
                 contentLib.query({
-                    count: MAX_EXPORT_ENTRIES,
+                    count: MAX_QUERY_HITS,
                     query: `_path LIKE "${escapedRootPath}/*"`,
                 })
         );
         if (descendants.total > descendants.hits.length) {
             throw new Error(
-                `Recursive root "${rootPath}" exceeds the ${MAX_EXPORT_ENTRIES} entry limit`
+                `Recursive root "${rootPath}" exceeds the ${MAX_QUERY_HITS} entry limit`
             );
         }
         descendants.hits.forEach((content) => {

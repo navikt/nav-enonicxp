@@ -182,7 +182,11 @@ beforeEach(() => {
     jest.mocked(contentLib.getOutboundDependencies).mockImplementation(
         ({ key: id }) => references.get(key(repositories[activeLocale], activeBranch, id)) || []
     );
-    jest.mocked(contentLib.query).mockImplementation(({ query }) => {
+    jest.mocked(contentLib.query).mockImplementation(({ query, count }) => {
+        // XP 8 fails queries above Elasticsearch's default index.max_result_window
+        if ((count ?? 10) > 10000) {
+            throw new Error('Result window is too large');
+        }
         const prefix = String(query).match(/_path LIKE "(.*)\/\*"/)?.[1];
         const hits = Array.from(nodes.entries())
             .filter(
