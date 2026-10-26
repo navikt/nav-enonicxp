@@ -1059,3 +1059,30 @@ test('composes combining characters in XP 7 node paths and reports each renamed 
         /Rename them in the source: \/content\/www\.nav\.no\/x\u0301/
     );
 });
+
+test('rejects XP 7 nodes whose paths collide once composed for XP 8', () => {
+    const entry = (contentId, path, branches = ['draft']) => ({
+        repoId: 'com.enonic.cms.default',
+        contentId,
+        branches,
+        paths: Object.fromEntries(branches.map((branch) => [branch, path])),
+    });
+    assert.throws(
+        () =>
+            mapXp7NodePathsToXp8([
+                entry('decomposed', '/content/www.nav.no/redirects/hvemkanfa\u030A'),
+                entry('composed', '/content/www.nav.no/redirects/hvemkanf\u00E5'),
+            ]),
+        /Delete or rename one of each pair in the source: com\.enonic\.cms\.default:draft:\/content\/www\.nav\.no\/redirects\/hvemkanf\u00E5 \(decomposed, composed\)/
+    );
+    assert.doesNotThrow(() =>
+        mapXp7NodePathsToXp8([
+            entry('decomposed', '/content/www.nav.no/redirects/hvemkanfa\u030A', ['draft']),
+            entry('composed', '/content/www.nav.no/redirects/hvemkanf\u00E5', ['master']),
+            {
+                ...entry('layer', '/content/www.nav.no/redirects/hvemkanf\u00E5'),
+                repoId: 'com.enonic.cms.navno-nynorsk',
+            },
+        ])
+    );
+});

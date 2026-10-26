@@ -636,10 +636,13 @@ const formatCodePoints = (value) =>
     [...value].map((character) => `U+${character.codePointAt(0).toString(16).toUpperCase()}`);
 
 // XP7: returns the entries with XP 8 node paths, and a conflict for every renamed node. Names that
-// still have combining characters after composing cannot be imported. Remove with XP 7.
+// still have combining characters after composing, or that collide with a sibling once composed,
+// cannot be imported. Remove with XP 7.
 export const mapXp7NodePathsToXp8 = (entries) => {
     const renamedNames = new Map();
     const invalidPaths = new Set();
+    const contentIdsByXp8Path = new Map();
+    const collisions = new Set();
     const mappedEntries = entries.map((entry) => {
         const paths = {};
         Object.entries(entry.paths).forEach(([branch, path]) => {
@@ -647,6 +650,14 @@ export const mapXp7NodePathsToXp8 = (entries) => {
             if (/\p{M}/u.test(xp8Path)) {
                 invalidPaths.add(path);
             }
+            const pathKey = `${entry.repoId}:${branch}:${xp8Path}`;
+            const existingContentId = contentIdsByXp8Path.get(pathKey);
+            if (existingContentId && existingContentId !== entry.contentId) {
+                collisions.add(
+                    `${entry.repoId}:${branch}:${xp8Path} (${existingContentId}, ${entry.contentId})`
+                );
+            }
+            contentIdsByXp8Path.set(pathKey, entry.contentId);
             const name = path.slice(path.lastIndexOf('/') + 1);
             const xp8Name = toXp8NodePath(name);
             if (xp8Name !== name) {
@@ -659,6 +670,11 @@ export const mapXp7NodePathsToXp8 = (entries) => {
     if (invalidPaths.size > 0) {
         throw new Error(
             `XP 8 rejects combining characters in these node names, even after composing them. Rename them in the source: ${[...invalidPaths].join(', ')}`
+        );
+    }
+    if (collisions.size > 0) {
+        throw new Error(
+            `These nodes get the same path once combining characters are composed for XP 8. Delete or rename one of each pair in the source: ${[...collisions].join(', ')}`
         );
     }
     const conflicts = [...renamedNames].map(([path, { name, xp8Name }]) => {
