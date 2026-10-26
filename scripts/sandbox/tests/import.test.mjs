@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import console from 'node:console';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { getImportOptions } from '../import.mjs';
+import { getImportOptions, reportXp7ToXp8Conflicts } from '../import.mjs';
 
 test('full import and refresh require an explicit target even if one is running', () => {
     for (const flags of [[], ['--force']]) {
@@ -132,4 +133,19 @@ test('rejects local input mistakes before checking the CLI or prompting', (t) =>
     });
     assert.equal(result.status, 1);
     assert.match(result.stderr, /Target sandbox local already exists; pass --force/);
+});
+
+test('prints XP 7 to XP 8 conflicts and appends them to the log', (t) => {
+    const warn = t.mock.method(console, 'warn', () => {});
+    const root = mkdtempSync(join(tmpdir(), 'curated-conflicts-'));
+    t.after(() => rmSync(root, { recursive: true, force: true }));
+    const logPath = join(root, 'conflicts.log');
+    reportXp7ToXp8Conflicts({ conflicts: ['first', 'second'], logPath, heading: 'run 1' });
+    reportXp7ToXp8Conflicts({ conflicts: ['third'], logPath, heading: 'run 2' });
+    assert.equal(
+        readFileSync(logPath, 'utf8'),
+        '# run 1\n  - first\n  - second\n\n# run 2\n  - third\n\n'
+    );
+    assert.ok(warn.mock.calls[0].arguments[0].includes('conflicts'));
+    assert.ok(warn.mock.calls[0].arguments[0].includes('\n  - first\n  - second\n'));
 });

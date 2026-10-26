@@ -561,6 +561,121 @@ const installSameMinorVersion = (application, context) => {
     return fallbackVersion;
 };
 
+// XP7: XP 7 app versions do not run on XP 8, so these XP 8 versions replace them when an XP 7
+// source is imported into an XP 8 target. Remove with XP 7.
+const XP8_APPLICATION_VERSIONS = {
+    'com.enonic.app.audit.log': '2.0.0',
+    'com.enonic.app.contentstudio': '6.0.4',
+    'com.enonic.app.contentstudio.plus': '2.0.4',
+    'com.enonic.app.guillotine': '8.0.0',
+    'com.enonic.app.livetrace': '3.0.1',
+    'com.enonic.app.siteimprove': '2.0.1',
+    'com.enonic.app.snapshotter': '4.0.0',
+    'com.enonic.app.xpdoctor': '3.0.0',
+    'systems.rcd.enonic.datatoolbox': '6.0.0',
+};
+
+// XP7: apps without an XP 8 version yet. Remove with XP 7.
+const APPLICATIONS_WITHOUT_XP8_VERSION = new Set([
+    'com.enonic.app.adfsidprovider',
+    'com.enonic.app.contentviewer',
+    'no.item.partfinder',
+]);
+
+// XP7: returns the applications to install on XP 8, and a conflict for every app that differs from
+// the source, so the import does not hide what must be fixed before production. Remove with XP 7.
+export const mapXp7ApplicationsToXp8 = (applications) => {
+    const conflicts = [];
+    const mappedApplications = applications.flatMap((application) => {
+        const { key, version } = application;
+        if (key === 'no.nav.navno') {
+            return [application];
+        }
+        if (APPLICATIONS_WITHOUT_XP8_VERSION.has(key)) {
+            if (application.required !== false) {
+                throw new Error(`Required application ${key} has no XP 8 version`);
+            }
+            conflicts.push(`${key}: not installed, no XP 8 version (source has ${version})`);
+            return [];
+        }
+        const xp8Version = XP8_APPLICATION_VERSIONS[key];
+        if (!xp8Version) {
+            conflicts.push(
+                `${key}: no XP 8 version is mapped, trying the source version ${version}`
+            );
+            return [application];
+        }
+        if (xp8Version !== version) {
+            conflicts.push(`${key}: installing XP 8 version ${xp8Version}, source has ${version}`);
+        }
+        return [{ ...application, version: xp8Version }];
+    });
+    // On XP 7, navno embeds lib-guillotine, so the source has no Guillotine app to copy.
+    const guillotineKey = 'com.enonic.app.guillotine';
+    if (!mappedApplications.some(({ key }) => key === guillotineKey)) {
+        const version = XP8_APPLICATION_VERSIONS[guillotineKey];
+        conflicts.push(
+            `${guillotineKey}: installing XP 8 version ${version}, required by navno on XP 8 but not installed in the source`
+        );
+        mappedApplications.push({
+            key: guillotineKey,
+            version,
+            installed: true,
+            started: true,
+            required: true,
+        });
+    }
+    return { applications: mappedApplications, conflicts };
+};
+
+// XP7: XP 8 rejects combining characters in node names, which XP 7 allowed. Composing them (NFC)
+// turns for example a decomposed «å» into the single character «å». Remove with XP 7.
+export const toXp8NodePath = (path) => path.normalize('NFC');
+
+const formatCodePoints = (value) =>
+    [...value].map((character) => `U+${character.codePointAt(0).toString(16).toUpperCase()}`);
+
+// XP7: returns the entries with XP 8 node paths, and a conflict for every renamed node. Names that
+// still have combining characters after composing cannot be imported. Remove with XP 7.
+export const mapXp7NodePathsToXp8 = (entries) => {
+    const renamedNames = new Map();
+    const invalidPaths = new Set();
+    const mappedEntries = entries.map((entry) => {
+        const paths = {};
+        Object.entries(entry.paths).forEach(([branch, path]) => {
+            const xp8Path = toXp8NodePath(path);
+            if (/\p{M}/u.test(xp8Path)) {
+                invalidPaths.add(path);
+            }
+            const name = path.slice(path.lastIndexOf('/') + 1);
+            const xp8Name = toXp8NodePath(name);
+            if (xp8Name !== name) {
+                renamedNames.set(path, { name, xp8Name });
+            }
+            paths[branch] = xp8Path;
+        });
+        return { ...entry, paths };
+    });
+    if (invalidPaths.size > 0) {
+        throw new Error(
+            `XP 8 rejects combining characters in these node names, even after composing them. Rename them in the source: ${[...invalidPaths].join(', ')}`
+        );
+    }
+    const conflicts = [...renamedNames].map(([path, { name, xp8Name }]) => {
+        const marks = [...new Set(formatCodePoints(name.match(/\p{M}/gu).join('')))].join(', ');
+        return `${path}: renamed to «${xp8Name}», XP 8 rejects combining characters (${marks}) in names`;
+    });
+    return { entries: mappedEntries, conflicts };
+};
+
+// XP7: XP 7 describes public read access as readAccess.public and keeps the deprecated parent,
+// while the XP 8 target expects publicRead. Remove with XP 7.
+export const mapXp7ProjectsToXp8 = (projects) =>
+    projects.map(({ readAccess, parent, ...project }) => ({
+        ...project,
+        publicRead: readAccess?.public === true,
+    }));
+
 export const installCuratedApplications = ({
     applications,
     auth,
@@ -622,6 +737,7 @@ export const installCuratedApplications = ({
             `Warning: ${warnings.length} applications differ from the source:\n${warnings.map((warning) => `  - ${warning}`).join('\n')}`
         );
     }
+    return warnings;
 };
 
 export const waitForManagementApi = (runCommand = execFileSync) => {

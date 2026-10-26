@@ -27,6 +27,9 @@ import {
     isCuratedSetupIncomplete,
     LOCAL_IMPORT_SERVICE_URL,
     LOCAL_MANAGEMENT_URL,
+    mapXp7ApplicationsToXp8,
+    mapXp7NodePathsToXp8,
+    mapXp7ProjectsToXp8,
     prepareCuratedTarget,
     runLocalXpCommand,
     setCuratedImportMode,
@@ -620,7 +623,7 @@ test('installs another patch of the same minor version with a warning when the e
     t.mock.method(process.stdout, 'write', () => true);
     const key = 'no.item.partfinder';
     const requests = [];
-    installCuratedApplications({
+    const warnings = installCuratedApplications({
         applications: [{ key, version: '1.2.0', required: true }],
         auth: 'su:synthetic',
         sandbox: 'target',
@@ -647,6 +650,53 @@ test('installs another patch of the same minor version with a warning when the e
     assert.match(
         warn.mock.calls[0].arguments[0],
         /no\.item\.partfinder: installed 1\.2\.2, source has 1\.2\.0/
+    );
+    assert.deepEqual(warnings, [
+        'no.item.partfinder: installed 1.2.2, source has 1.2.0 (not found)',
+    ]);
+});
+
+test('maps XP 7 applications to XP 8 versions and reports every difference', () => {
+    const navApplication = { key: 'no.nav.navno', version: '1.0.0', required: true };
+    const { applications, conflicts } = mapXp7ApplicationsToXp8([
+        navApplication,
+        { key: 'com.enonic.app.contentstudio', version: '5.3.2', required: true },
+        { key: 'com.enonic.app.guillotine', version: '8.0.0', required: false },
+        { key: 'com.enonic.app.contentviewer', version: '1.6.1', required: false },
+        { key: 'com.example.unknown', version: '1.0.0', required: false },
+    ]);
+    assert.deepEqual(applications, [
+        navApplication,
+        { key: 'com.enonic.app.contentstudio', version: '6.0.4', required: true },
+        { key: 'com.enonic.app.guillotine', version: '8.0.0', required: false },
+        { key: 'com.example.unknown', version: '1.0.0', required: false },
+    ]);
+    assert.deepEqual(conflicts, [
+        'com.enonic.app.contentstudio: installing XP 8 version 6.0.4, source has 5.3.2',
+        'com.enonic.app.contentviewer: not installed, no XP 8 version (source has 1.6.1)',
+        'com.example.unknown: no XP 8 version is mapped, trying the source version 1.0.0',
+    ]);
+    assert.deepEqual(mapXp7ApplicationsToXp8([navApplication]), {
+        applications: [
+            navApplication,
+            {
+                key: 'com.enonic.app.guillotine',
+                version: '8.0.0',
+                installed: true,
+                started: true,
+                required: true,
+            },
+        ],
+        conflicts: [
+            'com.enonic.app.guillotine: installing XP 8 version 8.0.0, required by navno on XP 8 but not installed in the source',
+        ],
+    });
+    assert.throws(
+        () =>
+            mapXp7ApplicationsToXp8([
+                { key: 'no.item.partfinder', version: '1.2.0', required: true },
+            ]),
+        /Required application no\.item\.partfinder has no XP 8 version/
     );
 });
 
@@ -959,4 +1009,53 @@ test('keeps the SU password and explains recovery when provisioning fails', (t) 
         },
     });
     assert.equal(repeated.created, false);
+});
+
+test('converts XP 7 project access to the XP 8 format', () => {
+    assert.deepEqual(
+        mapXp7ProjectsToXp8([
+            { id: 'default', parents: [], readAccess: { public: true } },
+            { id: 'navno-nynorsk', parents: ['default'], parent: 'default', readAccess: {} },
+        ]),
+        [
+            { id: 'default', parents: [], publicRead: true },
+            { id: 'navno-nynorsk', parents: ['default'], publicRead: false },
+        ]
+    );
+});
+
+test('composes combining characters in XP 7 node paths and reports each renamed node', () => {
+    const decomposed = 'a\u030A';
+    const entry = (contentId, path) => ({
+        repoId: 'com.enonic.cms.default',
+        contentId,
+        branches: ['draft', 'master'],
+        paths: { draft: path, master: path },
+    });
+    const { entries, conflicts } = mapXp7NodePathsToXp8([
+        entry('folder', `/content/www.nav.no/nyttig-${decomposed}-vite`),
+        entry('child', `/content/www.nav.no/nyttig-${decomposed}-vite/side`),
+        entry('plain', '/content/www.nav.no/arbeid'),
+    ]);
+    assert.deepEqual(
+        entries.map(({ paths }) => paths),
+        [
+            {
+                draft: '/content/www.nav.no/nyttig-\u00E5-vite',
+                master: '/content/www.nav.no/nyttig-\u00E5-vite',
+            },
+            {
+                draft: '/content/www.nav.no/nyttig-\u00E5-vite/side',
+                master: '/content/www.nav.no/nyttig-\u00E5-vite/side',
+            },
+            { draft: '/content/www.nav.no/arbeid', master: '/content/www.nav.no/arbeid' },
+        ]
+    );
+    assert.deepEqual(conflicts, [
+        `/content/www.nav.no/nyttig-${decomposed}-vite: renamed to «nyttig-\u00E5-vite», XP 8 rejects combining characters (U+30A) in names`,
+    ]);
+    assert.throws(
+        () => mapXp7NodePathsToXp8([entry('mark', '/content/www.nav.no/x\u0301')]),
+        /Rename them in the source: \/content\/www\.nav\.no\/x\u0301/
+    );
 });

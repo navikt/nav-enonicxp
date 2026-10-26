@@ -486,6 +486,8 @@ export const extractCuratedSource = async ({
     fetchImpl = fetchXp,
     getAuthHeaders = getSourceAuthHeaders,
     retryDelaysMs = RETRY_DELAYS_MS,
+    // XP7: maps source node paths to the manifest's target paths. Remove with XP 7.
+    mapNodePath = (path) => path,
 }) => {
     const exportRoots = manifest.exports.map(({ exportName }) => {
         if (!isSafeName(exportName)) {
@@ -569,16 +571,24 @@ export const extractCuratedSource = async ({
                     if (
                         !node ||
                         node._id !== entry.contentId ||
-                        node._path !== expectedPath ||
+                        mapNodePath(node._path) !== expectedPath ||
                         node._versionKey !== versionIds[index]
                     ) {
                         throw new Error(
                             `Source node mismatch for ${nativeExport.repoId}:${nativeExport.sourceBranch}:${entry.contentId}`
                         );
                     }
+                    const exportedNode =
+                        node._path === expectedPath
+                            ? node
+                            : {
+                                  ...node,
+                                  _path: expectedPath,
+                                  _name: expectedPath.slice(expectedPath.lastIndexOf('/') + 1),
+                              };
                     const nodeDirectory = getNodeDirectory(exportRoot, expectedPath);
                     try {
-                        writeNativeNodeXml(nodeDirectory, source);
+                        writeNativeNodeXml(nodeDirectory, { ...source, node: exportedNode });
                     } catch (error) {
                         error.message += ` in ${nativeExport.repoId}:${nativeExport.sourceBranch}`;
                         throw error;
@@ -589,7 +599,10 @@ export const extractCuratedSource = async ({
                     ) {
                         throw new Error(`Invalid binary reference list for ${entry.contentId}`);
                     }
-                    exportedSources.push({ node, manualOrderValue: source.manualOrderValue });
+                    exportedSources.push({
+                        node: exportedNode,
+                        manualOrderValue: source.manualOrderValue,
+                    });
                     const attachments = binaryMetadata(source);
                     [...new Set(binaryReferences)].forEach((binaryReference) =>
                         binaryRequests.push({

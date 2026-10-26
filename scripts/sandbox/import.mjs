@@ -2,7 +2,7 @@
 
 import { spawnSync } from 'node:child_process';
 import console from 'node:console';
-import { existsSync } from 'node:fs';
+import { appendFileSync, existsSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import process from 'node:process';
@@ -10,6 +10,7 @@ import {
     assertSandboxXpVersion,
     getSandboxPath,
     getXpSessionCookie,
+    isXp7ToXp8Import,
     LOOPBACK_HOSTS,
     parseAuth,
     printPromptHeading,
@@ -39,9 +40,13 @@ import {
     getLocalProcessEnvironment,
     installCuratedApplications,
     isCuratedSetupIncomplete,
+    mapXp7ApplicationsToXp8,
+    mapXp7NodePathsToXp8,
+    mapXp7ProjectsToXp8,
     LOCAL_IMPORT_SERVICE_URL,
     prepareCuratedTarget,
     setCuratedImportMode,
+    toXp8NodePath,
     verifyLocalImportTarget,
     waitForManagementApi,
 } from './lib/target.mjs';
@@ -104,6 +109,17 @@ const stopRunningSandbox = () => {
 };
 
 const getRunningSandbox = () => readRunningSandbox(homedir());
+
+// XP7: remove with XP 7.
+const XP7_TO_XP8_CONFLICT_LOG = 'xp7-to-xp8-conflicts.log';
+
+// XP7: prints and appends every XP 7 to XP 8 workaround, since each one must be fixed or accepted
+// before production. Remove with XP 7.
+export const reportXp7ToXp8Conflicts = ({ conflicts, logPath, heading }) => {
+    const lines = conflicts.map((conflict) => `  - ${conflict}`).join('\n');
+    console.warn(`\nXP 7 to XP 8 conflicts (also appended to ${logPath}):\n${lines}\n`);
+    appendFileSync(logPath, `# ${heading}\n${lines}\n\n`);
+};
 
 const main = async () => {
     const options = getImportOptions(process.argv.slice(2), getRunningSandbox);
@@ -195,9 +211,28 @@ const main = async () => {
         console.log(
             `Planned ${manifest.entries.length} entries in ${manifest.exports.length} branch exports`
         );
+        // XP7: workarounds that let an XP 7 source run on XP 8. Remove with XP 7.
+        let xp7ToXp8Conflicts = null;
         if (targetExists) {
             // Fail before downloading anything if the target cannot run the source version.
-            assertSandboxXpVersion(targetPath, options.target, manifest.xpVersion);
+            const targetXpVersion = assertSandboxXpVersion(
+                targetPath,
+                options.target,
+                manifest.xpVersion
+            );
+            if (isXp7ToXp8Import(manifest.xpVersion, targetXpVersion)) {
+                const mapping = mapXp7ApplicationsToXp8(manifest.applications);
+                // The target validates the manifest's apps too, so it must expect the XP 8 versions.
+                manifest.applications = mapping.applications;
+                manifest.projects = mapXp7ProjectsToXp8(manifest.projects);
+                const nodePaths = mapXp7NodePathsToXp8(manifest.entries);
+                manifest.entries = nodePaths.entries;
+                xp7ToXp8Conflicts = [
+                    `XP ${manifest.xpVersion} content imported into XP ${targetXpVersion} without \`dump load --upgrade\``,
+                    ...mapping.conflicts,
+                    ...nodePaths.conflicts,
+                ];
+            }
         }
         const navApplication = manifest.applications.find(({ key }) => key === 'no.nav.navno');
         const contentStudio = manifest.applications.find(
@@ -228,6 +263,7 @@ const main = async () => {
             sourceServiceUrl: source.sourceServiceUrl,
             auth: sourceAuth,
             exportDirectory,
+            mapNodePath: xp7ToXp8Conflicts ? toXp8NodePath : undefined,
         });
         console.log(
             `Extracted ${extraction.nodeCount} nodes and ${extraction.binaryCount} binary occurrences`
@@ -272,11 +308,12 @@ const main = async () => {
                     waitForService: true,
                 });
                 if (!options.page) {
-                    installCuratedApplications({
+                    const warnings = installCuratedApplications({
                         applications: manifest.applications,
                         auth: targetAuth,
                         sandbox: options.target,
                     });
+                    xp7ToXp8Conflicts?.push(...warnings);
                 }
             }
             await applyCuratedImport({
@@ -303,6 +340,13 @@ const main = async () => {
             if (getRunningSandbox() === options.target) {
                 stopRunningSandbox();
                 startSandbox(options.target);
+            }
+            if (xp7ToXp8Conflicts) {
+                reportXp7ToXp8Conflicts({
+                    conflicts: xp7ToXp8Conflicts,
+                    logPath: join(target.sandboxPath, XP7_TO_XP8_CONFLICT_LOG),
+                    heading: `${new Date().toISOString()} ${source.name} -> ${options.target}`,
+                });
             }
         }
 

@@ -353,6 +353,39 @@ test('writes selected manual child-order files in page scope too', async (t) => 
     );
 });
 
+test('writes nodes under mapped paths and lists them by their mapped names', async (t) => {
+    const root = directory(t);
+    const parent = createSourceNode({
+        _id: 'root',
+        _name: 'www.nav.no',
+        _path: '/content/www.nav.no',
+        _childOrder: '_manualordervalue DESC',
+    });
+    const decomposed = 'a\u030A';
+    const child = createSourceNode({
+        _id: 'child',
+        _name: `nyttig-${decomposed}-vite`,
+        _path: `/content/www.nav.no/nyttig-${decomposed}-vite`,
+    });
+    child.manualOrderValue = '1';
+    mockSource(t, [parent, child]);
+    const args = options(root, [parent, child]);
+    args.manifest.entries[1].paths.master = '/content/www.nav.no/nyttig-\u00E5-vite';
+    args.mapNodePath = (path) => path.normalize('NFC');
+    await extractCuratedSource(args);
+    assert.equal(
+        readFileSync(join(root, 'curated-test/www.nav.no/_/manualChildOrder.txt'), 'utf8'),
+        'nyttig-\u00E5-vite\n'
+    );
+    const metadata = JSON.parse(
+        readFileSync(
+            join(root, 'curated-test/www.nav.no/nyttig-\u00E5-vite/_/curated-metadata.json'),
+            'utf8'
+        )
+    );
+    assert.equal(metadata.contentPath, '/content/www.nav.no/nyttig-\u00E5-vite');
+});
+
 test('verifies binary hashes and cleans failed downloads before returning failure', async (t) => {
     const root = directory(t);
     const source = createSourceNode();
