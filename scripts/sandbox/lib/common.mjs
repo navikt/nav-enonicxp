@@ -110,6 +110,24 @@ export const directLocalFetch = async (input, options = {}) => {
     });
 };
 
+const REDIRECT_STATUSES = new Set([301, 302, 303, 307, 308]);
+
+// The query is left out of the reported target, since login redirects carry state and nonces.
+const parseRedirectLocation = (header, requestUrl) => {
+    if (!header) {
+        return undefined;
+    }
+    try {
+        const location = new URL(header, requestUrl);
+        return {
+            target: `${location.origin}${location.pathname}`,
+            toLogin: /(\/|%2f)idprovider(\/|%2f)/i.test(location.href),
+        };
+    } catch {
+        return undefined;
+    }
+};
+
 export const fetchXp = (input, options) => {
     const url = new URL(input);
     if (url.username || url.password) {
@@ -121,18 +139,27 @@ export const fetchXp = (input, options) => {
     if (url.protocol !== 'https:') {
         throw new Error('Non-local XP requests require HTTPS');
     }
-    // XP answers a rejected request (401 or 403) from a user who is not logged in with a redirect
-    // to its login page, so a redirect is reported as a rejection. The node and clocks help
-    // diagnose rejected approval codes, which XP checks against a stored expiry time.
-    return fetch(url, { ...options, redirect: 'manual' }).then((response) => {
-        if (response.status >= 300 && response.status < 400) {
-            const node = response.headers.get('X-data-host') ?? 'unknown';
-            const serverTime = response.headers.get('Date') ?? 'unknown';
+    // No XP endpoint used here redirects on success. For a user who is not logged in, XP answers a
+    // rejected request (401 or 403) with a redirect through its id provider to the login page.
+    // The node and clocks help diagnose rejected approval codes, which XP checks against a stored
+    // expiry time.
+    return fetch(url, { ...options, redirect: 'manual' }).then(async (response) => {
+        if (!REDIRECT_STATUSES.has(response.status)) {
+            return response;
+        }
+        await response.body?.cancel().catch(() => {});
+        const location = parseRedirectLocation(response.headers.get('Location'), url);
+        const node = response.headers.get('X-data-host') ?? 'unknown';
+        const serverTime = response.headers.get('Date') ?? 'unknown';
+        const details = `HTTP ${response.status}, node ${node}, server time ${serverTime}, local time ${new Date().toUTCString()}`;
+        if (location?.toLogin) {
             throw new Error(
-                `${url.origin} rejected the request and redirected to its login page (HTTP ${response.status}, node ${node}, server time ${serverTime}, local time ${new Date().toUTCString()}). Run the command again and approve in the browser; if it keeps failing, check that you are a system administrator there`
+                `${url.origin} rejected the request and redirected to its login page (${details}). Run the command again and approve in the browser; if it keeps failing, check that you are a system administrator there`
             );
         }
-        return response;
+        throw new Error(
+            `${url.origin} answered with an unexpected redirect to ${location?.target ?? 'an unknown location'} (${details})`
+        );
     });
 };
 

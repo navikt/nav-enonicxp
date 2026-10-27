@@ -16,6 +16,7 @@ import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
 import { setImmediate } from 'node:timers/promises';
 import { PassThrough } from 'node:stream';
+import { ReadableStream } from 'node:stream/web';
 import { join, resolve } from 'node:path';
 import test from 'node:test';
 import {
@@ -50,24 +51,50 @@ const listen = async (server, t) => {
     return `http://127.0.0.1:${server.address().port}`;
 };
 
-test('reports a deployed XP redirect to its login page as a rejected request', async (t) => {
-    const fetchMock = t.mock.method(globalThis, 'fetch', async (url) =>
-        url.pathname === '/token'
-            ? new Response(null, {
-                  status: 307,
-                  headers: {
-                      Location: 'https://login.invalid/',
-                      'X-data-host': 'd4',
-                      Date: 'Tue, 27 Oct 2026 10:24:58 GMT',
-                  },
-              })
-            : new Response('ok')
-    );
+test('reports deployed XP redirects, telling login redirects apart from other redirects', async (t) => {
+    let bodyCancelled = false;
+    const fetchMock = t.mock.method(globalThis, 'fetch', async (url) => {
+        if (url.pathname === '/token') {
+            const body = new ReadableStream({
+                cancel: () => {
+                    bodyCancelled = true;
+                },
+            });
+            return new Response(body, {
+                status: 307,
+                headers: {
+                    Location:
+                        'https://login.invalid/authorize?redirect_uri=https%3A%2F%2Fxp.invalid%2Fwebapp%2Fapp%2F_%2Fidprovider%2Fadfs',
+                    'X-data-host': 'd4',
+                    Date: 'Tue, 27 Oct 2026 10:24:58 GMT',
+                },
+            });
+        }
+        if (url.pathname === '/moved') {
+            return new Response(null, {
+                status: 308,
+                headers: { Location: '/moved/?state=secret-state' },
+            });
+        }
+        if (url.pathname === '/cached') {
+            return new Response(null, { status: 304 });
+        }
+        return new Response('ok');
+    });
     await assert.rejects(
         fetchXp('https://xp.invalid/token', { method: 'POST', redirect: 'error' }),
         /https:\/\/xp\.invalid rejected the request and redirected to its login page \(HTTP 307, node d4, server time Tue, 27 Oct 2026 10:24:58 GMT, local time /
     );
+    assert.equal(bodyCancelled, true);
     assert.equal(fetchMock.mock.calls[0].arguments[1].redirect, 'manual');
+    await assert.rejects(
+        fetchXp('https://xp.invalid/moved'),
+        (error) =>
+            error.message.startsWith(
+                'https://xp.invalid answered with an unexpected redirect to https://xp.invalid/moved/ (HTTP 308, node unknown'
+            ) && !error.message.includes('secret-state')
+    );
+    assert.equal((await fetchXp('https://xp.invalid/cached')).status, 304);
     assert.equal(await (await fetchXp('https://xp.invalid/manifest')).text(), 'ok');
 });
 
