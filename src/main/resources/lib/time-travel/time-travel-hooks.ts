@@ -13,6 +13,7 @@ import { runInContext } from '../context/run-in-context';
 import { logger } from '../utils/logging';
 import { contentLibGetStandard, nodeLibConnectStandard } from './standard-functions';
 import { getTimeTravelContext } from './run-with-time-travel';
+import { recordTimeTravelFetch } from './dependency-recorder';
 import { getContentNodeKey } from '../utils/content-utils';
 import { NAVNO_NODE_ROOT_PATH } from '../constants';
 
@@ -72,6 +73,15 @@ export const hookLibsWithTimeTravel = () => {
             localizedOnly: true,
         });
 
+        // TEMPORARY (archive experiment): recorded before the null check, because content that
+        // was not published yet at this time may be published later and change the page
+        recordTimeTravelFetch({
+            via: 'contentLib.get',
+            nodeKey: getContentNodeKey(key),
+            repoId: timeTravelRepoId,
+            version: requestedVersion,
+        });
+
         if (!requestedVersion) {
             return null;
         }
@@ -128,6 +138,14 @@ export const hookLibsWithTimeTravel = () => {
                 branch: timeTravelBranch,
                 unixTime: timeTravelTargetUnixTime,
                 getOldestIfNotFound: nodeKey === timeTravelBaseNodeKey,
+            });
+
+            // TEMPORARY (archive experiment): recorded before the null check, as in contentLib.get
+            recordTimeTravelFetch({
+                via: 'repo.get',
+                nodeKey,
+                repoId: timeTravelRepoId,
+                version: requestedVersion,
             });
 
             if (!requestedVersion) {
