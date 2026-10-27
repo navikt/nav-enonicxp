@@ -27,6 +27,7 @@ import {
     isCuratedSetupIncomplete,
     LOCAL_IMPORT_SERVICE_URL,
     LOCAL_MANAGEMENT_URL,
+    findApplicationUpgrades,
     mapXp7ApplicationsToXp8,
     mapXp7NodePathsToXp8,
     mapXp7ProjectsToXp8,
@@ -1112,5 +1113,29 @@ test('skips XP 7 nodes whose composed path belongs to a sibling in XP 8', () => 
                 repoId: 'com.enonic.cms.navno-nynorsk',
             },
         ])
+    );
+});
+
+test('upgrades older started apps and a missing Guillotine, and keeps newer or stopped apps', () => {
+    const upgrades = findApplicationUpgrades([
+        { key: 'com.enonic.app.contentstudio', version: '6.0.3', state: 'started' },
+        { key: 'com.enonic.app.audit.log', version: '2.0.0', state: 'started' },
+        { key: 'com.enonic.app.livetrace', version: '3.0.0', state: 'stopped' },
+        { key: 'com.enonic.app.siteimprove', version: '99.0.0', state: 'started' },
+        { key: 'no.nav.navno', version: '1.0.0', state: 'started' },
+    ]);
+    assert.deepEqual(
+        upgrades.map(({ key, required }) => ({ key, required })),
+        [
+            { key: 'com.enonic.app.contentstudio', required: false },
+            { key: 'com.enonic.app.guillotine', required: true },
+        ]
+    );
+    assert.equal(upgrades[0].version, '6.0.4');
+    assert.deepEqual(
+        findApplicationUpgrades([
+            { key: 'com.enonic.app.guillotine', version: '99.0.0', state: 'started' },
+        ]),
+        []
     );
 });

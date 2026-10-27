@@ -234,7 +234,12 @@ const main = async () => {
         let xp7ToXp8Conflicts = null;
         // Fail before downloading anything if the target cannot run the source version.
         const targetXpVersion = targetExists
-            ? assertSandboxXpVersion(targetPath, options.target, manifest.xpVersion)
+            ? assertSandboxXpVersion(
+                  targetPath,
+                  options.target,
+                  manifest.xpVersion,
+                  readRepositoryXpVersion()
+              )
             : getNewTargetXpVersion(manifest.xpVersion, readRepositoryXpVersion());
         if (isXp7ToXp8Import(manifest.xpVersion, targetXpVersion)) {
             const mapping = mapXp7ApplicationsToXp8(manifest.applications);

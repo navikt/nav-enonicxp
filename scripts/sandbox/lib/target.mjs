@@ -16,6 +16,7 @@ import process from 'node:process';
 import { setTimeout as sleep } from 'node:timers/promises';
 import {
     assertSandboxXpVersion,
+    compareVersions,
     directLocalFetch,
     getSandboxPath,
     getXpSessionCookie,
@@ -561,9 +562,12 @@ const installSameMinorVersion = (application, context) => {
     return fallbackVersion;
 };
 
-// XP7: XP 7 app versions do not run on XP 8, so these XP 8 versions replace them when an XP 7
-// source is imported into an XP 8 target. Remove with XP 7.
-const XP8_APPLICATION_VERSIONS = {
+const GUILLOTINE_KEY = 'com.enonic.app.guillotine';
+
+// App versions for the XP version the branch builds against. sandbox:upgrade upgrades older
+// installed apps to them. XP7: they also replace the XP 7 versions, which do not run on XP 8, when
+// an XP 7 source is imported into an XP 8 target.
+const APPLICATION_VERSIONS = {
     'com.enonic.app.audit.log': '2.0.0',
     'com.enonic.app.contentstudio': '6.0.4',
     'com.enonic.app.contentstudio.plus': '2.0.4',
@@ -598,7 +602,7 @@ export const mapXp7ApplicationsToXp8 = (applications) => {
             conflicts.push(`${key}: not installed, no XP 8 version (source has ${version})`);
             return [];
         }
-        const xp8Version = XP8_APPLICATION_VERSIONS[key];
+        const xp8Version = APPLICATION_VERSIONS[key];
         if (!xp8Version) {
             conflicts.push(
                 `${key}: no XP 8 version is mapped, trying the source version ${version}`
@@ -611,14 +615,13 @@ export const mapXp7ApplicationsToXp8 = (applications) => {
         return [{ ...application, version: xp8Version }];
     });
     // On XP 7, navno embeds lib-guillotine, so the source has no Guillotine app to copy.
-    const guillotineKey = 'com.enonic.app.guillotine';
-    if (!mappedApplications.some(({ key }) => key === guillotineKey)) {
-        const version = XP8_APPLICATION_VERSIONS[guillotineKey];
+    if (!mappedApplications.some(({ key }) => key === GUILLOTINE_KEY)) {
+        const version = APPLICATION_VERSIONS[GUILLOTINE_KEY];
         conflicts.push(
-            `${guillotineKey}: installing XP 8 version ${version}, required by navno on XP 8 but not installed in the source`
+            `${GUILLOTINE_KEY}: installing XP 8 version ${version}, required by navno on XP 8 but not installed in the source`
         );
         mappedApplications.push({
-            key: guillotineKey,
+            key: GUILLOTINE_KEY,
             version,
             installed: true,
             started: true,
@@ -627,6 +630,22 @@ export const mapXp7ApplicationsToXp8 = (applications) => {
     }
     return { applications: mappedApplications, conflicts };
 };
+
+// Returns the apps to install so a sandbox has at least the versions in APPLICATION_VERSIONS.
+// Guillotine is required by navno; other apps are only upgraded when installed and started, since
+// a stopped app may be disabled on purpose. Newer installed versions are kept.
+export const findApplicationUpgrades = (installedApplications) =>
+    Object.entries(APPLICATION_VERSIONS).flatMap(([key, version]) => {
+        const installed = installedApplications.find((application) => application.key === key);
+        const required = key === GUILLOTINE_KEY;
+        if (installed && compareVersions(installed.version, version) >= 0) {
+            return [];
+        }
+        if (!required && installed?.state !== 'started') {
+            return [];
+        }
+        return [{ key, version, installed: true, started: true, required }];
+    });
 
 // XP7: XP 8 rejects combining characters in node names, which XP 7 allowed. Composing them (NFC)
 // turns for example a decomposed «å» into the single character «å». Remove with XP 7.

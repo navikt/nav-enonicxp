@@ -1,12 +1,18 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import console from 'node:console';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import process from 'node:process';
 import test from 'node:test';
 import { fileURLToPath, URL } from 'node:url';
-import { deployLocalApplication, enableCuratedImport, resolveDeploySandbox } from '../deploy.mjs';
+import {
+    assertDeployableXpVersion,
+    deployLocalApplication,
+    enableCuratedImport,
+    resolveDeploySandbox,
+} from '../deploy.mjs';
 
 const fixture = (t) => {
     const root = mkdtempSync(join(tmpdir(), 'curated-deploy-'));
@@ -17,6 +23,7 @@ const fixture = (t) => {
     mkdirSync(join(sandboxPath, 'home/config'), { recursive: true });
     mkdirSync(repositoryRoot, { recursive: true });
     writeFileSync(join(repositoryRoot, '.enonic'), 'sandbox = "navno"\n');
+    writeFileSync(join(repositoryRoot, 'gradle.properties'), 'xpVersion = 7.16.6\n');
     writeFileSync(join(sandboxPath, '.enonic'), 'distro = "enonic-xp-mac-sdk-7.16.6"\n');
     return { homeDirectory, repositoryRoot, sandboxPath };
 };
@@ -163,6 +170,41 @@ test('rejects a missing sandbox before running the deploy command', (t) => {
         /Sandbox missing does not exist/
     );
     assert.equal(called, false);
+});
+
+test('refuses a sandbox on an older major or minor XP version, and warns on an older patch', (t) => {
+    const { homeDirectory, repositoryRoot, sandboxPath } = fixture(t);
+    writeFileSync(join(repositoryRoot, 'gradle.properties'), 'xpVersion = 8.1.2\n');
+    const useXp = (version) =>
+        writeFileSync(join(sandboxPath, '.enonic'), `distro = "enonic-xp-mac-sdk-${version}"\n`);
+    const warn = t.mock.method(console, 'warn', () => {});
+    let called = false;
+
+    useXp('7.16.6');
+    assert.throws(
+        () =>
+            deployLocalApplication(['navno'], {
+                homeDirectory,
+                repositoryRoot,
+                runCommand() {
+                    called = true;
+                },
+            }),
+        /uses XP 7\.16\.6, but this branch builds for XP 8\.1\.2\. Import its content into a new sandbox with `pnpm sandbox:import --source navno/
+    );
+    assert.equal(called, false);
+    useXp('8.0.4');
+    assert.throws(
+        () => assertDeployableXpVersion('navno', homeDirectory, repositoryRoot),
+        /uses XP 8\.0\.4, .*Run `pnpm sandbox:upgrade --sandbox navno` first/
+    );
+    assert.equal(warn.mock.callCount(), 0);
+    useXp('8.1.0');
+    assertDeployableXpVersion('navno', homeDirectory, repositoryRoot);
+    assert.match(warn.mock.calls[0].arguments[0], /uses XP 8\.1\.0, .*sandbox:upgrade/);
+    useXp('8.2.0');
+    assertDeployableXpVersion('navno', homeDirectory, repositoryRoot);
+    assert.equal(warn.mock.callCount(), 1);
 });
 
 test('the deploy command loads without removed CLI modules', () => {

@@ -9,7 +9,16 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import process from 'node:process';
-import { getSandboxPath, readRunningSandbox, runCli, setPropertiesEntry } from './lib/common.mjs';
+import {
+    compareVersions,
+    getMajorVersion,
+    getSandboxPath,
+    readRepositoryXpVersion,
+    readRunningSandbox,
+    readSandboxXpVersion,
+    runCli,
+    setPropertiesEntry,
+} from './lib/common.mjs';
 import { assertEnonicCliAvailable, assertSandboxName } from './lib/target.mjs';
 
 const HELP_FLAGS = new Set(['--help', '-h']);
@@ -68,6 +77,38 @@ export const enableCuratedImport = (
     }
 };
 
+const getMinorVersion = (version) => version.split('.').slice(0, 2).join('.');
+
+// The app only starts on the major and minor XP version it is built for, or newer, so an older
+// sandbox fails here instead of after the build. An older patch version still runs.
+export const assertDeployableXpVersion = (
+    sandbox,
+    homeDirectory = homedir(),
+    repositoryRoot = resolve('.')
+) => {
+    const sandboxPath = getSandboxPath(homeDirectory, sandbox);
+    if (!existsSync(join(sandboxPath, '.enonic'))) {
+        return;
+    }
+    const { version } = readSandboxXpVersion(sandboxPath);
+    const xpVersion = readRepositoryXpVersion(repositoryRoot);
+    if (compareVersions(version, xpVersion) >= 0) {
+        return;
+    }
+    const mismatch = `Sandbox ${sandbox} uses XP ${version}, but this branch builds for XP ${xpVersion}`;
+    if (getMajorVersion(version) < getMajorVersion(xpVersion)) {
+        throw new Error(
+            `${mismatch}. Import its content into a new sandbox with \`pnpm sandbox:import --source ${sandbox} --target NEW_NAME\` while ${sandbox} is running`
+        );
+    }
+    if (getMinorVersion(version) !== getMinorVersion(xpVersion)) {
+        throw new Error(`${mismatch}. Run \`pnpm sandbox:upgrade --sandbox ${sandbox}\` first`);
+    }
+    console.warn(
+        `Warning: ${mismatch}. Run \`pnpm sandbox:upgrade --sandbox ${sandbox}\` to update it`
+    );
+};
+
 export const deployLocalApplication = (
     args,
     {
@@ -79,6 +120,7 @@ export const deployLocalApplication = (
 ) => {
     if (!args.some((argument) => HELP_FLAGS.has(argument))) {
         const sandbox = resolveDeploySandbox(args, repositoryRoot);
+        assertDeployableXpVersion(sandbox, homeDirectory, repositoryRoot);
         // XP 8 unloads every app when cluster config changes at runtime, and the system apps
         // (admin, login) do not come back, so the sandbox must be stopped first.
         const stopIfRunning = () => {

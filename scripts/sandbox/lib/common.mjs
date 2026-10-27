@@ -425,14 +425,15 @@ export const readSandboxXpVersion = (sandboxPath) => {
     return { distro, version };
 };
 
-const isOlderXpVersion = (version, other) => {
+// Compares major.minor.patch and ignores any suffix. Negative when version is older than other.
+export const compareVersions = (version, other) => {
     const parts = version.split(/[.-]/).slice(0, 3).map(Number);
     const otherParts = other.split(/[.-]/).slice(0, 3).map(Number);
     const index = parts.findIndex((part, i) => part !== otherParts[i]);
-    return index >= 0 && parts[index] < otherParts[index];
+    return index < 0 ? 0 : Math.sign(parts[index] - otherParts[index]);
 };
 
-const getMajorVersion = (version) => Number(version.split('.')[0]);
+export const getMajorVersion = (version) => Number(version.split('.')[0]);
 
 // XP7: lets an XP 7 source be imported into an XP 8 target during the upgrade. Remove with XP 7.
 export const isXp7ToXp8Import = (sourceVersion, targetVersion) =>
@@ -453,16 +454,26 @@ export const readRepositoryXpVersion = (repositoryRoot = resolve('.')) => {
 export const getNewTargetXpVersion = (sourceVersion, repositoryVersion) =>
     isXp7ToXp8Import(sourceVersion, repositoryVersion) ? repositoryVersion : sourceVersion;
 
-// Returns the target's XP version.
-export const assertSandboxXpVersion = (sandboxPath, sandbox, xpVersion) => {
+// Returns the target's XP version. repositoryVersion is the XP version the branch builds against.
+export const assertSandboxXpVersion = (sandboxPath, sandbox, xpVersion, repositoryVersion) => {
     const { version } = readSandboxXpVersion(sandboxPath);
-    if (version === xpVersion || isXp7ToXp8Import(xpVersion, version)) {
+    if (version === xpVersion) {
+        return version;
+    }
+    if (isXp7ToXp8Import(xpVersion, version)) {
+        // The XP 8 apps installed for an XP 7 source are the ones the branch's XP version needs.
+        if (repositoryVersion && compareVersions(version, repositoryVersion) < 0) {
+            throw new Error(
+                `Target sandbox ${sandbox} uses XP ${version}, older than the XP ${repositoryVersion} this branch builds against. Run \`pnpm sandbox:upgrade --sandbox ${sandbox}\` first`
+            );
+        }
         return version;
     }
     // XP sandboxes can be upgraded but not downgraded.
-    const fix = isOlderXpVersion(version, xpVersion)
-        ? `Run \`enonic sandbox upgrade ${sandbox} --version ${xpVersion}\`, or import into a new sandbox with another --target`
-        : 'Import into a new sandbox with another --target';
+    const fix =
+        compareVersions(version, xpVersion) < 0
+            ? `Run \`enonic sandbox upgrade ${sandbox} --version ${xpVersion}\`, or import into a new sandbox with another --target`
+            : 'Import into a new sandbox with another --target';
     throw new Error(
         `Target sandbox ${sandbox} uses XP ${version}, but the source uses XP ${xpVersion}. ${fix}`
     );

@@ -142,6 +142,16 @@ pnpm sandbox:config --sandbox navno --set-password
 
 Kommandoen skriver ikke `cluster.enabled=false` eller `loginWithoutUser=false`. Det trengs bare for import: `sandbox:import` skriver begge når den oppretter en sandbox, og `sandbox:deploy` slår av clustering i en eksisterende sandbox.
 
+## Oppgrader en sandbox
+
+Når `xpVersion` i `gradle.properties` får en nyere minor- eller patch-versjon, oppgraderer du en eksisterende sandbox med:
+
+```bash
+pnpm sandbox:upgrade --sandbox navno
+```
+
+Kommandoen oppgraderer XP, config, appen fra branchen og nødvendige apper. Innholdet og `su`-passordet beholdes. Sandboxen må ha et `su`-passord, og en sandbox på en eldre hovedversjon må importeres inn i en ny sandbox med `sandbox:import` i stedet.
+
 ## Tester
 
 Lint og skripttester kjøres i CI av `sandbox-tooling.yml` når filer under `scripts/sandbox/` endres:

@@ -12,6 +12,7 @@
     "sandbox:create": "node scripts/sandbox/create.mjs",
     "sandbox:config": "node scripts/sandbox/config.mjs",
     "sandbox:deploy": "node scripts/sandbox/deploy.mjs",
+    "sandbox:upgrade": "node scripts/sandbox/upgrade.mjs",
     "sandbox:test": "node --test scripts/sandbox/tests/*.test.mjs",
     "sandbox:lint": "eslint scripts/sandbox --quiet"
   },
