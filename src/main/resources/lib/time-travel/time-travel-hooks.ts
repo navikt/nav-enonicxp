@@ -154,9 +154,7 @@ export const hookLibsWithTimeTravel = () => {
 
             // Templates should always resolve to the active version, to avoid inconsistent
             // component structures
-            if (
-                requestedVersion.nodePath.startsWith(NAVNO_NODE_ROOT_PATH + '/_templates ')
-            ) {
+            if (requestedVersion.nodePath.startsWith(NAVNO_NODE_ROOT_PATH + '/_templates ')) {
                 return repoGet(nodeKey);
             }
 

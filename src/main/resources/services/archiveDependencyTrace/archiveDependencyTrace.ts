@@ -210,6 +210,26 @@ const toStableJson = (value: unknown): string => {
     return JSON.stringify(value) ?? 'null';
 };
 
+// Guillotine gives every macro, link and image in rich text a new random id on every render
+// (MacroDecorator and CustomHtmlPostProcessor in lib-guillotine). The ids only link the
+// placeholders in processedHtml to the macros, links and images lists, so they are replaced with
+// the order they first appear in
+const normalizeRichTextRefs = (json: string) => {
+    const refs: string[] = [];
+    const refPattern = /data-(?:macro|link|image)-ref=\\"([0-9a-f-]{36})\\"/g;
+
+    let match = refPattern.exec(json);
+    while (match) {
+        if (refs.indexOf(match[1]) === -1) {
+            refs.push(match[1]);
+        }
+        match = refPattern.exec(json);
+    }
+
+    // split/join, since replaceAll may be missing in the XP script engine
+    return refs.reduce((result, ref, index) => result.split(ref).join(`ref-${index}`), json);
+};
+
 const findChangedPaths = (
     before: unknown,
     after: unknown,
@@ -278,7 +298,11 @@ const renderStep = (
     const lookupMs = Date.now() - lookupStart;
 
     const page = dependencies.find((dependency) => dependency.id === contentId);
-    const hash = renderProps ? sha256(toStableJson(renderProps)) : null;
+
+    // Compared without the random ids in rich text, both for the hash and for changedPaths
+    const comparableJson = renderProps ? normalizeRichTextRefs(toStableJson(renderProps)) : null;
+    const comparable: unknown = comparableJson ? JSON.parse(comparableJson) : null;
+    const hash = comparableJson ? sha256(comparableJson) : null;
 
     const refs: Record<string, DependencyRef> = {};
     Object.keys(dependenciesByKey).forEach((key) => {
@@ -319,11 +343,11 @@ const renderStep = (
             .map((key) => previous.refs[key]);
 
         if (step.changed) {
-            step.changedPaths = findChangedPaths(previous.renderProps, renderProps, '', []);
+            step.changedPaths = findChangedPaths(previous.renderProps, comparable, '', []);
         }
     }
 
-    return { step, current: { renderProps, hash, refs } };
+    return { step, current: { renderProps: comparable, hash, refs } };
 };
 
 const trace = (contentId: string, locale: string, startTime: string, maxSteps: number) => {
