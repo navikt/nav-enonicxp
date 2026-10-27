@@ -127,13 +127,22 @@ export const authorizeDeployedSource = async (
             openBrowser(url.href);
         },
     });
-    const response = await fetchImpl(source.tokenUrl, {
-        method: 'POST',
-        redirect: 'error',
-        signal: AbortSignal.timeout(30000),
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, verifier }),
-    });
+    const approvedAtMs = Date.now();
+    let response;
+    try {
+        response = await fetchImpl(source.tokenUrl, {
+            method: 'POST',
+            redirect: 'error',
+            signal: AbortSignal.timeout(30000),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code, verifier }),
+        });
+    } catch (error) {
+        throw new Error(
+            `Token exchange failed ${Date.now() - approvedAtMs} ms after the browser approval`,
+            { cause: error }
+        );
+    }
     const body = await response.json().catch(() => ({}));
     if (!response.ok || typeof body.token !== 'string') {
         throw new Error(`Token exchange with ${source.origin} failed (HTTP ${response.status})`);

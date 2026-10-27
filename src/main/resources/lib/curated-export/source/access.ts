@@ -171,8 +171,8 @@ const handleAuthorize = (req: Request): Response => {
     };
 };
 
-// The CLI routes answer 403, not 401: XP turns a 401 under /webapp into a redirect to the
-// login page, which the CLI can only report as a failed fetch.
+// XP turns both 401 and 403 under /webapp into a redirect to the login page for a user who is not
+// logged in, so the CLI reports any redirect from these routes as a rejected request.
 const handleTokenExchange = (req: Request): Response => {
     if (req.method !== 'POST' || !isJsonRequest(req)) {
         return jsonResponse(415, { message: 'POST application/json is required' });

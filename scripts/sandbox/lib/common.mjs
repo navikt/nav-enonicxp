@@ -121,7 +121,19 @@ export const fetchXp = (input, options) => {
     if (url.protocol !== 'https:') {
         throw new Error('Non-local XP requests require HTTPS');
     }
-    return fetch(url, { redirect: 'error', ...options });
+    // XP answers a rejected request (401 or 403) from a user who is not logged in with a redirect
+    // to its login page, so a redirect is reported as a rejection. The node and clocks help
+    // diagnose rejected approval codes, which XP checks against a stored expiry time.
+    return fetch(url, { ...options, redirect: 'manual' }).then((response) => {
+        if (response.status >= 300 && response.status < 400) {
+            const node = response.headers.get('X-data-host') ?? 'unknown';
+            const serverTime = response.headers.get('Date') ?? 'unknown';
+            throw new Error(
+                `${url.origin} rejected the request and redirected to its login page (HTTP ${response.status}, node ${node}, server time ${serverTime}, local time ${new Date().toUTCString()}). Run the command again and approve in the browser; if it keeps failing, check that you are a system administrator there`
+            );
+        }
+        return response;
+    });
 };
 
 export const parseAuth = (auth, label) => {

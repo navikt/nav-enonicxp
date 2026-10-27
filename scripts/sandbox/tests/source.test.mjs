@@ -103,6 +103,23 @@ test('fails when browser approval times out or the token exchange is rejected', 
         }),
         /Token exchange with https:\/\/portal-admin-q6.oera.no failed \(HTTP 401\)/
     );
+    await assert.rejects(
+        authorizeDeployedSource(source, {
+            log: () => {},
+            openBrowser: async (href) => {
+                const url = new URL(href);
+                await fetch(
+                    `http://127.0.0.1:${url.searchParams.get('port')}/callback?code=${'e'.repeat(64)}&state=${url.searchParams.get('state')}`
+                );
+            },
+            fetchImpl: async () => {
+                throw new Error('rejected');
+            },
+        }),
+        (error) =>
+            /^Token exchange failed \d+ ms after the browser approval$/.test(error.message) &&
+            error.cause.message === 'rejected'
+    );
 });
 
 test('rejects credentials in a source URL without echoing them', () => {
@@ -344,7 +361,7 @@ test('plans both branches of every project without extraction or target requests
     assert.equal(f.requests.length, 2);
     assert.equal(f.requests[1].url, f.options.serviceUrl);
     assert.equal(f.requests[1].headers.Cookie, 'session=synthetic');
-    assert.equal(f.requests[1].redirect, 'error');
+    assert.equal(f.requests[1].redirect, 'manual');
     assert.deepEqual(f.requests[1].body, {
         paths: ['/www.nav.no/arbeid'],
         seeds: [],

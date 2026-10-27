@@ -270,7 +270,7 @@ test('pins both node and binary reads to the manifest version, including multipl
     assert.equal(binaryRequests.length, 2);
     binaryRequests.forEach(({ url, request }) => {
         assert.equal(url.searchParams.get('versionId'), 'source-version');
-        assert.equal(request.redirect, 'error');
+        assert.equal(request.redirect, 'manual');
     });
     assert.deepEqual(
         readFileSync(join(root, 'curated-test/www.nav.no/page/_/bin/first.pdf')),

@@ -50,6 +50,27 @@ const listen = async (server, t) => {
     return `http://127.0.0.1:${server.address().port}`;
 };
 
+test('reports a deployed XP redirect to its login page as a rejected request', async (t) => {
+    const fetchMock = t.mock.method(globalThis, 'fetch', async (url) =>
+        url.pathname === '/token'
+            ? new Response(null, {
+                  status: 307,
+                  headers: {
+                      Location: 'https://login.invalid/',
+                      'X-data-host': 'd4',
+                      Date: 'Tue, 27 Oct 2026 10:24:58 GMT',
+                  },
+              })
+            : new Response('ok')
+    );
+    await assert.rejects(
+        fetchXp('https://xp.invalid/token', { method: 'POST', redirect: 'error' }),
+        /https:\/\/xp\.invalid rejected the request and redirected to its login page \(HTTP 307, node d4, server time Tue, 27 Oct 2026 10:24:58 GMT, local time /
+    );
+    assert.equal(fetchMock.mock.calls[0].arguments[1].redirect, 'manual');
+    assert.equal(await (await fetchXp('https://xp.invalid/manifest')).text(), 'ok');
+});
+
 test('rejects remote cleartext and non-local direct targets before making requests', async () => {
     assert.throws(() => fetchXp('http://remote.invalid/api'), /require HTTPS/);
     assert.throws(

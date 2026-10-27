@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { spawnSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import console from 'node:console';
 import { appendFileSync, existsSync } from 'node:fs';
 import { homedir } from 'node:os';
@@ -123,6 +123,22 @@ export const reportXp7ToXp8Conflicts = ({ conflicts, logPath, heading }) => {
     appendFileSync(logPath, `# ${heading}\n${lines}\n\n`);
 };
 
+// Printed so a failed run reported from another machine can be matched to its code and runtime.
+const printToolVersion = () => {
+    let commit = 'unknown';
+    try {
+        commit = execFileSync('git', ['rev-parse', '--short', 'HEAD'], {
+            encoding: 'utf8',
+            stdio: ['ignore', 'pipe', 'ignore'],
+        }).trim();
+    } catch {
+        // Not a git checkout, or git is missing.
+    }
+    console.log(
+        `Import tool: commit ${commit}, Node ${process.version}, ${process.platform}-${process.arch}`
+    );
+};
+
 const main = async () => {
     const options = getImportOptions(process.argv.slice(2), getRunningSandbox);
     // Local checks run before any prompt or network call, so mistakes fail right away.
@@ -147,6 +163,7 @@ const main = async () => {
     if (targetExists) {
         assertLocalTargetConfiguration(targetPath);
     }
+    printToolVersion();
     assertEnonicCliAvailable();
     const source = resolveCuratedSource(options.source);
     const sourceIsLoopback = LOOPBACK_HOSTS.has(new URL(source.origin).hostname);
