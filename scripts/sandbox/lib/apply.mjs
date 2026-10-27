@@ -1,4 +1,3 @@
-import { execFileSync } from 'node:child_process';
 import {
     chmodSync,
     cpSync,
@@ -28,6 +27,7 @@ import {
     runLocalXpCommand,
     verifyLocalImportTarget,
 } from './target.mjs';
+import { writeZipArchive } from './zip.mjs';
 
 const listRegularFiles = (root) => {
     const files = [];
@@ -48,15 +48,6 @@ const listRegularFiles = (root) => {
     visit(root);
     return files;
 };
-
-// XP 8 imports only <name>.zip with the export in a <name>/ folder. bsdtar (macOS, Windows) writes
-// zip, GNU tar does not, so Linux uses zip.
-const writeExportArchive = ({ sourceRoot, name, archivePath }) =>
-    process.platform === 'linux'
-        ? execFileSync('zip', ['-qr', archivePath, name], { cwd: sourceRoot, stdio: 'ignore' })
-        : execFileSync('tar', ['--format', 'zip', '-cf', archivePath, '-C', sourceRoot, name], {
-              stdio: 'ignore',
-          });
 
 export const prepareCuratedImportFiles = ({
     exportNames,
@@ -137,7 +128,8 @@ export const prepareCuratedImportFiles = ({
             }
             staged.add(name);
             if (archive) {
-                writeExportArchive({ sourceRoot: retainedRoot, name, archivePath: targetPath });
+                // XP 8 imports only <name>.zip with the export in a <name>/ folder.
+                writeZipArchive({ sourceRoot: retainedRoot, name, archivePath: targetPath });
                 chmodSync(targetPath, 0o600);
                 return;
             }

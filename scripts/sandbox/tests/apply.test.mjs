@@ -107,13 +107,37 @@ test('stages privately, restages consumed exports, and cleans only owned copies'
 
 test('stages zip archives with the export in a top-level folder for XP 8', (t) => {
     const f = fixture(t);
+    const nonAsciiDirectory = join(
+        f.sourceDirectory,
+        'bundle',
+        'www.nav.no',
+        'tiltaksarrangør',
+        '_'
+    );
+    mkdirSync(nonAsciiDirectory, { recursive: true });
+    writeFileSync(join(nonAsciiDirectory, 'node.xml'), '<node>æøå</node>');
     const files = f.prepare({ archive: true });
     files.stage('bundle');
     const archivePath = join(f.targetDirectory, 'bundle.zip');
     assert.equal(statSync(archivePath).mode & 0o777, 0o600);
     assert.ok(!existsSync(join(f.targetDirectory, 'bundle')));
-    const listing = execFileSync('unzip', ['-Z1', archivePath], { encoding: 'utf8' });
-    assert.ok(listing.split('\n').includes('bundle/www.nav.no/_/node.xml'));
+    // Python's zipfile reads the archive independently and verifies CRCs on read.
+    const listing = JSON.parse(
+        execFileSync(
+            'python3',
+            [
+                '-c',
+                'import json,sys,zipfile\nz=zipfile.ZipFile(sys.argv[1])\nprint(json.dumps({i.filename:[i.flag_bits&0x800,z.read(i).decode()] for i in z.infolist()}))',
+                archivePath,
+            ],
+            { encoding: 'utf8' }
+        )
+    );
+    assert.deepEqual(listing['bundle/www.nav.no/_/node.xml'], [0x800, '<node/>']);
+    assert.deepEqual(listing['bundle/www.nav.no/tiltaksarrangør/_/node.xml'], [
+        0x800,
+        '<node>æøå</node>',
+    ]);
     files.stage('bundle');
     files.cleanup();
     assert.ok(!existsSync(archivePath));
