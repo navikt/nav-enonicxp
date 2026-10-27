@@ -8,7 +8,8 @@ const http = require('http');
 
 console.log('Running deploy script!');
 
-const { APP_FILE_NAME, XP_INSTALL_API, XP_USER, XP_PASSWORD } = process.env;
+const { APP_FILE_NAME, XP_INSTALL_API, XP_USER, XP_PASSWORD, XP_CERTIFICATE, XP_PRIVATE_KEY } =
+    process.env;
 
 function requireEnv(name, value, redact = false) {
     if (!value) {
@@ -22,6 +23,11 @@ requireEnv('APP_FILE_NAME', APP_FILE_NAME);
 requireEnv('XP_USER', XP_USER);
 requireEnv('XP_PASSWORD', XP_PASSWORD, true);
 requireEnv('XP_INSTALL_API', XP_INSTALL_API);
+
+if (Boolean(XP_CERTIFICATE) !== Boolean(XP_PRIVATE_KEY)) {
+    console.error('XP_CERTIFICATE and XP_PRIVATE_KEY must be specified together');
+    process.exit(1);
+}
 
 const boundary = `FormBoundary${Date.now()}`;
 const fileName = path.basename(APP_FILE_NAME);
@@ -56,6 +62,11 @@ const options = {
     ...(isHttps && {
         rejectUnauthorized: false, // equivalent to curl -k
         ...(ca && { ca }),
+        ...(XP_CERTIFICATE &&
+            XP_PRIVATE_KEY && {
+                cert: XP_CERTIFICATE,
+                key: XP_PRIVATE_KEY,
+            }),
     }),
 };
 

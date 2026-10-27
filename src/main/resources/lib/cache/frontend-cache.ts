@@ -1,8 +1,9 @@
 import httpClient, { HttpResponse } from '/lib/http-client';
 import * as taskLib from '/lib/xp/task';
 import * as schedulerLib from '/lib/xp/scheduler';
-import { APP_DESCRIPTOR, URLS } from '../constants';
+import { APP_DESCRIPTOR, REVALIDATOR_PROXY_TOKEN_SCOPE, URLS } from '../constants';
 import { logger } from '../utils/logging';
+import { withCloudServiceAuthHeaders } from '../utils/service-call-auth';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { CacheInvalidateAll } from '@xp-types/tasks/cache-invalidate-all';
 
@@ -15,6 +16,20 @@ const REVALIDATOR_PROXY_URL_WIPE_ALL = `${URLS.REVALIDATOR_PROXY_ORIGIN}/revalid
 const DEFERRED_INVALIDATION_JOB_NAME = 'invalidate-all-job';
 const DEFERRED_TIME_MS_DEFAULT = 60000;
 const MAX_PATHS_TO_INVALIDATE = 300;
+
+// Cloud instances must authenticate to the revalidator-proxy with an EntraID bearer token in
+// addition to the static secret; other environments send only the secret (see
+// withCloudServiceAuthHeaders). When all XP environments
+// are migrated to Enonic Cloud, the serviceSecret can be removed.
+const buildRevalidatorProxyHeaders = (eventId: string): Record<string, string> =>
+    withCloudServiceAuthHeaders(
+        {
+            secret: app.config.serviceSecret,
+            eventid: eventId,
+        },
+        REVALIDATOR_PROXY_TOKEN_SCOPE,
+        `RevalidatorProxy (event ${eventId})`
+    );
 
 export const isFrontendInvalidateAllScheduled = () => {
     const existingJob = schedulerLib.get({ name: DEFERRED_INVALIDATION_JOB_NAME });
@@ -68,10 +83,7 @@ const frontendInvalidatePathsRequest = (
             method: 'POST',
             connectionTimeout: TIMEOUT_MS,
             contentType: 'application/json',
-            headers: {
-                secret: app.config.serviceSecret,
-                eventid: eventId,
-            },
+            headers: buildRevalidatorProxyHeaders(eventId),
             body: JSON.stringify({ paths }),
         });
 
@@ -139,10 +151,7 @@ export const frontendInvalidateAllSync = (
             method: 'GET',
             connectionTimeout: TIMEOUT_MS,
             contentType: 'application/json',
-            headers: {
-                secret: app.config.serviceSecret,
-                eventid: eventId,
-            },
+            headers: buildRevalidatorProxyHeaders(eventId),
         });
 
         if (response.status === 200) {

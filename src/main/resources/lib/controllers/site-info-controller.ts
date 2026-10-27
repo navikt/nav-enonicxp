@@ -3,7 +3,7 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import * as schedulerLib from '/lib/xp/scheduler';
 import httpClient from '/lib/http-client';
-import { CONTENT_ROOT_REPO_ID, URLS } from '../constants';
+import { CONTENT_ROOT_REPO_ID, URLS, FRONTEND_TOKEN_SCOPE } from '../constants';
 import { clusterInfo, ClusterState, requestClusterInfo } from '../cluster-utils/cluster-api';
 import { getPrepublishJobName, getUnpublishJobName } from '../scheduling/scheduled-publish';
 import { RepoBranch } from '../../types/common';
@@ -11,6 +11,7 @@ import { hasValidCustomPath } from '../paths/custom-paths/custom-path-utils';
 import { runInContext } from '../context/run-in-context';
 import { getFromLocalCache } from '../cache/local-cache';
 import { buildCacheKeyForReqContext } from '../cache/utils';
+import { withCloudServiceAuthHeaders } from '../utils/service-call-auth';
 
 const FRONTEND_API_URL = `${URLS.FRONTEND_ORIGIN}/editor/site-info`;
 const CACHE_KEY = 'content-lists';
@@ -176,7 +177,11 @@ export const get = (req: Request) => {
         url: FRONTEND_API_URL,
         method: 'POST',
         contentType: 'application/json',
-        headers: { secret: app.config.serviceSecret },
+        headers: withCloudServiceAuthHeaders(
+            { secret: app.config.serviceSecret },
+            FRONTEND_TOKEN_SCOPE,
+            'SiteInfo'
+        ),
         body: JSON.stringify(requestBody),
     });
 

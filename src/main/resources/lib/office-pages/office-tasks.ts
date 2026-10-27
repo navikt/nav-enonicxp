@@ -5,6 +5,8 @@ import { processAllOffices, fetchAllOfficeDataFromNorg } from './office-update';
 import { runInContext } from '../context/run-in-context';
 
 const OFFICE_FETCH_TASK_NAME = 'no.nav.navno:update-office';
+
+// Localhost runs every 10 minutes to reduce local dev noise; all other environments poll every minute.
 const CRON_SCHEDULE = app.config.env === 'localhost' ? '*/10 * * * *' : '* * * * *';
 
 const MAX_FAILURE_COUNT_BEFORE_CRITICAL = 10;
