@@ -28,6 +28,7 @@ import {
 } from './common.mjs';
 
 export const LOCAL_MANAGEMENT_URL = 'http://localhost:4848';
+export const LOCAL_ADMIN_URL = 'http://localhost:8080/admin';
 export const LOCAL_IMPORT_SERVICE_URL =
     'http://localhost:8080/_/service/no.nav.navno/curatedExportImport';
 

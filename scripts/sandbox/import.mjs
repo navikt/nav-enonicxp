@@ -45,6 +45,7 @@ import {
     mapXp7ApplicationsToXp8,
     mapXp7NodePathsToXp8,
     mapXp7ProjectsToXp8,
+    LOCAL_ADMIN_URL,
     LOCAL_IMPORT_SERVICE_URL,
     prepareCuratedTarget,
     setCuratedImportMode,
@@ -370,7 +371,9 @@ const main = async () => {
             }
         }
 
-        console.log(`Curated import completed in sandbox ${options.target}`);
+        console.log(
+            `Curated import completed in sandbox ${options.target}. Open ${LOCAL_ADMIN_URL}`
+        );
     });
 };
 

@@ -30,6 +30,7 @@ import {
     findApplicationUpgrades,
     getLocalProcessEnvironment,
     installCuratedApplications,
+    LOCAL_ADMIN_URL,
     parseCliJsonOutput,
     runLocalXpCommand,
     waitForManagementApi,
@@ -145,7 +146,9 @@ export const upgradeSandbox = async (
     } else {
         installApplications({ applications: upgrades, auth, sandbox, runCommand });
     }
-    console.log(`Sandbox ${sandbox} is running XP ${xpVersion} with the app from this branch`);
+    console.log(
+        `Sandbox ${sandbox} is running XP ${xpVersion} with the app from this branch. Open ${LOCAL_ADMIN_URL}`
+    );
     return { previousVersion: currentVersion, xpVersion, upgrades };
 };
 
