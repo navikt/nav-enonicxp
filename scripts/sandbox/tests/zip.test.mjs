@@ -32,3 +32,29 @@ test('writes zip64 end records when the archive has more than 65535 entries', (t
     // Two directory entries plus the files.
     assert.deepEqual(result, [fileCount + 2, null, '65539']);
 });
+
+test('stores files of 64 MiB or more uncompressed, copied in chunks', (t) => {
+    const directory = mkdtempSync(join(tmpdir(), 'zip-writer-'));
+    t.after(() => rmSync(directory, { recursive: true, force: true }));
+    mkdirSync(join(directory, 'export'));
+    const content = Buffer.alloc(64 * 1024 * 1024 + 1, 'a');
+    content.write('last', content.length - 4);
+    writeFileSync(join(directory, 'export', 'large.bin'), content);
+    writeFileSync(join(directory, 'export', 'small.txt'), 'a'.repeat(1000));
+    const archivePath = join(directory, 'export.zip');
+    writeZipArchive({ sourceRoot: directory, name: 'export', archivePath });
+
+    const result = JSON.parse(
+        execFileSync(
+            'python3',
+            [
+                '-c',
+                'import json,sys,zipfile\nz=zipfile.ZipFile(sys.argv[1])\nlarge=z.getinfo("export/large.bin")\ndata=z.read(large)\nprint(json.dumps([z.testzip(),large.compress_type,len(data),data[-4:].decode(),z.getinfo("export/small.txt").compress_type]))',
+                archivePath,
+            ],
+            { encoding: 'utf8' }
+        )
+    );
+    // 0 is stored, 8 is deflated.
+    assert.deepEqual(result, [null, 0, content.length, 'last', 8]);
+});
