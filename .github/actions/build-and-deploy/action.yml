@@ -41,7 +41,6 @@ runs:
       uses: ./.github/actions/build-app
       with:
         xpEnv: ${{ inputs.xpEnv }}
-        xpVersion: ${{ inputs.xpVersion }}
 
     - name: Build test assets
       shell: bash

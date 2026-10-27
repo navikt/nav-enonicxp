@@ -3,7 +3,7 @@ import thymeleafLib from '/lib/thymeleaf';
 import * as authLib from '/lib/xp/auth';
 import { UserKey } from '/lib/xp/auditlog';
 import * as contentLib from '/lib/xp/content';
-import { APP_DESCRIPTOR } from '../../../lib/constants';
+import { APP_DESCRIPTOR, NAVNO_NODE_ROOT_PATH } from '../../../lib/constants';
 import { getLayersMultiConnection } from '../../../lib/localization/layers-repo-utils/layers-repo-connection';
 import { NON_LOCALIZED_QUERY_FILTER } from '../../../lib/localization/layers-repo-utils/localization-state-filters';
 import { contentTypesRenderedByEditorFrontend } from '../../../lib/contenttype-lists';
@@ -131,7 +131,7 @@ const getUsersModifications = (user: UserKey): DashboardContentInfo[] => {
                 modifiedTimeRaw: draftModifiedTime,
                 modifiedTime: dayjs(draftModifiedTime).format('DD.MM.YYYY - HH:mm:ss'),
                 status,
-                title: draftContent._path.replace('/content/www.nav.no/', ''),
+                title: draftContent._path.replace(NAVNO_NODE_ROOT_PATH + '/', ''),
                 url: `/admin/tool/com.enonic.app.contentstudio/main/${projectId}/edit/${draftContent._id}`,
             };
         })

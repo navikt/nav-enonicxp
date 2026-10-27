@@ -1,5 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
+import * as repoLib from '/lib/xp/repo';
 import { ContentLogData, DashboardContentInfo } from './types';
 import dayjs from '/assets/dayjs/1.11.13/dayjs.min.js';
 import { getContentProjectIdFromRepoId, getRepoConnection } from '../../../../lib/repos/repo-utils';
@@ -8,6 +9,8 @@ import { APP_DESCRIPTOR } from '../../../../lib/constants';
 import { stripPathPrefix } from '../../../../lib/paths/path-utils';
 import { contentTypesRenderedByEditorFrontend } from '../../../../lib/contenttype-lists';
 import { ContentDescriptor, ContentNode } from '../../../../types/content-types/content-config';
+import { runInContext } from '../../../../lib/context/run-in-context';
+import { logger } from '../../../../lib/utils/logging';
 
 type ContentWithLog = {
     content: ContentNode;
@@ -57,9 +60,19 @@ const transformToContentData = (
 
 const getContentFromLogs = (logs: ContentLogData[]): ContentWithLog[] => {
     const contentNodes: ContentWithLog[] = [];
+    if (logs.length === 0) {
+        return contentNodes;
+    }
+    const repositoryIds = new Set(
+        runInContext({ asAdmin: true }, () => repoLib.list().map(({ id }) => id))
+    );
 
     for (const logEntry of logs) {
         const { contentId, repoId } = logEntry;
+        if (!repositoryIds.has(repoId)) {
+            logger.warning(`Skipping dashboard audit entry for missing repository ${repoId}`);
+            continue;
+        }
         const repoConnection = getRepoConnection({ branch: 'draft', repoId, asAdmin: true });
 
         const content = repoConnection.get<Content>(contentId);

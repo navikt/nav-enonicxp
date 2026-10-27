@@ -4,7 +4,7 @@
     "scripts": {
         "build-test-data-app": "../../gradlew build -p=.xp-test-data-app",
         "copy-jars": "cp ../../build/libs/navno.jar .xp-image && cp ./.xp-test-data-app/build/libs/navno-testdata.jar .xp-image",
-        "build-xp-image": "docker buildx build .xp-image -t navno_tests",
+        "build-xp-image": "docker buildx build .xp-image -t navno_tests --build-arg XP_VERSION=$(sed -n 's/^xpVersion *= *//p' ../../gradle.properties)",
         "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules --no-warnings\" jest",
         "prepare-and-test": "pnpm run build-test-data-app && pnpm run copy-jars && pnpm run build-xp-image && pnpm run test",
         "prepare-gha": "pnpm run copy-jars && pnpm run build-xp-image"

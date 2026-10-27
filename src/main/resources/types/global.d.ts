@@ -9,6 +9,7 @@ declare const app: {
         // after the migration to Enonic Cloud. Provided via server config, not committed to git.
         clientId: string;
         clientSecret: string;
+        curatedImportInProgress?: string;
     };
 };
 

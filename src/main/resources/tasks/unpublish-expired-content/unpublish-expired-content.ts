@@ -9,11 +9,20 @@ import { UnpublishExpiredContent } from '@xp-types/tasks/unpublish-expired-conte
 import { getRepoConnection } from '../../lib/repos/repo-utils';
 import { deleteExternalSearchDocumentForContent } from '../../lib/search/update-one';
 import { getISONowWithoutMS } from '../../lib/utils/datetime-utils';
+import { isCuratedImportInProgress } from '../../lib/curated-export/safety';
 
 export const run = (params: UnpublishExpiredContent) => {
     const { id, path, repoId = CONTENT_ROOT_REPO_ID } = params;
 
     const contentInfo = `${id} [${repoId}]`;
+
+    // Schedules persisted before the import still fire, and must not change content mid-import.
+    if (isCuratedImportInProgress()) {
+        logger.warning(
+            `Skipping unpublish of expired content ${contentInfo} while a curated import is in progress`
+        );
+        return;
+    }
 
     logger.info(`Running task for unpublishing expired content - ${contentInfo}`);
 

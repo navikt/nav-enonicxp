@@ -68,6 +68,7 @@
 - Prepublish/unpublish scheduling:
     - `lib/scheduling/scheduled-publish.ts`
     - related tasks in `src/main/resources/tasks/*`
+- Scheduler jobs persist independently in XP. When removing or renaming a persisted job, add its former exact name to `OBSOLETE_SCHEDULED_JOB_NAMES` in `lib/scheduling/manage-scheduled-jobs.ts`. The admin Webapp's scheduler-cleanup UI uses this list to let operators review and explicitly delete obsolete jobs. Task descriptor changes still require an explicit cleanup plan.
 - If you change publish behavior, validate both:
     1. scheduler/task flow
     2. cache invalidation/revalidation flow
@@ -88,7 +89,7 @@
 - Build/test stack is mixed Gradle + pnpm + TypeScript/Babel.
 - CI-aligned baseline:
     - Unit tests: `pnpm --filter nav-enonicxp-unit-tests run test`
-    - App build: `./gradlew build -PxpVersion=<version>`
+    - App build: `./gradlew build` (XP version from `gradle.properties`, also used by deploys and e2e tests)
 - TypeScript source under `src/main/resources/**/*.ts`, transpiled by Babel.
 - Transpiled JavaScript is executed on the JVM using **Nashorn** (legacy JS runtime constraints apply).
 

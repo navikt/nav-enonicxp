@@ -3,7 +3,7 @@ import * as contentLib from '/lib/xp/content';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import { logger } from '../../../utils/logging';
 import { CONTENT_LOCALE_DEFAULT } from '../../../constants';
-import { OfficeTypes } from '../../../office-pages/types';
+import { getOfficeEditorialType, OfficeEditorialTypes } from '../../../office-pages/office-editorial';
 
 export const officeCallback: CreationCallback = (context, params) => {
     params.fields.editorial = {
@@ -30,7 +30,12 @@ export const officeCallback: CreationCallback = (context, params) => {
                 return null;
             }
 
-            if (officeData.type !== OfficeTypes.LOKAL && officeData.type !== OfficeTypes.ALS) {
+            const editorialType = getOfficeEditorialType(
+                officeData.type,
+                officeDataContent.data.useUnitEditorialPage
+            );
+
+            if (!editorialType) {
                 return null;
             }
 
@@ -38,9 +43,11 @@ export const officeCallback: CreationCallback = (context, params) => {
 
             // The field skriftspraak in NORG is an open text field, so uppercase
             // before checking.
-            const language = skriftspraak?.toUpperCase() === 'NN' ? 'nn' : CONTENT_LOCALE_DEFAULT;
+            const language =
+                officeDataContent.language ||
+                (skriftspraak?.toUpperCase() === 'NN' ? 'nn' : CONTENT_LOCALE_DEFAULT);
 
-            const rootFolder = officeData.type === OfficeTypes.ALS ? 'arbeidsgiver' : 'kontor';
+            const rootFolder = editorialType === OfficeEditorialTypes.ALS ? 'arbeidsgiver' : 'kontor';
 
             const queryResult = contentLib.query({
                 contentTypes: ['no.nav.navno:office-editorial-page'],
@@ -57,7 +64,7 @@ export const officeCallback: CreationCallback = (context, params) => {
                             {
                                 hasValue: {
                                     field: 'data.officeType',
-                                    values: [officeData.type],
+                                    values: [editorialType],
                                 },
                             },
                         ],

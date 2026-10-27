@@ -3,6 +3,13 @@ plugins {
     id "com.github.node-gradle.node" version '7.1.0'
 }
 
+// A separate build, so read the XP version from the main app's gradle.properties
+if (!project.hasProperty('xpVersion')) {
+    def rootProperties = new Properties()
+    file('../../../gradle.properties').withInputStream { rootProperties.load(it) }
+    ext.xpVersion = rootProperties.getProperty('xpVersion')
+}
+
 repositories {
     mavenLocal()
     mavenCentral()
