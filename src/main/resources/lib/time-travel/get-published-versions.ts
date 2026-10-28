@@ -8,7 +8,7 @@ import { getLayersMigrationArchivedContentRef } from './layers-migration-refs';
 import { getNodeVersions, GetNodeVersionsParams } from '../utils/version-utils';
 import { logger } from '../utils/logging';
 import { getRepoConnection } from '../repos/repo-utils';
-import { isExcludedFromExternalArchive } from '../utils/content-utils';
+import { isExcludedFromExternalArchive, isPublishFromInFuture } from '../utils/content-utils';
 
 export type VersionReferenceEnriched = NodeVersion & {
     locale: string;
@@ -130,9 +130,13 @@ export const getPublishedAndModifiedVersions = (contentId: string, locale: strin
     );
 };
 
-// Used by the version history selector in the external archive
+// Used by the version history selector in the external archive. Versions scheduled for publishing
+// are left out until they are published
 export const getVersionsForExternalArchive = (versions: VersionReferenceEnriched[]) => {
     return versions.filter(
-        (v, i, a) => filterNonModifiedVersions(v, i, a) && !v.excludeFromExternalArchive
+        (v, i, a) =>
+            filterNonModifiedVersions(v, i, a) &&
+            !v.excludeFromExternalArchive &&
+            !isPublishFromInFuture(v.publishFromTime)
     );
 };

@@ -2,7 +2,11 @@ import { getRepoConnection } from '../repos/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { Content } from '/lib/xp/content';
 import { NodeVersion, RepoConnection, RepoNode } from '/lib/xp/node';
-import { isArchivedContentNode, isExcludedFromExternalArchive } from '../utils/content-utils';
+import {
+    isArchivedContentNode,
+    isContentAwaitingPrepublish,
+    isExcludedFromExternalArchive,
+} from '../utils/content-utils';
 import { logger } from '../utils/logging';
 
 const transformRepoContentNode = (node: RepoNode<Content>): Content => {
@@ -35,11 +39,12 @@ export const getLastPublishedContentVersion = (
     });
 
     const publishedContent = masterRepo.get<Content>(contentKey);
-    if (publishedContent) {
+    if (publishedContent && !isContentAwaitingPrepublish(publishedContent)) {
         return transformRepoContentNode(publishedContent);
     }
 
-    // If the content is not published, we try to find the last version which was published/committed
+    // If the content is not published, or is scheduled for publishing, we try to find the last
+    // version which was published/committed
     const draftRepo = getRepoConnection({
         repoId,
         branch: 'draft',
@@ -66,7 +71,7 @@ const getLastPublishedDraftVersion = (versions: NodeVersion[], draftRepo: RepoCo
                     key: version.nodeId,
                     versionId: version.versionId,
                 });
-                if (contentNode?.publish?.from) {
+                if (contentNode?.publish?.from && !isContentAwaitingPrepublish(contentNode)) {
                     return contentNode;
                 }
             } catch (error) {
@@ -99,7 +104,11 @@ export const getContentForExternalArchive = ({
         ? getContentVersion(contentId, versionId, locale)
         : getLastPublishedContentVersion(contentId, locale);
 
-    if (contentRequested && isExcludedFromExternalArchive(contentRequested)) {
+    if (
+        contentRequested &&
+        (isExcludedFromExternalArchive(contentRequested) ||
+            isContentAwaitingPrepublish(contentRequested))
+    ) {
         return {
             content: null,
             isArchived,

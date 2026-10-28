@@ -68,13 +68,15 @@ export const isContentNoIndex = (content: Content<any>) => {
     return !!content.data?.noindex;
 };
 
+// Content scheduled for publishing is pushed to master when it is scheduled, but is not public
+// until publish.from
+export const isPublishFromInFuture = (publishFrom?: string | null) =>
+    publishFrom ? publishFrom > getISONowWithoutMS() : false;
+
 export const isContentAwaitingPrepublish = (
     content: Content<any>
-): content is Content & { publish: { from: string } } => {
-    const publishFrom = content.publish?.from;
-    const isoNow = getISONowWithoutMS();
-    return publishFrom ? publishFrom > isoNow : false;
-};
+): content is Content & { publish: { from: string } } =>
+    isPublishFromInFuture(content.publish?.from);
 
 // If the content ref is a path, ensure it has the /content prefix
 export const getContentNodeKey = (contentRef: string) =>
