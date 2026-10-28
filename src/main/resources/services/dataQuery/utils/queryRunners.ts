@@ -14,6 +14,7 @@ import { RepoNode } from '/lib/xp/node';
 import cacheLib from '/lib/cache';
 import { logger } from '../../../lib/utils/logging';
 import { isContentAwaitingPrepublish } from '../../../lib/utils/content-utils';
+import { getLastPublishedContentVersion } from '../../../lib/external-archive/get-content';
 
 const RESPONSE_BATCH_SIZE = 1000;
 
@@ -145,7 +146,7 @@ export const runExternalArchiveQuery = (params: RunExternalArchiveQueryParams) =
     );
 
     const { repoIdToLocaleMap } = getLayersData();
-    const awaitingPrepublishIds = new Set<string>();
+    const notPublishedYetIds = new Set<string>();
 
     const contentHits = nodeHits.reduce<ContentWithLocaleData[]>((contents, node) => {
         const locale = repoIdToLocaleMap[node.repoId];
@@ -156,12 +157,17 @@ export const runExternalArchiveQuery = (params: RunExternalArchiveQueryParams) =
         });
         const result = repo.get<RepoNode<Content>>(node.id);
         if (!result) return contents;
-        const contentNode = transformRepoNode(result);
+        const latestContent = transformRepoNode(result);
 
         // Scheduled content is pushed to master when it is scheduled, but must not be shown in
-        // the archive before it is published
-        if (isContentAwaitingPrepublish(contentNode)) {
-            awaitingPrepublishIds.add(node.id);
+        // the archive before it is published. Use the last version which was published, as the
+        // content tree does. Content which has never been published is left out
+        const contentNode = isContentAwaitingPrepublish(latestContent)
+            ? getLastPublishedContentVersion(node.id, locale)
+            : latestContent;
+
+        if (!contentNode) {
+            notPublishedYetIds.add(node.id);
             return contents;
         }
 
@@ -174,11 +180,10 @@ export const runExternalArchiveQuery = (params: RunExternalArchiveQueryParams) =
         return [...contents, contentWithRepoIds];
     }, []);
 
-    if (contentHits.length + awaitingPrepublishIds.size !== nodeHits.length) {
+    if (contentHits.length + notPublishedYetIds.size !== nodeHits.length) {
         const diff = nodeHits.filter(
             (node) =>
-                !awaitingPrepublishIds.has(node.id) &&
-                !contentHits.find((hit) => hit._id === node.id)
+                !notPublishedYetIds.has(node.id) && !contentHits.find((hit) => hit._id === node.id)
         );
         logger.warning(
             `Data query: missing results from master content query for ${
