@@ -5,7 +5,7 @@ type TestNode = {
     type: string;
     displayName: string;
     data: Record<string, unknown>;
-    publish: { from: string; first: string };
+    publish: { from?: string; first?: string };
 };
 
 type TestVersion = {
@@ -46,13 +46,16 @@ import {
     getLastPublishedContentVersion,
 } from '@navno-app/lib/external-archive/get-content';
 
-const DAY_MS = 24 * 60 * 60 * 1000;
+const HOUR_MS = 60 * 60 * 1000;
+const DAY_MS = 24 * HOUR_MS;
 const daysFromNow = (days: number) => new Date(Date.now() + days * DAY_MS).toISOString();
+const hoursFromNow = (hours: number) => new Date(Date.now() + hours * HOUR_MS).toISOString();
 
-// Versions newest first. All are committed, i.e. published or scheduled for publishing
+// Versions newest first. All are committed: published, scheduled for publishing, or unpublished.
+// Unpublishing removes publish.from
 const addContent = (
     contentId: string,
-    versions: { versionId: string; publishFrom: string }[],
+    versions: { versionId: string; savedAt: string; publishFrom?: string }[],
     versionInMaster: string
 ) => {
     const nodes = versions.map(({ versionId, publishFrom }) => ({
@@ -62,7 +65,7 @@ const addContent = (
         type: 'no.nav.navno:dynamic-page',
         displayName: contentId,
         data: {},
-        publish: { from: publishFrom, first: publishFrom },
+        publish: publishFrom ? { from: publishFrom, first: publishFrom } : {},
     }));
 
     nodes.forEach((node) => {
@@ -70,32 +73,50 @@ const addContent = (
     });
     draftNodes[contentId] = nodes[0];
     masterNodes[contentId] = versionNodes[versionInMaster];
-    draftVersions[contentId] = nodes.map((node) => ({
-        versionId: node._versionKey,
+    draftVersions[contentId] = versions.map(({ versionId, savedAt }) => ({
+        versionId,
         nodeId: contentId,
-        nodePath: node._path,
-        timestamp: node.publish.from,
-        commitId: `commit-${node._versionKey}`,
+        nodePath: `/content/www.nav.no/${contentId}`,
+        timestamp: savedAt,
+        commitId: `commit-${versionId}`,
     }));
 };
 
 addContent(
     'published',
-    [{ versionId: 'published-1', publishFrom: daysFromNow(-10) }],
+    [{ versionId: 'published-1', savedAt: daysFromNow(-10), publishFrom: daysFromNow(-10) }],
     'published-1'
 );
 
 // New content, scheduled to be published tomorrow
-addContent('scheduled', [{ versionId: 'scheduled-1', publishFrom: daysFromNow(1) }], 'scheduled-1');
+addContent(
+    'scheduled',
+    [{ versionId: 'scheduled-1', savedAt: daysFromNow(-1), publishFrom: daysFromNow(1) }],
+    'scheduled-1'
+);
 
 // Was published, then unpublished, and is now scheduled to be published again
 addContent(
     'rescheduled',
     [
-        { versionId: 'rescheduled-2', publishFrom: daysFromNow(1) },
-        { versionId: 'rescheduled-1', publishFrom: daysFromNow(-30) },
+        { versionId: 'rescheduled-3', savedAt: daysFromNow(-1), publishFrom: daysFromNow(1) },
+        { versionId: 'rescheduled-2', savedAt: daysFromNow(-2) },
+        { versionId: 'rescheduled-1', savedAt: daysFromNow(-30), publishFrom: daysFromNow(-30) },
     ],
-    'rescheduled-2'
+    'rescheduled-3'
+);
+
+// Was published, then scheduled, unpublished before the scheduled time, and is now scheduled again.
+// The publish time of the cancelled schedule has passed
+addContent(
+    'cancelled',
+    [
+        { versionId: 'cancelled-4', savedAt: hoursFromNow(-1), publishFrom: daysFromNow(1) },
+        { versionId: 'cancelled-3', savedAt: hoursFromNow(-3) },
+        { versionId: 'cancelled-2', savedAt: hoursFromNow(-4), publishFrom: hoursFromNow(-2) },
+        { versionId: 'cancelled-1', savedAt: daysFromNow(-10), publishFrom: daysFromNow(-10) },
+    ],
+    'cancelled-4'
 );
 
 describe('getLastPublishedContentVersion', () => {
@@ -111,6 +132,10 @@ describe('getLastPublishedContentVersion', () => {
         expect(getLastPublishedContentVersion('rescheduled', 'no')?._versionKey).toBe(
             'rescheduled-1'
         );
+    });
+
+    test('skips a schedule which was cancelled by unpublishing', () => {
+        expect(getLastPublishedContentVersion('cancelled', 'no')?._versionKey).toBe('cancelled-1');
     });
 });
 

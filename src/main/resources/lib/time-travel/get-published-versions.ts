@@ -8,7 +8,7 @@ import { getLayersMigrationArchivedContentRef } from './layers-migration-refs';
 import { getNodeVersions, GetNodeVersionsParams } from '../utils/version-utils';
 import { logger } from '../utils/logging';
 import { getRepoConnection } from '../repos/repo-utils';
-import { isExcludedFromExternalArchive, isPublishFromInFuture } from '../utils/content-utils';
+import { isExcludedFromExternalArchive, wasVersionPublic } from '../utils/content-utils';
 
 export type VersionReferenceEnriched = NodeVersion & {
     locale: string;
@@ -130,13 +130,24 @@ export const getPublishedAndModifiedVersions = (contentId: string, locale: strin
     );
 };
 
-// Used by the version history selector in the external archive. Versions scheduled for publishing
-// are left out until they are published
+const toPublishTimes = (version: VersionReferenceEnriched) => ({
+    timestamp: version.timestamp,
+    publishFrom: version.publishFromTime,
+});
+
+// Used by the version history selector in the external archive. Versions which were never public
+// are left out: scheduled for publishing, or unpublished before the scheduled time.
+// Versions are compared by modifiedTime with the next version shown, not with a hidden version, so
+// content republished after a cancelled schedule is not left out
 export const getVersionsForExternalArchive = (versions: VersionReferenceEnriched[]) => {
-    return versions.filter(
-        (v, i, a) =>
-            filterNonModifiedVersions(v, i, a) &&
-            !v.excludeFromExternalArchive &&
-            !isPublishFromInFuture(v.publishFromTime)
+    const publicVersions = versions.filter(
+        (version, index) =>
+            !version.excludeFromExternalArchive &&
+            wasVersionPublic(
+                toPublishTimes(version),
+                index > 0 ? toPublishTimes(versions[index - 1]) : undefined
+            )
     );
+
+    return publicVersions.filter(filterNonModifiedVersions);
 };

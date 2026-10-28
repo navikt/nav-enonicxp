@@ -6,6 +6,7 @@ import {
     isArchivedContentNode,
     isContentAwaitingPrepublish,
     isExcludedFromExternalArchive,
+    wasVersionPublic,
 } from '../utils/content-utils';
 import { logger } from '../utils/logging';
 
@@ -63,7 +64,10 @@ export const getLastPublishedContentVersion = (
 };
 
 const getLastPublishedDraftVersion = (versions: NodeVersion[], draftRepo: RepoConnection) => {
-    // Iterate through each object in the list
+    // The newer published or unpublished version, to tell if a version was unpublished before its
+    // scheduled publish time
+    let newerVersion: { timestamp: string; publishFrom?: string } | undefined;
+
     for (const version of versions) {
         if (version.commitId) {
             try {
@@ -71,9 +75,16 @@ const getLastPublishedDraftVersion = (versions: NodeVersion[], draftRepo: RepoCo
                     key: version.nodeId,
                     versionId: version.versionId,
                 });
-                if (contentNode?.publish?.from && !isContentAwaitingPrepublish(contentNode)) {
+                const publishFrom = contentNode?.publish?.from;
+
+                if (
+                    contentNode &&
+                    wasVersionPublic({ timestamp: version.timestamp, publishFrom }, newerVersion)
+                ) {
                     return contentNode;
                 }
+
+                newerVersion = { timestamp: version.timestamp, publishFrom };
             } catch (error) {
                 logger.error(`Error fetching object with versionId ${version.versionId}: ${error}`);
             }
