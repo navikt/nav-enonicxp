@@ -1,45 +1,18 @@
 name: Deploy to prod
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
-  deploy-to-prod:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v7
-
-      - name: Deploy to prod
-        uses: ./.github/actions/build-and-deploy
-        with:
-          naisCluster: prod-gcp
-          xpAdminHost: portal-admin.oera.no
-          xpEnv: prod
-          NAIS_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
-          NAIS_MANAGEMENT_PROJECT_ID: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
+  deploy:
+    uses: ./.github/workflows/build-deploy-prod.yml
+    permissions: { contents: read, id-token: write }
+    secrets: inherit
 
   release:
-    name: Create a new release
-    needs: deploy-to-prod
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      id-token: write
-    steps:
-      - name: Generate unique tag name
-        run: echo "TAG_NAME=$(date +%s)" >> $GITHUB_ENV
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v3
-        with:
-          target_commitish: main
-          tag_name: release/prod@${{ env.TAG_NAME }} # Generates a unique tag using timestamp
-          name: Release ${{ github.ref_name }}
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }} # This is a PAT with repo permissions
+    needs: deploy
+    uses: navikt/navno-ci/.github/workflows/release.yml@v1
+    permissions: { contents: write }
+    with:
+      image: ${{ needs.deploy.outputs.image }}
+    secrets: inherit
