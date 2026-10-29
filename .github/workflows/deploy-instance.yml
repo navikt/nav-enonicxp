@@ -1,0 +1,48 @@
+# Builds the app, pushes the image and deploys it to one XP environment.
+# Callers need `permissions: { contents: read, id-token: write }` and `secrets: inherit`.
+name: Build and deploy instance
+on:
+  workflow_call:
+    inputs:
+      cluster:
+        type: string
+        required: true
+        description: NAIS cluster to deploy to
+      xp-admin-host:
+        type: string
+        required: true
+        description: XP admin host
+      xp-env:
+        type: string
+        required: true
+        description: XP environment
+    outputs:
+      image:
+        description: The pushed image
+        value: ${{ jobs.build.outputs.image }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions: { contents: read, id-token: write }
+    outputs:
+      image: ${{ steps.build.outputs.image }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - id: build
+        uses: ./.github/actions/build-and-push-image
+        with:
+          xpEnv: ${{ inputs.xp-env }}
+          NAIS_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+          NAIS_MANAGEMENT_PROJECT_ID: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
+
+  deploy:
+    needs: build
+    uses: navikt/navno-ci/.github/workflows/nais-deploy.yml@v1
+    permissions: { contents: read, id-token: write }
+    with:
+      cluster: ${{ inputs.cluster }}
+      resource: .nais-deploy-job/deploy-job.yml
+      var: image=${{ needs.build.outputs.image }},xpAdminHost=${{ inputs.xp-admin-host }},xpEnv=${{ inputs.xp-env }}

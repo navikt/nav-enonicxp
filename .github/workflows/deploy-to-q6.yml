@@ -2,20 +2,11 @@ name: Deploy to dev2/q6
 on: workflow_dispatch
 
 jobs:
-  deploy-to-dev2:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v7
-
-      - name: Deploy to dev2/q6
-        uses: ./.github/actions/build-and-deploy
-        with:
-          naisCluster: dev-gcp
-          xpAdminHost: portal-admin-q6.oera.no
-          xpEnv: q6
-          NAIS_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
-          NAIS_MANAGEMENT_PROJECT_ID: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
+  deploy:
+    uses: ./.github/workflows/deploy-instance.yml
+    permissions: { contents: read, id-token: write }
+    with:
+      cluster: dev-gcp
+      xp-admin-host: portal-admin-q6.oera.no
+      xp-env: q6
+    secrets: inherit
