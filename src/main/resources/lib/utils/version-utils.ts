@@ -1,4 +1,4 @@
-import { NodeVersion } from '/lib/xp/node';
+import { NodeVersion, RepoConnection } from '/lib/xp/node';
 import { RepoBranch } from '../../types/common';
 import { nodeLibConnectStandard } from '../time-travel/standard-functions';
 import { logger } from './logging';
@@ -56,6 +56,16 @@ export const getNodeVersions = ({
     }
 
     return result.hits;
+};
+
+// When the version was committed: published, scheduled for publishing or unpublished. This can be
+// long after the version was saved. Some code commits the same version again, which moves the time,
+// e.g. lib/contentlists/remove-unpublished.ts
+export const getVersionCommitTime = (version: NodeVersion, repo: RepoConnection) => {
+    const commit = version.commitId ? repo.getCommit({ id: version.commitId }) : null;
+
+    // If the commit is not found. A version is committed after it is saved
+    return commit?.timestamp ?? version.timestamp;
 };
 
 export const getContentVersionFromTime = ({

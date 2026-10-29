@@ -1,3 +1,13 @@
+// When each version was committed, by commitId. mock-xp does not implement getCommit
+const commitTimes: Record<string, string> = {};
+
+const getRepoConnection = () => ({
+    getCommit: ({ id }: { id: string }) =>
+        commitTimes[id] ? { id, timestamp: commitTimes[id] } : null,
+});
+
+jest.mock('@navno-app/lib/repos/repo-utils', () => ({ getRepoConnection }));
+
 import {
     getVersionsForExternalArchive,
     VersionReferenceEnriched,
@@ -5,9 +15,11 @@ import {
 
 const inOneHour = () => new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
+// committedAt is when the version was published or unpublished. Defaults to savedAt
 type TestVersion = {
     versionId: string;
     savedAt: string;
+    committedAt?: string;
     publishFrom?: string;
     unpublishedTime?: string;
     modifiedTime?: string;
@@ -15,8 +27,12 @@ type TestVersion = {
 
 // As externalArchive/content passes them: newest first, with unpublishedTime set when the newer
 // version unpublished the content. modifiedTime only changes when the content is edited
-const getVersionIds = (versions: TestVersion[]) =>
-    getVersionsForExternalArchive(
+const getVersionIds = (versions: TestVersion[]) => {
+    versions.forEach(({ versionId, savedAt, committedAt = savedAt }) => {
+        commitTimes[`commit-${versionId}`] = committedAt;
+    });
+
+    return getVersionsForExternalArchive(
         versions.map(
             ({ versionId, savedAt, publishFrom, unpublishedTime, modifiedTime = savedAt }) =>
                 ({
@@ -36,6 +52,7 @@ const getVersionIds = (versions: TestVersion[]) =>
                 }) as VersionReferenceEnriched & { unpublishedTime?: string }
         )
     ).map((version) => version.versionId);
+};
 
 const published = {
     versionId: 'published',
@@ -68,6 +85,65 @@ describe('getVersionsForExternalArchive', () => {
                 published,
             ])
         ).toEqual(['was-scheduled', 'published']);
+    });
+
+    // Scheduled for 12:00. At 11:00, scheduled for another time in Details > Schedule and published
+    // again
+    test('leaves out a version when the publish time is moved to a later time', () => {
+        expect(
+            getVersionIds([
+                {
+                    versionId: 'moved',
+                    savedAt: '2024-03-02T11:00:00Z',
+                    publishFrom: inOneHour(),
+                },
+                {
+                    versionId: 'scheduled',
+                    savedAt: '2024-03-02T10:00:00Z',
+                    publishFrom: '2024-03-02T12:00:00Z',
+                },
+                published,
+            ])
+        ).toEqual(['published']);
+    });
+
+    test('leaves out a version when the publish time is moved to an earlier time', () => {
+        expect(
+            getVersionIds([
+                {
+                    versionId: 'moved',
+                    savedAt: '2024-03-02T11:00:00Z',
+                    publishFrom: '2024-03-02T12:00:00Z',
+                },
+                {
+                    versionId: 'scheduled',
+                    savedAt: '2024-03-02T10:00:00Z',
+                    publishFrom: '2024-03-02T15:00:00Z',
+                },
+                published,
+            ])
+        ).toEqual(['moved', 'published']);
+    });
+
+    // Scheduled for 12:00, edited at 11:00, and the edit was published at 16:00. The scheduled
+    // version was public from 12:00 to 16:00. Only the commit time of the edit shows this
+    test('keeps a scheduled version which was public until the next version was published', () => {
+        expect(
+            getVersionIds([
+                {
+                    versionId: 'edited',
+                    savedAt: '2024-03-02T11:00:00Z',
+                    committedAt: '2024-03-02T16:00:00Z',
+                    publishFrom: '2024-03-02T12:00:00Z',
+                },
+                {
+                    versionId: 'scheduled',
+                    savedAt: '2024-03-02T10:00:00Z',
+                    publishFrom: '2024-03-02T12:00:00Z',
+                },
+                published,
+            ])
+        ).toEqual(['edited', 'scheduled', 'published']);
     });
 
     // Edited without publishing, then unpublished, then published again without new edits.

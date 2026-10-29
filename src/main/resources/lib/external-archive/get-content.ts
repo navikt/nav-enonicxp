@@ -9,6 +9,7 @@ import {
     wasVersionPublic,
 } from '../utils/content-utils';
 import { logger } from '../utils/logging';
+import { getVersionCommitTime } from '../utils/version-utils';
 
 const transformRepoContentNode = (node: RepoNode<Content>): Content => {
     const { _indexConfig, _inheritsPermissions, _permissions, _childOrder, ...content } = node;
@@ -73,32 +74,22 @@ const getDraftVersion = (version: NodeVersion, draftRepo: RepoConnection) => {
 };
 
 const getLastPublishedDraftVersion = (versions: NodeVersion[], draftRepo: RepoConnection) => {
-    // When the content was unpublished after the current version, as unpublishedTime in the archive
-    let unpublishedTime: string | undefined;
+    // When the newer version was committed, i.e. when the current version was replaced in master
+    // or removed by unpublishing
+    let replacedTime: string | undefined;
 
-    // Newest version first. Only committed versions can have been published or unpublished
+    // Newest version first. Only committed versions have been in master
     for (const version of versions) {
         if (!version.commitId) {
             continue;
         }
 
         const contentNode = getDraftVersion(version, draftRepo);
-        if (!contentNode) {
-            continue;
-        }
-
-        const publishFrom = contentNode.publish?.from;
-        if (wasVersionPublic(publishFrom, unpublishedTime)) {
+        if (contentNode && wasVersionPublic(contentNode.publish?.from, replacedTime)) {
             return contentNode;
         }
 
-        // Unpublishing removes publish.from. If this version unpublished the content, the next,
-        // older version was unpublished at this time
-        if (publishFrom) {
-            unpublishedTime = undefined;
-        } else {
-            unpublishedTime = version.timestamp;
-        }
+        replacedTime = getVersionCommitTime(version, draftRepo);
     }
 
     return null;

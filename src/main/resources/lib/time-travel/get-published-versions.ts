@@ -5,7 +5,11 @@ import { contentTypesWithCustomEditor } from '../contenttype-lists';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { getLayersData } from '../localization/layers-data';
 import { getLayersMigrationArchivedContentRef } from './layers-migration-refs';
-import { getNodeVersions, GetNodeVersionsParams } from '../utils/version-utils';
+import {
+    getNodeVersions,
+    GetNodeVersionsParams,
+    getVersionCommitTime,
+} from '../utils/version-utils';
 import { logger } from '../utils/logging';
 import { getRepoConnection } from '../repos/repo-utils';
 import { isExcludedFromExternalArchive, wasVersionPublic } from '../utils/content-utils';
@@ -130,17 +134,39 @@ export const getPublishedAndModifiedVersions = (contentId: string, locale: strin
     );
 };
 
-// Used by the version history selector in the external archive, with unpublishedTime set as in
-// externalArchive/content
+// When the newer version replaced the version in master, by publishing again or unpublishing. Only
+// a version scheduled for publishing can be replaced before its publish time, so the commit is only
+// looked up for those
+const getReplacedTime = (
+    version: VersionReferenceEnriched,
+    newerVersion: VersionReferenceEnriched | undefined
+) => {
+    const isScheduled = !!version.publishFromTime && version.publishFromTime > version.timestamp;
+    if (!isScheduled || !newerVersion) {
+        return undefined;
+    }
+
+    const repo = getRepoConnection({
+        branch: 'master',
+        repoId: getLayersData().localeToRepoIdMap[newerVersion.locale],
+        asAdmin: true,
+    });
+
+    return getVersionCommitTime(newerVersion, repo);
+};
+
+// Used by the version history selector in the external archive. Takes all versions from
+// getAllVersions, with unpublishedTime set as in externalArchive/content
 export const getVersionsForExternalArchive = (
     versions: (VersionReferenceEnriched & { unpublishedTime?: string })[]
 ) => {
-    const publicVersions = versions.filter((version) => {
+    const publicVersions = versions.filter((version, index) => {
         if (version.excludeFromExternalArchive) {
             return false;
         }
 
-        return wasVersionPublic(version.publishFromTime, version.unpublishedTime);
+        const replacedTime = getReplacedTime(version, versions[index - 1]);
+        return wasVersionPublic(version.publishFromTime, replacedTime);
     });
 
     // Versions which were never public must be removed first. Otherwise one of them can replace a

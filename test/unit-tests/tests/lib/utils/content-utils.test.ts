@@ -28,13 +28,14 @@ describe('wasVersionPublic', () => {
         expect(wasVersionPublic(inOneHour())).toBe(false);
     });
 
-    test('is false when the content was unpublished before the publish time', () => {
+    // Replaced by unpublishing, or by scheduling for another time
+    test('is false when the version was replaced before the publish time', () => {
         expect(wasVersionPublic('2024-03-01T14:00:00Z', '2024-03-01T13:01:56.987654321Z')).toBe(
             false
         );
     });
 
-    test('is true when the content was unpublished after the publish time', () => {
+    test('is true when the version was replaced after the publish time', () => {
         expect(wasVersionPublic('2024-03-01T14:00:00Z', '2024-03-02T09:30:12.123456789Z')).toBe(
             true
         );

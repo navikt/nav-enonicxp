@@ -78,9 +78,10 @@ export const isContentAwaitingPrepublish = (
 ): content is Content & { publish: { from: string } } =>
     isPublishFromInFuture(content.publish?.from);
 
-// Whether a version was public on nav.no at some point. The times are ISO strings in UTC, which
-// can be compared as text
-export const wasVersionPublic = (publishFrom?: string | null, unpublishedTime?: string | null) => {
+// Whether a version was public on nav.no at some point. replacedTime is when the next version was
+// committed, i.e. when this version was replaced in master or removed by unpublishing. The times
+// are ISO strings in UTC, which can be compared as text
+export const wasVersionPublic = (publishFrom?: string | null, replacedTime?: string | null) => {
     // Not published. Unpublishing removes publish.from
     if (!publishFrom) {
         return false;
@@ -91,9 +92,9 @@ export const wasVersionPublic = (publishFrom?: string | null, unpublishedTime?: 
         return false;
     }
 
-    // Scheduled for publishing, but unpublished before the publish time. This cancelled the
-    // scheduled publishing
-    if (unpublishedTime && unpublishedTime < publishFrom) {
+    // Scheduled for publishing, but unpublished or scheduled for another time before the publish
+    // time
+    if (replacedTime && replacedTime < publishFrom) {
         return false;
     }
 
