@@ -94,6 +94,41 @@ describe('getVersionsForExternalArchive', () => {
         ).toEqual(['published-again', 'published']);
     });
 
+    // Tested in dev 29.10: unpublished and published again without new edits. Unpublishing and
+    // publishing do not change modifiedTime, so both versions have the same modifiedTime
+    test('shows content published again after being unpublished, also without new edits', () => {
+        expect(
+            getVersionIds([
+                {
+                    versionId: 'published-again',
+                    savedAt: '2024-03-03T10:00:00Z',
+                    publishFrom: '2024-03-03T10:00:00Z',
+                    modifiedTime: published.savedAt,
+                },
+                {
+                    versionId: 'unpublished',
+                    savedAt: '2024-03-02T12:00:00Z',
+                    modifiedTime: published.savedAt,
+                },
+                { ...published, unpublishedTime: '2024-03-02T12:00:00Z' },
+            ])
+        ).toEqual(['published-again', 'published']);
+    });
+
+    test('merges versions with the same modifiedTime when the content was not unpublished', () => {
+        expect(
+            getVersionIds([
+                {
+                    versionId: 'saved-again',
+                    savedAt: '2024-03-02T10:00:00Z',
+                    publishFrom: published.publishFrom,
+                    modifiedTime: published.savedAt,
+                },
+                published,
+            ])
+        ).toEqual(['published']);
+    });
+
     // Tested in dev 28.10: published, unpublished, edited, scheduled for 15:00, unpublished before
     // 15:00, and published again at 14:05 without new edits. Publishing and unpublishing do not
     // change modifiedTime, so the three newest versions have the same modifiedTime

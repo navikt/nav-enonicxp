@@ -145,5 +145,14 @@ export const getVersionsForExternalArchive = (
 
     // Versions which were never public must be removed first. Otherwise one of them can replace a
     // public version with the same modifiedTime
-    return publicVersions.filter(filterNonModifiedVersions);
+    return publicVersions.filter((version, index, publicVersionsArray) => {
+        // Published again after being unpublished. Shown as a separate version, also without new
+        // edits, since the content was not public in between
+        const olderVersion = publicVersionsArray[index + 1];
+        if (olderVersion?.unpublishedTime) {
+            return true;
+        }
+
+        return filterNonModifiedVersions(version, index, publicVersionsArray);
+    });
 };
