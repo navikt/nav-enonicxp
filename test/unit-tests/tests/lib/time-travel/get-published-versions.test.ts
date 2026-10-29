@@ -3,145 +3,116 @@ import {
     VersionReferenceEnriched,
 } from '@navno-app/lib/time-travel/get-published-versions';
 
-const HOUR_MS = 60 * 60 * 1000;
-const DAY_MS = 24 * HOUR_MS;
-const daysFromNow = (days: number) => new Date(Date.now() + days * DAY_MS).toISOString();
-const hoursFromNow = (hours: number) => new Date(Date.now() + hours * HOUR_MS).toISOString();
+const inOneHour = () => new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
-// Newest first, as getAllVersions returns them. modifiedTime is the time of the last edit. It does
-// not change when content is published, scheduled or unpublished
-const createVersion = ({
-    versionId,
-    savedAt,
-    publishFrom,
-    modifiedTime = savedAt,
-}: {
+type TestVersion = {
     versionId: string;
     savedAt: string;
     publishFrom?: string;
+    unpublishedTime?: string;
     modifiedTime?: string;
-}) =>
-    ({
-        versionId,
-        nodeId: 'content-id',
-        nodePath: '/content/www.nav.no/side',
-        timestamp: savedAt,
-        commitId: `commit-${versionId}`,
-        locale: 'no',
-        displayName: 'Side',
-        modifiedTime,
-        type: 'no.nav.navno:dynamic-page',
-        publishFromTime: publishFrom,
-        // As enrichVersionReference sets it: unpublishing removes publish.from
-        excludeFromExternalArchive: publishFrom ? undefined : true,
-    }) as VersionReferenceEnriched;
+};
 
-const getVersionIds = (versions: VersionReferenceEnriched[]) =>
-    getVersionsForExternalArchive(versions).map((version) => version.versionId);
+// As externalArchive/content passes them: newest first, with unpublishedTime set when the newer
+// version unpublished the content. modifiedTime only changes when the content is edited
+const getVersionIds = (versions: TestVersion[]) =>
+    getVersionsForExternalArchive(
+        versions.map(
+            ({ versionId, savedAt, publishFrom, unpublishedTime, modifiedTime = savedAt }) =>
+                ({
+                    versionId,
+                    nodeId: 'content-id',
+                    nodePath: '/content/www.nav.no/side',
+                    timestamp: savedAt,
+                    commitId: `commit-${versionId}`,
+                    locale: 'no',
+                    displayName: 'Side',
+                    modifiedTime,
+                    type: 'no.nav.navno:dynamic-page',
+                    publishFromTime: publishFrom,
+                    unpublishedTime,
+                    // As enrichVersionReference sets it, since unpublishing removes publish.from
+                    excludeFromExternalArchive: publishFrom ? undefined : true,
+                }) as VersionReferenceEnriched & { unpublishedTime?: string }
+        )
+    ).map((version) => version.versionId);
+
+const published = {
+    versionId: 'published',
+    savedAt: '2024-03-01T14:42:46Z',
+    publishFrom: '2024-03-01T15:00:00Z',
+};
 
 describe('getVersionsForExternalArchive', () => {
-    test('leaves out versions scheduled for publishing', () => {
-        const versions = [
-            createVersion({
-                versionId: 'scheduled',
-                savedAt: daysFromNow(0),
-                publishFrom: daysFromNow(1),
-            }),
-            createVersion({
-                versionId: 'published-2',
-                savedAt: daysFromNow(-5),
-                publishFrom: daysFromNow(-30),
-            }),
-            createVersion({
-                versionId: 'published-1',
-                savedAt: daysFromNow(-30),
-                publishFrom: daysFromNow(-30),
-            }),
-        ];
-
-        expect(getVersionIds(versions)).toEqual(['published-2', 'published-1']);
+    test('leaves out a version scheduled for publishing', () => {
+        expect(
+            getVersionIds([
+                {
+                    versionId: 'scheduled',
+                    savedAt: '2024-03-02T10:00:00Z',
+                    publishFrom: inOneHour(),
+                },
+                published,
+            ])
+        ).toEqual(['published']);
     });
 
-    test('keeps versions which were scheduled, once they are published', () => {
-        const versions = [
-            createVersion({
-                versionId: 'was-scheduled',
-                savedAt: daysFromNow(-3),
-                publishFrom: daysFromNow(-1),
-            }),
-            createVersion({
-                versionId: 'published',
-                savedAt: daysFromNow(-30),
-                publishFrom: daysFromNow(-30),
-            }),
-        ];
-
-        expect(getVersionIds(versions)).toEqual(['was-scheduled', 'published']);
+    test('keeps a scheduled version once it is published', () => {
+        expect(
+            getVersionIds([
+                {
+                    versionId: 'was-scheduled',
+                    savedAt: '2024-03-02T10:00:00Z',
+                    publishFrom: '2024-03-02T15:00:00Z',
+                },
+                published,
+            ])
+        ).toEqual(['was-scheduled', 'published']);
     });
 
-    // Published, unpublished, edited, scheduled, unpublished before the scheduled time, and then
-    // published again without new edits. The cancelled and the republished version have the same
-    // modifiedTime
-    const createRescheduledVersions = (cancelledPublishFrom: string) => {
-        const originalEdit = daysFromNow(-1);
-        const newEdit = hoursFromNow(-5);
+    // Tested in dev 28.10: published, unpublished, edited, scheduled for 15:00, unpublished before
+    // 15:00, and published again at 14:05 without new edits. Publishing and unpublishing do not
+    // change modifiedTime, so the three newest versions have the same modifiedTime
+    test.each([
+        ['before', inOneHour()],
+        ['after', '2024-03-02T15:00:00Z'],
+    ])(
+        'shows content published again after a cancelled schedule, %s the cancelled publish time',
+        (_, cancelledPublishFrom) => {
+            const edited = '2024-03-02T10:44:11Z';
 
-        return [
-            createVersion({
-                versionId: 'republished',
-                savedAt: hoursFromNow(-1),
-                publishFrom: hoursFromNow(-0.5),
-                modifiedTime: newEdit,
-            }),
-            createVersion({
-                versionId: 'unpublished-2',
-                savedAt: hoursFromNow(-2),
-                modifiedTime: newEdit,
-            }),
-            createVersion({
-                versionId: 'cancelled',
-                savedAt: hoursFromNow(-4),
-                publishFrom: cancelledPublishFrom,
-                modifiedTime: newEdit,
-            }),
-            createVersion({
-                versionId: 'unpublished-1',
-                savedAt: hoursFromNow(-6),
-                modifiedTime: originalEdit,
-            }),
-            createVersion({
-                versionId: 'original',
-                savedAt: originalEdit,
-                publishFrom: originalEdit,
-                modifiedTime: originalEdit,
-            }),
-        ];
-    };
-
-    test('shows content republished after a cancelled schedule', () => {
-        expect(getVersionIds(createRescheduledVersions(hoursFromNow(2)))).toEqual([
-            'republished',
-            'original',
-        ]);
-    });
-
-    test('never shows a cancelled schedule, also after its publish time has passed', () => {
-        expect(getVersionIds(createRescheduledVersions(hoursFromNow(-1.5)))).toEqual([
-            'republished',
-            'original',
-        ]);
-    });
-
-    test('shows a scheduled version which was public before the content was unpublished', () => {
-        const versions = [
-            createVersion({ versionId: 'unpublished', savedAt: hoursFromNow(-1) }),
-            createVersion({
-                versionId: 'scheduled',
-                savedAt: hoursFromNow(-5),
-                publishFrom: hoursFromNow(-3),
-            }),
-        ];
-
-        expect(getVersionIds(versions)).toEqual(['scheduled']);
-    });
+            expect(
+                getVersionIds([
+                    {
+                        versionId: 'published-again',
+                        savedAt: '2024-03-02T14:04:01Z',
+                        publishFrom: '2024-03-02T14:05:00Z',
+                        modifiedTime: edited,
+                    },
+                    {
+                        versionId: 'unpublished-2',
+                        savedAt: '2024-03-02T14:01:56Z',
+                        modifiedTime: edited,
+                    },
+                    {
+                        versionId: 'cancelled',
+                        savedAt: '2024-03-02T10:45:06Z',
+                        publishFrom: cancelledPublishFrom,
+                        unpublishedTime: '2024-03-02T14:01:56Z',
+                        modifiedTime: edited,
+                    },
+                    {
+                        versionId: 'unpublished-1',
+                        savedAt: '2024-03-02T10:43:17Z',
+                        modifiedTime: '2024-03-01T14:41:56Z',
+                    },
+                    {
+                        ...published,
+                        unpublishedTime: '2024-03-02T10:43:17Z',
+                        modifiedTime: '2024-03-01T14:41:56Z',
+                    },
+                ])
+            ).toEqual(['published-again', 'published']);
+        }
+    );
 });

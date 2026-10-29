@@ -2,7 +2,7 @@ import * as contextLib from '/lib/xp/context';
 import { Content } from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
 import { ContentDescriptor, MediaDescriptor } from '../../types/content-types/content-config';
-import { fixDateFormat, getISONowWithoutMS } from './datetime-utils';
+import { getISONowWithoutMS } from './datetime-utils';
 import { logger } from './logging';
 import { COMPONENT_APP_KEY, NAVNO_NODE_ROOT_PATH } from '../constants';
 
@@ -78,28 +78,26 @@ export const isContentAwaitingPrepublish = (
 ): content is Content & { publish: { from: string } } =>
     isPublishFromInFuture(content.publish?.from);
 
-type VersionPublishTimes = { timestamp: string; publishFrom?: string | null };
-
-const toUnixTime = (dateTime: string) => new Date(fixDateFormat(dateTime)).getTime();
-
-// A published version is public from when it was saved, or from publish.from if that is later.
-// Unpublishing removes publish.from, so a newer version without it means the content was
-// unpublished. A version scheduled for publishing which was unpublished before its publish time
-// was never public
-export const wasVersionPublic = (
-    version: VersionPublishTimes,
-    newerVersion?: VersionPublishTimes
-) => {
-    if (!version.publishFrom || isPublishFromInFuture(version.publishFrom)) {
+// Whether a version was public on nav.no at some point. The times are ISO strings in UTC, which
+// can be compared as text
+export const wasVersionPublic = (publishFrom?: string | null, unpublishedTime?: string | null) => {
+    // Not published. Unpublishing removes publish.from
+    if (!publishFrom) {
         return false;
     }
 
-    if (!newerVersion || newerVersion.publishFrom) {
-        return true;
+    // Scheduled for publishing, and the publish time has not passed yet
+    if (isPublishFromInFuture(publishFrom)) {
+        return false;
     }
 
-    const publicFrom = Math.max(toUnixTime(version.timestamp), toUnixTime(version.publishFrom));
-    return toUnixTime(newerVersion.timestamp) > publicFrom;
+    // Scheduled for publishing, but unpublished before the publish time. This cancelled the
+    // scheduled publishing
+    if (unpublishedTime && unpublishedTime < publishFrom) {
+        return false;
+    }
+
+    return true;
 };
 
 // If the content ref is a path, ensure it has the /content prefix

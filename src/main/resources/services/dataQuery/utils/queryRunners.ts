@@ -146,7 +146,7 @@ export const runExternalArchiveQuery = (params: RunExternalArchiveQueryParams) =
     );
 
     const { repoIdToLocaleMap } = getLayersData();
-    const notPublishedYetIds = new Set<string>();
+    const missingNodeHits: typeof nodeHits = [];
 
     const contentHits = nodeHits.reduce<ContentWithLocaleData[]>((contents, node) => {
         const locale = repoIdToLocaleMap[node.repoId];
@@ -156,18 +156,18 @@ export const runExternalArchiveQuery = (params: RunExternalArchiveQueryParams) =
             asAdmin: true,
         });
         const result = repo.get<RepoNode<Content>>(node.id);
-        if (!result) return contents;
-        const latestContent = transformRepoNode(result);
+        if (!result) {
+            missingNodeHits.push(node);
+            return contents;
+        }
 
-        // Scheduled content is pushed to master when it is scheduled, but must not be shown in
-        // the archive before it is published. Use the last version which was published, as the
-        // content tree does. Content which has never been published is left out
+        // Scheduled content is in master before its publish time. Show the version which was
+        // public before, as the content tree does, and leave out content never published
+        const latestContent = transformRepoNode(result);
         const contentNode = isContentAwaitingPrepublish(latestContent)
             ? getLastPublishedContentVersion(node.id, locale)
             : latestContent;
-
         if (!contentNode) {
-            notPublishedYetIds.add(node.id);
             return contents;
         }
 
@@ -180,15 +180,11 @@ export const runExternalArchiveQuery = (params: RunExternalArchiveQueryParams) =
         return [...contents, contentWithRepoIds];
     }, []);
 
-    if (contentHits.length + notPublishedYetIds.size !== nodeHits.length) {
-        const diff = nodeHits.filter(
-            (node) =>
-                !notPublishedYetIds.has(node.id) && !contentHits.find((hit) => hit._id === node.id)
-        );
+    if (missingNodeHits.length > 0) {
         logger.warning(
             `Data query: missing results from master content query for ${
-                diff.length
-            } ids: ${JSON.stringify(diff)}`
+                missingNodeHits.length
+            } ids: ${JSON.stringify(missingNodeHits)}`
         );
     }
     return {

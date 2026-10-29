@@ -130,24 +130,20 @@ export const getPublishedAndModifiedVersions = (contentId: string, locale: strin
     );
 };
 
-const toPublishTimes = (version: VersionReferenceEnriched) => ({
-    timestamp: version.timestamp,
-    publishFrom: version.publishFromTime,
-});
+// Used by the version history selector in the external archive, with unpublishedTime set as in
+// externalArchive/content
+export const getVersionsForExternalArchive = (
+    versions: (VersionReferenceEnriched & { unpublishedTime?: string })[]
+) => {
+    const publicVersions = versions.filter((version) => {
+        if (version.excludeFromExternalArchive) {
+            return false;
+        }
 
-// Used by the version history selector in the external archive. Versions which were never public
-// are left out: scheduled for publishing, or unpublished before the scheduled time.
-// Versions are compared by modifiedTime with the next version shown, not with a hidden version, so
-// content republished after a cancelled schedule is not left out
-export const getVersionsForExternalArchive = (versions: VersionReferenceEnriched[]) => {
-    const publicVersions = versions.filter(
-        (version, index) =>
-            !version.excludeFromExternalArchive &&
-            wasVersionPublic(
-                toPublishTimes(version),
-                index > 0 ? toPublishTimes(versions[index - 1]) : undefined
-            )
-    );
+        return wasVersionPublic(version.publishFromTime, version.unpublishedTime);
+    });
 
+    // Versions which were never public must be removed first. Otherwise one of them can replace a
+    // public version with the same modifiedTime
     return publicVersions.filter(filterNonModifiedVersions);
 };
