@@ -63,34 +63,41 @@ export const getLastPublishedContentVersion = (
     return transformRepoContentNode(contentNode);
 };
 
+const getDraftVersion = (version: NodeVersion, draftRepo: RepoConnection) => {
+    try {
+        return draftRepo.get<Content>({ key: version.nodeId, versionId: version.versionId });
+    } catch (error) {
+        logger.error(`Error fetching object with versionId ${version.versionId}: ${error}`);
+        return null;
+    }
+};
+
 const getLastPublishedDraftVersion = (versions: NodeVersion[], draftRepo: RepoConnection) => {
     // When the content was unpublished after the current version, as unpublishedTime in the archive
     let unpublishedTime: string | undefined;
 
-    // Newest version first
+    // Newest version first. Only committed versions can have been published or unpublished
     for (const version of versions) {
-        if (version.commitId) {
-            try {
-                const contentNode = draftRepo.get<Content>({
-                    key: version.nodeId,
-                    versionId: version.versionId,
-                });
-                const publishFrom = contentNode?.publish?.from;
+        if (!version.commitId) {
+            continue;
+        }
 
-                if (contentNode && wasVersionPublic(publishFrom, unpublishedTime)) {
-                    return contentNode;
-                }
+        const contentNode = getDraftVersion(version, draftRepo);
+        if (!contentNode) {
+            continue;
+        }
 
-                // Unpublishing removes publish.from. If this version unpublished the content, the
-                // next, older version was unpublished at this time
-                if (publishFrom) {
-                    unpublishedTime = undefined;
-                } else {
-                    unpublishedTime = version.timestamp;
-                }
-            } catch (error) {
-                logger.error(`Error fetching object with versionId ${version.versionId}: ${error}`);
-            }
+        const publishFrom = contentNode.publish?.from;
+        if (wasVersionPublic(publishFrom, unpublishedTime)) {
+            return contentNode;
+        }
+
+        // Unpublishing removes publish.from. If this version unpublished the content, the next,
+        // older version was unpublished at this time
+        if (publishFrom) {
+            unpublishedTime = undefined;
+        } else {
+            unpublishedTime = version.timestamp;
         }
     }
 

@@ -23,9 +23,9 @@ jest.mock('@navno-app/lib/utils/logging', () => ({
 }));
 
 import { runExternalArchiveQuery } from '@navno-app/services/dataQuery/utils/queryRunners';
+import { getLayersData } from '@navno-app/lib/localization/layers-data';
 
-const DAY_MS = 24 * 60 * 60 * 1000;
-const daysFromNow = (days: number) => new Date(Date.now() + days * DAY_MS).toISOString();
+const tomorrow = () => new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
 const createContent = (id: string, displayName: string, publishFrom: string) => ({
     _id: id,
@@ -37,7 +37,7 @@ const createContent = (id: string, displayName: string, publishFrom: string) => 
 });
 
 const addHit = (id: string, publishFrom?: string) => {
-    nodeHits.push({ id, repoId: 'repo', branch: 'master' });
+    nodeHits.push({ id, repoId: getLayersData().localeToRepoIdMap.no, branch: 'master' });
     if (publishFrom) {
         contents[id] = createContent(id, id, publishFrom);
     }
@@ -57,8 +57,8 @@ describe('runExternalArchiveQuery', () => {
     });
 
     test('leaves out content scheduled for its first publishing', () => {
-        addHit('published', daysFromNow(-10));
-        addHit('scheduled', daysFromNow(1));
+        addHit('published', '2024-03-01T10:00:00Z');
+        addHit('scheduled', tomorrow());
 
         const result = runSearch();
 
@@ -68,23 +68,23 @@ describe('runExternalArchiveQuery', () => {
     });
 
     test('shows the last published version of content scheduled to be published again', () => {
-        addHit('rescheduled', daysFromNow(1));
+        addHit('rescheduled', tomorrow());
         lastPublishedVersions['rescheduled'] = createContent(
             'rescheduled',
             'Published title',
-            daysFromNow(-10)
+            '2024-03-01T10:00:00Z'
         );
 
         const result = runSearch();
 
-        expect(getLastPublishedContentVersion.mock.calls[0][0]).toBe('rescheduled');
+        expect(getLastPublishedContentVersion).toHaveBeenCalledWith('rescheduled', 'no');
         expect(result.hits.map((hit) => hit.displayName)).toEqual(['Published title']);
         expect(result.total).toBe(1);
         expect(warning).not.toHaveBeenCalled();
     });
 
     test('does not look up older versions for published content', () => {
-        addHit('published', daysFromNow(-10));
+        addHit('published', '2024-03-01T10:00:00Z');
 
         runSearch();
 
@@ -92,7 +92,7 @@ describe('runExternalArchiveQuery', () => {
     });
 
     test('still warns about hits without content', () => {
-        addHit('published', daysFromNow(-10));
+        addHit('published', '2024-03-01T10:00:00Z');
         addHit('missing');
 
         const result = runSearch();

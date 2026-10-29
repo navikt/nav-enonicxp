@@ -46,13 +46,10 @@ import {
     getLastPublishedContentVersion,
 } from '@navno-app/lib/external-archive/get-content';
 
-const HOUR_MS = 60 * 60 * 1000;
-const DAY_MS = 24 * HOUR_MS;
-const daysFromNow = (days: number) => new Date(Date.now() + days * DAY_MS).toISOString();
-const hoursFromNow = (hours: number) => new Date(Date.now() + hours * HOUR_MS).toISOString();
+const tomorrow = () => new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
 // Versions newest first. All are committed: published, scheduled for publishing, or unpublished.
-// Unpublishing removes publish.from
+// Unpublishing removes publish.from. Content Studio can only schedule content which is unpublished
 const addContent = (
     contentId: string,
     versions: { versionId: string; savedAt: string; publishFrom?: string }[],
@@ -84,39 +81,58 @@ const addContent = (
 
 addContent(
     'published',
-    [{ versionId: 'published-1', savedAt: daysFromNow(-10), publishFrom: daysFromNow(-10) }],
+    [
+        {
+            versionId: 'published-1',
+            savedAt: '2024-03-01T10:00:00Z',
+            publishFrom: '2024-03-01T10:00:00Z',
+        },
+    ],
     'published-1'
 );
 
 // New content, scheduled to be published tomorrow
 addContent(
     'scheduled',
-    [{ versionId: 'scheduled-1', savedAt: daysFromNow(-1), publishFrom: daysFromNow(1) }],
+    [{ versionId: 'scheduled-1', savedAt: '2024-03-01T10:00:00Z', publishFrom: tomorrow() }],
     'scheduled-1'
 );
 
-// Was published, then unpublished, and is now scheduled to be published again
+// Published, unpublished, and scheduled to be published again tomorrow
 addContent(
     'rescheduled',
     [
-        { versionId: 'rescheduled-3', savedAt: daysFromNow(-1), publishFrom: daysFromNow(1) },
-        { versionId: 'rescheduled-2', savedAt: daysFromNow(-2) },
-        { versionId: 'rescheduled-1', savedAt: daysFromNow(-30), publishFrom: daysFromNow(-30) },
+        { versionId: 'rescheduled-3', savedAt: '2024-03-03T10:00:00Z', publishFrom: tomorrow() },
+        { versionId: 'rescheduled-2', savedAt: '2024-03-02T10:00:00Z' },
+        {
+            versionId: 'rescheduled-1',
+            savedAt: '2024-03-01T10:00:00Z',
+            publishFrom: '2024-03-01T10:00:00Z',
+        },
     ],
     'rescheduled-3'
 );
 
-// Was published, then scheduled, unpublished before the scheduled time, and is now scheduled again.
-// The publish time of the cancelled schedule has passed
+// Published, unpublished, scheduled for 15:00, unpublished at 14:00 before the publish time, and
+// scheduled again for tomorrow
 addContent(
     'cancelled',
     [
-        { versionId: 'cancelled-4', savedAt: hoursFromNow(-1), publishFrom: daysFromNow(1) },
-        { versionId: 'cancelled-3', savedAt: hoursFromNow(-3) },
-        { versionId: 'cancelled-2', savedAt: hoursFromNow(-4), publishFrom: hoursFromNow(-2) },
-        { versionId: 'cancelled-1', savedAt: daysFromNow(-10), publishFrom: daysFromNow(-10) },
+        { versionId: 'cancelled-5', savedAt: '2024-03-03T10:00:00Z', publishFrom: tomorrow() },
+        { versionId: 'cancelled-4', savedAt: '2024-03-02T14:00:00Z' },
+        {
+            versionId: 'cancelled-3',
+            savedAt: '2024-03-02T10:45:00Z',
+            publishFrom: '2024-03-02T15:00:00Z',
+        },
+        { versionId: 'cancelled-2', savedAt: '2024-03-02T10:43:00Z' },
+        {
+            versionId: 'cancelled-1',
+            savedAt: '2024-03-01T10:00:00Z',
+            publishFrom: '2024-03-01T10:00:00Z',
+        },
     ],
-    'cancelled-4'
+    'cancelled-5'
 );
 
 describe('getLastPublishedContentVersion', () => {

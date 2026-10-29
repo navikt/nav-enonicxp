@@ -70,7 +70,7 @@ export const isContentNoIndex = (content: Content<any>) => {
 
 // Content scheduled for publishing is pushed to master when it is scheduled, but is not public
 // until publish.from
-export const isPublishFromInFuture = (publishFrom?: string | null) =>
+const isPublishFromInFuture = (publishFrom?: string | null) =>
     publishFrom ? publishFrom > getISONowWithoutMS() : false;
 
 export const isContentAwaitingPrepublish = (

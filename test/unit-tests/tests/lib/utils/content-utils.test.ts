@@ -1,37 +1,19 @@
 import { Content } from '/lib/xp/content';
-import {
-    isContentAwaitingPrepublish,
-    isPublishFromInFuture,
-    wasVersionPublic,
-} from '@navno-app/lib/utils/content-utils';
+import { isContentAwaitingPrepublish, wasVersionPublic } from '@navno-app/lib/utils/content-utils';
 
-const HOUR_MS = 60 * 60 * 1000;
-const inOneHour = () => new Date(Date.now() + HOUR_MS).toISOString();
-const oneHourAgo = () => new Date(Date.now() - HOUR_MS).toISOString();
-
-describe('isPublishFromInFuture', () => {
-    test('is true when publish.from is in the future', () => {
-        expect(isPublishFromInFuture(inOneHour())).toBe(true);
-    });
-
-    test('is false when publish.from has passed', () => {
-        expect(isPublishFromInFuture(oneHourAgo())).toBe(false);
-    });
-
-    test('is false without publish.from', () => {
-        expect(isPublishFromInFuture(undefined)).toBe(false);
-        expect(isPublishFromInFuture(null)).toBe(false);
-    });
-});
+const inOneHour = () => new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
 describe('isContentAwaitingPrepublish', () => {
-    test('checks publish.from on the content', () => {
+    test('is true when publish.from is in the future', () => {
         expect(isContentAwaitingPrepublish({ publish: { from: inOneHour() } } as Content)).toBe(
             true
         );
-        expect(isContentAwaitingPrepublish({ publish: { from: oneHourAgo() } } as Content)).toBe(
-            false
-        );
+    });
+
+    test('is false when publish.from has passed, or is missing', () => {
+        expect(
+            isContentAwaitingPrepublish({ publish: { from: '2024-03-01T14:00:00Z' } } as Content)
+        ).toBe(false);
         expect(isContentAwaitingPrepublish({} as Content)).toBe(false);
     });
 });

@@ -70,6 +70,30 @@ describe('getVersionsForExternalArchive', () => {
         ).toEqual(['was-scheduled', 'published']);
     });
 
+    // Edited without publishing, then unpublished, then published again without new edits.
+    // Unpublishing saves the draft, so the unpublished and the new version both have the
+    // modifiedTime of the edit. Not only for scheduled content
+    test('shows content published again after being unpublished with unpublished edits', () => {
+        const edited = '2024-03-02T09:00:00Z';
+
+        expect(
+            getVersionIds([
+                {
+                    versionId: 'published-again',
+                    savedAt: '2024-03-03T10:00:00Z',
+                    publishFrom: '2024-03-03T10:00:00Z',
+                    modifiedTime: edited,
+                },
+                {
+                    versionId: 'unpublished',
+                    savedAt: '2024-03-02T12:00:00Z',
+                    modifiedTime: edited,
+                },
+                { ...published, unpublishedTime: '2024-03-02T12:00:00Z' },
+            ])
+        ).toEqual(['published-again', 'published']);
+    });
+
     // Tested in dev 28.10: published, unpublished, edited, scheduled for 15:00, unpublished before
     // 15:00, and published again at 14:05 without new edits. Publishing and unpublishing do not
     // change modifiedTime, so the three newest versions have the same modifiedTime
