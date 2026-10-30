@@ -22,9 +22,8 @@ const masterNodes: Record<string, TestNode> = {};
 const draftNodes: Record<string, TestNode> = {};
 const versionNodes: Record<string, TestNode> = {};
 const draftVersions: Record<string, TestVersion[]> = {};
-const commitTimes: Record<string, string> = {};
 
-// Only what get-content.ts uses. mock-xp does not implement findVersions or getCommit
+// Only what get-content.ts uses. mock-xp does not implement findVersions
 const getRepoConnection = jest.fn(({ branch }: { branch: string }) => ({
     get: (params: GetParams) => {
         const { key, versionId } = typeof params === 'string' ? { key: params } : params;
@@ -38,8 +37,6 @@ const getRepoConnection = jest.fn(({ branch }: { branch: string }) => ({
         const hits = draftVersions[key] ?? [];
         return { hits, total: hits.length, count: hits.length };
     },
-    getCommit: ({ id }: { id: string }) =>
-        commitTimes[id] ? { id, timestamp: commitTimes[id] } : null,
 }));
 
 jest.mock('@navno-app/lib/repos/repo-utils', () => ({ getRepoConnection }));
@@ -51,17 +48,11 @@ import {
 
 const tomorrow = () => new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
-// Versions newest first. Unpublishing removes publish.from. A version is committed when it is
-// saved, unless committedAt is set, or draftOnly when it was never published or unpublished
+// Versions newest first. Unpublishing removes publish.from. All versions are committed, except
+// draftOnly versions, which were never published or unpublished
 const addContent = (
     contentId: string,
-    versions: {
-        versionId: string;
-        savedAt: string;
-        committedAt?: string;
-        draftOnly?: boolean;
-        publishFrom?: string;
-    }[],
+    versions: { versionId: string; savedAt: string; draftOnly?: boolean; publishFrom?: string }[],
     versionInMaster: string
 ) => {
     const nodes = versions.map(({ versionId, publishFrom }) => ({
@@ -79,21 +70,13 @@ const addContent = (
     });
     draftNodes[contentId] = nodes[0];
     masterNodes[contentId] = versionNodes[versionInMaster];
-    draftVersions[contentId] = versions.map(
-        ({ versionId, savedAt, committedAt = savedAt, draftOnly }) => {
-            if (!draftOnly) {
-                commitTimes[`commit-${versionId}`] = committedAt;
-            }
-
-            return {
-                versionId,
-                nodeId: contentId,
-                nodePath: `/content/www.nav.no/${contentId}`,
-                timestamp: savedAt,
-                commitId: draftOnly ? undefined : `commit-${versionId}`,
-            };
-        }
-    );
+    draftVersions[contentId] = versions.map(({ versionId, savedAt, draftOnly }) => ({
+        versionId,
+        nodeId: contentId,
+        nodePath: `/content/www.nav.no/${contentId}`,
+        timestamp: savedAt,
+        commitId: draftOnly ? undefined : `commit-${versionId}`,
+    }));
 };
 
 addContent(
@@ -167,26 +150,6 @@ addContent(
     'moved-2'
 );
 
-// As 'moved', but the new publish time was saved at 11:00 and published at 16:00. The first
-// version was public from 12:00 to 16:00
-addContent(
-    'moved-after-publish',
-    [
-        {
-            versionId: 'moved-after-publish-2',
-            savedAt: '2024-03-02T11:00:00Z',
-            committedAt: '2024-03-02T16:00:00Z',
-            publishFrom: tomorrow(),
-        },
-        {
-            versionId: 'moved-after-publish-1',
-            savedAt: '2024-03-02T10:00:00Z',
-            publishFrom: '2024-03-02T12:00:00Z',
-        },
-    ],
-    'moved-after-publish-2'
-);
-
 // Published, edited without publishing, and scheduled for tomorrow. The edit was never public
 addContent(
     'draft-only',
@@ -228,12 +191,6 @@ describe('getLastPublishedContentVersion', () => {
 
     test('returns nothing for content whose publish time was moved to a later time', () => {
         expect(getLastPublishedContentVersion('moved', 'no')).toBeNull();
-    });
-
-    test('returns a scheduled version which was public before the publish time was moved', () => {
-        expect(getLastPublishedContentVersion('moved-after-publish', 'no')?._versionKey).toBe(
-            'moved-after-publish-1'
-        );
     });
 
     test('skips versions which were never published or unpublished', () => {

@@ -68,32 +68,34 @@ export const isContentNoIndex = (content: Content<any>) => {
     return !!content.data?.noindex;
 };
 
-// Content scheduled for publishing is pushed to master when it is scheduled, but is not public
-// until publish.from
-const isPublishFromInFuture = (publishFrom?: string | null) =>
-    publishFrom ? publishFrom > getISONowWithoutMS() : false;
-
 export const isContentAwaitingPrepublish = (
     content: Content<any>
-): content is Content & { publish: { from: string } } =>
-    isPublishFromInFuture(content.publish?.from);
+): content is Content & { publish: { from: string } } => {
+    const publishFrom = content.publish?.from;
+    const isoNow = getISONowWithoutMS();
+    return publishFrom ? publishFrom > isoNow : false;
+};
 
 // Whether a version was public on nav.no at some point. replacedTime is when the next version was
-// committed, i.e. when this version was replaced in master or removed by unpublishing. The times
-// are ISO strings in UTC, which can be compared as text
+// saved. The next version replaced this version in master when it was published or unpublished,
+// which is at the same time or later. The times are ISO strings in UTC, which can be compared as
+// text
 export const wasVersionPublic = (publishFrom?: string | null, replacedTime?: string | null) => {
     // Not published. Unpublishing removes publish.from
     if (!publishFrom) {
         return false;
     }
 
-    // Scheduled for publishing, and the publish time has not passed yet
-    if (isPublishFromInFuture(publishFrom)) {
+    // Scheduled for publishing, and the publish time has not passed yet. Content scheduled for
+    // publishing is in master before it is public
+    if (publishFrom > getISONowWithoutMS()) {
         return false;
     }
 
     // Scheduled for publishing, but unpublished or scheduled for another time before the publish
-    // time
+    // time. Also leaves out a version which was public for a while, if the next version was saved
+    // before the publish time and published after it. Commit times would show this, but can be
+    // overwritten later, and then a version which was never public would be shown
     if (replacedTime && replacedTime < publishFrom) {
         return false;
     }

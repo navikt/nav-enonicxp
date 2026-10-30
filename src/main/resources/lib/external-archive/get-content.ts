@@ -9,7 +9,6 @@ import {
     wasVersionPublic,
 } from '../utils/content-utils';
 import { logger } from '../utils/logging';
-import { getVersionCommitTime } from '../utils/version-utils';
 
 const transformRepoContentNode = (node: RepoNode<Content>): Content => {
     const { _indexConfig, _inheritsPermissions, _permissions, _childOrder, ...content } = node;
@@ -74,8 +73,8 @@ const getDraftVersion = (version: NodeVersion, draftRepo: RepoConnection) => {
 };
 
 const getLastPublishedDraftVersion = (versions: NodeVersion[], draftRepo: RepoConnection) => {
-    // When the newer version was committed, i.e. when the current version was replaced in master
-    // or removed by unpublishing
+    // When the newer version was saved. It replaced the current version in master when it was
+    // published or unpublished
     let replacedTime: string | undefined;
 
     // Newest version first. Only committed versions have been in master
@@ -89,7 +88,7 @@ const getLastPublishedDraftVersion = (versions: NodeVersion[], draftRepo: RepoCo
             return contentNode;
         }
 
-        replacedTime = getVersionCommitTime(version, draftRepo);
+        replacedTime = version.timestamp;
     }
 
     return null;
