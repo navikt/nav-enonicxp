@@ -1,0 +1,215 @@
+import {
+    getVersionsForExternalArchive,
+    VersionReferenceEnriched,
+} from '@navno-app/lib/time-travel/get-published-versions';
+
+const inOneHour = () => new Date(Date.now() + 60 * 60 * 1000).toISOString();
+
+type TestVersion = {
+    versionId: string;
+    savedAt: string;
+    publishFrom?: string;
+    unpublishedTime?: string;
+    modifiedTime?: string;
+};
+
+// As externalArchive/content passes them: newest first, with unpublishedTime set when the newer
+// version unpublished the content. modifiedTime only changes when the content is edited
+const getVersionIds = (versions: TestVersion[]) =>
+    getVersionsForExternalArchive(
+        versions.map(
+            ({ versionId, savedAt, publishFrom, unpublishedTime, modifiedTime = savedAt }) =>
+                ({
+                    versionId,
+                    nodeId: 'content-id',
+                    nodePath: '/content/www.nav.no/side',
+                    timestamp: savedAt,
+                    commitId: `commit-${versionId}`,
+                    locale: 'no',
+                    displayName: 'Side',
+                    modifiedTime,
+                    type: 'no.nav.navno:dynamic-page',
+                    publishFromTime: publishFrom,
+                    unpublishedTime,
+                    // As enrichVersionReference sets it, since unpublishing removes publish.from
+                    excludeFromExternalArchive: publishFrom ? undefined : true,
+                }) as VersionReferenceEnriched & { unpublishedTime?: string }
+        )
+    ).map((version) => version.versionId);
+
+const published = {
+    versionId: 'published',
+    savedAt: '2024-03-01T14:42:46Z',
+    publishFrom: '2024-03-01T15:00:00Z',
+};
+
+describe('getVersionsForExternalArchive', () => {
+    test('leaves out a version scheduled for publishing', () => {
+        expect(
+            getVersionIds([
+                {
+                    versionId: 'scheduled',
+                    savedAt: '2024-03-02T10:00:00Z',
+                    publishFrom: inOneHour(),
+                },
+                published,
+            ])
+        ).toEqual(['published']);
+    });
+
+    test('keeps a scheduled version once it is published', () => {
+        expect(
+            getVersionIds([
+                {
+                    versionId: 'was-scheduled',
+                    savedAt: '2024-03-02T10:00:00Z',
+                    publishFrom: '2024-03-02T15:00:00Z',
+                },
+                published,
+            ])
+        ).toEqual(['was-scheduled', 'published']);
+    });
+
+    // Scheduled for 12:00. At 11:00, scheduled for another time in Details > Schedule and published
+    // again
+    test('leaves out a version when the publish time is moved to a later time', () => {
+        expect(
+            getVersionIds([
+                {
+                    versionId: 'moved',
+                    savedAt: '2024-03-02T11:00:00Z',
+                    publishFrom: inOneHour(),
+                },
+                {
+                    versionId: 'scheduled',
+                    savedAt: '2024-03-02T10:00:00Z',
+                    publishFrom: '2024-03-02T12:00:00Z',
+                },
+                published,
+            ])
+        ).toEqual(['published']);
+    });
+
+    test('leaves out a version when the publish time is moved to an earlier time', () => {
+        expect(
+            getVersionIds([
+                {
+                    versionId: 'moved',
+                    savedAt: '2024-03-02T11:00:00Z',
+                    publishFrom: '2024-03-02T12:00:00Z',
+                },
+                {
+                    versionId: 'scheduled',
+                    savedAt: '2024-03-02T10:00:00Z',
+                    publishFrom: '2024-03-02T15:00:00Z',
+                },
+                published,
+            ])
+        ).toEqual(['moved', 'published']);
+    });
+
+    // Edited without publishing, then unpublished, then published again without new edits.
+    // Unpublishing saves the draft, so the unpublished and the new version both have the
+    // modifiedTime of the edit. Not only for scheduled content
+    test('shows content published again after being unpublished with unpublished edits', () => {
+        const edited = '2024-03-02T09:00:00Z';
+
+        expect(
+            getVersionIds([
+                {
+                    versionId: 'published-again',
+                    savedAt: '2024-03-03T10:00:00Z',
+                    publishFrom: '2024-03-03T10:00:00Z',
+                    modifiedTime: edited,
+                },
+                {
+                    versionId: 'unpublished',
+                    savedAt: '2024-03-02T12:00:00Z',
+                    modifiedTime: edited,
+                },
+                { ...published, unpublishedTime: '2024-03-02T12:00:00Z' },
+            ])
+        ).toEqual(['published-again', 'published']);
+    });
+
+    // Tested in dev 29.10: unpublished and published again without new edits. Unpublishing and
+    // publishing do not change modifiedTime, so both versions have the same modifiedTime
+    test('shows content published again after being unpublished, also without new edits', () => {
+        expect(
+            getVersionIds([
+                {
+                    versionId: 'published-again',
+                    savedAt: '2024-03-03T10:00:00Z',
+                    publishFrom: '2024-03-03T10:00:00Z',
+                    modifiedTime: published.savedAt,
+                },
+                {
+                    versionId: 'unpublished',
+                    savedAt: '2024-03-02T12:00:00Z',
+                    modifiedTime: published.savedAt,
+                },
+                { ...published, unpublishedTime: '2024-03-02T12:00:00Z' },
+            ])
+        ).toEqual(['published-again', 'published']);
+    });
+
+    test('merges versions with the same modifiedTime when the content was not unpublished', () => {
+        expect(
+            getVersionIds([
+                {
+                    versionId: 'saved-again',
+                    savedAt: '2024-03-02T10:00:00Z',
+                    publishFrom: published.publishFrom,
+                    modifiedTime: published.savedAt,
+                },
+                published,
+            ])
+        ).toEqual(['published']);
+    });
+
+    // Tested in dev 28.10: published, unpublished, edited, scheduled for 15:00, unpublished before
+    // 15:00, and published again at 14:05 without new edits. Publishing and unpublishing do not
+    // change modifiedTime, so the three newest versions have the same modifiedTime
+    test.each([
+        ['before', inOneHour()],
+        ['after', '2024-03-02T15:00:00Z'],
+    ])(
+        'shows content published again after a cancelled schedule, %s the cancelled publish time',
+        (_, cancelledPublishFrom) => {
+            const edited = '2024-03-02T10:44:11Z';
+
+            expect(
+                getVersionIds([
+                    {
+                        versionId: 'published-again',
+                        savedAt: '2024-03-02T14:04:01Z',
+                        publishFrom: '2024-03-02T14:05:00Z',
+                        modifiedTime: edited,
+                    },
+                    {
+                        versionId: 'unpublished-2',
+                        savedAt: '2024-03-02T14:01:56Z',
+                        modifiedTime: edited,
+                    },
+                    {
+                        versionId: 'cancelled',
+                        savedAt: '2024-03-02T10:45:06Z',
+                        publishFrom: cancelledPublishFrom,
+                        unpublishedTime: '2024-03-02T14:01:56Z',
+                        modifiedTime: edited,
+                    },
+                    {
+                        versionId: 'unpublished-1',
+                        savedAt: '2024-03-02T10:43:17Z',
+                        modifiedTime: '2024-03-01T14:41:56Z',
+                    },
+                    {
+                        ...published,
+                        unpublishedTime: '2024-03-02T10:43:17Z',
+                        modifiedTime: '2024-03-01T14:41:56Z',
+                    },
+                ])
+            ).toEqual(['published-again', 'published']);
+        }
+    );
+});

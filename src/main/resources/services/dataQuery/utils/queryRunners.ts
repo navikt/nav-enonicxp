@@ -13,6 +13,8 @@ import { Content } from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
 import cacheLib from '/lib/cache';
 import { logger } from '../../../lib/utils/logging';
+import { isContentAwaitingPrepublish } from '../../../lib/utils/content-utils';
+import { getLastPublishedContentVersion } from '../../../lib/external-archive/get-content';
 
 const RESPONSE_BATCH_SIZE = 1000;
 
@@ -144,6 +146,8 @@ export const runExternalArchiveQuery = (params: RunExternalArchiveQueryParams) =
     );
 
     const { repoIdToLocaleMap } = getLayersData();
+    const missingNodeHits: typeof nodeHits = [];
+
     const contentHits = nodeHits.reduce<ContentWithLocaleData[]>((contents, node) => {
         const locale = repoIdToLocaleMap[node.repoId];
         const repo = getRepoConnection({
@@ -152,8 +156,21 @@ export const runExternalArchiveQuery = (params: RunExternalArchiveQueryParams) =
             asAdmin: true,
         });
         const result = repo.get<RepoNode<Content>>(node.id);
-        if (!result) return contents;
-        const contentNode = transformRepoNode(result);
+        if (!result) {
+            missingNodeHits.push(node);
+            return contents;
+        }
+
+        // Scheduled content is in master before its publish time. Show the version which was
+        // public before, as the content tree does, and leave out content never published
+        const latestContent = transformRepoNode(result);
+        const contentNode = isContentAwaitingPrepublish(latestContent)
+            ? getLastPublishedContentVersion(node.id, locale)
+            : latestContent;
+        if (!contentNode) {
+            return contents;
+        }
+
         const contentWithRepoIds = {
             ...contentNode,
             layerLocale: locale,
@@ -163,17 +180,16 @@ export const runExternalArchiveQuery = (params: RunExternalArchiveQueryParams) =
         return [...contents, contentWithRepoIds];
     }, []);
 
-    if (contentHits.length !== nodeHits.length) {
-        const diff = nodeHits.filter((node) => !contentHits.find((hit) => hit._id === node.id));
+    if (missingNodeHits.length > 0) {
         logger.warning(
             `Data query: missing results from master content query for ${
-                diff.length
-            } ids: ${JSON.stringify(diff)}`
+                missingNodeHits.length
+            } ids: ${JSON.stringify(missingNodeHits)}`
         );
     }
     return {
         hits: contentHits,
-        total: nodeHits.length,
+        total: contentHits.length,
         hasMore: false,
     };
 };

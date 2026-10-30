@@ -8,7 +8,7 @@ import { getLayersMigrationArchivedContentRef } from './layers-migration-refs';
 import { getNodeVersions, GetNodeVersionsParams } from '../utils/version-utils';
 import { logger } from '../utils/logging';
 import { getRepoConnection } from '../repos/repo-utils';
-import { isExcludedFromExternalArchive } from '../utils/content-utils';
+import { isExcludedFromExternalArchive, wasVersionPublic } from '../utils/content-utils';
 
 export type VersionReferenceEnriched = NodeVersion & {
     locale: string;
@@ -130,9 +130,30 @@ export const getPublishedAndModifiedVersions = (contentId: string, locale: strin
     );
 };
 
-// Used by the version history selector in the external archive
-export const getVersionsForExternalArchive = (versions: VersionReferenceEnriched[]) => {
-    return versions.filter(
-        (v, i, a) => filterNonModifiedVersions(v, i, a) && !v.excludeFromExternalArchive
-    );
+// Used by the version history selector in the external archive. Takes all versions from
+// getAllVersions, newest first, with unpublishedTime set as in externalArchive/content
+export const getVersionsForExternalArchive = (
+    versions: (VersionReferenceEnriched & { unpublishedTime?: string })[]
+) => {
+    const publicVersions = versions.filter((version, index) => {
+        if (version.excludeFromExternalArchive) {
+            return false;
+        }
+
+        const newerVersion = versions[index - 1];
+        return wasVersionPublic(version.publishFromTime, newerVersion?.timestamp);
+    });
+
+    // Versions which were never public must be removed first. Otherwise one of them can replace a
+    // public version with the same modifiedTime
+    return publicVersions.filter((version, index, publicVersionsArray) => {
+        // Published again after being unpublished. Shown as a separate version, also without new
+        // edits, since the content was not public in between
+        const olderVersion = publicVersionsArray[index + 1];
+        if (olderVersion?.unpublishedTime) {
+            return true;
+        }
+
+        return filterNonModifiedVersions(version, index, publicVersionsArray);
+    });
 };
