@@ -44,8 +44,7 @@ export const getLastPublishedContentVersion = (
         return transformRepoContentNode(publishedContent);
     }
 
-    // If the content is not published, or is scheduled for publishing, we try to find the last
-    // version which was public
+    // The content is not published, or is scheduled, so find the last version which was public
     const draftRepo = getRepoConnection({
         repoId,
         branch: 'draft',
@@ -73,8 +72,7 @@ const getDraftVersion = (version: NodeVersion, draftRepo: RepoConnection) => {
 };
 
 const getLastPublishedDraftVersion = (versions: NodeVersion[], draftRepo: RepoConnection) => {
-    // When the newer version was saved. It replaced the current version in master when it was
-    // published or unpublished
+    // When the newer version was saved. It replaced this one when published or unpublished
     let replacedTime: string | undefined;
 
     // Newest version first. Only committed versions can have been in master

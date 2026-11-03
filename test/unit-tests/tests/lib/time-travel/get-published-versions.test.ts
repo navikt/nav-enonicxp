@@ -13,8 +13,7 @@ type TestVersion = {
     modifiedTime?: string;
 };
 
-// As externalArchive/content passes them: newest first, with unpublishedTime set when the newer
-// version unpublished the content. modifiedTime only changes when the content is edited
+// As externalArchive/content passes them: newest first, with unpublishedTime set if unpublished
 const getVersionIds = (versions: TestVersion[]) =>
     getVersionsForExternalArchive(
         versions.map(
@@ -70,8 +69,7 @@ describe('getVersionsForExternalArchive', () => {
         ).toEqual(['was-scheduled', 'published']);
     });
 
-    // New content scheduled for 12:00. At 11:00, edited and published again with the same publish
-    // time (Update Scheduled). The first version was never public
+    // Scheduled for 12:00, edited and scheduled again at 11:00 (Update Scheduled)
     test('leaves out a scheduled version which was edited before the publish time', () => {
         expect(
             getVersionIds([
@@ -89,8 +87,7 @@ describe('getVersionsForExternalArchive', () => {
         ).toEqual(['edited']);
     });
 
-    // Scheduled for 12:00. At 11:00, scheduled for another time in Details > Schedule and published
-    // again
+    // Scheduled for 12:00, and moved to a later time at 11:00 in Details > Schedule
     test('leaves out a version when the publish time is moved to a later time', () => {
         expect(
             getVersionIds([
@@ -127,9 +124,7 @@ describe('getVersionsForExternalArchive', () => {
         ).toEqual(['moved', 'published']);
     });
 
-    // Edited without publishing, then unpublished, then published again without new edits.
-    // Unpublishing saves the draft, so the unpublished and the new version both have the
-    // modifiedTime of the edit. Not only for scheduled content
+    // Edited without publishing, unpublished and published again. The last two share modifiedTime
     test('shows content published again after being unpublished with unpublished edits', () => {
         const edited = '2024-03-02T09:00:00Z';
 
@@ -151,8 +146,7 @@ describe('getVersionsForExternalArchive', () => {
         ).toEqual(['published-again', 'published']);
     });
 
-    // Unpublished and published again without new edits. Unpublishing and publishing do not change
-    // modifiedTime, so both versions have the same modifiedTime
+    // Unpublishing and publishing do not change modifiedTime, so all versions have the same one
     test('shows content published again after being unpublished, also without new edits', () => {
         expect(
             getVersionIds([
@@ -186,9 +180,7 @@ describe('getVersionsForExternalArchive', () => {
         ).toEqual(['published']);
     });
 
-    // Published, unpublished, edited, scheduled for 15:00, unpublished before 15:00, and published
-    // again at 14:05 without new edits. Publishing and unpublishing do not change modifiedTime, so
-    // the three newest versions have the same modifiedTime
+    // Published, unpublished, edited, scheduled for 15:00, unpublished and published at 14:05
     test.each([
         ['before', inOneHour()],
         ['after', '2024-03-02T15:00:00Z'],

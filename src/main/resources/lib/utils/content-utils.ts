@@ -76,26 +76,19 @@ export const isContentAwaitingPrepublish = (
     return publishFrom ? publishFrom > isoNow : false;
 };
 
-// Whether a version was public on nav.no at some point. replacedTime is when the next version was
-// saved. The next version replaced this version in master when it was published or unpublished,
-// which is at the same time or later. The times are ISO strings in UTC, which can be compared as
-// text
+// Whether the version was public on nav.no. replacedTime is when the next version was saved
 export const wasVersionPublic = (publishFrom?: string | null, replacedTime?: string | null) => {
     // Not published. Unpublishing removes publish.from
     if (!publishFrom) {
         return false;
     }
 
-    // Scheduled for publishing, and the publish time has not passed yet. Content scheduled for
-    // publishing is in master before it is public
+    // Scheduled for publishing and not public yet, even though it is in master
     if (publishFrom > getISONowWithoutMS()) {
         return false;
     }
 
-    // Scheduled for publishing, but unpublished or scheduled again before the publish time. Also
-    // leaves out a version which was public for a while, if the next version was saved before the
-    // publish time and published after it. Commit times would show this, but can be overwritten
-    // later, and then a version which was never public would be shown
+    // Unpublished or scheduled again before the publish time, so it was never public
     if (replacedTime && replacedTime < publishFrom) {
         return false;
     }

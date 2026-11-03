@@ -48,8 +48,7 @@ import {
 
 const tomorrow = () => new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
-// Versions newest first. Unpublishing removes publish.from. All versions are committed, except
-// draftOnly versions, which were only saved. Without versionInMaster, the content is not published
+// Versions newest first. A version without publishFrom unpublished the content
 const addContent = (
     contentId: string,
     versions: { versionId: string; savedAt: string; draftOnly?: boolean; publishFrom?: string }[],
@@ -115,8 +114,7 @@ addContent(
     'rescheduled-3'
 );
 
-// Published, unpublished, scheduled for 15:00, unpublished at 14:00 before the publish time, and
-// scheduled again for tomorrow
+// Published, unpublished, scheduled for 15:00, unpublished at 14:00, and scheduled for tomorrow
 addContent(
     'cancelled',
     [
@@ -137,8 +135,7 @@ addContent(
     'cancelled-5'
 );
 
-// New content, scheduled for 12:00. At 11:00, scheduled for tomorrow in Details > Schedule and
-// published again
+// New content scheduled for 12:00, and moved to tomorrow at 11:00 in Details > Schedule
 addContent(
     'moved',
     [

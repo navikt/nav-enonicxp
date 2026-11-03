@@ -161,8 +161,7 @@ export const runExternalArchiveQuery = (params: RunExternalArchiveQueryParams) =
             return contents;
         }
 
-        // Scheduled content is in master before its publish time. Show the version which was
-        // public before, as the content tree does, and leave out content never published
+        // Show the last public version of scheduled content, as the tree does, or leave it out
         const latestContent = transformRepoNode(result);
         const contentNode = isContentAwaitingPrepublish(latestContent)
             ? getLastPublishedContentVersion(node.id, locale)

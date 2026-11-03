@@ -130,8 +130,7 @@ export const getPublishedAndModifiedVersions = (contentId: string, locale: strin
     );
 };
 
-// Used by the version history selector in the external archive. Takes all versions from
-// getAllVersions, newest first, with unpublishedTime set as in externalArchive/content
+// Used by the version history selector in the external archive. All versions, newest first
 export const getVersionsForExternalArchive = (
     versions: (VersionReferenceEnriched & { unpublishedTime?: string })[]
 ) => {
@@ -144,11 +143,9 @@ export const getVersionsForExternalArchive = (
         return wasVersionPublic(version.publishFromTime, newerVersion?.timestamp);
     });
 
-    // Versions which were never public must be removed first. Otherwise one of them can replace a
-    // public version with the same modifiedTime
+    // Merged after filtering, or a version which was never public could replace a public one
     return publicVersions.filter((version, index, publicVersionsArray) => {
-        // Published again after being unpublished. Shown as a separate version, also without new
-        // edits, since the content was not public in between
+        // Published again after being unpublished: not merged, also without new edits
         const olderVersion = publicVersionsArray[index + 1];
         if (olderVersion?.unpublishedTime) {
             return true;
