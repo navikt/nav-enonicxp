@@ -112,6 +112,17 @@ export const directLocalFetch = async (input, options = {}) => {
 
 const REDIRECT_STATUSES = new Set([301, 302, 303, 307, 308]);
 
+// Scripts must reach deployed XP directly, since they cannot complete the F5 access gateway's
+// interactive login. Without the naisdevice gateway, the direct address does not answer.
+const DIRECT_ACCESS_HELP =
+    'Connect naisdevice to the team-personbruker-prod gateway, which both prod and dev need, add the hosts file entries from «NAIS-device» in README.md, and run the command again';
+const UNREACHABLE_ERROR_CODES = new Set([
+    'UND_ERR_CONNECT_TIMEOUT',
+    'ETIMEDOUT',
+    'EHOSTUNREACH',
+    'ENETUNREACH',
+]);
+
 // The query is left out of the reported target, since login redirects carry state and nonces.
 const parseRedirectLocation = (header, requestUrl) => {
     if (!header) {
@@ -122,6 +133,8 @@ const parseRedirectLocation = (header, requestUrl) => {
         return {
             target: `${location.origin}${location.pathname}`,
             toLogin: /(\/|%2f)idprovider(\/|%2f)/i.test(location.href),
+            // The F5 access gateway's login page.
+            toAccessGateway: location.pathname === '/my.policy',
         };
     } catch {
         return undefined;
@@ -143,7 +156,15 @@ export const fetchXp = (input, options) => {
     // rejected request (401 or 403) with a redirect through its id provider to the login page.
     // The node and clocks help diagnose rejected approval codes, which XP checks against a stored
     // expiry time.
-    return fetch(url, { ...options, redirect: 'manual' }).then(async (response) => {
+    const request = fetch(url, { ...options, redirect: 'manual' }).catch((error) => {
+        if (UNREACHABLE_ERROR_CODES.has(error.cause?.code)) {
+            throw new Error(`${url.origin} did not answer. ${DIRECT_ACCESS_HELP}`, {
+                cause: error.cause,
+            });
+        }
+        throw error;
+    });
+    return request.then(async (response) => {
         if (!REDIRECT_STATUSES.has(response.status)) {
             return response;
         }
@@ -152,6 +173,11 @@ export const fetchXp = (input, options) => {
         const node = response.headers.get('X-data-host') ?? 'unknown';
         const serverTime = response.headers.get('Date') ?? 'unknown';
         const details = `HTTP ${response.status}, node ${node}, server time ${serverTime}, local time ${new Date().toUTCString()}`;
+        if (location?.toAccessGateway) {
+            throw new Error(
+                `${url.origin} was not reached: the request was sent to the access gateway's login page (${details}). ${DIRECT_ACCESS_HELP}`
+            );
+        }
         if (location?.toLogin) {
             throw new Error(
                 `${url.origin} rejected the request and redirected to its login page (${details}). Run the command again and approve in the browser; if it keeps failing, check that you are a system administrator there`

@@ -89,7 +89,7 @@ Dersom kilden er en lokal sandbox opprettet fra et Snapshotter-snapshot, trenger
 
 ## Tilgang til deployede miljøer
 
-Deployede miljøer har bare Entra ID-innlogging, så kommandoen får tilgang på samme måte som `gh auth login`:
+Deployede miljøer har bare Entra ID-innlogging, så kommandoen får tilgang på samme måte som `gh auth login`. Kommandoen må nå miljøet direkte, uten innloggingen i F5-gatewayen. Det krever at du er koblet til gatewayen `team-personbruker-prod` i naisdevice, både for prod og dev, og at hosts-filen er satt opp som beskrevet i [«NAIS-device» i hoved-READMEen](../../README.md#nais-device). Ellers stopper kommandoen på innloggingssiden til F5-gatewayen, selv om godkjenningen i nettleseren virker.
 
 1. Kommandoen starter en midlertidig mottaker på `127.0.0.1` og åpner godkjenningssiden `/webapp/no.nav.navno/curated-export/authorize` i nettleseren. Adressen skrives også ut, i tilfelle nettleseren ikke åpnes.
 2. Er du ikke innlogget i XP-admin, viser siden en lenke til innloggingen. Logg inn der, og trykk «Prøv igjen». Bekreft deretter at importverktøyet skal få lesetilgang. Godkjenn bare hvis du nettopp startet importen selv.

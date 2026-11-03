@@ -51,7 +51,7 @@ const listen = async (server, t) => {
     return `http://127.0.0.1:${server.address().port}`;
 };
 
-test('reports deployed XP redirects, telling login redirects apart from other redirects', async (t) => {
+test('reports deployed XP redirects, telling login and access gateway redirects apart from other redirects, and explains unreachable hosts', async (t) => {
     let bodyCancelled = false;
     const fetchMock = t.mock.method(globalThis, 'fetch', async (url) => {
         if (url.pathname === '/token') {
@@ -76,6 +76,22 @@ test('reports deployed XP redirects, telling login redirects apart from other re
                 headers: { Location: '/moved/?state=secret-state' },
             });
         }
+        if (url.pathname === '/gateway') {
+            return new Response(null, {
+                status: 302,
+                headers: { Location: '/my.policy' },
+            });
+        }
+        if (url.pathname === '/unreachable') {
+            throw new TypeError('fetch failed', {
+                cause: Object.assign(new Error('Connect Timeout Error'), {
+                    code: 'UND_ERR_CONNECT_TIMEOUT',
+                }),
+            });
+        }
+        if (url.pathname === '/broken') {
+            throw new TypeError('fetch failed', { cause: new Error('other socket error') });
+        }
         if (url.pathname === '/cached') {
             return new Response(null, { status: 304 });
         }
@@ -94,6 +110,18 @@ test('reports deployed XP redirects, telling login redirects apart from other re
                 'https://xp.invalid answered with an unexpected redirect to https://xp.invalid/moved/ (HTTP 308, node unknown'
             ) && !error.message.includes('secret-state')
     );
+    await assert.rejects(
+        fetchXp('https://xp.invalid/gateway'),
+        /https:\/\/xp\.invalid was not reached: the request was sent to the access gateway's login page \(HTTP 302, .*Connect naisdevice to the team-personbruker-prod gateway, .*add the hosts file entries from «NAIS-device» in README\.md/
+    );
+    await assert.rejects(
+        fetchXp('https://xp.invalid/unreachable'),
+        (error) =>
+            /^https:\/\/xp\.invalid did not answer\. Connect naisdevice to the team-personbruker-prod gateway/.test(
+                error.message
+            ) && error.cause.code === 'UND_ERR_CONNECT_TIMEOUT'
+    );
+    await assert.rejects(fetchXp('https://xp.invalid/broken'), /^TypeError: fetch failed$/);
     assert.equal((await fetchXp('https://xp.invalid/cached')).status, 304);
     assert.equal(await (await fetchXp('https://xp.invalid/manifest')).text(), 'ok');
 });
