@@ -763,6 +763,8 @@ const getInheritedContentIds = (connection: ReturnType<typeof getRepoConnection>
             count: 1000,
             query: `_path = "${CURATED_CONTENT_ROOT_PATH}" OR _path LIKE "${CURATED_CONTENT_ROOT_PATH}/*"`,
             filters: { boolean: { must: NON_LOCALIZED_QUERY_FILTER } },
+            // Unsorted paging can skip hits if the index changes between pages
+            sort: '_path ASC',
         });
         total = result.total;
         if (result.hits.length === 0) {
@@ -802,57 +804,71 @@ const publishInheritedLayerContent = (repository: string) => {
             asAdmin: true,
         });
 
-        const pending: Array<{ id: string; depth: number }> = [];
-        const inheritedIds = getInheritedContentIds(layerDraft);
-        for (let start = 0; start < inheritedIds.length; start += LAYER_BATCH_SIZE) {
-            const ids = inheritedIds.slice(start, start + LAYER_BATCH_SIZE);
-            const layerDraftNodes = getNodesById(layerDraft, ids);
-            const layerMasterNodes = getNodesById(layerMaster, ids);
-            const rootDraftNodes = getNodesById(rootDraft, ids);
-            const rootMasterNodes = getNodesById(rootMaster, ids);
-            ids.forEach((id) => {
-                const layerNode = layerDraftNodes[id];
-                const rootDraftNode = rootDraftNodes[id];
-                const rootMasterNode = rootMasterNodes[id];
-                if (
-                    !layerNode ||
-                    !isCuratedContentPath(layerNode._path) ||
-                    !rootDraftNode ||
-                    rootDraftNode._versionKey !== rootMasterNode?._versionKey
-                ) {
-                    return;
-                }
-                const patched = mirrorRootPublishInfoToLayerDraft(
-                    layerDraft,
-                    layerNode,
-                    rootMasterNode.publish
-                );
-                if (!patched && layerMasterNodes[id]?._versionKey === layerNode._versionKey) {
-                    return;
-                }
-                pending.push({ id, depth: layerNode._path.split('/').length });
-            });
-        }
+        const publishPass = () => {
+            const pending: Array<{ id: string; depth: number }> = [];
+            const inheritedIds = getInheritedContentIds(layerDraft);
+            for (let start = 0; start < inheritedIds.length; start += LAYER_BATCH_SIZE) {
+                const ids = inheritedIds.slice(start, start + LAYER_BATCH_SIZE);
+                const layerDraftNodes = getNodesById(layerDraft, ids);
+                const layerMasterNodes = getNodesById(layerMaster, ids);
+                const rootDraftNodes = getNodesById(rootDraft, ids);
+                const rootMasterNodes = getNodesById(rootMaster, ids);
+                ids.forEach((id) => {
+                    const layerNode = layerDraftNodes[id];
+                    const rootDraftNode = rootDraftNodes[id];
+                    const rootMasterNode = rootMasterNodes[id];
+                    if (
+                        !layerNode ||
+                        !isCuratedContentPath(layerNode._path) ||
+                        !rootDraftNode ||
+                        rootDraftNode._versionKey !== rootMasterNode?._versionKey
+                    ) {
+                        return;
+                    }
+                    const patched = mirrorRootPublishInfoToLayerDraft(
+                        layerDraft,
+                        layerNode,
+                        rootMasterNode.publish
+                    );
+                    if (!patched && layerMasterNodes[id]?._versionKey === layerNode._versionKey) {
+                        return;
+                    }
+                    pending.push({ id, depth: layerNode._path.split('/').length });
+                });
+            }
 
-        // Parents must reach master before their children
-        pending.sort((a, b) => a.depth - b.depth);
-        let published = 0;
-        const failed: Array<{ id: string; reason: string }> = [];
-        for (let start = 0; start < pending.length; start += LAYER_BATCH_SIZE) {
-            const result = layerDraft.push({
-                keys: pending.slice(start, start + LAYER_BATCH_SIZE).map(({ id }) => id),
-                target: 'master',
-                resolve: false,
-            });
-            published += result.success.length;
-            failed.push(...result.failed);
+            // Parents must reach master before their children
+            pending.sort((a, b) => a.depth - b.depth);
+            let published = 0;
+            const failed: Array<{ id: string; reason: string }> = [];
+            for (let start = 0; start < pending.length; start += LAYER_BATCH_SIZE) {
+                const result = layerDraft.push({
+                    keys: pending.slice(start, start + LAYER_BATCH_SIZE).map(({ id }) => id),
+                    target: 'master',
+                    resolve: false,
+                });
+                published += result.success.length;
+                failed.push(...result.failed);
+            }
+            return { published, failed };
+        };
+
+        const firstPass = publishPass();
+        let totalPublished = firstPass.published;
+        let remainingFailed = firstPass.failed;
+        // A parent missed in the first pass leaves its subtree unpublished. Nodes already
+        // on master are skipped, so a second pass only pushes what is still missing.
+        if (remainingFailed.some(({ reason }) => reason === 'PARENT_NOT_FOUND')) {
+            const retryPass = publishPass();
+            totalPublished += retryPass.published;
+            remainingFailed = retryPass.failed;
         }
-        if (failed.length > 0) {
+        if (remainingFailed.length > 0) {
             logger.warning(
-                `Could not publish ${failed.length} inherited nodes in ${repository}: ${JSON.stringify(failed.slice(0, 5))}`
+                `Could not publish ${remainingFailed.length} inherited nodes in ${repository}: ${JSON.stringify(remainingFailed.slice(0, 5))}`
             );
         }
-        return { published, failed: failed.length };
+        return { published: totalPublished, failed: remainingFailed.length };
     });
 };
 

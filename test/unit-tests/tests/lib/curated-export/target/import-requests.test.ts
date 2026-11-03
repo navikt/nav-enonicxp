@@ -405,6 +405,69 @@ describe('curated export import', () => {
         });
     });
 
+    it('retries once when a parent was missed, so its subtree is still published', () => {
+        const node = (id: string, path: string) => ({
+            _id: id,
+            _path: `${rootPath}${path}`,
+            _versionKey: `version-${id}`,
+        });
+        const parent = node('parent', '/folder');
+        const child = node('child', '/folder/page');
+        const layerMaster: Array<ReturnType<typeof node>> = [];
+        const nodesByRepoBranch: Record<string, Array<ReturnType<typeof node>>> = {
+            'com.enonic.cms.navno-engelsk:draft': [parent, child],
+            'com.enonic.cms.navno-engelsk:master': layerMaster,
+            'com.enonic.cms.default:draft': [parent, child],
+            'com.enonic.cms.default:master': [parent, child],
+        };
+        jest.mocked(getRepoConnection).mockImplementation(
+            ({ repoId, branch }) =>
+                ({
+                    get: (ids: string[]) =>
+                        (nodesByRepoBranch[`${repoId}:${branch}`] || []).filter(({ _id }) =>
+                            ids.includes(_id)
+                        ),
+                    query: queryNode,
+                    push: pushNode,
+                }) as never
+        );
+        queryNode
+            .mockReturnValueOnce({ total: 1, hits: [{ id: 'child' }] })
+            .mockReturnValue({ total: 2, hits: [{ id: 'parent' }, { id: 'child' }] });
+        pushNode.mockImplementation(({ keys }: { keys: string[] }) => {
+            const success: string[] = [];
+            const failed: Array<{ id: string; reason: string }> = [];
+            keys.forEach((id) => {
+                const pushed = nodesByRepoBranch['com.enonic.cms.navno-engelsk:draft'].find(
+                    (entry) => entry._id === id
+                )!;
+                const parentPath = pushed._path.slice(0, pushed._path.lastIndexOf('/'));
+                const parentOnMaster =
+                    parentPath === rootPath ||
+                    layerMaster.some((entry) => entry._path === parentPath);
+                if (!parentOnMaster) {
+                    failed.push({ id, reason: 'PARENT_NOT_FOUND' });
+                    return;
+                }
+                layerMaster.push(pushed);
+                success.push(id);
+            });
+            return { success, failed };
+        });
+
+        expect(
+            post(
+                importRequest({
+                    action: 'publish-inherited-layer-content',
+                    repository: childRepository,
+                })
+            )
+        ).toMatchObject({ status: 200, body: { published: 2, failed: 0 } });
+        expect(queryNode).toHaveBeenCalledWith(expect.objectContaining({ sort: '_path ASC' }));
+        expect(layerMaster.map(({ _id }) => _id)).toEqual(['parent', 'child']);
+        expect(logWarning).not.toHaveBeenCalled();
+    });
+
     it('sets root publish info on inherited layer content before publishing it', () => {
         const rootPublish = { first: '2020-01-01T00:00:00Z', from: '2025-12-09T14:11:50.943Z' };
         const node = (id: string, version: string, publish?: typeof rootPublish) => ({
@@ -463,9 +526,10 @@ describe('curated export import', () => {
         expect(patchNode).toHaveBeenCalledWith(
             expect.objectContaining({ key: 'missing-info', branches: ['draft'] })
         );
-        expect(
-            patchNode.mock.calls[0][0].editor({ _id: 'missing-info' }).publish
-        ).toMatchObject({ first: rootPublish.first, from: rootPublish.from });
+        expect(patchNode.mock.calls[0][0].editor({ _id: 'missing-info' }).publish).toMatchObject({
+            first: rootPublish.first,
+            from: rootPublish.from,
+        });
         expect(pushNode).toHaveBeenCalledWith({
             keys: ['missing-info'],
             target: 'master',
