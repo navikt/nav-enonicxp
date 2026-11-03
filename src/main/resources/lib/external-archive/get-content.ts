@@ -45,7 +45,7 @@ export const getLastPublishedContentVersion = (
     }
 
     // If the content is not published, or is scheduled for publishing, we try to find the last
-    // version which was published/committed
+    // version which was public
     const draftRepo = getRepoConnection({
         repoId,
         branch: 'draft',
@@ -77,7 +77,7 @@ const getLastPublishedDraftVersion = (versions: NodeVersion[], draftRepo: RepoCo
     // published or unpublished
     let replacedTime: string | undefined;
 
-    // Newest version first. Only committed versions have been in master
+    // Newest version first. Only committed versions can have been in master
     for (const version of versions) {
         if (!version.commitId) {
             continue;

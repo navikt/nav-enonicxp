@@ -49,11 +49,11 @@ import {
 const tomorrow = () => new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
 // Versions newest first. Unpublishing removes publish.from. All versions are committed, except
-// draftOnly versions, which were never published or unpublished
+// draftOnly versions, which were only saved. Without versionInMaster, the content is not published
 const addContent = (
     contentId: string,
     versions: { versionId: string; savedAt: string; draftOnly?: boolean; publishFrom?: string }[],
-    versionInMaster: string
+    versionInMaster?: string
 ) => {
     const nodes = versions.map(({ versionId, publishFrom }) => ({
         _id: contentId,
@@ -69,7 +69,9 @@ const addContent = (
         versionNodes[node._versionKey] = node;
     });
     draftNodes[contentId] = nodes[0];
-    masterNodes[contentId] = versionNodes[versionInMaster];
+    if (versionInMaster) {
+        masterNodes[contentId] = versionNodes[versionInMaster];
+    }
     draftVersions[contentId] = versions.map(({ versionId, savedAt, draftOnly }) => ({
         versionId,
         nodeId: contentId,
@@ -150,25 +152,21 @@ addContent(
     'moved-2'
 );
 
-// Published, edited without publishing, and scheduled for tomorrow. The edit was never public
-addContent(
-    'draft-only',
-    [
-        { versionId: 'draft-only-3', savedAt: '2024-03-03T10:00:00Z', publishFrom: tomorrow() },
-        {
-            versionId: 'draft-only-2',
-            savedAt: '2024-03-02T10:00:00Z',
-            draftOnly: true,
-            publishFrom: '2024-03-01T10:00:00Z',
-        },
-        {
-            versionId: 'draft-only-1',
-            savedAt: '2024-03-01T10:00:00Z',
-            publishFrom: '2024-03-01T10:00:00Z',
-        },
-    ],
-    'draft-only-3'
-);
+// Published, edited without publishing, and unpublished. The edit was never public
+addContent('draft-only', [
+    { versionId: 'draft-only-3', savedAt: '2024-03-03T10:00:00Z' },
+    {
+        versionId: 'draft-only-2',
+        savedAt: '2024-03-02T10:00:00Z',
+        draftOnly: true,
+        publishFrom: '2024-03-01T10:00:00Z',
+    },
+    {
+        versionId: 'draft-only-1',
+        savedAt: '2024-03-01T10:00:00Z',
+        publishFrom: '2024-03-01T10:00:00Z',
+    },
+]);
 
 describe('getLastPublishedContentVersion', () => {
     test('returns published content', () => {
@@ -193,7 +191,7 @@ describe('getLastPublishedContentVersion', () => {
         expect(getLastPublishedContentVersion('moved', 'no')).toBeNull();
     });
 
-    test('skips versions which were never published or unpublished', () => {
+    test('skips an edit which was never published', () => {
         expect(getLastPublishedContentVersion('draft-only', 'no')?._versionKey).toBe(
             'draft-only-1'
         );

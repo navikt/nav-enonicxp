@@ -28,7 +28,7 @@ describe('wasVersionPublic', () => {
         expect(wasVersionPublic(inOneHour())).toBe(false);
     });
 
-    // Replaced by unpublishing, or by scheduling for another time
+    // Replaced by unpublishing, or by scheduling again
     test('is false when the version was replaced before the publish time', () => {
         expect(wasVersionPublic('2024-03-01T14:00:00Z', '2024-03-01T13:01:56.987654321Z')).toBe(
             false

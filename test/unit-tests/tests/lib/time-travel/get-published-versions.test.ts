@@ -70,6 +70,25 @@ describe('getVersionsForExternalArchive', () => {
         ).toEqual(['was-scheduled', 'published']);
     });
 
+    // New content scheduled for 12:00. At 11:00, edited and published again with the same publish
+    // time (Update Scheduled). The first version was never public
+    test('leaves out a scheduled version which was edited before the publish time', () => {
+        expect(
+            getVersionIds([
+                {
+                    versionId: 'edited',
+                    savedAt: '2024-03-02T11:00:00Z',
+                    publishFrom: '2024-03-02T12:00:00Z',
+                },
+                {
+                    versionId: 'scheduled',
+                    savedAt: '2024-03-02T10:00:00Z',
+                    publishFrom: '2024-03-02T12:00:00Z',
+                },
+            ])
+        ).toEqual(['edited']);
+    });
+
     // Scheduled for 12:00. At 11:00, scheduled for another time in Details > Schedule and published
     // again
     test('leaves out a version when the publish time is moved to a later time', () => {
@@ -132,8 +151,8 @@ describe('getVersionsForExternalArchive', () => {
         ).toEqual(['published-again', 'published']);
     });
 
-    // Tested in dev 29.10: unpublished and published again without new edits. Unpublishing and
-    // publishing do not change modifiedTime, so both versions have the same modifiedTime
+    // Unpublished and published again without new edits. Unpublishing and publishing do not change
+    // modifiedTime, so both versions have the same modifiedTime
     test('shows content published again after being unpublished, also without new edits', () => {
         expect(
             getVersionIds([
@@ -167,9 +186,9 @@ describe('getVersionsForExternalArchive', () => {
         ).toEqual(['published']);
     });
 
-    // Tested in dev 28.10: published, unpublished, edited, scheduled for 15:00, unpublished before
-    // 15:00, and published again at 14:05 without new edits. Publishing and unpublishing do not
-    // change modifiedTime, so the three newest versions have the same modifiedTime
+    // Published, unpublished, edited, scheduled for 15:00, unpublished before 15:00, and published
+    // again at 14:05 without new edits. Publishing and unpublishing do not change modifiedTime, so
+    // the three newest versions have the same modifiedTime
     test.each([
         ['before', inOneHour()],
         ['after', '2024-03-02T15:00:00Z'],

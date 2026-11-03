@@ -92,10 +92,10 @@ export const wasVersionPublic = (publishFrom?: string | null, replacedTime?: str
         return false;
     }
 
-    // Scheduled for publishing, but unpublished or scheduled for another time before the publish
-    // time. Also leaves out a version which was public for a while, if the next version was saved
-    // before the publish time and published after it. Commit times would show this, but can be
-    // overwritten later, and then a version which was never public would be shown
+    // Scheduled for publishing, but unpublished or scheduled again before the publish time. Also
+    // leaves out a version which was public for a while, if the next version was saved before the
+    // publish time and published after it. Commit times would show this, but can be overwritten
+    // later, and then a version which was never public would be shown
     if (replacedTime && replacedTime < publishFrom) {
         return false;
     }
