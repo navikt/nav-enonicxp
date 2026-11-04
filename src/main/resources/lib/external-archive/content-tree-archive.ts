@@ -225,6 +225,11 @@ class ArchiveContentTree {
                 return;
             }
 
+            // Never published, like the archived content left out by processContentBatch
+            if (!childContent.publish?.first) {
+                return;
+            }
+
             const path = `${parentTreeNode.path}/${childContent._name}`;
 
             this.addToContentTree(childContent, path);
