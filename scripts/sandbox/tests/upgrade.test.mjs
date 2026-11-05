@@ -83,6 +83,33 @@ test('skips the XP upgrade and stop when the sandbox is current and stopped', as
     ]);
 });
 
+test('continues when the CLI state names a sandbox that is no longer running', async (t) => {
+    const { steps, dependencies } = fixture(t, { sandboxVersion: '8.1.2' });
+    const cliStatePath = join(dependencies.homeDirectory, '.enonic/.enonic');
+    const failStop = (clearState) => (command, args) => {
+        steps.push(`${command} ${args.join(' ')}`);
+        if (args[1] === 'stop') {
+            if (clearState) {
+                writeFileSync(cliStatePath, 'running = ""\n');
+            }
+            throw new Error('Command failed: enonic sandbox stop --force');
+        }
+    };
+
+    await upgradeSandbox({ sandbox: 'navno_xp8' }, { ...dependencies, runCommand: failStop(true) });
+    assert.deepEqual(steps.slice(0, 3), [
+        'enonic sandbox stop --force',
+        'deploy navno_xp8 --skip-start',
+        'enonic sandbox start navno_xp8 --detach --force',
+    ]);
+
+    writeFileSync(cliStatePath, 'running = "navno_xp8"\n');
+    await assert.rejects(
+        upgradeSandbox({ sandbox: 'navno_xp8' }, { ...dependencies, runCommand: failStop(false) }),
+        /Command failed: enonic sandbox stop/
+    );
+});
+
 test('refuses older major versions, downgrades and sandboxes without an SU password', async (t) => {
     const cases = [
         [

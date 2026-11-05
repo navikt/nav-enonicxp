@@ -122,7 +122,15 @@ export const upgradeSandbox = async (
     const commandOptions = { stdio: 'inherit', env: getLocalProcessEnvironment() };
     if (readRunningSandbox(homeDirectory) === sandbox) {
         console.log(`Stopping sandbox ${sandbox}`);
-        runCommand('enonic', ['sandbox', 'stop', '--force'], commandOptions);
+        try {
+            runCommand('enonic', ['sandbox', 'stop', '--force'], commandOptions);
+        } catch (error) {
+            // The CLI state can still name a sandbox whose process has died, for example after a
+            // reboot. The failed stop then clears the state, so only a sandbox still running fails
+            if (readRunningSandbox(homeDirectory) === sandbox) {
+                throw error;
+            }
+        }
     }
     if (currentVersion === xpVersion) {
         console.log(`Sandbox ${sandbox} already uses XP ${xpVersion}`);
