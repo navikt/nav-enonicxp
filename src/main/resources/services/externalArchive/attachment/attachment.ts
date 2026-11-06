@@ -1,6 +1,8 @@
 import { Request, Response } from '@enonic-types/core';
 import { getLayersData, isValidLocale } from '../../../lib/localization/layers-data';
 import { getRepoConnection } from '../../../lib/repos/repo-utils';
+import { isContentAwaitingPrepublish } from '../../../lib/utils/content-utils';
+import { ContentNode } from '../../../types/content-types/content-config';
 
 // Note: This assumes a content will only have 0 or 1 attachments.
 // A content could have multiple attachments, if we used the AttachmentUploader input type in any of our content types.
@@ -36,8 +38,9 @@ export const externalArchiveAttachmentService = (req: Request): Response => {
         asAdmin: true,
     });
 
-    const content = repo.get({ key: id, versionId });
-    if (!content) {
+    const content = repo.get<ContentNode>({ key: id, versionId });
+    // A version scheduled for publishing is not public until it is published
+    if (!content || isContentAwaitingPrepublish(content)) {
         return {
             status: 404,
             contentType: 'application/json',

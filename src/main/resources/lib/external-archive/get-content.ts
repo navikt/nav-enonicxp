@@ -2,7 +2,12 @@ import { getRepoConnection } from '../repos/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { Content } from '/lib/xp/content';
 import { NodeVersion, RepoConnection, RepoNode } from '/lib/xp/node';
-import { isArchivedContentNode, isExcludedFromExternalArchive } from '../utils/content-utils';
+import {
+    isArchivedContentNode,
+    isContentAwaitingPrepublish,
+    isExcludedFromExternalArchive,
+    wasVersionPublic,
+} from '../utils/content-utils';
 import { logger } from '../utils/logging';
 
 const transformRepoContentNode = (node: RepoNode<Content>): Content => {
@@ -35,11 +40,11 @@ export const getLastPublishedContentVersion = (
     });
 
     const publishedContent = masterRepo.get<Content>(contentKey);
-    if (publishedContent) {
+    if (publishedContent && !isContentAwaitingPrepublish(publishedContent)) {
         return transformRepoContentNode(publishedContent);
     }
 
-    // If the content is not published, we try to find the last version which was published/committed
+    // The content is not published, or is scheduled, so find the last version which was public
     const draftRepo = getRepoConnection({
         repoId,
         branch: 'draft',
@@ -57,22 +62,31 @@ export const getLastPublishedContentVersion = (
     return transformRepoContentNode(contentNode);
 };
 
+const getDraftVersion = (version: NodeVersion, draftRepo: RepoConnection) => {
+    try {
+        return draftRepo.get<Content>({ key: version.nodeId, versionId: version.versionId });
+    } catch (error) {
+        logger.error(`Error fetching object with versionId ${version.versionId}: ${error}`);
+        return null;
+    }
+};
+
 const getLastPublishedDraftVersion = (versions: NodeVersion[], draftRepo: RepoConnection) => {
-    // Iterate through each object in the list
+    // When the newer version was saved. It replaced this one when published or unpublished
+    let replacedTime: string | undefined;
+
+    // Newest version first. Only committed versions can have been in master
     for (const version of versions) {
-        if (version.commitId) {
-            try {
-                const contentNode = draftRepo.get<Content>({
-                    key: version.nodeId,
-                    versionId: version.versionId,
-                });
-                if (contentNode?.publish?.from) {
-                    return contentNode;
-                }
-            } catch (error) {
-                logger.error(`Error fetching object with versionId ${version.versionId}: ${error}`);
-            }
+        if (!version.commitId) {
+            continue;
         }
+
+        const contentNode = getDraftVersion(version, draftRepo);
+        if (contentNode && wasVersionPublic(contentNode.publish?.from, replacedTime)) {
+            return contentNode;
+        }
+
+        replacedTime = version.timestamp;
     }
 
     return null;
@@ -99,7 +113,11 @@ export const getContentForExternalArchive = ({
         ? getContentVersion(contentId, versionId, locale)
         : getLastPublishedContentVersion(contentId, locale);
 
-    if (contentRequested && isExcludedFromExternalArchive(contentRequested)) {
+    if (
+        contentRequested &&
+        (isExcludedFromExternalArchive(contentRequested) ||
+            isContentAwaitingPrepublish(contentRequested))
+    ) {
         return {
             content: null,
             isArchived,
