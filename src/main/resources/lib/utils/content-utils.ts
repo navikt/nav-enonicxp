@@ -76,6 +76,26 @@ export const isContentAwaitingPrepublish = (
     return publishFrom ? publishFrom > isoNow : false;
 };
 
+// Whether the version was public on nav.no. replacedTime is when the next version was saved
+export const wasVersionPublic = (publishFrom?: string | null, replacedTime?: string | null) => {
+    // Not published. Unpublishing removes publish.from
+    if (!publishFrom) {
+        return false;
+    }
+
+    // Scheduled for publishing and not public yet, even though it is in master
+    if (publishFrom > getISONowWithoutMS()) {
+        return false;
+    }
+
+    // Unpublished or scheduled again before the publish time, so it was never public
+    if (replacedTime && replacedTime < publishFrom) {
+        return false;
+    }
+
+    return true;
+};
+
 // If the content ref is a path, ensure it has the /content prefix
 export const getContentNodeKey = (contentRef: string) =>
     contentRef.replace(/^\/www.nav.no/, NAVNO_NODE_ROOT_PATH);
