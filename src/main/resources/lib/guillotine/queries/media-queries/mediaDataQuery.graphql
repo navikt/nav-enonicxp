@@ -5,7 +5,7 @@ query mediaDataQuery($ref: ID!) {
         get(key: $ref) {
             ...contentCommon
             ... on media_Data {
-                mediaUrl(type: server, download: true)
+                mediaUrl(download: true) { path queryString }
             }
         }
     }

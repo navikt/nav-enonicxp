@@ -144,12 +144,12 @@ describe('Guillotine richtext resolver', () => {
         );
     });
 
-    test('Should resolve link to custom path for links with the Guillotine loopback prefix', () => {
+    test('Should resolve link to custom path for links with the site endpoint prefix', () => {
         const resolveProcessedHtml = getProcessedHtmlResolver();
 
         const result = resolveProcessedHtml({
             source: {
-                processedHtml: `<p><a href="/_guillotine/default/draft/www.nav.no${contentWithCustomPath._path}">Link</a></p>`,
+                processedHtml: `<p><a href="/site/default/draft/www.nav.no${contentWithCustomPath._path}">Link</a></p>`,
                 links: [
                     {
                         contentId: contentWithCustomPath._id,

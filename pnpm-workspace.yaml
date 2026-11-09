@@ -9,26 +9,26 @@ catalog:
   '@babel/core': 7.29.7
   '@babel/preset-env': 7.29.7
   '@babel/preset-typescript': 7.29.7
-  '@enonic-types/core': 8.0.4
-  '@enonic-types/global': 8.0.4
-  '@enonic-types/lib-auditlog': 8.0.4
-  '@enonic-types/lib-auth': 8.0.4
-  '@enonic-types/lib-cluster': 8.0.4
-  '@enonic-types/lib-common': 8.0.4
-  '@enonic-types/lib-content': 8.0.4
-  '@enonic-types/lib-context': 8.0.4
-  '@enonic-types/lib-event': 8.0.4
-  '@enonic-types/lib-grid': 8.0.4
-  '@enonic-types/lib-io': 8.0.4
-  '@enonic-types/lib-node': 8.0.4
-  '@enonic-types/lib-portal': 8.0.4
-  '@enonic-types/lib-project': 8.0.4
-  '@enonic-types/lib-repo': 8.0.4
-  '@enonic-types/lib-scheduler': 8.0.4
-  '@enonic-types/lib-schema': 8.0.4
-  '@enonic-types/lib-task': 8.0.4
-  '@enonic-types/lib-value': 8.0.4
-  '@enonic-types/lib-websocket': 8.0.4
+  '@enonic-types/core': 8.1.2
+  '@enonic-types/global': 8.1.2
+  '@enonic-types/lib-auditlog': 8.1.2
+  '@enonic-types/lib-auth': 8.1.2
+  '@enonic-types/lib-cluster': 8.1.2
+  '@enonic-types/lib-common': 8.1.2
+  '@enonic-types/lib-content': 8.1.2
+  '@enonic-types/lib-context': 8.1.2
+  '@enonic-types/lib-event': 8.1.2
+  '@enonic-types/lib-grid': 8.1.2
+  '@enonic-types/lib-io': 8.1.2
+  '@enonic-types/lib-node': 8.1.2
+  '@enonic-types/lib-portal': 8.1.2
+  '@enonic-types/lib-project': 8.1.2
+  '@enonic-types/lib-repo': 8.1.2
+  '@enonic-types/lib-scheduler': 8.1.2
+  '@enonic-types/lib-schema': 8.1.2
+  '@enonic-types/lib-task': 8.1.2
+  '@enonic-types/lib-value': 8.1.2
+  '@enonic-types/lib-websocket': 8.1.2
   '@enonic/mock-xp': 1.0.0
   '@eslint/compat': 2.1.0
   '@eslint/eslintrc': 3.3.6

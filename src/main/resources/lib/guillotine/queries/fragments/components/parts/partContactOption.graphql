@@ -6,7 +6,7 @@ fragment partComponentContactOption on Part_no_nav_navno_contact_option {
         _selected
         chat {
             title
-            ingress(processHtml: { type: server }) {
+            ingress {
                 ...richText
             }
             sharedContactInformation(contentId: $ref) {
@@ -14,7 +14,7 @@ fragment partComponentContactOption on Part_no_nav_navno_contact_option {
             }
         }
         write {
-            ingress(processHtml: { type: server }) {
+            ingress {
                 ...richText
             }
             title
@@ -24,19 +24,19 @@ fragment partComponentContactOption on Part_no_nav_navno_contact_option {
             }
         }
         navoffice {
-            ingress(processHtml: { type: server }) {
+            ingress {
                 ...richText
             }
             title
         }
         aidcentral {
-            ingress(processHtml: { type: server }) {
+            ingress {
                 ...richText
             }
             title
         }
         call {
-            ingress(processHtml: { type: server }) {
+            ingress {
                 ...richText
             }
             phoneNumber
@@ -45,7 +45,7 @@ fragment partComponentContactOption on Part_no_nav_navno_contact_option {
             }
         }
         custom {
-            ingress(processHtml: { type: server }) {
+            ingress {
                 ...richText
             }
             icon

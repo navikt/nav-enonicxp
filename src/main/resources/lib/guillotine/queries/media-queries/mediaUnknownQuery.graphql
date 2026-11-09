@@ -5,7 +5,7 @@ query mediaUnknownQuery($ref: ID!) {
         get(key: $ref) {
             ...contentCommon
             ... on media_Unknown {
-                mediaUrl(type: server, download: true)
+                mediaUrl(download: true) { path queryString }
             }
         }
     }

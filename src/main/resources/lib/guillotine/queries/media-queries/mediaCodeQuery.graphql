@@ -5,7 +5,7 @@ query mediaCodeQuery($ref: ID!) {
         get(key: $ref) {
             ...contentCommon
             ... on media_Code {
-                mediaUrl(type: server, download: true)
+                mediaUrl(download: true) { path queryString }
             }
         }
     }

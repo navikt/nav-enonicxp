@@ -5,7 +5,7 @@ query mediaExecutableQuery($ref: ID!) {
         get(key: $ref) {
             ...contentCommon
             ... on media_Executable {
-                mediaUrl(type: server, download: true)
+                mediaUrl(download: true) { path queryString }
             }
         }
     }

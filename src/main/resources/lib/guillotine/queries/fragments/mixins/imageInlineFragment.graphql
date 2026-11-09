@@ -1,11 +1,11 @@
 fragment imageInlineMixin on Content {
     type
     ... on media_Vector {
-        mediaUrl(type: server, download: false)
+        mediaUrl(download: false) { path queryString }
     }
     ... on media_Image {
-        mediaUrl(type: server, download: false)
-        imageUrl(type: server, scale: "$scale")
+        mediaUrl(download: false) { path queryString }
+        imageUrl(scale: "$scale") { path queryString }
         imageInfo {
             imageWidth
             imageHeight

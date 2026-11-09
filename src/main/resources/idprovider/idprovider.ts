@@ -51,5 +51,5 @@ const isPublicFileRequest = (req: Request) =>
 
 const isGuillotineLoopbackRequest = (req: Request) =>
     req.method === 'POST' &&
-    /^\/_guillotine\/[^/]+\/(draft|master)\/?$/.test(req.path) &&
+    /^\/_guillotine\/?$/.test(req.path) &&
     validateServiceSecretHeader(req);

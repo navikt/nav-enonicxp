@@ -7,7 +7,7 @@ fragment contentFormDetails on no_nav_navno_FormDetails {
         title
         longTitle
         formNumbers
-        ingress(processHtml: { type: server }) {
+        ingress {
             ...richText
         }
         ...formTypeMixin

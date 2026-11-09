@@ -8,10 +8,10 @@ fragment contentMainArticle on no_nav_navno_MainArticle {
     data {
         ingress
         hasTableOfContents
-        text(processHtml: { type: server }) {
+        text {
             ...richText
         }
-        fact(processHtml: { type: server }) {
+        fact {
             ...richText
         }
         picture {

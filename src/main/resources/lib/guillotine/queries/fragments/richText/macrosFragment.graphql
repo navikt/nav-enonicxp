@@ -169,7 +169,7 @@ fragment html_fragmentMacro on Macro {
                                 ... on no_nav_navno_FormDetails {
                                     dataAsJson
                                     data {
-                                        ingress(processHtml: { type: server }) {
+                                        ingress {
                                             ... on RichText {
                                                 processedHtml
                                                 macros {
@@ -200,7 +200,7 @@ fragment form_detailsMacro on Macro {
                 ... on no_nav_navno_FormDetails {
                     dataAsJson
                     data {
-                        ingress(processHtml: { type: server }) {
+                        ingress {
                             ... on RichText {
                                 processedHtml
                                 macros {

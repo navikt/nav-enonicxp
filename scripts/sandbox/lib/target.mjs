@@ -572,7 +572,7 @@ const APPLICATION_VERSIONS = {
     'com.enonic.app.audit.log': '2.0.0',
     'com.enonic.app.contentstudio': '6.0.4',
     'com.enonic.app.contentstudio.plus': '2.0.4',
-    'com.enonic.app.guillotine': '8.0.0',
+    'com.enonic.app.guillotine': '9.0.0',
     'com.enonic.app.livetrace': '3.0.1',
     'com.enonic.app.siteimprove': '2.0.1',
     'com.enonic.app.snapshotter': '4.0.0',

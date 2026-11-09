@@ -34,14 +34,14 @@ fragment contentContactInformation on no_nav_navno_ContactInformation {
                 title
                 url
                 alertText
-                ingress(processHtml: { type: server }) {
+                ingress {
                     ...richText
                 }
             }
             chat {
                 title
                 alertText
-                ingress(processHtml: { type: server }) {
+                ingress {
                     ...richText
                 }
                 regularOpeningHours {
