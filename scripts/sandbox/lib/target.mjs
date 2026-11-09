@@ -570,8 +570,8 @@ const GUILLOTINE_KEY = 'com.enonic.app.guillotine';
 // an XP 7 source is imported into an XP 8 target.
 const APPLICATION_VERSIONS = {
     'com.enonic.app.audit.log': '2.0.0',
-    'com.enonic.app.contentstudio': '6.0.4',
-    'com.enonic.app.contentstudio.plus': '2.0.4',
+    'com.enonic.app.contentstudio': '6.1.0',
+    'com.enonic.app.contentstudio.plus': '2.1.0',
     'com.enonic.app.guillotine': '9.0.0',
     'com.enonic.app.livetrace': '3.0.1',
     'com.enonic.app.siteimprove': '2.0.1',

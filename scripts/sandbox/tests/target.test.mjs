@@ -668,12 +668,12 @@ test('maps XP 7 applications to XP 8 versions and reports every difference', () 
     ]);
     assert.deepEqual(applications, [
         navApplication,
-        { key: 'com.enonic.app.contentstudio', version: '6.0.4', required: true },
+        { key: 'com.enonic.app.contentstudio', version: '6.1.0', required: true },
         { key: 'com.enonic.app.guillotine', version: '9.0.0', required: false },
         { key: 'com.example.unknown', version: '1.0.0', required: false },
     ]);
     assert.deepEqual(conflicts, [
-        'com.enonic.app.contentstudio: installing XP 8 version 6.0.4, source has 5.3.2',
+        'com.enonic.app.contentstudio: installing XP 8 version 6.1.0, source has 5.3.2',
         'com.enonic.app.guillotine: installing XP 8 version 9.0.0, source has 8.0.0',
         'com.enonic.app.contentviewer: not installed, no XP 8 version (source has 1.6.1)',
         'com.example.unknown: no XP 8 version is mapped, trying the source version 1.0.0',
@@ -1132,7 +1132,7 @@ test('upgrades older started apps and a missing Guillotine, and keeps newer or s
             { key: 'com.enonic.app.guillotine', required: true },
         ]
     );
-    assert.equal(upgrades[0].version, '6.0.4');
+    assert.equal(upgrades[0].version, '6.1.0');
     assert.deepEqual(
         findApplicationUpgrades([
             { key: 'com.enonic.app.guillotine', version: '99.0.0', state: 'started' },
