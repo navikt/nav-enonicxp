@@ -11,7 +11,7 @@ repositories {
 }
 
 node {
-    version = '22.15.0'
+    version = new groovy.json.JsonSlurper().parse(file('package.json')).engines.node
     pnpmVersion = new groovy.json.JsonSlurper().parse(file('package.json'))
         .packageManager.tokenize('@')[1].tokenize('+')[0]
 }
