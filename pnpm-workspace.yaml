@@ -26,7 +26,7 @@ catalog:
   '@enonic-types/lib-repo': 7.16.8
   '@enonic-types/lib-scheduler': 7.16.8
   '@enonic-types/lib-schema': 7.16.8
-  '@enonic-types/lib-task': 7.16.8
+  '@enonic-types/lib-task': 8.1.2
   '@enonic-types/lib-value': 7.16.8
   '@enonic-types/lib-websocket': 7.16.8
   '@enonic/mock-xp': 1.0.0
