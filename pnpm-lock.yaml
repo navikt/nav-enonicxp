@@ -526,10 +526,6 @@ importers:
         version: 10.9.2(@swc/core@1.11.24)(@types/node@26.6.5)(typescript@5.9.3)
 
   test/e2e-tests:
-    dependencies:
-      pnpm:
-        specifier: ^11.18.0
-        version: 11.18.0
     devDependencies:
       '@types/jest':
         specifier: 'catalog:'
@@ -4240,11 +4236,6 @@ packages:
   pkg-dir@4.2.0:
     resolution: {integrity: sha512-HRDzbaKjC+AOWVXxAU/x54COGeIv9eb+6CkDSQoNTt4XyWoIJvuPsXizxu/Fr23EiekbtZwmh1IcIG/l/a10GQ==}
     engines: {node: '>=8'}
-
-  pnpm@11.18.0:
-    resolution: {integrity: sha512-M9g8d9qC9J+6g2klxvG4QRgewxMrZwY5vQEvcHX1x89jTF+HAUfBmq50ePrAHfCdiJLogEVIlu3SPumzN1dWPA==}
-    engines: {node: '>=22.13'}
-    hasBin: true
 
   possible-typed-array-names@1.1.0:
     resolution: {integrity: sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg==}
@@ -9398,8 +9389,6 @@ snapshots:
   pkg-dir@4.2.0:
     dependencies:
       find-up: 4.1.0
-
-  pnpm@11.18.0: {}
 
   possible-typed-array-names@1.1.0: {}
 
