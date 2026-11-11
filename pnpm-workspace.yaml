@@ -29,9 +29,9 @@ catalog:
   '@enonic-types/lib-task': 7.16.8
   '@enonic-types/lib-value': 7.16.8
   '@enonic-types/lib-websocket': 7.16.8
-  '@enonic/mock-xp': 1.0.0
-  '@eslint/compat': 2.1.0
-  '@eslint/eslintrc': 3.3.6
+  '@enonic/mock-xp': 1.1.2
+  '@eslint/compat': 2.1.1
+  '@eslint/eslintrc': 3.3.7
   '@eslint/js': 10.0.1
   '@item-enonic-types/lib-cache': 2.2.1
   '@item-enonic-types/lib-graphql': 2.1.0
@@ -39,25 +39,25 @@ catalog:
   '@item-enonic-types/lib-guillotine': 5.5.0
   '@item-enonic-types/lib-http-client': 3.2.2
   '@item-enonic-types/lib-thymeleaf': 2.1.0
-  '@swc/cli': 0.7.9
-  '@swc/core': 1.11.24
+  '@swc/cli': 0.8.2
+  '@swc/core': 1.16.21
   '@types/jest': 30.0.0
-  '@types/node': 26.6.5
-  '@typescript-eslint/eslint-plugin': 8.65.0
-  '@typescript-eslint/parser': 8.65.0
-  dayjs: 1.11.13
-  eslint: 10.8.0
+  '@types/node': 26.6.6
+  '@typescript-eslint/eslint-plugin': 8.72.1
+  '@typescript-eslint/parser': 8.72.1
+  dayjs: 1.11.23
+  eslint: 10.14.0
   eslint-config-prettier: 10.1.8
   eslint-import-resolver-typescript: 4.4.5
   eslint-plugin-import: 2.32.0
-  eslint-plugin-prettier: 5.5.6
+  eslint-plugin-prettier: 5.5.7
   graphql: 16.14.2
-  html-entities: 2.5.2
-  jest: 30.2.0
-  prettier: 3.9.6
+  html-entities: 2.6.0
+  jest: 30.5.2
+  prettier: 3.9.10
   striptags: 3.2.0
   testcontainers: 11.11.0
-  ts-jest: 29.4.6
+  ts-jest: 29.4.15
   ts-node: 10.9.2
   typescript: 5.9.3
 minimumReleaseAge: 4320
