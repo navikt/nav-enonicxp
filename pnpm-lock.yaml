@@ -214,8 +214,8 @@ catalogs:
       specifier: 7.16.8
       version: 7.16.8
     '@enonic-types/lib-auth':
-      specifier: 7.16.8
-      version: 7.16.8
+      specifier: 8.1.2
+      version: 8.1.2
     '@enonic-types/lib-cluster':
       specifier: 7.16.8
       version: 7.16.8
@@ -388,7 +388,7 @@ importers:
         version: 7.16.8
       '@enonic-types/lib-auth':
         specifier: 'catalog:'
-        version: 7.16.8
+        version: 8.1.2
       '@enonic-types/lib-cluster':
         specifier: 'catalog:'
         version: 7.16.8
@@ -1204,14 +1204,17 @@ packages:
   '@enonic-types/core@7.16.8':
     resolution: {integrity: sha512-nRsrFhMQG24pX7CXeA/1jI3VbC/mSE2iLtkxn56RRmD+ommHJoskFb59sVCGB2z4Jv8FlIAN8sNEGu97EORd+g==}
 
+  '@enonic-types/core@8.1.2':
+    resolution: {integrity: sha512-iQ4y9u0ol3iu5Oby6SP5JSpTx5062Do4rtzDDKDVPi3pZgQTpb2fyjmrjaeMUcOKS5pYxuszL/QjRZZPmujjtA==}
+
   '@enonic-types/global@7.16.8':
     resolution: {integrity: sha512-nlclKqgW8F8kzaok9zg5zyRqeXF1BCci3AJyywqbBmt/F2pyQghKwbvnWLqWsvnKKZKkfswLMcwrpH7BgYZoEw==}
 
   '@enonic-types/lib-auditlog@7.16.8':
     resolution: {integrity: sha512-xRzwfqH4lTbKEhQL1eTsgkBcANzcR95uDSq+8GjSkth8YmI2nLcx2aivYPtpGXlJPcDDHt7Ce1GYb/PfiRCbJw==}
 
-  '@enonic-types/lib-auth@7.16.8':
-    resolution: {integrity: sha512-qh4QaGOeBXCS7GYa0YBPql/5/7KhHk/0T1XBYMuxnoPX9VDvSOQ4/fXgU6jQCHijjoSTd2uOLE/uZBuZr8HEsw==}
+  '@enonic-types/lib-auth@8.1.2':
+    resolution: {integrity: sha512-CbhDaO3fS+ogv1/LrYVZmijWiNXBAHkoq0syONHydYpiAhHVqaHXjWy0DgRj4m28pkIapGleemBca5W+/b+Vuw==}
 
   '@enonic-types/lib-cluster@7.16.8':
     resolution: {integrity: sha512-8MdICF8/yV3r8neXDEtnPMk+4K/qu3YGmvsb1q0cszesWqLSjspNnuEIWyWzy4aVHh4DwXoulTBgv7YLr0rP2w==}
@@ -5754,6 +5757,8 @@ snapshots:
 
   '@enonic-types/core@7.16.8': {}
 
+  '@enonic-types/core@8.1.2': {}
+
   '@enonic-types/global@7.16.8':
     dependencies:
       '@enonic-types/core': 7.16.8
@@ -5762,9 +5767,9 @@ snapshots:
     dependencies:
       '@enonic-types/core': 7.16.8
 
-  '@enonic-types/lib-auth@7.16.8':
+  '@enonic-types/lib-auth@8.1.2':
     dependencies:
-      '@enonic-types/core': 7.16.8
+      '@enonic-types/core': 8.1.2
 
   '@enonic-types/lib-cluster@7.16.8': {}
 
