@@ -1,4 +1,5 @@
-import httpClient, { HttpResponse } from '/lib/http-client';
+import * as httpClient from '/lib/http-client';
+import { HttpResponse } from '/lib/http-client';
 import * as taskLib from '/lib/xp/task';
 import * as schedulerLib from '/lib/xp/scheduler';
 import { APP_DESCRIPTOR, URLS } from '../constants';

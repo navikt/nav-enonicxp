@@ -1,5 +1,5 @@
 import { Request } from '@enonic-types/core';
-import cacheLib from '/lib/cache';
+import * as cacheLib from '/lib/cache';
 import * as taskLib from '/lib/xp/task';
 import { batchedContentQuery } from '../../lib/utils/batched-query';
 import { ContentDescriptor } from '../../types/content-types/content-config';

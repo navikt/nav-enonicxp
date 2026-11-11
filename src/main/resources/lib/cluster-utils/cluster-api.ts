@@ -1,4 +1,4 @@
-import httpClient from '/lib/http-client';
+import * as httpClient from '/lib/http-client';
 import { logger } from '../utils/logging';
 
 type LocalNodeInfo = {

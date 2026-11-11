@@ -1,5 +1,5 @@
 import { Request, Response } from '@enonic-types/core';
-import thymeleafLib from '/lib/thymeleaf';
+import * as thymeleafLib from '/lib/thymeleaf';
 import { URLS } from '../../../lib/constants';
 import { validateCurrentUserPermissionForContent } from '../../../lib/utils/auth-utils';
 import { getServiceRequestSubPath } from '../../../services/service-utils';

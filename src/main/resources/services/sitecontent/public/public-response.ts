@@ -1,4 +1,4 @@
-import cacheLib from '/lib/cache';
+import * as cacheLib from '/lib/cache';
 import { findTargetContentAndLocale } from '../common/find-target-content-and-locale';
 import { sitecontentSpecialResponse } from './special-redirects';
 import { sitecontentContentResponse, SitecontentResponse } from '../common/content-response';

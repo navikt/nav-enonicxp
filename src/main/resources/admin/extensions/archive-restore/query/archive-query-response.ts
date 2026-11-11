@@ -1,5 +1,5 @@
 import { Request, Response } from '@enonic-types/core';
-import thymeleafLib from '/lib/thymeleaf';
+import * as thymeleafLib from '/lib/thymeleaf';
 import { sanitize } from '/lib/xp/common';
 import { Content } from '/lib/xp/content';
 import { getRepoConnection } from '../../../../lib/repos/repo-utils';

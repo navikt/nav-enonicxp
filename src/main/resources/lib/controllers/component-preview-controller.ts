@@ -1,6 +1,6 @@
 import { Request } from '@enonic-types/core';
 import * as portalLib from '/lib/xp/portal';
-import httpClient from '/lib/http-client';
+import * as httpClient from '/lib/http-client';
 import { URLS } from '../constants';
 import { logger } from '../utils/logging';
 import { runGuillotineComponentPreviewQuery } from '../guillotine/queries/run-sitecontent-query';

@@ -11,7 +11,7 @@ jest.mock(
     '/lib/thymeleaf',
     () => ({
         __esModule: true,
-        default: { render: mockRender },
+        render: mockRender,
     }),
     { virtual: true }
 );

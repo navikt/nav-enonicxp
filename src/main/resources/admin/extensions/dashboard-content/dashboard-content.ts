@@ -1,5 +1,5 @@
 import { Content } from '/lib/xp/content';
-import thymeleafLib from '/lib/thymeleaf';
+import * as thymeleafLib from '/lib/thymeleaf';
 import * as authLib from '/lib/xp/auth';
 import { UserKey } from '/lib/xp/auditlog';
 import * as contentLib from '/lib/xp/content';

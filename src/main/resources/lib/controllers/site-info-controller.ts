@@ -2,7 +2,7 @@ import { Request } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import * as schedulerLib from '/lib/xp/scheduler';
-import httpClient from '/lib/http-client';
+import * as httpClient from '/lib/http-client';
 import { CONTENT_ROOT_REPO_ID, URLS } from '../constants';
 import { clusterInfo, ClusterState, requestClusterInfo } from '../cluster-utils/cluster-api';
 import { getPrepublishJobName, getUnpublishJobName } from '../scheduling/scheduled-publish';

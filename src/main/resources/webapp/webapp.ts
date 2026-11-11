@@ -1,6 +1,6 @@
 import { Request } from '@enonic-types/core';
 import * as taskLib from '/lib/xp/task';
-import thymeleafLib from '/lib/thymeleaf';
+import * as thymeleafLib from '/lib/thymeleaf';
 import { runOfficeFetchTask } from '../lib/office-pages/office-tasks';
 import { runInContext } from '../lib/context/run-in-context';
 import { frontendInvalidateAllAsync } from '../lib/cache/frontend-cache';

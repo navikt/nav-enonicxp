@@ -1,6 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { Content, ByteSource } from '/lib/xp/content';
-import httpClient from '/lib/http-client';
+import * as httpClient from '/lib/http-client';
 import { logger } from '../utils/logging';
 import { runInContext } from '../context/run-in-context';
 import { forceArray } from '../utils/array-utils';

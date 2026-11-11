@@ -33,6 +33,9 @@ catalogs:
     '@enonic-types/lib-auth':
       specifier: 8.1.2
       version: 8.1.2
+    '@enonic-types/lib-cache':
+      specifier: 3.0.0
+      version: 3.0.0
     '@enonic-types/lib-cluster':
       specifier: 8.1.2
       version: 8.1.2
@@ -51,6 +54,9 @@ catalogs:
     '@enonic-types/lib-grid':
       specifier: 8.1.2
       version: 8.1.2
+    '@enonic-types/lib-http-client':
+      specifier: 4.0.1
+      version: 4.0.1
     '@enonic-types/lib-io':
       specifier: 8.1.2
       version: 8.1.2
@@ -75,6 +81,9 @@ catalogs:
     '@enonic-types/lib-task':
       specifier: 8.1.2
       version: 8.1.2
+    '@enonic-types/lib-thymeleaf':
+      specifier: 3.0.1
+      version: 3.0.1
     '@enonic-types/lib-value':
       specifier: 8.1.2
       version: 8.1.2
@@ -93,15 +102,6 @@ catalogs:
     '@eslint/js':
       specifier: 10.0.1
       version: 10.0.1
-    '@item-enonic-types/lib-cache':
-      specifier: 2.2.1
-      version: 2.2.1
-    '@item-enonic-types/lib-http-client':
-      specifier: 3.2.2
-      version: 3.2.2
-    '@item-enonic-types/lib-thymeleaf':
-      specifier: 2.1.0
-      version: 2.1.0
     '@swc/cli':
       specifier: 0.7.9
       version: 0.7.9
@@ -197,6 +197,9 @@ importers:
       '@enonic-types/lib-auth':
         specifier: 'catalog:'
         version: 8.1.2
+      '@enonic-types/lib-cache':
+        specifier: 'catalog:'
+        version: 3.0.0
       '@enonic-types/lib-cluster':
         specifier: 'catalog:'
         version: 8.1.2
@@ -215,6 +218,9 @@ importers:
       '@enonic-types/lib-grid':
         specifier: 'catalog:'
         version: 8.1.2
+      '@enonic-types/lib-http-client':
+        specifier: 'catalog:'
+        version: 4.0.1
       '@enonic-types/lib-io':
         specifier: 'catalog:'
         version: 8.1.2
@@ -239,6 +245,9 @@ importers:
       '@enonic-types/lib-task':
         specifier: 'catalog:'
         version: 8.1.2
+      '@enonic-types/lib-thymeleaf':
+        specifier: 'catalog:'
+        version: 3.0.1
       '@enonic-types/lib-value':
         specifier: 'catalog:'
         version: 8.1.2
@@ -254,15 +263,6 @@ importers:
       '@eslint/js':
         specifier: 'catalog:'
         version: 10.0.1(eslint@10.8.0)
-      '@item-enonic-types/lib-cache':
-        specifier: 'catalog:'
-        version: 2.2.1
-      '@item-enonic-types/lib-http-client':
-        specifier: 'catalog:'
-        version: 3.2.2
-      '@item-enonic-types/lib-thymeleaf':
-        specifier: 'catalog:'
-        version: 2.1.0
       '@types/node':
         specifier: 'catalog:'
         version: 26.1.2
@@ -1090,9 +1090,6 @@ packages:
   '@emnapi/wasi-threads@1.1.0':
     resolution: {integrity: sha512-WI0DdZ8xFSbgMjR1sFsKABJ/C5OnRrjT06JXbZKexJGrDuPTzZdDYfFlsgcCXCyf+suG5QU2e/y1Wo2V/OapLQ==}
 
-  '@enonic-types/core@7.16.6':
-    resolution: {integrity: sha512-RGey537Kd/DJBPAbNjfEYegnTJmD3oGjgWI8E++Np6xWT+vuAmxl03aNR+xik4iWFgRSo3UeWKHi7N8wCp3Mjg==}
-
   '@enonic-types/core@8.1.2':
     resolution: {integrity: sha512-iQ4y9u0ol3iu5Oby6SP5JSpTx5062Do4rtzDDKDVPi3pZgQTpb2fyjmrjaeMUcOKS5pYxuszL/QjRZZPmujjtA==}
 
@@ -1104,6 +1101,9 @@ packages:
 
   '@enonic-types/lib-auth@8.1.2':
     resolution: {integrity: sha512-CbhDaO3fS+ogv1/LrYVZmijWiNXBAHkoq0syONHydYpiAhHVqaHXjWy0DgRj4m28pkIapGleemBca5W+/b+Vuw==}
+
+  '@enonic-types/lib-cache@3.0.0':
+    resolution: {integrity: sha512-VBYIlZRDqGC68qWmhiHGNFXh6yxy/MZLZ8loRT7Qo5cF1YwHMhCvX0wkGjfFAKkkYnOxll7KaiYHsN2uxNqNzA==}
 
   '@enonic-types/lib-cluster@8.1.2':
     resolution: {integrity: sha512-jumdWFxOmNvCvpe5eXPWX7EAgWKiGUqIdnTozDJ/K3SpwALr+Xg5vmJWkWfISUfC0MCEe65rUCM8UKWNgZW2ww==}
@@ -1122,6 +1122,9 @@ packages:
 
   '@enonic-types/lib-grid@8.1.2':
     resolution: {integrity: sha512-I2+anP9CQDoerLSxOX9cQtqJxdKu5EZzSmo4RXE3HmMYb1yqG4zYMORv41547/fVhzZfUiusROsE9/l6TG/nMA==}
+
+  '@enonic-types/lib-http-client@4.0.1':
+    resolution: {integrity: sha512-QrA0LvmRq201ANdNJjpFp+R+R8WlD+0puaHqpSNXUKPOMsg0yRQJ5d0gFFmorivv4GYKQPYo9THvTr+mnXZDBg==}
 
   '@enonic-types/lib-io@8.1.2':
     resolution: {integrity: sha512-WZZwd+hfqw6NHCBqOcPT03nWDhCHwwRo3WCajkkbzQxMmb78tKzNBe6qSds28+uWVz0benWqGV99Md9FmuqykA==}
@@ -1146,6 +1149,9 @@ packages:
 
   '@enonic-types/lib-task@8.1.2':
     resolution: {integrity: sha512-FurPeUOuB2hn8QhN87lPkPgKGowO2RhK+IPZD/IC6L60vzfFXkzgsXKL3Utu3ai9zQlscEOvZBRDrnASpSZntA==}
+
+  '@enonic-types/lib-thymeleaf@3.0.1':
+    resolution: {integrity: sha512-/7wnALxgiadYMty19x6wPEQNmtJPt5CveAgUb9HQaNNDMLxmoqPQfjzCCIVkKbevnAW7xq03kLQxZLJndox5Vw==}
 
   '@enonic-types/lib-value@8.1.2':
     resolution: {integrity: sha512-0Sfz7LXLtNDZUphEbWEV1lhzBsgM5sChSfG+mvBHzWTp4B3qpnzNJF02lal5k9P6F2ON7jUJOvLbaKVa1sa46A==}
@@ -1253,16 +1259,6 @@ packages:
   '@istanbuljs/schema@0.1.3':
     resolution: {integrity: sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==}
     engines: {node: '>=8'}
-
-  '@item-enonic-types/lib-cache@2.2.1':
-    resolution: {integrity: sha512-mTko5xeMTdXYROqqRa3kil4mH4KlFfcmw6FNPIwfCk92dyNVvUY4Gixz3HdynBdKxkAr+g+iM+7bO3wisUykjA==}
-
-  '@item-enonic-types/lib-http-client@3.2.2':
-    resolution: {integrity: sha512-+Sdhx9VmBmJG3zLU75RN2TRdnXqEDPrNCLpFMCIzCmEy3qsXq1qoDrGXgmcoF29dYRp3IFPhe6UJs3E95VUCeQ==}
-    deprecated: 'Deprecated: use the official @enonic-types/lib-http-client instead'
-
-  '@item-enonic-types/lib-thymeleaf@2.1.0':
-    resolution: {integrity: sha512-xAjrZ1aSJh1Ps8xrbFrLdQF8IpYEWY7WUG084Fk/wJcONGHX1YXtjiF1XKtnY0b8wx2zWC2ikGiE0Jr6DiVwfQ==}
 
   '@jest/console@29.7.0':
     resolution: {integrity: sha512-5Ni4CU7XHQi32IJ398EEP4RrB8eV09sXP2ROqD4bksHrnTree52PsxvX8tpL8LvTZ3pFzXyPbNQReSN41CAhOg==}
@@ -5726,8 +5722,6 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
-  '@enonic-types/core@7.16.6': {}
-
   '@enonic-types/core@8.1.2': {}
 
   '@enonic-types/global@8.1.2':
@@ -5739,6 +5733,10 @@ snapshots:
       '@enonic-types/core': 8.1.2
 
   '@enonic-types/lib-auth@8.1.2':
+    dependencies:
+      '@enonic-types/core': 8.1.2
+
+  '@enonic-types/lib-cache@3.0.0':
     dependencies:
       '@enonic-types/core': 8.1.2
 
@@ -5757,6 +5755,10 @@ snapshots:
   '@enonic-types/lib-event@8.1.2': {}
 
   '@enonic-types/lib-grid@8.1.2':
+    dependencies:
+      '@enonic-types/core': 8.1.2
+
+  '@enonic-types/lib-http-client@4.0.1':
     dependencies:
       '@enonic-types/core': 8.1.2
 
@@ -5789,6 +5791,10 @@ snapshots:
       '@enonic-types/core': 8.1.2
 
   '@enonic-types/lib-task@8.1.2':
+    dependencies:
+      '@enonic-types/core': 8.1.2
+
+  '@enonic-types/lib-thymeleaf@3.0.1':
     dependencies:
       '@enonic-types/core': 8.1.2
 
@@ -5923,16 +5929,6 @@ snapshots:
       resolve-from: 5.0.0
 
   '@istanbuljs/schema@0.1.3': {}
-
-  '@item-enonic-types/lib-cache@2.2.1': {}
-
-  '@item-enonic-types/lib-http-client@3.2.2':
-    dependencies:
-      '@enonic-types/core': 7.16.6
-
-  '@item-enonic-types/lib-thymeleaf@2.1.0':
-    dependencies:
-      '@enonic-types/core': 7.16.6
 
   '@jest/console@29.7.0':
     dependencies:

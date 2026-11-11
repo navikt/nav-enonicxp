@@ -1,7 +1,7 @@
 import { Request, Response } from '@enonic-types/core';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import httpClient from '/lib/http-client';
+import * as httpClient from '/lib/http-client';
 import * as portalLib from '/lib/xp/portal';
 import {
     getContentFromCustomPath,

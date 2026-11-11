@@ -1,4 +1,4 @@
-import cacheLib from '/lib/cache';
+import * as cacheLib from '/lib/cache';
 import * as eventLib from '/lib/xp/event';
 
 export const LOCAL_CACHE_INVALIDATION_EVENT_NAME = 'local-cache-invalidation';

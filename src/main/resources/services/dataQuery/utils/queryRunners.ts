@@ -11,7 +11,7 @@ import { batchedContentQuery } from '../../../lib/utils/batched-query';
 import { getNodeHitsFromQuery, getNodeHitsFromExternalArchiveQuery } from './queryBuilder';
 import { Content } from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
-import cacheLib from '/lib/cache';
+import * as cacheLib from '/lib/cache';
 import { logger } from '../../../lib/utils/logging';
 
 const RESPONSE_BATCH_SIZE = 1000;

@@ -1,4 +1,4 @@
-import cacheLib from '/lib/cache';
+import * as cacheLib from '/lib/cache';
 import { getRepoConnection } from '../repos/repo-utils';
 import { getLayersData } from '../localization/layers-data';
 import { Content } from '/lib/xp/content';

@@ -1,4 +1,4 @@
-import httpClient from '/lib/http-client';
+import * as httpClient from '/lib/http-client';
 import { RepoBranch } from '../../../types/common';
 import { mergeGuillotineArray, mergeGuillotineObject } from './merge-json';
 import { logger } from '../../utils/logging';

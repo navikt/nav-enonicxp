@@ -14,9 +14,9 @@
         "types": ["@enonic-types/global"],
         "paths": {
             "@xp-types/*": ["../../../.xp-codegen/*"],
-            "/lib/cache": ["../../../node_modules/@item-enonic-types/lib-cache"],
-            "/lib/http-client": ["../../../node_modules/@item-enonic-types/lib-http-client"],
-            "/lib/thymeleaf": ["../../../node_modules/@item-enonic-types/lib-thymeleaf"],
+            "/lib/cache": ["../../../node_modules/@enonic-types/lib-cache"],
+            "/lib/http-client": ["../../../node_modules/@enonic-types/lib-http-client"],
+            "/lib/thymeleaf": ["../../../node_modules/@enonic-types/lib-thymeleaf"],
             "/lib/xp/auditlog": ["../../../node_modules/@enonic-types/lib-auditlog"],
             "/lib/xp/app": ["types/xp-libs/lib-app"],
             "/lib/xp/auth": ["../../../node_modules/@enonic-types/lib-auth"],

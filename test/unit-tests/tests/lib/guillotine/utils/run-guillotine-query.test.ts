@@ -1,7 +1,7 @@
-import httpClient from '/lib/http-client';
+import * as httpClient from '/lib/http-client';
 import { runGuillotineQuery } from '@navno-app/lib/guillotine/utils/run-guillotine-query';
 
-jest.mock('/lib/http-client', () => ({ __esModule: true, default: { request: jest.fn() } }));
+jest.mock('/lib/http-client', () => ({ __esModule: true, request: jest.fn() }));
 jest.mock('@navno-app/lib/context/run-in-context', () => ({
     getContextRepoId: () => 'com.enonic.cms.navno-nynorsk',
 }));

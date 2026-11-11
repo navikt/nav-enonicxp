@@ -1,5 +1,5 @@
 import { ErrorRequest } from '@enonic-types/core';
-import thymeleafLib from '/lib/thymeleaf';
+import * as thymeleafLib from '/lib/thymeleaf';
 import { frontendProxy } from '../../lib/controllers/frontend-proxy';
 import { NAVNO_ROOT_PATH } from '../../lib/constants';
 import { logger } from '../../lib/utils/logging';

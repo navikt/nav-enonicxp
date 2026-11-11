@@ -1,5 +1,5 @@
 import { Request } from '@enonic-types/core';
-import thymeleafLib from '/lib/thymeleaf';
+import * as thymeleafLib from '/lib/thymeleaf';
 
 const view = resolve('./archive-preview.html');
 

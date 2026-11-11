@@ -1,5 +1,5 @@
 import * as contentLib from '/lib/xp/content';
-import thymeleafLib from '/lib/thymeleaf';
+import * as thymeleafLib from '/lib/thymeleaf';
 import { runInContext } from '../../../lib/context/run-in-context';
 import { getContentNodeKey } from '../../../lib/utils/content-utils';
 import { APP_DESCRIPTOR, NAVNO_NODE_ROOT_PATH } from '../../../lib/constants';
