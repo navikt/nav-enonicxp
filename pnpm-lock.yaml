@@ -256,8 +256,8 @@ catalogs:
       specifier: 7.16.8
       version: 7.16.8
     '@enonic-types/lib-task':
-      specifier: 7.16.8
-      version: 7.16.8
+      specifier: 8.1.2
+      version: 8.1.2
     '@enonic-types/lib-value':
       specifier: 7.16.8
       version: 7.16.8
@@ -430,7 +430,7 @@ importers:
         version: 7.16.8
       '@enonic-types/lib-task':
         specifier: 'catalog:'
-        version: 7.16.8
+        version: 8.1.2
       '@enonic-types/lib-value':
         specifier: 'catalog:'
         version: 7.16.8
@@ -1204,6 +1204,9 @@ packages:
   '@enonic-types/core@7.16.8':
     resolution: {integrity: sha512-nRsrFhMQG24pX7CXeA/1jI3VbC/mSE2iLtkxn56RRmD+ommHJoskFb59sVCGB2z4Jv8FlIAN8sNEGu97EORd+g==}
 
+  '@enonic-types/core@8.1.2':
+    resolution: {integrity: sha512-iQ4y9u0ol3iu5Oby6SP5JSpTx5062Do4rtzDDKDVPi3pZgQTpb2fyjmrjaeMUcOKS5pYxuszL/QjRZZPmujjtA==}
+
   '@enonic-types/global@7.16.8':
     resolution: {integrity: sha512-nlclKqgW8F8kzaok9zg5zyRqeXF1BCci3AJyywqbBmt/F2pyQghKwbvnWLqWsvnKKZKkfswLMcwrpH7BgYZoEw==}
 
@@ -1252,8 +1255,8 @@ packages:
   '@enonic-types/lib-schema@7.16.8':
     resolution: {integrity: sha512-3mfUZHHeH4RQgFG77N+Ux3dH0VfGrO+OI8HA71ubGBW2+bFbrbU9jCgF57t+tYM2ChaCem82CVQna5GzPKm2+Q==}
 
-  '@enonic-types/lib-task@7.16.8':
-    resolution: {integrity: sha512-sGr7j9Lw5Tt88/CYVC6pz4zEvTQPpd7dTLQvIHcCPMYAL/q5A4QATPz/Dp2OFRobUAABTo/FnUsMHLKmrxWeTw==}
+  '@enonic-types/lib-task@8.1.2':
+    resolution: {integrity: sha512-FurPeUOuB2hn8QhN87lPkPgKGowO2RhK+IPZD/IC6L60vzfFXkzgsXKL3Utu3ai9zQlscEOvZBRDrnASpSZntA==}
 
   '@enonic-types/lib-value@7.16.8':
     resolution: {integrity: sha512-k5PmoIimTpEXH7iuJNIfJsRGY2AF3v5mn69jtuXef3Zv/j7jcEM07150xZJaXXQjt2TjbBGwW4cUdnC/9w8f3A==}
@@ -5754,6 +5757,8 @@ snapshots:
 
   '@enonic-types/core@7.16.8': {}
 
+  '@enonic-types/core@8.1.2': {}
+
   '@enonic-types/global@7.16.8':
     dependencies:
       '@enonic-types/core': 7.16.8
@@ -5812,9 +5817,9 @@ snapshots:
     dependencies:
       '@enonic-types/core': 7.16.8
 
-  '@enonic-types/lib-task@7.16.8':
+  '@enonic-types/lib-task@8.1.2':
     dependencies:
-      '@enonic-types/core': 7.16.8
+      '@enonic-types/core': 8.1.2
 
   '@enonic-types/lib-value@7.16.8':
     dependencies:
