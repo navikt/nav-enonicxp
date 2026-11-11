@@ -220,8 +220,8 @@ catalogs:
       specifier: 7.16.8
       version: 7.16.8
     '@enonic-types/lib-common':
-      specifier: 7.16.8
-      version: 7.16.8
+      specifier: 8.1.2
+      version: 8.1.2
     '@enonic-types/lib-content':
       specifier: 7.16.8
       version: 7.16.8
@@ -394,7 +394,7 @@ importers:
         version: 7.16.8
       '@enonic-types/lib-common':
         specifier: 'catalog:'
-        version: 7.16.8
+        version: 8.1.2
       '@enonic-types/lib-content':
         specifier: 'catalog:'
         version: 7.16.8
@@ -1216,8 +1216,8 @@ packages:
   '@enonic-types/lib-cluster@7.16.8':
     resolution: {integrity: sha512-8MdICF8/yV3r8neXDEtnPMk+4K/qu3YGmvsb1q0cszesWqLSjspNnuEIWyWzy4aVHh4DwXoulTBgv7YLr0rP2w==}
 
-  '@enonic-types/lib-common@7.16.8':
-    resolution: {integrity: sha512-eJ/ozWcf2hapLZDUGg7hY2GfDFU3wWF3Eq8HGASoj0Oe1qNVLEc4XTsL8NGKsEXIO1EYr3LYyJso2hMJOj4Wow==}
+  '@enonic-types/lib-common@8.1.2':
+    resolution: {integrity: sha512-wzRJ7ZGcTca2wG8RgMjTW8/8eUahB+OJydd3tKHu47pGHp/pzi5IIAhLC0SxxfhdhkL9TRCw++BKTflUBcd/sA==}
 
   '@enonic-types/lib-content@7.16.8':
     resolution: {integrity: sha512-flHROY9jBF1tQ6cDd6mZIm6Q1BCtTmWs5CWXx+TL+5kHQEOFRli82SW7s1ru6TnRNfIXGRopeOeITUxQahddVg==}
@@ -5768,7 +5768,7 @@ snapshots:
 
   '@enonic-types/lib-cluster@7.16.8': {}
 
-  '@enonic-types/lib-common@7.16.8': {}
+  '@enonic-types/lib-common@8.1.2': {}
 
   '@enonic-types/lib-content@7.16.8':
     dependencies:
