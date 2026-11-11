@@ -16,8 +16,5 @@
         "testcontainers": "catalog:",
         "ts-jest": "catalog:",
         "ts-node": "catalog:"
-    },
-    "dependencies": {
-        "pnpm": "^11.18.0"
     }
 }

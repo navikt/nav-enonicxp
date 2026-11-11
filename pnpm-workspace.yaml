@@ -42,7 +42,7 @@ catalog:
   '@swc/cli': 0.7.9
   '@swc/core': 1.11.24
   '@types/jest': 30.0.0
-  '@types/node': 26.1.2
+  '@types/node': 26.6.5
   '@typescript-eslint/eslint-plugin': 8.65.0
   '@typescript-eslint/parser': 8.65.0
   dayjs: 1.11.13
@@ -60,7 +60,7 @@ catalog:
   ts-jest: 29.4.6
   ts-node: 10.9.2
   typescript: 5.9.3
-minimumReleaseAge: 10080
+minimumReleaseAge: 4320
 allowBuilds:
   '@swc/core': true
   cpu-features: true
