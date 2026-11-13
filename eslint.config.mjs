@@ -178,7 +178,7 @@ export default defineConfig([globalIgnores([
         },
 
         // These packages declare their exports in `declare module` blocks, which eslint-plugin-import can't read
-        "import/ignore": ["node_modules/@enonic-types/lib-(cache|http-client|thymeleaf)/"],
+        "import/ignore": ["node_modules[/\\\\]@enonic-types[/\\\\]lib-(cache|http-client|thymeleaf)[/\\\\]"],
 
         "import/resolver": {
             typescript: {
