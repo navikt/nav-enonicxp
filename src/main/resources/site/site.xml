@@ -4,7 +4,6 @@
     <x-data name="virtualParent" optional="true"/>
     <x-data name="redirectToLayer" optional="true"/>
     <x-data name="fasetter" optional="true" allowContentTypes="^$"/>
-    <x-data name="cmsContent" optional="true" allowContentTypes="^$"/>
     <x-data name="cmsMenu" optional="true" allowContentTypes="^$"/>
     <x-data name="cmsStatus" optional="true" allowContentTypes="^$"/>
     <x-data name="menu-item" optional="true" allowContentTypes="^$"/>
