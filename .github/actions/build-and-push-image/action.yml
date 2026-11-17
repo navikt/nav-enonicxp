@@ -1,12 +1,6 @@
-name: Build, test and deploy app
+name: Build, test and push image
 
 inputs:
-  naisCluster:
-    required: true
-    description: NAIS cluster to deploy to
-  xpAdminHost:
-    required: true
-    description: XP admin host
   xpEnv:
     required: true
     description: XP environment
@@ -52,10 +46,3 @@ runs:
         docker_context: .nais-deploy-job
         image_suffix: ${{ inputs.xpEnv }}
         build_args: appFileName=navno.jar
-
-    - name: Deploy to nais
-      uses: nais/deploy/actions/deploy@v2
-      env:
-        CLUSTER: ${{ inputs.naisCluster }}
-        RESOURCE: .nais-deploy-job/deploy-job.yml
-        VAR: image=${{ steps.docker-push.outputs.image }},xpAdminHost=${{ inputs.xpAdminHost }},xpEnv=${{ inputs.xpEnv }}

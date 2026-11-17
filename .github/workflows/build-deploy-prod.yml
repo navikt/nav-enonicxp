@@ -1,0 +1,19 @@
+# Builds main and deploys it to prod - shared by deploy-to-prod.yml and base-image-refresh.yml
+# Callers need `permissions: { contents: read, id-token: write }` and `secrets: inherit`.
+name: Build and deploy to prod
+on:
+  workflow_call:
+    outputs:
+      image:
+        description: The deployed image
+        value: ${{ jobs.deploy.outputs.image }}
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/deploy-instance.yml
+    permissions: { contents: read, id-token: write }
+    with:
+      cluster: prod-gcp
+      xp-admin-host: portal-admin.oera.no
+      xp-env: prod
+    secrets: inherit

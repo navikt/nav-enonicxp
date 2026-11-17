@@ -23,7 +23,9 @@ app {
 }
 
 node {
-    version = '22.15.0'
+    def rootPackage = new groovy.json.JsonSlurper().parse(file('../../../package.json'))
+    version = rootPackage.engines.node
+    pnpmVersion = rootPackage.packageManager.tokenize('@')[1].tokenize('+')[0]
 }
 
 dependencies {

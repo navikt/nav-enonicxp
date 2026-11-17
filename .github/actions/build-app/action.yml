@@ -8,25 +8,10 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Setup Java
-      uses: actions/setup-java@v5
-      with:
-        distribution: zulu
-        java-version: 21
-        cache: gradle
+    - uses: navikt/navno-actions/setup-jvm@v1
 
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v6
-
-    - name: Setup node.js
-      uses: actions/setup-node@v6
-      with:
-        node-version: 22
-        cache: pnpm
-
-    - name: Install node.js dependencies
-      shell: bash
-      run: pnpm install --frozen-lockfile
+    # Also installs dependencies with --frozen-lockfile
+    - uses: navikt/navno-actions/setup-node-pnpm@v1
 
     - name: Run unit tests
       shell: bash

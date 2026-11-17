@@ -9,9 +9,6 @@ mixins:
   - name: "no.nav.navno:fasetter"
     allowContentTypes: "^$"
     optional: true
-  - name: "no.nav.navno:cmsContent"
-    allowContentTypes: "^$"
-    optional: true
   - name: "no.nav.navno:cmsMenu"
     allowContentTypes: "^$"
     optional: true
