@@ -1,4 +1,6 @@
 kind: "AdminExtension"
+title: "Mitt innhold"
+description: "Publisert, forhåndspublisert, under arbeid og avpublisert innhold"
 allow:
   - "role:system.everyone"
 interfaces:

@@ -1,4 +1,6 @@
 kind: "AdminExtension"
+title: "Melding til redaktører"
+description: "Siste melding til redaktører"
 allow:
   - "role:system.everyone"
 interfaces:
