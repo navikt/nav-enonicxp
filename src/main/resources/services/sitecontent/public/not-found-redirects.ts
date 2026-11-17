@@ -6,54 +6,10 @@ import { stripLeadingAndTrailingSlash, stripPathPrefix } from '../../../lib/path
 import { REDIRECTS_ROOT_PATH } from '../../../lib/constants';
 import { runInLocaleContext } from '../../../lib/localization/locale-context';
 import { runSitecontentGuillotineQuery } from '../../../lib/guillotine/queries/run-sitecontent-query';
-import { transformToRedirect } from '../common/transform-to-redirect';
 import { SitecontentResponse } from '../common/content-response';
 import { getContentLocaleRedirectTarget } from '../../../lib/utils/content-utils';
 
 const MAX_PARENT_PATH_LENGTH = 10;
-
-// The old Enonic CMS had urls suffixed with <contentKey>.cms
-// This contentKey was saved as an x-data field after the migration to XP
-// Check if a path matches this pattern and return the content with the contentKey
-// if it exists
-const getRedirectFromLegacyPath = (path: string) => {
-    const legacyCmsKeyMatch = /\d+(?=\.cms$)/.exec(path);
-    if (!legacyCmsKeyMatch) {
-        return null;
-    }
-
-    const legacyCmsKey = legacyCmsKeyMatch[0];
-
-    const legacyHits = contentLib.query({
-        count: 100,
-        sort: 'createdTime ASC',
-        filters: {
-            boolean: {
-                must: {
-                    hasValue: {
-                        field: 'x.no-nav-navno.cmsContent.contentKey',
-                        values: [legacyCmsKey],
-                    },
-                },
-            },
-        },
-    }).hits;
-
-    if (legacyHits.length === 0) {
-        return null;
-    }
-
-    // Sometimes multiple contents have the same legacy key, usually due to duplication
-    // for localization purposes. Return the oldest content.
-    const targetContent = legacyHits[0];
-
-    return transformToRedirect({
-        content: targetContent,
-        target: targetContent._path,
-        type: 'internal',
-        isPermanent: true,
-    });
-};
 
 // Finds the nearest ancestor with the internal link content type + redirectSubpaths flag
 // Use this as a redirect if found
@@ -119,11 +75,6 @@ export const sitecontentNotFoundRedirect = ({
     branch: RepoBranch;
 }): SitecontentResponse =>
     runInContext({ branch }, () => {
-        const redirectFromLegacyPath = getRedirectFromLegacyPath(pathRequested);
-        if (redirectFromLegacyPath) {
-            return redirectFromLegacyPath;
-        }
-
         const strippedPath = stripPathPrefix(pathRequested);
 
         // This order of lookups should be preserved. In the event of overlapping matches, we want the order
