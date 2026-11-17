@@ -6,24 +6,26 @@ import { FormIntermediateStep } from '@xp-types/site/content-types/form-intermed
 import { CONTENT_LOCALE_DEFAULT } from '../../constants';
 
 type Step = FormIntermediateStep['steps'][number];
+type FormIntermediateStepContent = Content<'no.nav.navno:form-intermediate-step'>;
+
+export const getDefaultLayerContent = (content: FormIntermediateStepContent) =>
+    content.language !== CONTENT_LOCALE_DEFAULT
+        ? runInLocaleContext({ locale: CONTENT_LOCALE_DEFAULT, branch: 'draft' }, () =>
+              contentLib.get<'no.nav.navno:form-intermediate-step'>({ key: content._id })
+          )
+        : null;
 
 export const needsFormNumbersUpdateCheck = ({
     currentContent,
-    content,
+    defaultLayerContent,
 }: {
-    currentContent: Content<'no.nav.navno:form-intermediate-step'>;
-    content: Content<'no.nav.navno:form-intermediate-step'>;
+    currentContent: FormIntermediateStepContent;
+    defaultLayerContent: FormIntermediateStepContent | null;
 }): boolean => {
     const steps = forceArray(currentContent.data.steps);
-    const isNonDefaultLanguage = content.language !== CONTENT_LOCALE_DEFAULT;
-
-    const defaultLayerContent = runInLocaleContext(
-        { locale: CONTENT_LOCALE_DEFAULT, branch: 'draft' },
-        () => contentLib.get({ key: content._id })
-    );
 
     return (
-        isNonDefaultLanguage &&
+        !!defaultLayerContent &&
         steps.some((currentLayerStep, index) => {
             const defaultStep = defaultLayerContent?.data?.steps?.[index];
 
@@ -81,16 +83,12 @@ export const updateStepFormNumbers = (step: Step, defaultLayerStep: Step | undef
 };
 
 export const updateFormNumbersFromDefaultLayer = (
-    content: Content<'no.nav.navno:form-intermediate-step'>
+    content: FormIntermediateStepContent,
+    defaultLayerContent: FormIntermediateStepContent | null
 ) => {
-    if (content.language !== CONTENT_LOCALE_DEFAULT) {
-        const defaultLayerContent = runInLocaleContext(
-            { locale: CONTENT_LOCALE_DEFAULT, branch: 'draft' },
-            () => contentLib.get({ key: content._id })
-        );
-
+    if (defaultLayerContent) {
         content.data.steps = content.data.steps.map((step, index) =>
-            updateStepFormNumbers(step, defaultLayerContent?.data.steps[index])
+            updateStepFormNumbers(step, defaultLayerContent.data.steps[index])
         );
     }
 };

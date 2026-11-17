@@ -1,10 +1,12 @@
 import { Request } from '@enonic-types/core';
 import * as taskLib from '/lib/xp/task';
+import * as authLib from '/lib/xp/auth';
+import { TaskInfo } from '@enonic-types/lib-task';
 import thymeleafLib from '/lib/thymeleaf';
 import { runOfficeFetchTask } from '../lib/office-pages/office-tasks';
 import { runInContext } from '../lib/context/run-in-context';
-import { frontendInvalidateAllAsync } from '../lib/cache/frontend-cache';
-import { requestSitemapUpdate } from '../lib/sitemap/sitemap';
+import { frontendInvalidateAllSync } from '../lib/cache/frontend-cache';
+import { requestSitemapUpdate, SITEMAP_JOB_NAME } from '../lib/sitemap/sitemap';
 import { updateScheduledPublishJobs } from '../lib/scheduling/scheduled-publish-updater';
 import { generateUUID } from '../lib/utils/uuid';
 import { removeUnpublishedFromAllContentLists } from '../lib/contentlists/remove-unpublished';
@@ -16,25 +18,84 @@ import { NAVOccurences } from '../lib/reporting/NAVOccurrences';
 import { archiveOldNews } from '../lib/archiving/archive-old-news';
 import { manageScheduledJobs } from '../lib/scheduling/manage-scheduled-jobs';
 import { handleCuratedExportRequest } from '../lib/curated-export/source/access';
+import {
+    getJobResult,
+    JobResult,
+    runJobWithResult,
+    storeJobResult,
+} from '../lib/jobs/job-results';
+import { getScheduleDescription } from '../lib/scheduling/schedule-description';
 
-type ActionsMap = Record<string, { description: string; callback: () => any }>;
+type Action = {
+    description: string;
+    // Names or descriptions of scheduled or background tasks which run the same job
+    relatedTasks?: string[];
+    // Name of the scheduler job which runs this job automatically
+    scheduleName?: string;
+} & (
+    | { callback: () => any }
+    // For jobs which store their own result, from a task in relatedTasks
+    | { startJob: (startedBy: string) => void }
+);
+
+type ActionsMap = Record<string, Action>;
+
+const SITEMAP_WAIT_MS = 10 * 60 * 1000;
+const SITEMAP_POLL_MS = 2000;
+
+const requestSitemapAndWaitForResult = (startedBy: string) => {
+    const requestedAt = Date.now();
+    requestSitemapUpdate(startedBy);
+    taskLib.progress({ info: 'Venter på at sitemap blir generert' });
+
+    while (Date.now() - requestedAt < SITEMAP_WAIT_MS) {
+        taskLib.sleep(SITEMAP_POLL_MS);
+        const result = getJobResult(SITEMAP_JOB_NAME);
+        if (result?.finishedAt && new Date(result.finishedAt).getTime() >= requestedAt) {
+            return;
+        }
+    }
+
+    storeJobResult(SITEMAP_JOB_NAME, {
+        status: 'failed',
+        startedAt: new Date(requestedAt).toISOString(),
+        finishedAt: new Date().toISOString(),
+        startedBy,
+        summary: `Fikk ikke svar fra sitemap-generering innen ${SITEMAP_WAIT_MS / 60000} minutter`,
+    });
+};
 
 const view = resolve('webapp.html');
 
 const validActions: ActionsMap = {
     norg: {
         description: 'Oppdater kontor fra norg',
-        callback: runOfficeFetchTask,
+        scheduleName: 'office_import_schedule',
+        callback: () => {
+            const result = runOfficeFetchTask();
+            if (!result) {
+                throw new Error('Klarte ikke å hente kontordata fra norg2');
+            }
+            return result;
+        },
     },
     wipeCache: {
         description: 'Slett frontend-cache',
         callback: () => {
-            frontendInvalidateAllAsync(`manual-wipe-${generateUUID()}`);
+            const response = frontendInvalidateAllSync(`manual-wipe-${generateUUID()}`);
+            if (!response) {
+                throw new Error(
+                    `Fikk ikke svar fra revalidator-proxy (${URLS.REVALIDATOR_PROXY_ORIGIN})`
+                );
+            }
+            return 'Revalidator-proxy bekreftet sletting av frontend-cache';
         },
     },
     generateSitemap: {
         description: 'Generer data for sitemap',
-        callback: requestSitemapUpdate,
+        startJob: requestSitemapAndWaitForResult,
+        relatedTasks: ['sitemap-generator-task'],
+        scheduleName: 'sitemap-generator-schedule',
     },
     updatePrepublishJobs: {
         description: 'Oppretter scheduler-jobs for prepublish/unpublish',
@@ -45,8 +106,10 @@ const validActions: ActionsMap = {
         callback: removeUnpublishedFromAllContentLists,
     },
     schedulerCleanup: {
-        description: 'Fjern expired scheduler jobs (kjøres normalt automatisk hver morgen)',
+        description: 'Fjern expired scheduler jobs',
         callback: runSchedulerCleanup,
+        relatedTasks: ['no.nav.navno:scheduler-cleanup'],
+        scheduleName: 'scheduler-cleanup',
     },
     reportNAVOccurences: {
         description: 'Går igjennom alt publisert innhold og rapporterer NAV-forekomster',
@@ -55,6 +118,8 @@ const validActions: ActionsMap = {
     oldNewsUnpublish: {
         description: 'Avpubliser og arkiver gamle nyheter/pressemeldinger',
         callback: archiveOldNews,
+        relatedTasks: ['no.nav.navno:archive-old-news'],
+        scheduleName: 'archive-old-news',
     },
     ...(!!URLS.SEARCH_API_URL && {
         updateAllSearchNodesExternal: {
@@ -86,21 +151,92 @@ const accessDeniedResponse = {
     contentType: 'text/html; charset=UTF-8',
 };
 
-const renderWebapp = (runningCmd?: string, schedulerMessage?: string) => {
+const statusTexts: Record<JobResult['status'], string> = {
+    running: 'Kjører',
+    ok: 'Fullført',
+    failed: 'Feilet',
+};
+
+const getActiveTask = (tasks: TaskInfo[], action: Action) => {
+    const taskIds = [action.description, ...(action.relatedTasks || [])];
+    return tasks.find(
+        (task) =>
+            (taskIds.includes(task.description) || taskIds.includes(task.name)) &&
+            (task.state === 'RUNNING' || task.state === 'WAITING')
+    );
+};
+
+const getProgressText = (task: TaskInfo) => {
+    const { info, current, total } = task.progress;
+    const count = total > 0 ? `${current} av ${total}` : '';
+    return [info, count].filter(Boolean).join(' – ') || null;
+};
+
+const getDurationText = (startedAt: string, finishedAt?: string) => {
+    if (!finishedAt) {
+        return null;
+    }
+
+    const seconds = Math.max(
+        0,
+        Math.round((new Date(finishedAt).getTime() - new Date(startedAt).getTime()) / 1000)
+    );
+    if (seconds < 60) {
+        return `${seconds} s`;
+    }
+
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) {
+        return `${minutes} min ${seconds % 60} s`;
+    }
+
+    return `${Math.floor(minutes / 60)} t ${minutes % 60} min`;
+};
+
+const getLastResultModel = (jobName: string, activeTask?: TaskInfo) => {
+    const result = getJobResult(jobName);
+    if (!result) {
+        return null;
+    }
+
+    // The stored status stays 'running' if the server stopped while the job was running
+    const isAborted = result.status === 'running' && !activeTask;
+
+    return {
+        ...result,
+        statusKey: isAborted ? 'aborted' : result.status,
+        statusText: isAborted ? 'Avbrutt' : statusTexts[result.status],
+        duration: getDurationText(result.startedAt, result.finishedAt),
+    };
+};
+
+const renderWebapp = (runningCmd?: string, message?: string) => {
     const { selectedJobs: obsoleteJobs } = runInContext({ asAdmin: true }, () =>
         manageScheduledJobs({ operation: 'list-obsolete' })
     );
 
-    const model = {
-        actionUrl: '/webapp/' + app.name,
-        cmds: Object.entries(validActions).map(([name, action]) => ({
+    const tasks = taskLib.list();
+
+    const cmds = Object.entries(validActions).map(([name, action]) => {
+        const activeTask = getActiveTask(tasks, action);
+        return {
             cmd: name,
             description: action.description,
-        })),
+            schedule: action.scheduleName ? getScheduleDescription(action.scheduleName) : null,
+            lastResult: getLastResultModel(name, activeTask),
+            progress: activeTask ? getProgressText(activeTask) : null,
+            isRunning: !!activeTask,
+        };
+    });
+
+    const model = {
+        actionUrl: '/webapp/' + app.name,
+        cmds,
+        hasRunningJobs: cmds.some((cmd) => cmd.isRunning),
         runningCmd,
         obsoleteJobs,
         hasObsoleteJobs: obsoleteJobs.length > 0,
-        schedulerMessage,
+        message,
     };
 
     return {
@@ -108,6 +244,10 @@ const renderWebapp = (runningCmd?: string, schedulerMessage?: string) => {
         contentType: 'text/html; charset=UTF-8',
     };
 };
+
+// Prevents bulk jobs from running in parallel if the page is opened more than once.
+// Queued tasks count too, as executeFunction does not start the task immediately.
+const isActionRunning = (action: Action) => !!getActiveTask(taskLib.list(), action);
 
 export const get = (req: Request) => {
     const curatedExportResponse = handleCuratedExportRequest(req);
@@ -123,11 +263,26 @@ export const get = (req: Request) => {
 
     const actionToRun = validActions[cmd];
 
+    if (actionToRun && isActionRunning(actionToRun)) {
+        return renderWebapp(undefined, `Jobben kjører allerede: ${actionToRun.description}`);
+    }
+
     if (actionToRun) {
+        const user = authLib.getUser();
+        const startedBy = user?.displayName || user?.login || 'ukjent';
+
         taskLib.executeFunction({
             description: actionToRun.description,
             func: () => {
-                runInContext({ branch: 'master', asAdmin: true }, actionToRun.callback);
+                runInContext({ branch: 'master', asAdmin: true }, () =>
+                    'startJob' in actionToRun
+                        ? actionToRun.startJob(startedBy)
+                        : runJobWithResult({
+                              jobName: cmd,
+                              startedBy,
+                              callback: actionToRun.callback,
+                          })
+                );
             },
         });
     }
@@ -157,10 +312,10 @@ export const post = (req: Request) => {
     const { deletedJobNames } = runInContext({ asAdmin: true }, () =>
         manageScheduledJobs({ operation: 'delete-obsolete', confirmDelete: true })
     );
-    const schedulerMessage =
+    const message =
         deletedJobNames.length > 0
             ? `Slettet scheduler-jobber: ${deletedJobNames.join(', ')}`
             : 'Fant ingen utdaterte scheduler-jobber å slette.';
 
-    return renderWebapp(undefined, schedulerMessage);
+    return renderWebapp(undefined, message);
 };

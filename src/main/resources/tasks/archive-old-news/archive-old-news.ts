@@ -1,3 +1,4 @@
+import { runJobWithResult, STARTED_BY_SCHEDULE } from '../../lib/jobs/job-results';
 import { logger } from '../../lib/utils/logging';
 import { archiveOldNews } from '../../lib/archiving/archive-old-news';
 import { isCuratedImportInProgress } from '../../lib/curated-export/safety';
@@ -9,5 +10,9 @@ export const run = () => {
         return;
     }
     logger.info('Running archive old news task');
-    archiveOldNews();
+    runJobWithResult({
+        jobName: 'oldNewsUnpublish',
+        startedBy: STARTED_BY_SCHEDULE,
+        callback: archiveOldNews,
+    });
 };

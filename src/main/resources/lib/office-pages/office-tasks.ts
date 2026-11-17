@@ -22,16 +22,19 @@ export const runOfficeFetchTask = () => {
             );
         }
 
-        return;
+        return null;
     }
 
     consecutiveFetchFailureCount = 0;
 
     logger.info(`Fetched ${offices.length} office from norg2, updating site data...`);
 
-    runInContext({ repository: CONTENT_ROOT_REPO_ID, branch: 'draft', asAdmin: true }, () =>
-        processAllOffices(offices)
+    const result = runInContext(
+        { repository: CONTENT_ROOT_REPO_ID, branch: 'draft', asAdmin: true },
+        () => processAllOffices(offices)
     );
+
+    return { fetchedFromNorg: offices.length, ...result };
 };
 
 export const createOfficeImportSchedule = () => {
