@@ -3,6 +3,7 @@ import * as portalLib from '/lib/xp/portal';
 import { getRepoConnection } from '../repos/repo-utils';
 import { RepoNode } from '/lib/xp/node';
 import * as contentLib from '/lib/xp/content';
+import * as valueLib from '/lib/xp/value';
 import { Content } from '/lib/xp/content';
 import { NodeComponent } from '../../types/components/component-node';
 import { runInContext } from '../context/run-in-context';
@@ -96,6 +97,31 @@ const buildSituationCardPart = (path: string, target: string): SituationCardPart
         },
     },
 });
+
+// The target fields are content selectors, which XP8 validates as references on save.
+// Plain strings from lib-node are stored as String and would make the page impossible to save.
+const withReferenceTargets = (card: SituationCardPartComponent): SituationCardPartComponent => {
+    const config = card.part.config?.['no-nav-navno']?.['areapage-situation-card'];
+    if (!config?.target || !config.dummyTarget) {
+        return card;
+    }
+
+    return {
+        ...card,
+        part: {
+            ...card.part,
+            config: {
+                'no-nav-navno': {
+                    'areapage-situation-card': {
+                        ...config,
+                        target: valueLib.reference(config.target) as unknown as string,
+                        dummyTarget: valueLib.reference(config.dummyTarget) as unknown as string,
+                    },
+                },
+            },
+        },
+    };
+};
 
 const situationCardHasTarget = (
     situationCard: SituationCardPartComponent,
@@ -225,7 +251,7 @@ const populateSituationsLayout = (req: Request) => {
 
             return {
                 ...applyModifiedData(content),
-                components: [...otherComponents, ...situationCards],
+                components: [...otherComponents, ...situationCards.map(withReferenceTargets)],
             };
         },
     });
