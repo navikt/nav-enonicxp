@@ -125,10 +125,12 @@ export const backfillLayerPublishInfo = () => {
 
     toggleCacheInvalidationOnNodeEvents({ shouldDefer: true, maxDeferTime: ONE_DAY_MS });
 
+    const resultsByRepo: Record<string, BackfillResult> = {};
+
     try {
         Object.values(localeToRepoIdMap).forEach((repoId) => {
             if (repoId !== CONTENT_ROOT_REPO_ID) {
-                backfillLayerRepo(repoId);
+                resultsByRepo[repoId] = backfillLayerRepo(repoId);
             }
         });
     } finally {
@@ -136,4 +138,6 @@ export const backfillLayerPublishInfo = () => {
     }
 
     logger.info('Finished job to backfill publish info for inherited layer content');
+
+    return resultsByRepo;
 };

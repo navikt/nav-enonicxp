@@ -85,23 +85,27 @@ export const externalSearchUpdateAll = () => {
     const searchConfig = getExternalSearchConfig();
     if (!searchConfig) {
         logger.error('No search config found!');
-        return;
+        throw new Error('No search config found!');
     }
 
     const validContentTypes = getValidContentTypes(searchConfig);
     if (validContentTypes.length === 0) {
         logger.error('No valid content types found in search config!');
-        return;
+        throw new Error('No valid content types found in search config!');
     }
 
     const start = Date.now();
 
     const contentToIndex = getContentToIndex(validContentTypes);
+    const contentSentPerRepo: Record<string, number> = {};
 
     Object.entries(contentToIndex).forEach(([repoId, contentIds]) => {
         logger.info(`Found ${contentIds.length} content to index in repo ${repoId}`);
         sendToSearchApi(repoId, contentIds);
+        contentSentPerRepo[repoId] = contentIds.length;
     });
 
     logger.info(`External search full update completed in ${(Date.now() - start) / 1000} seconds`);
+
+    return contentSentPerRepo;
 };

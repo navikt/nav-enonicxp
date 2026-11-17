@@ -98,6 +98,8 @@ const persistResultLogs = (result: ArchiveResult, jobName: string, query: QueryD
     logger.info(
         `Batch archiving result for ${logEntryName}: Total contents found ${result.totalFound} | Success count ${result.archived.length} | Failed count ${result.failed.length} | Protected count ${result.skipped.length} - Full results: ${logEntryDataToolboxUrl}`
     );
+
+    return logEntryDataToolboxUrl;
 };
 
 const hasNewerDescendants = (content: ContentDataSimple | Content, timestamp: string): boolean => {
@@ -270,5 +272,13 @@ export const findAndArchiveOldContent = ({
         result.archived.push(...layerResult.archived);
     });
 
-    persistResultLogs(result, jobName, query);
+    const fullResultsUrl = persistResultLogs(result, jobName, query);
+
+    return {
+        found: result.totalFound,
+        archived: result.archived.length,
+        skipped: result.skipped.length,
+        failed: result.failed.length,
+        fullResultsUrl,
+    };
 };

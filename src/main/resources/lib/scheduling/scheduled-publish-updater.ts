@@ -9,6 +9,8 @@ import { logger } from '../utils/logging';
 import { queryAllLayersToRepoIdBuckets } from '../localization/layers-repo-utils/query-all-layers';
 
 const schedulePrepublishTasks = () => {
+    const result = { scheduled: 0, missingJobs: 0 };
+
     const nodeHitsBuckets = queryAllLayersToRepoIdBuckets({
         queryParams: {
             count: 2000,
@@ -33,6 +35,7 @@ const schedulePrepublishTasks = () => {
                 name: getPrepublishJobName(content._id, repoId),
             });
             if (!existingJob) {
+                result.missingJobs++;
                 logger.warning(
                     `Scheduled job for prepublish was missing for content ${content._path} in repo ${repoId}`
                 );
@@ -46,11 +49,16 @@ const schedulePrepublishTasks = () => {
                 time: content.publish.from,
                 masterOnly: false,
             });
+            result.scheduled++;
         });
     });
+
+    return result;
 };
 
 const scheduleUnpublishTasks = () => {
+    const result = { scheduled: 0, missingJobs: 0 };
+
     const nodeHitsBuckets = queryAllLayersToRepoIdBuckets({
         queryParams: {
             count: 2000,
@@ -75,6 +83,7 @@ const scheduleUnpublishTasks = () => {
                 name: getUnpublishJobName(content._id, repoId),
             });
             if (!existingJob) {
+                result.missingJobs++;
                 logger.warning(
                     `Scheduled job for unpublish was missing for content ${content._path} in repo ${repoId}`
                 );
@@ -87,11 +96,14 @@ const scheduleUnpublishTasks = () => {
                 publishTo: content.publish.to,
                 masterOnly: false,
             });
+            result.scheduled++;
         });
     });
+
+    return result;
 };
 
-export const updateScheduledPublishJobs = () => {
-    schedulePrepublishTasks();
-    scheduleUnpublishTasks();
-};
+export const updateScheduledPublishJobs = () => ({
+    prepublish: schedulePrepublishTasks(),
+    unpublish: scheduleUnpublishTasks(),
+});

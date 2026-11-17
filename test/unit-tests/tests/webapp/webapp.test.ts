@@ -6,6 +6,9 @@ const mockManageScheduledJobs = jest.fn();
 const mockHandleCuratedExportRequest = jest.fn();
 const mockExecuteFunction = jest.fn();
 const mockListTasks = jest.fn();
+const mockGetJobResult = jest.fn();
+const mockRunJobWithResult = jest.fn();
+const mockGetUser = jest.fn();
 
 jest.mock(
     '/lib/thymeleaf',
@@ -25,12 +28,19 @@ jest.mock(
     { virtual: true }
 );
 
+jest.mock('/lib/xp/auth', () => ({ getUser: mockGetUser }), { virtual: true });
+
+jest.mock('@navno-app/lib/jobs/job-results', () => ({
+    getJobResult: mockGetJobResult,
+    runJobWithResult: mockRunJobWithResult,
+}));
+
 jest.mock('@navno-app/lib/office-pages/office-tasks', () => ({ runOfficeFetchTask: jest.fn() }));
 jest.mock('@navno-app/lib/context/run-in-context', () => ({
     runInContext: (_options: unknown, callback: () => unknown) => callback(),
 }));
 jest.mock('@navno-app/lib/cache/frontend-cache', () => ({
-    frontendInvalidateAllAsync: jest.fn(),
+    frontendInvalidateAllSync: jest.fn(),
 }));
 jest.mock('@navno-app/lib/sitemap/sitemap', () => ({ requestSitemapUpdate: jest.fn() }));
 jest.mock('@navno-app/lib/scheduling/scheduled-publish-updater', () => ({
@@ -45,6 +55,9 @@ jest.mock('@navno-app/lib/utils/auth-utils', () => ({
 }));
 jest.mock('@navno-app/lib/search/update-all', () => ({ externalSearchUpdateAll: jest.fn() }));
 jest.mock('@navno-app/lib/constants', () => ({ URLS: {} }));
+jest.mock('@navno-app/lib/scheduling/schedule-description', () => ({
+    getScheduleDescription: jest.fn(),
+}));
 jest.mock('@navno-app/lib/scheduling/schedule-cleanup', () => ({
     runSchedulerCleanup: jest.fn(),
 }));
@@ -78,6 +91,8 @@ beforeEach(() => {
     mockUserIsAdmin.mockReturnValue(true);
     mockHandleCuratedExportRequest.mockReturnValue(null);
     mockListTasks.mockReturnValue([]);
+    mockGetJobResult.mockReturnValue(null);
+    mockGetUser.mockReturnValue({ displayName: 'Ola Nordmann', login: 'ola' });
     mockManageScheduledJobs.mockReturnValue({
         selectedJobs: [],
         missingJobNames: [],
@@ -105,7 +120,7 @@ describe('Webapp scheduler cleanup', () => {
         expect(mockRender).toHaveBeenCalledWith(
             'webapp.html',
             expect.objectContaining({
-                schedulerMessage: 'Sletting ble ikke utført: bekreftelse mangler.',
+                message: 'Sletting ble ikke utført: bekreftelse mangler.',
             })
         );
     });
@@ -140,7 +155,7 @@ describe('Webapp scheduler cleanup', () => {
         expect(mockRender).toHaveBeenCalledWith(
             'webapp.html',
             expect.objectContaining({
-                schedulerMessage: 'Slettet scheduler-jobber: legacy_office_import_schedule',
+                message: 'Slettet scheduler-jobber: legacy_office_import_schedule',
             })
         );
     });
@@ -169,7 +184,9 @@ describe('Webapp actions', () => {
     const runAgainWithExistingTask = (state: string) => {
         get(request({ cmd: 'backfillLayerPublishInfo' }));
         const { description } = mockExecuteFunction.mock.calls[0][0];
-        mockListTasks.mockReturnValue([{ description, state }]);
+        mockListTasks.mockReturnValue([
+            { description, state, progress: { info: '', current: 0, total: 0 } },
+        ]);
         mockExecuteFunction.mockClear();
 
         get(request({ cmd: 'backfillLayerPublishInfo' }));
@@ -182,7 +199,7 @@ describe('Webapp actions', () => {
         expect(mockRender).toHaveBeenLastCalledWith(
             'webapp.html',
             expect.objectContaining({
-                schedulerMessage: expect.stringContaining('Jobben kjører allerede'),
+                message: expect.stringContaining('Jobben kjører allerede'),
                 runningCmd: undefined,
             })
         );
@@ -192,5 +209,75 @@ describe('Webapp actions', () => {
         runAgainWithExistingTask(state);
 
         expect(mockExecuteFunction).toHaveBeenCalledTimes(1);
+    });
+
+    test('runs the action through the job result wrapper with the current user', () => {
+        get(request({ cmd: 'backfillLayerPublishInfo' }));
+        mockExecuteFunction.mock.calls[0][0].func();
+
+        expect(mockRunJobWithResult).toHaveBeenCalledWith(
+            expect.objectContaining({
+                jobName: 'backfillLayerPublishInfo',
+                startedBy: 'Ola Nordmann',
+            })
+        );
+    });
+});
+
+describe('Webapp job results', () => {
+    const getRenderedCmd = (cmdName: string) =>
+        mockRender.mock.lastCall?.[1].cmds.find((cmd: { cmd: string }) => cmd.cmd === cmdName);
+
+    test('shows a job stored as running without an active task as aborted', () => {
+        mockGetJobResult.mockImplementation((jobName: string) =>
+            jobName === 'norg'
+                ? { status: 'running', startedAt: '2026-11-17T09:00:00.000Z', startedBy: 'ola' }
+                : null
+        );
+
+        get(request());
+
+        expect(getRenderedCmd('norg').lastResult.statusText).toBe('Avbrutt');
+        expect(getRenderedCmd('norg').lastResult.statusKey).toBe('aborted');
+        expect(getRenderedCmd('wipeCache').lastResult).toBeNull();
+    });
+
+    test.each([
+        ['2026-11-17T09:00:42.000Z', '42 s'],
+        ['2026-11-17T09:02:05.000Z', '2 min 5 s'],
+        ['2026-11-17T10:03:00.000Z', '1 t 3 min'],
+    ])('shows the duration of a job finished at %s as %s', (finishedAt, duration) => {
+        mockGetJobResult.mockReturnValue({
+            status: 'ok',
+            startedAt: '2026-11-17T09:00:00.000Z',
+            finishedAt,
+            startedBy: 'ola',
+        });
+
+        get(request());
+
+        expect(getRenderedCmd('norg').lastResult).toMatchObject({ statusKey: 'ok', duration });
+    });
+
+    test('shows progress for a running job', () => {
+        mockGetJobResult.mockReturnValue({
+            status: 'running',
+            startedAt: '2026-11-17T09:00:00.000Z',
+            startedBy: 'ola',
+        });
+        mockListTasks.mockReturnValue([
+            {
+                description: 'Oppdater kontor fra norg',
+                state: 'RUNNING',
+                progress: { info: 'Henter kontorer', current: 3, total: 10 },
+            },
+        ]);
+
+        get(request());
+
+        const norg = getRenderedCmd('norg');
+        expect(norg.lastResult.statusText).toBe('Kjører');
+        expect(norg.progress).toBe('Henter kontorer – 3 av 10');
+        expect(mockRender.mock.lastCall?.[1].hasRunningJobs).toBe(true);
     });
 });
