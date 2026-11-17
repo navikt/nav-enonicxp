@@ -18,44 +18,35 @@ type Response = {
     versions: VersionReferenceEnriched[];
 };
 
-const resolveCurrentContent = (content: Content, locale: string) => {
-    return runInLocaleContext({ locale, branch: 'draft', asAdmin: true }, () =>
-        runSitecontentGuillotineQuery(content, 'draft')
-    );
-};
-
 // Ensures all referenced contents are resolved to versions matching the timestamp of the specified content
 const resolveToContentTimestamp = (content: Content, locale: string) => {
-    return runInTimeTravelContext(
-        {
-            dateTime: content.modifiedTime || content.createdTime,
-            repoId: getLayersData().localeToRepoIdMap[locale],
-            branch: 'master',
-            baseContentKey: content._id,
-        },
-        () => runSitecontentGuillotineQuery(content, 'draft')
+    // The locale context is needed for localized public paths in _path and rich text links
+    return runInLocaleContext({ locale, asAdmin: true }, () =>
+        runInTimeTravelContext(
+            {
+                dateTime: content.modifiedTime || content.createdTime,
+                repoId: getLayersData().localeToRepoIdMap[locale],
+                branch: 'master',
+                baseContentKey: content._id,
+            },
+            () => runSitecontentGuillotineQuery(content, 'draft')
+        )
     );
 };
 
-const getContentRenderProps = (
-    content: Content,
-    locale: string,
-    versionId: string | undefined,
-    isArchived: boolean
-) => {
-    const resolveToTs = !!versionId;
+// Always render the version of the content we got, never the draft. Without a versionId in the
+// request, this is the last published version
+const getContentRenderProps = (content: Content, locale: string, isArchived: boolean) => {
     if (isArchived) {
         return getArchivedContent(
             content._id,
             getLayersData().localeToRepoIdMap[locale],
             undefined,
-            versionId
+            content._versionKey
         );
     }
 
-    return resolveToTs
-        ? resolveToContentTimestamp(content, locale)
-        : resolveCurrentContent(content, locale);
+    return resolveToContentTimestamp(content, locale);
 };
 
 export const externalArchiveContentService = (req: Request) => {
@@ -99,7 +90,7 @@ export const externalArchiveContentService = (req: Request) => {
         };
     }
 
-    const contentRenderProps = getContentRenderProps(content, locale, versionId, isArchived);
+    const contentRenderProps = getContentRenderProps(content, locale, isArchived);
     const allVersions = getAllVersions(content._id, locale);
     const versionsWithUnpublishedTime = allVersions.map((version) => ({
         ...version,
