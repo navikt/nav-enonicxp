@@ -15,6 +15,7 @@ import {
     NORG2_CONSUMER_ID,
 } from '../constants';
 import { createObjectChecksum } from '../utils/object-utils';
+import { omitPageForModify } from '../utils/content-utils';
 import { OfficeRawNORGData } from './office-raw-norg-data';
 import { OfficeTypes } from './types';
 
@@ -383,7 +384,7 @@ const updateOfficePageIfChanged = (
         contentLib.modify<OfficePageDescriptor>({
             key: existingOfficePage._id,
             editor: (content) => ({
-                ...content,
+                ...omitPageForModify(content),
                 language: getOfficeLanguage(newOfficeData),
                 displayName: newOfficeData.navn,
                 data: mergeOfficeDataWithPageData({

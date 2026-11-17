@@ -33,6 +33,16 @@ export const applyModifiedData = <ContentType extends ContentDescriptor>(
     return content;
 };
 
+// XP8 contentLib.modify rebuilds the page from the editor result, which turns references in component
+// configs into strings and fails validation. Omitting the page from the result keeps the stored page.
+// The key must be deleted, as page: null removes the page.
+export const omitPageForModify = <ContentType extends Content<any>>(
+    content: ContentType
+): ContentType => {
+    delete (content as { page?: unknown }).page;
+    return content;
+};
+
 export const isContentPreviewOnly = (content: Content) => {
     return !!content.x?.[COMPONENT_APP_KEY]?.previewOnly?.previewOnly;
 };

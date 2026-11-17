@@ -8,6 +8,7 @@ import { getLayersData } from '../localization/layers-data';
 import { getNodeVersions } from '../utils/version-utils';
 import { isContentLocalized } from '../localization/locale-utils';
 import { ContentNode } from '../../types/content-types/content-config';
+import { omitPageForModify } from '../utils/content-utils';
 
 type DynamicPageContent = ContentNode<any> | Content<any>;
 
@@ -61,7 +62,7 @@ const attemptDraftUpdate = (
                 requireValid: false,
                 editor: (content) => {
                     content.data = { ...content.data, ...metaData };
-                    return content;
+                    return omitPageForModify(content);
                 },
             });
         } catch (e) {
