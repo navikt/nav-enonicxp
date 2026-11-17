@@ -20,7 +20,7 @@ form:
         occurrences:
           min: 0
           max: 1
-        regexp: "^[0-9a-zA-Z-_]+$"
+        regexp: "^[0-9a-zA-Z_.-]+$"
       - type: "CheckBox"
         name: "hideFromInternalNavigation"
         label: "Ikke vis under innhold"
