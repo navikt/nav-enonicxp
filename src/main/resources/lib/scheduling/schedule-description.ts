@@ -85,12 +85,13 @@ export const formatCronSchedule = (cron: string, timeZone?: string): ScheduleDes
 
 export const getScheduleDescription = (jobName: string) => {
     const job = runInContext({ asAdmin: true }, () => schedulerLib.get({ name: jobName }));
-    if (!job || job.schedule.type !== 'CRON') {
+    if (job?.schedule.type !== 'CRON') {
         return null;
     }
 
     return {
         ...formatCronSchedule(job.schedule.value, job.schedule.timeZone),
         isDisabled: !job.enabled,
+        lastRun: job.lastRun || undefined,
     };
 };

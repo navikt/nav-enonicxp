@@ -57,7 +57,10 @@
             </div>
         </td>
         <td>
-            <span data-th-if="${!cmd.lastResult}" class="meta">Ikke kjørt</span>
+            <div data-th-if="${cmd.lastScheduledRun}" class="meta">
+                Startet automatisk <time data-th-datetime="${cmd.lastScheduledRun}" data-th-text="${cmd.lastScheduledRun}"></time>
+            </div>
+            <span data-th-if="${!cmd.lastResult and !cmd.lastScheduledRun}" class="meta">Ikke kjørt</span>
             <div data-th-if="${cmd.lastResult}">
                 <div class="last-run">
                     <span data-th-class="|status status-${cmd.lastResult.statusKey}|" data-th-text="${cmd.lastResult.statusText}"></span>
@@ -109,7 +112,7 @@
         const options = { timeZone: 'Europe/Oslo' };
         const day = date.toLocaleDateString('nb-NO', { ...options, day: 'numeric', month: 'short' });
         const time = date.toLocaleTimeString('nb-NO', { ...options, hour: '2-digit', minute: '2-digit' }).replace(':', '.');
-        element.textContent = element.hasAttribute('data-time-only') ? time : `${day} kl. ${time}`;
+        element.textContent = element.dataset.timeOnly !== undefined ? time : `${day} kl. ${time}`;
     });
     document.querySelectorAll('pre.summary').forEach((element) => {
         try {
