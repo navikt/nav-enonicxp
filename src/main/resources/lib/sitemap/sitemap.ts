@@ -17,6 +17,7 @@ import { clusterInfo } from '../cluster-utils/cluster-api';
 import { isMainDatanode } from '../cluster-utils/main-datanode';
 import { getParentPath } from '../paths/path-utils';
 import { runInContext } from '../context/run-in-context';
+import { runJobWithResult, STARTED_BY_SCHEDULE } from '../jobs/job-results';
 
 const MAX_COUNT = 50000;
 const EVENT_TYPE_SITEMAP_GENERATED = 'sitemap-generated';
@@ -239,7 +240,9 @@ export const getAllSitemapEntries = () => {
     return array;
 };
 
-const generateAndBroadcastSitemapData = () => {
+export const SITEMAP_JOB_NAME = 'generateSitemap';
+
+const generateAndBroadcastSitemapData = (startedBy: string) => {
     if (!isMainDatanode() || isGenerating) {
         logger.info(`Skipping sitemap generation on ${clusterInfo.localServerName}`);
         return;
@@ -251,25 +254,33 @@ const generateAndBroadcastSitemapData = () => {
         description: 'sitemap-generator-task',
         func: () => {
             try {
-                logger.info('Started generating sitemap data');
-                const startTime = Date.now();
-                const sitemapEntries = generateSitemapEntries();
+                runJobWithResult({
+                    jobName: SITEMAP_JOB_NAME,
+                    startedBy,
+                    callback: () => {
+                        logger.info('Started generating sitemap data');
+                        const startTime = Date.now();
+                        const sitemapEntries = generateSitemapEntries();
 
-                eventLib.send({
-                    type: EVENT_TYPE_SITEMAP_GENERATED,
-                    distributed: true,
-                    data: { entries: sitemapEntries },
+                        eventLib.send({
+                            type: EVENT_TYPE_SITEMAP_GENERATED,
+                            distributed: true,
+                            data: { entries: sitemapEntries },
+                        });
+
+                        logger.info(
+                            `Finished generating sitemap data with ${sitemapEntries.length} entries after ${
+                                Date.now() - startTime
+                            }ms`
+                        );
+
+                        if (sitemapEntries.length > MAX_COUNT) {
+                            logger.error(`Sitemap entries count exceeds recommended maximum`);
+                        }
+
+                        return { entries: sitemapEntries.length };
+                    },
                 });
-
-                logger.info(
-                    `Finished generating sitemap data with ${sitemapEntries.length} entries after ${
-                        Date.now() - startTime
-                    }ms`
-                );
-
-                if (sitemapEntries.length > MAX_COUNT) {
-                    logger.error(`Sitemap entries count exceeds recommended maximum`);
-                }
             } catch (e) {
                 logger.critical(`Error while generating sitemap - ${e}`);
             } finally {
@@ -280,7 +291,7 @@ const generateAndBroadcastSitemapData = () => {
 };
 
 export const generateSitemapDataAndActivateSchedule = () => {
-    generateAndBroadcastSitemapData();
+    generateAndBroadcastSitemapData('Oppstart av appen');
 
     // Regenerate sitemap from scratch at 06:00 daily
     createOrUpdateSchedule({
@@ -317,10 +328,12 @@ const updateSitemapData = (entries: SitemapEntry[]) => {
     logger.info(`Updated sitemap data with ${sitemapEntriesMap.size} / ${entries.length} entries`);
 };
 
-export const requestSitemapUpdate = () => {
+// Generation runs on the main data node, which may be another server than the one requesting it
+export const requestSitemapUpdate = (startedBy: string = STARTED_BY_SCHEDULE) => {
     eventLib.send({
         distributed: true,
         type: EVENT_TYPE_SITEMAP_REQUESTED,
+        data: { startedBy },
     });
 };
 
@@ -333,10 +346,12 @@ export const activateSitemapDataUpdateEventListener = () => {
         },
     });
 
-    eventLib.listener({
+    eventLib.listener<{ startedBy?: string }>({
         type: customListenerType(EVENT_TYPE_SITEMAP_REQUESTED),
         localOnly: false,
-        callback: generateAndBroadcastSitemapData,
+        callback: (event) => {
+            generateAndBroadcastSitemapData(event.data.startedBy || STARTED_BY_SCHEDULE);
+        },
     });
 
     eventLib.listener({

@@ -83,6 +83,8 @@ const persistResultLogs = (result: NAVToNavResult, startTs: string, jobName: str
     logger.info(
         `NAV occurrence result for ${logEntryName}: Total contents found ${result.occurrences.length} |  Full results: ${logEntryDataToolboxUrl}`
     );
+
+    return logEntryDataToolboxUrl;
 };
 
 const hasNAVOccurrences = (obj: any): boolean => {
@@ -166,5 +168,7 @@ export const NAVOccurences = () => {
         });
     });
 
-    persistResultLogs(result, new Date().toISOString(), 'NAVToNav');
+    const fullResultsUrl = persistResultLogs(result, new Date().toISOString(), 'NAVToNav');
+
+    return { occurrences: result.occurrences.length, fullResultsUrl };
 };
