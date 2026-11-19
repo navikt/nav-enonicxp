@@ -16,11 +16,17 @@ jest.mock('/lib/xp/common', () => ({
     sanitize: jest.fn((value: string) => value.toLowerCase().replace(/\s+/g, '-')),
 }));
 
+jest.mock('../../../../../src/main/resources/lib/utils/object-utils', () => ({
+    createObjectChecksum: jest.fn(() => 'checksum'),
+}));
+
 jest.mock('/lib/xp/content', () => ({
     create: jest.fn(),
     delete: jest.fn(),
     get: jest.fn(),
     getChildren: jest.fn(),
+    getOutboundDependencies: jest.fn(),
+    modify: jest.fn(),
     move: jest.fn(),
     publish: jest.fn(),
     unpublish: jest.fn(),
@@ -64,6 +70,8 @@ const officePage = (id: string, enhetNr: string, type: OfficeTypes) =>
 describe('Office update', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        contentMock.publish.mockReturnValue({ failedContents: [] } as never);
+        contentMock.getOutboundDependencies.mockReturnValue([] as never);
     });
 
     test('preserves editorial fields when merging imported office data', () => {
@@ -186,21 +194,77 @@ describe('Office update', () => {
         expect(fetchAllOfficeDataFromNorg()).toBeNull();
     });
 
-    test('never deletes editorially managed offices during stale cleanup', () => {
-        const editorialOffice = officePage('editorial-office', '0000', OfficeTypes.REDAKSJONELT);
-        const staleNorgOffice = officePage('stale-office', '1001', OfficeTypes.HMS);
+    test('aborts when NORG returns an empty list and existing office pages remain', () => {
+        const officeA = officePage('existing-a', '1001', OfficeTypes.HMS);
+        const officeB = officePage('existing-b', '1002', OfficeTypes.HMS);
 
         contentMock.getChildren
-            .mockReturnValueOnce({ hits: [editorialOffice, staleNorgOffice] } as never)
+            .mockReturnValueOnce({ hits: [officeA, officeB] } as never)
             .mockReturnValueOnce({ hits: [] } as never);
         contentMock.get.mockImplementation(({ key }) =>
-            key === 'stale-office' ? staleNorgOffice : null
+            key === 'existing-a' ? officeA : key === 'existing-b' ? officeB : null
         );
 
         processAllOffices([]);
 
-        expect(contentMock.delete).toHaveBeenCalledWith({ key: 'stale-office' });
-        expect(contentMock.delete).not.toHaveBeenCalledWith({ key: 'editorial-office' });
+        expect(contentMock.unpublish).not.toHaveBeenCalled();
+        expect(contentMock.delete).not.toHaveBeenCalled();
+    });
+
+    test('aborts when the fetched list is less than half of the existing offices', () => {
+        const existingOffices: any[] = [
+            officePage('existing-1', '1001', OfficeTypes.HMS),
+            officePage('existing-2', '1002', OfficeTypes.HMS),
+            officePage('existing-3', '1003', OfficeTypes.HMS),
+            officePage('existing-4', '1004', OfficeTypes.HMS),
+        ];
+
+        contentMock.getChildren
+            .mockReturnValueOnce({ hits: existingOffices } as never)
+            .mockReturnValueOnce({ hits: [] } as never);
+        contentMock.get.mockImplementation(
+            ({ key }: { key: string }) =>
+                existingOffices.find((office) => office._id === key) ?? null
+        );
+
+        processAllOffices([
+            {
+                enhetNr: '1001',
+                navn: 'Existing office',
+                type: OfficeTypes.HMS,
+            } as never,
+        ]);
+
+        expect(contentMock.unpublish).not.toHaveBeenCalled();
+        expect(contentMock.delete).not.toHaveBeenCalled();
+    });
+
+    test('still deletes stale office pages when the fetched list is at least half of the existing offices', () => {
+        const staleOfficeA = officePage('stale-a', '2001', OfficeTypes.HMS);
+        const staleOfficeB = officePage('stale-b', '2002', OfficeTypes.HMS);
+        const staleOfficeC = officePage('stale-c', '2003', OfficeTypes.HMS);
+        const staleOfficeD = officePage('stale-d', '2004', OfficeTypes.HMS);
+        const staleOffices: any[] = [staleOfficeA, staleOfficeB, staleOfficeC, staleOfficeD];
+
+        contentMock.getChildren
+            .mockReturnValueOnce({ hits: staleOffices } as never)
+            .mockReturnValueOnce({ hits: [] } as never);
+        contentMock.get.mockImplementation(
+            ({ key }: { key: string }) => staleOffices.find((office) => office._id === key) ?? null
+        );
+        contentMock.create.mockImplementation(
+            ({ name }: { name?: string }) => ({ _id: `${name ?? 'new'}-created` }) as any
+        );
+
+        processAllOffices([
+            { enhetNr: '3001', navn: 'New office 1', type: OfficeTypes.HMS } as never,
+            { enhetNr: '3002', navn: 'New office 2', type: OfficeTypes.HMS } as never,
+        ]);
+
+        expect(contentMock.delete).toHaveBeenCalledWith({ key: 'stale-a' });
+        expect(contentMock.delete).toHaveBeenCalledWith({ key: 'stale-b' });
+        expect(contentMock.delete).toHaveBeenCalledWith({ key: 'stale-c' });
+        expect(contentMock.delete).toHaveBeenCalledWith({ key: 'stale-d' });
     });
 
     test('does not overwrite an editorial office at an imported office path', () => {
