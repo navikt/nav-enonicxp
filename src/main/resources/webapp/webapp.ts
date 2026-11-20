@@ -76,6 +76,9 @@ const validActions: ActionsMap = {
             if (!result) {
                 throw new Error('Klarte ikke å hente kontordata fra norg2');
             }
+            if ('skipped' in result) {
+                throw new Error(`Importen ble hoppet over: ${result.skipped}`);
+            }
             return result;
         },
     },
