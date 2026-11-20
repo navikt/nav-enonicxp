@@ -494,7 +494,9 @@ export const processAllOffices = (offices: ImportedOfficeNorgData[]) => {
         logger.critical(
             `OfficeImporting: Skipping office import due to suspicious NORG response; fetched=${offices.length}, existing=${existingOffices.length}`
         );
-        return;
+        return {
+            skipped: `NORG ga ${offices.length} kontorer, men vi har ${existingOffices.length} kontorsider`,
+        };
     }
 
     offices.forEach((officePageData) => {

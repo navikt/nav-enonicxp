@@ -205,8 +205,9 @@ describe('Office update', () => {
             key === 'existing-a' ? officeA : key === 'existing-b' ? officeB : null
         );
 
-        processAllOffices([]);
+        const result = processAllOffices([]);
 
+        expect(result).toEqual({ skipped: 'NORG ga 0 kontorer, men vi har 2 kontorsider' });
         expect(contentMock.unpublish).not.toHaveBeenCalled();
         expect(contentMock.delete).not.toHaveBeenCalled();
     });
