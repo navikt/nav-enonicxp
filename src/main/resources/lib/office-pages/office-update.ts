@@ -565,7 +565,7 @@ export const processAllOffices = (offices: ImportedOfficeNorgData[]) => {
 
     if (contentToPublish.length === 0) {
         logger.info('No offices were updated');
-        return;
+        return { created: 0, updated: 0, deleted: summary.deleted.length, publishFailed: 0 };
     }
 
     const publishResponse = contentLib.publish({
@@ -584,4 +584,11 @@ export const processAllOffices = (offices: ImportedOfficeNorgData[]) => {
     logger.info(
         `Import summary from NORG2 - Updated: ${summary.updated.length} Created: ${summary.created.length}`
     );
+
+    return {
+        created: summary.created.length,
+        updated: summary.updated.length,
+        deleted: summary.deleted.length,
+        publishFailed: publishResponse.failedContents.length,
+    };
 };
