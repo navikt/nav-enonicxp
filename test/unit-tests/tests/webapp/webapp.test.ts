@@ -10,6 +10,7 @@ const mockGetJobResult = jest.fn();
 const mockRunJobWithResult = jest.fn();
 const mockGetUser = jest.fn();
 const mockGetScheduleDescription = jest.fn();
+const mockRunOfficeFetchTask = jest.fn();
 
 jest.mock(
     '/lib/thymeleaf',
@@ -36,7 +37,9 @@ jest.mock('@navno-app/lib/jobs/job-results', () => ({
     runJobWithResult: mockRunJobWithResult,
 }));
 
-jest.mock('@navno-app/lib/office-pages/office-tasks', () => ({ runOfficeFetchTask: jest.fn() }));
+jest.mock('@navno-app/lib/office-pages/office-tasks', () => ({
+    runOfficeFetchTask: mockRunOfficeFetchTask,
+}));
 jest.mock('@navno-app/lib/context/run-in-context', () => ({
     runInContext: (_options: unknown, callback: () => unknown) => callback(),
 }));
@@ -220,6 +223,18 @@ describe('Webapp actions', () => {
                 startedBy: 'Ola Nordmann',
             })
         );
+    });
+    test('fails the office import when the import was skipped', () => {
+        mockRunOfficeFetchTask.mockReturnValue({
+            fetchedFromNorg: 0,
+            skipped: 'NORG ga 0 kontorer',
+        });
+
+        get(request({ cmd: 'norg' }));
+        mockExecuteFunction.mock.calls[0][0].func();
+        const { callback } = mockRunJobWithResult.mock.calls[0][0];
+
+        expect(callback).toThrow('Importen ble hoppet over: NORG ga 0 kontorer');
     });
 });
 

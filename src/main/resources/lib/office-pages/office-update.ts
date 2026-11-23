@@ -263,6 +263,7 @@ const getOfficeLanguage = (office: ImportedOfficeNorgData) => {
 };
 
 const OFFICE_PARENT_PATHS = [OFFICES_BASE_PATH, ALS_OFFICES_BASE_PATH];
+const MIN_FETCHED_SHARE_OF_EXISTING = 0.5;
 
 const getExistingOfficePages = (): Content<OfficePageDescriptor>[] =>
     OFFICE_PARENT_PATHS.reduce<Content<OfficePageDescriptor>[]>((acc, parentPath) => {
@@ -482,6 +483,21 @@ export const processAllOffices = (offices: ImportedOfficeNorgData[]) => {
         updated: [],
         deleted: [],
     };
+
+    // Partial or empty NORG responses can be mistaken for a full removal, which would delete
+    // live office pages. Guard against a response that is too small to be trusted.
+    if (
+        existingOffices.length > 0 &&
+        (offices.length === 0 ||
+            offices.length < existingOffices.length * MIN_FETCHED_SHARE_OF_EXISTING)
+    ) {
+        logger.critical(
+            `OfficeImporting: Skipping office import due to suspicious NORG response; fetched=${offices.length}, existing=${existingOffices.length}`
+        );
+        return {
+            skipped: `NORG ga ${offices.length} kontorer, men vi har ${existingOffices.length} kontorsider`,
+        };
+    }
 
     offices.forEach((officePageData) => {
         const editorialOfficeWithSameNumber = editoriallyManagedOffices.find(
