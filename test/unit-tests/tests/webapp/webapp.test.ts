@@ -224,7 +224,6 @@ describe('Webapp actions', () => {
             })
         );
     });
-
     test('fails the office import when the import was skipped', () => {
         mockRunOfficeFetchTask.mockReturnValue({
             fetchedFromNorg: 0,
