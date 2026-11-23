@@ -61,19 +61,18 @@ const newsQuery: QueryDsl = {
 } as const;
 
 export const archiveOldNews = () =>
-    runInContext({ asAdmin: true }, () => {
-        findAndArchiveOldContent({
+    runInContext({ asAdmin: true }, () => ({
+        pressReleases: findAndArchiveOldContent({
             query: pressReleasesQuery,
             maxAgeMs: ONE_YEAR_MS,
             jobName: 'pressReleases',
-        });
-
-        findAndArchiveOldContent({
+        }),
+        news: findAndArchiveOldContent({
             query: newsQuery,
             maxAgeMs: ONE_YEAR_MS,
             jobName: 'news',
-        });
-    });
+        }),
+    }));
 
 export const activateArchiveNewsSchedule = () => {
     createOrUpdateSchedule({

@@ -2,41 +2,125 @@
 <html lang="no">
 <head>
     <title>NAV Enonic XP admin scripts</title>
+    <!-- Explicit url, so the refresh does not start the job again with the ?cmd= parameter -->
+    <meta data-th-if="${hasRunningJobs}" http-equiv="refresh" data-th-content="|10; url=${actionUrl}/|">
+    <style>
+        body { font-family: system-ui, sans-serif; font-size: 14px; color: #23262a; margin: 2rem; max-width: 72rem; }
+        h1 { font-size: 1.5rem; margin: 0 0 1rem; }
+        h2 { font-size: 1.1rem; margin: 2rem 0 0.5rem; }
+        table { border-collapse: collapse; width: 100%; table-layout: fixed; }
+        col.job { width: 40%; }
+        .job-key { display: block; margin-top: 0.2rem; font-size: 0.8rem; color: #5d6573; }
+        col.action { width: 6rem; }
+        th, td { text-align: left; vertical-align: top; padding: 0.6rem 0.75rem; border-bottom: 1px solid #e0e2e5; }
+        th { font-weight: 600; color: #5d6470; }
+        tr.just-started { background: #f3f8fd; }
+        .meta { color: #5d6470; }
+        .last-run { white-space: nowrap; }
+        .status { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 0.75rem; font-size: 0.8rem; font-weight: 600; margin-right: 0.4rem; }
+        .status-ok { background: #e3f4e8; color: #06622f; }
+        .status-running { background: #e6f0fb; color: #0b4a8b; }
+        .status-failed { background: #fbe7e6; color: #a1150f; }
+        .status-aborted { background: #eceef0; color: #4a515b; }
+        .message { padding: 0.6rem 0.75rem; background: #fff6e0; border-left: 3px solid #c77300; margin-bottom: 1rem; }
+        details { margin-top: 0.4rem; }
+        summary { cursor: pointer; color: #0b4a8b; }
+        pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.8rem; background: #f6f7f8; padding: 0.5rem; margin: 0.4rem 0 0; }
+        button, input[type=submit] { font: inherit; padding: 0.3rem 0.9rem; cursor: pointer; }
+    </style>
 </head>
 <body>
 <h1>Webapp</h1>
-<div data-th-each="cmd: ${cmds}">
-    <div data-th-if="${cmd.cmd=='schedulerCleanup'}">
-        <h2>Fjern utdaterte scheduler-jobber</h2>
-        <p data-th-if="${schedulerMessage}" data-th-text="${schedulerMessage}"></p>
-        <div data-th-if="${hasObsoleteJobs}">
-            <p>Følgende kjente utdaterte scheduler-jobber finnes:</p>
-            <ul>
-                <li data-th-each="job: ${obsoleteJobs}" data-th-text="${job.name}"></li>
-            </ul>
-            <form data-th-action="${actionUrl}" method="post">
-                <input type="hidden" name="cmd" value="deleteObsoleteSchedulerJobs">
-                <div style="margin-bottom: 0.5rem">
-                    <label>
-                        <input type="checkbox" name="confirmDelete" value="true" required>
-                        Bekreft sletting
-                    </label>
+<p class="message" data-th-if="${message}" data-th-text="${message}"></p>
+<table>
+    <colgroup>
+        <col class="job">
+        <col>
+        <col class="action">
+    </colgroup>
+    <thead>
+    <tr>
+        <th>Jobb</th>
+        <th>Siste kjøring</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr data-th-each="cmd: ${cmds}" data-th-class="${cmd.cmd == runningCmd} ? 'just-started'">
+        <td>
+            <div data-th-text="${cmd.description}"></div>
+            <div class="job-key">
+                <code data-th-text="${cmd.cmd}"></code><span data-th-if="${cmd.schedule}">
+                    · Kjøres automatisk <span data-th-text="${cmd.schedule.text}"></span>
+                    <time data-th-if="${cmd.schedule.time}" data-time-only data-th-datetime="${cmd.schedule.time}"></time><span data-th-if="${cmd.schedule.isDisabled}">, deaktivert</span>
+                </span>
+            </div>
+        </td>
+        <td>
+            <div data-th-if="${cmd.lastScheduledRun}" class="meta">
+                Startet automatisk <time data-th-datetime="${cmd.lastScheduledRun}" data-th-text="${cmd.lastScheduledRun}"></time>
+            </div>
+            <span data-th-if="${!cmd.lastResult and !cmd.lastScheduledRun}" class="meta">Ikke kjørt</span>
+            <div data-th-if="${cmd.lastResult}">
+                <div class="last-run">
+                    <span data-th-class="|status status-${cmd.lastResult.statusKey}|" data-th-text="${cmd.lastResult.statusText}"></span>
+                    <span class="meta">
+                        <time data-th-datetime="${cmd.lastResult.startedAt}" data-th-text="${cmd.lastResult.startedAt}"></time>
+                        · <span data-th-text="${cmd.lastResult.startedBy}"></span>
+                        <span data-th-if="${cmd.lastResult.duration}" data-th-text="|· ${cmd.lastResult.duration}|"></span>
+                    </span>
                 </div>
-                <input type="submit" value="Slett utdaterte scheduler-jobber">
+                <div data-th-if="${cmd.progress}" class="meta" data-th-text="${cmd.progress}"></div>
+                <details data-th-if="${cmd.lastResult.summary}">
+                    <summary>Vis resultat</summary>
+                    <pre class="summary" data-th-text="${cmd.lastResult.summary}"></pre>
+                </details>
+            </div>
+        </td>
+        <td>
+            <form data-th-action="${actionUrl}" method="get">
+                <button type="submit" name="cmd" data-th-value="${cmd.cmd}" data-th-disabled="${cmd.isRunning}">Kjør</button>
             </form>
-        </div>
-        <p data-th-if="${!hasObsoleteJobs}">Ingen kjente utdaterte scheduler-jobber finnes.</p>
-    </div>
-    <h2 data-th-text="${cmd.description}"></h2>
-    <div data-th-if="${cmd.cmd==runningCmd}">
-        <h3>Just ran this procedure</h3>
-    </div>
-    <form data-th-action="${actionUrl}" method="get">
-        <input type="submit" name="cmd" data-th-value="${cmd.cmd}">
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>Utdaterte scheduler-jobber</h2>
+<div data-th-if="${hasObsoleteJobs}">
+    <p>Følgende kjente utdaterte scheduler-jobber finnes:</p>
+    <ul>
+        <li data-th-each="job: ${obsoleteJobs}" data-th-text="${job.name}"></li>
+    </ul>
+    <form data-th-action="${actionUrl}" method="post">
+        <input type="hidden" name="cmd" value="deleteObsoleteSchedulerJobs">
+        <p>
+            <label>
+                <input type="checkbox" name="confirmDelete" value="true" required>
+                Bekreft sletting
+            </label>
+        </p>
+        <input type="submit" value="Slett utdaterte scheduler-jobber">
     </form>
 </div>
+<p data-th-if="${!hasObsoleteJobs}" class="meta">Ingen kjente utdaterte scheduler-jobber finnes.</p>
+
 <script th:inline="javascript">
     window.history.replaceState({}, document.title, window.location.pathname);
+    document.querySelectorAll('time[datetime]').forEach((element) => {
+        const date = new Date(element.getAttribute('datetime'));
+        const options = { timeZone: 'Europe/Oslo' };
+        const day = date.toLocaleDateString('nb-NO', { ...options, day: 'numeric', month: 'short' });
+        const time = date.toLocaleTimeString('nb-NO', { ...options, hour: '2-digit', minute: '2-digit' }).replace(':', '.');
+        element.textContent = element.dataset.timeOnly !== undefined ? time : `${day} kl. ${time}`;
+    });
+    document.querySelectorAll('pre.summary').forEach((element) => {
+        try {
+            element.textContent = JSON.stringify(JSON.parse(element.textContent), null, 2);
+        } catch (e) {
+            // Not JSON, shown as is
+        }
+    });
 </script>
 </body>
 </html>

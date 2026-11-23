@@ -52,19 +52,21 @@ export const runSchedulerCleanup = (dryRun?: boolean) => {
 
     if (numExpiredJobs === 0) {
         logger.info('No expired jobs found');
-        return;
+        return { expiredJobs: 0, pruned: 0 };
     }
 
     logger.info(`Found ${numExpiredJobs} expired jobs to prune`);
 
     if (dryRun) {
         logger.info('Skipping pruning as dryRun flag was set');
-        return;
+        return { expiredJobs: numExpiredJobs, pruned: 0 };
     }
 
     const result = repoConnection.delete(jobsToPrune.map((job) => job.id));
 
     logger.info(`Pruned ${result.length} / ${numExpiredJobs} expired jobs`);
+
+    return { expiredJobs: numExpiredJobs, pruned: result.length };
 };
 
 export const activateSchedulerCleanupSchedule = () => {

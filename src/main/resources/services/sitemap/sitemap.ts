@@ -19,7 +19,7 @@ export const get = (req: Request) => {
     if (!response || response.length === 0) {
         logger.warning('Sitemap data was requested but is not available!');
 
-        requestSitemapUpdate();
+        requestSitemapUpdate('Forespurt av frontend');
 
         return {
             status: 500,

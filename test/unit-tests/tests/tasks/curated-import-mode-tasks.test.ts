@@ -5,6 +5,10 @@ const getRepoConnection = jest.fn(() => ({ get: () => null }));
 jest.mock('@navno-app/lib/office-pages/office-tasks', () => ({ runOfficeFetchTask }));
 jest.mock('@navno-app/lib/archiving/archive-old-news', () => ({ archiveOldNews }));
 jest.mock('@navno-app/lib/repos/repo-utils', () => ({ getRepoConnection }));
+jest.mock('@navno-app/lib/jobs/job-results', () => ({
+    STARTED_BY_SCHEDULE: 'Planlagt kjøring',
+    runJobWithResult: ({ callback }: { callback: () => unknown }) => callback(),
+}));
 jest.mock('@navno-app/lib/utils/logging', () => ({
     logger: { info: jest.fn(), warning: jest.fn(), error: jest.fn(), critical: jest.fn() },
 }));
