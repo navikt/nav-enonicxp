@@ -20,7 +20,7 @@ catalog:
   '@enonic-types/lib-event': 7.16.8
   '@enonic-types/lib-grid': 7.16.8
   '@enonic-types/lib-io': 7.16.8
-  '@enonic-types/lib-node': 7.16.8
+  '@enonic-types/lib-node': 8.1.2
   '@enonic-types/lib-portal': 7.16.8
   '@enonic-types/lib-project': 7.16.8
   '@enonic-types/lib-repo': 7.16.8

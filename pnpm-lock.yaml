@@ -238,8 +238,8 @@ catalogs:
       specifier: 7.16.8
       version: 7.16.8
     '@enonic-types/lib-node':
-      specifier: 7.16.8
-      version: 7.16.8
+      specifier: 8.1.2
+      version: 8.1.2
     '@enonic-types/lib-portal':
       specifier: 7.16.8
       version: 7.16.8
@@ -412,7 +412,7 @@ importers:
         version: 7.16.8
       '@enonic-types/lib-node':
         specifier: 'catalog:'
-        version: 7.16.8
+        version: 8.1.2
       '@enonic-types/lib-portal':
         specifier: 'catalog:'
         version: 7.16.8
@@ -1204,6 +1204,9 @@ packages:
   '@enonic-types/core@7.16.8':
     resolution: {integrity: sha512-nRsrFhMQG24pX7CXeA/1jI3VbC/mSE2iLtkxn56RRmD+ommHJoskFb59sVCGB2z4Jv8FlIAN8sNEGu97EORd+g==}
 
+  '@enonic-types/core@8.1.2':
+    resolution: {integrity: sha512-iQ4y9u0ol3iu5Oby6SP5JSpTx5062Do4rtzDDKDVPi3pZgQTpb2fyjmrjaeMUcOKS5pYxuszL/QjRZZPmujjtA==}
+
   '@enonic-types/global@7.16.8':
     resolution: {integrity: sha512-nlclKqgW8F8kzaok9zg5zyRqeXF1BCci3AJyywqbBmt/F2pyQghKwbvnWLqWsvnKKZKkfswLMcwrpH7BgYZoEw==}
 
@@ -1234,8 +1237,8 @@ packages:
   '@enonic-types/lib-io@7.16.8':
     resolution: {integrity: sha512-ZNoXSu8TpPwFB3gsVMwo28/BbGl1AY2KVmlzyz1IhtC2cpnoU8yCAMADCAReECeU6CiDa1l4H7D9VcBGADPvbA==}
 
-  '@enonic-types/lib-node@7.16.8':
-    resolution: {integrity: sha512-5MgJT6U7mJ/U3rkgISmw5aQE8OkFZKd1nuEWjJyyXufYEi2O+5vPGeoM6MeR29b53hCKFPML42yD2nXHmR8raA==}
+  '@enonic-types/lib-node@8.1.2':
+    resolution: {integrity: sha512-22GtS94NlC4rUmRsPeH3vIryFHsCXKVrsSXt1v+9UXeYdyL6P4KLuHnUTQAIiEOQy7Itur0U1qvNKZ3bLisBGw==}
 
   '@enonic-types/lib-portal@7.16.8':
     resolution: {integrity: sha512-D2JMfCZ4+mO4Y775VuDnDBf2J6tZHthMYGO0yt0vX78AlrsZXL/HqU68TN/IetzknfJMtHD5lW1f97Uzxq74KQ==}
@@ -5754,6 +5757,8 @@ snapshots:
 
   '@enonic-types/core@7.16.8': {}
 
+  '@enonic-types/core@8.1.2': {}
+
   '@enonic-types/global@7.16.8':
     dependencies:
       '@enonic-types/core': 7.16.8
@@ -5788,9 +5793,9 @@ snapshots:
     dependencies:
       '@enonic-types/core': 7.16.8
 
-  '@enonic-types/lib-node@7.16.8':
+  '@enonic-types/lib-node@8.1.2':
     dependencies:
-      '@enonic-types/core': 7.16.8
+      '@enonic-types/core': 8.1.2
 
   '@enonic-types/lib-portal@7.16.8':
     dependencies:
