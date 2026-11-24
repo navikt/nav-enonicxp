@@ -263,6 +263,7 @@ const getOfficeLanguage = (office: ImportedOfficeNorgData) => {
 };
 
 const OFFICE_PARENT_PATHS = [OFFICES_BASE_PATH, ALS_OFFICES_BASE_PATH];
+const MIN_FETCHED_SHARE_OF_EXISTING = 0.5;
 
 const getExistingOfficePages = (): Content<OfficePageDescriptor>[] =>
     OFFICE_PARENT_PATHS.reduce<Content<OfficePageDescriptor>[]>((acc, parentPath) => {
@@ -483,6 +484,21 @@ export const processAllOffices = (offices: ImportedOfficeNorgData[]) => {
         deleted: [],
     };
 
+    // Partial or empty NORG responses can be mistaken for a full removal, which would delete
+    // live office pages. Guard against a response that is too small to be trusted.
+    if (
+        existingOffices.length > 0 &&
+        (offices.length === 0 ||
+            offices.length < existingOffices.length * MIN_FETCHED_SHARE_OF_EXISTING)
+    ) {
+        logger.critical(
+            `OfficeImporting: Skipping office import due to suspicious NORG response; fetched=${offices.length}, existing=${existingOffices.length}`
+        );
+        return {
+            skipped: `NORG ga ${offices.length} kontorer, men vi har ${existingOffices.length} kontorsider`,
+        };
+    }
+
     offices.forEach((officePageData) => {
         const editorialOfficeWithSameNumber = editoriallyManagedOffices.find(
             (office) => office.data.officeNorgData?.data?.enhetNr === officePageData.enhetNr
@@ -551,7 +567,7 @@ export const processAllOffices = (offices: ImportedOfficeNorgData[]) => {
 
     if (contentToPublish.length === 0) {
         logger.info('No offices were updated');
-        return;
+        return { created: 0, updated: 0, deleted: summary.deleted.length, publishFailed: 0 };
     }
 
     const publishResponse = contentLib.publish({
@@ -570,4 +586,11 @@ export const processAllOffices = (offices: ImportedOfficeNorgData[]) => {
     logger.info(
         `Import summary from NORG2 - Updated: ${summary.updated.length} Created: ${summary.created.length}`
     );
+
+    return {
+        created: summary.created.length,
+        updated: summary.updated.length,
+        deleted: summary.deleted.length,
+        publishFailed: publishResponse.failedContents.length,
+    };
 };

@@ -43,45 +43,54 @@ const isPublishedOrPrepublished = (contentId: string) => {
     }
 };
 
+type ContentListResult = {
+    numRemoved: number;
+    error?: string;
+};
+
 const removeUnpublishedFromContentList = (
     contentList: Content<ContentTypesWithContentLists>
-): number => {
-    let numRemoved = 0;
-
+): ContentListResult => {
     try {
-        runInContext({ branch: 'draft', asAdmin: true }, () => {
-            const context = contextLib.get();
+        return runInContext({ branch: 'draft', asAdmin: true }, () => {
+            const repoId = contextLib.get().repository;
             const repoConnection = getRepoConnection({
                 branch: 'draft',
-                repoId: context.repository,
+                repoId,
             });
 
-            const shouldPushChanges = isDraftAndMasterSameVersion(
-                contentList._id,
-                context.repository
+            const draftContentList = repoConnection.get<Content<ContentTypesWithContentLists>>(
+                contentList._id
             );
+            const sectionContents = forceArray(draftContentList?.data?.sectionContents);
+
+            // Resolved before modify, as XP 8 runs the editor in the node connection's context, and
+            // switching context inside the editor made the following update run without admin access
+            const idsToRemove = sectionContents
+                .map(String)
+                .filter((sectionContentId) => !isPublishedOrPrepublished(sectionContentId));
+
+            if (idsToRemove.length === 0) {
+                return { numRemoved: 0 };
+            }
+
+            idsToRemove.forEach((sectionContentId) => {
+                logger.info(
+                    `Removing unpublished or deleted content ${sectionContentId} from ${contentList._path}`
+                );
+            });
+
+            const shouldPushChanges = isDraftAndMasterSameVersion(contentList._id, repoId);
 
             repoConnection.modify<Content>({
                 key: contentList._id,
                 editor: (content) => {
-                    const sectionContents = forceArray(content.data?.sectionContents);
-
-                    if (sectionContents.length === 0) {
-                        return content;
-                    }
-
-                    content.data.sectionContents = sectionContents.filter((sectionContentId) => {
-                        const shouldKeep = isPublishedOrPrepublished(sectionContentId);
-
-                        if (!shouldKeep) {
-                            logger.info(
-                                `Removing unpublished or deleted content ${sectionContentId} from ${content._path}`
-                            );
-                            numRemoved++;
-                        }
-
-                        return shouldKeep;
-                    });
+                    // Filtering the existing values keeps their Reference type
+                    content.data.sectionContents = forceArray(
+                        content.data?.sectionContents
+                    ).filter(
+                        (sectionContentId) => !idsToRemove.includes(String(sectionContentId))
+                    );
 
                     return content;
                 },
@@ -96,17 +105,17 @@ const removeUnpublishedFromContentList = (
                     resolve: false,
                 });
             } else {
-                log.info(
+                logger.info(
                     `Removed unpublished content from content list ${contentList._id}, but draft and master are out of sync, so not pushing changes.`
                 );
             }
+
+            return { numRemoved: idsToRemove.length };
         });
     } catch (e) {
         logger.error(`Error while modifying ${contentList._id} - ${e}`);
-        return 0;
+        return { numRemoved: 0, error: String(e) };
     }
-
-    return numRemoved;
 };
 
 export const removeUnpublishedFromAllContentLists = () => {
@@ -119,14 +128,31 @@ export const removeUnpublishedFromAllContentLists = () => {
 
     logger.info(`Pruning ${contentLists.length} content lists`);
 
-    const numContentsWithRemovedItems = contentLists
-        .map(removeUnpublishedFromContentList)
-        .filter((item) => item !== 0);
-    const numRemovedItems = numContentsWithRemovedItems.reduce((acc, item) => acc + item, 0);
+    let numRemovedItems = 0;
+    const changedContentLists: string[] = [];
+    const failedContentLists: { path: string; error: string }[] = [];
+
+    contentLists.forEach((contentList) => {
+        const { numRemoved, error } = removeUnpublishedFromContentList(contentList);
+
+        if (error) {
+            failedContentLists.push({ path: contentList._path, error });
+        } else if (numRemoved > 0) {
+            numRemovedItems += numRemoved;
+            changedContentLists.push(contentList._path);
+        }
+    });
 
     logger.info(
-        `Removed ${numRemovedItems} unpublished content from ${numContentsWithRemovedItems.length} contents with content lists`
+        `Removed ${numRemovedItems} unpublished content from ${changedContentLists.length} contents with content lists`
     );
+
+    return {
+        contentListsChecked: contentLists.length,
+        itemsRemoved: numRemovedItems,
+        changedContentLists,
+        failedContentLists,
+    };
 };
 
 const removeUnpublishedContentFromContentLists = (contentId: string, repoId: string) => {

@@ -9,6 +9,7 @@ import {
     formIntermediateStepValidateCustomPath,
 } from '../paths/custom-paths/custom-path-content-validators';
 import {
+    getDefaultLayerContent,
     needsFormNumbersUpdateCheck,
     updateFormNumbersFromDefaultLayer,
 } from './form-intermediate-step-utils/form-intermediate-step-form-numbers';
@@ -35,10 +36,6 @@ const validateContent = (
     return true;
 };
 
-const updateCustomPath = (content: Content<'no.nav.navno:form-intermediate-step'>) => {
-    content.data.customPath = formIntermediateStepGenerateCustomPath(content);
-};
-
 const updateContent = (req: Request) => {
     const content = portalLib.getContent();
     if (!validateContent(content, req)) {
@@ -62,20 +59,27 @@ const updateContent = (req: Request) => {
         currentContent.data.customPath,
         currentContent
     );
+    const defaultLayerContent = getDefaultLayerContent(content);
     const needsFormNumbersUpdate = needsFormNumbersUpdateCheck({
         currentContent,
-        content,
+        defaultLayerContent,
     });
 
     if (needsCustomPathUpdate || needsFormNumbersUpdate) {
+        // Lookups must happen outside the editor: on XP 8, a context switch inside an editor makes
+        // the update fail with access denied
+        const newCustomPath = needsCustomPathUpdate
+            ? formIntermediateStepGenerateCustomPath(currentContent)
+            : undefined;
+
         repo.modify<Content<'no.nav.navno:form-intermediate-step'>>({
             key: content._id,
             editor: (content) => {
-                if (needsCustomPathUpdate) {
-                    updateCustomPath(content);
+                if (newCustomPath) {
+                    content.data.customPath = newCustomPath;
                 }
                 if (needsFormNumbersUpdate) {
-                    updateFormNumbersFromDefaultLayer(content);
+                    updateFormNumbersFromDefaultLayer(content, defaultLayerContent);
                 }
                 return content;
             },
