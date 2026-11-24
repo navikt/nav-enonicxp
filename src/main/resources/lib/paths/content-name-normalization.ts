@@ -25,15 +25,17 @@ const getParentPath = (path: string) => path.substring(0, path.lastIndexOf('/'))
 // Adds -2, -3 etc if a sibling already has the name
 const getAvailableName = (repo: RepoConnection, parentPath: string, name: string) => {
     let candidate = name;
-    for (let suffix = 2; repo.exists(`${parentPath}/${candidate}`); suffix++) {
+    let suffix = 2;
+    while (repo.exists(`${parentPath}/${candidate}`)) {
         candidate = `${name}-${suffix}`;
+        suffix++;
     }
     return candidate;
 };
 
 export const normalizeContentName = (repo: RepoConnection, nodeId: string) => {
     const node = repo.get<NameNode>(nodeId);
-    if (!node || !node._path.startsWith('/content/') || VALID_NAME_PATTERN.test(node._name)) {
+    if (!node?._path.startsWith('/content/') || VALID_NAME_PATTERN.test(node._name)) {
         return null;
     }
 
