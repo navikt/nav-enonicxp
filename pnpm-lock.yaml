@@ -247,8 +247,8 @@ catalogs:
       specifier: 7.16.8
       version: 7.16.8
     '@enonic-types/lib-repo':
-      specifier: 7.16.8
-      version: 7.16.8
+      specifier: 8.1.2
+      version: 8.1.2
     '@enonic-types/lib-scheduler':
       specifier: 7.16.8
       version: 7.16.8
@@ -421,7 +421,7 @@ importers:
         version: 7.16.8
       '@enonic-types/lib-repo':
         specifier: 'catalog:'
-        version: 7.16.8
+        version: 8.1.2
       '@enonic-types/lib-scheduler':
         specifier: 'catalog:'
         version: 7.16.8
@@ -1204,6 +1204,9 @@ packages:
   '@enonic-types/core@7.16.8':
     resolution: {integrity: sha512-nRsrFhMQG24pX7CXeA/1jI3VbC/mSE2iLtkxn56RRmD+ommHJoskFb59sVCGB2z4Jv8FlIAN8sNEGu97EORd+g==}
 
+  '@enonic-types/core@8.1.2':
+    resolution: {integrity: sha512-iQ4y9u0ol3iu5Oby6SP5JSpTx5062Do4rtzDDKDVPi3pZgQTpb2fyjmrjaeMUcOKS5pYxuszL/QjRZZPmujjtA==}
+
   '@enonic-types/global@7.16.8':
     resolution: {integrity: sha512-nlclKqgW8F8kzaok9zg5zyRqeXF1BCci3AJyywqbBmt/F2pyQghKwbvnWLqWsvnKKZKkfswLMcwrpH7BgYZoEw==}
 
@@ -1243,8 +1246,8 @@ packages:
   '@enonic-types/lib-project@7.16.8':
     resolution: {integrity: sha512-j1+3WN1hpBCV4BqLT82/jIq5mQSq3X2Ld3nwDWl+K6ZYMeI5WsgMlI66AWgjQC10hfhxU4/V+lGo7hf/WeR/VA==}
 
-  '@enonic-types/lib-repo@7.16.8':
-    resolution: {integrity: sha512-MxUSQ5bT8qYFLC81sWTCuCDXnCfqC2qJhI79Vfp6kWHZI0b2hSPhAerIs1jntqTG4WczcBHULNrZ7phXHKLfmw==}
+  '@enonic-types/lib-repo@8.1.2':
+    resolution: {integrity: sha512-sEeJDWqAf3fPOkAFPpm5euYrEOUzrhImnBa66QUWrJnapwtSzqhfwR7UCElb5TkhjOiRLicVKJXMJSXMsu1/0w==}
 
   '@enonic-types/lib-scheduler@7.16.8':
     resolution: {integrity: sha512-qvUmpu7X2uB0rGQfj4YfZ2rA62D4aN9x+KXNelAwnheM1gFJwY6vtzBRT7yus4fBdE37cqK9zsHLH0s5yP3jVA==}
@@ -5754,6 +5757,8 @@ snapshots:
 
   '@enonic-types/core@7.16.8': {}
 
+  '@enonic-types/core@8.1.2': {}
+
   '@enonic-types/global@7.16.8':
     dependencies:
       '@enonic-types/core': 7.16.8
@@ -5800,9 +5805,9 @@ snapshots:
     dependencies:
       '@enonic-types/core': 7.16.8
 
-  '@enonic-types/lib-repo@7.16.8':
+  '@enonic-types/lib-repo@8.1.2':
     dependencies:
-      '@enonic-types/core': 7.16.8
+      '@enonic-types/core': 8.1.2
 
   '@enonic-types/lib-scheduler@7.16.8':
     dependencies:
