@@ -229,8 +229,8 @@ catalogs:
       specifier: 7.16.8
       version: 7.16.8
     '@enonic-types/lib-event':
-      specifier: 7.16.8
-      version: 7.16.8
+      specifier: 8.1.2
+      version: 8.1.2
     '@enonic-types/lib-grid':
       specifier: 7.16.8
       version: 7.16.8
@@ -403,7 +403,7 @@ importers:
         version: 7.16.8
       '@enonic-types/lib-event':
         specifier: 'catalog:'
-        version: 7.16.8
+        version: 8.1.2
       '@enonic-types/lib-grid':
         specifier: 'catalog:'
         version: 7.16.8
@@ -1225,8 +1225,8 @@ packages:
   '@enonic-types/lib-context@7.16.8':
     resolution: {integrity: sha512-deLo60k7JkCZLI0WLHSLCHSZLMNPWqEDpb0LovNAn6rC3q4s03YgFmYruCuQzoKcllwuStx8MXUoGQP5lk20MA==}
 
-  '@enonic-types/lib-event@7.16.8':
-    resolution: {integrity: sha512-mre0aqWa+/3kvwQrbwxZh2LHJdqvev7/zQnydJwn93bEy2nl3AaQgyhpyp4ZsCCa4Bd/TphfP//E6f6p/rSI9g==}
+  '@enonic-types/lib-event@8.1.2':
+    resolution: {integrity: sha512-gUdJUGz5CWIOhu4NAvl+Q3OhuFWC14UG/FAZ+vgV0WekOZXb96DnZgtOuNWZwdVeEx495QtJiNsasECM4Uns8A==}
 
   '@enonic-types/lib-grid@7.16.8':
     resolution: {integrity: sha512-6Gvo/Wr6lpzqduW0o6vdlnQ7MY3h46uR7RuzpFGdUZlHTzl0AV7osJ0UH0go6zoxFXczZdMyyBURpcuFtOz0ZA==}
@@ -5778,7 +5778,7 @@ snapshots:
     dependencies:
       '@enonic-types/core': 7.16.8
 
-  '@enonic-types/lib-event@7.16.8': {}
+  '@enonic-types/lib-event@8.1.2': {}
 
   '@enonic-types/lib-grid@7.16.8':
     dependencies:
