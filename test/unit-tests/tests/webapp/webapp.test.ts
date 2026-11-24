@@ -9,6 +9,8 @@ const mockListTasks = jest.fn();
 const mockGetJobResult = jest.fn();
 const mockRunJobWithResult = jest.fn();
 const mockGetUser = jest.fn();
+const mockGetScheduleDescription = jest.fn();
+const mockRunOfficeFetchTask = jest.fn();
 
 jest.mock(
     '/lib/thymeleaf',
@@ -35,7 +37,9 @@ jest.mock('@navno-app/lib/jobs/job-results', () => ({
     runJobWithResult: mockRunJobWithResult,
 }));
 
-jest.mock('@navno-app/lib/office-pages/office-tasks', () => ({ runOfficeFetchTask: jest.fn() }));
+jest.mock('@navno-app/lib/office-pages/office-tasks', () => ({
+    runOfficeFetchTask: mockRunOfficeFetchTask,
+}));
 jest.mock('@navno-app/lib/context/run-in-context', () => ({
     runInContext: (_options: unknown, callback: () => unknown) => callback(),
 }));
@@ -56,7 +60,7 @@ jest.mock('@navno-app/lib/utils/auth-utils', () => ({
 jest.mock('@navno-app/lib/search/update-all', () => ({ externalSearchUpdateAll: jest.fn() }));
 jest.mock('@navno-app/lib/constants', () => ({ URLS: {} }));
 jest.mock('@navno-app/lib/scheduling/schedule-description', () => ({
-    getScheduleDescription: jest.fn(),
+    getScheduleDescription: mockGetScheduleDescription,
 }));
 jest.mock('@navno-app/lib/scheduling/schedule-cleanup', () => ({
     runSchedulerCleanup: jest.fn(),
@@ -92,6 +96,7 @@ beforeEach(() => {
     mockHandleCuratedExportRequest.mockReturnValue(null);
     mockListTasks.mockReturnValue([]);
     mockGetJobResult.mockReturnValue(null);
+    mockGetScheduleDescription.mockReturnValue(null);
     mockGetUser.mockReturnValue({ displayName: 'Ola Nordmann', login: 'ola' });
     mockManageScheduledJobs.mockReturnValue({
         selectedJobs: [],
@@ -172,24 +177,24 @@ describe('Webapp curated export routes', () => {
 });
 
 describe('Webapp actions', () => {
-    const backfillDescription = 'Sett publiseringsinfo på arvet innhold i layers';
+    const cleanupDescription = 'Fjern expired scheduler jobs';
 
     test('starts the action as a task', () => {
-        get(request({ cmd: 'backfillLayerPublishInfo' }));
+        get(request({ cmd: 'schedulerCleanup' }));
 
         expect(mockExecuteFunction).toHaveBeenCalledTimes(1);
-        expect(mockExecuteFunction.mock.calls[0][0].description).toContain(backfillDescription);
+        expect(mockExecuteFunction.mock.calls[0][0].description).toContain(cleanupDescription);
     });
 
     const runAgainWithExistingTask = (state: string) => {
-        get(request({ cmd: 'backfillLayerPublishInfo' }));
+        get(request({ cmd: 'schedulerCleanup' }));
         const { description } = mockExecuteFunction.mock.calls[0][0];
         mockListTasks.mockReturnValue([
             { description, state, progress: { info: '', current: 0, total: 0 } },
         ]);
         mockExecuteFunction.mockClear();
 
-        get(request({ cmd: 'backfillLayerPublishInfo' }));
+        get(request({ cmd: 'schedulerCleanup' }));
     };
 
     test.each(['RUNNING', 'WAITING'])('does not start the action again while it is %s', (state) => {
@@ -212,15 +217,27 @@ describe('Webapp actions', () => {
     });
 
     test('runs the action through the job result wrapper with the current user', () => {
-        get(request({ cmd: 'backfillLayerPublishInfo' }));
+        get(request({ cmd: 'schedulerCleanup' }));
         mockExecuteFunction.mock.calls[0][0].func();
 
         expect(mockRunJobWithResult).toHaveBeenCalledWith(
             expect.objectContaining({
-                jobName: 'backfillLayerPublishInfo',
+                jobName: 'schedulerCleanup',
                 startedBy: 'Ola Nordmann',
             })
         );
+    });
+    test('fails the office import when the import was skipped', () => {
+        mockRunOfficeFetchTask.mockReturnValue({
+            fetchedFromNorg: 0,
+            skipped: 'NORG ga 0 kontorer',
+        });
+
+        get(request({ cmd: 'norg' }));
+        mockExecuteFunction.mock.calls[0][0].func();
+        const { callback } = mockRunJobWithResult.mock.calls[0][0];
+
+        expect(callback).toThrow('Importen ble hoppet over: NORG ga 0 kontorer');
     });
 });
 
@@ -279,5 +296,34 @@ describe('Webapp job results', () => {
         expect(norg.lastResult.statusText).toBe('Kjører');
         expect(norg.progress).toBe('Henter kontorer – 3 av 10');
         expect(mockRender.mock.lastCall?.[1].hasRunningJobs).toBe(true);
+    });
+
+    test('shows the scheduler run when the scheduled run was not recorded', () => {
+        mockGetScheduleDescription.mockReturnValue({
+            text: 'hvert minutt',
+            isDisabled: false,
+            lastRun: '2026-11-17T14:21:00.000Z',
+        });
+
+        get(request());
+
+        expect(getRenderedCmd('norg').lastScheduledRun).toBe('2026-11-17T14:21:00.000Z');
+    });
+
+    test('shows only the stored result when it is from the latest scheduled run', () => {
+        mockGetScheduleDescription.mockReturnValue({
+            text: 'daglig kl.',
+            isDisabled: false,
+            lastRun: '2026-11-17T05:00:00.000Z',
+        });
+        mockGetJobResult.mockImplementation((jobName: string) =>
+            jobName === 'schedulerCleanup'
+                ? { status: 'finished', startedAt: '2026-11-17T05:00:01.000Z', startedBy: 'x' }
+                : null
+        );
+
+        get(request());
+
+        expect(getRenderedCmd('schedulerCleanup').lastScheduledRun).toBeNull();
     });
 });

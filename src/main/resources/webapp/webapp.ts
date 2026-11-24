@@ -77,6 +77,9 @@ const validActions: ActionsMap = {
             if (!result) {
                 throw new Error('Klarte ikke å hente kontordata fra norg2');
             }
+            if ('skipped' in result) {
+                throw new Error(`Importen ble hoppet over: ${result.skipped}`);
+            }
             return result;
         },
     },
@@ -216,6 +219,20 @@ const getLastResultModel = (jobName: string, activeTask?: TaskInfo) => {
     };
 };
 
+// Some scheduled runs are not recorded (e.g. the office import, which runs every minute), so we
+// fall back to the scheduler's own timestamp when it is newer than the stored result
+const getUnrecordedScheduledRun = (lastRun?: string, lastResultStartedAt?: string) => {
+    if (!lastRun) {
+        return null;
+    }
+
+    if (lastResultStartedAt && new Date(lastResultStartedAt) >= new Date(lastRun)) {
+        return null;
+    }
+
+    return lastRun;
+};
+
 const renderWebapp = (runningCmd?: string, message?: string) => {
     const { selectedJobs: obsoleteJobs } = runInContext({ asAdmin: true }, () =>
         manageScheduledJobs({ operation: 'list-obsolete' })
@@ -225,11 +242,14 @@ const renderWebapp = (runningCmd?: string, message?: string) => {
 
     const cmds = Object.entries(validActions).map(([name, action]) => {
         const activeTask = getActiveTask(tasks, action);
+        const schedule = action.scheduleName ? getScheduleDescription(action.scheduleName) : null;
+        const lastResult = getLastResultModel(name, activeTask);
         return {
             cmd: name,
             description: action.description,
-            schedule: action.scheduleName ? getScheduleDescription(action.scheduleName) : null,
-            lastResult: getLastResultModel(name, activeTask),
+            schedule,
+            lastResult,
+            lastScheduledRun: getUnrecordedScheduledRun(schedule?.lastRun, lastResult?.startedAt),
             progress: activeTask ? getProgressText(activeTask) : null,
             isRunning: !!activeTask,
         };
