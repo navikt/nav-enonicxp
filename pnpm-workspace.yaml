@@ -59,7 +59,7 @@ catalog:
   testcontainers: 11.11.0
   ts-jest: 29.4.6
   ts-node: 10.9.2
-  typescript: 5.9.3
+  typescript: 6.0.3
 minimumReleaseAge: 4320
 allowBuilds:
   '@swc/core': true
