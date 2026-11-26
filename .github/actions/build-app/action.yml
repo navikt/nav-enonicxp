@@ -9,6 +9,8 @@ runs:
   using: composite
   steps:
     - uses: navikt/navno-actions/setup-jvm@v1
+      with:
+        java-version: '25'
 
     # Also installs dependencies with --frozen-lockfile
     - uses: navikt/navno-actions/setup-node-pnpm@v1
