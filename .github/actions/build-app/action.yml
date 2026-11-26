@@ -8,9 +8,15 @@ inputs:
 runs:
   using: composite
   steps:
+    # The Gradle daemon JVM version is the single source of the Java version
+    - name: Read Java version
+      id: java
+      shell: bash
+      run: echo "version=$(sed -n 's/^toolchainVersion=//p' gradle/gradle-daemon-jvm.properties)" >> "$GITHUB_OUTPUT"
+
     - uses: navikt/navno-actions/setup-jvm@v1
       with:
-        java-version: '25'
+        java-version: ${{ steps.java.outputs.version }}
 
     # Also installs dependencies with --frozen-lockfile
     - uses: navikt/navno-actions/setup-node-pnpm@v1
