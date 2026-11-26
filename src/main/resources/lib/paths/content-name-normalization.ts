@@ -88,8 +88,9 @@ export const activateContentNameNormalizationListener = () => {
 
     hasSetupListeners = true;
 
+    // XP8 has no node.renamed event; renames emit node.moved
     eventLib.listener({
-        type: '(node.created|node.duplicated|node.renamed)',
+        type: '(node.created|node.duplicated|node.moved)',
         localOnly: false,
         callback: normalizeContentNamesOnEvent,
     });
