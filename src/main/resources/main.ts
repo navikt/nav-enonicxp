@@ -12,6 +12,7 @@ import {
 import { updateClusterInfo } from './lib/cluster-utils/cluster-api';
 import { activateContentListItemUnpublishedListener } from './lib/contentlists/remove-unpublished';
 import { activateCustomPathNodeListeners } from './lib/paths/custom-paths/custom-path-event-listeners';
+import { activateContentNameNormalizationListener } from './lib/paths/content-name-normalization';
 import { createOfficeImportSchedule } from './lib/office-pages/office-tasks';
 import { hookLibsWithTimeTravel } from './lib/time-travel/time-travel-hooks';
 import { TIME_TRAVEL_ENABLED } from './lib/time-travel/run-with-time-travel';
@@ -64,6 +65,7 @@ runInContext({ repository: CONTENT_ROOT_REPO_ID, branch: 'draft', asAdmin: true 
         activateArchiveNewsSchedule();
 
         activateCustomPathNodeListeners();
+        activateContentNameNormalizationListener();
         activateContentUpdateListener();
         activateSchedulerCleanupSchedule();
         initArchiveContentTrees();
